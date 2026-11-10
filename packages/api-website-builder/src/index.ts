@@ -1,4 +1,5 @@
 import { GetSettingsFeature } from "~/features/settings/GetSettings/index.js";
+import { WbFolderPermissions } from "~/features/folderPermissions/WbFolderPermissions.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/index.js";
 import { GetIntegrationsFeature } from "~/features/settings/GetIntegrations/index.js";
 import { UpdateIntegrationsFeature } from "~/features/settings/UpdateIntegrations/index.js";
@@ -74,6 +75,7 @@ const createContext = () => {
 
             // Register permissions
             WbPermissionsFeature.register(container);
+            container.register(WbFolderPermissions);
 
             // Register features
             GetSettingsFeature.register(container);
