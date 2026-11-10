@@ -18,6 +18,7 @@ import { GetAiChatUseCase } from "~/api/features/AiChats/GetAiChat/index.js";
 import { SaveAiChatUseCase } from "~/api/features/AiChats/SaveAiChat/index.js";
 import { AiChatNotFoundError } from "~/api/features/AiChats/domain/errors.js";
 import { AiChatTooLargeError } from "~/api/features/AiChats/domain/errors.js";
+import { AiChatPersistenceError } from "~/api/features/AiChats/domain/errors.js";
 import type { AiChat } from "~/api/features/AiChats/domain/types.js";
 import type { ModelMessage } from "ai";
 
@@ -46,6 +47,8 @@ interface SetupOptions {
     responseMessages?: ModelMessage[];
     /** Makes every save fail with this error. */
     saveError?: Error;
+    /** Makes every save throw this, rather than return a failed result. */
+    saveThrows?: Error;
 }
 
 const setup = (
@@ -56,7 +59,8 @@ const setup = (
     const requests: Ai.GenerateTextParams[] = [];
     const saves: SaveAiChatUseCase.Input[] = [];
     const container = new Container();
-    const chats = new Map(Object.entries(options.chats ?? {}));
+    const existing = Object.entries(options.chats ?? {});
+    const chats = new Map(existing);
 
     container.registerInstance(Ai, {
         streamText: async (request: Ai.StreamTextParams) => {
@@ -95,25 +99,31 @@ const setup = (
         messages
     });
 
-    container.registerInstance(GetAiChatUseCase, {
+    const getChat: GetAiChatUseCase.Interface = {
         execute: async (id: string) => {
             const messages = chats.get(id);
             if (!messages) {
                 return Result.fail(new AiChatNotFoundError(id));
             }
-            return Result.ok(chatOf(id, messages));
+            const chat = chatOf(id, messages);
+            return Result.ok(chat);
         }
-    } as GetAiChatUseCase.Interface);
+    };
+    container.registerInstance(GetAiChatUseCase, getChat);
 
     container.registerInstance(SaveAiChatUseCase, {
         execute: async (input: SaveAiChatUseCase.Input) => {
             saves.push(input);
+            if (options.saveThrows) {
+                throw options.saveThrows;
+            }
             if (options.saveError) {
                 return Result.fail(options.saveError);
             }
             const id = input.id ?? "chat-new";
             chats.set(id, input.messages);
-            return Result.ok(chatOf(id, input.messages));
+            const chat = chatOf(id, input.messages);
+            return Result.ok(chat);
         }
     } as unknown as SaveAiChatUseCase.Interface);
 
@@ -501,7 +511,32 @@ describe("AdminAssistantUseCase chats", () => {
 
         expect(events.map(event => event.type)).toEqual(["start", "not-saved", "done"]);
         expect(events.find(event => event.type === "not-saved")).toMatchObject({
-            reason: "too-large"
+            retryable: false
+        });
+    });
+
+    it("offers asking again only when the store itself failed", async () => {
+        const { useCase } = setup(undefined, [], {
+            saveError: new AiChatPersistenceError(new Error("Throttled."))
+        });
+
+        const events = await run(useCase);
+
+        expect(events.find(event => event.type === "not-saved")).toMatchObject({
+            message: "Throttled.",
+            retryable: true
+        });
+    });
+
+    it("reports a save that throws as not saved, then still finishes", async () => {
+        const { useCase } = setup(undefined, [], { saveThrows: new Error("Bug.") });
+
+        const events = await run(useCase);
+
+        expect(events.map(event => event.type)).toEqual(["start", "not-saved", "done"]);
+        expect(events.find(event => event.type === "not-saved")).toMatchObject({
+            message: "Bug.",
+            retryable: false
         });
     });
 

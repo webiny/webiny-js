@@ -120,8 +120,8 @@ const addToTurn = (turn: RestoredTurn, message: AdminAssistantMessage): void => 
  * Turns a saved conversation back into the turns the palette shows.
  *
  * The inverse of how the assistant replays a conversation: every user message starts a turn, and
- * the assistant and tool messages after it are that turn's. The follow-up questions come from the call that suggested them, so a
- * reopened chat offers the same ones it ended with.
+ * the assistant and tool messages after it are that turn's. The follow-up questions come from the
+ * call that suggested them, so a reopened chat offers the same ones it ended with.
  */
 export const turnsFromMessages = (messages: AdminAssistantMessage[]): RestoredTurn[] => {
     const turns: RestoredTurn[] = [];

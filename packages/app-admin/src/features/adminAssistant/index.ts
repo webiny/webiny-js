@@ -6,7 +6,6 @@ export type {
     AdminAssistantPendingApproval,
     AdminAssistantDecision,
     AdminAssistantRequest,
-    AdminAssistantSavedChat,
     AdminAssistantStreamEvent
 } from "./abstractions.js";
 export { AdminAssistantGateway as AdminAssistantGatewayImplementation } from "./AdminAssistantGateway.js";

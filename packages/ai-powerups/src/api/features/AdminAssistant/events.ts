@@ -39,10 +39,10 @@ export type AdminAssistantEvent =
      */
     | { type: "saved"; chat: AiChatSummary }
     /**
-     * The run finished but could not be stored, so the next question will not see it. `too-large`
-     * cannot succeed on a retry; anything else might.
+     * The run finished but could not be stored, so the next question will not see it. `retryable`
+     * says whether asking again could save it; otherwise only a new chat saves again.
      */
-    | { type: "not-saved"; message: string; reason: "too-large" | "rejected" }
+    | { type: "not-saved"; message: string; retryable: boolean }
     /** Terminal success, after `saved` or `not-saved`. */
     | { type: "done"; steps: number }
     /**

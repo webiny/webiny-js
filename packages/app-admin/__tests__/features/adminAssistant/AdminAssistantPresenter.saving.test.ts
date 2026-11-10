@@ -6,7 +6,6 @@ import { AdminAssistantGateway } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter as PresenterAbstraction } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantRequest } from "~/features/adminAssistant/abstractions";
-import type { AdminAssistantSavedChat } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
@@ -17,7 +16,7 @@ const answer = (text: string): AdminAssistantMessage => ({
     content: [{ type: "text", text }]
 });
 
-const saved = (id: string): AdminAssistantSavedChat => ({
+const saved = (id: string): AiChatsRepository.Summary => ({
     id,
     title: "Chat",
     createdOn: "2026-10-19T10:00:00.000Z",
@@ -56,9 +55,9 @@ const run = (text: string, chatId = "chat-1"): AdminAssistantStreamEvent[] => [
     { type: "done", steps: 1 }
 ];
 
-const notSaved = (text: string, reason: "too-large" | "rejected"): AdminAssistantStreamEvent[] => [
+const notSaved = (text: string, retryable: boolean): AdminAssistantStreamEvent[] => [
     { type: "text", text },
-    { type: "not-saved", message: "The chat could not be saved.", reason },
+    { type: "not-saved", message: "The chat could not be saved.", retryable },
     { type: "done", steps: 1 }
 ];
 
@@ -135,7 +134,7 @@ describe("AdminAssistantPresenter saving", () => {
         const { presenter, requests } = setup([
             [
                 ...paused().filter(event => event.type !== "saved" && event.type !== "done"),
-                { type: "not-saved", message: "Too large.", reason: "too-large" },
+                { type: "not-saved", message: "Too large.", retryable: false },
                 { type: "done", steps: 1 }
             ]
         ]);
@@ -166,13 +165,13 @@ describe("AdminAssistantPresenter saving", () => {
     });
 
     it("says why a run was not saved, and keeps the conversation", async () => {
-        const { presenter } = setup([notSaved("3 products.", "too-large")]);
+        const { presenter } = setup([notSaved("3 products.", false)]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
 
         expect(presenter.vm.storageError).toBe("The chat could not be saved.");
-        expect(presenter.vm.saveFailure).toBe("too-large");
+        expect(presenter.vm.saveFailure).toBe("final");
         expect(presenter.vm.turns[0].text).toBe("3 products.");
         expect(presenter.vm.turns[0].settled).toBe(true);
     });
@@ -181,7 +180,7 @@ describe("AdminAssistantPresenter saving", () => {
     it("asks again in place of a run that was not saved", async () => {
         const { presenter, requests } = setup([
             run("3 products."),
-            notSaved("The mug.", "rejected"),
+            notSaved("The mug.", true),
             run("The mug, again.")
         ]);
 
@@ -197,6 +196,28 @@ describe("AdminAssistantPresenter saving", () => {
         expect(presenter.vm.turns[1].text).toBe("The mug, again.");
         expect(presenter.vm.storageError).toBeNull();
         expect(presenter.vm.saveFailure).toBeNull();
+    });
+
+    /*
+     * The decision may have carried out the change. Asking again would start from before it, so the
+     * model would propose it again, and approving it a second time would make it twice.
+     */
+    it("offers only a new chat when a resumed run was not saved", async () => {
+        const { presenter, requests } = setup([
+            paused(),
+            notSaved("Created the folder.", true),
+            run("Not used.")
+        ]);
+
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+        presenter.decide(0, true);
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("final");
+
+        presenter.retry();
+        await settle(presenter);
+        expect(requests).toHaveLength(2);
     });
 
     it("does nothing on retry when the newest turn is fine", async () => {

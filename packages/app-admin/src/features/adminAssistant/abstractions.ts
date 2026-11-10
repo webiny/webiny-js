@@ -1,15 +1,12 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
-import type { AiChatSummary } from "~/features/aiChats/abstractions.js";
+import type { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 
 /**
  * A message of a saved chat. Opaque on purpose: the admin only reads them to show an opened chat,
  * and the server is the one that sends them to the model.
  */
 export type AdminAssistantMessage = { role: string; content: unknown };
-
-/** The chat a run was saved as. */
-export type AdminAssistantSavedChat = AiChatSummary;
 
 /** A tool the assistant invoked, so the UI can show its work rather than just an answer. */
 export interface AdminAssistantToolCall {
@@ -59,9 +56,9 @@ export type AdminAssistantStreamEvent =
     | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
     // The run was saved, as a new chat or onto the one asked about.
-    | { type: "saved"; chat: AdminAssistantSavedChat }
-    // The run finished but the server could not save it.
-    | { type: "not-saved"; message: string; reason: "too-large" | "rejected" }
+    | { type: "saved"; chat: AiChatsRepository.Summary }
+    // The run finished but the server could not save it. `retryable` says whether asking again could.
+    | { type: "not-saved"; message: string; retryable: boolean }
     // Comes after `saved` or `not-saved`.
     | { type: "done"; steps: number }
     | { type: "error"; message: string; code?: "AI_CAPABILITY_NOT_CONFIGURED" };
@@ -88,7 +85,6 @@ export namespace AdminAssistantGateway {
     export type PendingApproval = AdminAssistantPendingApproval;
     export type Decision = AdminAssistantDecision;
     export type Request = AdminAssistantRequest;
-    export type SavedChat = AdminAssistantSavedChat;
     export type StreamEvent = AdminAssistantStreamEvent;
 }
 

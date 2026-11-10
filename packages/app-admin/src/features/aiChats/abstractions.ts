@@ -21,10 +21,10 @@ export interface AiChatsPage {
 }
 
 /**
- * Why the assistant could not save a run: the chat is over the size the server stores, or the server
- * refused it for another reason.
+ * What fixes a run the assistant could not save: asking again, when the store itself failed, or
+ * only a new chat, when the chat is too large or the run cannot be repeated safely.
  */
-export type AiChatSaveFailure = "too-large" | "rejected";
+export type AiChatSaveFailure = "retryable" | "final";
 
 /**
  * Calls the `aiPowerUps` chat operations. The api registers them only with the admin assistant

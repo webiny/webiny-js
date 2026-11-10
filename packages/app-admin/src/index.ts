@@ -123,7 +123,6 @@ export type {
     AdminAssistantPendingApproval,
     AdminAssistantDecision,
     AdminAssistantRequest,
-    AdminAssistantSavedChat,
     AiTurnViewModel,
     IAdminAssistantPresenter,
     IAdminAssistantViewModel

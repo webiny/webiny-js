@@ -14,10 +14,10 @@ export interface NotSavedAlertProps {
 }
 
 const textFor = (reason: string, failure: AiChatSaveFailure | null): string => {
-    if (failure === "too-large") {
-        return "**Not saved.** This chat is too large to store. Start a new chat to keep saving.";
+    if (failure === "final") {
+        return `**Not saved.** ${reason} Start a new chat to keep saving.`;
     }
-    if (failure === "rejected") {
+    if (failure === "retryable") {
         return `**Not saved.** ${reason} Ask again to save the last answer.`;
     }
     return `**Couldn't open this chat.** ${reason}`;
@@ -28,13 +28,13 @@ const textFor = (reason: string, failure: AiChatSaveFailure | null): string => {
  * error: the conversation stays on screen.
  *
  * The assistant saves each answer itself, so an answer that was not saved is not in the chat it
- * continues from. Asking again answers it afresh and saves it; a chat too large to store needs a
- * new chat instead.
+ * continues from. When the store failed, asking again answers it afresh and saves it. Anything
+ * else would fail again, so it needs a new chat instead.
  */
 export const NotSavedAlert = ({ reason, failure, onRetry, onStartNew }: NotSavedAlertProps) => {
     const text = textFor(reason, failure);
     let action: React.ReactElement | undefined;
-    if (failure === "too-large") {
+    if (failure === "final") {
         action = <Alert.Action text="Start a new chat" onClick={onStartNew} />;
     } else if (failure) {
         action = <Alert.Action text="Ask again" onClick={onRetry} />;

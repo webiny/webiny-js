@@ -11,8 +11,6 @@ import type { AiChatValidationError } from "../domain/errors.js";
 export interface ISaveAiChatInput {
     /** Omit it to start a new chat. With it, the chat must exist and is overwritten. */
     id?: string;
-    /** Defaults to the first question for a new chat, and to the saved title otherwise. */
-    title?: string;
     /** The whole conversation so far, not only the newest turn. */
     messages: ModelMessage[];
 }

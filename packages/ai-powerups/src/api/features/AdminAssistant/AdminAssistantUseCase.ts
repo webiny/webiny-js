@@ -13,7 +13,7 @@ import {
 import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
 import { GetAiChatUseCase } from "~/api/features/AiChats/GetAiChat/index.js";
 import { SaveAiChatUseCase } from "~/api/features/AiChats/SaveAiChat/index.js";
-import { AiChatTooLargeError } from "~/api/features/AiChats/domain/errors.js";
+import { canRetrySave } from "~/api/features/AiChats/domain/canRetrySave.js";
 import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
@@ -254,6 +254,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
     /**
      * Stores the conversation after a run, as a new chat on the first question. Failing to store it
      * does not undo the answer, which the user has already read, so it is reported, not thrown.
+     * Whether asking again could save it is for the chats feature to say.
      */
     private async save(chatId: string | undefined, messages: ModelMessage[]): Promise<SaveEvent> {
         const input: SaveAiChatUseCase.Input = { messages };
@@ -261,14 +262,19 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             input.id = chatId;
         }
 
-        const result = await this.saveChat.execute(input);
-        if (result.isFail()) {
-            const reason = result.error instanceof AiChatTooLargeError ? "too-large" : "rejected";
-            return { type: "not-saved", message: result.error.message, reason };
-        }
+        try {
+            const result = await this.saveChat.execute(input);
+            if (result.isFail()) {
+                const retryable = canRetrySave(result.error);
+                return { type: "not-saved", message: result.error.message, retryable };
+            }
 
-        const { id, title, createdOn, savedOn } = result.value;
-        return { type: "saved", chat: { id, title, createdOn, savedOn } };
+            const { id, title, createdOn, savedOn } = result.value;
+            return { type: "saved", chat: { id, title, createdOn, savedOn } };
+        } catch (error) {
+            // Every failure the save expects is a result, so a throw is a bug that would repeat.
+            return { type: "not-saved", message: toMessage(error), retryable: false };
+        }
     }
 
     /**
@@ -302,7 +308,8 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 approved: false,
                 reason: SUPERSEDED_REASON
             }));
-            history.push(toApprovalMessage(superseded));
+            const rejection = toApprovalMessage(superseded);
+            history.push(rejection);
         }
         history.push({ role: "user", content: params.prompt });
         return history;

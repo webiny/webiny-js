@@ -1,10 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { AdminAssistantGateway } from "./abstractions.js";
 import type { AdminAssistantRequest } from "./abstractions.js";
-import type { AdminAssistantSavedChat } from "./abstractions.js";
 import { AdminAssistantPresenter as Abstraction } from "./abstractions.js";
 import type { AiTurnViewModel } from "./abstractions.js";
-import type { IAdminAssistantViewModel } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
@@ -70,8 +68,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         );
     }
 
-    get vm(): IAdminAssistantViewModel {
-        const vm: IAdminAssistantViewModel = {
+    get vm(): Abstraction.ViewModel {
+        const vm: Abstraction.ViewModel = {
             busy: this.busy,
             chatId: this.chatId,
             opening: this.opening,
@@ -125,7 +123,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         const index = this.turns.length;
         this.addTurn(trimmed);
-        void this.run(index, this.request({ prompt: trimmed }));
+        const request = this.request({ prompt: trimmed });
+        void this.run(index, request);
     }
 
     decide(turnIndex: number, approved: boolean): void {
@@ -157,7 +156,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             running: true
         });
 
-        void this.run(turnIndex, this.request({ approvals }), true);
+        const request = this.request({ approvals });
+        void this.run(turnIndex, request, true);
     }
 
     /*
@@ -172,14 +172,16 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         if (!turn || this.busy || this.opening) {
             return;
         }
-        if (!turn.error && !this.saveFailure) {
+        // A run that cannot be saved by asking again is left for a new chat.
+        if (!turn.error && this.saveFailure !== "retryable") {
             return;
         }
 
         this.clearStorageError();
         const fresh = emptyTurn(turn.question);
         this.replaceTurn(index, { ...fresh, running: true });
-        void this.run(index, this.request({ prompt: turn.question }));
+        const request = this.request({ prompt: turn.question });
+        void this.run(index, request);
     }
 
     private get setupRequired(): boolean {
@@ -306,8 +308,14 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                     continue;
                 }
 
+                /*
+                 * A resumed run may have carried out the change the user approved. Asking again
+                 * would start before that change, so the model proposes it again and approving
+                 * twice makes it twice. Only a new chat is offered then.
+                 */
                 if (event.type === "not-saved") {
-                    this.setSaveFailed(event.message, event.reason);
+                    const failure = event.retryable && !resuming ? "retryable" : "final";
+                    this.setSaveFailed(event.message, failure);
                     continue;
                 }
 
@@ -375,7 +383,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     }
 
     // The chats list learns of the chat from here, so it shows up without being read again.
-    private setSaved(chat: AdminAssistantSavedChat): void {
+    private setSaved(chat: AiChatsRepository.Summary): void {
         this.chatId = chat.id;
         this.storageError = null;
         this.saveFailure = null;

@@ -3,7 +3,6 @@ import { AiChatsGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AiChat } from "./abstractions.js";
 import type { AiChatSummary } from "./abstractions.js";
 import type { AiChatsPage } from "./abstractions.js";
-import { AiChatsRequestError } from "./AiChatsRequestError.js";
 
 const ERROR_FIELDS = /* GraphQL */ `
     error {
@@ -87,11 +86,10 @@ interface DeleteResponse {
 
 /**
  * Every operation answers `{ data, error }`; a missing `data` without an error is still a failure.
- * The error keeps the server's code.
  */
 function unwrap<TData, TMeta>(response: Response<TData, TMeta>): TData {
     if (response.error) {
-        throw new AiChatsRequestError(response.error.message, response.error.code ?? "");
+        throw new Error(response.error.message);
     }
     if (response.data === null) {
         throw new Error("The API returned no data.");
