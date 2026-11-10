@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { NotAuthorizedError } from "~/utils/errors.js";
 import type {
     HeadlessCmsImport,
     ValidCmsGroupResult,
@@ -21,6 +22,15 @@ export const createImportCrud = (context: CmsContext): HeadlessCmsImport => {
     return {
         validate: async params => {
             const { data } = params;
+
+            /* Validation reads all groups and models, so require the access an import needs. */
+            const canWriteGroups = await context.cms.accessControl.canAccessGroup({ rwd: "w" });
+            const canWriteModels = await context.cms.accessControl.canAccessModel({ rwd: "w" });
+            if (!canWriteGroups || !canWriteModels) {
+                throw new NotAuthorizedError(
+                    "Not allowed to import content model groups and models."
+                );
+            }
 
             const { groups, models } = await fetchGroupsAndModels(context);
 
