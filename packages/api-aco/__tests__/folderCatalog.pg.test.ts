@@ -178,8 +178,9 @@ describe.runIf(isPg)("Folder catalog on pg", () => {
         for (const { tablename } of tables.rows) {
             await knex.raw(`DROP TABLE "${tablename}"`);
         }
+        // Forget the catalog's tables and built tenants (the process-wide memory of the catalog).
         for (const manager of (globalThis as any).__sqlTableManagers || []) {
-            if (typeof manager.isKnownBuilt === "function") {
+            if (String(manager.key ?? "").startsWith("aco.pg.folderCatalog:")) {
                 manager.reset();
             }
         }

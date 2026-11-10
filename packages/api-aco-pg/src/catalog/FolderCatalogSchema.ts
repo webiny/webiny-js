@@ -1,6 +1,11 @@
 import type { Knex } from "knex";
 import { createAbstraction } from "@webiny/feature/api";
-import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
+import {
+    getSchemaMemory,
+    KnexClient,
+    SqlSchemaConfig,
+    type ISchemaMemory
+} from "@webiny/api-core-sql";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 
 export interface IFolderCatalogTables {
@@ -91,9 +96,12 @@ const resolveAcoTableName = (config: TableNameResolverConfig.Interface, name: st
 
 class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
     private readonly tables: IFolderCatalogTables;
-    private initPromise?: Promise<void>;
-    private ready = false;
-    private readonly builtTenants = new Set<string>();
+    /*
+     * Whether this process has created the tables, and the tenants it has seen built. Process-wide
+     * rather than per instance: the module is registered per request, with the project's extensions.
+     * Test setups drop all tables between tests and reset every memory.
+     */
+    private readonly memory: ISchemaMemory;
 
     public constructor(
         private readonly knex: KnexClient.Interface,
@@ -105,10 +113,7 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
             grants: resolveAcoTableName(tableNameConfig, "folder_grants"),
             state: resolveAcoTableName(tableNameConfig, "folder_catalog_state")
         };
-        // Test setups drop all tables between tests and call reset() on every registered manager.
-        const g = globalThis as Record<string, unknown>;
-        const managers = (g.__sqlTableManagers ??= []) as FolderCatalogSchema.Interface[];
-        managers.push(this);
+        this.memory = getSchemaMemory(`aco.pg.folderCatalog:${this.tables.folders}`);
     }
 
     public getTables(): IFolderCatalogTables {
@@ -116,17 +121,15 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
     }
 
     public isKnownBuilt(tenant: string): boolean {
-        return this.builtTenants.has(tenant);
+        return this.memory.known.has(tenant);
     }
 
     public rememberBuilt(tenant: string): void {
-        this.builtTenants.add(tenant);
+        this.memory.known.add(tenant);
     }
 
     public reset(): void {
-        this.initPromise = undefined;
-        this.ready = false;
-        this.builtTenants.clear();
+        this.memory.reset();
     }
 
     public ensure(): Promise<void> {
@@ -134,13 +137,7 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
             // Set up before the API took traffic: no DDL (and no advisory lock) on a cold start.
             return Promise.resolve();
         }
-        if (!this.initPromise) {
-            this.initPromise = this.create().catch(err => {
-                this.initPromise = undefined;
-                throw err;
-            });
-        }
-        return this.initPromise;
+        return this.memory.once(() => this.create());
     }
 
     public setup(): Promise<void> {
@@ -148,22 +145,21 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
     }
 
     public async ensureIn(trx: Knex.Transaction): Promise<void> {
-        if (this.ready || this.schemaConfig?.isManaged()) {
+        if (this.memory.isReady() || this.schemaConfig?.isManaged()) {
             return;
         }
         await this.createIn(trx);
         // Known to exist only once the caller's transaction commits.
         trx.executionPromise
             .then(() => {
-                this.ready = true;
-                this.initPromise ??= Promise.resolve();
+                this.memory.markReady();
             })
             .catch(() => undefined);
     }
 
     private async create(): Promise<void> {
         await this.knex.client.transaction(trx => this.createIn(trx));
-        this.ready = true;
+        this.memory.markReady();
     }
 
     private async createIn(trx: Knex.Transaction): Promise<void> {

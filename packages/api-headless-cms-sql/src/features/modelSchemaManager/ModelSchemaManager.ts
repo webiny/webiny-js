@@ -1,19 +1,19 @@
-import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
+import { getSchemaMemory, KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
 import { ModelSchemaManager as ModelSchemaManagerAbstraction } from "./abstractions.js";
 
 class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface {
     private readonly knex;
-    private readonly verified = new Set<string>();
+    /*
+     * Tables checked by this process. Process-wide rather than per instance: the Postgres CMS
+     * registers this manager per request.
+     */
+    private readonly verified = getSchemaMemory("cms.sql.ModelSchemaManager").known;
 
     constructor(
         knex: KnexClient.Interface,
         private readonly schemaConfig?: SqlSchemaConfig.Interface
     ) {
         this.knex = knex;
-
-        const g = globalThis as Record<string, unknown>;
-        const managers = (g.__sqlTableManagers ??= []) as ModelSchemaManagerAbstraction.Interface[];
-        managers.push(this);
     }
 
     public reset(): void {

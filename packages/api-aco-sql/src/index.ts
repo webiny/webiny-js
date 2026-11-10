@@ -1,5 +1,6 @@
 import type { Knex } from "knex";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { SqlSchemaSetup } from "@webiny/api-core-sql";
 import { FolderLevelPermissionsStorageOperations } from "./FolderLevelPermissionsStorageOperations.js";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 import { TaskCatalogFlpFeature } from "@webiny/api-aco/flpTaskCatalog/index.js";
@@ -20,6 +21,10 @@ export const registerAcoSqlStorageOperations = (params: RegisterAcoSqlStorageOpe
         });
 
         context.container.registerInstance(FlpStorageOperations, flpStorageOperations);
+        context.container.registerInstance(SqlSchemaSetup, {
+            name: "aco",
+            setup: () => flpStorageOperations.setupSchema()
+        });
         // Folder-level permissions on this storage use the task-maintained FLP catalog.
         TaskCatalogFlpFeature.register(context.container);
     });

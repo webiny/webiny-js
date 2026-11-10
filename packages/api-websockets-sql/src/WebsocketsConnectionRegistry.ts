@@ -1,5 +1,5 @@
 import { WebinyError } from "@webiny/error";
-import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
+import { KnexClient, SqlSchemaConfig, SqlSchemaSetup } from "@webiny/api-core-sql";
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { TableName } from "~/TableName/abstractions.js";
 import { toIsoString } from "~/toIsoString.js";
@@ -327,4 +327,23 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 export const WebsocketsConnectionRegistry = ConnectionRegistry.createImplementation({
     implementation: WebsocketsConnectionRegistryImpl,
     dependencies: [KnexClient, TableName, [SqlSchemaConfig, { optional: true }]]
+});
+
+/** The `websockets` schema setup step: the connections table, created and migrated. */
+class WebsocketsSchemaSetupImpl implements SqlSchemaSetup.Interface {
+    public readonly name = "websockets";
+
+    public constructor(
+        private readonly knex: KnexClient.Interface,
+        private readonly tableName: TableName.Interface
+    ) {}
+
+    public setup(): Promise<void> {
+        return new WebsocketsConnectionRegistryImpl(this.knex, this.tableName).setupSchema();
+    }
+}
+
+export const WebsocketsSchemaSetup = SqlSchemaSetup.createImplementation({
+    implementation: WebsocketsSchemaSetupImpl,
+    dependencies: [KnexClient, TableName]
 });

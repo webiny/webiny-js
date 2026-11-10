@@ -21,8 +21,6 @@ import {
 } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
-export type { RegisterRootStorageContext } from "~/composition/index.js";
-
 export type CreateWebinyApiHandlerConfig = WebinyApiCompositionConfig;
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {

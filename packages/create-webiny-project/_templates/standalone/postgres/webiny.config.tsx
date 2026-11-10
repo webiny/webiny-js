@@ -4,6 +4,8 @@ import { Admin } from "webiny/extensions";
 // AWS namespaces, which don't include server-only extensions like `Infra.Postgres`.
 import { Infra } from "@webiny/project-standalone";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
+import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
+import { AcoPg } from "@webiny/api-aco-pg/project";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
@@ -13,9 +15,7 @@ export const Extensions = () => {
     return (
         <>
             {/* SQL database — connect to a Postgres server. Connection params come from the WEBINY_PG_*
-                env vars (see `.env`); set `ssl` when connecting to a managed Postgres that requires it.
-                Content uses the Postgres-native storage; `storage="sql"` selects the generic SQL
-                storage instead (chosen once per project: switching does not move existing data). */}
+                env vars (see `.env`); set `ssl` when connecting to a managed Postgres that requires it. */}
             <Infra.Postgres
                 host={process.env.WEBINY_PG_HOST || "localhost"}
                 port={Number(process.env.WEBINY_PG_PORT) || 5432}
@@ -23,6 +23,11 @@ export const Extensions = () => {
                 password={process.env.WEBINY_PG_PASSWORD || "postgres"}
                 database={process.env.WEBINY_PG_DATABASE || "webiny"}
             />
+
+            {/* Content on Postgres: the CMS storage (entries in a jsonb table with a typed search
+                table), and folder-level permissions in a folder catalog. */}
+            <HeadlessCmsPg />
+            <AcoPg />
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves
                 against the project root, so uploads persist across rebuilds. */}

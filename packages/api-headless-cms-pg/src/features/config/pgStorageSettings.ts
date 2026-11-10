@@ -1,6 +1,6 @@
-import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import {
-    PG_BUILD_PARAMS,
+    PG_CMS_BUILD_PARAM,
     PgStorageConfig,
     type IPgStorageConfig,
     type IPgStorageSettings
@@ -19,75 +19,78 @@ export const resolvePgStorageConfig = (settings: IPgStorageSettings = {}): IPgSt
     fieldBudget: settings.fieldBudget ?? DEFAULT_FIELD_BUDGET,
     slotIndexes: settings.slotIndexes ?? true,
     countCap: settings.countCap ?? DEFAULT_COUNT_CAP,
-    bitmapHints: settings.bitmapHints ?? true
+    bitmapHints: settings.bitmapHints ?? true,
+    sharedTables: settings.sharedTables ?? false
 });
 
-/*
- * The config as a DI implementation of fixed settings. A class registration, not an instance, so a
- * later registration (a test reading each request's build params) can replace it: the container
- * prefers instances over classes whatever the order.
- */
-export const createPgStorageConfig = (settings: IPgStorageSettings = {}) => {
-    const config = resolvePgStorageConfig(settings);
-
-    class FixedPgStorageConfigImpl implements PgStorageConfig.Interface {
-        public readonly defaultIndexMode = config.defaultIndexMode;
-        public readonly indexModeTtlMs = config.indexModeTtlMs;
-        public readonly estimateTtlMs = config.estimateTtlMs;
-        public readonly fieldBudget = config.fieldBudget;
-        public readonly slotIndexes = config.slotIndexes;
-        public readonly countCap = config.countCap;
-        public readonly bitmapHints = config.bitmapHints;
-    }
-
-    return PgStorageConfig.createImplementation({
-        implementation: FixedPgStorageConfigImpl,
-        dependencies: []
-    });
-};
-
-type RawValue = string | number | boolean | null;
-
-/* A number at least `min`, from a number or a numeric string; undefined when unset or invalid. */
-const toNumber = (value: RawValue, min: number, integer = false): number | undefined => {
-    if (value === null || value === "" || typeof value === "boolean") {
+/* A number at least `min`; undefined when unset or invalid. */
+const toNumber = (value: unknown, min: number, integer = false): number | undefined => {
+    if (typeof value !== "number" || !Number.isFinite(value) || value < min) {
         return undefined;
     }
-    const number = Number(value);
-    if (!Number.isFinite(number) || number < min || (integer && !Number.isInteger(number))) {
+    if (integer && !Number.isInteger(value)) {
         return undefined;
     }
-    return number;
+    return value;
 };
 
-/* true or false from a boolean or "true"/"false"; undefined otherwise. */
-const toBoolean = (value: RawValue): boolean | undefined => {
-    if (value === true || value === "true") {
-        return true;
-    }
-    if (value === false || value === "false") {
-        return false;
-    }
-    return undefined;
+const toBoolean = (value: unknown): boolean | undefined => {
+    return typeof value === "boolean" ? value : undefined;
 };
 
 /**
- * The storage's settings from the API's build params (the `Pg*` params `<Infra.Postgres cmsStorage>`
- * or `<Api.BuildParam>` declare). For the handler that registers the storage: it reads the build
- * params and passes the result to `HeadlessCmsPgFeature.register()` as `settings`. Invalid values
- * are left out, so the default applies.
+ * The settings in the `HeadlessCmsPg` build param. `<HeadlessCmsPg>` validates them when the
+ * project is built; a value of the wrong type is left out here too, so the default applies.
  */
-export const readPgStorageSettings = (buildParams: BuildParams.Interface): IPgStorageSettings => {
-    const get = (key: string): RawValue => buildParams.get<RawValue>(key);
-    const indexMode = get(PG_BUILD_PARAMS.indexMode);
+export const parsePgStorageSettings = (value: unknown): IPgStorageSettings => {
+    if (!value || typeof value !== "object") {
+        return {};
+    }
+    const settings = value as Record<string, unknown>;
+    const indexMode = settings.defaultIndexMode;
     return {
         defaultIndexMode: indexMode === "lean" || indexMode === "indexed" ? indexMode : undefined,
-        indexModeTtlMs: toNumber(get(PG_BUILD_PARAMS.indexModeTtlMs), 0),
-        estimateTtlMs: toNumber(get(PG_BUILD_PARAMS.estimateTtlMs), 0),
-        fieldBudget: toNumber(get(PG_BUILD_PARAMS.fieldBudget), 0),
-        slotIndexes: toBoolean(get(PG_BUILD_PARAMS.slotIndexes)),
-        countCap: toNumber(get(PG_BUILD_PARAMS.countCap), 1, true),
-        bitmapHints: toBoolean(get(PG_BUILD_PARAMS.bitmapHints)),
-        sharedTables: toBoolean(get(PG_BUILD_PARAMS.sharedTables))
+        indexModeTtlMs: toNumber(settings.indexModeTtlMs, 0),
+        estimateTtlMs: toNumber(settings.estimateTtlMs, 0),
+        fieldBudget: toNumber(settings.fieldBudget, 0),
+        slotIndexes: toBoolean(settings.slotIndexes),
+        countCap: toNumber(settings.countCap, 1, true),
+        bitmapHints: toBoolean(settings.bitmapHints),
+        sharedTables: toBoolean(settings.sharedTables)
     };
 };
+
+/*
+ * The config from the `HeadlessCmsPg` build param of the container it's resolved in. The module is
+ * registered per request, where the build params are, and schema setup registers the build params
+ * before it, so setup and requests read the same settings.
+ */
+class BuildParamsPgStorageConfigImpl implements PgStorageConfig.Interface {
+    public readonly defaultIndexMode: PgStorageConfig.Interface["defaultIndexMode"];
+    public readonly indexModeTtlMs: number;
+    public readonly estimateTtlMs: number;
+    public readonly fieldBudget: number;
+    public readonly slotIndexes: boolean;
+    public readonly countCap: number;
+    public readonly bitmapHints: boolean;
+    public readonly sharedTables: boolean;
+
+    public constructor(buildParams: BuildParams.Interface) {
+        const config = resolvePgStorageConfig(
+            parsePgStorageSettings(buildParams.get(PG_CMS_BUILD_PARAM))
+        );
+        this.defaultIndexMode = config.defaultIndexMode;
+        this.indexModeTtlMs = config.indexModeTtlMs;
+        this.estimateTtlMs = config.estimateTtlMs;
+        this.fieldBudget = config.fieldBudget;
+        this.slotIndexes = config.slotIndexes;
+        this.countCap = config.countCap;
+        this.bitmapHints = config.bitmapHints;
+        this.sharedTables = config.sharedTables;
+    }
+}
+
+export const BuildParamsPgStorageConfig = PgStorageConfig.createImplementation({
+    implementation: BuildParamsPgStorageConfigImpl,
+    dependencies: [BuildParams]
+});

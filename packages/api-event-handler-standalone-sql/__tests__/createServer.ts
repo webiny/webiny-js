@@ -3,6 +3,7 @@ import os from "node:os";
 import nodePath from "node:path";
 import type { Knex } from "knex";
 import { vi } from "vitest";
+import { createSqliteStorage } from "@webiny/api-storage-sqlite";
 import { createSqlApiHandler } from "~/createWebinyApiHandler.js";
 import type { CreateSqlApiHandlerConfig } from "~/createWebinyApiHandler.js";
 
@@ -22,8 +23,8 @@ export interface GraphQLResult {
 }
 
 /**
- * Boots the full standalone SQL server on a random local port and returns a function that sends one
- * GraphQL request to it, plus a `close` to shut it down.
+ * Boots the full standalone SQL server, on the SQLite storage, on a random local port and returns a
+ * function that sends one GraphQL request to it, plus a `close` to shut it down.
  */
 export const createServer = async (
     extensions: CreateSqlApiHandlerConfig["extensions"] = () => [],
@@ -55,7 +56,7 @@ export const createServer = async (
 
     const server = await createSqlApiHandler({
         extensions,
-        knex: globalThis.__testKnex
+        storage: createSqliteStorage({ knex: globalThis.__testKnex })
     }).finally(() => {
         vi.useRealTimers();
     });

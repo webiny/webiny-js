@@ -39,6 +39,15 @@ export class SetupStandaloneWebinyProject {
             "@webiny/self-hosted-auth": "latest"
         });
 
+        // On Postgres, the CMS storage and the folder catalog are modules `webiny.config.tsx` adds
+        // (`<HeadlessCmsPg />`, `<AcoPg />`).
+        if (standaloneArgs.storageOps !== "sqlite") {
+            addProjectDependencies(projectRootFolderPath, {
+                "@webiny/api-aco-pg": "latest",
+                "@webiny/api-headless-cms-pg": "latest"
+            });
+        }
+
         // Standalone watches every default app in a single process, so `yarn dev` is all a developer
         // needs to get the whole project running locally. Standalone-only — on AWS the apps are watched
         // separately, so there's no single command to alias.

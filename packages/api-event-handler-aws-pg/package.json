@@ -21,7 +21,6 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-event-handler-aws": "0.0.0",
-    "@webiny/api-event-handler-core": "0.0.0",
     "@webiny/api-storage-pg": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "knex": "^3.3.0",
@@ -33,6 +32,8 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
     "@electric-sql/pglite-socket": "^0.2.17",
+    "@webiny/api-aco-pg": "0.0.0",
+    "@webiny/api-headless-cms-pg": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "@webiny/handler": "0.0.0",

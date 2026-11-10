@@ -10,6 +10,7 @@ import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { SqlGroupStorageOpsFeature } from "~/operations/group/feature.js";
 import { SqlModelStorageOpsFeature } from "~/operations/model/feature.js";
 import { SqlEntryStorageOpsFeature } from "~/operations/entry/feature.js";
+import { CmsSqlSchemaSetup } from "~/features/CmsSqlSchemaSetup.js";
 
 interface ISqlStorageOperationsConfig {
     knex: Knex;
@@ -43,5 +44,8 @@ export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>(
         SqlGroupStorageOpsFeature.register(container);
         SqlModelStorageOpsFeature.register(container);
         SqlEntryStorageOpsFeature.register(container);
+
+        // The `cms` schema setup step.
+        container.register(CmsSqlSchemaSetup);
     }
 });

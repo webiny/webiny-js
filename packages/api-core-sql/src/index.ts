@@ -9,6 +9,15 @@ export { getSqlTablePrefix } from "./getSqlTablePrefix.js";
 export { TableManager } from "./TableManager.js";
 export type { TableManagerOptions } from "./TableManager.js";
 export { SqlSchemaConfig } from "./schemaConfig/index.js";
+export { SqlSchemaSetup, runSqlSchemaSetup } from "./schemaSetup/index.js";
+export type {
+    RequiredSqlSchemaSetup,
+    RunSqlSchemaSetupParams,
+    SqlStorageExtensions
+} from "./schemaSetup/index.js";
+export { getSchemaMemory } from "./schemaMemory/getSchemaMemory.js";
+export type { ISchemaMemory } from "./schemaMemory/getSchemaMemory.js";
+export type { SqlStorage } from "./storage/types.js";
 export * from "./connectionRetry/index.js";
 export { SqlServiceManifestLoader, SqlServiceManifestWriter } from "./serviceDiscovery/index.js";
 

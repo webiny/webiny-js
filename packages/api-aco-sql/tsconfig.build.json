@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-core-sql/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" }
@@ -16,6 +17,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
+      "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],

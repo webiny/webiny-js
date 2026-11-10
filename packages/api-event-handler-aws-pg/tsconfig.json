@@ -5,9 +5,10 @@
     { "path": "../api-core" },
     { "path": "../api-core-sql" },
     { "path": "../api-event-handler-aws" },
-    { "path": "../api-event-handler-core" },
     { "path": "../api-storage-pg" },
     { "path": "../aws-sdk" },
+    { "path": "../api-aco-pg" },
+    { "path": "../api-headless-cms-pg" },
     { "path": "../handler" }
   ],
   "compilerOptions": {
@@ -23,12 +24,14 @@
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/api-event-handler-aws/*": ["../api-event-handler-aws/src/*"],
       "@webiny/api-event-handler-aws": ["../api-event-handler-aws/src"],
-      "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
-      "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/api-storage-pg/*": ["../api-storage-pg/src/*"],
       "@webiny/api-storage-pg": ["../api-storage-pg/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/api-aco-pg/*": ["../api-aco-pg/src/*"],
+      "@webiny/api-aco-pg": ["../api-aco-pg/src"],
+      "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
+      "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

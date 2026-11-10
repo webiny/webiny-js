@@ -5,7 +5,7 @@ import type { Knex } from "knex";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { startPglite } from "./startPglite.js";
+import { postgresModules, startPglite } from "./startPglite.js";
 
 /*
  * Every DynamoDB client anything builds, counted: the real class, with a counting constructor.
@@ -53,7 +53,10 @@ describe("the Postgres handlers and DynamoDB", () => {
     });
 
     it("serves a CMS request without building a DynamoDB client", async () => {
-        const handler = createAwsPgApiHandler({ extensions: () => [grantCmsAccess], knex });
+        const handler = createAwsPgApiHandler({
+            extensions: () => [...postgresModules, grantCmsAccess],
+            knex
+        });
 
         const result = await handler({
             httpMethod: "POST",
@@ -74,7 +77,7 @@ describe("the Postgres handlers and DynamoDB", () => {
     });
 
     it("builds no DynamoDB client when the streaming handler is created", () => {
-        createAwsPgStreamApiHandler({ extensions: () => [], knex });
+        createAwsPgStreamApiHandler({ extensions: () => postgresModules, knex });
 
         expect(dynamoDb.clients).toBe(0);
     });

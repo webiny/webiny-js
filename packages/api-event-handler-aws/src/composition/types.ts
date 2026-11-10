@@ -1,15 +1,5 @@
 import type { Container } from "@webiny/di";
 import type { registerExtensions } from "@webiny/handler";
-import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
-
-export interface RegisterRootStorageContext {
-    /**
-     * The build params the project was built with, for root storage that needs a setting from them.
-     * Read on the first call and kept for the life of the process, so a variant that never asks
-     * pays nothing.
-     */
-    readBuildParams: () => Promise<BuildParams.Interface>;
-}
 
 /**
  * The transport-agnostic half of a Webiny AWS Lambda composition root, shared by the buffered API
@@ -31,8 +21,5 @@ export interface WebinyApiCompositionConfig {
      * storage operations, the storage registries, and (for the OpenSearch variant) the OpenSearch
      * core. Supplied by the variant package.
      */
-    registerRootStorage: (
-        container: Container,
-        ctx: RegisterRootStorageContext
-    ) => void | Promise<void>;
+    registerRootStorage: (container: Container) => void | Promise<void>;
 }

@@ -1,13 +1,8 @@
 import knex, { type Knex } from "knex";
 import { withPgConnectionRetry } from "@webiny/api-core-sql";
-// By module path: the package's index brings the Postgres storage, which a generic SQL handler on
-// Postgres doesn't use.
-import {
-    DEFAULT_PG_RETRY_MS,
-    readPgConnectionEnv
-} from "@webiny/api-storage-pg/readPgConnectionEnv.js";
+import { DEFAULT_PG_RETRY_MS, readPgConnectionEnv } from "./readPgConnectionEnv.js";
 
-export interface CreatePostgresConnectionOptions {
+export interface CreatePgConnectionOptions {
     host?: string;
     port?: number;
     user?: string;
@@ -26,11 +21,12 @@ export interface CreatePostgresConnectionOptions {
 }
 
 /**
- * Build a Knex client backed by a Postgres database. Connection parameters are read from
- * environment variables set by `<Infra.Postgres>` in webiny.config, with explicit options
- * taking precedence.
+ * A Knex client for Postgres, for a long-running process (the standalone server): Postgres, PGlite
+ * (`<Infra.Pglite>`) or Aurora from a server. Connection parameters are read from the `WEBINY_PG_*`
+ * env vars `<Infra.Postgres>` sets, with explicit options taking precedence. On AWS Lambda, use
+ * `createLambdaPgConnection` (`@webiny/api-event-handler-aws-pg`) instead.
  */
-export function createPostgresConnection(options: CreatePostgresConnectionOptions = {}): Knex {
+export function createPgConnection(options: CreatePgConnectionOptions = {}): Knex {
     const env = readPgConnectionEnv();
     const host = options.host || env.connection.host;
     const port = options.port || env.connection.port;

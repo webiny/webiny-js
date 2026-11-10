@@ -4,7 +4,7 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createAwsPgApiHandler } from "~/index.js";
-import { startPglite } from "./startPglite.js";
+import { postgresModules, startPglite } from "./startPglite.js";
 
 /**
  * The CMS serves three GraphQL endpoints: /cms/manage, /cms/read and /cms/preview. Each request
@@ -55,7 +55,10 @@ describe("api-event-handler-aws-pg — CMS endpoints", () => {
     });
 
     const sendRequest = async (path: string, extensions: unknown[] = []) => {
-        const handler = createAwsPgApiHandler({ extensions: () => extensions, knex });
+        const handler = createAwsPgApiHandler({
+            extensions: () => [...postgresModules, ...extensions],
+            knex
+        });
         const result = await handler({
             httpMethod: "POST",
             path,

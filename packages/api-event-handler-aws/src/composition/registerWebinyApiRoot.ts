@@ -2,8 +2,7 @@ import type { Container } from "@webiny/di";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
-import { createLogger, readBuildParams } from "@webiny/api-event-handler-core";
-import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { createLogger } from "@webiny/api-event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { pinoLambdaDestination } from "pino-lambda";
 import { StructuredLogFormatter } from "pino-lambda";
@@ -41,10 +40,5 @@ export async function registerWebinyApiRoot(
     JwksStoreFeature.register(container);
 
     // ── Storage (variant-specific: database, CMS storage ops, registries, OpenSearch core) ──
-    // `root` runs once per Lambda instance, so the build params are read at most once per process,
-    // and only if the variant asks for them.
-    let buildParams: Promise<BuildParams.Interface> | undefined;
-    await config.registerRootStorage(container, {
-        readBuildParams: () => (buildParams ??= readBuildParams(config.extensions()))
-    });
+    await config.registerRootStorage(container);
 }

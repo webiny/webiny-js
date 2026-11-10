@@ -1,7 +1,23 @@
 import knexLib, { type Knex } from "knex";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { HeadlessCmsPgExtension } from "@webiny/api-headless-cms-pg";
+import { AcoPgExtension } from "@webiny/api-aco-pg";
 import { createAwsPgMigrateHandler } from "~/index.js";
+
+/**
+ * The Postgres modules a project adds with `<HeadlessCmsPg />` and `<AcoPg />`, as they land in its
+ * `extensions.ts`: every API and migrate handler of a Postgres project gets them.
+ */
+export const postgresModules = [
+    createRegisterExtensionPlugin(ctx => {
+        HeadlessCmsPgExtension.register(ctx.container);
+    }),
+    createRegisterExtensionPlugin(ctx => {
+        AcoPgExtension.register(ctx.container);
+    })
+];
 
 /**
  * A fresh in-memory Postgres (PGlite) over the wire protocol, as `<Infra.Pglite>` runs it. It serves
@@ -42,7 +58,7 @@ export const startPglite = async () => {
      * client of this database connects.
      */
     const setupSchema = async () => {
-        await createAwsPgMigrateHandler({ extensions: () => [], createKnex })();
+        await createAwsPgMigrateHandler({ extensions: () => postgresModules, createKnex })();
     };
 
     const stop = async () => {

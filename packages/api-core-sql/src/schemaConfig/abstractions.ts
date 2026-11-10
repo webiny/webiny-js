@@ -7,11 +7,17 @@ export interface ISqlSchemaConfig {
      * and no DDL on a cold start. When it isn't, each table is checked and created on first use.
      */
     isManaged(): boolean;
+    /**
+     * The prefix of every table the storage uses. Modules registered after the storage (the
+     * Postgres CMS and folder catalog) name their tables with it.
+     */
+    readonly tableNamePrefix?: string;
 }
 
 /**
  * How the SQL storage finds its tables, set by the storage that registers it. Optional for the
- * code that reads it: when it isn't registered, tables are checked and created on first use.
+ * code that only reads `isManaged()`: when it isn't registered, tables are checked and created on
+ * first use.
  */
 export const SqlSchemaConfig = createAbstraction<ISqlSchemaConfig>("Db/Sql/SchemaConfig");
 

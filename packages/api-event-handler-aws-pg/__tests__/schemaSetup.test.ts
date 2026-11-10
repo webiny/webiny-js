@@ -2,17 +2,18 @@ import { afterEach, describe, expect, it } from "vitest";
 import knexLib, { type Knex } from "knex";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
+import { createRegisterBuildParamPlugin } from "@webiny/handler";
+import { BuildParam } from "@webiny/api-core/features/buildParams/index.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
-import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
-import { setupPgSchema } from "~/index.js";
+import { createPgStorage } from "@webiny/api-storage-pg";
+import { postgresModules } from "./startPglite.js";
+import { readCatalog } from "./readCatalog.js";
 
 /**
- * Schema setup runs before the API takes traffic: at deploy time on Lambda, at start on a server.
+ * The Postgres storage's schema setup, with the modules a Postgres project adds (`<HeadlessCmsPg />`,
+ * `<AcoPg />`). It runs before the API takes traffic: at deploy time on Lambda, at start on a server.
  * Several processes can start together, so it runs in one transaction behind one advisory lock.
  */
-
-/** No `Pg*` build params: the CMS storage's defaults. */
-const buildParams: BuildParams.Interface = { get: () => null };
 
 /**
  * A fresh in-memory Postgres (PGlite) over the wire protocol. With more than one connection, PGlite
@@ -50,40 +51,27 @@ const startPglite = async ({ maxConnections = 1 } = {}) => {
     return { createKnex, stop };
 };
 
-/** Every table, column, index, function and trigger in the database, sorted. */
-const readCatalog = async (knex: Knex): Promise<string[]> => {
-    const result = await knex.raw(`
-        SELECT 'table ' || tablename AS item FROM pg_tables WHERE schemaname = 'public'
-        UNION ALL
-        SELECT 'column ' || table_name || '.' || column_name || ' ' || data_type
-            FROM information_schema.columns WHERE table_schema = 'public'
-        UNION ALL
-        SELECT 'index ' || indexname FROM pg_indexes WHERE schemaname = 'public'
-        UNION ALL
-        SELECT 'function ' || p.proname FROM pg_proc p
-            JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public'
-        UNION ALL
-        SELECT 'trigger ' || t.tgname FROM pg_trigger t
-            JOIN pg_class c ON c.oid = t.tgrelid
-            JOIN pg_namespace n ON n.oid = c.relnamespace
-            WHERE n.nspname = 'public' AND NOT t.tgisinternal
-    `);
-    return result.rows.map((row: { item: string }) => row.item).sort();
-};
+/** The `HeadlessCmsPg` build param `<HeadlessCmsPg slotIndexes={false} />` generates. */
+const withoutSlotIndexes = createRegisterBuildParamPlugin(ctx => {
+    ctx.container.registerInstance(BuildParam, {
+        key: "HeadlessCmsPg",
+        value: { slotIndexes: false }
+    });
+});
 
 /** The schema one setup leaves on an empty database. */
-const catalogAfterOneSetup = async (): Promise<string[]> => {
+const catalogAfterOneSetup = async (extensions: unknown[] = postgresModules) => {
     const pglite = await startPglite();
     try {
         const knex = pglite.createKnex();
-        await setupPgSchema({ knex, buildParams });
+        await createPgStorage({ knex }).setupSchema(extensions);
         return await readCatalog(knex);
     } finally {
         await pglite.stop();
     }
 };
 
-describe("setupPgSchema", () => {
+describe("createPgStorage — schema setup", () => {
     let pglite: Awaited<ReturnType<typeof startPglite>> | undefined;
 
     afterEach(async () => {
@@ -92,14 +80,15 @@ describe("setupPgSchema", () => {
         pglite = undefined;
     });
 
-    it("runs the whole setup in one transaction that takes the advisory lock first", async () => {
+    it("runs every step in one transaction that takes the advisory lock first", async () => {
         pglite = await startPglite();
         const knex = pglite.createKnex();
         const statements: string[] = [];
         knex.on("query", (query: { sql: string }) => statements.push(query.sql.trim()));
 
-        await setupPgSchema({ knex, buildParams });
+        const done = await createPgStorage({ knex }).setupSchema(postgresModules);
 
+        expect(done).toEqual(["core", "websockets", "cms", "aco"]);
         expect(statements[0]).toMatch(/^BEGIN/i);
         expect(statements[1]).toMatch(/^SELECT pg_advisory_xact_lock\(hashtext\(/);
         expect(statements[statements.length - 1]).toMatch(/^COMMIT/i);
@@ -117,8 +106,8 @@ describe("setupPgSchema", () => {
         const second = pglite.createKnex();
 
         const results = await Promise.all([
-            setupPgSchema({ knex: first, buildParams }),
-            setupPgSchema({ knex: second, buildParams })
+            createPgStorage({ knex: first }).setupSchema(postgresModules),
+            createPgStorage({ knex: second }).setupSchema(postgresModules)
         ]);
 
         expect(results[0]).toEqual(results[1]);
@@ -129,16 +118,41 @@ describe("setupPgSchema", () => {
         pglite = await startPglite();
         const knex = pglite.createKnex();
 
-        await setupPgSchema({ knex, buildParams });
+        await createPgStorage({ knex }).setupSchema(postgresModules);
         const catalog = await readCatalog(knex);
 
         const statements: string[] = [];
         knex.on("query", (query: { sql: string }) => statements.push(query.sql.trim()));
-        await setupPgSchema({ knex, buildParams });
+        await createPgStorage({ knex }).setupSchema(postgresModules);
 
         expect(await readCatalog(knex)).toEqual(catalog);
         // Additive only: a second run drops nothing. (The CMS re-applies its idempotent
         // `ADD COLUMN IF NOT EXISTS` and `SET STATISTICS`, which change nothing above.)
         expect(statements.filter(sql => /^drop\s/i.test(sql))).toEqual([]);
+    });
+
+    it("refuses the folder catalog without the CMS module, naming <HeadlessCmsPg />, and creates nothing", async () => {
+        pglite = await startPglite();
+        const knex = pglite.createKnex();
+        const [, acoOnly] = postgresModules;
+
+        await expect(createPgStorage({ knex }).setupSchema([acoOnly])).rejects.toThrow(
+            "add <HeadlessCmsPg /> (from @webiny/api-headless-cms-pg/project) to webiny.config.tsx."
+        );
+        const tables = await knex.raw(
+            "SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
+        );
+        expect(tables.rows).toEqual([]);
+    });
+
+    it("creates no per-slot indexes when the CMS module's settings turn them off", async () => {
+        const withIndexes = await catalogAfterOneSetup();
+        const withoutIndexes = await catalogAfterOneSetup([withoutSlotIndexes, ...postgresModules]);
+
+        const missing = withIndexes.filter(item => !withoutIndexes.includes(item));
+        // One partial btree per scalar slot of the search table, and nothing else.
+        expect(missing.length).toBeGreaterThan(10);
+        expect(missing.every(item => /^index .*webiny_cms_search_/.test(item))).toBe(true);
+        expect(withoutIndexes.filter(item => !withIndexes.includes(item))).toEqual([]);
     });
 });

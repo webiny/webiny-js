@@ -3,8 +3,10 @@
  * RDS Proxy). No DynamoDB and no OpenSearch.
  *
  * Thin variant over the storage-agnostic base (@webiny/api-event-handler-aws): supplies the Postgres
- * storage of `@webiny/api-storage-pg`, the same storage the standalone Postgres server uses. Identity
- * stays with the base (the project's identity provider extension, e.g. Cognito).
+ * storage (`createPgStorage` from `@webiny/api-storage-pg`, the same storage the standalone server
+ * uses on Postgres) on the Lambda connection (`createLambdaPgConnection`). The CMS and ACO on
+ * Postgres arrive with the project's extensions (`<HeadlessCmsPg />`, `<AcoPg />`), as on the
+ * server. Identity stays with the base (the project's identity provider extension, e.g. Cognito).
  *
  * Two entry points share that wiring: the buffered API Gateway handler and the response-streaming
  * Function URL handler. They are separate Lambda functions built from the same bundle. The tables
@@ -18,7 +20,7 @@ import {
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
 import { getSqlTablePrefix } from "@webiny/api-core-sql";
-import { registerPgRootStorage } from "@webiny/api-storage-pg";
+import { createPgStorage } from "@webiny/api-storage-pg";
 import { getLambdaPgKnex } from "~/connection/createLambdaPgConnection.js";
 
 export interface CreateAwsPgApiHandlerConfig extends Pick<BaseConfig, "extensions"> {
@@ -41,16 +43,16 @@ function storageConfig(
 ): Pick<BaseConfig, "extensions" | "registerRootStorage"> {
     return {
         extensions: config.extensions,
-        registerRootStorage: async (container, { readBuildParams }) => {
+        registerRootStorage: async container => {
             // Built here, in `root`, rather than at factory time: one bundle exports both the buffered
             // and the streaming handler, and `root` runs once, lazily.
-            await registerPgRootStorage(container, {
+            const storage = createPgStorage({
                 knex: config.knex ?? getLambdaPgKnex(),
                 tableNamePrefix: config.tableNamePrefix ?? (getSqlTablePrefix() || undefined),
-                buildParams: await readBuildParams(),
                 // The migrate handler set the schema up before the deploy finished.
                 schemaManaged: true
             });
+            await storage.register(container);
         }
     };
 }

@@ -11,9 +11,8 @@ export interface CreateSqliteConnectionOptions {
 }
 
 /**
- * Build a Knex client backed by a local SQLite file (better-sqlite3) for the standalone server
- * hosting type. This is the default standalone storage connection; a real deployment can instead pass its
- * own Knex client (Postgres/MySQL) straight to `createSqlApiHandler`.
+ * A Knex client backed by a local SQLite file (better-sqlite3), for the standalone server with
+ * `<Infra.Sqlite>`. Pass it to `createSqliteStorage`.
  *
  * The database file is mandatory: it comes from `WEBINY_SQL_FILENAME` (or an explicit `filename`),
  * which `<Infra.Sqlite>` resolves to an absolute, project-root path so data survives rebuilds. There

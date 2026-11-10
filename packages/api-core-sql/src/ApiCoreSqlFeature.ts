@@ -3,6 +3,8 @@ import type { Knex } from "knex";
 import { ApiCoreStorageOperationsFactory } from "@webiny/api-core";
 import { createApiCoreSql } from "./createApiCoreSql.js";
 import { SqlSchemaConfig } from "./schemaConfig/index.js";
+import { SqlSchemaSetup } from "./schemaSetup/index.js";
+import { TableManager } from "./TableManager.js";
 
 export interface ApiCoreSqlConfig {
     knex: Knex;
@@ -24,17 +26,30 @@ export interface ApiCoreSqlConfig {
  * each time: every one stayed in the global test registry, so a long-running server leaked one per
  * request, and each started with no verified tables. The operations hold no per-request state.
  *
- * It also registers `SqlSchemaConfig`, which every SQL storage in the container reads.
+ * It also registers `SqlSchemaConfig` (the schema-managed setting and the table prefix), which every
+ * SQL storage and module in the container reads, and the `core` schema setup step.
  */
 export const ApiCoreSqlFeature = createFeature<ApiCoreSqlConfig>({
     name: "ApiCoreSql",
     register(container, { knex, tableNamePrefix, schemaManaged = false }) {
-        container.registerInstance(SqlSchemaConfig, { isManaged: () => schemaManaged });
+        container.registerInstance(SqlSchemaConfig, {
+            isManaged: () => schemaManaged,
+            tableNamePrefix
+        });
 
         const storageOperations = createApiCoreSql({ knex, tableNamePrefix, schemaManaged });
 
         container.registerInstance(ApiCoreStorageOperationsFactory, {
             create: () => storageOperations
+        });
+
+        /*
+         * The tables declared on a TableManager of this connection: core's, and those of any other
+         * storage that declares its tables on one (audit logs).
+         */
+        container.registerInstance(SqlSchemaSetup, {
+            name: "core",
+            setup: () => TableManager.setupAll(knex)
         });
     }
 });

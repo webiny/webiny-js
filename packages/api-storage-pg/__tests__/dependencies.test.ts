@@ -4,7 +4,8 @@ import path from "node:path";
 
 /**
  * The Postgres storage is shared by the standalone server and AWS Lambda, so it may depend on
- * neither: no Node server, no self-hosted auth (standalone only) and nothing AWS.
+ * neither: no Node server, no self-hosted auth (standalone only) and nothing AWS. It is generic: the
+ * CMS and ACO on Postgres are modules the project adds, so it depends on neither of those either.
  */
 describe("api-storage-pg dependencies", () => {
     const packageJson = JSON.parse(
@@ -35,6 +36,11 @@ describe("api-storage-pg dependencies", () => {
         expect(forbidden).toEqual([]);
     });
 
+    it("depends on no CMS or ACO package", () => {
+        const all = [...dependencies, ...Object.keys(packageJson.devDependencies ?? {})];
+        expect(all.filter(name => /api-headless-cms|api-aco/.test(name))).toEqual([]);
+    });
+
     it("imports no standalone handler, self-hosted auth or AWS package", () => {
         const srcDir = path.join(import.meta.dirname, "..", "src");
         const imports = fs
@@ -49,5 +55,6 @@ describe("api-storage-pg dependencies", () => {
         expect(
             imports.filter(name => /api-event-handler|self-hosted-auth|aws|dynamodb/.test(name))
         ).toEqual([]);
+        expect(imports.filter(name => /api-headless-cms|api-aco/.test(name))).toEqual([]);
     });
 });

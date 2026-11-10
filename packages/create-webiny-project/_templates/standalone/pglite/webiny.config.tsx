@@ -4,6 +4,8 @@ import { Admin } from "webiny/extensions";
 // AWS namespaces, which don't include server-only extensions like `Infra.Pglite`.
 import { Infra } from "@webiny/project-standalone";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
+import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
+import { AcoPg } from "@webiny/api-aco-pg/project";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
@@ -14,9 +16,14 @@ export const Extensions = () => {
         <>
             {/* Database: PGlite (Postgres compiled to WebAssembly), which `webiny watch` starts next to the api — nothing to
                 install. Data is kept in `dataDir` (relative to the project root), so it survives
-                restarts. Content uses the Postgres-native storage. For production, switch to
-                <Infra.Postgres ... /> pointing at a real Postgres server. */}
+                restarts. For production, switch to <Infra.Postgres ... /> pointing at a real Postgres
+                server. */}
             <Infra.Pglite dataDir="./.webiny/postgres" />
+
+            {/* Content on Postgres: the CMS storage (entries in a jsonb table with a typed search
+                table), and folder-level permissions in a folder catalog. */}
+            <HeadlessCmsPg />
+            <AcoPg />
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves
                 against the project root, so uploads persist across rebuilds. */}

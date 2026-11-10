@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./index.js",
+    "./project": "./project.js",
     "./*": "./*"
   },
   "keywords": [
@@ -30,12 +31,16 @@
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
+    "@webiny/project": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "knex": "^3.3.0"
+    "knex": "^3.3.0",
+    "react": "19.3.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
     "@electric-sql/pglite-socket": "^0.2.17",
+    "@types/react": "19.3.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "pg": "^8.23.1",

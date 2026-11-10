@@ -5,9 +5,10 @@ import { Authorizer } from "@webiny/api-core/features/security/authorization/Aut
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { createWebinyApiHandler } from "@webiny/api-event-handler-aws";
-import { registerPgRootStorage } from "@webiny/api-storage-pg";
+import { createPgStorage } from "@webiny/api-storage-pg";
 import { createAwsPgApiHandler, createAwsPgMigrateHandler } from "~/index.js";
-import { startPglite } from "./startPglite.js";
+import { postgresModules, startPglite } from "./startPglite.js";
+import { readCatalog } from "./readCatalog.js";
 
 /**
  * The deploy-time migration, as a deployment runs it: the api deploy invokes it with `core`, `api`
@@ -41,27 +42,6 @@ const grantFullAccess = createRegisterExtensionPlugin(({ container }) => {
         Authorizer.createImplementation({ implementation: FullAccess, dependencies: [] })
     );
 });
-
-/** Every table, column, index, function and trigger in the database, sorted. */
-const readCatalog = async (knex: Knex): Promise<string[]> => {
-    const result = await knex.raw(`
-        SELECT 'table ' || tablename AS item FROM pg_tables WHERE schemaname = 'public'
-        UNION ALL
-        SELECT 'column ' || table_name || '.' || column_name || ' ' || data_type
-            FROM information_schema.columns WHERE table_schema = 'public'
-        UNION ALL
-        SELECT 'index ' || indexname FROM pg_indexes WHERE schemaname = 'public'
-        UNION ALL
-        SELECT 'function ' || p.proname FROM pg_proc p
-            JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public'
-        UNION ALL
-        SELECT 'trigger ' || t.tgname FROM pg_trigger t
-            JOIN pg_class c ON c.oid = t.tgrelid
-            JOIN pg_namespace n ON n.oid = c.relnamespace
-            WHERE n.nspname = 'public' AND NOT t.tgisinternal
-    `);
-    return result.rows.map((row: { item: string }) => row.item).sort();
-};
 
 const readManifestRows = async (knex: Knex) => {
     const rows: { name: string; manifest: string }[] = await knex("webiny_service_manifests")
@@ -194,7 +174,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
      */
     const migrate = async (event?: Parameters<ReturnType<typeof createAwsPgMigrateHandler>>[0]) => {
         await closeInspector();
-        return createAwsPgMigrateHandler({ extensions: () => [] })(event);
+        return createAwsPgMigrateHandler({ extensions: () => postgresModules })(event);
     };
 
     beforeAll(async () => {
@@ -227,11 +207,10 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
         expect(result).toEqual({
             ok: true,
             done: [
-                "core and audit log tables",
-                "CMS models and groups",
-                "CMS entries, search, scopes and value counts",
-                "ACO folder catalog",
-                "websocket connections",
+                "core",
+                "websockets",
+                "cms",
+                "aco",
                 "idle_session_timeout 600000 ms",
                 "service manifests: core, api, scheduler"
             ]
@@ -269,7 +248,10 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
 
         try {
             await installAndServeCms(() => {
-                return createAwsPgApiHandler({ extensions: () => [grantFullAccess], knex });
+                return createAwsPgApiHandler({
+                    extensions: () => [...postgresModules, grantFullAccess],
+                    knex
+                });
             });
 
             // The API changed no schema: everything it used was there after the migration.
@@ -291,13 +273,10 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
         try {
             await installAndServeCms(() => {
                 return createWebinyApiHandler({
-                    extensions: () => [grantFullAccess],
-                    registerRootStorage: async (container, { readBuildParams }) => {
-                        await registerPgRootStorage(container, {
-                            knex,
-                            buildParams: await readBuildParams(),
-                            schemaManaged: false
-                        });
+                    extensions: () => [...postgresModules, grantFullAccess],
+                    registerRootStorage: async container => {
+                        // No setup ran on this storage, so it isn't schema-managed.
+                        await createPgStorage({ knex }).register(container);
                     }
                 });
             });
@@ -367,7 +346,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
         await closeInspector();
         const knex = pglite.createKnex();
         try {
-            const handler = createAwsPgApiHandler({ extensions: () => [], knex });
+            const handler = createAwsPgApiHandler({ extensions: () => postgresModules, knex });
             const result = await handler({
                 httpMethod: "POST",
                 path: "/graphql",

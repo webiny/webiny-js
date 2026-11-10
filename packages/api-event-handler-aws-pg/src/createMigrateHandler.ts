@@ -1,12 +1,16 @@
 import type { Knex } from "knex";
 import type { CreateWebinyApiHandlerConfig as BaseConfig } from "@webiny/api-event-handler-aws";
-import { readBuildParams } from "@webiny/api-event-handler-core";
 import type { IServiceManifest } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { getSqlTablePrefix, SqlServiceManifestWriter, TableManager } from "@webiny/api-core-sql";
-import { setupPgSchema } from "@webiny/api-storage-pg";
+import { createPgStorage } from "@webiny/api-storage-pg";
 import { createLambdaPgConnection } from "~/connection/createLambdaPgConnection.js";
 
 export interface CreateAwsPgMigrateHandlerConfig extends Pick<BaseConfig, "extensions"> {
+    /*
+     * `extensions`: the same list the API functions get. The modules among them (`<HeadlessCmsPg />`,
+     * `<AcoPg />`) set up their tables with their settings, so the migration builds exactly the
+     * tables the API uses.
+     */
     /**
      * Opens the connection the migration runs on; the handler destroys it when it's done. Defaults
      * to a connection to `WEBINY_PG_WRITER_HOST`, else `WEBINY_PG_HOST`: schema changes go to the
@@ -50,8 +54,9 @@ const readIdleSessionTimeoutMs = (): number => {
 
 /**
  * The deploy-time migration of the API on Postgres, invoked by the deployment (not by API traffic):
- * 1. creates every table the API's storage uses (`setupPgSchema`, in one transaction behind an
- *    advisory lock), so the API runs schema-managed and the installation finds the database ready;
+ * 1. creates every table the API's storage and the project's modules use (the storage's
+ *    `setupSchema`, in one transaction behind an advisory lock), so the API runs schema-managed and
+ *    the installation finds the database ready;
  * 2. sets `idle_session_timeout` on the database user (`WEBINY_PG_IDLE_SESSION_TIMEOUT_MS`, default
  *    10 minutes, 0 = off), so connections left open by old function copies after a deploy close;
  * 3. stores the service manifests it is given (`serviceManifests`), where service discovery reads
@@ -77,11 +82,11 @@ export function createAwsPgMigrateHandler(config: CreateAwsPgMigrateHandlerConfi
         // Read before connecting, so a bad setting fails without touching the database.
         const idleSessionTimeoutMs = readIdleSessionTimeoutMs();
         const tableNamePrefix = config.tableNamePrefix ?? (getSqlTablePrefix() || undefined);
-        const buildParams = await readBuildParams(config.extensions());
 
         const knex = createKnex();
         try {
-            const done = await setupPgSchema({ knex, tableNamePrefix, buildParams });
+            const storage = createPgStorage({ knex, tableNamePrefix });
+            const done = await storage.setupSchema(config.extensions());
 
             // A role default: it applies to new sessions of this user. ALTER ROLE takes no
             // bindings; the value is a checked integer.
