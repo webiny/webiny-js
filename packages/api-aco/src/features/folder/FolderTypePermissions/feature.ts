@@ -3,6 +3,7 @@ import { FolderTypeAccess } from "./FolderTypeAccess.js";
 import {
     ListFoldersWithTypePermissions,
     GetFolderWithTypePermissions,
+    GetFolderHierarchyWithTypePermissions,
     CreateFolderWithTypePermissions,
     UpdateFolderWithTypePermissions,
     DeleteFolderWithTypePermissions
@@ -14,6 +15,7 @@ export const FolderTypePermissionsFeature = createFeature({
         container.register(FolderTypeAccess);
         container.registerDecorator(ListFoldersWithTypePermissions);
         container.registerDecorator(GetFolderWithTypePermissions);
+        container.registerDecorator(GetFolderHierarchyWithTypePermissions);
         container.registerDecorator(CreateFolderWithTypePermissions);
         container.registerDecorator(UpdateFolderWithTypePermissions);
         container.registerDecorator(DeleteFolderWithTypePermissions);
