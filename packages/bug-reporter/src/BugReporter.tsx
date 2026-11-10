@@ -1,6 +1,6 @@
 import React from "react";
-import { Admin } from "@webiny/extensions";
-import { Api } from "@webiny/extensions";
+import { Admin } from "@webiny/project-extensions";
+import { Api } from "@webiny/project-extensions";
 
 /**
  * Report a bug by talking to the app.

@@ -4,9 +4,9 @@
   "references": [
     { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../collaboration/tsconfig.build.json" },
-    { "path": "../extensions/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../notifications/tsconfig.build.json" }
+    { "path": "../notifications/tsconfig.build.json" },
+    { "path": "../project-extensions/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -19,12 +19,12 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/collaboration/*": ["../collaboration/src/*"],
       "@webiny/collaboration": ["../collaboration/src"],
-      "@webiny/extensions/*": ["../extensions/src/*"],
-      "@webiny/extensions": ["../extensions/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/notifications/*": ["../notifications/src/*"],
-      "@webiny/notifications": ["../notifications/src"]
+      "@webiny/notifications": ["../notifications/src"],
+      "@webiny/project-extensions/*": ["../project-extensions/src/*"],
+      "@webiny/project-extensions": ["../project-extensions/src"]
     }
   }
 }

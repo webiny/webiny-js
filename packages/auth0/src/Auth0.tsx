@@ -1,8 +1,8 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { Api } from "@webiny/extensions";
-import { Admin } from "@webiny/extensions";
-import { Infra } from "@webiny/extensions";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
+import { Infra } from "@webiny/project-extensions";
 import { z } from "zod";
 
 export const Auth0 = defineExtension({

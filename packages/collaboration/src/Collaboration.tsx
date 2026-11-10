@@ -1,6 +1,6 @@
 import React from "react";
-import { Api } from "@webiny/extensions";
-import { Admin } from "@webiny/extensions";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
 
 export const Collaboration = () => {
     return (

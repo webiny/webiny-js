@@ -6,9 +6,9 @@
     { "path": "../api-core" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../extensions" },
     { "path": "../feature" },
-    { "path": "../project" }
+    { "path": "../project" },
+    { "path": "../project-extensions" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -25,12 +25,12 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/extensions/*": ["../extensions/src/*"],
-      "@webiny/extensions": ["../extensions/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"]
+      "@webiny/project": ["../project/src"],
+      "@webiny/project-extensions/*": ["../project-extensions/src/*"],
+      "@webiny/project-extensions": ["../project-extensions/src"]
     }
   }
 }

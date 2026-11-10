@@ -1,6 +1,6 @@
 import React from "react";
-import { Api } from "@webiny/extensions";
-import { Admin } from "@webiny/extensions";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
 
 /*
  * Not wrapped in a `FeatureFlag` component: those read the license when the project is built, so a
