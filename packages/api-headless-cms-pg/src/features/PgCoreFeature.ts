@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api/index.js";
+import { BuildParamsPgStorageConfig } from "./config/BuildParamsPgStorageConfig.js";
 import { PgSchemaManager } from "./schema/PgSchema.js";
 import { ScopeRegistryImplementation } from "./scopes/ScopeRegistry.js";
 import { SearchIndexerImplementation } from "./search/SearchIndexer.js";
@@ -11,6 +12,8 @@ import { EntryValuesPatcherImplementation } from "~/features/entryValuesPatcher/
 export const PgCoreFeature = createFeature({
     name: "cms.pg.core",
     register: container => {
+        // The storage's settings, from the API's build params.
+        container.register(BuildParamsPgStorageConfig);
         // The schema manager remembers that the tables exist, so it lives for the process.
         container.register(PgSchemaManager).inSingletonScope();
         // These depend on the container-scoped filter registries, so they stay transient.

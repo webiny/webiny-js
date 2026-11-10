@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { Knex } from "knex";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { KnexClient } from "@webiny/api-core-sql";
@@ -13,7 +14,7 @@ import { PgSchema } from "~/features/schema/abstractions.js";
 import { createIndexPlan } from "~/features/indexPlan/createIndexPlan.js";
 import type { IIndexPlan } from "~/features/indexPlan/createIndexPlan.js";
 import type { IndexMode } from "~/features/indexMode/indexMode.js";
-import { getDefaultIndexMode, getModeTtlMs } from "~/features/indexMode/indexMode.js";
+import { PgStorageConfig } from "~/features/config/abstractions.js";
 
 const EMPTY_SLOT_MAP: Abstraction.SlotMap = {
     slots: {},
@@ -112,6 +113,17 @@ const afterCommit = (trx: Knex.Transaction, callback: () => void): void => {
     });
 };
 
+/*
+ * What a model's index plan is built from: its fields and its title field (phrase search). The
+ * system fields and the filter registries are the same for the whole process.
+ */
+const planFingerprint = (model: CmsModel): string =>
+    createHash("sha1")
+        .update(model.titleFieldId ?? "")
+        .update("\u0000")
+        .update(JSON.stringify(model.fields))
+        .digest("base64");
+
 const hasPending = (stored: Abstraction.SlotMap): boolean =>
     Object.keys(stored.state || {}).length > 0 || (stored.retired || []).length > 0;
 
@@ -121,7 +133,8 @@ class ScopeRegistryImpl implements Abstraction.Interface {
         private readonly schema: PgSchema.Interface,
         private readonly pathRegistry: FieldFilterPathRegistry.Interface,
         private readonly transformRegistry: FieldFilterValueTransformRegistry.Interface,
-        private readonly entrySystemFields: CmsEntrySystemField.Interface[]
+        private readonly entrySystemFields: CmsEntrySystemField.Interface[],
+        private readonly config: PgStorageConfig.Interface
     ) {}
 
     public reset(): void {
@@ -136,18 +149,17 @@ class ScopeRegistryImpl implements Abstraction.Interface {
 
     public async get(model: CmsModel, db?: Knex): Promise<Abstraction.Scope> {
         await this.schema.ensure();
-        const plan = createIndexPlan({
-            model,
-            systemFields: this.entrySystemFields.map(systemField => systemField.field),
-            pathRegistry: this.pathRegistry,
-            transformRegistry: this.transformRegistry
-        });
         const { scopes } = this.schema.getTables();
         const key = scopeCacheKey(scopes, model.tenant, model.modelId);
+        const budget = this.config.fieldBudget;
 
         const cached = scopeCache.get(key);
+        // The plan depends only on the model's fields: rebuilt only when they changed.
+        const fingerprint = planFingerprint(model);
+        const plan =
+            cached && cached.fingerprint === fingerprint ? cached.plan : this.createPlan(model);
         if (cached) {
-            if (Date.now() - cached.modeReadAt > getModeTtlMs()) {
+            if (Date.now() - cached.modeReadAt > this.config.indexModeTtlMs) {
                 // The mode changes, and so does pending work (the background sync clears it).
                 const result = await (db || this.knex.client).raw(
                     `SELECT index_mode, slot_map FROM "${scopes}" WHERE scope_id = ?`,
@@ -156,10 +168,19 @@ class ScopeRegistryImpl implements Abstraction.Interface {
                 cached.indexMode = result.rows[0].index_mode;
                 cached.slotMap = { ...EMPTY_SLOT_MAP, ...result.rows[0].slot_map };
                 cached.modeReadAt = Date.now();
+                cached.scope = null;
             }
-            const { slotMap, changed } = allocateSlots(plan, cached.slotMap);
+            if (cached.scope && cached.plan === plan) {
+                // Same plan, slot map and mode as when allocateSlots last found nothing to change.
+                return cached.scope;
+            }
+            const { slotMap, changed } = allocateSlots(plan, cached.slotMap, budget);
             if (!changed) {
-                return this.scope(cached.scopeId, plan, slotMap, cached.indexMode);
+                const scope = this.scope(cached.scopeId, plan, slotMap, cached.indexMode);
+                cached.plan = plan;
+                cached.fingerprint = fingerprint;
+                cached.scope = scope;
+                return scope;
             }
         }
 
@@ -167,7 +188,7 @@ class ScopeRegistryImpl implements Abstraction.Interface {
             const row = await this.lockScope(trx, model);
             const stored: Abstraction.SlotMap = { ...EMPTY_SLOT_MAP, ...row.slot_map };
             const base = fromVersion1(plan, stored) ?? stored;
-            let { slotMap, changed } = allocateSlots(plan, base);
+            let { slotMap, changed } = allocateSlots(plan, base, budget);
             if (changed) {
                 // Allocate again knowing whether existing rows need work for the new keys.
                 const search = this.schema.getTables().search;
@@ -175,12 +196,13 @@ class ScopeRegistryImpl implements Abstraction.Interface {
                     `SELECT EXISTS (SELECT 1 FROM "${search}" WHERE scope_id = ?) AS has_rows`,
                     [row.scope_id]
                 );
-                ({ slotMap, changed } = allocateSlots(plan, base, {
+                ({ slotMap, changed } = allocateSlots(plan, base, budget, {
                     hasRows: rows.rows[0].has_rows === true,
                     codeModel: model.isPlugin === true
                 }));
                 await this.store(trx, row.scope_id, slotMap);
             }
+            const scope = this.scope(row.scope_id, plan, slotMap, row.index_mode);
             /*
              * Cached only once the transaction has committed: a rolled-back one (an error later in
              * an entry write, or a COMMIT lost to a failover and run again) may have inserted the
@@ -192,10 +214,14 @@ class ScopeRegistryImpl implements Abstraction.Interface {
                     scopeId: row.scope_id,
                     slotMap,
                     indexMode: row.index_mode,
-                    modeReadAt: Date.now()
+                    modeReadAt: Date.now(),
+                    plan,
+                    fingerprint,
+                    // A changed map is checked again by the next get(); an unchanged one is final.
+                    scope: changed ? null : scope
                 });
             });
-            return this.scope(row.scope_id, plan, slotMap, row.index_mode);
+            return scope;
         };
 
         if (db && (db as Knex.Transaction).isTransaction) {
@@ -235,10 +261,19 @@ class ScopeRegistryImpl implements Abstraction.Interface {
             await trx.raw(`DELETE FROM "${values}" WHERE scope_id = ?`, [scopeId]);
             await trx.raw(
                 `UPDATE "${scopes}" SET slot_map = '{}'::jsonb, index_mode = ? WHERE scope_id = ?`,
-                [getDefaultIndexMode(), scopeId]
+                [this.config.defaultIndexMode, scopeId]
             );
         });
         this.forget(model);
+    }
+
+    private createPlan(model: CmsModel): IIndexPlan {
+        return createIndexPlan({
+            model,
+            systemFields: this.entrySystemFields.map(systemField => systemField.field),
+            pathRegistry: this.pathRegistry,
+            transformRegistry: this.transformRegistry
+        });
     }
 
     private scope(
@@ -265,7 +300,7 @@ class ScopeRegistryImpl implements Abstraction.Interface {
         const { scopes } = this.schema.getTables();
         await trx.raw(
             `INSERT INTO "${scopes}" (tenant, model_id, index_mode) VALUES (?, ?, ?) ON CONFLICT (tenant, model_id) DO NOTHING`,
-            [model.tenant, model.modelId, getDefaultIndexMode()]
+            [model.tenant, model.modelId, this.config.defaultIndexMode]
         );
         const result = await trx.raw(
             `SELECT scope_id, slot_map, index_mode FROM "${scopes}" WHERE tenant = ? AND model_id = ? FOR UPDATE`,
@@ -293,6 +328,7 @@ export const ScopeRegistryImplementation = Abstraction.createImplementation({
         PgSchema,
         FieldFilterPathRegistry,
         FieldFilterValueTransformRegistry,
-        [CmsEntrySystemField, { multiple: true }]
+        [CmsEntrySystemField, { multiple: true }],
+        PgStorageConfig
     ]
 });

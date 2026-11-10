@@ -3,7 +3,8 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { ScopeIndexMode as Abstraction } from "./abstractions.js";
 import type { IndexMode } from "./indexMode.js";
-import { getModeTtlMs, MODE_LOCK_SQL } from "./indexMode.js";
+import { MODE_LOCK_SQL } from "./indexMode.js";
+import { PgStorageConfig } from "~/features/config/abstractions.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
 import { ScopeRegistry } from "~/features/scopes/abstractions.js";
 import { SqlFragment } from "~/features/search/SqlFragment.js";
@@ -19,7 +20,8 @@ class ScopeIndexModeImpl implements Abstraction.Interface {
     public constructor(
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
-        private readonly scopes: ScopeRegistry.Interface
+        private readonly scopes: ScopeRegistry.Interface,
+        private readonly config: PgStorageConfig.Interface
     ) {}
 
     public async getMode(model: CmsModel): Promise<IndexMode> {
@@ -48,7 +50,7 @@ class ScopeIndexModeImpl implements Abstraction.Interface {
         }
         this.scopes.forget(model);
         // Other processes may still add `ix` for this scope from a cached mode until it expires.
-        await sleep(getModeTtlMs() + TTL_MARGIN_MS);
+        await sleep(this.config.indexModeTtlMs + TTL_MARGIN_MS);
         if (!(await this.switchMode(scopeId, ["demoting"], "lean"))) {
             return;
         }
@@ -121,5 +123,5 @@ class ScopeIndexModeImpl implements Abstraction.Interface {
 
 export const ScopeIndexModeImplementation = Abstraction.createImplementation({
     implementation: ScopeIndexModeImpl,
-    dependencies: [KnexClient, PgSchema, ScopeRegistry]
+    dependencies: [KnexClient, PgSchema, ScopeRegistry, PgStorageConfig]
 });

@@ -2,7 +2,7 @@ import { createFeature } from "@webiny/feature/api/index.js";
 import type { Knex } from "knex";
 import { ValueFilterFeature } from "@webiny/db-utils";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
+import { createPgTableNameResolverConfig } from "~/features/config/PgTableNameResolverConfig.js";
 import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
 import { GroupSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features/groupSchemaManager/feature.js";
 import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features/modelSchemaManager/feature.js";
@@ -12,6 +12,7 @@ import { PgCoreFeature } from "~/features/PgCoreFeature.js";
 import { PgEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 export { ScopeIndexMode } from "~/features/indexMode/abstractions.js";
+export { PgStorageConfig, PG_BUILD_PARAMS } from "~/features/config/abstractions.js";
 export type { IndexMode } from "~/features/indexMode/indexMode.js";
 export { SearchIndexer } from "~/features/search/abstractions.js";
 export { EntryValuesPatcher } from "~/features/entryValuesPatcher/abstractions.js";
@@ -34,11 +35,12 @@ export interface IPgStorageOperationsConfig {
 export const HeadlessCmsPgFeature = createFeature<IPgStorageOperationsConfig>({
     name: "cms.storageOperations.pg",
     register: (container, config) => {
-        container.registerInstance(TableNameResolverConfig, {
-            sharedTables: process.env.WEBINY_SHARED_TABLES === "true",
-            tableNamePrefix: config.tableNamePrefix,
-            tableNameSuffix: config.tableNameSuffix
-        });
+        container.register(
+            createPgTableNameResolverConfig({
+                tableNamePrefix: config.tableNamePrefix,
+                tableNameSuffix: config.tableNameSuffix
+            })
+        );
 
         TableNameResolverFeature.register(container);
         ValueFilterFeature.register(container);

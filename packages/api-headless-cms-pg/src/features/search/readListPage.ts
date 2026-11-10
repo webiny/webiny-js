@@ -6,23 +6,11 @@ import { SqlFragment } from "./SqlFragment.js";
 import { estimateMatches } from "./estimateMatches.js";
 
 /*
- * Totals are exact up to this many matches; above it a list reports the cap. It also picks the plan
- * of a filtered list: up to the cap, matches are read through the search indexes and sorted; above
- * it, the sort index is walked.
- */
-export const DEFAULT_COUNT_CAP = 10000;
-
-/*
  * A filtered list estimated to match more than this many times the cap is not counted: it is read
  * by walking the sort index and its total is reported as the cap. Below it, the matches are
  * collected up to the cap (exact total, or the cap when more match).
  */
 const SKIP_COUNT_FACTOR = 2;
-
-export const getCountCap = (): number => {
-    const value = Number(process.env.WEBINY_PG_COUNT_CAP);
-    return Number.isInteger(value) && value > 0 ? value : DEFAULT_COUNT_CAP;
-};
 
 /*
  * Collecting a filtered list's matches must read the search indexes (GIN and slot bitmaps). Search
@@ -34,12 +22,10 @@ const BITMAP_ONLY =
     "SET LOCAL enable_seqscan = off; SET LOCAL enable_indexscan = off; SET LOCAL enable_indexonlyscan = off";
 
 /*
- * `WEBINY_PG_BITMAP_HINTS=false` leaves the planner settings alone. RDS Proxy pins a client
+ * `PgStorageConfig.bitmapHints` false leaves the planner settings alone. RDS Proxy pins a client
  * to its database connection for the rest of the session after any SET, SET LOCAL included, so
  * behind a proxy the hints cost multiplexing (POC switch, to measure that against the plans).
  */
-const useBitmapHints = (): boolean => process.env.WEBINY_PG_BITMAP_HINTS !== "false";
-
 export interface IPageRow {
     entry_id: string;
     id: string;
@@ -59,7 +45,16 @@ export interface IReadListPageParams {
     limit: number;
     /* Null token of the sort slot of an indexed scope, null otherwise (see compilePage). */
     nullToken: string | null;
+    /*
+     * Totals are exact up to this many matches; above it a list reports the cap. It also picks the
+     * plan of a filtered list: up to the cap, matches are read through the search indexes and
+     * sorted; above it, the sort index is walked (PgStorageConfig.countCap).
+     */
     cap: number;
+    /* Collect matches with bitmap-only planner settings (PgStorageConfig.bitmapHints). */
+    bitmapHints: boolean;
+    /* How long a row estimate is cached (PgStorageConfig.estimateTtlMs). */
+    estimateTtlMs: number;
 }
 
 export interface IListPage {
@@ -82,8 +77,12 @@ const readPage = async (db: Knex, query: SqlFragment): Promise<IPageRow[]> => {
  * own (SET LOCAL lasts until its end); without them, a plain statement, which saves the BEGIN and
  * COMMIT round trips.
  */
-const readWithHints = async <TRow>(db: Knex, query: SqlFragment): Promise<TRow[]> => {
-    if (!useBitmapHints()) {
+const readWithHints = async <TRow>(
+    db: Knex,
+    query: SqlFragment,
+    bitmapHints: boolean
+): Promise<TRow[]> => {
+    if (!bitmapHints) {
         return (await db.raw(query.sql, query.rawBindings())).rows;
     }
     return db.transaction(async trx => {
@@ -129,7 +128,14 @@ export const readListPage = async (params: IReadListPageParams): Promise<IListPa
     let selectiveScoped = false;
     if (indexed && nullToken) {
         const threshold = SKIP_COUNT_FACTOR * cap;
-        const estimate = await estimateMatches({ db, search, base, conditions, limit: threshold });
+        const estimate = await estimateMatches({
+            db,
+            search,
+            base,
+            conditions,
+            limit: threshold,
+            ttlMs: params.estimateTtlMs
+        });
         if (estimate.rows > threshold) {
             const page = await readWithoutCount(params);
             // A first page that is not full holds the whole result: its total is known.
@@ -176,7 +182,11 @@ export const readListPage = async (params: IReadListPageParams): Promise<IListPa
         limit,
         cap
     });
-    const matched = await readWithHints<IPageRow & { total: number }>(db, matchedQuery);
+    const matched = await readWithHints<IPageRow & { total: number }>(
+        db,
+        matchedQuery,
+        params.bitmapHints
+    );
     const total = matched.length > 0 ? matched[0].total : 0;
     if (total <= cap) {
         return {
@@ -251,5 +261,5 @@ const readWithoutCount = async (
         return { rows: walked, plan: "walk" };
     }
     const sorted = compilePage({ search, filter, sort, cursor, limit, nullToken: null });
-    return { rows: await readWithHints<IPageRow>(db, sorted), plan: "sorted" };
+    return { rows: await readWithHints<IPageRow>(db, sorted, params.bitmapHints), plan: "sorted" };
 };

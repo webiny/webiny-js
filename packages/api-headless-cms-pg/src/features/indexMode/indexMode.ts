@@ -29,25 +29,3 @@ export const writesIx = (mode: IndexMode): boolean => mode !== "lean";
 
 /* Whether queries may add `ix` (and so use the partial indexes) in this mode. */
 export const readsIx = (mode: IndexMode): boolean => mode === "indexed";
-
-/**
- * The mode of new scopes. A cluster for small accounts runs `lean` and promotes big models; a
- * cluster for large accounts runs `indexed`. Override with `WEBINY_PG_INDEX_MODE`.
- */
-export const getDefaultIndexMode = (): "lean" | "indexed" => {
-    return process.env.WEBINY_PG_INDEX_MODE === "lean" ? "lean" : "indexed";
-};
-
-/**
- * How long a process may use a cached scope mode for queries. Demotion waits longer than this
- * before unflagging rows, so no process still adds `ix` for the scope by then. Override with
- * `WEBINY_PG_INDEX_MODE_TTL_MS`.
- */
-export const DEFAULT_MODE_TTL_MS = 30000;
-
-export const getModeTtlMs = (): number => {
-    const raw = Number(process.env.WEBINY_PG_INDEX_MODE_TTL_MS);
-    return Number.isFinite(raw) && raw >= 0 && process.env.WEBINY_PG_INDEX_MODE_TTL_MS !== undefined
-        ? raw
-        : DEFAULT_MODE_TTL_MS;
-};

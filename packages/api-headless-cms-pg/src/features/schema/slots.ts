@@ -9,7 +9,7 @@
  * - `na` numeric[], multiple values
  *
  * The column counts are the physical capacity of the table. How many of them a single model may use
- * is a product constraint, configured separately (see `getFieldBudget`).
+ * is a product constraint, configured separately (`PgStorageConfig.fieldBudget`).
  */
 export type SlotFamily = "t" | "n" | "b" | "ta" | "na";
 

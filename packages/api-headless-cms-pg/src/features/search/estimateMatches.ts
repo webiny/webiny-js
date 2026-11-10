@@ -11,6 +11,8 @@ export interface IEstimateMatchesParams {
     conditions: SqlFragment[];
     /* Estimating stops once the estimate is at most this many rows. */
     limit: number;
+    /* How long an estimate is cached (PgStorageConfig.estimateTtlMs); 0: not cached. */
+    ttlMs: number;
 }
 
 export interface IMatchesEstimate {
@@ -23,10 +25,15 @@ export interface IMatchesEstimate {
 }
 
 /* The planner's row estimate for `filter` (planning only, no rows read). */
-const plannerRows = (db: Knex, search: string, filter: SqlFragment): Promise<number> => {
+const plannerRows = (
+    db: Knex,
+    search: string,
+    filter: SqlFragment,
+    ttlMs: number
+): Promise<number> => {
     const sql = `EXPLAIN (FORMAT JSON) SELECT 1 FROM "${search}" WHERE ${filter.sql}`;
     const bindings = filter.rawBindings();
-    return cachedEstimate(`${sql}\u0000${JSON.stringify(bindings)}`, async () => {
+    return cachedEstimate(`${sql}\u0000${JSON.stringify(bindings)}`, ttlMs, async () => {
         const result = await db.raw(sql, bindings);
         const plan = result.rows[0]["QUERY PLAN"];
         return (typeof plan === "string" ? JSON.parse(plan) : plan)[0].Plan["Plan Rows"];
@@ -54,10 +61,10 @@ const costOf = (fragment: SqlFragment): number => {
 export const estimateMatches = async (
     params: IEstimateMatchesParams
 ): Promise<IMatchesEstimate> => {
-    const { db, search, base, conditions, limit } = params;
+    const { db, search, base, conditions, limit, ttlMs } = params;
     const baseFilter = SqlFragment.join(base, " AND ");
     // Accurate with the scope statistics (createSchemaSql): scope, view and `ix` are correlated.
-    const modelRows = Math.max(1, await plannerRows(db, search, baseFilter));
+    const modelRows = Math.max(1, await plannerRows(db, search, baseFilter, ttlMs));
     // The scope's rows in all views (planned once, when a scoped predicate needs it).
     let scopeRowsPlanned: Promise<number> | null = null;
     const scopeRows = (): Promise<number> => {
@@ -67,7 +74,8 @@ export const estimateMatches = async (
             SqlFragment.join(
                 base.filter(condition => !condition.sql.startsWith("view ")),
                 " AND "
-            )
+            ),
+            ttlMs
         ).then(rows => Math.max(1, rows));
         return scopeRowsPlanned;
     };
@@ -76,7 +84,7 @@ export const estimateMatches = async (
         const filter = SqlFragment.join([...base, fragment], " AND ");
         const sql = `SELECT count(*)::int AS n FROM (SELECT 1 FROM "${search}" WHERE ${filter.sql} LIMIT ${limit}) t`;
         const bindings = filter.rawBindings();
-        return cachedEstimate(`${sql}\u0000${JSON.stringify(bindings)}`, async () => {
+        return cachedEstimate(`${sql}\u0000${JSON.stringify(bindings)}`, ttlMs, async () => {
             const counted = await db.raw(sql, bindings);
             return counted.rows[0].n;
         });
@@ -117,7 +125,7 @@ export const estimateMatches = async (
         const target = estimate?.kind === "planner" ? estimate.fragment : fragment;
         if (estimate?.kind === "atMost") {
             const filter = SqlFragment.join([...base, target], " AND ");
-            const rows = Math.min(estimate.rows, await plannerRows(db, search, filter));
+            const rows = Math.min(estimate.rows, await plannerRows(db, search, filter, ttlMs));
             return Math.min(1, rows / modelRows);
         }
         if (target.scoped) {
@@ -127,10 +135,13 @@ export const estimateMatches = async (
              * took a quarter off). Its keys are in every view of the model: its share is of the
              * scope's rows in all views.
              */
-            return Math.min(1, (await plannerRows(db, search, target)) / (await scopeRows()));
+            return Math.min(
+                1,
+                (await plannerRows(db, search, target, ttlMs)) / (await scopeRows())
+            );
         }
         const filter = SqlFragment.join([...base, target], " AND ");
-        return Math.min(1, (await plannerRows(db, search, filter)) / modelRows);
+        return Math.min(1, (await plannerRows(db, search, filter, ttlMs)) / modelRows);
     };
 
     // Top-level ANDed parts, so that estimating can stop early.

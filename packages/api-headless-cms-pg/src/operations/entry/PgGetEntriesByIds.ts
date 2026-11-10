@@ -8,7 +8,7 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { modelRows } from "~/features/entries/entryQueries.js";
+import { modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
 import { type IEntryRow, rowToEntry } from "~/features/entries/entryRow.js";
 
 class PgGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interface {
@@ -25,11 +25,11 @@ class PgGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interface
         await this.schema.ensure();
         const ids = params.ids as string[];
         const keys = ids;
-        const rows = await modelRows(
-            this.knex.client,
-            this.schema.getTables().entries,
-            model
-        ).whereIn("id", keys);
+        const rows = await whereTextIn(
+            modelRows(this.knex.client, this.schema.getTables().entries, model),
+            "id",
+            keys
+        );
         const byKey = new Map(
             rows.map((row: IEntryRow) => [
                 row.id,

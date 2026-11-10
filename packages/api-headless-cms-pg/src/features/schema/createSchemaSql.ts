@@ -12,7 +12,15 @@ const COLUMN_TYPES = {
 /**
  * DDL for the three tables. Statements are idempotent, so concurrent processes may run them.
  */
-export const createSchemaSql = (tables: PgSchema.Tables): string[] => {
+export interface ICreateSchemaSqlOptions {
+    /* One partial btree per scalar slot (PgStorageConfig.slotIndexes). */
+    slotIndexes: boolean;
+}
+
+export const createSchemaSql = (
+    tables: PgSchema.Tables,
+    options: ICreateSchemaSqlOptions
+): string[] => {
     const { entries, search, scopes } = tables;
 
     const slotDefinitions = (Object.keys(COLUMN_TYPES) as (keyof typeof COLUMN_TYPES)[])
@@ -87,10 +95,10 @@ export const createSchemaSql = (tables: PgSchema.Tables): string[] => {
 
     /*
      * One partial btree per scalar slot serves sort, ranges and prefix filters. Test runs recreate the
-     * schema before every test, so they can skip these (WEBINY_PG_SLOT_INDEXES=false): they
+     * schema before every test, so they can skip these (`PgSlotIndexes` build param false): they
      * affect speed, never results.
      */
-    if (process.env.WEBINY_PG_SLOT_INDEXES === "false") {
+    if (!options.slotIndexes) {
         return statements;
     }
     for (const family of SCALAR_FAMILIES) {

@@ -24,12 +24,13 @@ import {
 } from "@webiny/api-headless-cms-storage";
 import { EntrySearch as Abstraction } from "./abstractions.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
+import { PgStorageConfig } from "~/features/config/abstractions.js";
 import { ScopeRegistry } from "~/features/scopes/abstractions.js";
 import { listRevisionsOfEntry } from "~/features/entries/listRevisionsOfEntry.js";
 import { compileWhere } from "./compileWhere.js";
 import { compileSearch } from "./compileSearch.js";
 import { compileSort } from "./compileSort.js";
-import { getCountCap, readListPage } from "./readListPage.js";
+import { readListPage } from "./readListPage.js";
 import type { ICursor } from "./compilePage.js";
 import { SqlFragment } from "./SqlFragment.js";
 import { getView } from "./views.js";
@@ -37,8 +38,11 @@ import { readsIx } from "~/features/indexMode/indexMode.js";
 import { createNullToken } from "./tokens.js";
 import { readValueCounts } from "./valueCounts.js";
 import { rowToEntry } from "~/features/entries/entryRow.js";
+import { modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
 
 const MAX_LIST_LIMIT = 1000000;
+/* Entries read per query when loading a list page. */
+const LOAD_ENTRIES_CHUNK = 5000;
 
 /* UTF-8 base64 of {v, id}; the shared cursor helpers decode as ASCII and mangle non-ASCII sort values. */
 const encodeCursor = (cursor: ICursor): string =>
@@ -70,7 +74,8 @@ class EntrySearchImpl implements Abstraction.Interface {
         private readonly transformRegistry: FieldFilterValueTransformRegistry.Interface,
         private readonly filterCreateRegistry: FieldFilterCreateRegistry.Interface,
         private readonly sortingRegistry: FieldSortingRegistry.Interface,
-        private readonly valueFilterRegistry: ValueFilterRegistry.Interface
+        private readonly valueFilterRegistry: ValueFilterRegistry.Interface,
+        private readonly config: PgStorageConfig.Interface
     ) {}
 
     public async list<T extends CmsEntryValues = CmsEntryValues>(
@@ -151,7 +156,9 @@ class EntrySearchImpl implements Abstraction.Interface {
             cursor,
             limit: limit + 1,
             nullToken,
-            cap: getCountCap()
+            cap: this.config.countCap,
+            bitmapHints: this.config.bitmapHints,
+            estimateTtlMs: this.config.estimateTtlMs
         });
         const hasMoreItems = rows.length > limit;
         const page = rows.slice(0, limit);
@@ -281,12 +288,19 @@ class EntrySearchImpl implements Abstraction.Interface {
         if (ids.length === 0) {
             return [];
         }
-        const rows: { id: string; data: CmsStorageEntry }[] = await this.knex
-            .client(entries)
-            .select("id", "data")
-            .where({ tenant: model.tenant, model_id: model.modelId })
-            .whereIn("id", ids);
-        const byId = new Map(rows.map(row => [row.id, row]));
+        // A page can be up to MAX_LIST_LIMIT rows: read it in bounded chunks, each with the ids as
+        // one array parameter.
+        const byId = new Map<string, { id: string; data: CmsStorageEntry }>();
+        for (let start = 0; start < ids.length; start += LOAD_ENTRIES_CHUNK) {
+            const rows: { id: string; data: CmsStorageEntry }[] = await whereTextIn(
+                modelRows(this.knex.client, entries, model).select("id", "data"),
+                "id",
+                ids.slice(start, start + LOAD_ENTRIES_CHUNK)
+            );
+            for (const row of rows) {
+                byId.set(row.id, row);
+            }
+        }
         const fromStorage = createStorageTransformCallable(this.storageTransformRegistry, model);
 
         const items: CmsEntry<T>[] = [];
@@ -324,6 +338,7 @@ export const EntrySearchImplementation = Abstraction.createImplementation({
         FieldFilterValueTransformRegistry,
         FieldFilterCreateRegistry,
         FieldSortingRegistry,
-        ValueFilterRegistry
+        ValueFilterRegistry,
+        PgStorageConfig
     ]
 });

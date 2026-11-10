@@ -1,7 +1,6 @@
 import type { IIndexPath, IIndexPlan } from "~/features/indexPlan/createIndexPlan.js";
 import type { SlotFamily } from "~/features/schema/slots.js";
 import { familyOfSlot, SLOT_CAPACITY } from "~/features/schema/slots.js";
-import { getFieldBudget } from "~/features/schema/fieldCaps.js";
 import type { ScopeRegistry } from "./abstractions.js";
 
 type ISlotPath = IIndexPath & { family: SlotFamily };
@@ -44,6 +43,7 @@ export const settingsOf = (entry: IIndexPath): string | undefined => {
 export const allocateSlots = (
     plan: IIndexPlan,
     current: ScopeRegistry.SlotMap,
+    budget: number,
     context: IAllocateContext = { hasRows: false, codeModel: false }
 ): IAllocateResult => {
     const slotMap: ScopeRegistry.SlotMap = {
@@ -63,7 +63,6 @@ export const allocateSlots = (
     const retired = slotMap.retired!;
     const gone = slotMap.gone!;
     let changed = current.version !== 2;
-    const budget = getFieldBudget();
 
     // Work on existing rows for a key that just got its assignment.
     const markNew = (key: string, sortableSlot: boolean): void => {

@@ -1,6 +1,7 @@
 import type { Knex } from "knex";
 import type { CmsEntry, CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
 import { mergeEntryLevelMeta } from "@webiny/api-headless-cms-sql/operations/entry/mappers.js";
+import { SqlFragment } from "~/features/search/SqlFragment.js";
 import type { IEntryRow } from "./entryRow.js";
 
 export interface IModelRef {
@@ -14,6 +15,20 @@ export const modelRows = (
     model: IModelRef
 ): Knex.QueryBuilder<IEntryRow> => {
     return db<IEntryRow>(table).where({ tenant: model.tenant, model_id: model.modelId });
+};
+
+/**
+ * `column = ANY(?::text[])` with the values as one array parameter. `whereIn()` binds every value
+ * separately, which is slow for a large set and fails past Postgres's 65,535 parameters.
+ */
+export const whereTextIn = <Q extends Knex.QueryBuilder>(
+    query: Q,
+    column: string,
+    values: string[]
+): Q => {
+    const array = SqlFragment.textArray(values);
+    const bindings = [column, ...array.bindings] as Knex.RawBinding[];
+    return query.whereRaw(`?? = ANY(${array.sql})`, bindings) as Q;
 };
 
 /**

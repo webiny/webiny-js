@@ -7,7 +7,7 @@ import type {
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { modelRows } from "~/features/entries/entryQueries.js";
+import { modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
 
 class PgDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperation.Interface {
     public constructor(
@@ -22,7 +22,7 @@ class PgDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperati
         const entryIds = params.entries.map(id => parseIdentifier(id).id);
 
         await this.knex.client.transaction(async trx => {
-            await modelRows(trx, entries, model).whereIn("entry_id", entryIds).delete();
+            await whereTextIn(modelRows(trx, entries, model), "entry_id", entryIds).delete();
             await this.indexer.syncEntries(trx, model, entryIds);
         });
     }

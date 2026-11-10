@@ -85,6 +85,8 @@ export namespace FolderCatalog {
 }
 
 const BUILD_LOCK = "aco_folder_catalog:";
+/** Rows per INSERT while building: well under Postgres's 65,535 bind parameters (7 per folder). */
+const BUILD_CHUNK = 1000;
 
 /** A text array as one parameter: knex expands a JS array into a list of parameters. */
 const textArray = (values: string[]): string => {
@@ -360,17 +362,57 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
             children.set(parentId, list);
         }
 
-        // From the roots down, so every folder's parent is placed before it.
-        const queue: Array<{ source: FolderSource; parent: FolderRow | null }> = (
+        /*
+         * Level by level from the roots down, in memory: every folder's row needs its parent's
+         * paths. The tables start empty for the tenant, so the rows are written in a few multi-row
+         * INSERTs, with no per-folder round trips and no grants to delete first.
+         */
+        const tenant = folderModel.tenant;
+        const rows: FolderRow[] = [];
+        const grantRows: Array<GrantRow & { tenant: string; position: number }> = [];
+        let current: Array<{ source: FolderSource; parent: FolderRow | null }> = (
             children.get(null) ?? []
         ).map(source => ({ source, parent: null }));
-        while (queue.length > 0) {
-            const { source, parent } = queue.shift()!;
-            const row = this.toRow(source, parent);
-            await this.insert(trx, folderModel.tenant, row, source.permissions);
-            for (const child of children.get(source.id) ?? []) {
-                queue.push({ source: child, parent: row });
+        while (current.length > 0) {
+            const next: typeof current = [];
+            for (const { source, parent } of current) {
+                const row = this.toRow(source, parent);
+                rows.push(row);
+                this.ownPermissions(source.permissions).forEach((permission, position) => {
+                    grantRows.push({
+                        tenant,
+                        folder_id: row.id,
+                        position,
+                        target: permission.target,
+                        level: permission.level
+                    });
+                });
+                for (const child of children.get(source.id) ?? []) {
+                    next.push({ source: child, parent: row });
+                }
             }
+            current = next;
+        }
+
+        const { folders, grants } = this.schema.getTables();
+        for (let start = 0; start < rows.length; start += BUILD_CHUNK) {
+            const chunk = rows.slice(start, start + BUILD_CHUNK);
+            await trx.raw(
+                `INSERT INTO "${folders}" (tenant, id, type, slug, parent_id, id_path, slug_path)
+                VALUES ${chunk.map(() => "(?, ?, ?, ?, ?, ?::text[], ?)").join(", ")}`,
+                chunk.flatMap(row => [
+                    tenant,
+                    row.id,
+                    row.type,
+                    row.slug,
+                    row.parent_id,
+                    textArray(row.id_path),
+                    row.slug_path
+                ])
+            );
+        }
+        for (let start = 0; start < grantRows.length; start += BUILD_CHUNK) {
+            await trx(grants).insert(grantRows.slice(start, start + BUILD_CHUNK));
         }
     }
 
@@ -496,10 +538,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
     ): Promise<void> {
         const { grants } = this.schema.getTables();
         await trx(grants).where({ tenant, folder_id: folderId }).delete();
-        // Only the folder's own permissions; inherited ones are worked out when reading.
-        const own = permissions.filter(
-            permission => !permission.plugin && !permission.inheritedFrom?.startsWith("parent:")
-        );
+        const own = this.ownPermissions(permissions);
         if (own.length === 0) {
             return;
         }
@@ -511,6 +550,13 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
                 target: permission.target,
                 level: permission.level
             }))
+        );
+    }
+
+    /** Only the folder's own permissions; inherited ones are worked out when reading. */
+    private ownPermissions(permissions: FolderPermission[]): FolderPermission[] {
+        return permissions.filter(
+            permission => !permission.plugin && !permission.inheritedFrom?.startsWith("parent:")
         );
     }
 

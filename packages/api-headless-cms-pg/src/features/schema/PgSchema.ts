@@ -2,6 +2,7 @@ import { KnexClient, isSqlSchemaManaged } from "@webiny/api-core-sql";
 import { TableNameResolver } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 import { PgSchema as Abstraction } from "./abstractions.js";
 import { createSchemaSql } from "./createSchemaSql.js";
+import { PgStorageConfig } from "~/features/config/abstractions.js";
 import { scopeCache } from "~/features/scopes/scopeCache.js";
 import { clearEstimateCache } from "~/features/search/estimateCache.js";
 
@@ -11,7 +12,8 @@ class PgSchemaImpl implements Abstraction.Interface {
 
     public constructor(
         private readonly knex: KnexClient.Interface,
-        tableNameResolver: TableNameResolver.Interface
+        tableNameResolver: TableNameResolver.Interface,
+        private readonly config: PgStorageConfig.Interface
     ) {
         this.tables = {
             entries: tableNameResolver.resolve("entries"),
@@ -55,7 +57,7 @@ class PgSchemaImpl implements Abstraction.Interface {
     }
 
     private async create(): Promise<void> {
-        const statements = createSchemaSql(this.tables);
+        const statements = createSchemaSql(this.tables, { slotIndexes: this.config.slotIndexes });
         await this.knex.client.transaction(async trx => {
             // Serialize DDL across processes; IF NOT EXISTS alone races on catalog inserts.
             await trx.raw("SELECT pg_advisory_xact_lock(hashtext(?))", [this.tables.search]);
@@ -68,5 +70,5 @@ class PgSchemaImpl implements Abstraction.Interface {
 
 export const PgSchemaManager = Abstraction.createImplementation({
     implementation: PgSchemaImpl,
-    dependencies: [KnexClient, TableNameResolver]
+    dependencies: [KnexClient, TableNameResolver, PgStorageConfig]
 });

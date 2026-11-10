@@ -21,6 +21,7 @@
   "description": "Postgres-native storage operations for Headless CMS API: entries in jsonb plus a typed search table, no OpenSearch.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-sql": "0.0.0",
@@ -35,7 +36,6 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
     "@electric-sql/pglite-socket": "^0.2.17",
-    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "pg": "^8.23.1",

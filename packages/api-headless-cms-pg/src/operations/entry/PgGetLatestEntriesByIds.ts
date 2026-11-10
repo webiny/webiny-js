@@ -9,7 +9,7 @@ import type {
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { modelRows } from "~/features/entries/entryQueries.js";
+import { modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
 import { type IEntryRow, rowToEntry } from "~/features/entries/entryRow.js";
 
 class PgGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperation.Interface {
@@ -26,9 +26,11 @@ class PgGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperati
         await this.schema.ensure();
         const ids = params.ids as string[];
         const keys = ids.map(id => parseIdentifier(id).id);
-        const rows = await modelRows(this.knex.client, this.schema.getTables().entries, model)
-            .whereIn("entry_id", keys)
-            .andWhere("is_latest", true);
+        const rows = await whereTextIn(
+            modelRows(this.knex.client, this.schema.getTables().entries, model),
+            "entry_id",
+            keys
+        ).andWhere("is_latest", true);
         const byKey = new Map(
             rows.map((row: IEntryRow) => [
                 row.entry_id,

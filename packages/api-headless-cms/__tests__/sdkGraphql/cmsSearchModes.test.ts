@@ -7,6 +7,7 @@ import { createProductCategoryModel } from "./mocks/productCategoryModel";
 import type { Container } from "@webiny/di";
 import { GetModelUseCase } from "~/exports/api/cms/model.js";
 import { ModelStorageSync } from "~/features/modelStorageSync/index.js";
+import { BuildParam } from "@webiny/api-core/features/buildParams/index.js";
 
 interface ProductValues {
     name: string;
@@ -26,7 +27,18 @@ interface ProductValues {
 const isPg = (process.env.WEBINY_STORAGE || "").split(",").includes("pg");
 
 describe("SDK GraphQL - CMS search modes", () => {
-    const { sdk } = useWebinySdk();
+    // pg's count cap (the `PgCountCap` build param) for the next requests; null: the default.
+    let countCap: number | null = null;
+    const { sdk } = useWebinySdk({
+        afterSetup: requestContainer => {
+            if (countCap !== null) {
+                requestContainer.registerInstance(BuildParam, {
+                    key: "PgCountCap",
+                    value: countCap
+                });
+            }
+        }
+    });
     // The container of the latest manage request, for pg's services.
     let container: Container | undefined;
     const manageHandler = useGraphQLHandler({
@@ -351,7 +363,7 @@ describe("SDK GraphQL - CMS search modes", () => {
     });
 
     /**
-     * pg counts matches up to a cap (WEBINY_PG_COUNT_CAP, 10,000 by default) and picks
+     * pg counts matches up to a cap (the `PgCountCap` build param, 10,000 by default) and picks
      * the query plan from that count: few matches are read through the search indexes and sorted,
      * many are found by walking the sort index. Both plans must return the same pages.
      */
@@ -392,7 +404,7 @@ describe("SDK GraphQL - CMS search modes", () => {
         const expected = ["Laptop C", "Laptop E", "Laptop A", "Laptop D", "Laptop B"];
 
         afterEach(() => {
-            delete process.env.WEBINY_PG_COUNT_CAP;
+            countCap = null;
         });
 
         it("pages a sorted search the same below and above the cap", async () => {
@@ -403,7 +415,7 @@ describe("SDK GraphQL - CMS search modes", () => {
                 totalCount: 5
             });
 
-            process.env.WEBINY_PG_COUNT_CAP = "3";
+            countCap = 3;
             expect(await listPages({ search: "laptop" })).toEqual({
                 names: expected,
                 totalCount: isPg ? 3 : 5
@@ -416,7 +428,7 @@ describe("SDK GraphQL - CMS search modes", () => {
 
             expect(await listPages({ where })).toEqual({ names: expected, totalCount: 5 });
 
-            process.env.WEBINY_PG_COUNT_CAP = "3";
+            countCap = 3;
             expect(await listPages({ where })).toEqual({
                 names: expected,
                 totalCount: isPg ? 3 : 5
@@ -443,7 +455,7 @@ describe("SDK GraphQL - CMS search modes", () => {
             const pages: Record<string, { names: string[] }> = {};
             for (const cap of ["", "3", "1"]) {
                 if (cap) {
-                    process.env.WEBINY_PG_COUNT_CAP = cap;
+                    countCap = Number(cap);
                 }
                 pages[`unfiltered ${cap}`] = await listPages({});
                 pages[`search ${cap}`] = await listPages({ search: "laptop" });
@@ -469,7 +481,7 @@ describe("SDK GraphQL - CMS search modes", () => {
 
             expect(await listPages({ where })).toEqual({ names, totalCount: 3 });
 
-            process.env.WEBINY_PG_COUNT_CAP = "2";
+            countCap = 2;
             expect(await listPages({ where })).toEqual({
                 names,
                 totalCount: isPg ? 2 : 3
@@ -486,7 +498,7 @@ describe("SDK GraphQL - CMS search modes", () => {
 
             expect(await listPages({ where })).toEqual({ names, totalCount: 2 });
 
-            process.env.WEBINY_PG_COUNT_CAP = "1";
+            countCap = 1;
             expect(await listPages({ where })).toEqual({
                 names,
                 totalCount: isPg ? 1 : 2
@@ -507,7 +519,7 @@ describe("SDK GraphQL - CMS search modes", () => {
                 totalCount: 2
             });
 
-            process.env.WEBINY_PG_COUNT_CAP = "1";
+            countCap = 1;
             expect(await listPages({ search: "stand" })).toEqual({
                 names: ["Stand Lamp", "Laptop Stand"],
                 totalCount: isPg ? 1 : 2
@@ -516,7 +528,7 @@ describe("SDK GraphQL - CMS search modes", () => {
 
         it("caps the total of an unfiltered list", async () => {
             await seed();
-            process.env.WEBINY_PG_COUNT_CAP = "3";
+            countCap = 3;
 
             const { names, totalCount } = await listPages({});
             expect(names).toEqual([

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-core-sql/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-headless-cms-sql/tsconfig.build.json" },
@@ -10,8 +11,7 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-core/tsconfig.build.json" }
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -20,6 +20,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -37,9 +39,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }
