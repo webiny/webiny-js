@@ -39,11 +39,13 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         const [id] = input.key.split("/");
         const currentIdentity = this.identityContext.getIdentity();
 
-        // Attribution and dates come from the server. Only full access (e.g. imports and
-        // migrations) may set them.
-        const systemInput: Partial<CreateFileInput> = (await this.identityContext.hasFullAccess())
-            ? input
-            : {};
+        // Attribution and dates come from the server. Only full access, or code running without
+        // authorization (imports, migrations), may set them.
+        const systemInput: Partial<CreateFileInput> =
+            !this.identityContext.isAuthorizationEnabled() ||
+            (await this.identityContext.hasFullAccess())
+                ? input
+                : {};
 
         // Prepare file input
         const fileInput: FileInput = {
