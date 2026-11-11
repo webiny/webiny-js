@@ -1,7 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { ListApiKeysInput } from "../shared/types.js";
-import type { ApiKey } from "~/types/security.js";
+import type { ListApiKeysInput, ReadableApiKey } from "../shared/types.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
@@ -13,10 +12,10 @@ export interface IListApiKeysErrors {
 type ListApiKeysError = IListApiKeysErrors[keyof IListApiKeysErrors] | ApiKeysRepository.Error;
 
 export interface IListApiKeys {
-    execute(params?: ListApiKeysInput): Promise<Result<ApiKey[], ListApiKeysError>>;
+    execute(params?: ListApiKeysInput): Promise<Result<ReadableApiKey[], ListApiKeysError>>;
 }
 
-/** List all API keys. */
+/** List all API keys. The `token` is only returned to full access. */
 export const ListApiKeysUseCase = createAbstraction<IListApiKeys>("ListApiKeysUseCase");
 
 export namespace ListApiKeysUseCase {

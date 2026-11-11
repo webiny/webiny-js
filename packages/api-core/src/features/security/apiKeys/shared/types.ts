@@ -11,6 +11,14 @@ export interface ApiKey {
     createdOn: string;
 }
 
+/**
+ * An API key as returned by reading use cases (list, get). The `token` is null unless the caller
+ * has full access (or runs without authorization), as the token grants the key's permissions.
+ */
+export type ReadableApiKey = Omit<ApiKey, "token"> & {
+    token: ApiKey["token"] | null;
+};
+
 export interface CreateApiKeyInput {
     name: string;
     slug: string;

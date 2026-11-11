@@ -17,6 +17,9 @@ import {
 } from "~/features/security/IdentityContext/index.js";
 import { CreateApiKeyUseCase } from "~/features/security/apiKeys/CreateApiKey/index.js";
 import { UpdateApiKeyUseCase } from "~/features/security/apiKeys/UpdateApiKey/index.js";
+import { ListApiKeysUseCase } from "~/features/security/apiKeys/ListApiKeys/index.js";
+import { GetApiKeyUseCase } from "~/features/security/apiKeys/GetApiKey/index.js";
+import { GetApiKeyByTokenUseCase } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
 import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
 import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
 import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
@@ -138,6 +141,52 @@ describe("Granting permissions: only what the caller holds", () => {
             );
 
             expect(result.isOk()).toBe(true);
+        });
+
+        it("returns API keys without tokens to callers without full access", async () => {
+            const created = await container
+                .resolve(CreateApiKeyUseCase)
+                .execute({ ...input, permissions: [{ name: "*" }] });
+            expect(created.isOk()).toBe(true);
+            const { id, token } = created.value!;
+            expect(token).toMatch(/^wat_/);
+
+            signInWith(LIMITED_PERMISSIONS);
+
+            const list = await container.resolve(ListApiKeysUseCase).execute();
+            expect(list.isOk()).toBe(true);
+            expect(list.value).toHaveLength(1);
+            expect(list.value![0]).toMatchObject({ id, slug: "key", token: null });
+
+            const get = await container.resolve(GetApiKeyUseCase).execute(id);
+            expect(get.isOk()).toBe(true);
+            expect(get.value).toMatchObject({ id, slug: "key", token: null });
+
+            // Authentication by token still resolves the key, with its token.
+            const byToken = await container.resolve(GetApiKeyByTokenUseCase).execute(token);
+            expect(byToken.isOk()).toBe(true);
+            expect(byToken.value).toMatchObject({ id, token });
+
+            // Hiding the token must not leak into later reads by full access.
+            signInWith([{ name: "*" }]);
+            const fullList = await container.resolve(ListApiKeysUseCase).execute();
+            expect(fullList.value![0].token).toBe(token);
+        });
+
+        it("returns API keys with tokens to full access and code running without authorization", async () => {
+            const created = await container.resolve(CreateApiKeyUseCase).execute(input);
+            expect(created.isOk()).toBe(true);
+            const { id, token } = created.value!;
+
+            const list = await container.resolve(ListApiKeysUseCase).execute();
+            expect(list.value).toMatchObject([{ id, token }]);
+
+            const get = await container.resolve(GetApiKeyUseCase).execute(id);
+            expect(get.value).toMatchObject({ id, token });
+
+            signInWith([]);
+            const systemGet = await asSystem(() => container.resolve(GetApiKeyUseCase).execute(id));
+            expect(systemGet.value).toMatchObject({ id, token });
         });
     });
 
