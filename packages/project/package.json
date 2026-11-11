@@ -17,7 +17,6 @@
     "@webiny/di": "^2.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/global-config": "0.0.0",
-    "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",

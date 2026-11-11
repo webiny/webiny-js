@@ -1,6 +1,6 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type AppName } from "~/abstractions/types.js";
-import { type PulumiProcess } from "@webiny/pulumi-sdk";
+import { type PulumiProcess } from "~/abstractions/pulumiTypes.js";
 
 type IPulumiProcess = PulumiProcess;
 

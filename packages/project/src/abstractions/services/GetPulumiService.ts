@@ -1,5 +1,5 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import type { Pulumi, Options as PulumiOptions } from "@webiny/pulumi-sdk";
+import type { Pulumi, PulumiOptions } from "~/abstractions/pulumiTypes.js";
 import { type IAppModel } from "~/abstractions/models/index.js";
 
 export type IGetPulumiServiceParams = Partial<{
