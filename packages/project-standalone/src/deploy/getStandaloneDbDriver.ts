@@ -1,7 +1,9 @@
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
-import { Sqlite } from "../extensions/Sqlite.js";
-import { Postgres } from "../extensions/Postgres.js";
-import { Pglite, resolvePglite, type ResolvedPglite } from "../extensions/Pglite.js";
+import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { resolvePglite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { type ResolvedPglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 export type ServerDbDriver = "sqlite" | "postgres";
 

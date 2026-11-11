@@ -1,6 +1,6 @@
 import { CoreBeforeDeploy } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
-import { CoreStackOutputService } from "../../abstractions/index.js";
+import { CoreStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
 
 class EnsureOsWasDeployedImpl implements CoreBeforeDeploy.Interface {
     constructor(private coreStackOutputService: CoreStackOutputService.Interface) {}

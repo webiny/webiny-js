@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const ApiBeforeWatch = defineExtension({
     type: "Api/BeforeWatch",
-    tags: { runtimeContext: "project", application: "api" },
+    tags: { runtimeContext: "project", application: "api", hosting: "all" },
     description: "Add custom logic to be executed before the API watch process.",
     multiple: true,
     paramsSchema: ({ project }) => {

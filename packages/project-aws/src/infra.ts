@@ -4,19 +4,16 @@ import {
     AdminBeforeBuild,
     AdminBeforeDeploy,
     AdminBeforeWatch,
-    AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
-    CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
@@ -34,9 +31,15 @@ import {
 } from "./pulumi/extensions/index.js";
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
-import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
+import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AwsDefaultRegion } from "@webiny/project-extensions-aws/extensions/AwsDefaultRegion.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar, ApiMaxBundleSize, Encryption, Hashing } from "@webiny/project/extensions/index.js";
+import { EnvVar } from "@webiny/project/extensions/index.js";
+import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,

@@ -9,7 +9,7 @@ import { hasDefaultExport } from "./hasDefaultExport.js";
 
 export const ApiExtension = defineExtension({
     type: "Api/Extension",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "all" },
     description: "Add any API extension.",
     multiple: true,
     paramsSchema: ({ project }) => {

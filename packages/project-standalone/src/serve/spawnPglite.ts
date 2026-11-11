@@ -3,7 +3,10 @@ import path from "node:path";
 import { type IServerProcessSpec } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
 import { stopWithParent } from "./stopWithParent.js";
 import { findFreePort } from "./findFreePort.js";
-import { PGLITE_DEFAULT_PORT, type ResolvedPglite } from "../extensions/Pglite.js";
+import {
+    PGLITE_DEFAULT_PORT,
+    type ResolvedPglite
+} from "@webiny/project-extensions-standalone/extensions/index.js";
 
 /**
  * The port the database listens on: the configured one as is (a busy one fails at startup, with a

@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const AfterDeploy = defineExtension({
     type: "Project/AfterDeploy",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Add custom logic to be executed after the PROJECT deploy process.",
     multiple: true,
     paramsSchema: ({ project }) => {

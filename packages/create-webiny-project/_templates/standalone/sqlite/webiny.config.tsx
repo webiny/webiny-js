@@ -1,8 +1,6 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the standalone hosting-type package. `webiny/extensions` exposes the
-// AWS namespaces, which don't include server-only extensions like `Infra.Sqlite`.
-import { Infra } from "@webiny/project-standalone";
+import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**

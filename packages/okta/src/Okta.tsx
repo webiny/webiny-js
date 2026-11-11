@@ -1,13 +1,13 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
-import { Api } from "@webiny/project-aws/api.js";
-import { Admin } from "@webiny/project-aws/admin.js";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
 import { z } from "zod";
 
 export const Okta = defineExtension({
     type: "Project/Okta",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable and configure Okta authentication.",
     paramsSchema: z.object({
         issuer: z.string().describe("Okta issuer URL."),
