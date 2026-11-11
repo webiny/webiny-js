@@ -71,4 +71,11 @@ describe("TaskCdnCache", () => {
             "Could not invalidate the CDN."
         );
     });
+
+    it("lets caches keep a response for a year, since a write invalidates it", () => {
+        const trigger = vi.fn(async () => Result.ok({} as any));
+        const { cdnCache } = setup(trigger);
+
+        expect(cdnCache.getCacheControl()).toEqual("public, max-age=31536000");
+    });
 });

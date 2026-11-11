@@ -7,6 +7,7 @@ import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
+import { CdnCache } from "@webiny/api-core/features/cdnCache/index.js";
 
 class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
@@ -17,6 +18,7 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
         // true — a route is built only once its definition matches.
         const identityCtx = this.container.resolve(IdentityContext);
         const getActiveRedirects = this.container.resolve(GetActiveRedirectsUseCase);
+        const cdnCache = this.container.resolve(CdnCache);
 
         const identity = identityCtx.getIdentity();
         if (identity.isAnonymous()) {
@@ -29,7 +31,10 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
         }
         const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
-        return response.header("cache-control", "public, max-age=31536000").json(redirectsDto);
+        // A redirect write invalidates /wb/redirects through the CDN cache, so it decides how long
+        // the list may be cached.
+        const cacheControl = cdnCache.getCacheControl();
+        return response.header("cache-control", cacheControl).json(redirectsDto);
     }
 }
 

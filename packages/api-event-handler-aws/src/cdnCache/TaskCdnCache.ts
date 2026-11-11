@@ -32,6 +32,11 @@ class TaskCdnCacheImpl implements CdnCache.Interface {
             this.logger.error({ error, ...params }, "Could not invalidate the CDN.");
         }
     }
+
+    getCacheControl(): string {
+        // CloudFront keeps the response for a year and drops it when `invalidate` runs.
+        return "public, max-age=31536000";
+    }
 }
 
 export const TaskCdnCache = CdnCache.createImplementation({
