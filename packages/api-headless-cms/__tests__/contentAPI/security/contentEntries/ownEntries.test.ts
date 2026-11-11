@@ -13,6 +13,7 @@ import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestE
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntry/GetRevisionsByEntryId/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
+import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 
 const GET_TEST_ENTRY_REVISIONS = /* GraphQL */ `
     query GetTestEntryRevisions($id: ID!) {
@@ -277,6 +278,51 @@ describe("Own Entries Permissions Checks", () => {
             permanently: false
         });
         expect(own.isOk()).toBe(true);
+    });
+
+    it("should not allow creating an entry with the id of an existing entry", async () => {
+        const { manageApiA, manageApiB, entryA, entryB } = await setup();
+
+        // Another user's entry.
+        const takeover = await manageApiB.createTestEntry({
+            variables: { data: { id: entryA.entryId, values: { title: "taken", slug: "taken" } } }
+        });
+        expect(takeover.data).toBeNull();
+        expect(takeover.error).toMatchObject({
+            code: "Cms/Entry/AlreadyExists"
+        });
+
+        // Full access doesn't allow it either.
+        const overwrite = await manageApiA.createTestEntry({
+            variables: { data: { id: entryB.entryId, values: { title: "taken", slug: "taken" } } }
+        });
+        expect(overwrite.error).toMatchObject({
+            code: "Cms/Entry/AlreadyExists"
+        });
+
+        // Entries in the bin count too.
+        const { context, model } = await getContextAndModel(manageApiA);
+        const deleted = await context.container
+            .resolve(DeleteEntryUseCase)
+            .execute(model, entryA.entryId, { permanently: false });
+        expect(deleted.isOk()).toBe(true);
+        const binned = await context.container
+            .resolve(CreateEntryUseCase)
+            .execute(model, { id: entryA.entryId, values: { title: "taken", slug: "taken" } });
+        expect(binned.error).toMatchObject({ code: "Cms/Entry/AlreadyExists" });
+
+        // Untouched.
+        const original = await manageApiA.getTestEntry({ variables: { revision: entryB.id } });
+        expect(original.data?.values?.title).toBe(entryB.values.title);
+
+        // A new id of the caller's choosing still works.
+        const fresh = await manageApiB.createTestEntry({
+            variables: {
+                data: { id: "my-own-entry-id", values: { title: "fresh", slug: "fresh" } }
+            }
+        });
+        expect(fresh.error).toBeNull();
+        expect(fresh.data.entryId).toBe("my-own-entry-id");
     });
 
     it("should only resolve referenced entries the user can access", async () => {

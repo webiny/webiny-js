@@ -182,6 +182,50 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
         });
     });
 
+    test(`forbid "createFile" and "createFiles" with the id of an existing file`, async () => {
+        const mock = createFileMock("existing-id-");
+        const [created] = await createFile({ data: mock });
+        expect(created.data.fileManager.createFile.error).toBeNull();
+
+        const takeover = {
+            ...createFileMock("existing-id-takeover-"),
+            id: mock.id,
+            key: `${mock.id}/taken.png`,
+            name: "taken.png"
+        };
+
+        const { createFile: createFileAsB, createFiles: createFilesAsB } = useGqlHandler({
+            permissions: [{ name: "fm.file", own: true }],
+            identity: identityB
+        });
+
+        const [single] = await createFileAsB({ data: takeover });
+        expect(single.data.fileManager.createFile.data).toBeNull();
+        expect(single.data.fileManager.createFile.error).toMatchObject({
+            code: "FileManager/File/AlreadyExistsError"
+        });
+
+        // The batch skips files it couldn't create.
+        const [batch] = await createFilesAsB({ data: [takeover] });
+        expect(batch.data.fileManager.createFiles.data).toEqual([]);
+
+        // Full access can't replace it either.
+        const [asOwner] = await createFile({ data: takeover });
+        expect(asOwner.data.fileManager.createFile.error).toMatchObject({
+            code: "FileManager/File/AlreadyExistsError"
+        });
+
+        const { getFile: getFileAsA } = useGqlHandler({
+            permissions: [{ name: "fm.*" }],
+            identity: identityA
+        });
+        const [original] = await getFileAsA({ id: mock.id });
+        expect(original.data.fileManager.getFile.data).toMatchObject({
+            key: mock.key,
+            name: mock.name
+        });
+    });
+
     test(`allow "createFile" if identity has sufficient permissions`, async () => {
         const insufficientPermissions: IdentityPermissions = [
             [[], null],

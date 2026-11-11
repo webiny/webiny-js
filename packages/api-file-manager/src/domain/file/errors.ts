@@ -71,12 +71,14 @@ export class FileDeleteError extends BaseError {
     }
 }
 
-export class FileAlreadyExistsError extends BaseError<{ key: string }> {
+export class FileAlreadyExistsError extends BaseError<{ key: string; id?: string }> {
     override readonly code = "FileManager/File/AlreadyExistsError" as const;
 
-    constructor(data: { key: string }) {
+    constructor(data: { key: string; id?: string }) {
         super({
-            message: `File with key "${data.key}" already exists.`,
+            message: data.id
+                ? `File with id "${data.id}" already exists.`
+                : `File with key "${data.key}" already exists.`,
             data
         });
     }

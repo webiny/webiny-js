@@ -7,6 +7,7 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import type {
+    EntryAlreadyExistsError,
     EntryLockedError,
     EntryNotAuthorizedError,
     EntryNotFoundError,
@@ -30,6 +31,7 @@ export interface IUpdateSingletonEntryUseCase {
 export interface IUpdateSingletonEntryUseCaseErrors {
     notFound: EntryNotFoundError;
     notAuthorized: EntryNotAuthorizedError;
+    alreadyExists: EntryAlreadyExistsError;
     validation: EntryValidationError;
     persistence: EntryPersistenceError;
     locked: EntryLockedError;

@@ -38,6 +38,7 @@ export interface ICreateFileRepository {
 export interface ICreateFileRepositoryErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
+    alreadyExists: FileAlreadyExistsError;
 }
 
 type RepositoryError = ICreateFileRepositoryErrors[keyof ICreateFileRepositoryErrors];

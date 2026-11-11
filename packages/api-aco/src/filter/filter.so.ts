@@ -78,10 +78,15 @@ export const createFilterOperations = (
         },
         createFilter({ data }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, {
-                    id: data.id,
-                    values: data
-                });
+                // A client may choose the filter id; it must not replace someone else's filter.
+                const entry = await cms.createEntry(
+                    model,
+                    {
+                        id: data.id,
+                        values: data
+                    },
+                    { failIfExists: true }
+                );
                 return pickEntryFieldValues(entry);
             });
         },
