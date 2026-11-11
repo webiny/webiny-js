@@ -13,11 +13,13 @@ import {
 } from "./features/index.js";
 import { deployCommandWithTelemetry } from "./decorators/index.js";
 import { awsGetProjectSdkService } from "./services/GetProjectSdkService.js";
+import { getAwsProjectSdkService } from "./services/GetAwsProjectSdkService.js";
 
 export const registerAwsFeatures = (container: Container): void => {
     // Override the default GetProjectSdkService so the AWS project features
     // (e.g. AwsWatch decorator) are registered into the ProjectSdk container.
     container.register(awsGetProjectSdkService).inSingletonScope();
+    container.register(getAwsProjectSdkService).inSingletonScope();
 
     container.register(watchCommand).inSingletonScope();
     container.register(deployCommand).inSingletonScope();

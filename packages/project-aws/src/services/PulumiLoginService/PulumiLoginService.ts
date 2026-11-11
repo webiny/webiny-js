@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { GetPulumiService } from "~/abstractions/services/GetPulumiService.js";
 import { PulumiLoginService } from "~/abstractions/services/PulumiLoginService.js";
 import { GetProjectService } from "@webiny/project/abstractions/index.js";
-import { type AppModel } from "@webiny/project/models/index.js";
+import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import trimEnd from "lodash/trimEnd.js";
 import fs from "fs";
 import path from "path";
@@ -15,7 +15,7 @@ export class DefaultPulumiLoginService implements PulumiLoginService.Interface {
         private getProjectService: GetProjectService.Interface
     ) {}
 
-    async execute(app: AppModel) {
+    async execute(app: IAppModel) {
         const pulumi = await this.getPulumiService.execute({ app });
 
         const projectAppRelativePath = path.join("apps", app.name);

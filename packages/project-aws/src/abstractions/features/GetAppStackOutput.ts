@@ -31,4 +31,5 @@ export namespace GetAppStackOutput {
     export type Interface = IGetAppStackOutput;
     export type Result = IGetAppStackOutputResult;
     export type StackOutput = IStackOutput;
+    export type CoreStackOutput = ICoreStackOutput;
 }

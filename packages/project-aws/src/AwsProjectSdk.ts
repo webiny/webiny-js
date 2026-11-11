@@ -1,4 +1,4 @@
-import { type ProjectSdk } from "@webiny/project";
+import { ProjectSdk } from "@webiny/project";
 import { type AppName } from "@webiny/project";
 import { DeployApp } from "@webiny/project-extensions-aws/abstractions/features/DeployApp.js";
 import { DestroyApp } from "~/abstractions/features/DestroyApp.js";
@@ -11,12 +11,17 @@ import { RunPulumiCommand } from "~/abstractions/features/RunPulumiCommand.js";
 import { ListDeployedEnvironmentsService } from "~/abstractions/services/ListDeployedEnvironmentsService.js";
 
 /**
- * The deploy and Pulumi side of the project SDK. It resolves from the same container as the
- * `ProjectSdk` it wraps, so that SDK has to be created with `registerAwsProjectFeatures` or
- * `registerAwsPulumiServices`.
+ * `ProjectSdk` plus the deploy and Pulumi methods. `getAwsProjectSdk` and the AWS CLI create it with
+ * the AWS features registered; `from` gives an existing `ProjectSdk` these methods, and its container
+ * needs `registerAwsProjectFeatures` or `registerAwsPulumiServices` for them to resolve.
  */
-export class AwsProjectSdk {
-    public constructor(private readonly projectSdk: ProjectSdk) {}
+export class AwsProjectSdk extends ProjectSdk {
+    public static from(projectSdk: ProjectSdk): AwsProjectSdk {
+        if (projectSdk instanceof AwsProjectSdk) {
+            return projectSdk;
+        }
+        return new AwsProjectSdk(projectSdk.getContainer());
+    }
 
     // Here we have two stack output methods. Both do the same thing, but one is returning
     // raw Pulumi output, while the other is returning a JSON, which is far more suitable
@@ -61,9 +66,5 @@ export class AwsProjectSdk {
 
     public listDeployedEnvironments() {
         return this.container.resolve(ListDeployedEnvironmentsService).execute();
-    }
-
-    private get container() {
-        return this.projectSdk.getContainer();
     }
 }

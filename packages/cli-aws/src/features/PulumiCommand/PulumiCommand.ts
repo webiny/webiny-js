@@ -1,14 +1,9 @@
 import { createImplementation } from "@webiny/di";
-import {
-    CliCommandFactory,
-    GetProjectSdkService,
-    StdioService,
-    UiService
-} from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory, StdioService, UiService } from "@webiny/cli-core/abstractions/index.js";
 import { ManuallyReportedError } from "@webiny/cli-core/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
 export interface IPulumiCommandParams extends IBaseAppParams {
     command: string[];
@@ -16,13 +11,13 @@ export interface IPulumiCommandParams extends IBaseAppParams {
 
 export class PulumiCommand implements CliCommandFactory.Interface<IPulumiCommandParams> {
     constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
+        private getAwsProjectSdkService: GetAwsProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IPulumiCommandParams>> {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
 
         return {
             name: "pulumi",
@@ -39,12 +34,12 @@ export class PulumiCommand implements CliCommandFactory.Interface<IPulumiCommand
             ],
             options: createBaseAppOptions(projectSdk),
             handler: async (params: IPulumiCommandParams) => {
-                const projectSdk = await this.getProjectSdkService.execute();
+                const projectSdk = await this.getAwsProjectSdkService.execute();
 
                 try {
                     const [, ...command] = params._ || [];
 
-                    const { pulumiProcess } = await new AwsProjectSdk(projectSdk).runPulumiCommand({
+                    const { pulumiProcess } = await projectSdk.runPulumiCommand({
                         ...params,
                         command
                     });
@@ -63,5 +58,5 @@ export class PulumiCommand implements CliCommandFactory.Interface<IPulumiCommand
 export const pulumiCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: PulumiCommand,
-    dependencies: [GetProjectSdkService, UiService, StdioService]
+    dependencies: [GetAwsProjectSdkService, UiService, StdioService]
 });

@@ -26,7 +26,7 @@ export interface CustomDomainParams {
     [key: string]: any;
 }
 
-/** A running Pulumi command, as `DeployApp` hands it to its `output` callback. */
+// A running Pulumi command, as `DeployApp` hands it to its `output` callback.
 export interface PulumiProcess {
     [key: string]: any;
 }

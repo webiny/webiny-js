@@ -9,7 +9,7 @@ import { PulumiGetStackOutputService } from "~/abstractions/services/PulumiGetSt
 import { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import chalk from "chalk";
 import type inspectorType from "inspector";
-import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 export class AwsWatch implements Watch.Interface {
     constructor(
@@ -110,7 +110,9 @@ export class AwsWatch implements Watch.Interface {
 
         const coreApp = this.getApp.execute("core");
         const coreStackOutput =
-            await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(coreApp);
+            await this.pulumiGetStackOutputService.execute<GetAppStackOutput.CoreStackOutput>(
+                coreApp
+            );
 
         if (!coreStackOutput) {
             throw new Error(

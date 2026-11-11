@@ -1,3 +1,15 @@
+/*
+ * Deploy and Pulumi abstractions that only the AWS packages use. They live here, next to their
+ * implementations, and use the real `@webiny/pulumi-sdk` types.
+ *
+ * An abstraction that `webiny/infra` exports, or that one of those depends on, goes to
+ * `@webiny/project-extensions-aws/abstractions` instead, because `webiny/infra` has to load in a
+ * standalone project, which doesn't install this package. That is why `DeployApp` is there: the
+ * deploy hooks `webiny/infra` exports take `DeployApp.Params`.
+ *
+ * Import these from `@webiny/project-aws/abstractions/index.js`. The package root doesn't re-export
+ * them, because `ICoreStackOutput` here and in `@webiny/project-extensions-aws` are different types.
+ */
 export * from "./features/DestroyApp.js";
 export * from "./features/ExportStack.js";
 export * from "./features/GetAppOutput.js";

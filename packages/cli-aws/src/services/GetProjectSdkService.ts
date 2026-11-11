@@ -6,6 +6,7 @@ import {
     GetProjectSdkService
 } from "@webiny/cli-core/abstractions/index.js";
 import { registerAwsProjectFeatures } from "@webiny/project-aws";
+import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
 
 export class AwsGetProjectSdkService implements GetProjectSdkService.Interface {
     constructor(
@@ -17,7 +18,7 @@ export class AwsGetProjectSdkService implements GetProjectSdkService.Interface {
         const cliParams = this.cliParamsService.get();
         const argv = this.getArgvService.execute();
 
-        return ProjectSdk.init(
+        const projectSdk = await ProjectSdk.init(
             {
                 ...argv,
                 cwd: cliParams.cwd,
@@ -28,6 +29,8 @@ export class AwsGetProjectSdkService implements GetProjectSdkService.Interface {
             },
             registerAwsProjectFeatures
         );
+
+        return AwsProjectSdk.from(projectSdk);
     }
 }
 

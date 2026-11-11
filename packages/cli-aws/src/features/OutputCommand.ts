@@ -1,12 +1,8 @@
 import { createImplementation } from "@webiny/di";
-import {
-    CliCommandFactory,
-    GetProjectSdkService,
-    UiService
-} from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory, UiService } from "@webiny/cli-core/abstractions/index.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
 export interface IOutputCommandParams extends IBaseAppParams {
     json?: boolean;
@@ -14,12 +10,12 @@ export interface IOutputCommandParams extends IBaseAppParams {
 
 export class OutputCommand implements CliCommandFactory.Interface<IOutputCommandParams> {
     constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
+        private getAwsProjectSdkService: GetAwsProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IOutputCommandParams>> {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
 
         return {
             name: "output",
@@ -45,10 +41,10 @@ export class OutputCommand implements CliCommandFactory.Interface<IOutputCommand
                 }
             ],
             handler: async (params: IOutputCommandParams) => {
-                const projectSdk = await this.getProjectSdkService.execute();
+                const projectSdk = await this.getAwsProjectSdkService.execute();
                 const ui = this.uiService;
 
-                const output = await new AwsProjectSdk(projectSdk).getAppStackOutput(params.app);
+                const output = await projectSdk.getAppStackOutput(params.app);
                 if (params.json) {
                     ui.text(JSON.stringify(output, null, 2));
                     return;
@@ -94,5 +90,5 @@ export class OutputCommand implements CliCommandFactory.Interface<IOutputCommand
 export const outputCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: OutputCommand,
-    dependencies: [GetProjectSdkService, UiService]
+    dependencies: [GetAwsProjectSdkService, UiService]
 });

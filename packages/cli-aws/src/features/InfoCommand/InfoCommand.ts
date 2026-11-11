@@ -1,22 +1,21 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommandFactory } from "@webiny/cli-core/abstractions/index.js";
-import { GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
 import { UiService } from "@webiny/cli-core/abstractions/index.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { PrintInfoForEnv } from "./PrintInfoForEnv.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
 export type IInfoCommandParams = Omit<IBaseAppParams, "app">;
 
 export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandParams> {
     constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
+        private getAwsProjectSdkService: GetAwsProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IInfoCommandParams>> {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
 
         return {
             name: "info",
@@ -27,7 +26,7 @@ export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandPara
                 const ui = this.uiService;
 
                 const printInfoForEnv = new PrintInfoForEnv({
-                    getProjectSdkService: this.getProjectSdkService,
+                    getAwsProjectSdkService: this.getAwsProjectSdkService,
                     uiService: this.uiService
                 });
 
@@ -35,9 +34,7 @@ export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandPara
                     await printInfoForEnv.execute({ env: params.env, variant: params.variant });
                     ui.emptyLine();
                 } else {
-                    const existingEnvs = await new AwsProjectSdk(
-                        projectSdk
-                    ).listDeployedEnvironments();
+                    const existingEnvs = await projectSdk.listDeployedEnvironments();
 
                     if (existingEnvs.length === 0) {
                         ui.info(
@@ -76,5 +73,5 @@ export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandPara
 export const infoCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: InfoCommand,
-    dependencies: [GetProjectSdkService, UiService]
+    dependencies: [GetAwsProjectSdkService, UiService]
 });

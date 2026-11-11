@@ -3,7 +3,8 @@ import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { openSearchParamsSchema } from "@webiny/project-extensions-aws/extensions/index.js";
 import { PulumiOpenSearch } from "@webiny/project-extensions-aws/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
-import { ProjectDecorator, DatabaseSetup } from "@webiny/project/extensions/index.js";
+import { ProjectDecorator } from "@webiny/project/extensions/index.js";
+import { DatabaseSetup } from "@webiny/project/extensions/index.js";
 import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 
 const p = createPathResolver(import.meta.dirname, "OpenSearch");

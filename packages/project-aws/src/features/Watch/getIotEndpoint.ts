@@ -1,7 +1,9 @@
 import { DescribeEndpointCommand, IoTClient } from "@webiny/aws-sdk/client-iot/index.js";
-import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
-export const getIotEndpoint = (coreStackOutput: ICoreStackOutput): Promise<string> => {
+export const getIotEndpoint = (
+    coreStackOutput: GetAppStackOutput.CoreStackOutput
+): Promise<string> => {
     const iotClient = new IoTClient();
 
     return iotClient

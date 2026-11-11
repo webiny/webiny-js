@@ -3,7 +3,7 @@ import { GetPulumiService } from "~/abstractions/services/GetPulumiService.js";
 import { LoggerService } from "@webiny/project/abstractions/index.js";
 import { PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
 import { PulumiSelectStackService } from "~/abstractions/services/PulumiSelectStackService.js";
-import { type AppModel } from "@webiny/project/models/index.js";
+import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { createEnvConfiguration } from "@webiny/project/utils/env/index.js";
 import { withPulumiConfigPassphrase } from "~/utils/withPulumiConfigPassphrase.js";
 
@@ -14,7 +14,7 @@ export class DefaultPulumiExportService implements PulumiExportService.Interface
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(app: AppModel) {
+    async execute(app: IAppModel) {
         const pulumi = await this.getPulumiService.execute({ app });
 
         await this.pulumiSelectStackService.execute(app);

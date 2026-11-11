@@ -1,14 +1,9 @@
 import { createImplementation } from "@webiny/di";
-import {
-    CliCommandFactory,
-    GetProjectSdkService,
-    StdioService,
-    UiService
-} from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory, StdioService, UiService } from "@webiny/cli-core/abstractions/index.js";
 import { measureDuration } from "@webiny/cli-core/features/utils/index.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
 import { AppName } from "@webiny/project";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
 export interface IDestroyNoAppParams {
     variant?: string;
@@ -26,13 +21,13 @@ export type IDestroyCommandParams = IDestroyNoAppParams | IDestroyWithAppParams;
 
 export class DestroyCommand implements CliCommandFactory.Interface<IDestroyCommandParams> {
     constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
+        private getAwsProjectSdkService: GetAwsProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IDestroyCommandParams>> {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
 
         return {
             name: "destroy",
@@ -64,11 +59,11 @@ export class DestroyCommand implements CliCommandFactory.Interface<IDestroyComma
     }
 
     private async destroyApp(params: IDestroyWithAppParams) {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
         const ui = this.uiService;
         const stdio = this.stdioService;
 
-        const { pulumiProcess } = await new AwsProjectSdk(projectSdk).destroyApp(params);
+        const { pulumiProcess } = await projectSdk.destroyApp(params);
 
         const getDestroyDuration = measureDuration();
 
@@ -101,5 +96,5 @@ export class DestroyCommand implements CliCommandFactory.Interface<IDestroyComma
 export const destroyCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: DestroyCommand,
-    dependencies: [GetProjectSdkService, UiService, StdioService]
+    dependencies: [GetAwsProjectSdkService, UiService, StdioService]
 });

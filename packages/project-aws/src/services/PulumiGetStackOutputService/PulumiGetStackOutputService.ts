@@ -4,7 +4,7 @@ import { LoggerService } from "@webiny/project/abstractions/index.js";
 import { PulumiGetStackOutputService } from "~/abstractions/services/PulumiGetStackOutputService.js";
 import { PulumiSelectStackService } from "~/abstractions/services/PulumiSelectStackService.js";
 import { StackOutputCacheService } from "~/abstractions/services/StackOutputCacheService.js";
-import { type AppModel } from "@webiny/project/models/index.js";
+import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { createEnvConfiguration } from "@webiny/project/utils/env/index.js";
 import { withPulumiConfigPassphrase } from "~/utils/withPulumiConfigPassphrase.js";
 import { mapStackOutput } from "./mapStackOutput.js";
@@ -18,7 +18,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
     ) {}
 
     async execute<TOutput extends Record<string, any> = Record<string, any>>(
-        app: AppModel,
+        app: IAppModel,
         params?: PulumiGetStackOutputService.Params
     ): Promise<TOutput | null> {
         // Try to read from cache if skipCache is not true

@@ -27,7 +27,6 @@ import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";
 import { CoreAuditLogsDynamo } from "~/pulumi/index.js";
-import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -39,10 +38,8 @@ export function createCorePulumiApp() {
             const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
-            const pulumiResourceNamePrefix = await new AwsProjectSdk(
-                sdk
-            ).getPulumiResourceNamePrefix();
-            const coreStackOutput = await new AwsProjectSdk(sdk).getAppStackOutput<{
+            const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
+            const coreStackOutput = await sdk.getAppStackOutput<{
                 opensearchDomainName?: string;
                 primaryDynamodbTableName?: string;
             }>("core");

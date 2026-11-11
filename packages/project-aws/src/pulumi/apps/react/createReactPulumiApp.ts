@@ -9,7 +9,6 @@ import { ApiOutput, CoreOutput } from "~/pulumi/apps/index.js";
 import { type AppName } from "@webiny/project";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
-import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 
 export type ReactPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
@@ -42,9 +41,7 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
         program: async app => {
             const sdk = await getAwsProjectSdk();
 
-            const pulumiResourceNamePrefix = await new AwsProjectSdk(
-                sdk
-            ).getPulumiResourceNamePrefix();
+            const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
 
             if (pulumiResourceNamePrefix) {
                 app.onResource(resource => {

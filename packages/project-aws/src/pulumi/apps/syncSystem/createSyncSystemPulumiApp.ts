@@ -12,7 +12,6 @@ import { SyncSystemWorkerLambda } from "~/pulumi/apps/syncSystem/SyncSystemWorke
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
-import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 
 export function createSyncSystemPulumiApp() {
     return createPulumiApp({
@@ -22,9 +21,7 @@ export function createSyncSystemPulumiApp() {
             const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
-            const pulumiResourceNamePrefix = await new AwsProjectSdk(
-                sdk
-            ).getPulumiResourceNamePrefix();
+            const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
 
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
 

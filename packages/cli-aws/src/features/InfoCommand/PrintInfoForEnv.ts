@@ -1,7 +1,6 @@
-import { GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
 import { UiService } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
 export interface IPrintInfoForEnvParams {
     env: string;
@@ -9,7 +8,7 @@ export interface IPrintInfoForEnvParams {
 }
 
 export interface IPrintInfoForEnvDi {
-    getProjectSdkService: GetProjectSdkService.Interface;
+    getAwsProjectSdkService: GetAwsProjectSdkService.Interface;
     uiService: UiService.Interface;
 }
 
@@ -21,19 +20,19 @@ export class PrintInfoForEnv {
             throw new Error("Please provide an object with `env` and `variant` properties.");
         }
 
-        const { getProjectSdkService, uiService } = this.di;
+        const { getAwsProjectSdkService, uiService } = this.di;
 
-        const projectSdk = await getProjectSdkService.execute();
+        const projectSdk = await getAwsProjectSdkService.execute();
         const ui = uiService;
 
         const { env, variant } = params;
 
         const projectId = await projectSdk.getProjectId();
-        const resourcePrefix = await new AwsProjectSdk(projectSdk).getPulumiResourceNamePrefix();
+        const resourcePrefix = await projectSdk.getPulumiResourceNamePrefix();
 
-        const api = await new AwsProjectSdk(projectSdk).getAppStackOutput("api");
+        const api = await projectSdk.getAppStackOutput("api");
 
-        const admin = await new AwsProjectSdk(projectSdk).getAppStackOutput("admin");
+        const admin = await projectSdk.getAppStackOutput("admin");
 
         const outputs = [api, admin];
 

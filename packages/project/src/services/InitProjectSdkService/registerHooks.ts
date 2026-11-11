@@ -1,7 +1,7 @@
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 import { Container } from "@webiny/di";
-import { ExtensionSrcResolver } from "~/utils/index.js";
+import { registerSrcExtensions } from "~/utils/index.js";
 import {
     AdminAfterBuild as AdminAfterBuildExt,
     AdminBeforeBuild as AdminBeforeBuildExt,
@@ -38,11 +38,5 @@ export const registerHooks = async (
         ...projectExtensions.extensionsByType(CoreAfterBuildExt)
     ];
 
-    for (const hookExtension of hooksExtensions) {
-        const hookImpl = await ExtensionSrcResolver.importFromPath(
-            hookExtension.params.src,
-            project
-        );
-        container.register(hookImpl).inSingletonScope();
-    }
+    await registerSrcExtensions(container, hooksExtensions, project);
 };

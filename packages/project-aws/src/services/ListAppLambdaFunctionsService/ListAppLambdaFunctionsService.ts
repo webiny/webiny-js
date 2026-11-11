@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { ListAppLambdaFunctionsService } from "~/abstractions/services/ListAppLambdaFunctionsService.js";
 import { PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
 import { LoggerService } from "@webiny/project/abstractions/index.js";
-import { type AppModel } from "@webiny/project/models/index.js";
+import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import path from "path";
 import { minimatch } from "minimatch";
 
@@ -28,7 +28,7 @@ export class DefaultListAppLambdaFunctionsService
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(app: AppModel, params?: ListAppLambdaFunctionsService.Params) {
+    async execute(app: IAppModel, params?: ListAppLambdaFunctionsService.Params) {
         const stackExport = await this.pulumiExportService.execute<ExpectedStackExport>(app);
 
         if (!stackExport) {

@@ -2,12 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { setTimeout } from "node:timers/promises";
 import open from "open";
 import ora from "ora";
-import {
-    CliCommandFactory,
-    GetProjectSdkService,
-    StdioService,
-    UiService
-} from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory, StdioService, UiService } from "@webiny/cli-core/abstractions/index.js";
 import { BuildRunner } from "@webiny/cli-core/features/BuildCommand/buildRunners/BuildRunner.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
@@ -18,7 +13,7 @@ import {
 
 // TODO: convert to a real service.
 import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
 export type { IDeployCommandParams, IDeploySingleAppParams };
 
@@ -26,13 +21,13 @@ const sleep = (ms: number = 1500) => setTimeout(ms);
 
 export class DeployCommand implements CliCommandFactory.Interface<IDeployCommandParams> {
     constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
+        private getAwsProjectSdkService: GetAwsProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IDeployCommandParams>> {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
         const ui = this.uiService;
 
         return {
@@ -99,7 +94,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                     ui.emptyLine();
 
                     const isCi = projectSdk.isCi();
-                    const coreStack = await new AwsProjectSdk(projectSdk).getAppStackOutput("core");
+                    const coreStack = await projectSdk.getAppStackOutput("core");
 
                     const isFirstDeployment = !isCi && !coreStack?.deploymentId;
                     if (isFirstDeployment) {
@@ -130,7 +125,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                     }
 
                     const printInfoForEnv = new PrintInfoForEnv({
-                        getProjectSdkService: this.getProjectSdkService,
+                        getAwsProjectSdkService: this.getAwsProjectSdkService,
                         uiService: this.uiService
                     });
 
@@ -138,9 +133,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                     ui.textBold("Project Details");
                     await printInfoForEnv.execute(params);
 
-                    const adminAppOutput = await new AwsProjectSdk(projectSdk).getAppStackOutput(
-                        "admin"
-                    );
+                    const adminAppOutput = await projectSdk.getAppStackOutput("admin");
 
                     if (isFirstDeployment && adminAppOutput) {
                         ui.emptyLine();
@@ -173,7 +166,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
     }
 
     private async deployApp(params: IDeploySingleAppParams) {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
 
         const ui = this.uiService;
         const stdio = this.stdioService;
@@ -197,7 +190,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
             projectSdk.isCi() || params.preview || params.showDeploymentLogs
         );
 
-        return await new AwsProjectSdk(projectSdk).deployApp({
+        return await projectSdk.deployApp({
             ...params,
             output: pulumiProcess => {
                 const deployOutput = new DeployOutput({
@@ -217,5 +210,5 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
 export const deployCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: DeployCommand,
-    dependencies: [GetProjectSdkService, UiService, StdioService]
+    dependencies: [GetAwsProjectSdkService, UiService, StdioService]
 });

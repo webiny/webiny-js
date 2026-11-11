@@ -16,6 +16,8 @@ export interface IDeployApp {
     execute(params: IDeployAppParams): Promise<void>;
 }
 
+// `DeployApp` lives here rather than in `@webiny/project-aws` with the other deploy abstractions
+// because the deploy hooks, which `webiny/infra` exports, take `DeployApp.Params`.
 export const DeployApp = createAbstraction<IDeployApp>("DeployApp");
 
 export namespace DeployApp {

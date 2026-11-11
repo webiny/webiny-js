@@ -6,7 +6,7 @@ import { PulumiGetConfigPassphraseService } from "~/abstractions/services/Pulumi
 import { PulumiGetSecretsProviderService } from "~/abstractions/services/PulumiGetSecretsProviderService.js";
 import { PulumiLoginService } from "~/abstractions/services/PulumiLoginService.js";
 import { PulumiSelectStackService } from "~/abstractions/services/PulumiSelectStackService.js";
-import { type AppModel } from "@webiny/project/models/index.js";
+import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { createEnvConfiguration } from "@webiny/project/utils/env/index.js";
 import { withPulumiConfigPassphrase } from "~/utils/withPulumiConfigPassphrase.js";
 import { getStackName } from "@webiny/project/utils/index.js";
@@ -21,7 +21,7 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
         private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
-    async execute(app: AppModel) {
+    async execute(app: IAppModel) {
         const pulumi = await this.getPulumiService.execute({ app });
 
         await this.pulumiLoginService.execute(app);
@@ -82,11 +82,11 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
         );
     }
 
-    private mustPerformCoreAppRegionMismatchCheck(app: AppModel) {
+    private mustPerformCoreAppRegionMismatchCheck(app: IAppModel) {
         return app.name !== "core" && app.name !== "blueGreen";
     }
 
-    private async getAppStackOutput(app: AppModel) {
+    private async getAppStackOutput(app: IAppModel) {
         // We had to reimplement `getAppStackOutput` locally here. We could not use the existing
         // `PulumiGetStackOutputService` because, internally, it also depends on `PulumiSelectStackService`.
         // This would create a circular dependency. But also, this works just fine.

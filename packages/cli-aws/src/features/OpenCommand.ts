@@ -1,22 +1,21 @@
 import { createImplementation } from "@webiny/di";
 import { CliCommandFactory } from "@webiny/cli-core/abstractions/index.js";
-import { GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
 import { UiService } from "@webiny/cli-core/abstractions/index.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 import open from "open";
 
 export type IOpenCommandParams = Omit<IBaseAppParams, "app">;
 
 export class OpenCommand implements CliCommandFactory.Interface<IOpenCommandParams> {
     constructor(
-        private getProjectSdkService: GetProjectSdkService.Interface,
+        private getAwsProjectSdkService: GetAwsProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IOpenCommandParams>> {
-        const projectSdk = await this.getProjectSdkService.execute();
+        const projectSdk = await this.getAwsProjectSdkService.execute();
         const ui = this.uiService;
 
         return {
@@ -37,7 +36,7 @@ export class OpenCommand implements CliCommandFactory.Interface<IOpenCommandPara
             handler: async () => {
                 ui.info(`Opening %s...`, "Admin app");
 
-                const appOutput = await new AwsProjectSdk(projectSdk).getAppStackOutput<{
+                const appOutput = await projectSdk.getAppStackOutput<{
                     appUrl: string;
                 }>("admin");
 
@@ -69,5 +68,5 @@ export class OpenCommand implements CliCommandFactory.Interface<IOpenCommandPara
 export const openCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: OpenCommand,
-    dependencies: [GetProjectSdkService, UiService]
+    dependencies: [GetAwsProjectSdkService, UiService]
 });

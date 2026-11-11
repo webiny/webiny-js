@@ -1,4 +1,5 @@
 import { ProjectSdk } from "@webiny/project";
+import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 import { registerAwsPulumiServices } from "~/registerAwsProjectFeatures.js";
 
 /**
@@ -11,4 +12,7 @@ import { registerAwsPulumiServices } from "~/registerAwsProjectFeatures.js";
  * Empty params → env/variant/region are picked up from the parent process via env
  * (getProjectSdkContextFromEnv).
  */
-export const getAwsProjectSdk = () => ProjectSdk.init({}, registerAwsPulumiServices);
+export const getAwsProjectSdk = async () => {
+    const projectSdk = await ProjectSdk.init({}, registerAwsPulumiServices);
+    return AwsProjectSdk.from(projectSdk);
+};

@@ -3,7 +3,7 @@ import { GetProjectService } from "@webiny/project/abstractions/index.js";
 import { LoggerService } from "@webiny/project/abstractions/index.js";
 import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 import { StackOutputCacheService } from "~/abstractions/services/StackOutputCacheService.js";
-import { type AppModel } from "@webiny/project/models/index.js";
+import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import fs from "fs/promises";
 
 export class DefaultStackOutputCacheService implements StackOutputCacheService.Interface {
@@ -17,7 +17,7 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
         private loggerService: LoggerService.Interface
     ) {}
 
-    async read(app: AppModel): Promise<Record<string, any> | null> {
+    async read(app: IAppModel): Promise<Record<string, any> | null> {
         const cachePath = this.getCachePath(app);
 
         try {
@@ -34,7 +34,7 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
         }
     }
 
-    async write(app: AppModel, data: Record<string, any>): Promise<void> {
+    async write(app: IAppModel, data: Record<string, any>): Promise<void> {
         const cachePath = this.getCachePath(app);
         const cacheDir = this.getCacheDir().toString();
 
@@ -51,7 +51,7 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
         }
     }
 
-    async delete(app: AppModel): Promise<void> {
+    async delete(app: IAppModel): Promise<void> {
         const cachePath = this.getCachePath(app);
 
         try {
@@ -66,7 +66,7 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
         }
     }
 
-    private getCacheKey(app: AppModel): string {
+    private getCacheKey(app: IAppModel): string {
         const sdkParams = this.projectSdkParamsService.get();
         const env = sdkParams.env || DefaultStackOutputCacheService.DEFAULT_ENV;
         const region = sdkParams.region || DefaultStackOutputCacheService.DEFAULT_REGION;
@@ -79,7 +79,7 @@ export class DefaultStackOutputCacheService implements StackOutputCacheService.I
         return project.paths.dotWebinyFolder.join("caches", "stack-output");
     }
 
-    private getCachePath(app: AppModel): string {
+    private getCachePath(app: IAppModel): string {
         return this.getCacheDir().join(this.getCacheKey(app)).toString();
     }
 }

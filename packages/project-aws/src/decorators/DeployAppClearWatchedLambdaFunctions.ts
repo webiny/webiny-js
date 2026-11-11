@@ -2,7 +2,7 @@ import { DeployApp } from "@webiny/project-extensions-aws/abstractions/index.js"
 import { GetApp } from "@webiny/project/abstractions/index.js";
 import { PulumiGetStackOutputService } from "~/abstractions/services/PulumiGetStackOutputService.js";
 import { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
-import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 /**
  * Decorator that clears watched Lambda functions after successful deployment.
@@ -20,7 +20,9 @@ export class DeployAppClearWatchedLambdaFunctions implements DeployApp.Interface
     async execute(params: DeployApp.Params) {
         const coreApp = this.getApp.execute("core");
         const coreStackOutput =
-            await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(coreApp);
+            await this.pulumiGetStackOutputService.execute<GetAppStackOutput.CoreStackOutput>(
+                coreApp
+            );
         const deploymentId = coreStackOutput?.deploymentId;
 
         const result = await this.decoratee.execute(params);

@@ -1,1 +1,1 @@
-export * from "./AdminBeforeBuild.js";
+export * from "./AdminAfterDeploy.js";

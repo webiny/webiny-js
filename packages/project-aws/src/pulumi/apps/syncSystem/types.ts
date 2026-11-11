@@ -1,11 +1,11 @@
 import type * as pulumi from "@pulumi/pulumi";
-import type { IStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 export type PulumiOutput<T> = {
     [K in keyof T]: pulumi.Output<T[K]>;
 };
 
-export interface IGetSyncSystemOutputResult extends IStackOutput {
+export interface IGetSyncSystemOutputResult extends GetAppStackOutput.StackOutput {
     /**
      * createRegionProvider
      */
