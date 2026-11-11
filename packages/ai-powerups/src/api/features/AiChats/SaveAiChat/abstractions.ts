@@ -11,15 +11,14 @@ import type { AiChatValidationError } from "../domain/errors.js";
 export interface ISaveAiChatInput {
     /** Omit it to start a new chat. With it, the chat must exist and is overwritten. */
     id?: string;
-    /** Defaults to the first question for a new chat, and to the saved title otherwise. */
-    title?: string;
     /** The whole conversation so far, not only the newest turn. */
     messages: ModelMessage[];
 }
 
 /**
- * SaveAiChat Use Case - Creates or overwrites one of the current identity's chats. The client saves
- * after each turn, so a chat is never more than one turn behind the palette.
+ * SaveAiChat Use Case - Creates or overwrites one of the current identity's chats. The admin
+ * assistant saves through it after each run, including one paused on an approval, so a chat is never
+ * more than one run behind what the user saw.
  */
 export interface ISaveAiChatUseCase {
     execute(input: ISaveAiChatInput): Promise<Result<AiChat, UseCaseError>>;

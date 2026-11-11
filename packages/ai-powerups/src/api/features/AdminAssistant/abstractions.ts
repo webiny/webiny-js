@@ -1,5 +1,4 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ModelMessage } from "ai";
 import type { ApprovalDecision } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
 
@@ -19,10 +18,16 @@ export namespace AdminAssistantConfig {
     export type Interface = IAdminAssistantConfig;
 }
 
+/**
+ * A question, or a decision on a paused one. The conversation so far is read from the saved chat
+ * rather than sent, so a request stays the same size however long the chat gets.
+ */
 export interface AdminAssistantParams {
-    /** Conversation so far. Replayed verbatim, since approval requests live only in these messages. */
-    messages: ModelMessage[];
-    /** Approve or reject tool calls a previous run paused on. */
+    /** The saved chat to continue. Omitted for a new chat, which the run creates. */
+    chatId?: string;
+    /** The new question. Absent when the request only decides on a paused run. */
+    prompt?: string;
+    /** Approve or reject tool calls the chat's last run paused on. */
     decisions: ApprovalDecision[];
 }
 
