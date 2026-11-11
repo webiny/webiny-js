@@ -1,6 +1,10 @@
 import { OidcIdentityProvider } from "@webiny/api-core/idp";
 import { CognitoIdpConfig } from "./abstractions.js";
 
+interface FederatedIdentity {
+    userId?: unknown;
+}
+
 class CognitoIdentityProviderImpl implements OidcIdentityProvider.Interface {
     public clientId: string;
     public issuer: string;
@@ -67,9 +71,60 @@ class CognitoIdentityProviderImpl implements OidcIdentityProvider.Interface {
             throw new Error(`Invalid token: "token_use" must be "id".`);
         }
 
+        // Security: federated sign-in requires "custom:id" to stay writable by the app client, so
+        // a user could set their own "custom:id" to someone else's ID. The "identities" claim is
+        // set by Cognito and can't be edited, so "custom:id" must match one of its provider user IDs.
+        // Projects that map "custom:id" to another provider attribute can set
+        // `verifyFederatedCustomId: false` on their `CognitoIdpConfig` and verify it themselves.
+        if (this.config?.verifyFederatedCustomId !== false) {
+            this.verifyFederatedCustomId(token);
+        }
+
         if (this.config?.verifyTokenClaims) {
             await this.config.verifyTokenClaims(token);
         }
+    }
+
+    private verifyFederatedCustomId(token: OidcIdentityProvider.JwtPayload): void {
+        const identities = this.getFederatedIdentities(token);
+        if (!identities) {
+            return;
+        }
+
+        const customId = token["custom:id"];
+        const isMatch =
+            typeof customId === "string" &&
+            customId.length > 0 &&
+            identities.some(identity => String(identity?.userId) === customId);
+
+        if (!isMatch) {
+            throw new Error(
+                `Invalid token: "custom:id" must match the user ID of the federated identity.`
+            );
+        }
+    }
+
+    private getFederatedIdentities(
+        token: OidcIdentityProvider.JwtPayload
+    ): FederatedIdentity[] | null {
+        let identities: unknown = token.identities;
+        if (identities === undefined || identities === null) {
+            return null;
+        }
+
+        if (typeof identities === "string") {
+            try {
+                identities = JSON.parse(identities);
+            } catch {
+                throw new Error(`Invalid token: "identities" claim is malformed.`);
+            }
+        }
+
+        if (!Array.isArray(identities)) {
+            throw new Error(`Invalid token: "identities" claim is malformed.`);
+        }
+
+        return identities.length > 0 ? identities : null;
     }
 }
 
