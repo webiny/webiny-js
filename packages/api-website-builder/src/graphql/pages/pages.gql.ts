@@ -331,7 +331,7 @@ export const createPagesSchema = () => {
                 },
                 deletePageRevision: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const deletePageRevision =
                             context.container.resolve(DeletePageRevisionUseCase);
                         const result = await deletePageRevision.execute({
