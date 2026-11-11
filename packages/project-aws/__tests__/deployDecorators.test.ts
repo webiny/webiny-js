@@ -15,8 +15,10 @@ const noExtensions = { extensionsByType: () => [] } as unknown as IProjectConfig
 const project = {} as IProjectModel;
 
 describe("deploy decorators", () => {
-    // The container wraps once per registration, so a second registration of
-    // `deployAppWithHooks` would run every deploy hook twice.
+    /*
+     * The container wraps once per registration, so a second registration of
+     * `deployAppWithHooks` would run every deploy hook twice.
+     */
     it("are registered once in the CLI container", async () => {
         const container = new Container();
         const registrations = new Map<unknown, number>();
@@ -24,7 +26,8 @@ describe("deploy decorators", () => {
         container.registerDecorator = (
             decorator: Parameters<Container["registerDecorator"]>[0]
         ) => {
-            registrations.set(decorator, (registrations.get(decorator) ?? 0) + 1);
+            const count = registrations.get(decorator) ?? 0;
+            registrations.set(decorator, count + 1);
             return registerDecorator(decorator);
         };
 
@@ -43,8 +46,7 @@ describe("deploy decorators", () => {
             destroyAppClearStackOutputCache,
             getPulumiServiceWithDownloadInfo
         ];
-        expect(decorators.map(decorator => registrations.get(decorator))).toEqual([
-            1, 1, 1, 1, 1, 1
-        ]);
+        const counts = decorators.map(decorator => registrations.get(decorator));
+        expect(counts).toEqual([1, 1, 1, 1, 1, 1]);
     });
 });

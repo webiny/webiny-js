@@ -24,8 +24,10 @@ export interface IProjectInfoServiceResult {
         yarn: string;
         isCI: boolean;
     };
-    // Sections a hosting package adds about its own tooling. `webiny about` prints them after the
-    // ones above.
+    /*
+     * Sections a hosting package adds about its own tooling. `webiny about` prints them after the
+     * ones above.
+     */
     sections: IProjectInfoSection[];
 }
 

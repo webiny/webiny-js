@@ -2,7 +2,7 @@ import { DeployApp } from "@webiny/project-extensions-aws/abstractions/index.js"
 import { GetApp } from "@webiny/project/abstractions/index.js";
 import { PulumiGetStackOutputService } from "~/abstractions/services/PulumiGetStackOutputService.js";
 import { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
-import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { type CoreStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/CoreStackOutputService.js";
 
 /**
  * Decorator that injects watched Lambda function URNs into Pulumi replace args.
@@ -20,9 +20,7 @@ export class DeployAppWithWatchedLambdaReplacement implements DeployApp.Interfac
     async execute(params: DeployApp.Params) {
         const coreApp = this.getApp.execute("core");
         const coreStackOutput =
-            await this.pulumiGetStackOutputService.execute<GetAppStackOutput.CoreStackOutput>(
-                coreApp
-            );
+            await this.pulumiGetStackOutputService.execute<CoreStackOutputService.Output>(coreApp);
         const deploymentId = coreStackOutput?.deploymentId;
 
         const app = this.getApp.execute(params.app);

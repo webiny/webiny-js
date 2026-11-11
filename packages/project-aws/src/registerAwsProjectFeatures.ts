@@ -66,7 +66,6 @@ export const registerAwsPulumiServices = (container: Container): void => {
     container.register(pulumiGetStackOutputService).inSingletonScope();
     container.register(pulumiLoginService).inSingletonScope();
     container.register(pulumiSelectStackService).inSingletonScope();
-    container.register(getPulumiVersionService).inSingletonScope();
     container.register(stackOutputCacheService).inSingletonScope();
     container.register(awsPulumiInitHostingSdkService).inSingletonScope();
 
@@ -105,6 +104,8 @@ export const registerAwsProjectFeatures = (container: Container): void => {
     // Deploy hooks from the config and the deploy decorators, registered once the config is loaded.
     container.register(awsDeployInitHostingSdkService).inSingletonScope();
 
+    // `webiny about`: the Pulumi section and the version lookup it uses.
+    container.register(getPulumiVersionService).inSingletonScope();
     container.registerDecorator(projectInfoWithPulumi);
 
     // Watch decorator that adds Lambda hot-reload.

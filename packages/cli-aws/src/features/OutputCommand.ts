@@ -1,5 +1,6 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommandFactory, UiService } from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory } from "@webiny/cli-core/abstractions/index.js";
+import { UiService } from "@webiny/cli-core/abstractions/index.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
 import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";

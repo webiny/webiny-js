@@ -11,6 +11,11 @@ import { createEnvConfiguration } from "@webiny/project/utils/env/index.js";
 import { withPulumiConfigPassphrase } from "~/utils/withPulumiConfigPassphrase.js";
 import { getStackName } from "@webiny/project/utils/index.js";
 
+// Every app except core and blue-green is checked against the region stored in the core stack.
+const isCoreAppRegionMismatchCheckNeeded = (app: IAppModel) => {
+    return app.name !== "core" && app.name !== "blueGreen";
+};
+
 export class DefaultPulumiSelectStackService implements PulumiSelectStackService.Interface {
     constructor(
         private getPulumiService: GetPulumiService.Interface,
@@ -51,8 +56,7 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
          */
         const region = sdkParams.region || process.env.AWS_REGION;
 
-        const mustPerformCoreAppRegionMismatchCheck =
-            this.mustPerformCoreAppRegionMismatchCheck(app);
+        const mustPerformCoreAppRegionMismatchCheck = isCoreAppRegionMismatchCheckNeeded(app);
 
         if (mustPerformCoreAppRegionMismatchCheck) {
             const coreStack = await this.getAppStackOutput(app);
@@ -80,10 +84,6 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
                 targetStack.region
             }". This can happen if you try to deploy a stack to a region other than it was initially deployed.`
         );
-    }
-
-    private mustPerformCoreAppRegionMismatchCheck(app: IAppModel) {
-        return app.name !== "core" && app.name !== "blueGreen";
     }
 
     private async getAppStackOutput(app: IAppModel) {

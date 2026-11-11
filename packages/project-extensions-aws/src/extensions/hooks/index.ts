@@ -6,3 +6,4 @@ export * from "./ApiBeforeDeploy.js";
 export * from "./BeforeDeploy.js";
 export * from "./CoreAfterDeploy.js";
 export * from "./CoreBeforeDeploy.js";
+export * from "./deployHooks.js";

@@ -1,10 +1,8 @@
 import { createImplementation, Container } from "@webiny/di";
-import {
-    GetProjectService,
-    GetProjectConfig,
-    InitHostingSdkService,
-    InitProjectSdkService
-} from "~/abstractions/index.js";
+import { GetProjectService } from "~/abstractions/index.js";
+import { GetProjectConfig } from "~/abstractions/index.js";
+import { InitHostingSdkService } from "~/abstractions/index.js";
+import { InitProjectSdkService } from "~/abstractions/index.js";
 import { buildAppWithHooks } from "~/decorators/index.js";
 import { watchWithHooks } from "~/decorators/index.js";
 import { registerHooks } from "./registerHooks.js";

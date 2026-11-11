@@ -1,16 +1,14 @@
 import { Container } from "@webiny/di";
-import {
-    deployCommand,
-    destroyCommand,
-    ddbPutItemConditionalCheckFailedGracefulErrorHandler,
-    infoCommand,
-    openCommand,
-    outputCommand,
-    pendingOperationsGracefulErrorHandler,
-    pulumiCommand,
-    refreshCommand,
-    watchCommand
-} from "./features/index.js";
+import { deployCommand } from "./features/index.js";
+import { destroyCommand } from "./features/index.js";
+import { ddbPutItemConditionalCheckFailedGracefulErrorHandler } from "./features/index.js";
+import { infoCommand } from "./features/index.js";
+import { openCommand } from "./features/index.js";
+import { outputCommand } from "./features/index.js";
+import { pendingOperationsGracefulErrorHandler } from "./features/index.js";
+import { pulumiCommand } from "./features/index.js";
+import { refreshCommand } from "./features/index.js";
+import { watchCommand } from "./features/index.js";
 import { deployCommandWithTelemetry } from "./decorators/index.js";
 import { awsGetProjectSdkService } from "./services/GetProjectSdkService.js";
 import { getAwsProjectSdkService } from "./services/GetAwsProjectSdkService.js";

@@ -1,18 +1,6 @@
-import { ProjectSdk } from "@webiny/project";
 import { AwsProjectSdk } from "~/AwsProjectSdk.js";
-import { registerAwsPulumiServices } from "~/registerAwsProjectFeatures.js";
 
-/**
- * ProjectSdk for the Pulumi program. The Pulumi program runs in its own process and does NOT go
- * through the CLI's GetProjectSdkService, so it must register the AWS pulumi services itself
- * (name prefix, stack output, …). We register only `registerAwsPulumiServices` — not the full
- * `registerAwsProjectFeatures` — to avoid pulling in the CLI-only deploy/workspace decorators and
- * hooks (which would, e.g., re-run workspace builders mid-deploy).
- *
- * Empty params → env/variant/region are picked up from the parent process via env
- * (getProjectSdkContextFromEnv).
- */
-export const getAwsProjectSdk = async () => {
-    const projectSdk = await ProjectSdk.init({}, registerAwsPulumiServices);
-    return AwsProjectSdk.from(projectSdk);
+// The project SDK of the Pulumi program; see `AwsProjectSdk.createForPulumiProgram`.
+export const getAwsProjectSdk = () => {
+    return AwsProjectSdk.createForPulumiProgram();
 };

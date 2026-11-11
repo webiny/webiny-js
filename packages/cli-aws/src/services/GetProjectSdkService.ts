@@ -1,41 +1,21 @@
 import { createImplementation } from "@webiny/di";
-import { ProjectSdk } from "@webiny/project";
-import {
-    CliParamsService,
-    GetArgvService,
-    GetProjectSdkService
-} from "@webiny/cli-core/abstractions/index.js";
-import { registerAwsProjectFeatures } from "@webiny/project-aws";
-import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
+import { GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
+import { GetAwsProjectSdkService } from "~/abstractions/GetAwsProjectSdkService.js";
 
+/*
+ * cli-core's commands ask for `GetProjectSdkService`. In the AWS CLI they get the same SDK the AWS
+ * commands get from `GetAwsProjectSdkService`, so the AWS features are registered for both.
+ */
 export class AwsGetProjectSdkService implements GetProjectSdkService.Interface {
-    constructor(
-        private readonly cliParamsService: CliParamsService.Interface,
-        private readonly getArgvService: GetArgvService.Interface
-    ) {}
+    constructor(private readonly getAwsProjectSdkService: GetAwsProjectSdkService.Interface) {}
 
-    async execute() {
-        const cliParams = this.cliParamsService.get();
-        const argv = this.getArgvService.execute();
-
-        const projectSdk = await ProjectSdk.init(
-            {
-                ...argv,
-                cwd: cliParams.cwd,
-                logging: {
-                    streamToStdout: argv.showLogs,
-                    level: argv.logLevel
-                }
-            },
-            registerAwsProjectFeatures
-        );
-
-        return AwsProjectSdk.from(projectSdk);
+    execute() {
+        return this.getAwsProjectSdkService.execute();
     }
 }
 
 export const awsGetProjectSdkService = createImplementation({
     abstraction: GetProjectSdkService,
     implementation: AwsGetProjectSdkService,
-    dependencies: [CliParamsService, GetArgvService]
+    dependencies: [GetAwsProjectSdkService]
 });

@@ -5,7 +5,7 @@ export interface IGetAwsProjectSdkService {
     execute(): Promise<AwsProjectSdk>;
 }
 
-/** The project SDK with the deploy and Pulumi methods, for the commands that need them. */
+// The project SDK with the deploy and Pulumi methods, for the commands that need them.
 export const GetAwsProjectSdkService =
     createAbstraction<IGetAwsProjectSdkService>("GetAwsProjectSdkService");
 

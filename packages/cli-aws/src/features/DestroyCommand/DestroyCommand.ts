@@ -1,5 +1,7 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommandFactory, StdioService, UiService } from "@webiny/cli-core/abstractions/index.js";
+import { CliCommandFactory } from "@webiny/cli-core/abstractions/index.js";
+import { StdioService } from "@webiny/cli-core/abstractions/index.js";
+import { UiService } from "@webiny/cli-core/abstractions/index.js";
 import { measureDuration } from "@webiny/cli-core/features/utils/index.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
 import { AppName } from "@webiny/project";

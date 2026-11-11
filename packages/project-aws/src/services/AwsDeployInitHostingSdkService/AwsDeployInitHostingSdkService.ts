@@ -1,14 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { InitHostingSdkService } from "@webiny/project/abstractions/index.js";
 import { registerSrcExtensions } from "@webiny/project/utils/index.js";
-import { AdminAfterDeploy } from "@webiny/project-extensions-aws/extensions/hooks/AdminAfterDeploy.js";
-import { AdminBeforeDeploy } from "@webiny/project-extensions-aws/extensions/hooks/AdminBeforeDeploy.js";
-import { AfterDeploy } from "@webiny/project-extensions-aws/extensions/hooks/AfterDeploy.js";
-import { ApiAfterDeploy } from "@webiny/project-extensions-aws/extensions/hooks/ApiAfterDeploy.js";
-import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/extensions/hooks/ApiBeforeDeploy.js";
-import { BeforeDeploy } from "@webiny/project-extensions-aws/extensions/hooks/BeforeDeploy.js";
-import { CoreAfterDeploy } from "@webiny/project-extensions-aws/extensions/hooks/CoreAfterDeploy.js";
-import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/hooks/CoreBeforeDeploy.js";
+import { deployHooks } from "@webiny/project-extensions-aws/extensions/hooks/deployHooks.js";
 import { deployAppClearWatchedLambdaFunctions } from "~/decorators/DeployAppClearWatchedLambdaFunctions.js";
 import { deployAppRefreshStackOutputCache } from "~/decorators/DeployAppRefreshStackOutputCache.js";
 import { deployAppWithHooks } from "~/decorators/DeployAppWithHooks.js";
@@ -23,16 +16,9 @@ import { getPulumiServiceWithDownloadInfo } from "~/decorators/GetPulumiServiceW
  */
 export class AwsDeployInitHostingSdkService implements InitHostingSdkService.Interface {
     async execute({ container, projectExtensions, project }: InitHostingSdkService.Params) {
-        const hookExtensions = [
-            ...projectExtensions.extensionsByType(BeforeDeploy),
-            ...projectExtensions.extensionsByType(AfterDeploy),
-            ...projectExtensions.extensionsByType(AdminBeforeDeploy),
-            ...projectExtensions.extensionsByType(AdminAfterDeploy),
-            ...projectExtensions.extensionsByType(ApiBeforeDeploy),
-            ...projectExtensions.extensionsByType(ApiAfterDeploy),
-            ...projectExtensions.extensionsByType(CoreBeforeDeploy),
-            ...projectExtensions.extensionsByType(CoreAfterDeploy)
-        ];
+        const hookExtensions = deployHooks.flatMap(hook =>
+            projectExtensions.extensionsByType(hook)
+        );
 
         await registerSrcExtensions(container, hookExtensions, project);
 

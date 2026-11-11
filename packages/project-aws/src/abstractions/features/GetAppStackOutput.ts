@@ -9,14 +9,6 @@ export interface IStackOutput {
     [key: string]: string | string[] | undefined | number | number[] | boolean | object;
 }
 
-// This interface is later extended in downstream packages (e.g., @webiny/project-aws).
-// TODO: because some of these are AWS specific, we should consider moving these to
-// TODO: @webiny/project-aws. Would've done it, but didn't have time.
-export interface ICoreStackOutput extends IStackOutput {
-    deploymentId: string;
-    iotAuthorizerName: string;
-}
-
 export type IGetAppStackOutputResult<TOutput extends IStackOutput = IStackOutput> = TOutput | null;
 
 export interface IGetAppStackOutput {
@@ -31,5 +23,4 @@ export namespace GetAppStackOutput {
     export type Interface = IGetAppStackOutput;
     export type Result = IGetAppStackOutputResult;
     export type StackOutput = IStackOutput;
-    export type CoreStackOutput = ICoreStackOutput;
 }
