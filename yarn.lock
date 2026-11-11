@@ -10981,7 +10981,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg":
+"@webiny/api-event-handler-standalone-pg@npm:0.0.0, @webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg":
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg"
   dependencies:
@@ -13747,6 +13747,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-standalone-template@workspace:packages/project-standalone-template"
   dependencies:
+    "@webiny/api-event-handler-standalone-pg": "npm:0.0.0"
     "@webiny/api-event-handler-standalone-sql": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
