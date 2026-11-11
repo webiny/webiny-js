@@ -4,7 +4,6 @@
   "references": [
     { "path": "../feature-flags" },
     { "path": "../react-properties" },
-    { "path": "../utils" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -18,8 +17,6 @@
       "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

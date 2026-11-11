@@ -15,6 +15,7 @@ import { BLUE_GREEN_ROUTER_STORE_KEY } from "./constants.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
 import { getBgDeploymentsConfigFromExtension } from "~/pulumi/apps/extensions/getBgDeploymentsConfigFromExtension.js";
+import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 
 export function createBlueGreenPulumiApp() {
     return createPulumiApp({
@@ -31,7 +32,9 @@ export function createBlueGreenPulumiApp() {
                 );
             }
 
-            const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
+            const pulumiResourceNamePrefix = await new AwsProjectSdk(
+                sdk
+            ).getPulumiResourceNamePrefix();
             const deployments = validateDeployments(blueGreenConfig.deployments);
 
             const applicationsDomains = await getApplicationDomains({

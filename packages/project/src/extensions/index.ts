@@ -20,29 +20,20 @@ import { Smtp } from "./api/index.js";
 // Hooks.
 import {
     AdminAfterBuild,
-    AdminAfterDeploy,
     AdminBeforeBuild,
-    AdminBeforeDeploy,
     AdminBeforeWatch,
     AfterBuild,
-    AfterDeploy,
-    BeforeDeploy,
     BeforeWatch,
     ApiAfterBuild,
-    ApiAfterDeploy,
     ApiBeforeBuild,
-    ApiBeforeDeploy,
     ApiBeforeWatch,
     BeforeBuild,
     CoreAfterBuild,
-    CoreAfterDeploy,
     CoreBeforeBuild,
-    CoreBeforeDeploy,
     CoreBeforeWatch
 } from "./hooks/index.js";
 
-// Pulumi (non-app-specific).
-import { ProductionEnvironments, PulumiResourceNamePrefix } from "./pulumi/index.js";
+import { ProductionEnvironments } from "./ProductionEnvironments.js";
 
 // Exports.
 export { Telemetry };
@@ -63,28 +54,18 @@ export { ApiExtension };
 
 // Hooks.
 export { BeforeBuild };
-export { BeforeDeploy };
 export { BeforeWatch };
 export { AfterBuild };
-export { AfterDeploy };
 export { AdminBeforeBuild };
-export { AdminBeforeDeploy };
 export { AdminBeforeWatch };
 export { AdminAfterBuild };
-export { AdminAfterDeploy };
 export { ApiBeforeBuild };
-export { ApiBeforeDeploy };
 export { ApiBeforeWatch };
 export { ApiAfterBuild };
-export { ApiAfterDeploy };
 export { CoreBeforeBuild };
-export { CoreBeforeDeploy };
 export { CoreBeforeWatch };
 export { CoreAfterBuild };
-export { CoreAfterDeploy };
 
-// Pulumi (non-app-specific).
-export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
 
 // Definitions (used internally). 👇
@@ -100,28 +81,18 @@ export const definitions = [
 
     // Hooks.
     AdminAfterBuild.def,
-    AdminAfterDeploy.def,
     BeforeBuild.def,
-    BeforeDeploy.def,
     BeforeWatch.def,
     AfterBuild.def,
-    AfterDeploy.def,
     AdminBeforeBuild.def,
-    AdminBeforeDeploy.def,
     AdminBeforeWatch.def,
     ApiAfterBuild.def,
-    ApiAfterDeploy.def,
     ApiBeforeBuild.def,
-    ApiBeforeDeploy.def,
     ApiBeforeWatch.def,
     CoreAfterBuild.def,
-    CoreAfterDeploy.def,
     CoreBeforeBuild.def,
-    CoreBeforeDeploy.def,
     CoreBeforeWatch.def,
 
-    // Pulumi (non-app-specific).
-    PulumiResourceNamePrefix.def,
     ProductionEnvironments.def,
     DatabaseSetup.def,
     BuildParam.def,

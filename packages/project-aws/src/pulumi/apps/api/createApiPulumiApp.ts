@@ -35,6 +35,7 @@ import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/DefaultSetApiCustomDomains.js";
 import { ApiCustomDomains as apiCustomDomainsExt } from "@webiny/project-extensions-aws/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
+import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -46,7 +47,9 @@ export const createApiPulumiApp = () => {
             const sdk = await getAwsProjectSdk();
             const projectConfig = await sdk.getProjectConfig();
 
-            const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
+            const pulumiResourceNamePrefix = await new AwsProjectSdk(
+                sdk
+            ).getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
 

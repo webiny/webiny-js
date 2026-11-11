@@ -6,13 +6,11 @@ import {
     UpdateFunctionCodeCommand,
     UpdateFunctionConfigurationCommand
 } from "@webiny/aws-sdk/client-lambda/index.js";
-import {
-    type ListAppLambdaFunctionsService,
-    type LoggerService,
-    type PulumiExportService,
-    type WatchedLambdaFunctionsService,
-    type UiService
-} from "@webiny/project/abstractions/index.js";
+import { type ListAppLambdaFunctionsService } from "~/abstractions/services/ListAppLambdaFunctionsService.js";
+import { type LoggerService } from "@webiny/project/abstractions/index.js";
+import { type UiService } from "@webiny/project/abstractions/index.js";
+import { type PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
+import { type WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import { type AppModel } from "@webiny/project/models/index.js";
 
 const WATCH_MODE_NOTE_IN_DESCRIPTION = " (💡 local development mode, redeploy to remove)";

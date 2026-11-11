@@ -17,7 +17,8 @@ import {
 } from "@webiny/cli-core/features/DeployCommand/index.js";
 
 // TODO: convert to a real service.
-import { PrintInfoForEnv } from "@webiny/cli-core/features/InfoCommand/PrintInfoForEnv.js";
+import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
+import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
 
 export type { IDeployCommandParams, IDeploySingleAppParams };
 
@@ -98,7 +99,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                     ui.emptyLine();
 
                     const isCi = projectSdk.isCi();
-                    const coreStack = await projectSdk.getAppStackOutput("core");
+                    const coreStack = await new AwsProjectSdk(projectSdk).getAppStackOutput("core");
 
                     const isFirstDeployment = !isCi && !coreStack?.deploymentId;
                     if (isFirstDeployment) {
@@ -137,7 +138,9 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                     ui.textBold("Project Details");
                     await printInfoForEnv.execute(params);
 
-                    const adminAppOutput = await projectSdk.getAppStackOutput("admin");
+                    const adminAppOutput = await new AwsProjectSdk(projectSdk).getAppStackOutput(
+                        "admin"
+                    );
 
                     if (isFirstDeployment && adminAppOutput) {
                         ui.emptyLine();
@@ -194,7 +197,7 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
             projectSdk.isCi() || params.preview || params.showDeploymentLogs
         );
 
-        return await projectSdk.deployApp({
+        return await new AwsProjectSdk(projectSdk).deployApp({
             ...params,
             output: pulumiProcess => {
                 const deployOutput = new DeployOutput({

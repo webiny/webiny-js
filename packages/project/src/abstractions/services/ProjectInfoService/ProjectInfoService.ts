@@ -1,5 +1,10 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
+export interface IProjectInfoSection {
+    name: string;
+    data: Record<string, string>;
+}
+
 export interface IProjectInfoServiceResult {
     webiny: {
         debugEnabled: boolean;
@@ -19,12 +24,9 @@ export interface IProjectInfoServiceResult {
         yarn: string;
         isCI: boolean;
     };
-    pulumi: {
-        "@pulumi/pulumi": string;
-        "@pulumi/aws": string;
-        secretsProvider: string;
-        usingPassword: boolean;
-    };
+    // Sections a hosting package adds about its own tooling. `webiny about` prints them after the
+    // ones above.
+    sections: IProjectInfoSection[];
 }
 
 export interface IProjectInfoService {
@@ -36,4 +38,5 @@ export const ProjectInfoService = createAbstraction<IProjectInfoService>("Projec
 export namespace ProjectInfoService {
     export type Interface = IProjectInfoService;
     export type Result = IProjectInfoServiceResult;
+    export type Section = IProjectInfoSection;
 }

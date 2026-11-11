@@ -1,4 +1,4 @@
-import { type IStackOutput } from "@webiny/project";
+import { type IStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
 
 // TODO: split into this per-app stack outputs.

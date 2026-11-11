@@ -1,5 +1,5 @@
 import type * as pulumi from "@pulumi/pulumi";
-import type { IStackOutput } from "@webiny/project";
+import type { IStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 export type PulumiOutput<T> = {
     [K in keyof T]: pulumi.Output<T[K]>;

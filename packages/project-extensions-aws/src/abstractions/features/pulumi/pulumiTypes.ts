@@ -1,7 +1,7 @@
 /*
- * Types of the Pulumi apps the AWS hosting type deploys. They depend on Pulumi, so they live in
- * `@webiny/project-aws`, which fills these in through declaration merging (see
- * `project-aws/src/abstractions/pulumiTypes.ts`). Keeping only placeholders here means the
+ * Types of the Pulumi apps the AWS hosting type deploys, and of a running Pulumi command. They
+ * depend on Pulumi, so they live in `@webiny/project-aws`, which fills these in through
+ * declaration merging (see `project-aws/src/abstractions/pulumiTypes.ts`). Keeping only placeholders here means the
  * abstractions below load, and type-check, in a project without `@webiny/project-aws`.
  *
  * The index signature keeps them permissive. In an installed AWS project the Pulumi app types
@@ -23,5 +23,10 @@ export interface AdminPulumiApp {
 }
 
 export interface CustomDomainParams {
+    [key: string]: any;
+}
+
+/** A running Pulumi command, as `DeployApp` hands it to its `output` callback. */
+export interface PulumiProcess {
     [key: string]: any;
 }

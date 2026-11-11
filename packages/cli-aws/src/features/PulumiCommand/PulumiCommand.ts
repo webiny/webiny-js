@@ -8,6 +8,7 @@ import {
 import { ManuallyReportedError } from "@webiny/cli-core/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
+import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
 
 export interface IPulumiCommandParams extends IBaseAppParams {
     command: string[];
@@ -43,7 +44,7 @@ export class PulumiCommand implements CliCommandFactory.Interface<IPulumiCommand
                 try {
                     const [, ...command] = params._ || [];
 
-                    const { pulumiProcess } = await projectSdk.runPulumiCommand({
+                    const { pulumiProcess } = await new AwsProjectSdk(projectSdk).runPulumiCommand({
                         ...params,
                         command
                     });

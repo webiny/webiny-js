@@ -8,6 +8,7 @@ import {
 import { measureDuration } from "@webiny/cli-core/features/utils/index.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
 import { AppName } from "@webiny/project";
+import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
 
 export interface IDestroyNoAppParams {
     variant?: string;
@@ -67,7 +68,7 @@ export class DestroyCommand implements CliCommandFactory.Interface<IDestroyComma
         const ui = this.uiService;
         const stdio = this.stdioService;
 
-        const { pulumiProcess } = await projectSdk.destroyApp(params);
+        const { pulumiProcess } = await new AwsProjectSdk(projectSdk).destroyApp(params);
 
         const getDestroyDuration = measureDuration();
 

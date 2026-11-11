@@ -6,6 +6,7 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
+import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
 
 export interface IOutputCommandParams extends IBaseAppParams {
     json?: boolean;
@@ -47,7 +48,7 @@ export class OutputCommand implements CliCommandFactory.Interface<IOutputCommand
                 const projectSdk = await this.getProjectSdkService.execute();
                 const ui = this.uiService;
 
-                const output = await projectSdk.getAppStackOutput(params.app);
+                const output = await new AwsProjectSdk(projectSdk).getAppStackOutput(params.app);
                 if (params.json) {
                     ui.text(JSON.stringify(output, null, 2));
                     return;

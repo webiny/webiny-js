@@ -1,6 +1,7 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
+import { AwsProjectSdk } from "~/AwsProjectSdk.js";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -42,7 +43,7 @@ export const CoreOutput = createAppModule({
         return app.addHandler(async () => {
             const sdk = await getAwsProjectSdk();
 
-            const output = await sdk.getAppStackOutput("core");
+            const output = await new AwsProjectSdk(sdk).getAppStackOutput("core");
             if (!output) {
                 throw new Error("Core application is not deployed.");
             }

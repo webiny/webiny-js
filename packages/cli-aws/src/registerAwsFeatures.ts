@@ -3,6 +3,8 @@ import {
     deployCommand,
     destroyCommand,
     ddbPutItemConditionalCheckFailedGracefulErrorHandler,
+    infoCommand,
+    openCommand,
     outputCommand,
     pendingOperationsGracefulErrorHandler,
     pulumiCommand,
@@ -21,6 +23,8 @@ export const registerAwsFeatures = (container: Container): void => {
     container.register(deployCommand).inSingletonScope();
     container.register(destroyCommand).inSingletonScope();
     container.register(pulumiCommand).inSingletonScope();
+    container.register(infoCommand).inSingletonScope();
+    container.register(openCommand).inSingletonScope();
     container.register(outputCommand).inSingletonScope();
     container.register(refreshCommand).inSingletonScope();
 

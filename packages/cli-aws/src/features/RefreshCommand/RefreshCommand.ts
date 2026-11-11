@@ -7,6 +7,7 @@ import {
 import { ManuallyReportedError } from "@webiny/cli-core/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "@webiny/cli-core/abstractions/features/types.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
+import { AwsProjectSdk } from "@webiny/project-aws/AwsProjectSdk.js";
 
 export interface IRefreshCommandParams extends IBaseAppParams {
     command: string[];
@@ -38,7 +39,9 @@ export class RefreshCommand implements CliCommandFactory.Interface<IRefreshComma
                 const projectSdk = await this.getProjectSdkService.execute();
 
                 try {
-                    const { pulumiProcess } = await projectSdk.refreshApp(params);
+                    const { pulumiProcess } = await new AwsProjectSdk(projectSdk).refreshApp(
+                        params
+                    );
                     pulumiProcess.stdin?.pipe(this.stdioService.getStdin());
                     pulumiProcess.stdout?.pipe(this.stdioService.getStdout());
                     pulumiProcess.stderr?.pipe(this.stdioService.getStderr());

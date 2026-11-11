@@ -1,6 +1,6 @@
 import { UiService, StdioService } from "@webiny/cli-core/abstractions/index.js";
 import { IDeploySingleAppParams } from "../DeployCommand.js";
-import { type DeployApp } from "@webiny/project/abstractions/index.js";
+import { type DeployApp } from "@webiny/project-extensions-aws/abstractions/index.js";
 
 export type IDeployProcess = DeployApp.PulumiProcess;
 

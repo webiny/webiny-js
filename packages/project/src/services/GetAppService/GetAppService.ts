@@ -23,15 +23,10 @@ export class DefaultGetAppService implements GetAppService.Interface {
 
         const workspaceFolderPath = project.paths.workspaceFolder.join("apps", appName).toString();
 
-        const localPulumiStateFilesFolderPath = project.paths.localPulumiStateFilesFolder
-            .join("apps", appName)
-            .toString();
-
         return AppModel.fromDto({
             name: appName,
             paths: {
-                workspaceFolder: workspaceFolderPath,
-                localPulumiStateFilesFolder: localPulumiStateFilesFolderPath
+                workspaceFolder: workspaceFolderPath
             }
         });
     }

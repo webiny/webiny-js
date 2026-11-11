@@ -1,17 +1,15 @@
-import {
-    GetApp,
-    ListAppLambdaFunctionsService,
-    LoggerService,
-    ProjectSdkParamsService,
-    PulumiExportService,
-    PulumiGetStackOutputService,
-    UiService,
-    Watch,
-    WatchedLambdaFunctionsService
-} from "@webiny/project/abstractions/index.js";
+import { GetApp } from "@webiny/project/abstractions/index.js";
+import { LoggerService } from "@webiny/project/abstractions/index.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { UiService } from "@webiny/project/abstractions/index.js";
+import { Watch } from "@webiny/project/abstractions/index.js";
+import { ListAppLambdaFunctionsService } from "~/abstractions/services/ListAppLambdaFunctionsService.js";
+import { PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
+import { PulumiGetStackOutputService } from "~/abstractions/services/PulumiGetStackOutputService.js";
+import { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import chalk from "chalk";
 import type inspectorType from "inspector";
-import { type ICoreStackOutput } from "@webiny/project/abstractions/features/GetAppStackOutput.js";
+import { type ICoreStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 export class AwsWatch implements Watch.Interface {
     constructor(
@@ -132,7 +130,7 @@ export class AwsWatch implements Watch.Interface {
         const { getIotEndpoint } = await import("./getIotEndpoint.js");
         const { replaceLambdaFunctions } = await import("./replaceLambdaFunctions.js");
         const { initInvocationForwarding } =
-            await import("@webiny/project/features/Watch/initInvocationForwarding.js");
+            await import("~/features/Watch/initInvocationForwarding.js");
 
         const iotEndpoint = await getIotEndpoint(coreStackOutput);
 
