@@ -9,7 +9,7 @@ import { redirectMocks } from "./mocks/redirect.mock.js";
 
 const INVALIDATED = { caller: "wb.redirects", paths: ["/wb/redirects"] };
 
-const CDN_CACHE_CONTROL = "public, max-age=31536000";
+const CDN_CACHE_CONTROL = "public, max-age=0, s-maxage=31536000";
 
 const setup = () => {
     const invalidate = vi.fn(async () => {});

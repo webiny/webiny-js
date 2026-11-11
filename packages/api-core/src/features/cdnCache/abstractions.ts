@@ -11,8 +11,8 @@ export interface ICdnCache {
     invalidate(params: ICdnCacheInvalidateParams): Promise<void>;
     /*
      * The `Cache-Control` header for an API response that is dropped through `invalidate` when it
-     * changes. With a CDN that is invalidated, caches can keep it for long. Without one, nothing
-     * would tell a cache in front of the API that it changed, so caches must check back each time.
+     * changes. `invalidate` only reaches the CDN itself, so only the CDN may keep the response for
+     * long; every other cache, and every cache when there is no CDN, must check back each time.
      */
     getCacheControl(): string;
 }

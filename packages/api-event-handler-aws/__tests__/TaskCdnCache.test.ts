@@ -72,10 +72,10 @@ describe("TaskCdnCache", () => {
         );
     });
 
-    it("lets caches keep a response for a year, since a write invalidates it", () => {
+    it("lets only CloudFront keep a response for a year, since only it is invalidated", () => {
         const trigger = vi.fn(async () => Result.ok({} as any));
         const { cdnCache } = setup(trigger);
 
-        expect(cdnCache.getCacheControl()).toEqual("public, max-age=31536000");
+        expect(cdnCache.getCacheControl()).toEqual("public, max-age=0, s-maxage=31536000");
     });
 });
