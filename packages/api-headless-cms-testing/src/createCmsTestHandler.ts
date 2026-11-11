@@ -20,6 +20,8 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./processLegacyPlugins.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 const DEFAULT_IDENTITY: IdentityData = {
     id: "id-12345678",
@@ -31,6 +33,12 @@ export interface CmsTestHandlerParams {
     /** Identity for the request. `undefined` → a default admin; `null` → anonymous. */
     identity?: IdentityData | null;
     permissions?: SecurityPermission[];
+    /**
+     * Permissions of other identities, by identity id, for code that evaluates another user
+     * through `IdentityContext.withIdentity`. The request identity gets `permissions`; other
+     * identities not listed here get none.
+     */
+    permissionsByIdentity?: Record<string, SecurityPermission[]>;
     testProjectLicense?: DecryptedWcpProjectLicense;
     /** CMS endpoint type to build. Defaults to "manage". */
     cmsType?: "manage" | "read" | "preview";
@@ -78,7 +86,10 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     const setupRoot = (container: Container) => {
         container.registerInstance(TestIdentity, identity);
-        container.registerInstance(TestPermissions, { list: permissions });
+        container.registerInstance(TestPermissions, {
+            list: permissions,
+            byIdentity: params.permissionsByIdentity
+        });
         container.register(TestAuthenticator);
         container.register(TestAuthorizer);
         container.registerDecorator(AuthTriggerHandler);
@@ -101,6 +112,8 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         );
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        const logger = new NullLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
 
         // CMS storage preset. All storage presets are RegisterExtensionPlugins (registerDynamoDBCore,

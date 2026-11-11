@@ -39,6 +39,15 @@ jobs:
             exit 1
           fi
 
+          HEAD_REPO=$(gh api "/repos/${{ github.repository }}/pulls/${{
+          github.event.issue.number }}" -q ".head.repo.full_name // empty")
+
+          if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then
+            echo "::error::/e2e does not run on pull requests from forks (head repository: ${HEAD_REPO:-deleted})."
+            gh api --silent -X POST "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" -f body="/e2e does not run on pull requests from forks."
+            exit 1
+          fi
+
           gh api --silent -X POST "/repos/${{ github.repository
           }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
           content=eyes
@@ -66,20 +75,20 @@ jobs:
 
             | Standalone (Postgres) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (SQLite, WCP) | 🔄
-            Running... | - |' || '' }}
+            | Standalone (Postgres, 2 API processes) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (Postgres, WCP) |
-            🔄 Running... | - |' || '' }}
+            | Standalone (SQLite, WCP) | 🔄 Running... | - |
+
+            | Standalone (Postgres, WCP) | 🔄 Running... | - |
+
+            | Standalone (Postgres, 2 API processes, WCP) | 🔄 Running... | - |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   baseBranch:
     needs: checkComment
-    name: Get base branch
+    name: Get base branch, PR head and PR features
     permissions:
       contents: read
       actions: write
@@ -87,6 +96,8 @@ jobs:
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
+      standalone: ${{ steps.features.outputs.standalone }}
+      bug-reporter: ${{ steps.features.outputs.bug-reporter }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -106,6 +117,37 @@ jobs:
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
+      - name: Check what the PR's code supports
+        id: features
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_SHA: ${{ steps.pr-sha.outputs.pr-sha }}
+        run: >-
+          set -euo pipefail
+
+          has_path() {
+            if gh api "repos/${{ github.repository }}/contents/$1?ref=$PR_SHA" --silent 2> /tmp/gh-api-error.txt; then
+              echo true
+            elif grep -q "HTTP 404" /tmp/gh-api-error.txt; then
+              echo false
+            else
+              cat /tmp/gh-api-error.txt >&2
+              return 1
+            fi
+          }
+
+          found=$(has_path packages/create-webiny-project/_templates/standalone)
+
+          echo "standalone: $found"
+
+          echo "standalone=$found" >> $GITHUB_OUTPUT
+
+          found=$(has_path
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js)
+
+          echo "bug-reporter: $found"
+
+          echo "bug-reporter=$found" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -137,7 +179,7 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -192,37 +234,15 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-wby-cms-ddb-project-setup:
+  publish:
+    name: Publish to Verdaccio
     needs:
       - baseBranch
-      - constants
       - build
-      - checkComment
-    name: E2E (DDB) - Project setup
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
-      pull-requests: write
-    environment: next
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
-      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - name: Configure AWS Credentials
-        uses: >-
-          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -266,30 +286,129 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
+      - name: Create a Verdaccio user and write its token into .npmrc
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+        run: >-
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4873/-/ping > /dev/null && break
+            sleep 1
+          done
+
+          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
+            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
+            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
+          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
+          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
+
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
+            exit 1
+          fi
+
+          echo "::add-mask::$TOKEN"
+
+          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
-      - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      - name: Compress Verdaccio storage
+        run: >-
+          tar -cf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}" .verdaccio
+      - name: Upload Verdaccio storage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: verdaccio-files-ddb
+          name: verdaccio-storage
+          path: verdaccio-storage.tzst
           retention-days: 1
-          include-hidden-files: true
-          path: |-
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-aws-ddb-deploy:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - DDB - Deploy
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      pull-requests: write
+    outputs:
+      admin-url: ${{ steps.admin-url.outputs.admin-url }}
+    environment: next
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -307,6 +426,7 @@ jobs:
           node
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -327,6 +447,7 @@ jobs:
       - name: Enable extension bug-report-ai
         working-directory: new-webiny-project
         run: yarn webiny extension bug-report-ai
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
@@ -347,28 +468,76 @@ jobs:
           echo "admin-url=$(yarn webiny output admin --env dev --json
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
+        if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i "s@| DDB | 🔄 Deploying... | - |@| DDB | ✅ Ready | $ADMIN_URL
-          |@" /tmp/comment.txt
+          row="| DDB | ✅ Ready | $ADMIN_URL |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -378,64 +547,203 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+  e2e-aws-ddb:
+    needs:
+      - baseBranch
+      - e2e-aws-ddb-deploy
+    name: E2E - DDB / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
-          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-ddb
+          name: e2e-test-results-ddb-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-aws-ddb-report:
+    needs:
+      - checkComment
+      - e2e-aws-ddb-deploy
+      - e2e-aws-ddb
+    name: E2E - DDB - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-aws-ddb-deploy.result }}
+          TESTS_RESULT: ${{ needs.e2e-aws-ddb.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - DDB passed
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB \|.*@| DDB | ✅ Passed | ${ADMIN_URL:--} |@"
-          /tmp/comment.txt
+          row="| DDB | ✅ Passed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
+        id: status-row-success
       - name: Update PR comment - DDB failed
         if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB \|.*@| DDB | ❌ Failed | ${ADMIN_URL:--} |@"
-          /tmp/comment.txt
+          row="| DDB | ❌ Failed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
+        id: status-row-failure
     runs-on: ubuntu-latest
-  e2e-wby-cms-ddb-os-project-setup:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-aws-ddb-os-deploy:
     needs:
       - baseBranch
-      - constants
-      - build
+      - publish
       - checkComment
-    name: E2E (DDB-OS) - Project setup
+    name: E2E - DDB+OS - Deploy
     permissions:
       contents: read
       actions: write
       id-token: write
       pull-requests: write
+    outputs:
+      admin-url: ${{ steps.admin-url.outputs.admin-url }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -479,54 +787,26 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
-      - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: verdaccio-files-ddb-os
-          retention-days: 1
-          include-hidden-files: true
-          path: |-
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -553,6 +833,7 @@ jobs:
           node
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -573,6 +854,7 @@ jobs:
       - name: Enable extension bug-report-ai
         working-directory: new-webiny-project
         run: yarn webiny extension bug-report-ai
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
@@ -600,28 +882,76 @@ jobs:
           echo "admin-url=$(yarn webiny output admin --env dev --json
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
+        if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i "s@| DDB+OS | 🔄 Deploying... | - |@| DDB+OS | ✅ Ready |
-          $ADMIN_URL |@" /tmp/comment.txt
+          row="| DDB+OS | ✅ Ready | $ADMIN_URL |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -631,63 +961,300 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+  e2e-aws-ddb-os:
+    needs:
+      - baseBranch
+      - e2e-aws-ddb-os-deploy
+    name: E2E - DDB+OS / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
-          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-ddb-os
+          name: e2e-test-results-ddb-os-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-aws-ddb-os-report:
+    needs:
+      - checkComment
+      - e2e-aws-ddb-os-deploy
+      - e2e-aws-ddb-os
+    name: E2E - DDB+OS - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-aws-ddb-os-deploy.result }}
+          TESTS_RESULT: ${{ needs.e2e-aws-ddb-os.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - DDB+OS passed
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ✅ Passed | ${ADMIN_URL:--}
-          |@" /tmp/comment.txt
+          row="| DDB+OS | ✅ Passed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
+        id: status-row-success
       - name: Update PR comment - DDB+OS failed
         if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ❌ Failed | ${ADMIN_URL:--}
-          |@" /tmp/comment.txt
+          row="| DDB+OS | ❌ Failed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
+        id: status-row-failure
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-sqlite-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (SQLite) - Build
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"sqlite"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-sqlite.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-sqlite
+          path: standalone-build-sqlite.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+    if: needs.baseBranch.outputs.standalone == 'true'
   e2e-standalone-sqlite:
     needs:
+      - e2e-standalone-sqlite-build
       - baseBranch
-      - constants
-      - build
-      - checkComment
-    name: E2E - Standalone (SQLite)
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
+    name: E2E - Standalone (SQLite) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -711,82 +1278,30 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
-        run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Start Verdaccio local server
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
-      - name: Create a new standalone Webiny project
-        run: >-
-          npx create-webiny-project@local-npm new-webiny-project-standalone
-          --tag local-npm --no-interactive --hosting-type standalone
-          --assign-to-yarnrc
-          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"storageOps":"sqlite"}'
-      - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
-          '${{ github.workspace }}/new-webiny-project-standalone'
-      - name: Print CLI version
-        working-directory: new-webiny-project-standalone
-        run: yarn webiny --version
-      - name: Build API and Admin
-        working-directory: new-webiny-project-standalone
-        env:
-          WEBINY_HOSTING_TYPE: standalone
-          WEBINY_API_URL: http://localhost:3002
-          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
-        run: yarn webiny build api && yarn webiny build admin
+          name: standalone-build-sqlite
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-sqlite.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
           WEBINY_SQL_FILENAME: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/server.sqlite
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -834,72 +1349,94 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-sqlite
+          name: e2e-results-standalone-sqlite-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-sqlite
+          name: e2e-test-results-standalone-sqlite-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
-      - name: Update PR comment - Standalone (SQLite) passed
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(SQLite\) \|.*@| Standalone (SQLite) | ✅
-          Passed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
-      - name: Update PR comment - Standalone (SQLite) failed
-        if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(SQLite\) \|.*@| Standalone (SQLite) | ❌
-          Failed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -907,17 +1444,245 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-sqlite-report:
+    needs:
+      - checkComment
+      - e2e-standalone-sqlite-build
+      - e2e-standalone-sqlite
+      - baseBranch
+    name: E2E - Standalone (SQLite) - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-not-supported.outputs.row ||
+        steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Update PR comment - Standalone (SQLite) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (SQLite) | ⏭️ Not supported by this branch | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(SQLite\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite) could
+          not be written after 5 attempts."
+        id: status-row-not-supported
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-sqlite.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
+      - name: Update PR comment - Standalone (SQLite) passed
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (SQLite) | ✅ Passed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(SQLite\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite) could
+          not be written after 5 attempts."
+        id: status-row-success
+      - name: Update PR comment - Standalone (SQLite) failed
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (SQLite) | ❌ Failed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(SQLite\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite) could
+          not be written after 5 attempts."
+        id: status-row-failure
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-postgres-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (Postgres) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres
+          path: standalone-build-postgres.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+    if: needs.baseBranch.outputs.standalone == 'true'
   e2e-standalone-postgres:
     needs:
+      - e2e-standalone-postgres-build
       - baseBranch
-      - constants
-      - build
-      - checkComment
-    name: E2E - Standalone (Postgres)
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
+    name: E2E - Standalone (Postgres) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
     services:
       postgres:
         image: postgres:17
@@ -953,73 +1718,15 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
-        run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Start Verdaccio local server
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
-      - name: Create a new standalone Webiny project
-        run: >-
-          npx create-webiny-project@local-npm new-webiny-project-standalone
-          --tag local-npm --no-interactive --hosting-type standalone
-          --assign-to-yarnrc
-          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"storageOps":"postgres"}'
-      - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
-          '${{ github.workspace }}/new-webiny-project-standalone'
-      - name: Print CLI version
-        working-directory: new-webiny-project-standalone
-        run: yarn webiny --version
-      - name: Build API and Admin
-        working-directory: new-webiny-project-standalone
-        env:
-          WEBINY_HOSTING_TYPE: standalone
-          WEBINY_API_URL: http://localhost:3002
-          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
-        run: yarn webiny build api && yarn webiny build admin
+          name: standalone-build-postgres
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-postgres.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1028,9 +1735,15 @@ jobs:
           WEBINY_PG_USER: postgres
           WEBINY_PG_PASSWORD: postgres
           WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1078,72 +1791,94 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres
+          name: e2e-results-standalone-postgres-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-postgres
+          name: e2e-test-results-standalone-postgres-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
-      - name: Update PR comment - Standalone (Postgres) passed
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
-          | ✅ Passed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
-      - name: Update PR comment - Standalone (Postgres) failed
-        if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
-          | ❌ Failed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -1151,17 +1886,141 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-standalone-sqlite-wcp:
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-report:
     needs:
-      - baseBranch
-      - constants
-      - build
       - checkComment
-    name: E2E - Standalone (SQLite, WCP)
+      - e2e-standalone-postgres-build
+      - e2e-standalone-postgres
+      - baseBranch
+    name: E2E - Standalone (Postgres) - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-not-supported.outputs.row ||
+        steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write
       pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Update PR comment - Standalone (Postgres) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres) | ⏭️ Not supported by this branch | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres)
+          could not be written after 5 attempts."
+        id: status-row-not-supported
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
+      - name: Update PR comment - Standalone (Postgres) passed
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres) | ✅ Passed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres)
+          could not be written after 5 attempts."
+        id: status-row-success
+      - name: Update PR comment - Standalone (Postgres) failed
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres) | ❌ Failed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres)
+          could not be written after 5 attempts."
+        id: status-row-failure
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-postgres-2-processes-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (Postgres, 2 API processes) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1185,45 +2044,529 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-2-processes.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-2-processes
+          path: standalone-build-postgres-2-processes.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+    if: needs.baseBranch.outputs.standalone == 'true'
+  e2e-standalone-postgres-2-processes:
+    needs:
+      - e2e-standalone-postgres-2-processes-build
+      - baseBranch
+    name: E2E - Standalone (Postgres, 2 API processes) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+      valkey:
+        image: valkey/valkey:8
+        ports:
+          - '6379:6379'
+        options: >-
+          --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout
+          2s --health-retries 15
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-2-processes
+      - name: Extract API and Admin builds
+        run: >-
+          tar -xf standalone-build-postgres-2-processes.tzst
+          --use-compress-program=zstdmt
+      - name: Start 2 API processes
+        env:
+          WEBINY_PG_HOST: localhost
+          WEBINY_PG_PORT: '5432'
+          WEBINY_PG_USER: postgres
+          WEBINY_PG_PASSWORD: postgres
+          WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
+          WEBINY_LOCAL_STORAGE_PATH: >-
+            ${{ github.workspace
+            }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
+          WEBINY_REDIS_URL: redis://localhost:6379
+        run: >-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+
+          cd
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+
+          PORT=3012 nohup node start.mjs > /tmp/webiny-api-1.log 2>&1 &
+
+          PORT=3013 nohup node start.mjs > /tmp/webiny-api-2.log 2>&1 &
+
+          echo "2 API processes starting"
+      - name: Start nginx in front of the API processes
+        run: >-
+          set -euo pipefail
+
+          command -v nginx > /dev/null || (sudo apt-get update && sudo apt-get
+          install -y nginx)
+
+          cat > /tmp/webiny-nginx.conf <<'NGINX'
+
+          worker_processes 1;
+
+          pid /tmp/webiny-nginx.pid;
+
+          error_log /tmp/webiny-nginx-error.log;
+
+          events {}
+
+          http {
+              access_log /tmp/webiny-nginx-access.log;
+              client_max_body_size 0;
+              map $http_upgrade $connection_upgrade {
+                  default upgrade;
+                  '' close;
+              }
+              upstream webiny_api {
+                  server 127.0.0.1:3012;
+                  server 127.0.0.1:3013;
+              }
+              server {
+                  listen 3002;
+                  location / {
+                      proxy_pass http://webiny_api;
+                      proxy_http_version 1.1;
+                      proxy_set_header Upgrade $http_upgrade;
+                      proxy_set_header Connection $connection_upgrade;
+                      proxy_set_header Host $http_host;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_request_buffering off;
+                      proxy_buffering off;
+                  }
+              }
+          }
+
+          NGINX
+
+          sudo nginx -t -c /tmp/webiny-nginx.conf
+
+          sudo nginx -c /tmp/webiny-nginx.conf
+
+          echo "nginx listening on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build -l
+          3001 > /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3012
+
+          wait_for_port 3013
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: >-
+            e2e-results-standalone-postgres-2-processes-shard-${{ matrix.shard
+            }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: >-
+            e2e-test-results-standalone-postgres-2-processes-shard-${{
+            matrix.shard }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-2-processes-report:
+    needs:
+      - checkComment
+      - e2e-standalone-postgres-2-processes-build
+      - e2e-standalone-postgres-2-processes
+      - baseBranch
+    name: E2E - Standalone (Postgres, 2 API processes) - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-not-supported.outputs.row ||
+        steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: >-
+          Update PR comment - Standalone (Postgres, 2 API processes) not
+          supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, 2 API processes) | ⏭️ Not supported by
+          this branch | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes) could not be written after 5 attempts."
+        id: status-row-not-supported
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-2-processes-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres-2-processes.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
+      - name: Update PR comment - Standalone (Postgres, 2 API processes) passed
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, 2 API processes) | ✅ Passed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes) could not be written after 5 attempts."
+        id: status-row-success
+      - name: Update PR comment - Standalone (Postgres, 2 API processes) failed
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, 2 API processes) | ❌ Failed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes) could not be written after 5 attempts."
+        id: status-row-failure
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-sqlite-wcp-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (SQLite, WCP) - Build
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1241,6 +2584,7 @@ jobs:
           node
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1254,15 +2598,87 @@ jobs:
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-sqlite-wcp.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-sqlite-wcp
+          path: standalone-build-sqlite-wcp.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+    if: needs.baseBranch.outputs.standalone == 'true'
+  e2e-standalone-sqlite-wcp:
+    needs:
+      - e2e-standalone-sqlite-wcp-build
+      - baseBranch
+    name: E2E - Standalone (SQLite, WCP) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-sqlite-wcp
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-sqlite-wcp.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
           WEBINY_SQL_FILENAME: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/server.sqlite
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
@@ -1312,78 +2728,100 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-sqlite-wcp
+          name: e2e-results-standalone-sqlite-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: AI E2E - run tests
+        id: ai-e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: |-
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
           if [ ! -f e2e/e2e.config.ts ]; then
             echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
             exit 0
           fi
-          yarn e2e --exclude-tag installation
+
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
+      - name: AI E2E - tests - write job summary
+        if: always() && steps.ai-e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## AI E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: AI E2E - upload results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-sqlite-wcp
+          name: ai-e2e-results-standalone-sqlite-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
-      - name: Update PR comment - Standalone (SQLite, WCP) passed
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
-          WCP) | ✅ Passed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
-      - name: Update PR comment - Standalone (SQLite, WCP) failed
-        if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
-          WCP) | ❌ Failed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -1391,20 +2829,130 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
-  e2e-standalone-postgres-wcp:
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-sqlite-wcp-report:
     needs:
-      - baseBranch
-      - constants
-      - build
       - checkComment
-    name: E2E - Standalone (Postgres, WCP)
+      - e2e-standalone-sqlite-wcp-build
+      - e2e-standalone-sqlite-wcp
+      - baseBranch
+    name: E2E - Standalone (SQLite, WCP) - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-not-supported.outputs.row ||
+        steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write
       pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Update PR comment - Standalone (SQLite, WCP) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (SQLite, WCP) | ⏭️ Not supported by this branch | -
+          |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite, WCP)
+          could not be written after 5 attempts."
+        id: status-row-not-supported
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-wcp-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-sqlite-wcp.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
+      - name: Update PR comment - Standalone (SQLite, WCP) passed
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (SQLite, WCP) | ✅ Passed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite, WCP)
+          could not be written after 5 attempts."
+        id: status-row-success
+      - name: Update PR comment - Standalone (SQLite, WCP) failed
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (SQLite, WCP) | ❌ Failed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite, WCP)
+          could not be written after 5 attempts."
+        id: status-row-failure
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-postgres-wcp-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (Postgres, WCP) - Build
     services:
       postgres:
         image: postgres:17
@@ -1440,45 +2988,26 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1496,6 +3025,7 @@ jobs:
           node
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1509,6 +3039,87 @@ jobs:
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-wcp.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-wcp
+          path: standalone-build-postgres-wcp.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+    if: needs.baseBranch.outputs.standalone == 'true'
+  e2e-standalone-postgres-wcp:
+    needs:
+      - e2e-standalone-postgres-wcp-build
+      - baseBranch
+    name: E2E - Standalone (Postgres, WCP) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-wcp
+      - name: Extract API and Admin builds
+        run: >-
+          tar -xf standalone-build-postgres-wcp.tzst
+          --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1517,9 +3128,15 @@ jobs:
           WEBINY_PG_USER: postgres
           WEBINY_PG_PASSWORD: postgres
           WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
@@ -1569,78 +3186,100 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres-wcp
+          name: e2e-results-standalone-postgres-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: AI E2E - run tests
+        id: ai-e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: |-
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
           if [ ! -f e2e/e2e.config.ts ]; then
             echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
             exit 0
           fi
-          yarn e2e --exclude-tag installation
+
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
+      - name: AI E2E - tests - write job summary
+        if: always() && steps.ai-e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## AI E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: AI E2E - upload results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-postgres-wcp
+          name: ai-e2e-results-standalone-postgres-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
-      - name: Update PR comment - Standalone (Postgres, WCP) passed
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
-          (Postgres, WCP) | ✅ Passed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
-      - name: Update PR comment - Standalone (Postgres, WCP) failed
-        if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
-
-          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
-          (Postgres, WCP) | ❌ Failed | - |@" /tmp/comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -1648,6 +3287,724 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-wcp-report:
+    needs:
+      - checkComment
+      - e2e-standalone-postgres-wcp-build
+      - e2e-standalone-postgres-wcp
+      - baseBranch
+    name: E2E - Standalone (Postgres, WCP) - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-not-supported.outputs.row ||
+        steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Update PR comment - Standalone (Postgres, WCP) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, WCP) | ⏭️ Not supported by this branch |
+          - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, WCP)
+          could not be written after 5 attempts."
+        id: status-row-not-supported
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres-wcp.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
+      - name: Update PR comment - Standalone (Postgres, WCP) passed
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, WCP) | ✅ Passed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, WCP)
+          could not be written after 5 attempts."
+        id: status-row-success
+      - name: Update PR comment - Standalone (Postgres, WCP) failed
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, WCP) | ❌ Failed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, WCP)
+          could not be written after 5 attempts."
+        id: status-row-failure
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-postgres-wcp-2-processes-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (Postgres, 2 API processes, WCP) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-wcp-2-processes.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-wcp-2-processes
+          path: standalone-build-postgres-wcp-2-processes.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+    if: needs.baseBranch.outputs.standalone == 'true'
+  e2e-standalone-postgres-wcp-2-processes:
+    needs:
+      - e2e-standalone-postgres-wcp-2-processes-build
+      - baseBranch
+    name: >-
+      E2E - Standalone (Postgres, 2 API processes, WCP) / shard ${{ matrix.shard
       }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+      valkey:
+        image: valkey/valkey:8
+        ports:
+          - '6379:6379'
+        options: >-
+          --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout
+          2s --health-retries 15
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-wcp-2-processes
+      - name: Extract API and Admin builds
+        run: >-
+          tar -xf standalone-build-postgres-wcp-2-processes.tzst
+          --use-compress-program=zstdmt
+      - name: Start 2 API processes
+        env:
+          WEBINY_PG_HOST: localhost
+          WEBINY_PG_PORT: '5432'
+          WEBINY_PG_USER: postgres
+          WEBINY_PG_PASSWORD: postgres
+          WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
+          WEBINY_LOCAL_STORAGE_PATH: >-
+            ${{ github.workspace
+            }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+          WEBINY_REDIS_URL: redis://localhost:6379
+        run: >-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+
+          cd
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+
+          PORT=3012 nohup node start.mjs > /tmp/webiny-api-1.log 2>&1 &
+
+          PORT=3013 nohup node start.mjs > /tmp/webiny-api-2.log 2>&1 &
+
+          echo "2 API processes starting"
+      - name: Start nginx in front of the API processes
+        run: >-
+          set -euo pipefail
+
+          command -v nginx > /dev/null || (sudo apt-get update && sudo apt-get
+          install -y nginx)
+
+          cat > /tmp/webiny-nginx.conf <<'NGINX'
+
+          worker_processes 1;
+
+          pid /tmp/webiny-nginx.pid;
+
+          error_log /tmp/webiny-nginx-error.log;
+
+          events {}
+
+          http {
+              access_log /tmp/webiny-nginx-access.log;
+              client_max_body_size 0;
+              map $http_upgrade $connection_upgrade {
+                  default upgrade;
+                  '' close;
+              }
+              upstream webiny_api {
+                  server 127.0.0.1:3012;
+                  server 127.0.0.1:3013;
+              }
+              server {
+                  listen 3002;
+                  location / {
+                      proxy_pass http://webiny_api;
+                      proxy_http_version 1.1;
+                      proxy_set_header Upgrade $http_upgrade;
+                      proxy_set_header Connection $connection_upgrade;
+                      proxy_set_header Host $http_host;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_request_buffering off;
+                      proxy_buffering off;
+                  }
+              }
+          }
+
+          NGINX
+
+          sudo nginx -t -c /tmp/webiny-nginx.conf
+
+          sudo nginx -c /tmp/webiny-nginx.conf
+
+          echo "nginx listening on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build -l
+          3001 > /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3012
+
+          wait_for_port 3013
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: >-
+            e2e-results-standalone-postgres-wcp-2-processes-shard-${{
+            matrix.shard }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: AI E2E - run tests
+        id: ai-e2e-tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          if [ ! -f e2e/e2e.config.ts ]; then
+            echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
+            exit 0
+          fi
+
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
+      - name: AI E2E - tests - write job summary
+        if: always() && steps.ai-e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## AI E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: AI E2E - upload results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: >-
+            ai-e2e-results-standalone-postgres-wcp-2-processes-shard-${{
+            matrix.shard }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-wcp-2-processes-report:
+    needs:
+      - checkComment
+      - e2e-standalone-postgres-wcp-2-processes-build
+      - e2e-standalone-postgres-wcp-2-processes
+      - baseBranch
+    name: E2E - Standalone (Postgres, 2 API processes, WCP) - Report status
+    outputs:
+      row: >-
+        ${{ steps.status-row-not-supported.outputs.row ||
+        steps.status-row-success.outputs.row ||
+        steps.status-row-failure.outputs.row }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: >-
+          Update PR comment - Standalone (Postgres, 2 API processes, WCP) not
+          supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, 2 API processes, WCP) | ⏭️ Not supported
+          by this branch | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes, WCP) could not be written after 5 attempts."
+        id: status-row-not-supported
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-2-processes-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres-wcp-2-processes.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
+      - name: Update PR comment - Standalone (Postgres, 2 API processes, WCP) passed
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, 2 API processes, WCP) | ✅ Passed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes, WCP) could not be written after 5 attempts."
+        id: status-row-success
+      - name: Update PR comment - Standalone (Postgres, 2 API processes, WCP) failed
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          set -euo pipefail
+
+          row="| Standalone (Postgres, 2 API processes, WCP) | ❌ Failed | - |"
+
+          echo "row=$row" >> $GITHUB_OUTPUT
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes, WCP) could not be written after 5 attempts."
+        id: status-row-failure
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-final-status-comment:
+    needs:
+      - checkComment
+      - e2e-aws-ddb-report
+      - e2e-aws-ddb-os-report
+      - e2e-standalone-sqlite-report
+      - e2e-standalone-postgres-report
+      - e2e-standalone-postgres-2-processes-report
+      - e2e-standalone-sqlite-wcp-report
+      - e2e-standalone-postgres-wcp-report
+      - e2e-standalone-postgres-wcp-2-processes-report
+    name: E2E - Final status comment
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Rewrite every row of the status comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ROW_1: ${{ needs.e2e-aws-ddb-report.outputs.row }}
+          ROW_2: ${{ needs.e2e-aws-ddb-os-report.outputs.row }}
+          ROW_3: ${{ needs.e2e-standalone-sqlite-report.outputs.row }}
+          ROW_4: ${{ needs.e2e-standalone-postgres-report.outputs.row }}
+          ROW_5: ${{ needs.e2e-standalone-postgres-2-processes-report.outputs.row }}
+          ROW_6: ${{ needs.e2e-standalone-sqlite-wcp-report.outputs.row }}
+          ROW_7: ${{ needs.e2e-standalone-postgres-wcp-report.outputs.row }}
+          ROW_8: >-
+            ${{ needs.e2e-standalone-postgres-wcp-2-processes-report.outputs.row
+            }}
+        run: >-
+          set -euo pipefail
+
+          rows=()
+
+          for row in "$ROW_1" "$ROW_2" "$ROW_3" "$ROW_4" "$ROW_5" "$ROW_6"
+          "$ROW_7" "$ROW_8"; do
+            if [ -n "$row" ]; then rows+=("$row"); fi
+          done
+
+          if [ "${#rows[@]}" -eq 0 ]; then
+            echo "No report job wrote a row."
+            exit 0
+          fi
+
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt || { sleep 3; continue; }
+            while IFS= read -r line || [ -n "$line" ]; do
+              for row in "${rows[@]}"; do
+                label="${row#| }"
+                label="${label%% | *}"
+                if [[ "$line" == "| $label | "* ]]; then
+                  line="$row"
+                  break
+                fi
+              done
+              printf '%s\n' "$line"
+            done < /tmp/comment.txt > /tmp/final-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/final-comment.txt > /dev/null || { sleep 3; continue; }
+            printf "Row written: %s\n" "${rows[@]}"
+            exit 0
+          done
+
+          echo "::warning::The status comment could not be rewritten after 5
+          attempts."
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false

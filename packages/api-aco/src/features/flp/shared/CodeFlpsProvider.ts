@@ -23,6 +23,10 @@ class CodeFlpsProviderImpl implements CodeFlpsProviderAbstraction.Interface {
             });
     }
 
+    public listFlps(): Promise<CodeFlp[]> {
+        return this.getCodeFlps();
+    }
+
     /** All code-defined FLPs, collected from every registered `FlpFactory`. */
     private async getCodeFlps(): Promise<CodeFlp[]> {
         if (this.cache === undefined) {

@@ -13,6 +13,7 @@ import {
 } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
+    getDistributionUrl,
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/pulumi/utils/index.js";
@@ -26,10 +27,13 @@ import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfig
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import {
+    ApiPulumi,
+    SetApiCustomDomains
+} from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/DefaultSetApiCustomDomains.js";
-import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
+import { ApiCustomDomains as apiCustomDomainsExt } from "@webiny/project-extensions-aws/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
@@ -346,6 +350,8 @@ export const createApiPulumiApp = () => {
         app.addServiceManifest({
             name: "api",
             manifest: {
+                // Read by the API through `PublicUrls.getApiUrl()`.
+                url: getDistributionUrl(baseApp.resources.cloudfront),
                 bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id,

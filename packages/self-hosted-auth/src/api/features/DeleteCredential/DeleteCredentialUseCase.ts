@@ -6,8 +6,10 @@ class DeleteCredentialUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private credentials: CredentialsRepository.Interface) {}
 
     async execute(input: DeleteCredentialInput) {
-        // TODO(authz): this is reachable only from the installer today. Assert the caller holds
-        // `adminUsers.user` if it is ever wired to anything a request can reach.
+        /*
+         * No authorization here: the installer and `DeleteAdminUserUseCase` are the callers, and the
+         * latter checks `adminUsers.user` before it gets this far.
+         */
         return this.credentials.delete({ userId: input.userId });
     }
 }

@@ -9,7 +9,7 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../feature" },
-    { "path": "../project-aws" },
+    { "path": "../project-extensions" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -33,8 +33,8 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/project-extensions/*": ["../project-extensions/src/*"],
+      "@webiny/project-extensions": ["../project-extensions/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

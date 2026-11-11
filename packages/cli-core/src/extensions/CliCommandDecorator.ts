@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const CliCommandDecorator = defineExtension({
     type: "cliCommandDecorator",
-    tags: { runtimeContext: "cli" },
+    tags: { runtimeContext: "cli", hosting: "all" },
     description: "Decorates an existing CLI command.",
     multiple: true,
     paramsSchema: ({ project }) => {

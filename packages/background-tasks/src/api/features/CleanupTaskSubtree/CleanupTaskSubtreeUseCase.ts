@@ -2,7 +2,6 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { CleanupTaskSubtreeUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstractions.js";
 import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
-import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/index.js";
 import type { ITask } from "~/api/types.js";
 import type { ITaskLog } from "~/api/types.js";
 import type { IListTaskParams } from "~/api/types.js";
@@ -11,16 +10,17 @@ import type { IListTaskLogParams } from "~/api/types.js";
 const PAGE_SIZE = 100;
 
 /**
- * Deletes the task identified by `rootId`, all its descendants, and their logs (when the owning
- * definition has `databaseLogs: true`). Bottom-up and best-effort: a record that fails to delete is
- * logged and skipped, and the use case never throws.
+ * Deletes the task identified by `rootId`, all its descendants, and their logs. The logs are listed
+ * by task id whatever the owning definition says (`databaseLogs`, or no registered definition): a
+ * self-cleaning task writes none of its own, but an abort still writes one log row, and cleanup
+ * removes whatever exists. Bottom-up and best-effort: a record that fails to delete is logged and
+ * skipped, and the use case never throws.
  */
 class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private readonly tasks: TasksRepository.Interface,
         private readonly logs: TaskLogsRepository.Interface,
         private readonly deleteTask: DeleteTaskUseCase.Interface,
-        private readonly getDefinition: GetRunnableTaskDefinitionUseCase.Interface,
         private readonly logger: Logger.Interface
     ) {}
 
@@ -105,10 +105,6 @@ class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 
     private async deleteTaskLogs(task: ITask): Promise<void> {
-        const definition = this.getDefinition.execute(task.definitionId);
-        if (definition.isFail() || definition.value.databaseLogs !== true) {
-            return;
-        }
         let logs: ITaskLog[];
         try {
             logs = await this.listLogs(task.id);
@@ -133,11 +129,5 @@ class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CleanupTaskSubtreeUseCase = UseCaseAbstraction.createImplementation({
     implementation: CleanupTaskSubtreeUseCaseImpl,
-    dependencies: [
-        TasksRepository,
-        TaskLogsRepository,
-        DeleteTaskUseCase,
-        GetRunnableTaskDefinitionUseCase,
-        Logger
-    ]
+    dependencies: [TasksRepository, TaskLogsRepository, DeleteTaskUseCase, Logger]
 });

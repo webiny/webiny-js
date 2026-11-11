@@ -14,6 +14,16 @@ export interface FullyDeleteModelDialogProps {
     onClose: () => void;
 }
 
+const getCancelText = (status: FullyDeleteModelStateStatus): string => {
+    if (status === FullyDeleteModelStateStatus.PROCESSED) {
+        return "OK";
+    }
+    if (status === FullyDeleteModelStateStatus.ERROR) {
+        return "Close";
+    }
+    return "Cancel";
+};
+
 export const FullyDeleteModelDialog = ({
     model: inputModel,
     onClose
@@ -51,8 +61,8 @@ export const FullyDeleteModelDialog = ({
             } catch (ex: any) {
                 setStatusError({
                     message: ex.message,
-                    code: "FULLY_DELETE_MODEL_ERROR",
-                    data: {}
+                    code: ex.code ?? "FULLY_DELETE_MODEL_ERROR",
+                    data: ex.data ?? {}
                 });
             }
         })();
@@ -90,12 +100,7 @@ export const FullyDeleteModelDialog = ({
                 <>
                     <AdminUiDialog.CancelAction
                         data-testid="cms-delete-content-model-close-button"
-                        text={
-                            status === FullyDeleteModelStateStatus.PROCESSED ||
-                            status === FullyDeleteModelStateStatus.ERROR
-                                ? "OK"
-                                : "Cancel"
-                        }
+                        text={getCancelText(status)}
                     />
                     {(status === FullyDeleteModelStateStatus.NONE ||
                         status === FullyDeleteModelStateStatus.UNDERSTOOD) && (

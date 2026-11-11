@@ -3,7 +3,6 @@ import { createJob } from "./jobs/index.js";
 import {
     ACTION,
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
     DEFAULT_RUNNER,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
@@ -11,6 +10,8 @@ import {
     createWaitForOpenSearchStep,
     runNodeScript
 } from "./utils/index.js";
+import { VALKEY_SERVICE } from "./utils/index.js";
+import { VALKEY_TEST_URL } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -22,6 +23,7 @@ import {
     AbstractStorageOps,
     DdbOsStorageOps,
     DdbStorageOps,
+    PgStorageOps,
     SqlStorageOps
 } from "./storageOps/index.js";
 
@@ -38,6 +40,7 @@ const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBI
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
+const pgStorageOps = new PgStorageOps();
 
 const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const jobNames = {
@@ -78,8 +81,29 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
 
+    // The "No storage" job runs the Redis message bus tests; see `utils/valkey.ts`.
+    const needsValkey = !storageOps;
+    if (needsValkey) {
+        env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
+    }
+
+    // One object for every service container the job needs, so adding one never replaces another.
+    const services: Record<string, any> = {};
+    if (needsOpenSearch) {
+        Object.assign(services, OPENSEARCH_SERVICE);
+    }
+    if (needsValkey) {
+        Object.assign(services, VALKEY_SERVICE);
+    }
+    const hasServices = Object.keys(services).length > 0;
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
+
+        // An in-process PGlite: no Postgres service.
+        if (storageOps instanceof PgStorageOps) {
+            env["WEBINY_SQL_CLIENT"] = "pglite";
+        }
     }
 
     const runJob: NormalJob = createJob({
@@ -97,7 +121,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env,
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
-        ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
+        services: hasServices ? services : undefined,
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
@@ -195,7 +219,7 @@ export const pullRequests = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -287,7 +311,7 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -308,6 +332,7 @@ export const pullRequests = createWorkflow({
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
-        ...createVitestTestsJobs(sqlStorageOps)
+        ...createVitestTestsJobs(sqlStorageOps),
+        ...createVitestTestsJobs(pgStorageOps)
     }
 });

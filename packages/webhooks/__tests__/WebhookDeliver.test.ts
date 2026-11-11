@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { WebhookDeliver } from "~/api/features/WebhookDeliver/abstractions.js";
 import { WebhookDeliverFeature } from "~/api/features/WebhookDeliver/feature.js";
@@ -24,7 +25,7 @@ const mockResponse = (status: number, body = "OK", headers?: Record<string, stri
 });
 
 describe("WebhookDeliver", () => {
-    let fetchMock: ReturnType<typeof vi.fn>;
+    let fetchMock: Mock;
 
     beforeEach(() => {
         fetchMock = vi.fn();

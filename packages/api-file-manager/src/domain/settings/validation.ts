@@ -1,5 +1,4 @@
 import zod from "zod";
-import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 
 const MIN_FILE_SIZE = 0;
 const MAX_FILE_SIZE = 10737418240;
@@ -29,23 +28,17 @@ const uploadMaxFileSizeValidation = zod
 export const updateSettingsValidation = zod.object({
     uploadMinFileSize: uploadMinFileSizeValidation,
     uploadMaxFileSize: uploadMaxFileSizeValidation,
+    /*
+     * Omitted stays omitted, so a partial update keeps the stored prefix. An empty value is kept
+     * as empty: UpdateSettingsUseCase stores it as "no custom prefix".
+     */
     srcPrefix: zod
         .string()
         .optional()
-        .transform(async value => {
+        .transform(value => {
             if (!value) {
-                const manifest = await ServiceDiscovery.load();
-                if (!manifest || !manifest.api) {
-                    return "";
-                }
-
-                const { domain } = manifest.api.cloudfront;
-
-                return `https://${domain}/files/`;
+                return value;
             }
-            if (typeof value === "string") {
-                return value.endsWith("/") ? value : value + "/";
-            }
-            return value;
+            return value.endsWith("/") ? value : value + "/";
         })
 });

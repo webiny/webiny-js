@@ -64,6 +64,10 @@ describe(
                 params: { fileName: unique(fileName) }
             });
 
+            // The details drawer is headed by the file's name. A locator check, unlike the reads
+            // below, also lets the replay cache record the step above.
+            await expect(screen.getByRole("heading", fileName, { level: 2 })).toBeVisible();
+
             // The drawer's Download action is a link to the file's delivery URL with `?original`,
             // which serves the uploaded bytes unchanged.
             const downloadUrl = await browser.evaluate(

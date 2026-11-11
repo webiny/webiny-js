@@ -7,7 +7,7 @@ import fs from "fs";
 
 export const BuildParam = defineExtension({
     type: "Api/BuildParam",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "all" },
     description: "Add build-time parameter to API app.",
     multiple: true,
     paramsSchema: () => {
@@ -47,12 +47,9 @@ export const BuildParam = defineExtension({
             fs.mkdirSync(buildParamsDir, { recursive: true });
         }
 
-        // Check if file already exists.
-        if (fs.existsSync(filePath)) {
-            // File exists, just ensure it's imported in extensions.ts
-        } else {
-            // Create the BuildParam implementation file.
-            const fileContent = `import { BuildParam } from "webiny/api/build-params";
+        // Written when missing or when its value changed (a config edit), and left alone when equal,
+        // so an unchanged param doesn't trigger a rebuild.
+        const fileContent = `import { BuildParam } from "webiny/api/build-params";
 
 class ${className} implements BuildParam.Interface {
     key = "${paramName}";
@@ -64,6 +61,8 @@ export default BuildParam.createImplementation({
     dependencies: []
 });
 `;
+        const existing = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : undefined;
+        if (existing !== fileContent) {
             fs.writeFileSync(filePath, fileContent, "utf8");
         }
 

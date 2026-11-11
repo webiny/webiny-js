@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-aco-pg" },
+    { "path": "../api-event-handler-standalone-sql" },
+    { "path": "../api-headless-cms-pg" },
+    { "path": "../handler" },
+    { "path": "../api-core" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-aco-pg/*": ["../api-aco-pg/src/*"],
+      "@webiny/api-aco-pg": ["../api-aco-pg/src"],
+      "@webiny/api-event-handler-standalone-sql/*": ["../api-event-handler-standalone-sql/src/*"],
+      "@webiny/api-event-handler-standalone-sql": ["../api-event-handler-standalone-sql/src"],
+      "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
+      "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
+    }
+  }
+}

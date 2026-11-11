@@ -10,7 +10,7 @@ export interface LanguageCodeProps {
 export const LanguageCodeTag = ({ code, className }: LanguageCodeProps) => {
     const featureFlags = useFeatureFlags();
 
-    if (!code || !featureFlags.isEnabled("multiTenancy")) {
+    if (!code || !featureFlags.isEnabled("languages")) {
         return null;
     }
 

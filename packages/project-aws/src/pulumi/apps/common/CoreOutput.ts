@@ -1,5 +1,6 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
+import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -11,7 +12,7 @@ export interface ICoreOutput {
     cognitoUserPoolArn: string;
     cognitoAppClientId: string;
     cognitoUserPoolId: string;
-    cognitoUserPoolPasswordPolicy: string;
+    cognitoUserPoolPasswordPolicy: ApiStackOutputService.PasswordPolicy;
     fileManagerBucketId: string;
     fileManagerBucketArn: string;
     primaryDynamodbTableArn: string;

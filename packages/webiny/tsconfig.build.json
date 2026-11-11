@@ -39,12 +39,14 @@
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
-    { "path": "../project-aws/tsconfig.build.json" },
+    { "path": "../project-extensions/tsconfig.build.json" },
+    { "path": "../project-extensions-aws/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../webhooks/tsconfig.build.json" },
-    { "path": "../website-builder-sdk/tsconfig.build.json" }
+    { "path": "../website-builder-sdk/tsconfig.build.json" },
+    { "path": "../project-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -127,8 +129,10 @@
       "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/project-extensions/*": ["../project-extensions/src/*"],
+      "@webiny/project-extensions": ["../project-extensions/src"],
+      "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],
+      "@webiny/project-extensions-aws": ["../project-extensions-aws/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
       "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/utils/*": ["../utils/src/*"],
@@ -138,7 +142,9 @@
       "@webiny/webhooks/*": ["../webhooks/src/*"],
       "@webiny/webhooks": ["../webhooks/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
+      "@webiny/project-aws/*": ["../project-aws/src/*"],
+      "@webiny/project-aws": ["../project-aws/src"]
     }
   }
 }

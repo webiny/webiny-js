@@ -1,10 +1,14 @@
 import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
-import { AdminPulumi, SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import {
+    AdminPulumi,
+    SetAdminCustomDomains
+} from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
 import { DefaultSetAdminCustomDomains } from "~/pulumi/features/DefaultSetAdminCustomDomains.js";
-import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
+import { AdminCustomDomains as adminCustomDomainsExt } from "@webiny/project-extensions-aws/extensions/AdminCustomDomains.js";
 import { withServiceManifest } from "~/pulumi/index.js";
+import { getDistributionUrl } from "~/pulumi/utils/index.js";
 
 export type AdminPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
@@ -59,6 +63,8 @@ export const createAdminPulumiApp = async () => {
         app.addServiceManifest({
             name: "admin",
             manifest: {
+                // Read by the API through `PublicUrls.getAdminUrl()`.
+                url: getDistributionUrl(baseApp.resources.cloudfront),
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id,
                     domain: baseApp.resources.cloudfront.output.domainName.apply(

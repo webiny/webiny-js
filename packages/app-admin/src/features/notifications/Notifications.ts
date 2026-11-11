@@ -26,6 +26,10 @@ class NotificationsImpl implements Abstraction.Interface {
         this.push(input, "warning");
     }
 
+    error(input: INotificationInput): void {
+        this.push(input, "error");
+    }
+
     getNotifications(): INotification[] {
         return this.notifications;
     }

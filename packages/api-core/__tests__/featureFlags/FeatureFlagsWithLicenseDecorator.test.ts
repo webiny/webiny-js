@@ -36,11 +36,11 @@ const LICENSE_CAPABILITIES = [
     "canUseAiEntryComparison",
     "canUseAiEntryTranslation",
     "canUseAbTesting",
-    "canUseRemoteComponents",
     "canUseAiPowerups",
     "canUseCollaboration",
     "canUseComments",
-    "canUseActivityLog"
+    "canUseActivityLog",
+    "canUseLanguages"
 ] as const satisfies readonly LicenseCapability[];
 
 type AssertNever<T extends never> = T;
@@ -111,6 +111,32 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
             expect(licensed.isEnabled("multiTenancy")).toBe(true);
             expect(unlicensed.isEnabled("multiTenancy")).toBe(false);
+        });
+
+        it("governs languages through canUseLanguages, not the multiTenancy flag", () => {
+            const licensed = flagsFor({}, { present: true, allows: ["canUseLanguages"] });
+            const unlicensed = flagsFor(
+                { languages: true },
+                { present: true, allowsFeatures: ["multiTenancy"] }
+            );
+
+            expect(licensed.isEnabled("languages")).toBe(true);
+            expect(unlicensed.isEnabled("languages")).toBe(false);
+        });
+
+        it("lets config disable languages the license allows", () => {
+            const flags = flagsFor(
+                { languages: false },
+                { present: true, allows: ["canUseLanguages"] }
+            );
+
+            expect(flags.isEnabled("languages")).toBe(false);
+        });
+
+        it("carries languages through the DTO the admin app reads", () => {
+            const flags = flagsFor({}, { present: true, allows: ["canUseLanguages"] });
+
+            expect(flags.toDto()).toMatchObject({ languages: true });
         });
     });
 
@@ -204,17 +230,6 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             expect(flags.isEnabled("aiPowerups.adminAssistant")).toBe(false);
         });
 
-        it("governs remote components, which now sit under aiPowerups", () => {
-            const licensed = flagsFor({}, { present: true, allows: ["canUseRemoteComponents"] });
-            const unlicensed = flagsFor(
-                { aiPowerups: { remoteComponents: true } },
-                { present: true }
-            );
-
-            expect(licensed.isEnabled("aiPowerups.remoteComponents")).toBe(true);
-            expect(unlicensed.isEnabled("aiPowerups.remoteComponents")).toBe(false);
-        });
-
         it("governs collaboration", () => {
             const licensed = flagsFor(
                 {},
@@ -275,6 +290,28 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             const flags = flagsFor({ myCustomFlag: false }, { present: true });
 
             expect(flags.isEnabled("myCustomFlag")).toBe(false);
+        });
+    });
+
+    /*
+     * Webhooks are opt-out: on unless the project sets `webhooks: false`. The decorator rebuilds its
+     * flags from `toDto()`, so an unset flag must come out of that round trip as on, not as `false`.
+     */
+    describe("webhooks", () => {
+        it("stays on when config leaves it unset, with or without a license", () => {
+            for (const present of [true, false]) {
+                const flags = flagsFor({}, { present });
+
+                expect(flags.isExplicitlyDisabled("webhooks")).toBe(false);
+                expect(flags.toDto().webhooks).toBe(true);
+            }
+        });
+
+        it("is off when config disables it", () => {
+            const flags = flagsFor({ webhooks: false }, { present: true });
+
+            expect(flags.isExplicitlyDisabled("webhooks")).toBe(true);
+            expect(flags.toDto().webhooks).toBe(false);
         });
     });
 });

@@ -4,6 +4,8 @@ import { FormComponentLabel, type FormComponentProps } from "~/FormComponent/ind
 type FilePickerLabelProps = Pick<FormComponentProps, "label" | "disabled" | "required" | "hint"> & {
     invalid?: boolean;
     className?: string;
+    /** The trigger's id — so the label names the button that picks a file. */
+    htmlFor?: string;
 };
 
 const FilePickerLabel = ({
@@ -12,7 +14,8 @@ const FilePickerLabel = ({
     required,
     disabled,
     invalid,
-    className
+    className,
+    htmlFor
 }: FilePickerLabelProps) => {
     if (!label) {
         return null;
@@ -20,6 +23,7 @@ const FilePickerLabel = ({
 
     return (
         <FormComponentLabel
+            htmlFor={htmlFor}
             text={label}
             hint={hint}
             required={required}

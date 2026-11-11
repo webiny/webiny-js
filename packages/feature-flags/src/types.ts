@@ -29,7 +29,6 @@ export interface IAiPowerupsFeatureFlags {
     fileManager?: IAiPowerupsFileManagerFeatureFlags;
     lexicalGeneration?: boolean;
     adminAssistant?: boolean;
-    remoteComponents?: boolean;
     cms?: IAiPowerupsCmsFeatureFlags;
 }
 
@@ -46,6 +45,7 @@ export interface ICollaborationFeatureFlags {
  */
 export interface IFeatureFlagsDto {
     multiTenancy?: boolean;
+    languages?: boolean;
     advancedPublishingWorkflow?: boolean;
     advancedAccessControlLayer?: boolean | IAaclFeatureFlags;
     auditLogs?: boolean;
@@ -54,4 +54,9 @@ export interface IFeatureFlagsDto {
     aiPowerups?: boolean | IAiPowerupsFeatureFlags;
     abTesting?: boolean;
     collaboration?: boolean | ICollaborationFeatureFlags;
+    /**
+     * On unless explicitly `false`. Read at project-config time, so `false` keeps the webhooks
+     * extension (API + Admin) out of the build entirely.
+     */
+    webhooks?: boolean;
 }

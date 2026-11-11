@@ -27,6 +27,7 @@ import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     multiTenancy: l => l.canUseFeature("multiTenancy"),
+    languages: l => l.canUseLanguages(),
     advancedPublishingWorkflow: l => l.canUseWorkflows(),
     advancedAccessControlLayer: l => l.canUseAacl(),
     "advancedAccessControlLayer.teams": l => l.canUseTeams(),
@@ -42,7 +43,6 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     "aiPowerups.websiteBuilder.pageTranslation": l => l.canUseAiPageTranslation(),
     "aiPowerups.lexicalGeneration": l => l.canUseAiLexicalGeneration(),
     "aiPowerups.adminAssistant": l => l.canUseAiAdminAssistant(),
-    "aiPowerups.remoteComponents": l => l.canUseRemoteComponents(),
     "aiPowerups.cms.entryGeneration": l => l.canUseAiEntryGeneration(),
     "aiPowerups.cms.entryComparison": l => l.canUseAiEntryComparison(),
     "aiPowerups.cms.entryTranslation": l => l.canUseAiEntryTranslation(),

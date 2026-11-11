@@ -1,26 +1,35 @@
-import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
 import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
-import { RequestId } from "./RequestId.js";
-import { noopTransport } from "./Transport.js";
+import { HandlerExecution } from "./HandlerExecution.js";
+import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
+import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
+import { HandlerPlatform } from "./HandlerPlatform.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
-    constructor(private config: HandlerConfig.Interface) {}
+    constructor(
+        private config: HandlerConfig.Interface,
+        private scope: HandlerExecutionScope.Interface,
+        private platform: HandlerPlatform.Interface
+    ) {}
 
     async create(root: Container, rawArgs: any[]): Promise<Container> {
+        // `HandlerExecutionRunner` opens the execution's scope before calling this.
+        const frame = this.scope.getCurrent();
+        if (!frame) {
+            throw new Error(
+                "ChildContainerFactory.create() was called outside a handler execution. Call it through HandlerExecutionRunner, which opens the execution's scope first."
+            );
+        }
+
         const child = root.createChildContainer();
         child.registerInstance(RequestContainer, child);
-        /*
-         * A default so the abstraction always resolves. Registered before the transport binds, so a
-         * transport with an id of its own can override it: the last instance registered wins.
-         */
-        child.registerInstance(RequestId, { value: randomUUID() });
 
-        // Transport-specific bind: register the raw platform arguments into the request container
-        // before request setup runs. The default transport binds nothing.
-        const transport = this.config.transport ?? noopTransport;
-        await transport.bind(child, ...rawArgs);
+        const handlerExecution = new DefaultHandlerExecution(frame, this.scope);
+        child.registerInstance(HandlerExecution, handlerExecution);
+
+        // Register the raw platform arguments into the container before request setup runs.
+        await this.platform.bind(child, rawArgs);
 
         if (this.config.child) {
             await this.config.child(child);
@@ -32,5 +41,5 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
 
 export const DefaultChildContainerFactory = ChildContainerFactory.createImplementation({
     implementation: ChildContainerFactoryImpl,
-    dependencies: [HandlerConfig]
+    dependencies: [HandlerConfig, HandlerExecutionScope, HandlerPlatform]
 });

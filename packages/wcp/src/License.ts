@@ -163,17 +163,12 @@ export class License implements ILicense {
             this.canUseAiAdminAssistant() ||
             this.canUseAiEntryGeneration() ||
             this.canUseAiEntryComparison() ||
-            this.canUseAiEntryTranslation() ||
-            this.canUseRemoteComponents()
+            this.canUseAiEntryTranslation()
         );
     }
 
     canUseAbTesting(): boolean {
         return this.canUseFeature("abTesting");
-    }
-
-    canUseRemoteComponents(): boolean {
-        return this.license.package.features.aiPowerups?.options?.remoteComponents === true;
     }
 
     canUseCollaboration(): boolean {
@@ -194,5 +189,13 @@ export class License implements ILicense {
         }
 
         return this.license.package.features.collaboration.options?.activityLog === true;
+    }
+
+    /*
+     * Languages are granted with multi-tenancy. This is the one place that mapping lives; everything
+     * else asks for `languages`, so a change to which license option grants them only touches this.
+     */
+    canUseLanguages(): boolean {
+        return this.canUseFeature("multiTenancy");
     }
 }

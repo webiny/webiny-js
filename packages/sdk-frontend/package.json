@@ -18,13 +18,12 @@
   "dependencies": {
     "@webiny/cms-sdk": "0.0.0",
     "@webiny/sdk": "0.0.0",
-    "@webiny/website-builder-sdk": "0.0.0",
-    "css-tree": "^3.2.1"
+    "@webiny/website-builder-sdk": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   },
   "webiny": {
     "publishFrom": "dist"

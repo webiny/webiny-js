@@ -18,20 +18,25 @@ export class Router {
     }
 
     /**
-     * Set or update route definitions. Routes with the same name will be replaced.
+     * Replace the route definitions with `routes`, the complete current set.
      *
-     * @param routes - Array of route definitions to add
+     * A route that is not in `routes` is dropped. Merging instead would keep routes that the config
+     * no longer registers, for example one behind `HasPermission` after the user changes, and the
+     * current URL would keep matching it.
+     *
+     * Names stay unique: a later definition with the same name replaces the earlier one in its
+     * position, which is how a route from the config overrides a built-in one.
+     *
+     * @param routes - All route definitions.
      */
     setRoutes(routes: RouteDefinition[]): void {
-        routes.forEach(route => {
-            const index = this.routes.findIndex(r => r.name === route.name);
+        const byName = new Map<string, RouteDefinition>();
+        for (const route of routes) {
+            byName.set(route.name, route);
+        }
 
-            if (index > -1) {
-                this.routes[index] = route;
-            } else {
-                this.routes.push(route);
-            }
-        });
+        const uniqueRoutes = byName.values();
+        this.routes = Array.from(uniqueRoutes);
 
         this.sortRoutes();
     }

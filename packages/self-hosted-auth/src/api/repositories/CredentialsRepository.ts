@@ -7,6 +7,7 @@ import { SaveCredentialStorageOperation } from "~/api/storage/credentials/index.
 import { DeleteCredentialStorageOperation } from "~/api/storage/credentials/index.js";
 import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { CredentialsPersistenceError } from "~/api/domain/errors.js";
+import { normalizeEmail } from "~/api/domain/normalizeEmail.js";
 
 export interface ICredentialsRepository {
     /**
@@ -54,8 +55,11 @@ class CredentialsRepositoryImpl implements ICredentialsRepository {
     ) {}
 
     async getByEmail(params: { email: string }) {
+        // Every lookup and every write normalizes here, so no caller can store or ask for a variant.
+        const email = normalizeEmail(params.email);
+
         try {
-            const credential = await this.getByEmailOperation.execute(params);
+            const credential = await this.getByEmailOperation.execute({ email });
 
             return Result.ok(credential);
         } catch {
@@ -74,8 +78,11 @@ class CredentialsRepositoryImpl implements ICredentialsRepository {
     }
 
     async save(params: { credential: StorageCredential }) {
+        const email = normalizeEmail(params.credential.email);
+        const credential = { ...params.credential, email };
+
         try {
-            await this.saveOperation.execute(params);
+            await this.saveOperation.execute({ credential });
 
             return Result.ok(true as const);
         } catch {

@@ -23,11 +23,17 @@ import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
+
+export type ContainerPlugin = (container: Container) => void;
+
+export type HandlerPlugin = Plugin | ContainerPlugin | PluginCollection;
 
 export interface CreateHandlerParams {
     permissions?: PermissionsArg[];
     identity?: IdentityData;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    plugins?: HandlerPlugin | HandlerPlugin[] | HandlerPlugin[][];
 }
 
 function createTestAuthorizer(permissions: PermissionsArg[]) {
@@ -54,6 +60,8 @@ export const createContextHandler = (params?: CreateHandlerParams) => {
             child.registerInstance(RequestContainer, child);
 
             registerApiCoreStorageOperations(child, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            child.registerInstance(Logger, logger);
             ApiCoreFeature.register(child, {});
             MailerFeature.register(child);
 

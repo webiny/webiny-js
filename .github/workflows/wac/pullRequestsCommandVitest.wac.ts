@@ -10,7 +10,6 @@ import {
 } from "./steps/index.js";
 import {
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
     DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_OPTIONS,
@@ -18,12 +17,16 @@ import {
     OPENSEARCH_SERVICE,
     runNodeScript
 } from "./utils/index.js";
+import { VALKEY_SERVICE } from "./utils/index.js";
+import { VALKEY_TEST_URL } from "./utils/index.js";
+import { commentRowUpdateRun } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     DdbStorageOps,
     DdbOsStorageOps,
     SqlStorageOps,
     PgliteStorageOps,
+    PgStorageOps,
     type AbstractStorageOps
 } from "./storageOps/index.js";
 
@@ -31,6 +34,7 @@ const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
 const pgliteStorageOps = new PgliteStorageOps();
+const pgStorageOps = new PgStorageOps();
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -54,7 +58,7 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 // Live status table shown in the PR comment. Rows are updated in place as each
 // group progresses (Queued -> Running -> Passed/Failed) by the per-group jobs,
 // and the final `vitestStatusSummary` job mirrors the result into the PR body.
-const STATUS_GROUPS = ["No storage", "DDB", "DDB+OS", "SQL", "PGlite"];
+const STATUS_GROUPS = ["No storage", "DDB", "DDB+OS", "SQL", "PGlite", "pg"];
 
 const COMMENT_INTRO =
     "Vitest tests have been initiated (for more information, click " +
@@ -74,13 +78,16 @@ const COMMENT_ENV = {
     COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
 };
 
-// Read the comment, overwrite a single group's row (matched by label, so the
-// update is independent of the row's current status), and write it back.
+/*
+ * Read the comment, overwrite a single group's row (matched by label, so the update is independent of
+ * the row's current status), and write it back, retrying if another group's write replaced it. Must
+ * be the last command of its step (see commentRowUpdateRun). The "Heal PR comment" job rewrites every
+ * row once after all of them.
+ */
 const updateCommentRowRun = (group: string) =>
     [
-        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt`,
-        `sed -i "s@^| ${group} |.*@| ${group} | $STATUS |@" /tmp/vitest-comment.txt`,
-        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt`
+        `row="| ${group} | $STATUS |"`,
+        commentRowUpdateRun({ label: group, bodyFile: "/tmp/vitest-comment.txt" })
     ].join("\n");
 
 const createMarkRunningStep = (group: string) => ({
@@ -133,6 +140,22 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     // leading ".", which picks up the container's `top_queries-*` index (query insights plugin)
     // unless a prefix filters it out.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
+    // The "No storage" job runs the Redis message bus tests; see `utils/valkey.ts`.
+    const needsValkey = !storageOps;
+    if (needsValkey) {
+        env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
+    }
+
+    // One object for every service container the job needs, so adding one never replaces another.
+    const services: Record<string, any> = {};
+    if (needsOpenSearch) {
+        Object.assign(services, OPENSEARCH_SERVICE);
+    }
+    if (needsValkey) {
+        Object.assign(services, VALKEY_SERVICE);
+    }
+    const hasServices = Object.keys(services).length > 0;
     if (needsOpenSearch) {
         env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
     }
@@ -140,7 +163,8 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
 
-        if (storageOps instanceof PgliteStorageOps) {
+        // Both run on an in-process PGlite: no Postgres service.
+        if (storageOps instanceof PgliteStorageOps || storageOps instanceof PgStorageOps) {
             env["WEBINY_SQL_CLIENT"] = "pglite";
         }
     }
@@ -203,7 +227,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             // DDB+OS was the only group that assumed an AWS role, and it did so for the shared
             // OpenSearch domain. With the container there is nothing left in this workflow that
             // talks to AWS: DynamoDB in these tests is dynalite.
-            ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
+            services: hasServices ? services : undefined,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
@@ -278,7 +302,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
@@ -292,6 +316,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
         ...createVitestTestsJobs(ddbOsStorageOps),
         ...createVitestTestsJobs(sqlStorageOps),
         ...createVitestTestsJobs(pgliteStorageOps),
+        ...createVitestTestsJobs(pgStorageOps),
 
         // Once all groups are done, write the authoritative final status: it
         // heals the PR comment (in case a concurrent row update was lost) and
@@ -300,13 +325,25 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             name: "Vitest status summary",
             // Rewrites the status comment and the PR description.
             permissions: { "pull-requests": "write" },
+            /*
+             * The `-result` jobs write their group's row into the comment, so this waits for them
+             * too: rewriting the table while one of them is still writing would let its write put
+             * other rows back to an older state, with nothing left to repair them.
+             */
             needs: [
                 "checkComment",
                 "vitest-run",
                 "vitest-ddb-run",
                 "vitest-ddb-os-run",
                 "vitest-sql-run",
-                "vitest-pglite-run"
+                "vitest-pglite-run",
+                "vitest-pg-run",
+                "vitest-result",
+                "vitest-ddb-result",
+                "vitest-ddb-os-result",
+                "vitest-sql-result",
+                "vitest-pglite-result",
+                "vitest-pg-result"
             ],
             if: "always() && needs.checkComment.result == 'success'",
             checkout: false,
@@ -319,7 +356,8 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                 R_DDB: "${{ needs.vitest-ddb-run.result }}",
                 R_DDB_OS: "${{ needs.vitest-ddb-os-run.result }}",
                 R_SQL: "${{ needs.vitest-sql-run.result }}",
-                R_PGLITE: "${{ needs.vitest-pglite-run.result }}"
+                R_PGLITE: "${{ needs.vitest-pglite-run.result }}",
+                R_PG: "${{ needs.vitest-pg-run.result }}"
             },
             steps: [
                 {
@@ -359,12 +397,14 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                         `add_failed "DDB+OS / " "DDB+OS"`,
                         `add_failed "SQL / " "SQL"`,
                         `add_failed "PGlite / " "PGlite"`,
+                        `add_failed "pg / " "pg"`,
                         ``,
                         `S_NONE=$(status_for "No storage / " "$R_NONE")`,
                         `S_DDB=$(status_for "DDB / " "$R_DDB")`,
                         `S_DDB_OS=$(status_for "DDB+OS / " "$R_DDB_OS")`,
                         `S_SQL=$(status_for "SQL / " "$R_SQL")`,
                         `S_PGLITE=$(status_for "PGlite / " "$R_PGLITE")`,
+                        `S_PG=$(status_for "pg / " "$R_PG")`,
                         ``,
                         `render_table() {`,
                         `  echo "| Group | Status |"`,
@@ -374,6 +414,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                         `  echo "| DDB+OS | $S_DDB_OS |"`,
                         `  echo "| SQL | $S_SQL |"`,
                         `  echo "| PGlite | $S_PGLITE |"`,
+                        `  echo "| pg | $S_PG |"`,
                         `  if [ -s /tmp/failed.txt ]; then`,
                         `    echo ""`,
                         `    echo "<details><summary>❌ Failed packages</summary>"`,

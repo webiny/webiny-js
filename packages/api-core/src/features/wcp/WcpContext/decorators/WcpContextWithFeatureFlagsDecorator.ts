@@ -120,9 +120,6 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             adminAssistant: flags.isEnabled("aiPowerups.adminAssistant")
                                 ? project.package.features.aiPowerups?.options?.adminAssistant
                                 : false,
-                            remoteComponents: flags.isEnabled("aiPowerups.remoteComponents")
-                                ? project.package.features.aiPowerups?.options?.remoteComponents
-                                : false,
                             cms: {
                                 entryGeneration: flags.isEnabled("aiPowerups.cms.entryGeneration")
                                     ? project.package.features.aiPowerups?.options?.cms
@@ -300,13 +297,6 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         return this.decoratee.canUseAbTesting() && this.featureFlags.get().isEnabled("abTesting");
     }
 
-    canUseRemoteComponents() {
-        return (
-            this.decoratee.canUseRemoteComponents() &&
-            this.featureFlags.get().isEnabled("aiPowerups.remoteComponents")
-        );
-    }
-
     canUseCollaboration() {
         return (
             this.decoratee.canUseCollaboration() &&
@@ -326,6 +316,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
             this.decoratee.canUseActivityLog() &&
             this.featureFlags.get().isEnabled("collaboration.activityLog")
         );
+    }
+
+    canUseLanguages() {
+        return this.decoratee.canUseLanguages() && this.featureFlags.get().isEnabled("languages");
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {

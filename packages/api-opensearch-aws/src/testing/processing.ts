@@ -117,16 +117,10 @@ const processBatchWrite = async (
                 TableName: process.env.DB_TABLE_OPENSEARCH
             });
 
-            if (!Item) {
-                const { PK, SK } = DeleteRequest.Key;
-                throw new Error(
-                    `Missing record in the elasticsearch table "${process.env.DB_TABLE_OPENSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that record you are deleting is stored in the Elasticsearch table.`
-                );
-            } else if (!Item.index) {
-                const { PK, SK } = Item;
-                throw new Error(
-                    `Missing index value on the record in the elasticsearch table "${process.env.DB_TABLE_OPENSEARCH}" with keys PK "${PK}" and SK "${SK}". Make sure that you stored Elasticsearch entry in the Elasticsearch table.`
-                );
+            // A missing record (or one without an index) emits no REMOVE record, like DynamoDB
+            // streams for a delete of a missing item and like `processDelete`.
+            if (!Item || !Item.index) {
+                continue;
             }
             const record = createDynamoStreamRecord("REMOVE", {
                 Keys: DeleteRequest.Key,
@@ -143,6 +137,9 @@ const processBatchWrite = async (
             });
             records.push(record);
         }
+    }
+    if (records.length === 0) {
+        return;
     }
     await handler(createDynamoStreamEvent(...records));
 };

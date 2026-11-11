@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import { useDropZoneManager } from "./DropZoneManagerProvider.js";
 import type { Box } from "./Box.js";
+import type { ElementFactoryCreateElementParams } from "@webiny/website-builder-sdk";
 import type { DropZoneProximity } from "~/BaseEditor/defaultConfig/Content/Preview/DropZoneManager.js";
 
 export interface DropEvent {
-    item: { id?: string; componentName: string };
+    item: {
+        id?: string;
+        componentName: string;
+        // The new element's bindings, in place of the manifest's defaults.
+        bindings?: ElementFactoryCreateElementParams["bindings"];
+    };
     target: { parentId: string; slot: string; index: number };
 }
 

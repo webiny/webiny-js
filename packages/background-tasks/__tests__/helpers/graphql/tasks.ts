@@ -214,3 +214,34 @@ export const createGetTaskQuery = () => {
         }
     `;
 };
+export interface IDeleteTaskVariables {
+    id: string;
+}
+
+export interface IDeleteTaskResponse {
+    data: {
+        backgroundTasks: {
+            deleteTask: {
+                data: boolean | null;
+                error: ITaskError | null;
+            };
+        };
+    };
+}
+
+export const createDeleteTaskMutation = () => {
+    return /* GraphQL */ `
+        mutation DeleteTask($id: ID!) {
+            backgroundTasks {
+                deleteTask(id: $id) {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                    }
+                }
+            }
+        }
+    `;
+};

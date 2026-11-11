@@ -6,11 +6,14 @@ import type { IKeyValueListParams } from "./abstractions.js";
 import type { IKeyValueListResult } from "./abstractions.js";
 import type { IKeyValueRecord } from "./abstractions.js";
 import type { IKeyValueStoreSetOptions } from "./abstractions.js";
+import type { IKeyValueDeleteOptions } from "./abstractions.js";
 import { KeyNotFoundError } from "./errors.js";
 import { KeyValueStorageError } from "./errors.js";
 import { KeyValueInvalidCursorError } from "./errors.js";
 import { KeyValueInvalidCollectionError } from "./errors.js";
 import { KeyValueKeyTooLongError } from "./errors.js";
+import { KeyValueConditionFailedError } from "./errors.js";
+import { KeyValueInvalidConditionError } from "./errors.js";
 
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 1000;
@@ -55,6 +58,30 @@ const decodeCursor = (cursor: string): ICursor | undefined => {
     } catch {
         return undefined;
     }
+};
+
+const isComparable = (value: unknown): boolean => {
+    const type = typeof value;
+    return type === "string" || type === "number" || type === "boolean";
+};
+
+/*
+ * The types already allow one of `exists` or `equals`, of the right kind. This holds callers the
+ * types do not reach, such as plain JavaScript, to the same: a condition the stores would read
+ * differently, or not at all, must not become an unconditional write.
+ */
+const isValidCondition = (condition: unknown, allowNotExists: boolean): boolean => {
+    if (typeof condition !== "object" || condition === null) {
+        return false;
+    }
+    const { exists, equals } = condition as { exists?: unknown; equals?: unknown };
+    if (exists !== undefined && equals !== undefined) {
+        return false;
+    }
+    if (exists !== undefined) {
+        return exists === true || (exists === false && allowNotExists);
+    }
+    return isComparable(equals);
 };
 
 /*
@@ -105,6 +132,9 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        if (options?.condition !== undefined && !isValidCondition(options.condition, true)) {
+            return Result.fail(new KeyValueInvalidConditionError());
+        }
         if (options?.collection !== undefined) {
             if (!isValidCollection(options.collection)) {
                 return Result.fail(new KeyValueInvalidCollectionError(MAX_COLLECTION_BYTES));
@@ -115,16 +145,29 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         try {
-            await this.storageOperations.set(key, value, scope, options);
+            const written = await this.storageOperations.set(key, value, scope, options);
+            if (!written) {
+                return Result.fail(new KeyValueConditionFailedError(key));
+            }
             return Result.ok();
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));
         }
     }
 
-    async delete(key: string, scope: string): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async delete(
+        key: string,
+        scope: string,
+        options?: IKeyValueDeleteOptions
+    ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        if (options?.condition !== undefined && !isValidCondition(options.condition, false)) {
+            return Result.fail(new KeyValueInvalidConditionError());
+        }
         try {
-            await this.storageOperations.delete(key, scope);
+            const deleted = await this.storageOperations.delete(key, scope, options);
+            if (!deleted) {
+                return Result.fail(new KeyValueConditionFailedError(key));
+            }
             return Result.ok();
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));

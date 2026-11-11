@@ -7,12 +7,13 @@ import { setProjectFeatureFlags } from "~/services/GetProjectConfigService/Featu
 
 export const FeatureFlags = defineExtension({
     type: "FeatureFlags",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable or disable features.",
     paramsSchema: z.object({
         // Follows `IFeatureFlagsDto` from `packages/feature-flags/src/types.ts`.
         features: z.object({
             multiTenancy: z.boolean().optional(),
+            languages: z.boolean().optional(),
             advancedPublishingWorkflow: z.boolean().optional(),
             advancedAccessControlLayer: z
                 .union([
@@ -49,7 +50,6 @@ export const FeatureFlags = defineExtension({
                             .optional(),
                         lexicalGeneration: z.boolean().optional(),
                         adminAssistant: z.boolean().optional(),
-                        remoteComponents: z.boolean().optional(),
                         cms: z
                             .object({
                                 entryGeneration: z.boolean().optional(),
@@ -69,7 +69,8 @@ export const FeatureFlags = defineExtension({
                         activityLog: z.boolean().optional()
                     })
                 ])
-                .optional()
+                .optional(),
+            webhooks: z.boolean().optional()
         })
     }),
     render: ({ features = {} }) => {

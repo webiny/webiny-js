@@ -13,7 +13,7 @@ import { EnvVar } from "./EnvVar.js";
  */
 export const AdminWebsocketsUrl = defineExtension({
     type: "Admin/WebsocketsUrl",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Set a dedicated WebSocket URL for the Admin app.",
     paramsSchema: z.object({
         url: z

@@ -4,7 +4,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { isPathContained, toBuffer } from "../utils.js";
+import { toBuffer } from "../utils.js";
+import { isPathContained } from "~/utils/isPathContained.js";
 
 class UploadPartRouteImpl implements HttpRouteHandler.Interface {
     public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}

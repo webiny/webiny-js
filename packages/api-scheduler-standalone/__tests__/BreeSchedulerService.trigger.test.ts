@@ -6,14 +6,14 @@ describe("BreeSchedulerService — trigger", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: IBreeSchedulerServiceParams["onTrigger"];
+    let runAction: IBreeSchedulerServiceParams["runAction"];
 
     beforeEach(async () => {
-        onTrigger = vi.fn().mockResolvedValue(undefined);
+        runAction = vi.fn().mockResolvedValue(undefined);
 
         service = new BreeSchedulerService({
             logger: createMockLogger(),
-            onTrigger
+            runAction
         });
 
         await service.start();
@@ -23,7 +23,7 @@ describe("BreeSchedulerService — trigger", () => {
         await service.stop();
     });
 
-    it("should fire onTrigger when the scheduled time arrives", async () => {
+    it("should run the action when the scheduled time arrives", async () => {
         await service.create({
             id: "trigger-1",
             namespace,
@@ -34,7 +34,7 @@ describe("BreeSchedulerService — trigger", () => {
         /* Wait for the bree job to fire. */
         await vi.waitFor(
             () => {
-                expect(onTrigger).toHaveBeenCalledWith("trigger-1", namespace, tenant);
+                expect(runAction).toHaveBeenCalledWith("trigger-1", namespace, tenant);
             },
             { timeout: 5_000, interval: 200 }
         );
@@ -49,7 +49,7 @@ describe("BreeSchedulerService — trigger", () => {
         ).toBe(false);
     });
 
-    it("should not fire onTrigger if the schedule is deleted before it fires", async () => {
+    it("should not run the action if the schedule is deleted before it fires", async () => {
         await service.create({
             id: "deleted-1",
             namespace,
@@ -66,6 +66,6 @@ describe("BreeSchedulerService — trigger", () => {
         /* Wait a bit past the scheduled time to confirm it doesn't fire. */
         await new Promise(resolve => setTimeout(resolve, 4_000));
 
-        expect(onTrigger).not.toHaveBeenCalled();
+        expect(runAction).not.toHaveBeenCalled();
     });
 }, 15_000);

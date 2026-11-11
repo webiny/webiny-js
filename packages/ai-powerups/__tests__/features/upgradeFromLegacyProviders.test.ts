@@ -11,6 +11,7 @@ import {
     AiCapability,
     ResolveAiCapabilityUseCase
 } from "~/api/features/Capabilities/abstractions.js";
+import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
@@ -41,6 +42,16 @@ const legacyRaw = {
         ]
     }
 };
+
+/** The `model` argument is not used by these tests; the resolver only needs the service to exist. */
+class StubConfiguredAiModels implements ConfiguredAiModelsService.Interface {
+    async list() {
+        return Result.ok([]);
+    }
+    async findConnection() {
+        return Result.ok(null);
+    }
+}
 
 class StubEncryption implements Encryption.Interface {
     async encrypt(plain: string) {
@@ -123,6 +134,12 @@ function resolver(value: IAiPowerUpsSettings) {
     );
     container.register(
         Encryption.createImplementation({ implementation: StubEncryption, dependencies: [] })
+    );
+    container.register(
+        ConfiguredAiModelsService.createImplementation({
+            implementation: StubConfiguredAiModels,
+            dependencies: []
+        })
     );
     container.register(ResolveAiCapabilityUseCaseImplementation);
 

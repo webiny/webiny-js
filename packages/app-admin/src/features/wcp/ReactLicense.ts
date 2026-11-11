@@ -96,10 +96,6 @@ export class ReactLicense implements ILicense {
         return this.license.canUseAbTesting();
     }
 
-    canUseRemoteComponents(): boolean {
-        return this.license.canUseRemoteComponents();
-    }
-
     canUseCollaboration(): boolean {
         return this.license.canUseCollaboration();
     }
@@ -110,6 +106,10 @@ export class ReactLicense implements ILicense {
 
     canUseActivityLog(): boolean {
         return this.license.canUseActivityLog();
+    }
+
+    canUseLanguages(): boolean {
+        return this.license.canUseLanguages();
     }
 
     toDto(): DecryptedWcpProjectLicense | null {

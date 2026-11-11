@@ -44,4 +44,13 @@ describe("ProcessTimer", () => {
         expect(remaining).toBeGreaterThan(86_399_000);
         expect(remaining).toBeLessThanOrEqual(86_400_000);
     });
+
+    it("has no time left once expired", () => {
+        const timer = new ProcessTimer(60_000);
+
+        timer.expire();
+
+        expect(timer.getRemainingMilliseconds()).toBe(0);
+        expect(timer.getRemainingSeconds()).toBe(0);
+    });
 });

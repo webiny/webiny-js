@@ -41,17 +41,15 @@ export const createStorageOperations = (
 ): AdminUsersStorageOperations => {
     const { knex, tableManager } = params;
 
-    const ensureTable = () => {
-        return tableManager.ensure(TABLE_NAME, table => {
-            table.text("id").notNullable();
-            table.text("tenant").notNullable();
-            table.text("email").notNullable();
-            table.text("data").notNullable();
+    const ensureTable = tableManager.define(TABLE_NAME, table => {
+        table.text("id").notNullable();
+        table.text("tenant").notNullable();
+        table.text("email").notNullable();
+        table.text("data").notNullable();
 
-            table.primary(["tenant", "id"]);
-            table.unique(["tenant", "email"]);
-        });
-    };
+        table.primary(["tenant", "id"]);
+        table.unique(["tenant", "email"]);
+    });
 
     const query = () => {
         return knex<IAdminUserRow>(tableManager.resolve(TABLE_NAME));
@@ -103,13 +101,17 @@ export const createStorageOperations = (
 
                 items = sortItems(items, sort);
 
-                const { id_in } = where;
+                const { id_in, teams_in } = where;
 
-                if (Array.isArray(id_in)) {
-                    return items.filter(item => id_in.includes(item.id));
-                }
-
-                return items;
+                return items.filter(item => {
+                    if (Array.isArray(id_in) && !id_in.includes(item.id)) {
+                        return false;
+                    }
+                    if (Array.isArray(teams_in)) {
+                        return (item.teams || []).some(team => teams_in.includes(team));
+                    }
+                    return true;
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list users.",

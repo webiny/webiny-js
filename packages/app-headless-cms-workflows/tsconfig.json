@@ -4,12 +4,15 @@
   "references": [
     { "path": "../admin-ui" },
     { "path": "../app" },
+    { "path": "../app-aco" },
     { "path": "../app-admin" },
     { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
+    { "path": "../app-websockets" },
     { "path": "../app-workflows" },
     { "path": "../feature" },
-    { "path": "../utils" }
+    { "path": "../feature-flags" },
+    { "path": "../react-composition" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -22,18 +25,24 @@
       "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
+      "@webiny/app-websockets/*": ["../app-websockets/src/*"],
+      "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
       "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     }
   }
 }

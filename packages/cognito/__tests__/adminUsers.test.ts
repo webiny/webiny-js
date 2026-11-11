@@ -22,6 +22,8 @@ import {
 import { MockCognitoService } from "./mocks/MockCognitoService.js";
 import { MockAuthorizer } from "./mocks/MockAuthorizer.js";
 import { CognitoService } from "~/api/features/CognitoService/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 describe("Admin Users (Cognito)", () => {
     let container: Container;
@@ -37,6 +39,8 @@ describe("Admin Users (Cognito)", () => {
         // Register api-core features. The test WCP license is supplied via config (it becomes the
         // WcpLicenseProvider's initial license); WcpFeature wires WcpContext to that provider.
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        const logger = new NullLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new MockAuthorizer());
 
@@ -257,33 +261,23 @@ describe("Admin Users (Cognito)", () => {
         );
     });
 
-    it("should call Cognito updateUserAttributes when email changes", async () => {
+    it("should refuse to change a user's email", async () => {
         const createAdminUser = container.resolve(CreateUserUseCase);
         const updateAdminUser = container.resolve(UpdateUserUseCase);
 
-        // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
         expect(createResult.isOk()).toBe(true);
         const user = createResult.value!;
 
-        // Clear any errors from mock
         mockCognitoService.clearError();
-
-        // Spy on updateUserAttributes
         const updateUserAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
 
-        // Update email
-        const newEmail = "new_email@example.com";
         const updateResult = await updateAdminUser.execute(user.id, {
-            email: newEmail
+            email: "new_email@example.com"
         });
 
-        expect(updateResult.isOk()).toBe(true);
-        // Verify updateUserAttributes was called with the original username
-        expect(updateUserAttributesSpy).toHaveBeenCalledWith(
-            adminUsers.userA.email,
-            expect.any(Object)
-        );
+        expect(updateResult.isFail() && updateResult.error.code).toBe("AdminUser/Validation");
+        expect(updateUserAttributesSpy).not.toHaveBeenCalled();
     });
 
     it("should validate input before creating user", async () => {

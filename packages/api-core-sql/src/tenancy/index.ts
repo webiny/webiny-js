@@ -49,16 +49,14 @@ export const createStorageOperations = (
 ): TenancyStorageOperations => {
     const { knex, tableManager } = params;
 
-    const ensureTable = () => {
-        return tableManager.ensure(TABLE_NAME, table => {
-            table.text("id").primary().notNullable();
-            table.text("parent");
-            table.text("createdOn").notNullable();
-            table.text("data").notNullable();
+    const ensureTable = tableManager.define(TABLE_NAME, table => {
+        table.text("id").primary().notNullable();
+        table.text("parent");
+        table.text("createdOn").notNullable();
+        table.text("data").notNullable();
 
-            table.index(["parent"]);
-        });
-    };
+        table.index(["parent"]);
+    });
 
     const query = () => {
         return knex<ITenantRow>(tableManager.resolve(TABLE_NAME));

@@ -2,33 +2,60 @@ import type { NormalJob } from "github-actions-wac";
 import { createCheckoutPrSteps } from "../steps/index.js";
 import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
-import { createSetupVerdaccioSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
-import { ACTION, AWS_REGION } from "../utils/index.js";
+import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
-import { createStatusRowUpdateSteps } from "./statusComment.js";
-import { createInstallationTestSteps } from "./installationTest.js";
+import { createReportStatusJob } from "./reportStatus.js";
+import { createStatusRowStep } from "./statusRowStep.js";
+import { createInstallationTestSteps, createPlaywrightSetupSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
-import {
-    globalBuildCacheSteps,
-    installBuildSteps,
-    runBuildCacheDownloadSteps,
-    yarnCacheSteps
-} from "./sharedSteps.js";
+import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
+import { createRestoreVerdaccioSteps } from "./verdaccio.js";
+import type { PrFeature } from "./prFeature.js";
 
-// AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run the installation test
-// against the deployed URLs. One variant per storage setup ("ddb", "ddb-os").
+export interface AwsVariant {
+    // The project's storage setup, as create-webiny-project takes it.
+    dbSetup: "ddb" | "ddb-os";
+    // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
+    shards: number;
+}
+
+type JobStep = NonNullable<NormalJob["steps"]>[number];
+
+interface AwsJobsOptions {
+    /*
+     * Configure the bug reporter and add the bug-report-ai extension only when the PR's code has
+     * the bug reporter. Unset, both always run.
+     */
+    bugReporter?: PrFeature;
+}
+
+// AWS-deployed E2E. One variant per storage setup, three jobs each, the same shape as the
+// standalone variants (createStandaloneVariantJobs):
+// - deploy: scaffolds a project, deploys it with Pulumi, and runs the installation test against it.
+//   The installation test runs here rather than in the shards because every shard tests the same
+//   deployment, so it can be installed only once. It also creates the admin user the shards sign
+//   in with.
+// - tests: one job per shard, against the deployed Admin app's URL. All shards share the one
+//   deployment and its database, so tests must not depend on each other's data.
+// - report status: writes the shards' combined result and the Admin URL into the status comment.
 //
 // Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
 // Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
 // aws-nuke rather than `webiny destroy`.
-export const createAwsJobs = (dbSetup: string) => {
-    const jobNames = {
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`
+export const createAwsJobs = (
+    { dbSetup, shards }: AwsVariant,
+    { bugReporter }: AwsJobsOptions = {}
+) => {
+    const jobKeys = {
+        deploy: `e2e-aws-${dbSetup}-deploy`,
+        tests: `e2e-aws-${dbSetup}`,
+        report: `e2e-aws-${dbSetup}-report`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
+    const adminUrl = `\${{ needs.${jobKeys.deploy}.outputs.admin-url }}`;
 
     const env: Record<string, string> = {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
@@ -49,11 +76,33 @@ export const createAwsJobs = (dbSetup: string) => {
         env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
-    const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build", "checkComment"],
-        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        // Writes the admin URL and the result into the status comment.
+    const enableBugReportAiStep: JobStep = {
+        /*
+         * Pulled from S3 like any other published extension, so this covers the install
+         * path a customer takes as well as the extension itself. Drafting falls back to
+         * the reporter's own words here, since no AI provider is configured: provider keys
+         * are encrypted runtime settings, not build params, so CI has no way to set one.
+         */
+        name: "Enable extension bug-report-ai",
+        "working-directory": DIR_TEST_PROJECT,
+        run: "yarn webiny extension bug-report-ai"
+    };
+    if (bugReporter) {
+        enableBugReportAiStep.if = bugReporter.has;
+    }
+
+    // The jobs whose outputs the steps' `if` reads have to be among the deploy job's `needs`.
+    const deployNeeds: [string, ...string[]] = ["baseBranch", "publish", "checkComment"];
+    if (bugReporter && !deployNeeds.includes(bugReporter.needs)) {
+        deployNeeds.push(bugReporter.needs);
+    }
+
+    const deployJob: NormalJob = createJob({
+        needs: deployNeeds,
+        name: `E2E - ${dbDisplayName} - Deploy`,
+        // Writes the admin URL into the status comment.
         permissions: { "pull-requests": "write" },
+        outputs: { "admin-url": "${{ steps.admin-url.outputs.admin-url }}" },
         environment: "next",
         env,
         awsAuth: true,
@@ -61,31 +110,8 @@ export const createAwsJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
-            ...runBuildCacheDownloadSteps,
-            ...installBuildSteps,
-            ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                "working-directory": DIR_WEBINY_JS,
-                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-            },
-            {
-                name: "Version and publish to Verdaccio",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn release --type=verdaccio"
-            },
-            {
-                name: "Create verdaccio-files artifact",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `verdaccio-files-${dbSetup}`,
-                    "retention-days": 1,
-                    "include-hidden-files": true,
-                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                        "\n"
-                    )
-                }
-            },
+            ...installSteps,
+            ...createRestoreVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
                 name: "Disable Webiny telemetry",
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
@@ -106,7 +132,8 @@ export const createAwsJobs = (dbSetup: string) => {
                 : []),
             ...createConfigureBugReporterSteps({
                 workingDirectory: DIR_WEBINY_JS,
-                projectPath: PATH_TEST_PROJECT
+                projectPath: PATH_TEST_PROJECT,
+                if: bugReporter?.has
             }),
             {
                 name: "Print CLI version",
@@ -133,17 +160,7 @@ export const createAwsJobs = (dbSetup: string) => {
                 "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny extension whitelabeling"
             },
-            {
-                /*
-                 * Pulled from S3 like any other published extension, so this covers the install
-                 * path a customer takes as well as the extension itself. Drafting falls back to
-                 * the reporter's own words here, since no AI provider is configured: provider keys
-                 * are encrypted runtime settings, not build params, so CI has no way to set one.
-                 */
-                name: "Enable extension bug-report-ai",
-                "working-directory": DIR_TEST_PROJECT,
-                run: "yarn webiny extension bug-report-ai"
-            },
+            enableBugReportAiStep,
             {
                 name: "API bundle size limit",
                 run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
@@ -164,41 +181,62 @@ export const createAwsJobs = (dbSetup: string) => {
                 "working-directory": DIR_TEST_PROJECT,
                 run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
             },
-            {
-                name: "Update PR comment with admin URL",
-                env: {
-                    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
-                    ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}`,
-                    COMMENT_ID: `\${{ needs.checkComment.outputs.comment-id }}`
+            createStatusRowStep(
+                {
+                    label: dbDisplayName,
+                    urlExpression: "$ADMIN_URL",
+                    env: { ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}` }
                 },
-                run: [
-                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-                    `sed -i "s@| ${dbDisplayName} | 🔄 Deploying... | - |@| ${dbDisplayName} | ✅ Ready | $ADMIN_URL |@" /tmp/comment.txt`,
-                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
-                ].join("\n")
-            },
+                {
+                    name: "Update PR comment with admin URL",
+                    condition: "success()",
+                    status: "✅ Ready"
+                }
+            ),
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
                 artifactName: `e2e-results-${dbSetup}`
-            }),
-            ...createUnlicensedE2eSteps({
-                workingDirectory: DIR_WEBINY_JS,
-                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
-                artifactName: `e2e-test-results-${dbSetup}`
-            }),
-            // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
-            // BEFORE the tests run - so without these the comment claims the variant is fine even
-            // when its tests failed.
-            ...createStatusRowUpdateSteps({
-                label: dbDisplayName,
-                urlExpression: "${ADMIN_URL:--}",
-                env: { ADMIN_URL: "${{ steps.admin-url.outputs.admin-url }}" }
             })
         ]
     });
 
+    const testsJob = createJob({
+        needs: ["baseBranch", jobKeys.deploy],
+        name: `E2E - ${dbDisplayName} / shard \${{ matrix.shard }}`,
+        strategy: {
+            // Every shard reports, so one failure doesn't hide the others.
+            "fail-fast": false,
+            matrix: { shard: Array.from({ length: shards }, (_, i) => i + 1) }
+        },
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...yarnCacheSteps,
+            ...installSteps,
+            ...createPlaywrightSetupSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl,
+                artifactName: `e2e-test-results-${dbSetup}-shard-\${{ matrix.shard }}`,
+                shard: `\${{ matrix.shard }}/${shards}`
+            })
+        ]
+    });
+
+    // The deploy job sets the row to "✅ Ready" with the URL as soon as the deploy succeeds, before
+    // any test has run. This replaces it with the tests' result.
+    const reportJob = createReportStatusJob({
+        label: dbDisplayName,
+        buildJobKey: jobKeys.deploy,
+        testsJobKey: jobKeys.tests,
+        urlExpression: "${ADMIN_URL:--}",
+        env: { ADMIN_URL: adminUrl }
+    });
+
     return {
-        [jobNames.projectSetup]: projectSetupJob
+        [jobKeys.deploy]: deployJob,
+        [jobKeys.tests]: testsJob,
+        [jobKeys.report]: reportJob
     };
 };

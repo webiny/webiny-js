@@ -16,6 +16,8 @@ import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
+import { Logger } from "~/features/logger/index.js";
+import { NullLogger } from "~/features/logger/index.js";
 
 class TestAuthorizer implements Authorizer.Interface {
     async authorize(): Promise<SecurityPermission[] | null> {
@@ -34,6 +36,8 @@ describe("Users", function () {
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        const logger = new NullLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new TestAuthorizer());
 
@@ -252,5 +256,47 @@ describe("Users", function () {
 
         expect(listUsersResult.isOk()).toBe(true);
         expect(listUsersResult.value).toEqual([]);
+    });
+
+    it("should filter users by id_in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const listUsers = container.resolve(ListUsersUseCase);
+
+        const userA = await createUser.execute(users.userA);
+        await createUser.execute(users.userB);
+
+        const result = await listUsers.execute({ where: { id_in: [userA.value.id] } });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.map(user => user.id)).toEqual([userA.value.id]);
+    });
+
+    it("should filter users by teams_in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const listUsers = container.resolve(ListUsersUseCase);
+
+        const userA = await createUser.execute({ ...users.userA, teams: ["team-a", "team-b"] });
+        await createUser.execute({ ...users.userB, teams: ["team-c"] });
+
+        const result = await listUsers.execute({ where: { teams_in: ["team-b", "team-x"] } });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.map(user => user.id)).toEqual([userA.value.id]);
+    });
+
+    it("should combine id_in and teams_in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const listUsers = container.resolve(ListUsersUseCase);
+
+        const userA = await createUser.execute({ ...users.userA, teams: ["team-a"] });
+        const userB = await createUser.execute({ ...users.userB, teams: ["team-a"] });
+
+        const result = await listUsers.execute({
+            where: { id_in: [userB.value.id], teams_in: ["team-a"] }
+        });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.map(user => user.id)).toEqual([userB.value.id]);
+        expect(result.value.map(user => user.id)).not.toContain(userA.value.id);
     });
 });

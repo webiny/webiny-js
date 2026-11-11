@@ -1,8 +1,6 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the standalone hosting-type package. `webiny/extensions` exposes the
-// AWS namespaces, which don't include server-only extensions like `Infra.Postgres`.
-import { Infra } from "@webiny/project-standalone";
+import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**
@@ -13,7 +11,9 @@ export const Extensions = () => {
     return (
         <>
             {/* SQL database — connect to a Postgres server. Connection params come from the WEBINY_PG_*
-                env vars (see `.env`); set `ssl` when connecting to a managed Postgres that requires it. */}
+                env vars (see `.env`); set `ssl` when connecting to a managed Postgres that requires it.
+                Content uses the Postgres-native storage; `storage="sql"` selects the generic SQL
+                storage instead (chosen once per project: switching does not move existing data). */}
             <Infra.Postgres
                 host={process.env.WEBINY_PG_HOST || "localhost"}
                 port={Number(process.env.WEBINY_PG_PORT) || 5432}
@@ -29,11 +29,29 @@ export const Extensions = () => {
                 uploadSecret={process.env.WEBINY_UPLOAD_SECRET || "dev-only-insecure-upload-secret"}
             />
 
+            {/* Encryption and the hashing pepper are always on in a standalone API, which refuses to
+                start without WEBINY_ENCRYPTION_PASSPHRASE and WEBINY_HASHING_PEPPER. The values below
+                are dev defaults for `webiny watch` / `webiny serve`; a deployed API reads both from
+                its environment. Keep them stable: changing them makes encrypted data unreadable and
+                stops existing passwords from verifying. */}
+            <Infra.Crypto.Encryption
+                passphrase={
+                    process.env.WEBINY_ENCRYPTION_PASSPHRASE ||
+                    "dev-only-insecure-encryption-passphrase"
+                }
+            />
+            <Infra.Crypto.Hashing
+                pepper={process.env.WEBINY_HASHING_PEPPER || "dev-only-insecure-hashing-pepper"}
+            />
+
             {/* The API's public origin. AWS derives this from stack output; the server has none, so it
                 is configured here. `Admin.ApiUrl` points the admin bundle at it; `Infra.ApiUrl` tells
-                the API its own origin (used for the file-upload URL + file srcPrefix). */}
+                the API its own origin (used for the file-upload URL + file srcPrefix).
+                `Infra.AdminUrl` tells it where the admin app is served from (handed to websites, e.g.
+                the Next.js starter kit). */}
             <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
             <Infra.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
+            <Infra.AdminUrl url={process.env.WEBINY_ADMIN_URL || "http://localhost:3001"} />
 
             {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
             <SelfHostedAuth

@@ -35,7 +35,15 @@ const DecoratableCodeEditor = ({
                 invalid={invalid}
             />
             <FormComponentDescription text={description} disabled={disabled} />
-            <CodeEditorPrimitive {...props} disabled={disabled} />
+            <CodeEditorPrimitive
+                {...props}
+                /* Monaco names its own textarea (`ariaLabel`); it can't point at the label element. */
+                options={{
+                    ...(typeof label === "string" ? { ariaLabel: label } : {}),
+                    ...props.options
+                }}
+                disabled={disabled}
+            />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}

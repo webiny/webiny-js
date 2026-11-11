@@ -2,12 +2,14 @@ import WebinyError from "@webiny/error";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
+import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { createPartitionKey } from "~/operations/entry/keys.js";
 
 class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
+        private dataLoaders: CmsDdbDataLoaders.Interface,
         private storageModelProvider: CmsStorageModelProvider.Interface
     ) {}
 
@@ -54,6 +56,10 @@ class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
          */
         try {
             await entityBatch.execute();
+
+            this.dataLoaders.clearAll({
+                tenant: model.tenant
+            });
         } catch (ex) {
             throw WebinyError.from(ex, {
                 message: "Could not move records to a new folder.",
@@ -68,5 +74,5 @@ class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
 
 export const DdbMoveEntry = MoveEntryStorageOperation.createImplementation({
     implementation: DdbMoveEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
 });

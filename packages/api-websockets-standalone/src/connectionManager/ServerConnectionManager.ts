@@ -1,11 +1,15 @@
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ProcessOwner } from "@webiny/event-handler-standalone";
 import { WebsocketsConnectionManager } from "./abstractions.js";
 
 export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.Interface<unknown> {
     private readonly sockets = new Map<string, unknown>();
     private readonly metadata = new Map<string, WebsocketsConnectionManager.ConnectionMetadata>();
 
-    public constructor(private readonly registry: ConnectionRegistry.Interface) {}
+    public constructor(
+        private readonly registry: ConnectionRegistry.Interface,
+        private readonly owner: ProcessOwner.Interface
+    ) {}
 
     public async add(params: WebsocketsConnectionManager.AddParams<unknown>): Promise<void> {
         this.sockets.set(params.connectionId, params.socket);
@@ -30,7 +34,8 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             identity: params.identity,
             tenant: params.tenant,
             endpoint: params.endpoint,
-            connectedOn: new Date(params.connectedAt).toISOString()
+            connectedOn: new Date(params.connectedAt).toISOString(),
+            owner: this.owner.id
         });
     }
 
@@ -45,6 +50,28 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             }
             throw err;
         }
+    }
+
+    /*
+     * The process holding each of these connections, for connections this process has no socket for.
+     * Rows without an owner are left out: nobody can say who holds them, so they wait for the
+     * heartbeat's stale cleanup.
+     */
+    public async groupByOwner(connectionIds: string[]): Promise<Map<string, string[]>> {
+        const byOwner = new Map<string, string[]>();
+        if (connectionIds.length === 0) {
+            return byOwner;
+        }
+        const connections = await this.registry.listViaConnections(connectionIds);
+        for (const connection of connections) {
+            if (!connection.owner) {
+                continue;
+            }
+            const group = byOwner.get(connection.owner) ?? [];
+            group.push(connection.connectionId);
+            byOwner.set(connection.owner, group);
+        }
+        return byOwner;
     }
 
     public getSocket(connectionId: string): unknown | undefined {
@@ -79,5 +106,5 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
 
 export const ServerConnectionManager = WebsocketsConnectionManager.createImplementation({
     implementation: ServerConnectionManagerImpl,
-    dependencies: [ConnectionRegistry]
+    dependencies: [ConnectionRegistry, ProcessOwner]
 });

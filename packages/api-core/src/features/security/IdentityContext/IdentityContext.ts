@@ -1,6 +1,7 @@
-import { AsyncLocalStorage } from "async_hooks";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
+import { HandlerExecution } from "@webiny/event-handler-core";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
@@ -10,14 +11,18 @@ import type { SecurityPermission } from "~/types/security.js";
 import type { AaclPermission } from "../../wcp/WcpContext/types.js";
 import { FeatureFlags } from "../../featureFlags/abstractions.js";
 
-const identityStorage = new AsyncLocalStorage<Identity | undefined>();
-
 class IdentityContextImpl implements Abstraction.Interface {
     private identity: Identity = new AnonymousIdentity();
+    /*
+     * `withIdentity()` switches the identity for its callback's async call chain only, the same way
+     * `TenantContext.withTenant()` switches the tenant.
+     */
+    private readonly overrides = new AsyncLocalStorage<Identity>();
 
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
-        private featureFlags: FeatureFlags.Interface
+        private featureFlags: FeatureFlags.Interface,
+        private handlerExecution: HandlerExecution.Interface | undefined
     ) {}
 
     // ========================================================================
@@ -25,15 +30,29 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     getIdentity(): Identity {
-        // Check for identity override first (from withIdentity())
-        const override = identityStorage.getStore();
-        if (override !== undefined) {
+        this.handlerExecution?.assertCurrent("IdentityContext");
+
+        const override = this.overrides.getStore();
+        if (override) {
             return override;
         }
         return this.identity;
     }
 
+    /*
+     * Sets the request's identity. Inside a `withIdentity()` callback it throws: the callback would
+     * keep reading its own identity, and the change would only show once the callback ended, in the
+     * rest of the request.
+     */
     setIdentity(identity: Identity | undefined): void {
+        this.handlerExecution?.assertCurrent("IdentityContext");
+
+        if (this.overrides.getStore()) {
+            throw new Error(
+                "IdentityContext.setIdentity() was called inside a withIdentity() callback. Call withIdentity() instead, so the switch stays inside its own callback."
+            );
+        }
+
         // If undefined, set to anonymous identity
         this.identity = identity ?? new AnonymousIdentity();
 
@@ -41,8 +60,9 @@ class IdentityContextImpl implements Abstraction.Interface {
         this.authorizationContext.clearPermissionsCache();
     }
 
-    withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T> {
-        return identityStorage.run(identity, cb);
+    withIdentity<T>(identity: Identity, cb: () => Promise<T>): Promise<T> {
+        this.handlerExecution?.assertCurrent("IdentityContext");
+        return this.overrides.run(identity, cb);
     }
 
     // ========================================================================
@@ -50,7 +70,13 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T> {
+        this.handlerExecution?.assertCurrent("IdentityContext");
         return this.authorizationContext.withoutAuthorization(cb);
+    }
+
+    withAuthorization<T>(cb: () => Promise<T>): Promise<T> {
+        this.handlerExecution?.assertCurrent("IdentityContext");
+        return this.authorizationContext.withAuthorization(cb);
     }
 
     isAuthorizationEnabled(): boolean {
@@ -140,5 +166,5 @@ class IdentityContextImpl implements Abstraction.Interface {
 export const IdentityContext = createImplementation({
     abstraction: Abstraction,
     implementation: IdentityContextImpl,
-    dependencies: [AuthorizationContext, FeatureFlags]
+    dependencies: [AuthorizationContext, FeatureFlags, [HandlerExecution, { optional: true }]]
 });

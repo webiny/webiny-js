@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import {
     GetSettingsUseCase as UseCaseAbstraction,
@@ -21,11 +22,12 @@ function createSettings(overrides?: Partial<FmSettings>): FmSettings {
         uploadMinFileSize: "0",
         uploadMaxFileSize: "26214400",
         srcPrefix: "https://cdn.example.com/files/",
+        defaultSrcPrefix: "https://api.example.com/files/",
         ...overrides
     };
 }
 
-type MockGateway = IGetSettingsGateway & { execute: ReturnType<typeof vi.fn> };
+type MockGateway = IGetSettingsGateway & { execute: Mock };
 
 function createMockGateway(settings: FmSettings = createSettings()): MockGateway {
     const execute = vi.fn<() => Promise<FmSettings>>();
@@ -33,7 +35,7 @@ function createMockGateway(settings: FmSettings = createSettings()): MockGateway
     return { execute };
 }
 
-type MockSaveGateway = ISaveSettingsGateway & { execute: ReturnType<typeof vi.fn> };
+type MockSaveGateway = ISaveSettingsGateway & { execute: Mock };
 
 function createMockSaveGateway(): MockSaveGateway {
     const execute = vi.fn<(data: FmSettings) => Promise<FmSettings>>();

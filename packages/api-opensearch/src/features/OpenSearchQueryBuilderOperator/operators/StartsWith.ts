@@ -1,4 +1,5 @@
 import { OpenSearchQueryBuilderOperator } from "../abstractions/OpenSearchQueryBuilderOperator.js";
+import { startsWithQuery } from "./startsWithQuery.js";
 
 class StartsWithImpl implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
@@ -13,11 +14,7 @@ class StartsWithImpl implements OpenSearchQueryBuilderOperator.Interface {
         if (value === "" || value === null || value === undefined) {
             return;
         }
-        query.filter.push({
-            match_phrase_prefix: {
-                [basePath]: value
-            }
-        });
+        query.filter.push(startsWithQuery(basePath, String(value)));
     }
 }
 

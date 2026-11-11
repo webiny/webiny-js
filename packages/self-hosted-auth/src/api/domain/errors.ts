@@ -135,3 +135,19 @@ export class WeakPasswordError extends BaseError {
         super({ message });
     }
 }
+
+/**
+ * Some user already signs in with this address. Credentials are global while admin users are per
+ * tenant, so this can fire for an address the current tenant has never seen: the account belongs to
+ * a user somewhere else on the installation.
+ */
+export class AccountExistsError extends BaseError<{ email: string }> {
+    override readonly code = "ACCOUNT_EXISTS" as const;
+
+    constructor(email: string) {
+        super({
+            message: "An account with this email already exists.",
+            data: { email }
+        });
+    }
+}

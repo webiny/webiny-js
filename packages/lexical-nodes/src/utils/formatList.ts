@@ -285,10 +285,9 @@ export function $handleIndent(WebinyListItemNodes: Array<ListItemNode>): void {
 
         const parent = WebinyListItemNode.getParent();
 
-        // We can cast both of the below `isNestedListNode` only returns a boolean type instead of a user-defined type guards
-        const nextSibling = WebinyListItemNode.getNextSibling<ListItemNode>() as ListItemNode;
-        const previousSibling =
-            WebinyListItemNode.getPreviousSibling<ListItemNode>() as ListItemNode;
+        // `isNestedListNode` is a type guard, so the siblings are narrowed where they are used.
+        const nextSibling = WebinyListItemNode.getNextSibling();
+        const previousSibling = WebinyListItemNode.getPreviousSibling();
         // if there are nested lists on either side, merge them all together.
 
         if (isNestedListNode(nextSibling) && isNestedListNode(previousSibling)) {

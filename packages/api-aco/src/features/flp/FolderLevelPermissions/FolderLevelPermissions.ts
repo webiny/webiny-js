@@ -11,10 +11,15 @@ import {
     CanCreateFolderInRoot,
     CheckNotInheritedPermissions,
     GetDefaultPermissions,
-    GetDefaultPermissionsWithTeams
+    GetDefaultPermissionsWithTeams,
+    type IGetDefaultPermissions
 } from "./useCases/index.js";
 import { FolderLevelPermissions as FolderLevelPermissionsAbstraction } from "./abstractions.js";
-import type { FolderLevelPermission, FolderPermission, ListFlpsParams } from "~/types.js";
+import { DefaultPermissionsMerger } from "./useCases/GetDefaultPermissions/DefaultPermissionsMerger.js";
+import { expandTeamPermissions } from "./useCases/GetDefaultPermissions/GetDefaultPermissionsWithTeams.js";
+import type { Team } from "@webiny/api-core/types/security.js";
+import type { FolderLevelPermission, FolderPermission } from "~/types.js";
+import type { ListFolderPermissionsParams } from "~/features/flp/FolderPermissionsRepository/abstractions.js";
 import { ListFlpsUseCase } from "~/features/flp/ListFlps/index.js";
 import { GetFlpUseCase } from "~/features/flp/GetFlp/index.js";
 
@@ -141,23 +146,40 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
         });
     }
 
+    // With teams enabled, every call loads the current user's teams through `ListUserTeamsUseCase`
+    // (an admin user read plus a team list). Nothing caches them between calls.
     public getDefaultPermissions(permissions: FolderPermission[]): Promise<FolderPermission[]> {
-        const getDefaultPermissionsUseCase = new GetDefaultPermissions(this.identityContext);
-
-        if (this.canUseTeams()) {
-            const getDefaultPermissionsWithTeams = new GetDefaultPermissionsWithTeams(
-                this.identityContext,
-                this.listUserTeamsUseCase,
-                getDefaultPermissionsUseCase
-            );
-
-            return getDefaultPermissionsWithTeams.execute(permissions);
-        }
-
-        return getDefaultPermissionsUseCase.execute(permissions);
+        return this.createDefaultPermissions().execute(permissions);
     }
 
-    public async listFolderLevelPermissions(params: ListFlpsParams): Promise<
+    public async getDefaultPermissionsBatch(
+        permissionsList: FolderPermission[][]
+    ): Promise<FolderPermission[][]> {
+        if (permissionsList.length === 0) {
+            return [];
+        }
+        const identity = this.identityContext.getIdentity();
+        const identityPermissions = await this.identityContext.listPermissions();
+
+        let identityTeams: Team[] = [];
+        if (this.canUseTeams()) {
+            const result = await this.listUserTeamsUseCase.execute(identity.id);
+            identityTeams = result.isOk() ? result.value : [];
+        }
+
+        // The same steps as getDefaultPermissions(), with the lookups done once.
+        return permissionsList.map(permissions =>
+            DefaultPermissionsMerger.merge(
+                identity,
+                identityPermissions,
+                this.canUseTeams()
+                    ? expandTeamPermissions(identity, identityTeams, permissions)
+                    : permissions
+            )
+        );
+    }
+
+    public async listFolderLevelPermissions(params: ListFolderPermissionsParams): Promise<
         Array<{
             id: string;
             permissions: FolderPermission[];
@@ -165,11 +187,26 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
     > {
         const flps = await this.listFlpsUseCase.execute(params);
 
+        // One instance for every listed record: with teams enabled, the user's teams are loaded
+        // once per call, not once per record.
+        const defaultPermissions = this.createDefaultPermissions();
         return Promise.all(
             flps.map(async flp => ({
                 id: flp.id,
-                permissions: await this.getDefaultPermissions(flp.permissions)
+                permissions: await defaultPermissions.execute(flp.permissions)
             }))
+        );
+    }
+
+    private createDefaultPermissions(): IGetDefaultPermissions {
+        const getDefaultPermissionsUseCase = new GetDefaultPermissions(this.identityContext);
+        if (!this.canUseTeams()) {
+            return getDefaultPermissionsUseCase;
+        }
+        return new GetDefaultPermissionsWithTeams(
+            this.identityContext,
+            this.listUserTeamsUseCase,
+            getDefaultPermissionsUseCase
         );
     }
 

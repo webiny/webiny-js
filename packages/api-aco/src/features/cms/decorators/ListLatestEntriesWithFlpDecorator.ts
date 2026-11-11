@@ -1,23 +1,17 @@
-import { createDecorator } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createDecorator, Result } from "@webiny/feature/api";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 import type {
-    CmsModel,
+    CmsEntryListParams,
     CmsEntryValues,
-    CmsEntryListParams
+    CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import { ListEntriesFactory } from "~/utils/decorators/ListEntriesFactory.js";
+import { FolderAccessListFilter } from "~/features/flp/FolderAccessListFilter/index.js";
 
 class ListLatestEntriesWithFlpDecoratorImpl implements ListLatestEntriesUseCase.Interface {
-    private readonly listEntriesHandler: ListEntriesFactory;
-
     constructor(
-        folderLevelPermissions: FolderLevelPermissions.Interface,
+        private folderAccessListFilter: FolderAccessListFilter.Interface,
         private decoratee: ListLatestEntriesUseCase.Interface
-    ) {
-        this.listEntriesHandler = new ListEntriesFactory(folderLevelPermissions);
-    }
+    ) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
@@ -31,10 +25,10 @@ class ListLatestEntriesWithFlpDecoratorImpl implements ListLatestEntriesUseCase.
             return result.value;
         };
 
-        const { entries, meta } = await this.listEntriesHandler.execute<T>({
+        const { entries, meta } = await this.folderAccessListFilter.listEntries<T>({
             model,
-            dataLoader: loader,
-            initialParams: params
+            params,
+            loader
         });
 
         return Result.ok({ entries, meta });
@@ -44,5 +38,5 @@ class ListLatestEntriesWithFlpDecoratorImpl implements ListLatestEntriesUseCase.
 export const ListLatestEntriesWithFlpDecorator = createDecorator({
     abstraction: ListLatestEntriesUseCase,
     decorator: ListLatestEntriesWithFlpDecoratorImpl,
-    dependencies: [FolderLevelPermissions]
+    dependencies: [FolderAccessListFilter]
 });

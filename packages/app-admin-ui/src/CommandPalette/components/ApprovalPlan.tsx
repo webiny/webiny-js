@@ -1,10 +1,7 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
-import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
+import { Tag } from "@webiny/admin-ui";
 import type { AdminAssistantPendingApproval } from "@webiny/app-admin";
 
 export interface ApprovalPlanProps {
@@ -15,11 +12,27 @@ export interface ApprovalPlanProps {
 }
 
 /**
- * The confirm gate for a proposed change.
+ * The arguments as the tool will receive them, as JSON. A tool that takes no arguments shows none:
+ * its input arrives as `undefined` or `{}`.
+ */
+const toArguments = (input: unknown): string | null => {
+    if (input === undefined || input === null) {
+        return null;
+    }
+    if (typeof input === "object" && Object.keys(input).length === 0) {
+        return null;
+    }
+    return JSON.stringify(input, null, 2);
+};
+
+/**
+ * The confirm gate for a proposed change. It sits under the answer, never inside it.
  *
- * Arguments are shown as raw JSON on purpose. A prose summary would be the assistant describing its
- * own request — and the assistant is exactly what is not yet trusted here. What the user approves has
- * to be what actually runs.
+ * Each step shows the tool's arguments exactly as it will receive them, not a summary. A prose summary
+ * would be the assistant describing its own request, and the assistant is exactly what is not yet
+ * trusted here. What the user approves has to be what actually runs.
+ *
+ * Reject comes first and Run last, so Run is a deliberate click; Enter never approves.
  */
 export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalPlanProps) => {
     if (approvals.length === 0) {
@@ -27,57 +40,59 @@ export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalP
     }
 
     const destructive = approvals.some(approval => approval.destructive);
-
-    let heading = `Approve ${approvals.length} changes`;
-    if (approvals.length === 1) {
-        heading = `Approve: ${approvals[0].title ?? approvals[0].toolName}`;
-    }
+    const heading =
+        approvals.length === 1 ? "Approve this change" : `Approve ${approvals.length} changes`;
 
     return (
-        <div
+        <section
+            aria-label={heading}
             className={cn(
-                "mt-sm overflow-hidden rounded-md border border-neutral-dimmed",
-                destructive ? "bg-destructive-subtle" : "bg-warning-subtle"
+                "flex flex-col gap-sm-extra rounded-lg-plus border-sm bg-neutral-base p-md",
+                destructive ? "border-destructive-default" : "border-neutral-muted"
             )}
         >
-            <div className="flex items-center gap-sm border-b border-neutral-dimmed px-sm py-xs-plus">
-                <Icon
-                    icon={destructive ? <WarningIcon /> : <BoltIcon />}
-                    size="sm"
-                    label=""
-                    color="inherit"
-                    className={destructive ? "text-destructive-primary" : undefined}
-                />
-                <Text size="sm" className="font-semibold text-neutral-primary">
-                    {heading}
-                </Text>
+            <div className="flex items-center gap-sm">
+                <span className="flex-1 text-md font-semibold text-neutral-primary">{heading}</span>
                 {destructive ? (
-                    <Text size="sm" className="ml-auto text-destructive-primary">
-                        Cannot be undone
-                    </Text>
+                    <Tag variant="destructive-light" content="Cannot be undone" />
                 ) : null}
             </div>
 
-            <div className="bg-neutral-base px-sm py-xs-plus">
-                {approvals.map(approval => (
-                    <div key={approval.approvalId} className="mb-xs">
-                        <Text as="div" size="sm" className="font-mono text-neutral-strong">
-                            {approval.toolName}
-                        </Text>
-                        <pre className="mt-xxs overflow-x-auto rounded bg-neutral-subtle p-sm text-xs text-neutral-strong">
-                            {JSON.stringify(approval.input, null, 2)}
-                        </pre>
-                    </div>
-                ))}
+            <ol className="m-0 flex list-none flex-col gap-sm p-0">
+                {approvals.map(approval => {
+                    const args = toArguments(approval.input);
 
-                <div className="mt-sm flex items-center gap-sm">
-                    <Button variant="primary" text="Run" disabled={busy} onClick={onApprove} />
-                    <Button variant="secondary" text="Reject" disabled={busy} onClick={onReject} />
-                    <Text size="sm" className="text-neutral-muted">
-                        Nothing runs until you confirm.
-                    </Text>
-                </div>
+                    return (
+                        <li key={approval.approvalId} className="flex flex-col gap-xs">
+                            <code className="font-mono text-[13px] font-medium leading-5 text-neutral-primary">
+                                {approval.toolName}
+                            </code>
+                            {args ? (
+                                <pre className="m-0 whitespace-pre-wrap break-words rounded-md bg-neutral-light px-sm-extra py-sm font-mono text-sm leading-[18px] text-neutral-primary">
+                                    {args}
+                                </pre>
+                            ) : null}
+                        </li>
+                    );
+                })}
+            </ol>
+
+            <div className="flex justify-end gap-sm">
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    text="Reject"
+                    disabled={busy}
+                    onClick={onReject}
+                />
+                <Button
+                    variant="primary"
+                    size="sm"
+                    text="Run"
+                    disabled={busy}
+                    onClick={onApprove}
+                />
             </div>
-        </div>
+        </section>
     );
 };

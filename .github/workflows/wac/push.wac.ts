@@ -2,13 +2,14 @@ import { createWorkflow, NormalJob } from "github-actions-wac";
 import {
     ACTION,
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
     DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
     runNodeScript
 } from "./utils/index.js";
+import { VALKEY_SERVICE } from "./utils/index.js";
+import { VALKEY_TEST_URL } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 import { createConfigureBugReporterSteps } from "./steps/index.js";
 import { createDeployWebinySteps } from "./steps/index.js";
@@ -16,21 +17,27 @@ import { createGlobalBuildCacheSteps } from "./steps/index.js";
 import { createInstallBuildSteps } from "./steps/index.js";
 import { createRunBuildCacheSteps } from "./steps/index.js";
 import { createSetupVerdaccioSteps } from "./steps/index.js";
+import { createVerdaccioAuthSteps } from "./steps/index.js";
 import { createYarnCacheSteps } from "./steps/index.js";
 import { withCommonParams } from "./steps/index.js";
 import { BUG_REPORTER_ENV } from "./steps/index.js";
 import {
     createInstallationTestSteps,
-    createStandaloneProjectParts,
+    createPublishToVerdaccioSteps,
+    createStandaloneVariantJobs,
     createUnlicensedE2eSteps,
-    type StandaloneStorageOps
+    createUploadVerdaccioStorageSteps,
+    SERVER_VARIANTS,
+    WCP_VARIANTS,
+    type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
-import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
+import { DdbOsStorageOps, DdbStorageOps, PgStorageOps, SqlStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
+const pgStorageOps = new PgStorageOps();
 
 const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
@@ -50,23 +57,45 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
     workingDirectory: DIR_WEBINY_JS
 });
 
-// Self-hosted ("server" hosting type) E2E, sharing its whole project lifecycle with the /e2e
-// command workflow. Only the wrapper differs: `push` checks out the pushed ref rather than a PR,
-// gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
-// from an artifact, and has no PR comment to report into.
-const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
-    const parts = createStandaloneProjectParts(storageOps, { workingDirectory: DIR_WEBINY_JS });
+// Self-hosted ("server" hosting type) E2E: the same variants (e2e/variants.ts) and the same jobs as
+// the /e2e command workflow - a build job, a matrix of shards and no report, since `push` has no PR
+// comment to report into. Only the context differs: `push` tests the pushed commit, which the job's
+// checkout already holds, and its yarn cache is savable (a trusted trigger).
+const STANDALONE_PUBLISH_JOB = "e2eTests-standalone-publish";
 
-    return {
-        [`e2eTests-standalone-${storageOps}`]: createJob({
-            needs: ["constants", "build"],
-            name: `E2E (Standalone ${storageOps === "postgres" ? "Postgres" : "SQLite"})`,
-            checkout: { path: DIR_WEBINY_JS },
-            ...(parts.services ? { services: parts.services } : {}),
-            steps: [...yarnCacheSteps, ...runBuildCacheSteps, ...installBuildSteps, ...parts.steps]
-        })
-    };
+const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2eTests-standalone",
+    buildNeeds: [STANDALONE_PUBLISH_JOB],
+    testsNeeds: [],
+    setupSteps: yarnCacheSteps,
+    report: false,
+    // A trusted trigger, so this can save what `/e2e` restores.
+    savePlaywrightCache: true
 };
+
+const createStandaloneE2EJobs = () => ({
+    // Publishes the packages to Verdaccio once, for every standalone build job to install from.
+    [STANDALONE_PUBLISH_JOB]: createJob({
+        needs: ["constants", "build"],
+        name: "E2E (Standalone) - Publish to Verdaccio",
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...yarnCacheSteps,
+            ...runBuildCacheSteps,
+            ...installBuildSteps,
+            ...createPublishToVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
+        ]
+    }),
+    ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    )
+});
 
 // Pulumi state stays in the project's local `.pulumi` folder and goes away with the runner. The
 // nightly `cleanup.yml` removes what was deployed with aws-nuke, so nothing needs the state later.
@@ -97,7 +126,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
 
     const projectSetupJob: NormalJob = createJob({
         needs: ["constants", "build"],
-        "runs-on": BUILD_PACKAGES_RUNNER,
+        "runs-on": DEFAULT_RUNNER,
         name: `E2E (${storageOps.displayName}) - Project setup`,
         environment: "next",
         env,
@@ -111,12 +140,9 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
             ...runBuildCacheSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createVerdaccioAuthSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...withCommonParams(
                 [
-                    {
-                        name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                        run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                    },
                     {
                         name: "Version and publish to Verdaccio",
                         run: "yarn release --type=verdaccio"
@@ -124,18 +150,6 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                 ],
                 { "working-directory": DIR_WEBINY_JS }
             ),
-            {
-                name: "Create verdaccio-files artifact",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `verdaccio-files-${storageOps.shortId}`,
-                    "retention-days": 1,
-                    "include-hidden-files": true,
-                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                        "\n"
-                    )
-                }
-            },
             {
                 name: "Disable Webiny telemetry",
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
@@ -217,7 +231,8 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
-                artifactName: `e2e-results-${storageOps.shortId}`
+                artifactName: `e2e-results-${storageOps.shortId}`,
+                savePlaywrightCache: true
             }),
             ...createUnlicensedE2eSteps({
                 workingDirectory: DIR_WEBINY_JS,
@@ -244,8 +259,29 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
 
+    // The "No storage" job runs the Redis message bus tests; see `utils/valkey.ts`.
+    const needsValkey = !storageOps;
+    if (needsValkey) {
+        env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
+    }
+
+    // One object for every service container the job needs, so adding one never replaces another.
+    const services: Record<string, any> = {};
+    if (needsOpenSearch) {
+        Object.assign(services, OPENSEARCH_SERVICE);
+    }
+    if (needsValkey) {
+        Object.assign(services, VALKEY_SERVICE);
+    }
+    const hasServices = Object.keys(services).length > 0;
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
+
+        // An in-process PGlite: no Postgres service.
+        if (storageOps instanceof PgStorageOps) {
+            env["WEBINY_SQL_CLIENT"] = "pglite";
+        }
     }
 
     return {
@@ -282,7 +318,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             "runs-on": "${{ matrix.os }}",
             env,
             awsAuth: !!storageOps,
-            ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
+            services: hasServices ? services : undefined,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -334,7 +370,7 @@ export const push = createWorkflow({
             name: "Build",
             needs: "constants",
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
@@ -385,7 +421,7 @@ export const push = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -407,9 +443,9 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
         ...createVitestTestsJobs(sqlStorageOps),
+        ...createVitestTestsJobs(pgStorageOps),
         ...createAwsE2EJobs(ddbStorageOps),
         ...createAwsE2EJobs(ddbOsStorageOps),
-        ...createStandaloneE2EJobs("sqlite"),
-        ...createStandaloneE2EJobs("postgres")
+        ...createStandaloneE2EJobs()
     }
 });

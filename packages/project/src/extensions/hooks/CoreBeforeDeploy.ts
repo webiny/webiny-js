@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const CoreBeforeDeploy = defineExtension({
     type: "Core/BeforeDeploy",
-    tags: { runtimeContext: "project", application: "core" },
+    tags: { runtimeContext: "project", application: "core", hosting: "aws" },
     description: "Add custom logic to be executed before the CORE deployment process.",
     multiple: true,
     paramsSchema: ({ project }) => {

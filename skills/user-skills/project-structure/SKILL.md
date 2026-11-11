@@ -54,7 +54,7 @@ export const Extensions = () => {
     <>
       {/* Infrastructure configuration */}
       <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Infra.OpenSearch enabled={true} />
+      <Infra.Core.OpenSearch enabled={true} />
       <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
 
       {/* Identity provider */}
@@ -109,7 +109,7 @@ Declarative components for configuring AWS infrastructure:
 | --------------------------------------------------------------------- | -------------------------------------- |
 | `<Infra.Aws.DefaultRegion name="us-east-1" />`                        | Set the AWS region                     |
 | `<Infra.Aws.Tags tags={{ KEY: "value" }} />`                          | Apply tags to all AWS resources        |
-| `<Infra.OpenSearch enabled={true} />`                                 | Enable/disable OpenSearch              |
+| `<Infra.Core.OpenSearch enabled={true} />`                            | Enable/disable OpenSearch              |
 | `<Infra.Vpc enabled={true} />`                                        | Enable/disable VPC deployment          |
 | `<Infra.PulumiResourceNamePrefix prefix="myproj-" />`                 | Prefix all Pulumi resource names       |
 | `<Infra.ProductionEnvironments environments={["prod", "staging"]} />` | Define which envs use production infra |
@@ -122,12 +122,12 @@ Use `<Infra.Env.Is>` to load extensions or config only in specific environments:
 ```tsx
 <Infra.Env.Is env="prod">
     <Infra.Aws.Tags tags={{ ENV: "production" }} />
-    <Infra.OpenSearch enabled={true} />
+    <Infra.Core.OpenSearch enabled={true} />
 </Infra.Env.Is>
 
 <Infra.Env.Is env={["dev", "staging"]}>
     <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-    <Infra.OpenSearch enabled={false} />
+    <Infra.Core.OpenSearch enabled={false} />
 </Infra.Env.Is>
 ```
 

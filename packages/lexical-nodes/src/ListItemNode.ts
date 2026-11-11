@@ -191,8 +191,8 @@ export class ListItemNode extends ElementNode {
         // Attempt to merge if the list is of the same type.
 
         if ($isListNode(node) && node.getListType() === listNode.getListType()) {
-            let child = node;
-            const children = node.getChildren<ListNode>();
+            let child: LexicalNode = node;
+            const children = node.getChildren();
 
             for (let i = children.length - 1; i >= 0; i--) {
                 child = children[i];

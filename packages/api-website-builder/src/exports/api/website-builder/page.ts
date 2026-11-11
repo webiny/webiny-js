@@ -14,6 +14,11 @@ export {
     PageBeforeDeleteEventHandler
 } from "~/features/pages/DeletePage/abstractions.js";
 export {
+    DeletePageRevisionUseCase,
+    PageRevisionAfterDeleteEventHandler,
+    PageRevisionBeforeDeleteEventHandler
+} from "~/features/pages/DeletePageRevision/abstractions.js";
+export {
     TrashPageUseCase,
     PageAfterTrashEventHandler,
     PageBeforeTrashEventHandler
@@ -55,3 +60,4 @@ export {
     PageAfterUpdateEventHandler,
     PageBeforeUpdateEventHandler
 } from "~/features/pages/UpdatePage/abstractions.js";
+export { ComposePageUseCase } from "~/features/pages/ComposePage/abstractions.js";

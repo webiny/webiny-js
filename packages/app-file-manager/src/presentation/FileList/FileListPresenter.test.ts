@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { observable, runInAction } from "mobx";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
@@ -298,7 +299,7 @@ describe("FileListPresenter", () => {
         presenter.init();
 
         expect(mocks.listPresenter.init).toHaveBeenCalledTimes(1);
-        const config = (mocks.listPresenter.init as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        const config = (mocks.listPresenter.init as Mock).mock.calls[0][0];
         expect(config.dataSource).toBeDefined();
         expect(config.initialSort).toEqual({ field: "createdOn", direction: "DESC" });
     });
@@ -382,7 +383,7 @@ describe("FileListPresenter", () => {
     it("should restore viewMode from localStorage on construction", () => {
         // Pre-seed localStorage with "grid" before creating the presenter.
         const seededMocks = createMocks();
-        (seededMocks.localStorage.get as ReturnType<typeof vi.fn>).mockReturnValue("grid");
+        (seededMocks.localStorage.get as Mock).mockReturnValue("grid");
 
         const container = createContainer(seededMocks);
         const seededPresenter: IFileManagerPresenter = container.resolve(Abstraction);
@@ -415,7 +416,7 @@ describe("FileListPresenter", () => {
         await presenter.actions.upload([file1, file2]);
 
         expect(mocks.fileUploader.uploadMany).toHaveBeenCalledTimes(1);
-        const args = (mocks.fileUploader.uploadMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        const args = (mocks.fileUploader.uploadMany as Mock).mock.calls[0][0];
         expect(args).toHaveLength(2);
         expect(args[0].data.name).toBe("test.txt");
         expect(args[0].data.type).toBe("text/plain");
@@ -438,7 +439,7 @@ describe("FileListPresenter", () => {
 
         await presenter.actions.upload([file]);
 
-        const args = (mocks.fileUploader.uploadMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        const args = (mocks.fileUploader.uploadMany as Mock).mock.calls[0][0];
         expect(args[0].data.tags).toEqual(["scope:website-builder"]);
     });
 

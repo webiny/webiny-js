@@ -24,6 +24,8 @@ const iconPickerVariants = cva("cursor-pointer text-neutral-strong", {
 });
 
 interface IconPickerPrimitiveProps extends VariantProps<typeof iconPickerVariants> {
+    /** The trigger's id — what a `<label htmlFor>` points at. */
+    id?: string;
     /**
      * Indicates if the field is disabled.
      */
@@ -69,6 +71,7 @@ const IconPickerPrimitive = (props: IconPickerPrimitiveProps) => {
         <PopoverPrimitive open={vm.open} onOpenChange={setListOpenState}>
             <PopoverPrimitive.Trigger asChild>
                 <button
+                    id={props.id}
                     data-disabled={props.disabled}
                     className={cn(
                         inputVariants({

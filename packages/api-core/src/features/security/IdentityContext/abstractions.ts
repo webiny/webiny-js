@@ -6,7 +6,7 @@ export interface IIdentityContext {
     // Identity methods
     getIdentity(): Identity;
     setIdentity(identity: Identity | undefined): void;
-    withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
+    withIdentity<T>(identity: Identity, cb: () => Promise<T>): Promise<T>;
 
     // Permission methods
     getPermission<TPermission extends SecurityPermission = SecurityPermission>(
@@ -23,6 +23,11 @@ export interface IIdentityContext {
 
     // Authorization context methods
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T>;
+    /**
+     * Runs `cb` with authorization enabled, also inside `withoutAuthorization`. Combine with
+     * `withIdentity` to evaluate another user's real permissions from a background task.
+     */
+    withAuthorization<T>(cb: () => Promise<T>): Promise<T>;
     isAuthorizationEnabled(): boolean;
 }
 

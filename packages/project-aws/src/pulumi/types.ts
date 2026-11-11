@@ -1,4 +1,5 @@
 import { type IStackOutput } from "@webiny/project";
+import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
 
 // TODO: split into this per-app stack outputs.
 export interface IDefaultStackOutput extends IStackOutput {
@@ -16,7 +17,7 @@ export interface IDefaultStackOutput extends IStackOutput {
     cognitoUserPoolArn: string;
     cognitoAppClientId: string;
     cognitoUserPoolId: string;
-    cognitoUserPoolPasswordPolicy: string;
+    cognitoUserPoolPasswordPolicy: ApiStackOutputService.PasswordPolicy;
     websocketApiUrl: string;
     fileManagerBucketId: string;
     fileManagerBucketArn: string;

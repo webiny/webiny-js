@@ -5,6 +5,7 @@ import { GlobalKeyValueStore as ServiceAbstraction } from "./abstractions.js";
 import type { IGlobalKeyValueStoreOptions } from "./abstractions.js";
 import type { IGlobalKeyValueSetOptions } from "./abstractions.js";
 import type { IGlobalKeyValueListParams } from "./abstractions.js";
+import type { IGlobalKeyValueDeleteOptions } from "./abstractions.js";
 
 const DEFAULT_SCOPE = "global";
 
@@ -31,16 +32,17 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         const scope = this.getScope(options);
         return this.repository.set(key, value, scope, {
             expiresAt: options?.expiresAt,
-            collection: options?.collection
+            collection: options?.collection,
+            condition: options?.condition
         });
     }
 
     async delete(
         key: string,
-        options?: IGlobalKeyValueStoreOptions
+        options?: IGlobalKeyValueDeleteOptions
     ): Promise<Result<void, ServiceAbstraction.Error>> {
         const scope = this.getScope(options);
-        return this.repository.delete(key, scope);
+        return this.repository.delete(key, scope, { condition: options?.condition });
     }
 
     async list<T = unknown>(

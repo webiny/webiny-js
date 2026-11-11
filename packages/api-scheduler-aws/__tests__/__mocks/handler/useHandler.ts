@@ -18,6 +18,8 @@ import type {
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface UseHandlerParams {
     getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
@@ -54,6 +56,8 @@ export const useHandler = (params: UseHandlerParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
