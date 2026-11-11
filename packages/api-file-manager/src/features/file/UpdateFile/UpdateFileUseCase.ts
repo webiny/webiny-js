@@ -45,6 +45,14 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const currentIdentity = this.identityContext.getIdentity();
 
+        // Attribution and dates come from the server. Only full access, or code running without
+        // authorization (imports, migrations), may set them.
+        const systemInput: Partial<typeof input> =
+            !this.identityContext.isAuthorizationEnabled() ||
+            (await this.identityContext.hasFullAccess())
+                ? input
+                : {};
+
         const file: File = {
             ...original,
             ...input,
@@ -58,14 +66,18 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             description: input.description !== undefined ? input.description : original.description,
             location: input.location !== undefined ? input.location : original.location,
             // System fields.
-            createdOn: input.createdOn ?? original.createdOn,
-            modifiedOn: input.modifiedOn ?? undefined,
-            savedOn: input.savedOn ?? original.savedOn,
-            createdBy: input.createdBy ? Identity.from(input.createdBy) : original.createdBy,
-            modifiedBy: input.modifiedBy
-                ? Identity.from(input.modifiedBy)
+            createdOn: systemInput.createdOn ?? original.createdOn,
+            modifiedOn: systemInput.modifiedOn ?? undefined,
+            savedOn: systemInput.savedOn ?? original.savedOn,
+            createdBy: systemInput.createdBy
+                ? Identity.from(systemInput.createdBy)
+                : original.createdBy,
+            modifiedBy: systemInput.modifiedBy
+                ? Identity.from(systemInput.modifiedBy)
                 : Identity.from(currentIdentity),
-            savedBy: input.savedBy ? Identity.from(input.savedBy) : Identity.from(currentIdentity)
+            savedBy: systemInput.savedBy
+                ? Identity.from(systemInput.savedBy)
+                : Identity.from(currentIdentity)
         };
 
         await this.eventPublisher.publish(new FileBeforeUpdateEvent({ original, file, input }));

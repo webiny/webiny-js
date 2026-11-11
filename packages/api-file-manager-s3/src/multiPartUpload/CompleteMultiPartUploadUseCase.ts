@@ -3,10 +3,12 @@ import {
     ListPartsCommand,
     CompleteMultipartUploadCommand
 } from "@webiny/aws-sdk/client-s3/index.js";
+import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
 
 interface CompleteMultiPartUploadParams {
     fileKey: string;
     uploadId: string;
+    tenantId: string;
 }
 
 interface GetAllUploadPartsParams {
@@ -28,7 +30,7 @@ export class CompleteMultiPartUploadUseCase {
     async execute(params: CompleteMultiPartUploadParams) {
         const uploadParams = {
             Bucket: this.bucket,
-            Key: params.fileKey,
+            Key: getFileStorageKey(params.tenantId, params.fileKey),
             UploadId: params.uploadId
         };
 

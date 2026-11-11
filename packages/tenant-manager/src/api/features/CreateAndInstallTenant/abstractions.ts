@@ -7,6 +7,7 @@ import type {
     TenantInstallationError,
     TenantUpdateError,
     TenantNotFoundError,
+    TenantNotChildError,
     TenantPersistenceError,
     TenantModelNotFoundError
 } from "../../domain/errors.js";
@@ -22,6 +23,7 @@ export interface ICreateAndInstallTenantUseCaseErrors {
     tenantCreation: TenantCreationError;
     tenantInstallation: TenantInstallationError;
     notFound: TenantNotFoundError;
+    notChild: TenantNotChildError;
     notAuthorized: NotAuthorizedError;
     persistence: TenantPersistenceError;
     tenantUpdate: TenantUpdateError;

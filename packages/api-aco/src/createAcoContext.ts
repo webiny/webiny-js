@@ -1,4 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
+import { FolderTypePermissionsFeature } from "~/features/folder/FolderTypePermissions/index.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
@@ -104,6 +105,9 @@ const setupAcoContext = async (
     GetAncestorsFeature.register(context.container);
 
     EnsureFolderIsEmptyFeature.register(context.container);
+
+    // App permissions per folder type (each app registers FolderTypePermissions).
+    FolderTypePermissionsFeature.register(context.container);
 
     /**
      * Register FLP use cases and event handlers

@@ -1,5 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
 import type { FileContents } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
@@ -12,7 +13,11 @@ import { MetadataReader } from "~/features/WriteFileMetadata/MetadataReader.js";
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCase.Interface {
     private metadataReader: MetadataReader;
 
-    constructor(keyValueStore: GlobalKeyValueStore.Interface) {
+    constructor(
+        keyValueStore: GlobalKeyValueStore.Interface,
+        private s3: S3,
+        private bucket: string
+    ) {
         this.metadataReader = new MetadataReader(keyValueStore);
     }
 
@@ -23,9 +28,10 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCase.Inter
         }
 
         try {
-            const s3 = new S3();
-            const bucket = String(process.env.S3_BUCKET);
-            const response = await s3.getObject({ Bucket: bucket, Key: metadata.bucketKey });
+            const response = await this.s3.getObject({
+                Bucket: this.bucket,
+                Key: metadata.bucketKey
+            });
 
             if (!response.Body) {
                 return Result.fail(new FileNotFoundError(fileId));
@@ -44,5 +50,5 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCase.Inter
 export const GetFileContentsByIdUseCaseImplementation =
     GetFileContentsByIdUseCase.createImplementation({
         implementation: GetFileContentsByIdUseCaseImpl,
-        dependencies: [GlobalKeyValueStore]
+        dependencies: [GlobalKeyValueStore, S3Client, S3Bucket]
     });

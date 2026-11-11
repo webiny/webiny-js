@@ -19,8 +19,8 @@
   "dependencies": {
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
-    "mobx": "^7.1.4",
-    "vue": "^3.5.44"
+    "mobx": "^7.1.5",
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
