@@ -50,6 +50,7 @@ import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 export { useEnv };
@@ -116,6 +117,7 @@ export const Infra = {
     // Standalone.
     Sqlite,
     Postgres,
+    Pglite,
     FileStorage,
     ApiUrl,
     AdminUrl,

@@ -3,5 +3,6 @@ export * from "./ApiUrl.js";
 export * from "./Encryption.js";
 export * from "./FileStorage.js";
 export * from "./Hashing.js";
+export * from "./Pglite.js";
 export * from "./Postgres.js";
 export * from "./Sqlite.js";

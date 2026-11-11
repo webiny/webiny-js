@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@webiny/api-event-handler-standalone-pg": "latest",
     "@webiny/api-event-handler-standalone-sql": "latest",
     "@webiny/api-aco": "latest",
     "@webiny/api-core": "latest",

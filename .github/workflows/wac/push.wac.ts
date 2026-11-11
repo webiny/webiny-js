@@ -32,11 +32,12 @@ import {
     type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
-import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
+import { DdbOsStorageOps, DdbStorageOps, PgStorageOps, SqlStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
+const pgStorageOps = new PgStorageOps();
 
 const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
@@ -276,6 +277,11 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
+
+        // An in-process PGlite: no Postgres service.
+        if (storageOps instanceof PgStorageOps) {
+            env["WEBINY_SQL_CLIENT"] = "pglite";
+        }
     }
 
     return {
@@ -437,6 +443,7 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
         ...createVitestTestsJobs(sqlStorageOps),
+        ...createVitestTestsJobs(pgStorageOps),
         ...createAwsE2EJobs(ddbStorageOps),
         ...createAwsE2EJobs(ddbOsStorageOps),
         ...createStandaloneE2EJobs()

@@ -13,6 +13,8 @@
   "description": "Project app factories for standalone Webiny projects.",
   "license": "MIT",
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.14",
+    "@electric-sql/pglite-socket": "^0.2.17",
     "@vercel/nft": "^1.11.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/cli-core": "0.0.0",
@@ -29,6 +31,14 @@
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@electric-sql/pglite",
+        "@electric-sql/pglite-socket"
+      ]
+    }
   },
   "publishConfig": {
     "access": "public"
