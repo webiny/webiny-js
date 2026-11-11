@@ -12,6 +12,7 @@ import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
 import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
@@ -30,7 +31,8 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         private coreCreateTenant: Tenancy.CreateTenantUseCase.Interface,
         private coreUpdateTenant: Tenancy.UpdateTenantUseCase.Interface,
         private coreDeleteTenant: Tenancy.DeleteTenantUseCase.Interface,
-        private coreInstallTenant: Tenancy.InstallTenantUseCase.Interface
+        private coreInstallTenant: Tenancy.InstallTenantUseCase.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(tenantId: string): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
@@ -93,9 +95,16 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         const createdTenant = createTenantResult.value;
 
         // Install tenant
-        const installResult = await this.coreInstallTenant.execute({
-            tenant: createdTenant,
-            installationInput: []
+        /**
+         * The caller was authorized above. Installers set up system data (e.g. the "Full Access"
+         * role), which the caller's own permissions may not cover (they may only grant what they
+         * hold), so they run without authorization, like the system installation does.
+         */
+        const installResult = await this.identityContext.withoutAuthorization(() => {
+            return this.coreInstallTenant.execute({
+                tenant: createdTenant,
+                installationInput: []
+            });
         });
 
         if (installResult.isFail()) {
@@ -146,6 +155,7 @@ export default UseCaseAbstraction.createImplementation({
         Tenancy.CreateTenantUseCase,
         Tenancy.UpdateTenantUseCase,
         Tenancy.DeleteTenantUseCase,
-        Tenancy.InstallTenantUseCase
+        Tenancy.InstallTenantUseCase,
+        IdentityContext
     ]
 });
