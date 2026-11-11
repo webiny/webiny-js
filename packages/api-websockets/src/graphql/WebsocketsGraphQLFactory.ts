@@ -6,6 +6,7 @@ import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/in
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 import { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.js";
+import { validateDisconnectWhere } from "~/features/Disconnect/validateDisconnectWhere.js";
 import type { WebsocketsPermission } from "~/types.js";
 
 interface IDisconnectConnectionsArgs {
@@ -67,6 +68,11 @@ const disconnectScopedConnections = async (
     disconnect: WebsocketsDisconnectUseCase.Interface,
     where: WebsocketsListConnectionsUseCase.ParamsWhere | undefined
 ): Promise<WebsocketsListConnectionsUseCase.RegistryData[]> => {
+    // Security: an empty `identityId` / `tenant` / `connections` must not fall through to "list all".
+    const validationError = validateDisconnectWhere(where);
+    if (validationError) {
+        throw validationError;
+    }
     const connections = await listScopedConnections(scope, listConnections, where);
     if (connections.length === 0) {
         return [];
