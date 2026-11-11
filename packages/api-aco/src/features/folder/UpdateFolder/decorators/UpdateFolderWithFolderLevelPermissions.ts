@@ -38,7 +38,13 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
         this.decoretee = decoretee;
     }
 
-    async execute(id: string, params: UpdateFolderParams): UpdateFolderUseCase.Return {
+    async execute(id: string, input: UpdateFolderParams): UpdateFolderUseCase.Return {
+        /* GraphQL accepts `permissions: null`. Treat it as "no own permissions" so it goes
+           through the same owner check as an empty list, instead of skipping the check and
+           wiping the folder's permissions. */
+        const params: UpdateFolderParams =
+            input.permissions === null ? { ...input, permissions: [] } : input;
+
         const originalResult = await this.getFolder.execute(id);
 
         if (originalResult.isFail()) {
