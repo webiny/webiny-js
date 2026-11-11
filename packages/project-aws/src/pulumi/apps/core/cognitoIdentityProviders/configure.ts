@@ -8,7 +8,7 @@ import {
     type PulumiAppResourceConstructor
 } from "@webiny/pulumi";
 import { getIdpConfig } from "./getIdpConfig.js";
-import { USER_WRITABLE_ATTRIBUTES } from "../CoreCognito.js";
+import { getUserWritableAttributes } from "../CoreCognito.js";
 import { getEnvVariableAwsRegion } from "~/pulumi/env/awsRegion.js";
 
 export type IdentityAttributeMapping = {
@@ -123,9 +123,11 @@ export const configureAdminCognitoFederation = (
         const mapping = (config.attributeMapping || {}) as Record<string, unknown>;
         return Object.keys(mapping).filter(name => name !== "username");
     });
-    appClient.config.writeAttributes([
-        ...new Set([...USER_WRITABLE_ATTRIBUTES, ...mappedAttributes])
-    ]);
+    appClient.config.writeAttributes(
+        getUserWritableAttributes(userPool.output.schemas).apply(attributes => {
+            return [...new Set([...attributes, ...mappedAttributes])];
+        })
+    );
 
     appClient.config.allowedOauthScopes(["profile", "email", "openid"]);
     appClient.config.allowedOauthFlows(["implicit", "code"]);
