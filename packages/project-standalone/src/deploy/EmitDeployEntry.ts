@@ -1,7 +1,13 @@
 import path from "path";
 import fs from "fs";
-import { ApiAfterBuild, GetProjectService, UiService } from "@webiny/project/abstractions/index.js";
+import {
+    ApiAfterBuild,
+    GetProjectConfigService,
+    GetProjectService,
+    UiService
+} from "@webiny/project/abstractions/index.js";
 import { getStandaloneBuildPaths } from "./getStandaloneBuildPaths.js";
+import { getStandaloneDatabase } from "./getStandaloneDbDriver.js";
 
 /**
  * Make the deployed build/ folder runnable on its own:
@@ -15,7 +21,8 @@ import { getStandaloneBuildPaths } from "./getStandaloneBuildPaths.js";
 class EmitDeployEntryImpl implements ApiAfterBuild.Interface {
     constructor(
         private getProjectService: GetProjectService.Interface,
-        private ui: UiService.Interface
+        private ui: UiService.Interface,
+        private getProjectConfigService: GetProjectConfigService.Interface
     ) {}
 
     async execute() {
@@ -34,10 +41,18 @@ class EmitDeployEntryImpl implements ApiAfterBuild.Interface {
         );
 
         this.ui.info("Emitted build/start.mjs + package.json (run with: node start.mjs).");
+
+        // PGlite is started by `watch` / `serve`, never by the deployed entry.
+        const { pglite } = await getStandaloneDatabase(this.getProjectConfigService);
+        if (pglite) {
+            this.ui.warning(
+                "This build connects to the PGlite database of <Infra.Pglite>, which only `webiny watch` and `webiny-standalone serve` start. For a deployment, configure <Infra.Postgres> with your Postgres server."
+            );
+        }
     }
 }
 
 export const EmitDeployEntry = ApiAfterBuild.createImplementation({
     implementation: EmitDeployEntryImpl,
-    dependencies: [GetProjectService, UiService]
+    dependencies: [GetProjectService, UiService, GetProjectConfigService]
 });

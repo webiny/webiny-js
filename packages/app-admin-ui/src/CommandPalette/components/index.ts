@@ -16,6 +16,7 @@ export { FollowUps } from "./FollowUps.js";
 export { NotSavedAlert } from "./NotSavedAlert.js";
 export { NoResults } from "./NoResults.js";
 export { PaletteFooter, type Hint } from "./PaletteFooter.js";
-export { assistantLabel } from "./assistantLabel.js";
+export { assistantLabel, NO_MODEL_PLACEHOLDER } from "./assistantLabel.js";
 export { TurnError } from "./TurnError.js";
 export { hasAnswerBlock } from "./hasAnswerBlock.js";
+export { AssistantSetupCard } from "./AssistantSetupCard.js";

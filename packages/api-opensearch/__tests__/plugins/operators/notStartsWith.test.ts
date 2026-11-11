@@ -1,3 +1,4 @@
+import { startsWithQuery } from "~/features/OpenSearchQueryBuilderOperator/operators/startsWithQuery.js";
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "~/testing/index.js";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
@@ -32,18 +33,7 @@ describe("not_startsWith operator", () => {
 
         const expected: OpenSearchBoolQueryConfig = {
             must: [],
-            must_not: [
-                {
-                    match_phrase_prefix: {
-                        name: "John"
-                    }
-                },
-                {
-                    match_phrase_prefix: {
-                        name: "Doe"
-                    }
-                }
-            ],
+            must_not: [startsWithQuery("name", "John"), startsWithQuery("name", "Doe")],
             filter: [],
             should: []
         };

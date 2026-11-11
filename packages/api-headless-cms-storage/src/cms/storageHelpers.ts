@@ -58,7 +58,10 @@ export const createStorageTransformCallable = (
     };
 };
 
-/* Aggregates unique values for a given field across a list of CMS entries. */
+/*
+ * Aggregates unique values for a given field across a list of CMS entries: each value with the
+ * number of entries holding it (a value repeated in one entry counts once).
+ */
 export const aggregateUniqueFieldValues = <T extends CmsEntryValues = CmsEntryValues>(
     items: CmsEntry<T>[],
     fieldId: string
@@ -72,11 +75,7 @@ export const aggregateUniqueFieldValues = <T extends CmsEntryValues = CmsEntryVa
             continue;
         }
 
-        const values = Array.isArray(fieldValue) ? fieldValue : [fieldValue];
-
-        if (values.length === 0) {
-            continue;
-        }
+        const values = new Set(Array.isArray(fieldValue) ? fieldValue : [fieldValue]);
 
         for (const value of values) {
             result[value] = {

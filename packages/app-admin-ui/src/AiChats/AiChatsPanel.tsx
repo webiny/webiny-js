@@ -16,6 +16,7 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
+import { useAiSettingsLocation } from "~/CommandPalette/useAiSettingsLocation.js";
 import { ChatConversation } from "./ChatConversation.js";
 import { ChatHistory } from "./ChatHistory.js";
 
@@ -29,6 +30,7 @@ const AiChatsPanelBase = () => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const { identity } = useIdentity();
+    const settings = useAiSettingsLocation();
     const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
     const { vm } = presenter;
 
@@ -96,6 +98,12 @@ const AiChatsPanelBase = () => {
 
     const openChat = vm.chats.find(chat => chat.id === openChatId);
 
+    // The panel stays open beside the settings page, so "Try again" is one click away.
+    let chooseModel: (() => void) | undefined;
+    if (settings?.canOpen()) {
+        chooseModel = () => settings.open();
+    }
+
     return (
         <SidePanel
             title={vm.conversationTitle}
@@ -140,6 +148,8 @@ const AiChatsPanelBase = () => {
                 assistant={assistant}
                 firstName={firstName}
                 startedOn={openChat?.createdOn}
+                onStartNew={startNew}
+                onChooseModel={chooseModel}
             />
         </SidePanel>
     );

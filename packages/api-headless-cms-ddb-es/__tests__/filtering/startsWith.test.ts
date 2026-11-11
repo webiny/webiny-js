@@ -1,3 +1,4 @@
+import { startsWithQuery } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/operators/startsWithQuery.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
@@ -29,13 +30,7 @@ describe("startsWith filter", () => {
         const expected: OpenSearchBoolQueryConfig = {
             should: [],
             must: [],
-            filter: [
-                {
-                    match_phrase_prefix: {
-                        ["values.title"]: title
-                    }
-                }
-            ],
+            filter: [startsWithQuery("values.title", title)],
             must_not: []
         };
 

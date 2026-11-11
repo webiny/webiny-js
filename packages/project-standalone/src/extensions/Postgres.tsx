@@ -1,6 +1,6 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension, EnvVar } from "@webiny/project/extensions/index.js";
+import { BuildParam, defineExtension, EnvVar } from "@webiny/project/extensions/index.js";
 
 const sslObjectSchema = z.object({
     rejectUnauthorized: z.boolean().optional().describe("Reject unverified SSL certificates."),
@@ -10,6 +10,90 @@ const sslObjectSchema = z.object({
 });
 
 type SslObject = z.infer<typeof sslObjectSchema>;
+
+/*
+ * Settings of the Postgres-native CMS storage, passed to the API as build params. The Postgres API
+ * handler reads them at startup (`readPgStorageSettings` in @webiny/api-headless-cms-pg) and passes
+ * them to the storage. Each one is optional; unset, the storage's default applies.
+ */
+const cmsStorageSchema = z.object({
+    indexMode: z
+        .enum(["lean", "indexed"])
+        .optional()
+        .describe(
+            'Index mode of new models: "lean" (rows unindexed until a model grows) or "indexed" (default).'
+        ),
+    indexModeTtlMs: z
+        .number()
+        .int()
+        .nonnegative()
+        .optional()
+        .describe(
+            "Milliseconds a process may use a cached index mode for queries. Default: 30000."
+        ),
+    estimateTtlMs: z
+        .number()
+        .int()
+        .nonnegative()
+        .optional()
+        .describe("Milliseconds a row estimate is cached; 0 turns the cache off. Default: 60000."),
+    fieldBudget: z
+        .number()
+        .int()
+        .nonnegative()
+        .optional()
+        .describe("Indexed columns a single model's own fields may use. Default: 50."),
+    countCap: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe("A list's total is exact up to this many matches. Default: 10000."),
+    slotIndexes: z
+        .boolean()
+        .optional()
+        .describe("false skips the per-column sort indexes (test runs). Default: true."),
+    bitmapHints: z
+        .boolean()
+        .optional()
+        .describe(
+            "false leaves the planner settings alone when collecting matches (behind RDS Proxy). Default: true."
+        ),
+    sharedTables: z
+        .boolean()
+        .optional()
+        .describe("true: all tenants share one table set. Default: false.")
+});
+
+type CmsStorageSettings = z.infer<typeof cmsStorageSchema>;
+
+const CMS_STORAGE_PARAMS: Record<keyof CmsStorageSettings, string> = {
+    indexMode: "PgIndexMode",
+    indexModeTtlMs: "PgIndexModeTtlMs",
+    estimateTtlMs: "PgEstimateTtlMs",
+    fieldBudget: "PgFieldBudget",
+    countCap: "PgCountCap",
+    slotIndexes: "PgSlotIndexes",
+    bitmapHints: "PgBitmapHints",
+    sharedTables: "CmsSharedTables"
+};
+
+const CmsStorageBuildParams = ({ settings }: { settings: CmsStorageSettings | undefined }) => {
+    if (!settings) {
+        return null;
+    }
+    return (
+        <>
+            {(Object.keys(CMS_STORAGE_PARAMS) as (keyof CmsStorageSettings)[]).map(key => {
+                const value = settings[key];
+                if (value === undefined) {
+                    return null;
+                }
+                return <BuildParam key={key} paramName={CMS_STORAGE_PARAMS[key]} value={value} />;
+            })}
+        </>
+    );
+};
 
 const optionalString = (value: string | number | boolean | undefined): string | undefined => {
     if (value === undefined) {
@@ -66,6 +150,12 @@ export const Postgres = defineExtension({
         user: z.string().describe("Postgres user."),
         password: z.string().describe("Postgres password."),
         database: z.string().describe("Postgres database name."),
+        storage: z
+            .enum(["pg", "sql"])
+            .optional()
+            .describe(
+                'How content is stored: "pg" (default) is the Postgres-native storage; "sql" is the generic SQL storage. Chosen once per project: switching does not move existing data.'
+            ),
         ssl: z
             .union([z.boolean(), sslObjectSchema])
             .optional()
@@ -100,7 +190,16 @@ export const Postgres = defineExtension({
         keepAliveInitialDelayMillis: z
             .number()
             .optional()
-            .describe("Milliseconds before first TCP keep-alive probe.")
+            .describe("Milliseconds before first TCP keep-alive probe."),
+        retryMs: z
+            .number()
+            .optional()
+            .describe(
+                "Milliseconds to retry a read or transaction that lost its connection (failover, restart). 0 turns retries off. Default: 15000."
+            ),
+        cmsStorage: cmsStorageSchema
+            .optional()
+            .describe('Settings of the Postgres-native CMS storage (storage: "pg").')
     }),
     render: props => {
         return (
@@ -148,6 +247,11 @@ export const Postgres = defineExtension({
                     varName="WEBINY_PG_KEEP_ALIVE_INITIAL_DELAY_MILLIS"
                     value={optionalString(props.keepAliveInitialDelayMillis)}
                 />
+                <OptionalEnvVar
+                    varName="WEBINY_PG_RETRY_MS"
+                    value={optionalString(props.retryMs)}
+                />
+                <CmsStorageBuildParams settings={props.cmsStorage} />
             </>
         );
     }

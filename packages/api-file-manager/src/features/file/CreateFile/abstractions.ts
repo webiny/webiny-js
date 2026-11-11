@@ -1,3 +1,4 @@
+import type { InvalidFileKeyError } from "~/domain/file/errors.js";
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { CreatedBy, File, FileInput } from "~/domain/file/types.js";
@@ -65,6 +66,7 @@ export interface ICreateFileUseCaseErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
     invalidSize: InvalidFileSizeError;
+    invalidKey: InvalidFileKeyError;
     alreadyExists: FileAlreadyExistsError;
 }
 

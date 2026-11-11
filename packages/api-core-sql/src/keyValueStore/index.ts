@@ -53,21 +53,23 @@ export const createStorageOperations = (
 ): IKeyValueStorageOperations => {
     const { knex, tableManager } = params;
 
+    const ensureValuesTable = tableManager.define(TABLE_NAME, table => {
+        table.text("scopedKey").primary().notNullable();
+        table.text("key").notNullable();
+        table.text("scope").notNullable();
+        table.text("value").notNullable();
+        table.datetime("expiresAt");
+    });
+    const ensureCollectionTable = tableManager.define(COLLECTION_TABLE_NAME, table => {
+        table.text("scopedKey").primary().notNullable();
+        table.text("scope").notNullable();
+        table.text("collection").notNullable();
+        table.text("key").notNullable();
+        table.index(["scope", "collection"]);
+    });
     const ensureTable = async () => {
-        await tableManager.ensure(TABLE_NAME, table => {
-            table.text("scopedKey").primary().notNullable();
-            table.text("key").notNullable();
-            table.text("scope").notNullable();
-            table.text("value").notNullable();
-            table.datetime("expiresAt");
-        });
-        await tableManager.ensure(COLLECTION_TABLE_NAME, table => {
-            table.text("scopedKey").primary().notNullable();
-            table.text("scope").notNullable();
-            table.text("collection").notNullable();
-            table.text("key").notNullable();
-            table.index(["scope", "collection"]);
-        });
+        await ensureValuesTable();
+        await ensureCollectionTable();
     };
 
     const query = (trx: Knex = knex) => {

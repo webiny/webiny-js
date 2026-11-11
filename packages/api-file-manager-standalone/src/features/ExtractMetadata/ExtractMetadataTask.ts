@@ -8,6 +8,7 @@ import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/Update
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
 
 class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMetadataInput> {
     public constructor(
@@ -41,9 +42,10 @@ class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMet
         }
 
         const storagePath = this.config.storagePath;
-        const filePath = `${storagePath}/${fileMetadata.bucketKey}`;
 
         try {
+            const filePath = resolveStoragePath(storagePath, fileMetadata.bucketKey);
+
             /* Read the image file from local disk. */
             const buffer = await fs.readFile(filePath);
 
