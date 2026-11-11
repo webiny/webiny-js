@@ -77,14 +77,33 @@ const COMMENT_ENV = {
     COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
 };
 
-// Read the comment, overwrite a single group's row (matched by label, so the
-// update is independent of the row's current status), and write it back.
-const updateCommentRowRun = (group: string) =>
-    [
-        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt`,
-        `sed -i "s@^| ${group} |.*@| ${group} | $STATUS |@" /tmp/vitest-comment.txt`,
-        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt`
+const ROW_UPDATE_ATTEMPTS = 5;
+
+/*
+ * Read the comment, overwrite a single group's row (matched by label, so the update is independent of
+ * the row's current status), and write it back. Groups update their rows in parallel, and GitHub only
+ * replaces a comment's body whole, so a write that read the body before ours landed would put the old
+ * row back. After writing, wait a few seconds, read the comment back and start over if the row was
+ * replaced or an API call failed. Must be the last command of its step, since it ends with `exit`.
+ * The "Heal PR comment" job rewrites every row once at the end either way.
+ */
+const updateCommentRowRun = (group: string) => {
+    const comment = `repos/\${{ github.repository }}/issues/comments/$COMMENT_ID`;
+    return [
+        `row="| ${group} | $STATUS |"`,
+        `for attempt in $(seq 1 ${ROW_UPDATE_ATTEMPTS}); do`,
+        `  gh api ${comment} --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }`,
+        `  sed -i "s@^| ${group} |.*@$row@" /tmp/vitest-comment.txt`,
+        `  gh api ${comment} -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }`,
+        "  sleep $((RANDOM % 4 + 3))",
+        `  if gh api ${comment} --jq '.body' | grep -qxF "$row"; then`,
+        "    exit 0",
+        "  fi",
+        `  echo "Another job's write replaced the row (attempt $attempt of ${ROW_UPDATE_ATTEMPTS})."`,
+        "done",
+        `echo "::warning::The status comment row for ${group} could not be written after ${ROW_UPDATE_ATTEMPTS} attempts."`
     ].join("\n");
+};
 
 const createMarkRunningStep = (group: string) => ({
     name: `Mark "${group}" as running`,
