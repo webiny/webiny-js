@@ -6,10 +6,8 @@ import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
 import { DbRegistryFeature } from "@webiny/db/exports/api/db.js";
 import { type OpenSearchClientOptions } from "@webiny/api-opensearch";
-import {
-    createAwsOpenSearchClient,
-    AwsOpenSearchClientFactoryFeature
-} from "@webiny/api-opensearch-aws";
+import { createAwsOpenSearchClient } from "@webiny/api-opensearch-aws";
+import { AwsOpenSearchClientFactoryFeature } from "@webiny/api-opensearch-aws";
 import { OpenSearchClientFeature } from "@webiny/api-opensearch/features/OpenSearchClient/feature.js";
 import { OpenSearchQueryBuilderOperatorFeature } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/feature.js";
 import { OpenSearchFieldFeature } from "@webiny/api-opensearch/features/OpenSearchField/feature.js";

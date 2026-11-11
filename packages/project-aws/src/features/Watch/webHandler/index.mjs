@@ -15,16 +15,15 @@
 import http from "node:http";
 import zlib from "node:zlib";
 import crypto from "node:crypto";
-import { createRequire } from "node:module";
+import mqttModule from "./mqtt.js";
 
 const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
 const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
 const WEBINY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT = "webiny.watch.functionInvocationHandshake";
 const DEFAULT_LOCAL_EXECUTION_HANDSHAKE_TIMEOUT = 5_000;
 
-// `mqtt.js` is the CommonJS bundle the regular Lambda forwarder uses.
-const require = createRequire(import.meta.url);
-const { default: mqtt } = require("./mqtt.js");
+// `mqtt.js` is the CommonJS bundle the regular Lambda forwarder uses; its export is on `default`.
+const mqtt = mqttModule.default;
 
 const webinyWatchArgs = JSON.parse(process.env["WEBINY_WATCH"]);
 
@@ -63,7 +62,8 @@ const gunzip = input => {
         return;
       }
       const json = result.toString("utf-8");
-      resolve(JSON.parse(json));
+      const value = JSON.parse(json);
+      resolve(value);
     });
   });
 };
@@ -215,7 +215,8 @@ const forward = async event => {
       // function's timeout, since the handshake already cleared the timer.
       const onConnectionLost = error => {
         clearTimeout(timeoutId);
-        reject(error ?? new Error("Lost the connection to the watch session."));
+        const reason = error ?? new Error("Lost the connection to the watch session.");
+        reject(reason);
       };
       client.on("error", onConnectionLost);
       client.on("close", () => {

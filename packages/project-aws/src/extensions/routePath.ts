@@ -1,6 +1,7 @@
 /**
- * The `path` prop on `<Api.Route>` feeds two consumers that spell path parameters differently:
- * API Gateway wants `{orderId}`, the DI `HttpRouter` wants `:orderId`. Rather than pick a winner and
+ * The `path` prop on `<Api.Route>` feeds consumers that spell path parameters differently: API
+ * Gateway wants `{orderId}`, the DI `HttpRouter` wants `:orderId`, and a CloudFront behavior can only
+ * match a parameter with a `*`. Rather than pick a winner and
  * break whichever projects already used the other, accept both and convert per consumer.
  *
  * Wildcards are left alone. `HttpRouter` matches a trailing `/*`, API Gateway spells the same thing
@@ -20,6 +21,15 @@ export function toRouterPath(path: string): string {
     return path.replace(/\{([^}]+)\}/g, (_match, name: string) => {
         return `:${name}`;
     });
+}
+
+/**
+ * `/orders/{orderId}` → `/orders/*`, the path pattern of the CloudFront behavior that routes the
+ * path to the web function. Handles either parameter syntax; `{proxy+}` becomes `*` too.
+ */
+export function toCloudFrontPathPattern(path: string): string {
+    const gatewayPath = toApiGatewayPath(path);
+    return gatewayPath.replace(/\{[^}]+\}/g, "*");
 }
 
 /**

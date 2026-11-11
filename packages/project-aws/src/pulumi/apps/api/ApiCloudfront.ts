@@ -9,6 +9,7 @@ import { ApiFileManager } from "./ApiFileManager.js";
 import { ApiGateway } from "./ApiGateway.js";
 import { ApiGraphqlStream } from "./ApiGraphqlStream.js";
 import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
+import { toCloudFrontPathPattern } from "~/extensions/routePath.js";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
@@ -606,8 +607,7 @@ function addWebRouteBehavior(
     distribution: PulumiAppResource<typeof aws.cloudfront.Distribution>,
     routePath: string
 ): void {
-    // API Gateway path parameters (`/orders/{orderId}`, `{proxy+}`) become CloudFront wildcards.
-    const pathPattern = routePath.replace(/\{[^}]+\}/g, "*");
+    const pathPattern = toCloudFrontPathPattern(routePath);
 
     distribution.config.orderedCacheBehaviors(current => {
         if (!Array.isArray(current)) {
