@@ -5,7 +5,7 @@ import {
 } from "./abstractions.js";
 import { ModelToAstConverter } from "../ModelToAstConverter/abstractions.js";
 import { ValuesSelectionGenerator } from "../ValuesSelectionGenerator/abstractions.js";
-import { ModelsFetcher } from "../shared/abstractions.js";
+import { GetModelUseCase } from "../GetModel/abstractions.js";
 import type {
     CmsModel,
     CmsModelFieldAstNode,
@@ -16,7 +16,7 @@ import type {
 class RefModelsGeneratorImpl implements IRefModelsGenerator {
     constructor(
         private readonly modelToAst: ModelToAstConverter.Interface,
-        private readonly modelsFetcher: ModelsFetcher.Interface,
+        private readonly getModelUseCase: GetModelUseCase.Interface,
         private readonly valuesSelectionGenerator: ValuesSelectionGenerator.Interface
     ) {}
 
@@ -31,12 +31,17 @@ class RefModelsGeneratorImpl implements IRefModelsGenerator {
         const result: Record<string, RefModelMetadata> = {};
 
         for (const modelId of refModelIds) {
-            const fetchResult = await this.modelsFetcher.fetchById(modelId);
+            // Security: only expose models the current identity can read. Private models are
+            // internal and never exposed.
+            const fetchResult = await this.getModelUseCase.execute(modelId);
             if (fetchResult.isFail()) {
                 continue;
             }
 
             const refModel = fetchResult.value;
+            if (refModel.isPrivate) {
+                continue;
+            }
             const valuesSelection = this.valuesSelectionGenerator.generate(refModel);
 
             result[modelId] = { valuesSelection };
@@ -85,5 +90,5 @@ class RefModelsGeneratorImpl implements IRefModelsGenerator {
 
 export const RefModelsGenerator = Abstraction.createImplementation({
     implementation: RefModelsGeneratorImpl,
-    dependencies: [ModelToAstConverter, ModelsFetcher, ValuesSelectionGenerator]
+    dependencies: [ModelToAstConverter, GetModelUseCase, ValuesSelectionGenerator]
 });
