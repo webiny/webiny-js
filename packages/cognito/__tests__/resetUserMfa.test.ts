@@ -131,7 +131,43 @@ describe("Admin Users (Cognito): resetting a user's MFA", () => {
         expect(result.error?.message).toContain("User has no software token.");
     });
 
-    it("lets an administrator of another of the person's tenants reset a shared account", async () => {
+    it("refuses an administrator of another of the person's tenants to reset a shared account", async () => {
+        const rootUser = await createUser();
+        inTenant(acme);
+        const linkResult = await container
+            .resolve(LinkUserUseCase)
+            .execute({ email: adminUsers.userA.email });
+        expect(linkResult.isOk()).toBe(true);
+        const resetMfaSpy = vi.spyOn(mockCognitoService, "resetMfa");
+
+        signInAs("acme-admin");
+        const result = await resetMfa(rootUser.id);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error?.code).toBe("Cognito/Account/Shared");
+        expect(resetMfaSpy).not.toHaveBeenCalled();
+        expect(mockCognitoService.getMfaResets(adminUsers.userA.email)).toBe(0);
+    });
+
+    it("refuses an administrator of the original tenant to reset a shared account", async () => {
+        const rootUser = await createUser();
+        inTenant(acme);
+        const linkResult = await container
+            .resolve(LinkUserUseCase)
+            .execute({ email: adminUsers.userA.email });
+        expect(linkResult.isOk()).toBe(true);
+        const resetMfaSpy = vi.spyOn(mockCognitoService, "resetMfa");
+
+        inTenant(RootTenantValue.create());
+        signInAs("root-admin");
+        const result = await resetMfa(rootUser.id);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error?.code).toBe("Cognito/Account/Shared");
+        expect(resetMfaSpy).not.toHaveBeenCalled();
+    });
+
+    it("lets the person reset the MFA of their own shared account", async () => {
         const rootUser = await createUser();
         inTenant(acme);
         const linkResult = await container
@@ -139,7 +175,7 @@ describe("Admin Users (Cognito): resetting a user's MFA", () => {
             .execute({ email: adminUsers.userA.email });
         expect(linkResult.isOk()).toBe(true);
 
-        signInAs("acme-admin");
+        signInAs(rootUser.id);
         const result = await resetMfa(rootUser.id);
 
         expect(result.isOk()).toBe(true);

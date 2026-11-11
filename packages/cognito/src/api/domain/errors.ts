@@ -155,7 +155,7 @@ export class CognitoSharedAccountError extends BaseError<{ id: string }> {
 
     constructor(id: string) {
         super({
-            message: `This person's account is also used in other tenants, so only they can change its name, email and password.`,
+            message: `This person's account is also used in other tenants, so only they can change its name, email, password and MFA.`,
             data: { id }
         });
     }
