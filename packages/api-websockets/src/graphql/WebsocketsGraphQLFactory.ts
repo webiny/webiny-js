@@ -280,7 +280,10 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
                         const scope = { identityContext, tenantContext };
                         const currentTenant = tenantContext.getTenant();
-                        if (args.tenant !== currentTenant.id && !(await canAccessAllTenants(scope))) {
+                        if (
+                            args.tenant !== currentTenant.id &&
+                            !(await canAccessAllTenants(scope))
+                        ) {
                             throw new NotAuthorizedError();
                         }
 
