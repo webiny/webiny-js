@@ -20,7 +20,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { handler, invoke, getContext } = createCmsTestHandler({
         ...params,
         // identity === null → anonymous (handled natively by the shared harness).
-        legacyPlugins: [...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)],
         setup: container => {
             // All DI-native now: background tasks (wbyTask model + task use cases + GraphQL) and website
             // builder (models + features + schema). The mock TaskService override must come after.

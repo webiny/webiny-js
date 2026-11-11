@@ -21,8 +21,6 @@ export const useHandler = (params: Params = {}) => {
         ...params,
         // identity === null → anonymous; the shared harness authenticates the null identity natively
         // (TestAuthenticator returns it), so no post-auth override is needed.
-        //
-        legacyPlugins: [...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)],
         setup: container => {
             // All DI-native now: background tasks (wbyTask model + task use cases + GraphQL) and website
             // builder (models + features + schema). The mock TaskService override must come after.
