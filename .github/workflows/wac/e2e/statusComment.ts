@@ -12,6 +12,7 @@ const updateStep = (
     { outcome, status }: { outcome: "success" | "failure"; status: string }
 ) =>
     createStatusRowStep(params, {
+        id: `status-row-${outcome}`,
         name: `Update PR comment - ${params.label} ${outcome === "success" ? "passed" : "failed"}`,
         condition: params.if ? `${outcome}() && ${params.if}` : `${outcome}()`,
         status

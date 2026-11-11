@@ -7,6 +7,7 @@ import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
 import { createReportStatusJob } from "./reportStatus.js";
+import { createStatusRowStep } from "./statusRowStep.js";
 import { createInstallationTestSteps, createPlaywrightSetupSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
@@ -91,7 +92,7 @@ export const createAwsJobs = (
     }
 
     // The jobs whose outputs the steps' `if` reads have to be among the deploy job's `needs`.
-    const deployNeeds = ["baseBranch", "publish", "checkComment"];
+    const deployNeeds: [string, ...string[]] = ["baseBranch", "publish", "checkComment"];
     if (bugReporter && !deployNeeds.includes(bugReporter.needs)) {
         deployNeeds.push(bugReporter.needs);
     }
@@ -180,19 +181,18 @@ export const createAwsJobs = (
                 "working-directory": DIR_TEST_PROJECT,
                 run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
             },
-            {
-                name: "Update PR comment with admin URL",
-                env: {
-                    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
-                    ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}`,
-                    COMMENT_ID: `\${{ needs.checkComment.outputs.comment-id }}`
+            createStatusRowStep(
+                {
+                    label: dbDisplayName,
+                    urlExpression: "$ADMIN_URL",
+                    env: { ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}` }
                 },
-                run: [
-                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-                    `sed -i "s@| ${dbDisplayName} | 🔄 Deploying... | - |@| ${dbDisplayName} | ✅ Ready | $ADMIN_URL |@" /tmp/comment.txt`,
-                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
-                ].join("\n")
-            },
+                {
+                    name: "Update PR comment with admin URL",
+                    condition: "success()",
+                    status: "✅ Ready"
+                }
+            ),
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
