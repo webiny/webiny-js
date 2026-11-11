@@ -8,6 +8,7 @@ import { WebhookDispatcherFeature } from "~/api/features/WebhookDispatcher/featu
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
 
@@ -30,6 +31,7 @@ describe("WebhookDispatcher", () => {
     let createDeliveryMock: Mock;
     let providerMock: Mock;
     let loggerErrorMock: Mock;
+    let updateDeliveryMock: Mock;
 
     beforeEach(() => {
         container = new Container();
@@ -71,6 +73,11 @@ describe("WebhookDispatcher", () => {
                 .mockResolvedValue(
                     Result.ok({ signingSecret: undefined, deliveryRetentionDays: undefined })
                 )
+        });
+
+        updateDeliveryMock = vi.fn().mockResolvedValue(Result.ok({ id: "del-1" }));
+        container.registerInstance(UpdateWebhookDeliveryRepository, {
+            execute: updateDeliveryMock
         });
 
         loggerErrorMock = vi.fn();
@@ -124,7 +131,8 @@ describe("WebhookDispatcher", () => {
             })
         );
         const triggerError = new Error("Task definition not found.");
-        triggerMock.mockResolvedValueOnce(Result.fail(triggerError as any));
+        const failed = Result.fail(triggerError as any);
+        triggerMock.mockResolvedValueOnce(failed);
 
         const dispatcher = container.resolve(WebhookDispatcher);
 
@@ -138,6 +146,8 @@ describe("WebhookDispatcher", () => {
             { error: triggerError, webhookId: "wh-1", deliveryId: "del-1" },
             "Could not queue the webhook delivery."
         );
+        expect(updateDeliveryMock).toHaveBeenCalledTimes(1);
+        expect(updateDeliveryMock).toHaveBeenCalledWith("del-1", { status: "failed" });
     });
 
     it("dispatches no tasks when no matching webhooks", async () => {

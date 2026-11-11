@@ -15,6 +15,9 @@ import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import { TaskService as TaskTransport } from "~/api/domain/TaskService.js";
 import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
 import type { Container } from "@webiny/di";
+import { Result } from "@webiny/feature/api";
+import { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
+import { BackgroundTaskPersistenceError } from "~/api/domain/errors.js";
 
 describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
@@ -237,8 +240,9 @@ describe("tasks - trigger crud", () => {
                 fetch: async () => null
             });
         };
+        const definitions = createMockTaskDefinitions();
         const handler = useRawHandler({
-            plugins: [...createMockTaskDefinitions(), failingTransport]
+            plugins: [definitions, failingTransport]
         });
         const context = await handler.handle();
 
@@ -252,5 +256,29 @@ describe("tasks - trigger crud", () => {
 
         const tasks = await context.container.resolve(ListTasksUseCase).execute({});
         expect(tasks.value.items).toEqual([]);
+    });
+
+    it("returns the task when it was sent but its event response couldn't be stored", async () => {
+        const failingUpdate = (container: Container) => {
+            const error = new BackgroundTaskPersistenceError(new Error("Write throttled."));
+            container.registerInstance(UpdateTaskUseCase, {
+                execute: async () => Result.fail(error)
+            });
+        };
+        const definitions = createMockTaskDefinitions();
+        const handler = useRawHandler({
+            plugins: [definitions, failingUpdate]
+        });
+        const context = await handler.handle();
+
+        const result = await context.container
+            .resolve(TaskService)
+            .trigger({ definition: "myCustomTaskNumber1" });
+
+        expect(result.isOk()).toBeTrue();
+        expect(result.value).toMatchObject({
+            definitionId: "myCustomTaskNumber1",
+            eventResponse: { mockedSend: true }
+        });
     });
 });

@@ -84,7 +84,8 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
             try {
                 await definition.onBeforeTrigger({ data: input, definition });
             } catch (ex) {
-                return Result.fail(TaskTriggerError.from(ex, id));
+                const error = TaskTriggerError.from(ex, id);
+                return Result.fail(error);
             }
         }
         if (isDelayTooLong(delay)) {
@@ -110,7 +111,8 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
             this.logger.error({ error: ex }, "Could not trigger the step function.");
             // The task can't run, so don't leave it behind as pending.
             await this.deleteTask.execute(task.id);
-            return Result.fail(TaskTriggerError.from(ex, id));
+            const error = TaskTriggerError.from(ex, id);
+            return Result.fail(error);
         }
         if (!response) {
             this.logger.error({ task }, "Could not trigger the step function.");
@@ -123,9 +125,21 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
             );
         }
 
-        return await this.updateTask.execute<I, O>(task.id, {
-            eventResponse: response as Record<string, any>
-        });
+        const eventResponse = response as Record<string, any>;
+        const updated = await this.updateTask.execute<I, O>(task.id, { eventResponse });
+        if (updated.isFail()) {
+            // The transport has the task and will run it, so this is not a failed trigger. Only the
+            // stored event response is missing.
+            this.logger.error(
+                { error: updated.error, id: task.id },
+                "Could not store the task's event response."
+            );
+            // A task that was just created has no output yet, so it fits any output type.
+            const queued = { ...task, eventResponse } as TaskService.Task<I, O>;
+            return Result.ok(queued);
+        }
+
+        return updated;
     }
 
     async fetchServiceInfo(
@@ -188,15 +202,14 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
         if (updated.isFail()) {
             return Result.fail(updated.error);
         }
-        const logUpdate = await this.updateTaskLog.execute(taskLog.value.id, {
-            items: taskLog.value.items.concat([
-                {
-                    message: params.message || "Task aborted.",
-                    type: TaskLogItemType.INFO,
-                    createdOn: new Date().toISOString()
-                }
-            ])
-        });
+        const items = taskLog.value.items.concat([
+            {
+                message: params.message || "Task aborted.",
+                type: TaskLogItemType.INFO,
+                createdOn: new Date().toISOString()
+            }
+        ]);
+        const logUpdate = await this.updateTaskLog.execute(taskLog.value.id, { items });
         if (logUpdate.isFail()) {
             return Result.fail(logUpdate.error);
         }

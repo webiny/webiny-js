@@ -4,6 +4,7 @@ import { ResendWebhookDeliveryInputSchema } from "./schema.js";
 import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
@@ -19,7 +20,8 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         private readonly getWebhookRepository: GetWebhookRepository.Interface,
         private readonly createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
         private readonly taskService: TaskService.Interface,
-        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface
+        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface,
+        private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface
     ) {}
 
     async execute(deliveryId: string): Promise<Result<boolean, UseCaseAbstraction.Error>> {
@@ -76,6 +78,10 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
             }
         });
         if (triggered.isFail()) {
+            // Nothing will send this delivery, so it must not stay pending.
+            await this.updateDeliveryRepository.execute(newDeliveryResult.value.id, {
+                status: "failed"
+            });
             return Result.fail(
                 new WebhookDeliveryNotQueuedError({
                     message: triggered.error.message,
@@ -96,6 +102,7 @@ export const ResendWebhookDeliveryUseCase = UseCaseAbstraction.createImplementat
         GetWebhookRepository,
         CreateWebhookDeliveryRepository,
         TaskService,
-        GetWebhookSettingsRepository
+        GetWebhookSettingsRepository,
+        UpdateWebhookDeliveryRepository
     ]
 });

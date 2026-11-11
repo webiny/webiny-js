@@ -5,6 +5,7 @@ import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstraction
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
+import type { WebhookDeliveryNotQueuedError } from "~/api/domain/errors.js";
 
 describe("TriggerWebhookUseCase", () => {
     const handler = useHandler();
@@ -89,6 +90,12 @@ describe("TriggerWebhookUseCase", () => {
         expect(result.error.message).toBe(
             "Could not queue the webhook delivery: Task definition not found."
         );
+
+        const notQueued = result.error as WebhookDeliveryNotQueuedError;
+        const stored = await context.container
+            .resolve(GetWebhookDeliveryUseCase)
+            .execute(notQueued.data.deliveryId);
+        expect(stored.value.status).toBe("failed");
     });
 
     it("should fail when webhook does not exist", async () => {

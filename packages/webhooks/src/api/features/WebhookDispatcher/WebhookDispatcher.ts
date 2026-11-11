@@ -6,6 +6,7 @@ import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookDispatcherData } from "@webiny/api-core/features/webhooks/WebhookDispatcher/abstractions.js";
@@ -18,6 +19,7 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
         private readonly taskService: TaskService.Interface,
         private readonly provider: WebhookProvider.Interface,
         private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface,
+        private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
         private readonly logger: Logger.Interface
     ) {}
 
@@ -65,7 +67,7 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
             }
 
             // The event's own write has already succeeded, so a delivery that can't be queued is
-            // logged and doesn't fail it.
+            // logged and marked failed, and doesn't fail the write.
             const triggered = await this.taskService.trigger<ISendWebhookTaskInput>({
                 definition: SEND_WEBHOOK_TASK,
                 name: `Webhook: ${webhook.slug} — ${event.eventName}`,
@@ -84,6 +86,9 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
                     },
                     "Could not queue the webhook delivery."
                 );
+                await this.updateDeliveryRepository.execute(deliveryResult.value.id, {
+                    status: "failed"
+                });
             }
         }
     }
@@ -97,6 +102,7 @@ export const WebhookDispatcher = WebhookDispatcherAbstraction.createImplementati
         TaskService,
         WebhookProvider,
         GetWebhookSettingsRepository,
+        UpdateWebhookDeliveryRepository,
         Logger
     ]
 });
