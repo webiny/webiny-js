@@ -39,12 +39,25 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
 
         const original = EntryToFolderMapper.toFolder(originalResult.value);
 
+        // Security: `type` and `path` are never taken from the input. The GraphQL input accepts
+        // them, but changing them would move the folder into another app or corrupt the tree.
+        const input: UpdateFolderParams & Partial<Pick<Folder, "type" | "path">> = { ...data };
+        delete input.type;
+        delete input.path;
+
+        if (input.parentId && input.parentId !== original.parentId) {
+            const parentResult = await this.validateNewParent(original, input.parentId);
+            if (parentResult.isFail()) {
+                return Result.fail(parentResult.error);
+            }
+        }
+
         // Check if folder with new slug already exists
         const checkResult = await this.checkExistingFolder({
             id,
             type: original.type,
-            slug: data.slug || original.slug,
-            parentId: data.parentId !== undefined ? data.parentId : original.parentId
+            slug: input.slug || original.slug,
+            parentId: input.parentId !== undefined ? input.parentId : original.parentId
         });
 
         if (checkResult.isFail()) {
@@ -53,8 +66,8 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
 
         // Create new path if slug or parentId changed
         const pathResult = await this.createFolderPath({
-            slug: data.slug || original.slug,
-            parentId: data.parentId !== undefined ? data.parentId : original.parentId
+            slug: input.slug || original.slug,
+            parentId: input.parentId !== undefined ? input.parentId : original.parentId
         });
 
         if (pathResult.isFail()) {
@@ -66,7 +79,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
             entryId.toString(),
             {
                 values: {
-                    ...data,
+                    ...input,
                     path: pathResult.value
                 }
             }
@@ -78,6 +91,59 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
 
         const updatedFolder = EntryToFolderMapper.toFolder(result.value);
         return Result.ok(updatedFolder);
+    }
+
+    /**
+     * Security: the new parent must be a folder of the same type, and must not be the folder
+     * itself or one of its descendants (that would create a cycle in the tree).
+     */
+    private async validateNewParent(
+        folder: Folder,
+        parentId: string
+    ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        if (parentId === folder.id) {
+            return Result.fail(new FolderValidationError("A folder cannot be its own parent."));
+        }
+
+        const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
+            this.folderModel,
+            EntryId.from(parentId).toString()
+        );
+        if (parentResult.isFail()) {
+            return Result.fail(new FolderValidationError("Parent folder not found."));
+        }
+
+        const parent = EntryToFolderMapper.toFolder(parentResult.value);
+        if (parent.type !== folder.type) {
+            return Result.fail(
+                new FolderValidationError("Parent folder must be of the same type as the folder.")
+            );
+        }
+
+        // Walk up from the new parent: reaching the folder itself means a cycle.
+        const visited = new Set<string>([parent.id]);
+        let ancestorId = parent.parentId;
+        while (ancestorId && !visited.has(ancestorId)) {
+            if (ancestorId === folder.id) {
+                return Result.fail(
+                    new FolderValidationError(
+                        "A folder cannot be moved into one of its own subfolders."
+                    )
+                );
+            }
+            visited.add(ancestorId);
+
+            const ancestorResult = await this.getEntryById.execute<CmsEntryFolder>(
+                this.folderModel,
+                EntryId.from(ancestorId).toString()
+            );
+            if (ancestorResult.isFail()) {
+                break;
+            }
+            ancestorId = ancestorResult.value.values.parentId ?? null;
+        }
+
+        return Result.ok();
     }
 
     private async checkExistingFolder(params: {

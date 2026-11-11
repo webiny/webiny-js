@@ -5,6 +5,7 @@ import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/in
 import { UpdateFolderUseCase } from "../abstractions.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
+import { validatePermissionsInput } from "~/features/folder/shared/validatePermissionsInput.js";
 
 /**
  * Compares the folder's own (non-inherited) permissions. The admin app sends the current
@@ -99,24 +100,9 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
 
         // Validate data.
         if (Array.isArray(params.permissions)) {
-            for (const permission of params.permissions) {
-                const targetIsValid =
-                    permission.target.startsWith("admin:") || permission.target.startsWith("team:");
-                if (!targetIsValid) {
-                    return Result.fail(
-                        new FolderValidationError(
-                            `Permission target "${permission.target}" is not valid.`
-                        )
-                    );
-                }
-
-                if (permission.inheritedFrom) {
-                    return Result.fail(
-                        new FolderValidationError(
-                            `Permission "inheritedFrom" cannot be set manually.`
-                        )
-                    );
-                }
+            const validationError = validatePermissionsInput(params.permissions);
+            if (validationError) {
+                return Result.fail(validationError);
             }
         }
 
