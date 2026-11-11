@@ -227,11 +227,12 @@ jobs:
           row="| No storage | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| No storage |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| No storage \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -304,11 +305,12 @@ jobs:
           row="| No storage | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| No storage |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| No storage \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -429,11 +431,12 @@ jobs:
           row="| DDB | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| DDB |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -506,11 +509,12 @@ jobs:
           row="| DDB | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| DDB |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -625,11 +629,12 @@ jobs:
           row="| DDB+OS | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| DDB+OS |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -702,11 +707,12 @@ jobs:
           row="| DDB+OS | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| DDB+OS |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -851,11 +857,12 @@ jobs:
           row="| SQL | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| SQL |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| SQL \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -928,11 +935,12 @@ jobs:
           row="| SQL | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| SQL |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| SQL \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -1047,11 +1055,12 @@ jobs:
           row="| PGlite | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| PGlite |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| PGlite \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -1124,11 +1133,12 @@ jobs:
           row="| PGlite | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| PGlite |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| PGlite \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -1245,11 +1255,12 @@ jobs:
           row="| pg | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| pg |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| pg \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -1322,11 +1333,12 @@ jobs:
           row="| pg | $STATUS |"
 
           for attempt in $(seq 1 5); do
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }
-            sed -i "s@^| pg |.*@$row@" /tmp/vitest-comment.txt
-            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| pg \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
             sleep $((RANDOM % 4 + 3))
             if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
               exit 0
             fi
             echo "Another job's write replaced the row (attempt $attempt of 5)."
@@ -1426,6 +1438,12 @@ jobs:
       - vitest-sql-run
       - vitest-pglite-run
       - vitest-pg-run
+      - vitest-result
+      - vitest-ddb-result
+      - vitest-ddb-os-result
+      - vitest-sql-result
+      - vitest-pglite-result
+      - vitest-pg-result
     if: always() && needs.checkComment.result == 'success'
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

@@ -19,6 +19,7 @@ import {
 } from "./utils/index.js";
 import { VALKEY_SERVICE } from "./utils/index.js";
 import { VALKEY_TEST_URL } from "./utils/index.js";
+import { commentRowUpdateRun } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     DdbStorageOps,
@@ -77,33 +78,17 @@ const COMMENT_ENV = {
     COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
 };
 
-const ROW_UPDATE_ATTEMPTS = 5;
-
 /*
  * Read the comment, overwrite a single group's row (matched by label, so the update is independent of
- * the row's current status), and write it back. Groups update their rows in parallel, and GitHub only
- * replaces a comment's body whole, so a write that read the body before ours landed would put the old
- * row back. After writing, wait a few seconds, read the comment back and start over if the row was
- * replaced or an API call failed. Must be the last command of its step, since it ends with `exit`.
- * The "Heal PR comment" job rewrites every row once at the end either way.
+ * the row's current status), and write it back, retrying if another group's write replaced it. Must
+ * be the last command of its step (see commentRowUpdateRun). The "Heal PR comment" job rewrites every
+ * row once after all of them.
  */
-const updateCommentRowRun = (group: string) => {
-    const comment = `repos/\${{ github.repository }}/issues/comments/$COMMENT_ID`;
-    return [
+const updateCommentRowRun = (group: string) =>
+    [
         `row="| ${group} | $STATUS |"`,
-        `for attempt in $(seq 1 ${ROW_UPDATE_ATTEMPTS}); do`,
-        `  gh api ${comment} --jq '.body' > /tmp/vitest-comment.txt || { sleep 3; continue; }`,
-        `  sed -i "s@^| ${group} |.*@$row@" /tmp/vitest-comment.txt`,
-        `  gh api ${comment} -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { sleep 3; continue; }`,
-        "  sleep $((RANDOM % 4 + 3))",
-        `  if gh api ${comment} --jq '.body' | grep -qxF "$row"; then`,
-        "    exit 0",
-        "  fi",
-        `  echo "Another job's write replaced the row (attempt $attempt of ${ROW_UPDATE_ATTEMPTS})."`,
-        "done",
-        `echo "::warning::The status comment row for ${group} could not be written after ${ROW_UPDATE_ATTEMPTS} attempts."`
+        commentRowUpdateRun({ label: group, bodyFile: "/tmp/vitest-comment.txt" })
     ].join("\n");
-};
 
 const createMarkRunningStep = (group: string) => ({
     name: `Mark "${group}" as running`,
@@ -340,6 +325,11 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             name: "Vitest status summary",
             // Rewrites the status comment and the PR description.
             permissions: { "pull-requests": "write" },
+            /*
+             * The `-result` jobs write their group's row into the comment, so this waits for them
+             * too: rewriting the table while one of them is still writing would let its write put
+             * other rows back to an older state, with nothing left to repair them.
+             */
             needs: [
                 "checkComment",
                 "vitest-run",
@@ -347,7 +337,13 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                 "vitest-ddb-os-run",
                 "vitest-sql-run",
                 "vitest-pglite-run",
-                "vitest-pg-run"
+                "vitest-pg-run",
+                "vitest-result",
+                "vitest-ddb-result",
+                "vitest-ddb-os-result",
+                "vitest-sql-result",
+                "vitest-pglite-result",
+                "vitest-pg-result"
             ],
             if: "always() && needs.checkComment.result == 'success'",
             checkout: false,
