@@ -16,6 +16,10 @@ class MockDataCreatorTask implements TaskDefinition.Interface<
 > {
     id = MOCK_DATA_CREATOR_TASK_ID;
     title = "Mock Data Creator";
+    /**
+     * Security: development tool that bypasses CMS permissions. Never triggered through the API.
+     */
+    isPrivate = true;
     maxIterations = 500;
 
     selfCleanup = "always" as const;
