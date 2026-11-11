@@ -116,19 +116,6 @@ describe("AI chats", () => {
         expect((await get.execute(first.value.id)).value.messages).toEqual(longer);
     });
 
-    it("takes a title from the save when one is given", async () => {
-        const { save } = setup();
-        const created = await save.execute({ title: "  Slugs  ", messages: question("Hi") });
-        expect(created.value.title).toBe("Slugs");
-
-        const renamed = await save.execute({
-            id: created.value.id,
-            title: "Renamed",
-            messages: created.value.messages
-        });
-        expect(renamed.value.title).toBe("Renamed");
-    });
-
     it("shortens a long first question to fit the chats panel", async () => {
         const { save } = setup();
         const long = "word ".repeat(40);

@@ -1,13 +1,12 @@
 import type { AiChatsRepository } from "~/features/aiChats/abstractions";
 
 /**
- * An in-memory chats repository that records every save, so a test can see what the presenter
- * sent and in which order.
+ * An in-memory chats repository. It records every chat the presenter tells it was saved, and opens
+ * the chats a test puts in it.
  */
 export const createFakeChats = (chats: AiChatsRepository.Summary[] = []) => {
-    const saves: AiChatsRepository.SaveInput[] = [];
+    const remembered: AiChatsRepository.Summary[] = [];
     const stored = new Map<string, AiChatsRepository.Chat>();
-    let nextId = 1;
 
     const repository: AiChatsRepository.Interface = {
         chats,
@@ -23,23 +22,17 @@ export const createFakeChats = (chats: AiChatsRepository.Summary[] = []) => {
             }
             return chat;
         },
-        async save(input) {
-            saves.push(input);
-            const id = input.id ?? `chat-${nextId++}`;
-            const chat: AiChatsRepository.Chat = {
-                id,
-                title: "Chat",
-                createdOn: "2026-10-19T10:00:00.000Z",
-                savedOn: "2026-10-19T10:00:00.000Z",
-                messages: input.messages
-            };
-            stored.set(id, chat);
-            return { id, title: chat.title, createdOn: chat.createdOn, savedOn: chat.savedOn };
+        remember(chat) {
+            remembered.push(chat);
         },
         async delete(id) {
             stored.delete(id);
         }
     };
 
-    return { repository, saves, stored };
+    const put = (chat: AiChatsRepository.Chat): void => {
+        stored.set(chat.id, chat);
+    };
+
+    return { repository, remembered, put };
 };

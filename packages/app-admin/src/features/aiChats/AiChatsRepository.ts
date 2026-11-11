@@ -4,25 +4,7 @@ import { AiChatsRepository as RepositoryAbstraction } from "./abstractions.js";
 import type { AiChat } from "./abstractions.js";
 import type { AiChatSummary } from "./abstractions.js";
 import type { AiChatsPage } from "./abstractions.js";
-import type { SaveAiChatInput } from "./abstractions.js";
 import { messageOf } from "./messageOf.js";
-import type { AiChatSaveFailure } from "./abstractions.js";
-import { AiChatSaveError } from "./AiChatSaveError.js";
-import { AiChatsRequestError } from "./AiChatsRequestError.js";
-
-/** The server's code for a chat over the size it stores. */
-const CHAT_TOO_LARGE = "AiChat/TooLarge";
-
-/**
- * A save that got an answer was refused; one that did not never reached the server. Only the first
- * carries a code, and only "too large" needs a different fix than trying again.
- */
-const saveFailureOf = (error: unknown): AiChatSaveFailure => {
-    if (!(error instanceof AiChatsRequestError)) {
-        return "unreachable";
-    }
-    return error.code === CHAT_TOO_LARGE ? "too-large" : "rejected";
-};
 
 /**
  * Registered as a singleton, so the assistant and the chats panel see one list.
@@ -61,17 +43,17 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
         return this.gateway.get(id);
     }
 
-    async save(input: SaveAiChatInput): Promise<AiChatSummary> {
-        let summary: AiChatSummary;
-        try {
-            summary = await this.gateway.save(input);
-        } catch (error) {
-            const message = messageOf(error);
-            const failure = saveFailureOf(error);
-            throw new AiChatSaveError(message, failure);
+    /*
+     * The server lists chats by when they were created, so a chat saved again keeps its place. Only
+     * a new chat goes first, which is also where the server puts it.
+     */
+    remember(chat: AiChatSummary): void {
+        const known = this.chats.some(existing => existing.id === chat.id);
+        if (!known) {
+            this.chats = [chat, ...this.chats];
+            return;
         }
-        this.upsert(summary);
-        return summary;
+        this.chats = this.chats.map(existing => (existing.id === chat.id ? chat : existing));
     }
 
     async delete(id: string): Promise<void> {
@@ -123,19 +105,6 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
     private failReading(message: string): void {
         this.error = message;
         this.loading = false;
-    }
-
-    /*
-     * The server lists chats by when they were created, so a chat saved again keeps its place. Only
-     * a new chat goes first, which is also where the server puts it.
-     */
-    private upsert(summary: AiChatSummary): void {
-        const known = this.chats.some(chat => chat.id === summary.id);
-        if (!known) {
-            this.chats = [summary, ...this.chats];
-            return;
-        }
-        this.chats = this.chats.map(chat => (chat.id === summary.id ? summary : chat));
     }
 
     private remove(id: string): void {

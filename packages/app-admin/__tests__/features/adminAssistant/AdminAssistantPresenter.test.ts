@@ -31,7 +31,14 @@ const settle = async (presenter: PresenterAbstraction.Interface) => {
     }
 };
 
-const DONE: AdminAssistantStreamEvent = { type: "done", messages: [], steps: 1 };
+const DONE: AdminAssistantStreamEvent = { type: "done", steps: 1 };
+
+const SAVED = {
+    id: "chat-1",
+    title: "Chat",
+    createdOn: "2026-10-19T10:00:00.000Z",
+    savedOn: "2026-10-19T10:00:00.000Z"
+};
 
 describe("AdminAssistantPresenter", () => {
     it("knows no model until a run names one", async () => {
@@ -92,6 +99,7 @@ describe("AdminAssistantPresenter", () => {
                         }
                     ]
                 },
+                { type: "saved", chat: SAVED },
                 DONE
             ],
             [{ type: "text", text: "No folder was created." }, DONE]

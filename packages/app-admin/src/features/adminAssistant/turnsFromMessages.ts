@@ -1,10 +1,8 @@
 import type { AdminAssistantMessage } from "./abstractions.js";
 import type { AiTurnViewModel } from "./abstractions.js";
 
-/** A rebuilt turn, with the messages that let the conversation carry on from it. */
-export interface RestoredTurn extends Omit<AiTurnViewModel, "needsSetup"> {
-    messages: AdminAssistantMessage[];
-}
+/** A rebuilt turn. The server keeps the messages, so carrying on needs none of them here. */
+export type RestoredTurn = Omit<AiTurnViewModel, "needsSetup">;
 
 interface Part {
     type?: unknown;
@@ -72,14 +70,11 @@ const startTurn = (question: string): RestoredTurn => ({
     running: false,
     pendingApprovals: [],
     followUps: [],
-    messages: [],
     settled: true
 });
 
 /** Reads what an assistant or tool message adds to the turn it belongs to. */
 const addToTurn = (turn: RestoredTurn, message: AdminAssistantMessage): void => {
-    turn.messages.push(message);
-
     if (message.role === "assistant") {
         // Each assistant message is a step. Steps were streamed as one answer, a paragraph apart.
         const text = textOf(message);
@@ -125,9 +120,8 @@ const addToTurn = (turn: RestoredTurn, message: AdminAssistantMessage): void => 
  * Turns a saved conversation back into the turns the palette shows.
  *
  * The inverse of how the assistant replays a conversation: every user message starts a turn, and
- * the assistant and tool messages after it are that turn's, kept verbatim so a follow-up replays
- * exactly what was saved. The follow-up questions come from the call that suggested them, so a
- * reopened chat offers the same ones it ended with.
+ * the assistant and tool messages after it are that turn's. The follow-up questions come from the
+ * call that suggested them, so a reopened chat offers the same ones it ended with.
  */
 export const turnsFromMessages = (messages: AdminAssistantMessage[]): RestoredTurn[] => {
     const turns: RestoredTurn[] = [];
