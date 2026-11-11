@@ -5,6 +5,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { WEBSITE_BUILDER_INTEGRATIONS } from "~/constants.js";
 import { GetIntegrationsUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { canManageIntegrations } from "../canManageIntegrations.js";
 
 class GetIntegrationsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -21,7 +22,7 @@ class GetIntegrationsUseCaseImpl implements UseCaseAbstraction.Interface {
         /* Integrations hold credentials. The page editor needs them for its integration inputs
            (e.g. ecommerce pickers), so page editors may read them too. */
         const canRead =
-            (await this.permissions.canAccess("integrations")) ||
+            (await canManageIntegrations(this.identityContext)) ||
             (await this.permissions.canEdit("page"));
         if (!canRead) {
             return Result.fail(new NotAuthorizedError());
