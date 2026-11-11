@@ -13,6 +13,10 @@ import { CmsParametersPlugin, createCmsExtension } from "@webiny/api-headless-cm
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
+import { Result } from "@webiny/feature/api";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { FileNotAuthorizedError } from "@webiny/api-file-manager/domain/file/errors.js";
+import type { File } from "@webiny/api-file-manager/domain/file/types.js";
 import { Extension } from "~/api/Extension.js";
 import type { Container } from "@webiny/di";
 import { createTenancyAndSecurity } from "./tenancySecurity.js";
@@ -47,6 +51,24 @@ class TestTaskService {
     }
 }
 
+/**
+ * Stands in for File Manager's `GetFileUseCase`: only `accessibleFileIds` can be read, every
+ * other file is refused as the real use case does for files the caller can't access.
+ */
+class TestGetFileUseCase implements GetFileUseCase.Interface {
+    public readonly requested: string[] = [];
+
+    constructor(private accessibleFileIds: string[]) {}
+
+    async execute(id: string) {
+        this.requested.push(id);
+        if (!this.accessibleFileIds.includes(id)) {
+            return Result.fail(new FileNotAuthorizedError());
+        }
+        return Result.ok({ id, name: `${id}.txt`, type: "text/plain" } as unknown as File);
+    }
+}
+
 class EncryptionPassphraseBuildParam implements BuildParam.Interface {
     public readonly key = "EncryptionPassphrase";
     public readonly value = "test-encryption-passphrase";
@@ -67,9 +89,17 @@ export interface UseGraphQLHandlerParams {
      * Registers test-specific implementations (models, decorators) in the request container.
      */
     register?: (container: Container) => void;
+    /**
+     * Files the caller can read through File Manager's `GetFileUseCase`.
+     */
+    accessibleFileIds?: string[];
 }
 
-const createPlugins = (params: UseGraphQLHandlerParams, taskService: TestTaskService) => {
+const createPlugins = (
+    params: UseGraphQLHandlerParams,
+    taskService: TestTaskService,
+    getFile: TestGetFileUseCase
+) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -97,6 +127,7 @@ const createPlugins = (params: UseGraphQLHandlerParams, taskService: TestTaskSer
                 TaskService,
                 taskService as unknown as TaskService.Interface
             );
+            context.container.registerInstance(GetFileUseCase, getFile);
             Extension.register(context.container);
             params.register?.(context.container);
         })
@@ -109,7 +140,11 @@ const createPlugins = (params: UseGraphQLHandlerParams, taskService: TestTaskSer
 export const useContext = async (params: UseGraphQLHandlerParams = {}) => {
     const handler = createRawHandler<any, any>({
         plugins: [
-            ...createPlugins(params, new TestTaskService()),
+            ...createPlugins(
+                params,
+                new TestTaskService(),
+                new TestGetFileUseCase(params.accessibleFileIds ?? [])
+            ),
             createRawEventHandler(async ({ context }) => {
                 return context;
             })
@@ -120,9 +155,10 @@ export const useContext = async (params: UseGraphQLHandlerParams = {}) => {
 
 export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const taskService = new TestTaskService();
+    const getFile = new TestGetFileUseCase(params.accessibleFileIds ?? []);
 
     const handler = createHandler({
-        plugins: createPlugins(params, taskService),
+        plugins: createPlugins(params, taskService, getFile),
         debug: false
     });
 
@@ -144,6 +180,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
 
     return {
         taskService,
+        getFile,
         getSettings() {
             return invoke(/* GraphQL */ `
                 query {
@@ -194,14 +231,22 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
                 }
             `);
         },
-        generatePageContent() {
-            return invoke(/* GraphQL */ `
-                mutation {
-                    aiPowerUps {
-                        generatePageContent(prompt: "Hello", components: [], tools: [])
+        generatePageContent(additionalFileIds?: string[]) {
+            return invoke(
+                /* GraphQL */ `
+                    mutation GeneratePageContent($additionalFileIds: [String!]) {
+                        aiPowerUps {
+                            generatePageContent(
+                                prompt: "Hello"
+                                components: []
+                                tools: []
+                                additionalFileIds: $additionalFileIds
+                            )
+                        }
                     }
-                }
-            `);
+                `,
+                { additionalFileIds }
+            );
         },
         compareEntryRevisions(modelId: string) {
             return invoke(
@@ -227,16 +272,23 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
                 { modelId }
             );
         },
-        generateEntryContent(modelId = "article") {
+        generateEntryContent(modelId = "article", additionalFileIds?: string[]) {
             return invoke(
                 /* GraphQL */ `
-                    mutation GenerateEntryContent($modelId: String!) {
+                    mutation GenerateEntryContent(
+                        $modelId: String!
+                        $additionalFileIds: [String!]
+                    ) {
                         aiPowerUps {
-                            generateEntryContent(prompt: "Hello", modelId: $modelId)
+                            generateEntryContent(
+                                prompt: "Hello"
+                                modelId: $modelId
+                                additionalFileIds: $additionalFileIds
+                            )
                         }
                     }
                 `,
-                { modelId }
+                { modelId, additionalFileIds }
             );
         }
     };

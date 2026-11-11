@@ -207,6 +207,26 @@ describe("AI Power-Ups settings security", () => {
             expect(response.data.aiPowerUps.generatePageContent).toEqual({ id: "task-1" });
             expect(taskService.triggered).toHaveLength(1);
         });
+
+        test("queues a task when the caller can read every additional file", async () => {
+            const { generatePageContent, taskService, getFile } = useGraphQLHandler({
+                accessibleFileIds: ["file-1", "file-2"]
+            });
+            const response = await generatePageContent(["file-1", "file-2", "file-1"]);
+            expect(response.data.aiPowerUps.generatePageContent).toEqual({ id: "task-1" });
+            expect(taskService.triggered).toHaveLength(1);
+            expect(getFile.requested).toEqual(["file-1", "file-2"]);
+        });
+
+        test("is refused when any additional file can't be read", async () => {
+            const { generatePageContent, taskService } = useGraphQLHandler({
+                accessibleFileIds: ["file-1"]
+            });
+            const response = await generatePageContent(["file-1", "other-tenant-file"]);
+            expect(response.data.aiPowerUps).toBeNull();
+            expect(response.errors[0].message).toBe("Not authorized.");
+            expect(taskService.triggered).toHaveLength(0);
+        });
     });
 
     describe("generateEntryContent", () => {

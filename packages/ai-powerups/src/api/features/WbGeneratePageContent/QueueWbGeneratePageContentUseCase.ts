@@ -2,6 +2,8 @@ import { Result } from "@webiny/feature/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { checkAdditionalFilesAccess } from "~/api/features/AiPromptContext/checkAdditionalFilesAccess.js";
 import { QueueWbGeneratePageContentUseCase } from "./abstractions.js";
 import {
     WB_GENERATE_PAGE_CONTENT_TASK_ID,
@@ -11,7 +13,8 @@ import {
 class QueueWbGeneratePageContentUseCaseImpl implements QueueWbGeneratePageContentUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private taskService: TaskService.Interface
+        private taskService: TaskService.Interface,
+        private getFile: GetFileUseCase.Interface
     ) {}
 
     async execute(
@@ -21,6 +24,14 @@ class QueueWbGeneratePageContentUseCaseImpl implements QueueWbGeneratePageConten
         // write Website Builder pages can queue one.
         if (!(await this.canWritePages())) {
             return Result.fail(new NotAuthorizedError());
+        }
+
+        const filesResult = await checkAdditionalFilesAccess(
+            this.getFile,
+            params.additionalFileIds
+        );
+        if (filesResult.isFail()) {
+            return Result.fail(filesResult.error);
         }
 
         const result = await this.taskService.trigger<IWbGeneratePageContentTaskInput>({
@@ -61,5 +72,5 @@ class QueueWbGeneratePageContentUseCaseImpl implements QueueWbGeneratePageConten
 
 export default QueueWbGeneratePageContentUseCase.createImplementation({
     implementation: QueueWbGeneratePageContentUseCaseImpl,
-    dependencies: [IdentityContext, TaskService]
+    dependencies: [IdentityContext, TaskService, GetFileUseCase]
 });
