@@ -1,5 +1,6 @@
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { GetLatestRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry/index.js";
+import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { getEntryTitle } from "@webiny/api-headless-cms/utils/getEntryTitle.js";
 import { CollabLocatorResolver } from "~/api/domain/locator/abstractions.js";
 import { CONTENT_TYPE_CMS_ENTRY } from "~/shared/constants.js";
@@ -11,7 +12,8 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
 
     constructor(
         private getModel: GetModelUseCase.Interface,
-        private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface
+        private getEntry: GetEntryUseCase.Interface,
+        private getLatestRevisionIncludingDeleted: GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface
     ) {}
 
     async resolve(params: CollabLocatorResolver.Params): Promise<CollabLocatorResolver.Resolution> {
@@ -29,14 +31,29 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
 
         const model = modelResult.value;
 
-        // Loading the current revision is the read-access gate: it fails with
-        // "Cms/Entry/NotAuthorized" when the caller may not read the entry.
-        const entryResult = await this.getLatestRevision.execute(model, { id: entryId });
+        // Security: loading the latest revision through GetEntryUseCase is the read-access gate.
+        // It applies model, own-entry and folder level permissions (incl. trashed entries).
+        const entryResult = await this.getEntry.execute(model, {
+            where: { entryId, latest: true }
+        });
         if (entryResult.isFail()) {
-            if (entryResult.error.code === "Cms/Entry/NotAuthorized") {
+            if (entryResult.error.code !== "Cms/Entry/NotFound") {
                 return { exists: false, authorized: false };
             }
-            // Entry itself is gone (deleted / never existed) — authorized but orphaned.
+            // The gated read hides entries the caller may not access, so "not found" is only
+            // trusted when the entry is really gone (permanently deleted / never existed).
+            const existing = await this.getLatestRevisionIncludingDeleted.execute(model, {
+                id: entryId
+            });
+            if (existing.isFail() && existing.error.code === "Cms/Entry/NotFound") {
+                // Authorized but orphaned.
+                return { exists: false, authorized: true };
+            }
+            return { exists: false, authorized: false };
+        }
+
+        // Trashed entry the caller can access — authorized, but the anchor is gone.
+        if (entryResult.value.wbyDeleted) {
             return { exists: false, authorized: true };
         }
 
@@ -68,5 +85,9 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
 
 export const CmsLocatorResolver = CollabLocatorResolver.createImplementation({
     implementation: CmsLocatorResolverImpl,
-    dependencies: [GetModelUseCase, GetLatestRevisionByEntryIdUseCase]
+    dependencies: [
+        GetModelUseCase,
+        GetEntryUseCase,
+        GetLatestRevisionByEntryIdIncludingDeletedUseCase
+    ]
 });
