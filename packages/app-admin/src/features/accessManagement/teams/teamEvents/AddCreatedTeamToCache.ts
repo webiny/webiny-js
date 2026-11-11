@@ -1,27 +1,16 @@
-import { GetTeamGateway } from "../getTeam/abstractions.js";
-import { TeamsListCache } from "../listTeams/abstractions.js";
+import { AddCreatedTeamRepository } from "./abstractions.js";
 import { TeamCreatedEventHandler } from "./abstractions.js";
 
-/**
- * Reads the team back and adds it to the teams list cache, which the Teams view renders from.
- *
- * Read back rather than taken from the event, so the team has the same fields as one the admin loads
- * itself. `addItems` replaces by id, so an event for a team the list already has changes nothing.
- */
+/** Adds the created team to the teams list cache, which the Teams view renders from. */
 class AddCreatedTeamToCacheImpl implements TeamCreatedEventHandler.Interface {
-    constructor(
-        private getTeam: GetTeamGateway.Interface,
-        private cache: TeamsListCache.Interface
-    ) {}
+    constructor(private repository: AddCreatedTeamRepository.Interface) {}
 
     async handle(event: TeamCreatedEventHandler.Event): Promise<void> {
-        const team = await this.getTeam.execute(event.payload.id);
-
-        this.cache.addItems([team]);
+        await this.repository.execute(event.payload.id);
     }
 }
 
 export const AddCreatedTeamToCache = TeamCreatedEventHandler.createImplementation({
     implementation: AddCreatedTeamToCacheImpl,
-    dependencies: [GetTeamGateway, TeamsListCache]
+    dependencies: [AddCreatedTeamRepository]
 });

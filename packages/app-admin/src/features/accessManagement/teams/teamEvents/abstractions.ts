@@ -14,3 +14,16 @@ export namespace TeamCreatedEventHandler {
     export type Interface = IEventHandler<TeamCreatedEvent>;
     export type Event = TeamCreatedEvent;
 }
+
+export interface IAddCreatedTeamRepository {
+    execute(id: string): Promise<void>;
+}
+
+/** Puts a team that was created elsewhere into the teams list, reading it back by id. */
+export const AddCreatedTeamRepository = createAbstraction<IAddCreatedTeamRepository>(
+    "AccessManagement/AddCreatedTeamRepository"
+);
+
+export namespace AddCreatedTeamRepository {
+    export type Interface = IAddCreatedTeamRepository;
+}

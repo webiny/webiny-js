@@ -27,6 +27,7 @@ describe("team created notification", () => {
         const context = await handler();
         websocketMessages.length = 0;
 
+        // A tool handler returns `unknown`, so the result has to be cast; an annotation does not compile.
         const created = (await getTool(context.container, "createTeam").execute({
             name: "Notify create",
             slug: "notify-create",
