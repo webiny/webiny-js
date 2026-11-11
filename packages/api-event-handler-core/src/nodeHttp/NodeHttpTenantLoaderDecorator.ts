@@ -6,13 +6,8 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-
-function headerValue(value: string | string[] | undefined): string | null {
-    if (Array.isArray(value)) {
-        return value[0] ?? null;
-    }
-    return value ?? null;
-}
+import { extractTenantId } from "~/auth/extractTenantId.js";
+import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
 
 /**
  * EXTRACT (transport-specific): reads the tenant id from the `x-tenant` header of a Node
@@ -30,10 +25,9 @@ class NodeHttpTenantLoaderDecoratorImpl implements NodeHttpEventHandler.Interfac
     ) {}
 
     async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
-        const headers = ctx.event?.headers;
-        this.rawTenantId.set(
-            headers ? headerValue(headers["x-tenant"] ?? headers["X-Tenant"]) : null
-        );
+        const headers = headersFromIncomingMessage(ctx.event);
+        const tenantId = extractTenantId(headers);
+        this.rawTenantId.set(tenantId);
         await this.tenantLoader.establish();
         return this.decoratee.execute(ctx, next);
     }

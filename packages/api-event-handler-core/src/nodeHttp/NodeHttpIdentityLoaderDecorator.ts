@@ -7,22 +7,7 @@ import {
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { extractAuthToken } from "~/auth/extractAuthToken.js";
-
-/**
- * Node gives a header that appears more than once as an array; the auth headers are read from the
- * first value, as before.
- */
-function headersFromIncomingMessage(event: IncomingMessage): Record<string, string> {
-    const headers: Record<string, string> = {};
-    for (const [name, value] of Object.entries(event?.headers ?? {})) {
-        if (Array.isArray(value)) {
-            headers[name] = value[0] ?? "";
-        } else if (value !== undefined) {
-            headers[name] = value;
-        }
-    }
-    return headers;
-}
+import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
 
 /**
  * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` —
