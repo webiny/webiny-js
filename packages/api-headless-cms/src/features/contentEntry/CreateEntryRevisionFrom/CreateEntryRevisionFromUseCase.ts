@@ -49,6 +49,17 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         const originalEntry = originalResult.value;
 
+        // Security: write access must be checked against the source entry, not only against the
+        // new revision (whose meta fields, e.g. createdBy, can come from input).
+        const canWriteOriginal = await this.accessControl.canAccessEntry({
+            model,
+            entry: originalEntry,
+            rwd: "w"
+        });
+        if (!canWriteOriginal) {
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
+        }
+
         const dataResult = await this.createEntryRevisionFromDataFactory.create<T>(
             sourceId,
             model,
