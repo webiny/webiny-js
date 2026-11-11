@@ -70,6 +70,26 @@ export class CannotDeletePluginRolesError extends BaseError {
     }
 }
 
+export class CannotUpdateSystemRolesError extends BaseError {
+    override readonly code = "CANNOT_UPDATE_SYSTEM_ROLES" as const;
+
+    constructor() {
+        super({
+            message: "Cannot update system roles."
+        });
+    }
+}
+
+export class CannotDeleteSystemRolesError extends BaseError {
+    override readonly code = "CANNOT_DELETE_SYSTEM_ROLES" as const;
+
+    constructor() {
+        super({
+            message: "Cannot delete system roles."
+        });
+    }
+}
+
 type RoleValidationErrorData = {
     message: string;
 };

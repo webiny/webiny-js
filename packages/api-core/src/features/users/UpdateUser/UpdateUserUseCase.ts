@@ -4,6 +4,10 @@ import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
+import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
+import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
+import { canAssignRolesAndTeams } from "~/features/security/utils/canAssignRolesAndTeams.js";
+import { CANNOT_GRANT_PERMISSIONS_MESSAGE } from "~/features/security/utils/canGrantPermissions.js";
 import { updateUserValidation } from "./schema.js";
 import {
     NotAuthorizedError,
@@ -18,7 +22,9 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private repository: AdminUsersRepository.Interface
+        private repository: AdminUsersRepository.Interface,
+        private rolesRepository: RolesRepository.Interface,
+        private teamsRepository: TeamsRepository.Interface
     ) {}
 
     async execute(
@@ -53,6 +59,22 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const originalUser = getUserResult.value;
+
+        /**
+         * Security: the caller may only assign roles and teams whose permissions they hold, and
+         * may only manage a user whose current roles and teams they could assign (otherwise they
+         * could, for example, change the password of a user with more access than they have).
+         */
+        const canAssign = await canAssignRolesAndTeams({
+            identityContext: this.identityContext,
+            rolesRepository: this.rolesRepository,
+            teamsRepository: this.teamsRepository,
+            roles: [...(originalUser.roles ?? []), ...(validation.data.roles ?? [])],
+            teams: [...(originalUser.teams ?? []), ...(validation.data.teams ?? [])]
+        });
+        if (!canAssign) {
+            return Result.fail(new NotAuthorizedError(CANNOT_GRANT_PERMISSIONS_MESSAGE));
+        }
 
         // 4. Clone update data for event modification
         const updateData = structuredClone(validation.data);
@@ -90,5 +112,11 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
 export const UpdateUserUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: UpdateUserUseCaseImpl,
-    dependencies: [IdentityContext, EventPublisher, AdminUsersRepository]
+    dependencies: [
+        IdentityContext,
+        EventPublisher,
+        AdminUsersRepository,
+        RolesRepository,
+        TeamsRepository
+    ]
 });
