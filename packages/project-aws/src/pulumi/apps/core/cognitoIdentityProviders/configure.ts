@@ -8,6 +8,7 @@ import {
     type PulumiAppResourceConstructor
 } from "@webiny/pulumi";
 import { getIdpConfig } from "./getIdpConfig.js";
+import { USER_WRITABLE_ATTRIBUTES } from "../CoreCognito.js";
 import { getEnvVariableAwsRegion } from "~/pulumi/env/awsRegion.js";
 
 export type IdentityAttributeMapping = {
@@ -113,6 +114,17 @@ export const configureAdminCognitoFederation = (
             }
             return config.providerType;
         })
+    ]);
+
+    /* Cognito writes the mapped attributes on every federated sign-in, so the app client must be
+       allowed to write them. Note: this includes `custom:id`, which then also becomes writable by
+       users through their own access token. */
+    const mappedAttributes = idpConfigs.flatMap(config => {
+        const mapping = (config.attributeMapping || {}) as Record<string, unknown>;
+        return Object.keys(mapping).filter(name => name !== "username");
+    });
+    appClient.config.writeAttributes([
+        ...new Set([...USER_WRITABLE_ATTRIBUTES, ...mappedAttributes])
     ]);
 
     appClient.config.allowedOauthScopes(["profile", "email", "openid"]);

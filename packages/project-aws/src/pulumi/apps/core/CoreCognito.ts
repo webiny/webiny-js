@@ -9,6 +9,14 @@ export interface CoreCognitoParams {
 
 export type CoreCognito = PulumiAppModule<typeof CoreCognito>;
 
+/**
+ * Attributes users may change themselves (with their own access token). `custom:id` is the
+ * Webiny identity id, so it must never be in this list: a user who could write it would sign in
+ * as any other user. Required attributes have to stay writable. Federated identity providers
+ * add the attributes they map (see `cognitoIdentityProviders/configure.ts`).
+ */
+export const USER_WRITABLE_ATTRIBUTES = ["email", "family_name", "given_name"];
+
 export const CoreCognito = createAppModule({
     name: "Cognito",
     config(app: PulumiApp, params: CoreCognitoParams) {
@@ -103,6 +111,7 @@ export const CoreCognito = createAppModule({
             name: "user-pool-client",
             config: {
                 userPoolId: userPool.output.id,
+                writeAttributes: USER_WRITABLE_ATTRIBUTES,
                 accessTokenValidity: 60,
                 idTokenValidity: 60,
                 refreshTokenValidity: 30,
