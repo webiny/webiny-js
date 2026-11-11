@@ -612,7 +612,7 @@ export const createStandaloneVariantJobs = (
     const buildArtifactName = `standalone-build-${id}`;
     const shard = `\${{ matrix.shard }}/${shards}`;
     // The jobs whose outputs the build's `if` reads have to be among its `needs`.
-    const buildJobNeeds = [...buildNeeds];
+    const buildJobNeeds: [string, ...string[]] = [...buildNeeds];
     if (feature && !buildJobNeeds.includes(feature.needs)) {
         buildJobNeeds.push(feature.needs);
     }

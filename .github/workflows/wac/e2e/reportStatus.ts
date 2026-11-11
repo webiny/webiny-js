@@ -36,8 +36,7 @@ export const createReportStatusJob = ({
     feature
 }: CreateReportStatusJobParams) => {
     const row = { label, urlExpression, env };
-    const needs = ["checkComment", buildJobKey, testsJobKey];
-    const steps: JobStep[] = [];
+    const needs: [string, ...string[]] = ["checkComment", buildJobKey, testsJobKey];
 
     const checkResultStep: JobStep = {
         // `needs.<matrix job>.result` is `success` only if every shard passed. A failed
@@ -53,29 +52,39 @@ export const createReportStatusJob = ({
         ].join("\n")
     };
 
-    if (!feature) {
-        steps.push(checkResultStep, ...createStatusRowUpdateSteps(row));
-    } else {
+    let steps: [JobStep, ...JobStep[]] = [checkResultStep, ...createStatusRowUpdateSteps(row)];
+    if (feature) {
         /*
          * `!lacks` rather than `has`, so a run where the feature check itself failed (empty
          * output) still reports the variant as failed.
          */
         const notSkippedOnPurpose = `!(${feature.lacks})`;
         needs.push(feature.needs);
-        steps.push(
+        steps = [
             createStatusRowStep(row, {
+                id: "status-row-not-supported",
                 name: `Update PR comment - ${label} not supported`,
                 condition: feature.lacks,
                 status: "⏭️ Not supported by this branch"
             }),
             { ...checkResultStep, if: notSkippedOnPurpose },
             ...createStatusRowUpdateSteps({ ...row, if: notSkippedOnPurpose })
-        );
+        ];
     }
+
+    /*
+     * The row this job wrote, whichever step wrote it, for createFinalStatusCommentJob. Only steps
+     * that ran have an output, so at most one of these is set.
+     */
+    const rowSources = steps
+        .map(step => step.id)
+        .filter(id => id?.startsWith("status-row-"))
+        .map(id => `steps.${id}.outputs.row`);
 
     return createJob({
         needs,
         name: `E2E - ${label} - Report status`,
+        outputs: { row: `\${{ ${rowSources.join(" || ")} }}` },
         // Also after a failed or skipped build or shard, which is when the row most needs updating.
         if: "${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}",
         permissions: { "pull-requests": "write" },
