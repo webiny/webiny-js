@@ -12,6 +12,7 @@ import { GetPreviousRevisionByEntryIdUseCase } from "~/features/contentEntry/Get
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntry/GetRevisionsByEntryId/index.js";
+import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
 
 const GET_TEST_ENTRY_REVISIONS = /* GraphQL */ `
     query GetTestEntryRevisions($id: ID!) {
@@ -235,6 +236,47 @@ describe("Own Entries Permissions Checks", () => {
         });
         expect(internalRevisionA.isOk()).toBe(true);
         expect(internalRevisionA.value.id).toBe(entryARev2.id);
+    });
+
+    it("should not allow force deleting entries of other users", async () => {
+        const { manageApiA, manageApiB, entryA, entryB } = await setup();
+        const { context, model } = await getContextAndModel(manageApiB);
+        const deleteEntry = context.container.resolve(DeleteEntryUseCase);
+
+        // Moving to the bin with force must not turn "not authorized" into a raw delete.
+        const toBin = await deleteEntry.execute(model, entryA.entryId, {
+            force: true,
+            permanently: false
+        });
+        expect(toBin.isFail()).toBe(true);
+        expect(toBin.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        const permanent = await deleteEntry.execute(model, entryA.entryId, {
+            force: true,
+            permanently: true
+        });
+        expect(permanent.isFail()).toBe(true);
+        expect(permanent.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        // An own-only user can't prove ownership of leftover records, so no blind cleanup.
+        const orphan = await deleteEntry.execute(model, "nonExistingEntryId", {
+            force: true,
+            permanently: true
+        });
+        expect(orphan.isFail()).toBe(true);
+        expect(orphan.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        const stillThere = await manageApiA.getTestEntry({
+            variables: { revision: entryA.id }
+        });
+        expect(stillThere.data?.id).toBe(entryA.id);
+
+        // Own entries can still be force deleted.
+        const own = await deleteEntry.execute(model, entryB.entryId, {
+            force: true,
+            permanently: false
+        });
+        expect(own.isOk()).toBe(true);
     });
 
     it("should only resolve referenced entries the user can access", async () => {
