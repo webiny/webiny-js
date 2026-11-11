@@ -6,13 +6,13 @@ import { replaceInPath } from "replace-in-path";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.js";
 import { ExtensionSrcResolver } from "@webiny/project/utils/index.js";
-import { ApiPulumi as ApiPulumiAbstraction } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi as ApiPulumiAbstraction } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { ApiPulumi } from "~/pulumi/extensions/ApiPulumi.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
 export const ApiLambdaFunction = defineExtension({
     type: "Api/LambdaFunction",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "aws" },
     description: "Add a custom Lambda function to the API app.",
     multiple: true,
     paramsSchema: ({ project }) => {

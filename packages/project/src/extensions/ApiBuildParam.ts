@@ -7,7 +7,7 @@ import fs from "fs";
 
 export const BuildParam = defineExtension({
     type: "Api/BuildParam",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "all" },
     description: "Add build-time parameter to API app.",
     multiple: true,
     paramsSchema: () => {

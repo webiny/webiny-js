@@ -19,7 +19,7 @@
     "@webiny/collaboration": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/notifications": "0.0.0",
-    "@webiny/project-aws": "0.0.0",
+    "@webiny/project-extensions": "0.0.0",
     "react": "19.3.1"
   },
   "devDependencies": {

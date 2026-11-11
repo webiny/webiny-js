@@ -7,14 +7,14 @@ import { ApiBeforeWatch } from "@webiny/project/extensions/index.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
 import { CiIs } from "@webiny/project/extensions/infra/index.js";
 import { CiIsNot } from "@webiny/project/extensions/infra/index.js";
-import { Sqlite } from "./extensions/Sqlite.js";
-import { Postgres } from "./extensions/Postgres.js";
-import { Pglite } from "./extensions/Pglite.js";
-import { FileStorage } from "./extensions/FileStorage.js";
-import { ApiUrl } from "./extensions/ApiUrl.js";
-import { AdminUrl } from "./extensions/AdminUrl.js";
-import { Encryption } from "./extensions/Encryption.js";
-import { Hashing } from "./extensions/Hashing.js";
+import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Encryption } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 /**
  * Standalone hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the

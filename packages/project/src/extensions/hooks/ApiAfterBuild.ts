@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const ApiAfterBuild = defineExtension({
     type: "Api/AfterBuild",
-    tags: { runtimeContext: "project", application: "api" },
+    tags: { runtimeContext: "project", application: "api", hosting: "all" },
     description: "Add custom logic to be executed after the API build process.",
     multiple: true,
     paramsSchema: ({ project }) => {

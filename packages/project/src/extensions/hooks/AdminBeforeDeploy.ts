@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const AdminBeforeDeploy = defineExtension({
     type: "Admin/BeforeDeploy",
-    tags: { runtimeContext: "project", application: "admin" },
+    tags: { runtimeContext: "project", application: "admin", hosting: "aws" },
     description: "Add custom logic to be executed before the ADMIN deployment process.",
     multiple: true,
     paramsSchema: ({ project }) => {

@@ -25,7 +25,7 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
-    "@webiny/project-aws": "0.0.0",
+    "@webiny/project-extensions": "0.0.0",
     "mobx": "^7.1.4",
     "react": "19.3.1"
   },

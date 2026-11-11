@@ -1,4 +1,4 @@
-import { ApiWebFunction } from "~/extensions/ApiWebFunction.js";
+import { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";
 import { type IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 /**

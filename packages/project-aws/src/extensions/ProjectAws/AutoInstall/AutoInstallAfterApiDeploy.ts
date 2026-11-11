@@ -2,7 +2,7 @@ import { ApiAfterDeploy } from "@webiny/project/abstractions/index.js";
 import { UiService } from "@webiny/project/abstractions/services/UiService.js";
 import { LoggerService } from "@webiny/project/abstractions/services/LoggerService.js";
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
-import { ApiGqlClient } from "~/abstractions/ApiGqlClient.js";
+import { ApiGqlClient } from "@webiny/project-extensions-aws/abstractions/ApiGqlClient.js";
 
 const IS_INSTALLED_QUERY = `
     query IsSystemInstalled {

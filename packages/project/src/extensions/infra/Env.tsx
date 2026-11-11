@@ -6,6 +6,7 @@ import {
     useEnvContext
 } from "~/services/GetProjectConfigService/EnvContext.js";
 import { useProductionEnvironments } from "~/services/GetProjectConfigService/ProductionEnvironmentsContext.js";
+import { assertHostingType } from "~/extensions/hosting/assertHostingType.js";
 
 export interface EnvIsProps {
     env?: string | string[];
@@ -30,6 +31,8 @@ const matchesValue = (current: string | undefined, allowed: string | string[]): 
  * Multiple conditions are AND-ed together.
  */
 export const EnvIs: React.FC<EnvIsProps> = ({ env, variant, region, children }) => {
+    // Deploy environments only exist in AWS projects.
+    assertHostingType("Infra.Env.Is", "aws");
     const currentEnv = useEnv();
     const currentVariant = useVariant();
     const currentRegion = useRegion();
@@ -57,6 +60,7 @@ export const EnvIs: React.FC<EnvIsProps> = ({ env, variant, region, children }) 
  * Multiple conditions are AND-ed together (renders when NONE of the conditions match).
  */
 export const EnvIsNot: React.FC<EnvIsProps> = ({ env, variant, region, children }) => {
+    assertHostingType("Infra.Env.IsNot", "aws");
     const currentEnv = useEnv();
     const currentVariant = useVariant();
     const currentRegion = useRegion();
@@ -80,6 +84,7 @@ export const EnvIsNot: React.FC<EnvIsProps> = ({ env, variant, region, children 
 };
 
 export const EnvIsProd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    assertHostingType("Infra.Env.IsProd", "aws");
     const env = useEnv();
     const prodEnvs = useProductionEnvironments();
     if (!prodEnvs.includes(env)) {
@@ -89,6 +94,7 @@ export const EnvIsProd: React.FC<{ children: React.ReactNode }> = ({ children })
 };
 
 export const EnvIsNotProd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    assertHostingType("Infra.Env.IsNotProd", "aws");
     const env = useEnv();
     const prodEnvs = useProductionEnvironments();
     if (prodEnvs.includes(env)) {
