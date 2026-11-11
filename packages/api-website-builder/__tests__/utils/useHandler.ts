@@ -18,18 +18,24 @@ import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity.js";
 import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { createAco } from "@webiny/api-aco";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
     identity?: IdentityData | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    /**
+     * Register ACO (folders, folder level permissions). Off by default.
+     */
+    aco?: boolean;
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, identity, plugins = [], aco = false } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const acoStorage = aco ? getStorageOps<ApiCoreStorageOperations>("aco") : null;
 
     const testProjectLicense = createTestWcpLicense();
 
@@ -45,6 +51,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
+            ...(acoStorage ? acoStorage.plugins : []),
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
@@ -54,6 +61,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createCmsExtension(),
             createBackgroundTasks(),
             createWebsiteBuilder(),
+            aco ? createAco() : [],
             createContextPlugin(context => {
                 context.container.register(WbInvalidateCloudfrontCacheTaskDefinition);
             }),
