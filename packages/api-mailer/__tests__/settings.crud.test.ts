@@ -126,19 +126,19 @@ describe("Settings Transporter CRUD", () => {
         delete removedPasswordInput["password"];
 
         const updateResult = await saveSettings.execute({
-            host: "dummy-host2.webiny",
+            host: input.host,
             user: input.user,
-            from: input.from,
+            from: "from2@dummy-host.webiny",
             port: 587
         });
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
-            host: "dummy-host2.webiny",
+            host: input.host,
             port: 587,
             secure: false,
             user: input.user,
-            from: input.from,
+            from: "from2@dummy-host.webiny",
             replyTo: input.replyTo
         });
         expect(updateResult.value).not.toHaveProperty("password");
@@ -153,10 +153,30 @@ describe("Settings Transporter CRUD", () => {
                 password: input.password,
                 port: 587,
                 secure: false,
-                host: "dummy-host2.webiny"
+                from: "from2@dummy-host.webiny"
             },
             source: "storage"
         });
+    });
+
+    it("should require the password when the host changes", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute(input);
+
+        const updateResult = await saveSettings.execute({
+            host: "attacker-host.webiny",
+            user: input.user,
+            from: input.from
+        });
+
+        expect(updateResult.isFail()).toBe(true);
+        expect(updateResult.error?.code).toBe("Mailer/Settings/Validation");
+
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const afterUpdate = await getSettings.execute("Mailer/SmtpTransport");
+        expect(afterUpdate.value?.settings.host).toBe(input.host);
     });
 
     it("should not be possible to read settings without permissions", async () => {
