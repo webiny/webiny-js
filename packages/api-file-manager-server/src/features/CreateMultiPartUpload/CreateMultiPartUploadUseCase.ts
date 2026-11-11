@@ -1,4 +1,3 @@
-import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { mdbid } from "@webiny/utils";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -7,6 +6,9 @@ import { CreateMultiPartUploadUseCase } from "@webiny/api-file-manager/features/
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { resolveServerUrl } from "~/utils/resolveServerUrl.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
+import { getStoragePath, resolveMultipartUploadDir } from "~/utils/storagePaths.js";
+import { writeMultipartUploadInfo } from "~/utils/multipartUploadInfo.js";
 
 class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.Interface {
     public constructor(
@@ -17,15 +19,20 @@ class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.I
     public async execute(
         params: CreateMultiPartUploadUseCase.Params
     ): Promise<CreateMultiPartUploadResult> {
-        const { file, numberOfParts } = params;
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        const { file, numberOfParts, clientId } = params;
+        const storagePath = getStoragePath();
         const tenant = this.tenantContext.getTenant();
+        await ensureNewFileId({ storagePath, file, tenantId: tenant.id, clientId });
+
         const serverUrl = await resolveServerUrl(this.request);
 
         const uploadId = mdbid();
 
-        const multipartDir = path.join(storagePath, "tenants", tenant.id, "multipart", uploadId);
+        const multipartDir = resolveMultipartUploadDir(storagePath, tenant.id, uploadId);
         await mkdir(multipartDir, { recursive: true });
+
+        // Security: bind the upload to its file, `CompleteMultiPartUpload` refuses any other key.
+        await writeMultipartUploadInfo(multipartDir, { fileKey: file.key });
 
         const secret = process.env.WEBINY_UPLOAD_SECRET as string;
         const expiresAt = Date.now() + 86_400_000; /* 24h */

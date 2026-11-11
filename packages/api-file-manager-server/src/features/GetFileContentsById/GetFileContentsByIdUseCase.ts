@@ -7,6 +7,7 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
+import { getStoragePath, resolveTenantFilePath } from "~/utils/storagePaths.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCase.Interface {
     private readonly metadataReader: MetadataReader.Interface;
@@ -23,10 +24,15 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCase.Inter
             return Result.fail(new FileNotFoundError(fileId));
         }
 
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
+        let filePath: string;
+        try {
+            // Security: the key comes from the file record, never read outside the tenant's files.
+            filePath = resolveTenantFilePath(getStoragePath(), metadata.tenant, metadata.bucketKey);
+        } catch {
+            return Result.fail(new FileNotFoundError(fileId));
+        }
 
         try {
-            const filePath = `${storagePath}/${metadata.bucketKey}`;
             const buffer = await fs.readFile(filePath);
             return Result.ok({ buffer, contentType: metadata.contentType });
         } catch (error) {
