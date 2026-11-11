@@ -34,6 +34,20 @@ class InvalidKeyPrefixError extends BaseError<{ keyPrefix: string }> {
     }
 }
 
+class InvalidFileIdError extends BaseError<{ id: string }> {
+    override readonly code = "INVALID_FILE_ID" as const;
+
+    constructor(id: string) {
+        super({
+            message: `Invalid file id "${id}". It may contain only letters, numbers and dashes, and must start and end with a letter or a number.`,
+            data: { id }
+        });
+    }
+}
+
+// Security: a client id becomes a storage path segment; allow only CMS-style ids.
+const FILE_ID_PATTERN = /^([a-zA-Z0-9])([a-zA-Z0-9-]+)([a-zA-Z0-9])$/;
+
 /*
  * FileNormalizer normalizes file data, before it's signed for upload.
  * It generates a unique file id, and makes sure that the file key includes the unique id.
@@ -54,6 +68,10 @@ export class FileNormalizer {
             segments.some(segment => segment === ".." || segment === ".")
         ) {
             throw new InvalidKeyPrefixError(keyPrefix);
+        }
+
+        if (payload.id && !FILE_ID_PATTERN.test(payload.id)) {
+            throw new InvalidFileIdError(payload.id);
         }
 
         const data = {
