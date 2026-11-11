@@ -109,3 +109,14 @@ export class InvalidFileTypeError extends BaseError<{ type: string }> {
         });
     }
 }
+
+export class InvalidFileKeyError extends BaseError<{ id: string; key: string }> {
+    override readonly code = "FileManager/File/InvalidFileKeyError" as const;
+
+    constructor(data: { id: string; key: string }) {
+        super({
+            message: `File key "${data.key}" is not valid for file "${data.id}".`,
+            data
+        });
+    }
+}

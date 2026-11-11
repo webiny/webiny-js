@@ -7,13 +7,20 @@ import {
 import { GetSettingsUseCase } from "../../settings/GetSettings/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { File, FileInput } from "~/domain/file/types.js";
-import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
+import {
+    FileNotAuthorizedError,
+    InvalidFileKeyError,
+    InvalidFileSizeError
+} from "~/domain/file/errors.js";
 import { FileBeforeBatchCreateEvent, FileAfterBatchCreateEvent } from "./events.js";
 import { FmPermissions } from "~/features/shared/abstractions.js";
 import { CreateFileInput } from "~/features/file/CreateFile/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { isValidFileKey } from "~/features/file/shared/isValidFileKey.js";
 
 class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
+        private identityContext: IdentityContext.Interface,
         private permissions: FmPermissions.Interface,
         private repository: CreateFilesInBatchRepository.Interface,
         private getSettings: GetSettingsUseCase.Interface,
@@ -32,6 +39,17 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
         const validationResult = await this.validateInput(input.files);
         if (validationResult.isFail()) {
             return Result.fail(validationResult.error);
+        }
+
+        // Security: each key must point at its own file's upload. Imports and migrations
+        // (running without authorization) may register any key.
+        if (this.identityContext.isAuthorizationEnabled()) {
+            for (const file of input.files) {
+                const fileId = file.id || file.key.split("/")[0];
+                if (!isValidFileKey(fileId, file.key)) {
+                    return Result.fail(new InvalidFileKeyError({ id: fileId, key: file.key }));
+                }
+            }
         }
 
         // Prepare file inputs with defaults
@@ -102,5 +120,11 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreateFilesInBatchUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateFilesInBatchUseCaseImpl,
-    dependencies: [FmPermissions, CreateFilesInBatchRepository, GetSettingsUseCase, EventPublisher]
+    dependencies: [
+        IdentityContext,
+        FmPermissions,
+        CreateFilesInBatchRepository,
+        GetSettingsUseCase,
+        EventPublisher
+    ]
 });

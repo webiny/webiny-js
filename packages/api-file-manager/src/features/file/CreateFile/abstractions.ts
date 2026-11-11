@@ -5,6 +5,7 @@ import {
     type FilePersistenceError,
     type InvalidFileSizeError,
     type FileAlreadyExistsError,
+    type InvalidFileKeyError,
     FileNotAuthorizedError
 } from "~/domain/file/errors.js";
 
@@ -66,6 +67,7 @@ export interface ICreateFileUseCaseErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
     invalidSize: InvalidFileSizeError;
+    invalidKey: InvalidFileKeyError;
     alreadyExists: FileAlreadyExistsError;
 }
 

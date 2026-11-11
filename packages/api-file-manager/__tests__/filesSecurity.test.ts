@@ -407,4 +407,88 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
             });
         }
     });
+
+    test(`forbid "createFile" and "createFiles" with a key that does not belong to the file id`, async () => {
+        const victim = createFileMock("victim-");
+        const [created] = await createFile({ data: victim });
+        expect(created.data.fileManager.createFile.error).toBeNull();
+
+        const { createFile: createFileAsB, createFiles: createFilesAsB } = useGqlHandler({
+            permissions: [{ name: "fm.file" }],
+            identity: identityB
+        });
+
+        const badKeys = [
+            victim.key,
+            "../../../../../../etc/passwd",
+            "/etc/passwd",
+            "x\\..\\y",
+            "SELF/../" + victim.key
+        ];
+
+        for (const badKey of badKeys) {
+            const id = mdbid();
+            const data = {
+                ...createFileMock(),
+                id,
+                key: badKey.replace("SELF", id)
+            };
+
+            const [single] = await createFileAsB({ data });
+            expect(single.data.fileManager.createFile.data).toBeNull();
+            expect(single.data.fileManager.createFile.error).toMatchObject({
+                code: "FileManager/File/InvalidFileKeyError"
+            });
+
+            const [batch] = await createFilesAsB({ data: [data] });
+            expect(batch.data.fileManager.createFiles.data).toBeNull();
+            expect(batch.data.fileManager.createFiles.error).toMatchObject({
+                code: "FileManager/File/InvalidFileKeyError"
+            });
+        }
+
+        // A key prefix in front of the file id is still allowed.
+        const id = mdbid();
+        const [prefixed] = await createFileAsB({
+            data: { ...createFileMock(), id, key: `some/prefix/${id}/image.png` }
+        });
+        expect(prefixed.data.fileManager.createFile.error).toBeNull();
+    });
+
+    test(`forbid "getSettings" for anonymous identities`, async () => {
+        const { getSettings } = useGqlHandler({ permissions: [], identity: null });
+        const [response] = await getSettings();
+        expect(response.data.fileManager.getSettings.data).toBeNull();
+        expect(response.data.fileManager.getSettings.error).toMatchObject({
+            code: "SECURITY_NOT_AUTHORIZED"
+        });
+    });
+
+    test(`"listTags" requires read access and respects own-only scope`, async () => {
+        const fileA = { ...createFileMock("tags-a-"), tags: ["only-a-tag"] };
+        await createFile({ data: fileA });
+
+        const identityBHandler = useGqlHandler({
+            permissions: [{ name: "fm.file", own: true }],
+            identity: identityB
+        });
+        await identityBHandler.createFile({
+            data: { ...createFileMock("tags-b-"), tags: ["only-b-tag"] }
+        });
+
+        const { listTags: listTagsWriteOnly } = useGqlHandler({
+            permissions: [{ name: "fm.file", rwd: "w" }],
+            identity: identityA
+        });
+        const [writeOnly] = await listTagsWriteOnly({});
+        expect(writeOnly.data.fileManager.listTags.error).toMatchObject({
+            code: "FileManager/File/NotAuthorizedError"
+        });
+
+        const [ownOnly] = await identityBHandler.listTags({});
+        expect(ownOnly.data.fileManager.listTags.error).toBeNull();
+        const tags = ownOnly.data.fileManager.listTags.data.map((t: { tag: string }) => t.tag);
+        expect(tags).toContain("only-b-tag");
+        expect(tags).not.toContain("only-a-tag");
+    });
 });
