@@ -18,19 +18,25 @@ const fetchGroupsAndModels = async (context: CmsContext) => {
     });
 };
 
+/**
+ * Validation reads all groups and models, so require the access an import needs before doing
+ * anything. Security: without this, the structure import was an existence oracle for groups and
+ * models the identity cannot access.
+ */
+const ensureCanImport = async (context: CmsContext) => {
+    const canWriteGroups = await context.cms.accessControl.canAccessGroup({ rwd: "w" });
+    const canWriteModels = await context.cms.accessControl.canAccessModel({ rwd: "w" });
+    if (!canWriteGroups || !canWriteModels) {
+        throw new NotAuthorizedError("Not allowed to import content model groups and models.");
+    }
+};
+
 export const createImportCrud = (context: CmsContext): HeadlessCmsImport => {
     return {
         validate: async params => {
             const { data } = params;
 
-            /* Validation reads all groups and models, so require the access an import needs. */
-            const canWriteGroups = await context.cms.accessControl.canAccessGroup({ rwd: "w" });
-            const canWriteModels = await context.cms.accessControl.canAccessModel({ rwd: "w" });
-            if (!canWriteGroups || !canWriteModels) {
-                throw new NotAuthorizedError(
-                    "Not allowed to import content model groups and models."
-                );
-            }
+            await ensureCanImport(context);
 
             const { groups, models } = await fetchGroupsAndModels(context);
 
@@ -55,6 +61,8 @@ export const createImportCrud = (context: CmsContext): HeadlessCmsImport => {
         },
         structure: async params => {
             const { data } = params;
+
+            await ensureCanImport(context);
 
             const { groups, models } = await fetchGroupsAndModels(context);
 
