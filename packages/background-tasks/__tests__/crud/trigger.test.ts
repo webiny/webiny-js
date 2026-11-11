@@ -11,6 +11,10 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
 import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
+import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
+import { TaskService as TaskTransport } from "~/api/domain/TaskService.js";
+import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
+import type { Container } from "@webiny/di";
 
 describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
@@ -123,44 +127,41 @@ describe("tasks - trigger crud", () => {
 
         const context = await handler.handle();
 
-        try {
-            const result = await context.container.resolve(TriggerTaskUseCase).execute({
-                definition: MOCK_TASK_DEFINITION_ID,
-                name: "A test of triggering task",
-                input: {
-                    wrongValueKey: "wrong",
-                    anotherWrongValueKey: "wrong again"
-                }
-            });
-            expect(result.value).toEqual("Should not reach this point.");
-        } catch (ex) {
-            expect(ex.message).toEqual("Validation failed.");
-            expect(ex.data).toEqual({
-                invalidFields: {
-                    file: {
-                        code: "invalid_type",
-                        data: {
-                            path: ["file"]
-                        },
-                        message: "Invalid input: expected string, received undefined"
+        const invalid = await context.container.resolve(TriggerTaskUseCase).execute({
+            definition: MOCK_TASK_DEFINITION_ID,
+            name: "A test of triggering task",
+            input: {
+                wrongValueKey: "wrong",
+                anotherWrongValueKey: "wrong again"
+            }
+        });
+        expect(invalid.isFail()).toBeTrue();
+        expect(invalid.error.message).toEqual("Validation failed.");
+        expect(invalid.error.data).toEqual({
+            invalidFields: {
+                file: {
+                    code: "invalid_type",
+                    data: {
+                        path: ["file"]
                     },
-                    page: {
-                        code: "invalid_type",
-                        data: {
-                            path: ["page"]
-                        },
-                        message: "Invalid input: expected number, received undefined"
+                    message: "Invalid input: expected string, received undefined"
+                },
+                page: {
+                    code: "invalid_type",
+                    data: {
+                        path: ["page"]
                     },
-                    take: {
-                        code: "invalid_type",
-                        data: {
-                            path: ["take"]
-                        },
-                        message: "Invalid input: expected boolean, received undefined"
-                    }
+                    message: "Invalid input: expected number, received undefined"
+                },
+                take: {
+                    code: "invalid_type",
+                    data: {
+                        path: ["take"]
+                    },
+                    message: "Invalid input: expected boolean, received undefined"
                 }
-            });
-        }
+            }
+        });
 
         const input = {
             file: "correct",
@@ -168,18 +169,88 @@ describe("tasks - trigger crud", () => {
             take: false
         };
 
-        try {
-            const result = await context.container.resolve(TriggerTaskUseCase).execute({
-                definition: MOCK_TASK_DEFINITION_ID,
-                name: "A test of triggering task",
-                input
+        const result = await context.container.resolve(TriggerTaskUseCase).execute({
+            definition: MOCK_TASK_DEFINITION_ID,
+            name: "A test of triggering task",
+            input
+        });
+        expect(result.value).toMatchObject({
+            id: expect.any(String),
+            input
+        });
+    });
+
+    it("returns a failure for a definition that isn't registered", async () => {
+        const context = await handler.handle();
+        const service = context.container.resolve(TaskService);
+
+        const result = await service.trigger({ definition: "notRegistered" });
+
+        expect(result.isFail()).toBeTrue();
+        expect(result.error).toBeInstanceOf(TaskDefinitionNotFoundError);
+        expect(result.error.data).toEqual({ id: "notRegistered" });
+    });
+
+    it("returns a failure for a delay longer than the maximum", async () => {
+        const context = await handler.handle();
+        const service = context.container.resolve(TaskService);
+
+        const result = await service.trigger({
+            definition: "myCustomTaskNumber1",
+            delay: 400 * 24 * 60 * 60
+        });
+
+        expect(result.isFail()).toBeTrue();
+        expect(result.error.code).toEqual("BackgroundTasks/Task/TriggerError");
+        expect(result.error.message).toEqual("The maximum delay for a task is 355 days.");
+    });
+
+    it("returns a failure when the definition's onBeforeTrigger throws", async () => {
+        const definition = createTaskDefinition({
+            id: MOCK_TASK_DEFINITION_ID,
+            title: "A task that refuses to start",
+            run({ controller }) {
+                return controller.response.done();
+            },
+            onBeforeTrigger: async () => {
+                throw new Error("Index is not ready.");
+            }
+        });
+        const handler = useRawHandler({ plugins: [definition] });
+        const context = await handler.handle();
+
+        const result = await context.container
+            .resolve(TaskService)
+            .trigger({ definition: MOCK_TASK_DEFINITION_ID });
+
+        expect(result.isFail()).toBeTrue();
+        expect(result.error.code).toEqual("BackgroundTasks/Task/TriggerError");
+        expect(result.error.message).toEqual("Index is not ready.");
+    });
+
+    it("returns a failure and deletes the task when the transport can't send it", async () => {
+        const failingTransport = (container: Container) => {
+            container.registerInstance(TaskTransport, {
+                send: async () => {
+                    throw new Error("Step function is unavailable.");
+                },
+                fetch: async () => null
             });
-            expect(result.value).toMatchObject({
-                id: expect.any(String),
-                input
-            });
-        } catch (ex) {
-            expect(ex.message).toEqual("Should not reach this point.");
-        }
+        };
+        const handler = useRawHandler({
+            plugins: [...createMockTaskDefinitions(), failingTransport]
+        });
+        const context = await handler.handle();
+
+        const result = await context.container
+            .resolve(TaskService)
+            .trigger({ definition: "myCustomTaskNumber1" });
+
+        expect(result.isFail()).toBeTrue();
+        expect(result.error.code).toEqual("BackgroundTasks/Task/TriggerError");
+        expect(result.error.message).toEqual("Step function is unavailable.");
+
+        const tasks = await context.container.resolve(ListTasksUseCase).execute({});
+        expect(tasks.value.items).toEqual([]);
     });
 });

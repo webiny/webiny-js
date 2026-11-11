@@ -7,6 +7,7 @@ import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDel
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
+import { WebhookDeliveryNotQueuedError } from "~/api/domain/errors.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookPayload } from "~/api/features/SendWebhookTask/types.js";
@@ -65,7 +66,7 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(newDeliveryResult.error);
         }
 
-        await this.taskService.trigger({
+        const triggered = await this.taskService.trigger({
             definition: SEND_WEBHOOK_TASK,
             name: `Resend webhook: ${delivery.eventType}`,
             input: {
@@ -74,6 +75,14 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
                 deliveryId: newDeliveryResult.value.id
             }
         });
+        if (triggered.isFail()) {
+            return Result.fail(
+                new WebhookDeliveryNotQueuedError({
+                    message: triggered.error.message,
+                    deliveryId: newDeliveryResult.value.id
+                })
+            );
+        }
 
         return Result.ok(true);
     }

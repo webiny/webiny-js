@@ -31,11 +31,17 @@ class SyncStorageOnModelUpdateImpl implements ModelAfterUpdateEventHandler.Inter
             if (!(await this.sync.needsSync(model))) {
                 return;
             }
-            await this.taskService.trigger<IModelStorageSyncTaskInput>({
+            const result = await this.taskService.trigger<IModelStorageSyncTaskInput>({
                 definition: MODEL_STORAGE_SYNC_TASK,
                 name: `Sync storage of model "${model.modelId}"`,
                 input: { modelId: model.modelId }
             });
+            if (result.isFail()) {
+                this.logger.error(
+                    { error: result.error, modelId: model.modelId },
+                    "Could not start the storage sync of a changed model."
+                );
+            }
         } catch (error) {
             this.logger.error(
                 { error, modelId: model.modelId },

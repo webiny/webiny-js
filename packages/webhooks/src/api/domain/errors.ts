@@ -66,6 +66,19 @@ export class WebhookPersistenceError extends BaseError<WebhookPersistenceErrorDa
     }
 }
 
+export class WebhookDeliveryNotQueuedError extends BaseError<{ deliveryId: string }> {
+    override readonly code = "WEBHOOK_DELIVERY_NOT_QUEUED" as const;
+
+    constructor(params: { message: string; deliveryId: string }) {
+        super({
+            message: `Could not queue the webhook delivery: ${params.message}`,
+            data: {
+                deliveryId: params.deliveryId
+            }
+        });
+    }
+}
+
 export class WebhookModelNotFoundError extends BaseError {
     override readonly code = "WEBHOOK_MODEL_NOT_FOUND" as const;
 

@@ -3,6 +3,7 @@ import type { Mock } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { WebhookDispatcher, WebhookProvider } from "@webiny/api-core/features/webhooks/index.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { WebhookDispatcherFeature } from "~/api/features/WebhookDispatcher/feature.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
@@ -28,6 +29,7 @@ describe("WebhookDispatcher", () => {
     let listRepoMock: Mock;
     let createDeliveryMock: Mock;
     let providerMock: Mock;
+    let loggerErrorMock: Mock;
 
     beforeEach(() => {
         container = new Container();
@@ -71,6 +73,11 @@ describe("WebhookDispatcher", () => {
                 )
         });
 
+        loggerErrorMock = vi.fn();
+        container.registerInstance(Logger, {
+            error: loggerErrorMock
+        } as unknown as Logger.Interface);
+
         WebhookDispatcherFeature.register(container);
     });
 
@@ -103,6 +110,33 @@ describe("WebhookDispatcher", () => {
                     deliveryId: "del-1"
                 })
             })
+        );
+    });
+
+    it("logs a delivery that can't be queued and carries on with the next webhook", async () => {
+        listRepoMock.mockResolvedValue(
+            Result.ok({
+                items: [
+                    makeWebhook("wh-1", "shop-sync", ["product.entry.published"]),
+                    makeWebhook("wh-2", "erp-sync", ["product.entry.published"])
+                ],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 2 }
+            })
+        );
+        const triggerError = new Error("Task definition not found.");
+        triggerMock.mockResolvedValueOnce(Result.fail(triggerError as any));
+
+        const dispatcher = container.resolve(WebhookDispatcher);
+
+        await expect(
+            dispatcher.dispatch("product.entry.published", { entryId: "abc" })
+        ).resolves.toBeUndefined();
+
+        expect(triggerMock).toHaveBeenCalledTimes(2);
+        expect(loggerErrorMock).toHaveBeenCalledTimes(1);
+        expect(loggerErrorMock).toHaveBeenCalledWith(
+            { error: triggerError, webhookId: "wh-1", deliveryId: "del-1" },
+            "Could not queue the webhook delivery."
         );
     });
 

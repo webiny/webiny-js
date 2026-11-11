@@ -36,6 +36,10 @@ export interface ITaskAbortParams {
     message?: string;
 }
 
+/**
+ * Every method returns its failures and never rejects: an unknown definition, a hook that throws
+ * or a transport that can't send the task all come back as `Result.fail`.
+ */
 export interface ITaskService {
     trigger: <
         T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,

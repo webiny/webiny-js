@@ -69,6 +69,28 @@ describe("TriggerWebhookUseCase", () => {
         expect(getResult.value.status).toBe("pending");
     });
 
+    it("should fail when the send task can't be queued", async () => {
+        const context = await handler.handle();
+        const createUseCase = context.container.resolve(CreateWebhookUseCase);
+        const triggerUseCase = context.container.resolve(TriggerWebhookUseCase);
+
+        const webhookResult = await createUseCase.execute({
+            name: "Unqueued Test",
+            endpointUrl: "https://example.com/hook",
+            events: ["cms.entry.product.published"],
+            signingSecret: "whsec_dGVzdHNlY3JldA=="
+        });
+        handler.noopTaskService.nextFailure = new Error("Task definition not found.");
+
+        const result = await triggerUseCase.execute(webhookResult.value.id, {});
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("WEBHOOK_DELIVERY_NOT_QUEUED");
+        expect(result.error.message).toBe(
+            "Could not queue the webhook delivery: Task definition not found."
+        );
+    });
+
     it("should fail when webhook does not exist", async () => {
         const context = await handler.handle();
         const triggerUseCase = context.container.resolve(TriggerWebhookUseCase);
