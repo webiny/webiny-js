@@ -8,6 +8,7 @@ import {
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import { WorkflowStateFilter } from "./WorkflowStateFilter.js";
 import { WorkflowStateNotAuthorizedError } from "~/domain/workflowState/errors.js";
+import { filterReadableStates } from "../shared/filterReadableStates.js";
 
 class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -57,7 +58,11 @@ class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
             totalCount = meta.totalCount;
 
             const items = records.map(record => new WorkflowState(record, teams, identity));
-            const filtered = await this.stateFilter.filter(items);
+            const filtered = await filterReadableStates({
+                identityContext: this.identityContext,
+                stateFilter: this.stateFilter,
+                items
+            });
 
             totalRemoved += items.length - filtered.length;
             accumulated.push(...filtered);

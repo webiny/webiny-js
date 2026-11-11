@@ -6,6 +6,7 @@ import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
+import { createMockWorkflow } from "~tests/mocks/workflow.js";
 
 describe("Workflows Use Cases", () => {
     it("should not list any workflows because there are no any", async () => {
@@ -142,5 +143,94 @@ describe("Workflows Use Cases", () => {
             id: workflow.id
         });
         expect(getAfterDeleteResult.isFail()).toBe(true);
+    });
+});
+
+/**
+ * Not a literal at the call site: `editor` is not part of the test helper permission type.
+ */
+const workflowsEditorPermissions = [{ name: "workflows", editor: true }];
+
+describe("Workflows access", () => {
+    const outsiderIdentity = {
+        id: "outsider-identity-id",
+        displayName: "Outsider Identity",
+        type: "user"
+    };
+
+    const storeMockWorkflow = async () => {
+        const { context } = await createContextHandler();
+        const result = await context.container
+            .resolve(StoreWorkflowUseCase)
+            .execute(createMockWorkflow({ app: "test" }));
+        expect(result.isOk()).toBe(true);
+        return result.value!;
+    };
+
+    it("should not list or get workflows without manage permission or app read access", async () => {
+        const workflow = await storeMockWorkflow();
+
+        for (const permissions of [[], [{ name: "workflows" }]]) {
+            const { context } = await createContextHandler({
+                identity: outsiderIdentity,
+                permissions
+            });
+            const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
+
+            const listResult = await listWorkflows.execute({ where: { app: "test" } });
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error!.code).toBe("Workflows/Workflow/NotAuthorized");
+
+            const listAllResult = await listWorkflows.execute({});
+            expect(listAllResult.isFail()).toBe(true);
+            expect(listAllResult.error!.code).toBe("Workflows/Workflow/NotAuthorized");
+
+            const getResult = await context.container
+                .resolve(GetWorkflowUseCase)
+                .execute({ app: "test", id: workflow.id });
+            expect(getResult.isFail()).toBe(true);
+            expect(getResult.error!.code).toBe("Workflows/Workflow/NotAuthorized");
+        }
+    });
+
+    it("should list and get workflows with manage permission", async () => {
+        const workflow = await storeMockWorkflow();
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: workflowsEditorPermissions
+        });
+
+        const listResult = await context.container.resolve(ListWorkflowsUseCase).execute({});
+        expect(listResult.isOk()).toBe(true);
+        expect(listResult.value!.items.map(item => item.id)).toEqual([workflow.id]);
+
+        const getResult = await context.container
+            .resolve(GetWorkflowUseCase)
+            .execute({ app: "test", id: workflow.id });
+        expect(getResult.isOk()).toBe(true);
+    });
+
+    it("should list and get workflows without authorization (background work)", async () => {
+        const workflow = await storeMockWorkflow();
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: []
+        });
+        const identityContext = context.container.resolve(IdentityContext);
+
+        const listResult = await identityContext.withoutAuthorization(async () => {
+            return context.container.resolve(ListWorkflowsUseCase).execute({});
+        });
+        expect(listResult.isOk()).toBe(true);
+        expect(listResult.value!.items.map(item => item.id)).toEqual([workflow.id]);
+
+        const getResult = await identityContext.withoutAuthorization(async () => {
+            return context.container
+                .resolve(GetWorkflowUseCase)
+                .execute({ app: "test", id: workflow.id });
+        });
+        expect(getResult.isOk()).toBe(true);
     });
 });

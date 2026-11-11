@@ -21,6 +21,7 @@ import {
     WorkflowStateNotAuthorizedError
 } from "~/domain/workflowState/errors.js";
 import { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -48,6 +49,23 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
                 new WorkflowStateValidationError(
                     "Cannot create a workflow state without version of a target record."
                 )
+            );
+        }
+
+        // The caller must be able to write the target; the provider throws when they can't, or
+        // when the target can't be read.
+        let targetContext: GenericRecord;
+        try {
+            targetContext = await this.targetContextProvider.provide({
+                app: input.app,
+                targetRevisionId: input.targetRevisionId
+            });
+        } catch (ex) {
+            if (ex instanceof WorkflowStateNotAuthorizedError) {
+                return Result.fail(ex);
+            }
+            return Result.fail(
+                new WorkflowStateNotAuthorizedError("Cannot access the workflow state target.")
             );
         }
 
@@ -117,11 +135,6 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
         }
 
         const identity = this.identityContext.getIdentity();
-
-        const targetContext = await this.targetContextProvider.provide({
-            app: input.app,
-            targetRevisionId: input.targetRevisionId
-        });
 
         const record: CreateWorkflowStateRepository.Input = {
             workflowId: workflow.id,

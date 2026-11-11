@@ -14,6 +14,9 @@ import { ApproveWorkflowStateStepUseCase } from "~/features/workflowState/Approv
 import { RejectWorkflowStateStepUseCase } from "~/features/workflowState/RejectWorkflowStateStep/index.js";
 import { TakeOverWorkflowStateStepUseCase } from "~/features/workflowState/TakeOverWorkflowStateStep/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { GetWorkflowStateUseCase } from "~/features/workflowState/GetWorkflowState/index.js";
+import { CancelWorkflowStateUseCase } from "~/features/workflowState/CancelWorkflowState/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 
@@ -716,5 +719,199 @@ describe("Workflow State Use Cases", () => {
         const takeOverResult = await takeOverWorkflowStateStep.execute(state.id);
 
         expect(takeOverResult.isFail()).toBe(true);
+    });
+});
+
+/**
+ * Not a literal at the call site: `editor` is not part of the test helper permission type.
+ */
+const workflowsEditorPermissions = [{ name: "workflows", editor: true }];
+
+describe("Workflow State access", () => {
+    const app = "accessApp";
+    const targetRevisionId = "access-record#0001";
+    const OTHER_TEAM_ID = "some-other-team";
+
+    const outsiderIdentity = {
+        id: "outsider-identity-id",
+        displayName: "Outsider Identity",
+        type: "user"
+    };
+
+    /**
+     * The creator has full access. Step teams decide whether other test identities (all of them
+     * members of the full access team) are reviewers.
+     */
+    const createState = async (teamId: string) => {
+        const { context } = await createContextHandler();
+        const mockWorkflow = createMockWorkflow({ app });
+        const workflow = {
+            ...mockWorkflow,
+            steps: mockWorkflow.steps.map(step => ({
+                ...step,
+                teams: [{ id: teamId }]
+            })) as typeof mockWorkflow.steps
+        };
+        const workflowResult = await context.container
+            .resolve(StoreWorkflowUseCase)
+            .execute(workflow);
+        expect(workflowResult.isOk()).toBe(true);
+
+        const stateResult = await context.container.resolve(CreateWorkflowStateUseCase).execute({
+            app,
+            targetRevisionId,
+            title: "Access test"
+        });
+        expect(stateResult.isOk()).toBe(true);
+        return { context, state: stateResult.value! };
+    };
+
+    it("should not let an identity without access read or list a state", async () => {
+        const { state } = await createState(OTHER_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: []
+        });
+
+        const getResult = await context.container
+            .resolve(GetWorkflowStateUseCase)
+            .execute(state.id);
+        expect(getResult.isFail()).toBe(true);
+        expect(getResult.error!.code).toBe("Workflows/State/NotAuthorized");
+
+        const getTargetResult = await context.container
+            .resolve(GetTargetWorkflowStateUseCase)
+            .execute({ app, targetRevisionId });
+        expect(getTargetResult.isFail()).toBe(true);
+        expect(getTargetResult.error!.code).toBe("Workflows/State/NotAuthorized");
+
+        const listResult = await context.container
+            .resolve(ListWorkflowStatesUseCase)
+            .execute({ where: { app } });
+        expect(listResult.isOk()).toBe(true);
+        expect(listResult.value!.items).toEqual([]);
+    });
+
+    it("should let reviewers read a state", async () => {
+        const { state } = await createState(FULL_ACCESS_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: reviewerIdentity,
+            permissions: []
+        });
+
+        const getResult = await context.container
+            .resolve(GetWorkflowStateUseCase)
+            .execute(state.id);
+        expect(getResult.isOk()).toBe(true);
+
+        const listResult = await context.container
+            .resolve(ListWorkflowStatesUseCase)
+            .execute({ where: { app } });
+        expect(listResult.isOk()).toBe(true);
+        expect(listResult.value!.items.map(item => item.id)).toEqual([state.id]);
+    });
+
+    it("should let workflow managers read states of apps without an access check", async () => {
+        const { state } = await createState(OTHER_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: workflowsEditorPermissions
+        });
+
+        const getResult = await context.container
+            .resolve(GetWorkflowStateUseCase)
+            .execute(state.id);
+        expect(getResult.isOk()).toBe(true);
+    });
+
+    it("should read states without authorization (background work)", async () => {
+        const { state } = await createState(OTHER_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: []
+        });
+
+        const identityContext = context.container.resolve(IdentityContext);
+        const getResult = await identityContext.withoutAuthorization(async () => {
+            return context.container.resolve(GetWorkflowStateUseCase).execute(state.id);
+        });
+        expect(getResult.isOk()).toBe(true);
+    });
+
+    it("should not let a reviewer who did not request the review cancel it", async () => {
+        const { context: creatorContext, state } = await createState(FULL_ACCESS_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: reviewerIdentity,
+            permissions: []
+        });
+
+        const cancelResult = await context.container
+            .resolve(CancelWorkflowStateUseCase)
+            .execute(state.id);
+        expect(cancelResult.isFail()).toBe(true);
+        expect(cancelResult.error!.code).toBe("Workflows/State/NotAuthorized");
+
+        const getResult = await creatorContext.container
+            .resolve(GetWorkflowStateUseCase)
+            .execute(state.id);
+        expect(getResult.isOk()).toBe(true);
+        expect(getResult.value!.isActive).toBe(true);
+    });
+
+    it("should not let an identity without access cancel a state", async () => {
+        const { state } = await createState(OTHER_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: []
+        });
+
+        const cancelResult = await context.container
+            .resolve(CancelWorkflowStateUseCase)
+            .execute(state.id);
+        expect(cancelResult.isFail()).toBe(true);
+        expect(cancelResult.error!.code).toBe("Workflows/State/NotAuthorized");
+    });
+
+    it("should let a workflow manager cancel a state", async () => {
+        const { state } = await createState(OTHER_TEAM_ID);
+
+        const { context } = await createContextHandler({
+            identity: outsiderIdentity,
+            permissions: workflowsEditorPermissions
+        });
+
+        const cancelResult = await context.container
+            .resolve(CancelWorkflowStateUseCase)
+            .execute(state.id);
+        expect(cancelResult.isOk()).toBe(true);
+        expect(cancelResult.value!.isActive).toBe(false);
+    });
+
+    it("should not create a state for an app without an access check unless managing workflows", async () => {
+        const { context: managerContext } = await createContextHandler();
+        const workflowResult = await managerContext.container
+            .resolve(StoreWorkflowUseCase)
+            .execute(createMockWorkflow({ app }));
+        expect(workflowResult.isOk()).toBe(true);
+
+        for (const permissions of [[], [{ name: "workflows" }]]) {
+            const { context } = await createContextHandler({
+                identity: outsiderIdentity,
+                permissions
+            });
+            const result = await context.container.resolve(CreateWorkflowStateUseCase).execute({
+                app,
+                targetRevisionId,
+                title: "Access test"
+            });
+            expect(result.isFail()).toBe(true);
+            expect(result.error!.code).toBe("Workflows/State/NotAuthorized");
+        }
     });
 });
