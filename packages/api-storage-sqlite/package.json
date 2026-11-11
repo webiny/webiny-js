@@ -20,6 +20,7 @@
   "dependencies": {
     "@webiny/api-aco-sql": "0.0.0",
     "@webiny/api-audit-logs-sql": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-headless-cms-sql": "0.0.0",
     "@webiny/api-websockets-sql": "0.0.0",
@@ -31,7 +32,9 @@
     "@webiny/di": "^2.0.0"
   },
   "devDependencies": {
-    "@webiny/api-core": "0.0.0",
+    "@webiny/api-aco": "0.0.0",
+    "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "@webiny/handler": "0.0.0",

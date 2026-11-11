@@ -20,7 +20,7 @@ setStorageOps("cms", () => {
             knex
         }),
         createRegisterExtensionPlugin(context =>
-            HeadlessCmsSqlFeature.register(context.container, { knex, tableNamePrefix })
+            HeadlessCmsSqlFeature.register(context.container, { tableNamePrefix })
         ),
         createRegisterExtensionPlugin(({ container }) => {
             const sortingRegistry = container.resolve(FieldSortingRegistry);

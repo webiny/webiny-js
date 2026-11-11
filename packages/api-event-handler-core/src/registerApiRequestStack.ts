@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
 import { registerBuildParams, registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, RequestStorage } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
@@ -90,6 +90,15 @@ export async function registerApiRequestStack(
     // — the shared request stack both hosting types call — so no handler wires it. Process-cached
     // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await WcpLicenseLoader.load();
+
+    // ── Storage (before ANY feature) ───────────────────────────
+    // Every storage that registers per request put a `RequestStorage` in the root; each registers
+    // its storages here, in this request's container. First, because `ApiCoreFeature` resolves the
+    // core storage while it registers. A storage that keeps its storages in the root (the DynamoDB
+    // variants) registers none, and this does nothing.
+    for (const storage of container.resolveAll(RequestStorage)) {
+        await storage.register(container);
+    }
 
     // ── Build params (before ANY feature) ──────────────────────
     // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,

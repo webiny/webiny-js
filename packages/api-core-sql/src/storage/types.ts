@@ -14,11 +14,13 @@ export interface SqlStorage {
     /** The prefix of every table the storage uses. */
     readonly tableNamePrefix?: string;
     /**
-     * Registers the storage in the transport's root container, once per process. After a successful
-     * `setupSchema()` (or with `schemaManaged: true`), it registers schema-managed: no part checks
-     * for or creates tables at runtime.
+     * Registers the storage in the transport's root container, once per process: the connection and
+     * its settings (`SqlConnectionFeature`), and a `RequestStorage` that registers the storages
+     * (core, audit logs, websockets) in each request's container. After a successful `setupSchema()`
+     * (or with `schemaManaged: true`), it registers schema-managed: no part checks for or creates
+     * tables at runtime.
      */
-    register(container: Container): Promise<void>;
+    register(container: Container): void;
     /**
      * Creates every table, index and function the storage and the project's modules use, before the
      * API takes traffic. Applies the project's API extensions (`extensions`) the way a request does,

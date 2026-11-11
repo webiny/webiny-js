@@ -48,6 +48,11 @@ const DDL = /^\s*(create|alter|drop|comment)\s/i;
 export interface CreatePgServerOptions {
     /** The project's extensions. Default: the signing secret and the Postgres CMS and ACO modules. */
     extensions?: unknown[];
+    /**
+     * Leave the timers faked after start, so a test fires the server's timers (the websocket
+     * heartbeat, the recoveries) with `vi.advanceTimersByTimeAsync`. The test restores real timers.
+     */
+    keepFakeTimers?: boolean;
 }
 
 /**
@@ -129,7 +134,9 @@ export const createPgServer = async (options: CreatePgServerOptions = {}) => {
         await stopDatabase();
         throw error;
     } finally {
-        vi.useRealTimers();
+        if (!options.keepFakeTimers) {
+            vi.useRealTimers();
+        }
     }
     started = true;
 
@@ -168,5 +175,5 @@ export const createPgServer = async (options: CreatePgServerOptions = {}) => {
         await stopDatabase();
     };
 
-    return { graphql, knex, ddlAfterStart, close };
+    return { graphql, knex, ddlAfterStart, close, port };
 };

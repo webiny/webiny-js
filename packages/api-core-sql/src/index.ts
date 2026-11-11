@@ -4,7 +4,8 @@ import { KnexClientFeature } from "./feature/KnexClient/index.js";
 
 export { createApiCoreSql } from "./createApiCoreSql.js";
 export { ApiCoreSqlFeature } from "./ApiCoreSqlFeature.js";
-export type { ApiCoreSqlConfig } from "./ApiCoreSqlFeature.js";
+export { SqlConnectionFeature, setSqlServiceManifestLoader } from "./connection/index.js";
+export type { SqlConnectionConfig } from "./connection/index.js";
 export { getSqlTablePrefix } from "./getSqlTablePrefix.js";
 export { TableManager } from "./TableManager.js";
 export type { TableManagerOptions } from "./TableManager.js";
@@ -16,6 +17,7 @@ export type {
     SqlStorageExtensions
 } from "./schemaSetup/index.js";
 export { getSchemaMemory } from "./schemaMemory/getSchemaMemory.js";
+export { getConnectionKey } from "./schemaMemory/getConnectionKey.js";
 export type { ISchemaMemory } from "./schemaMemory/getSchemaMemory.js";
 export type { SqlStorage } from "./storage/types.js";
 export * from "./connectionRetry/index.js";

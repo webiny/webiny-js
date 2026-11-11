@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api-core" },
     { "path": "../api-core-sql" },
     { "path": "../api-event-handler-standalone" },
     { "path": "../handler" },
@@ -10,7 +11,6 @@
     { "path": "../api-aco" },
     { "path": "../api-aco-pg" },
     { "path": "../api-audit-logs" },
-    { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-pg" },
     { "path": "../api-storage-pg" },
@@ -24,6 +24,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/api-event-handler-standalone/*": ["../api-event-handler-standalone/src/*"],
@@ -40,8 +42,6 @@
       "@webiny/api-aco-pg": ["../api-aco-pg/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],

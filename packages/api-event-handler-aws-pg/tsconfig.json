@@ -8,7 +8,9 @@
     { "path": "../api-storage-pg" },
     { "path": "../aws-sdk" },
     { "path": "../api-aco-pg" },
+    { "path": "../api-audit-logs" },
     { "path": "../api-headless-cms-pg" },
+    { "path": "../api-websockets" },
     { "path": "../handler" }
   ],
   "compilerOptions": {
@@ -30,8 +32,12 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/api-aco-pg/*": ["../api-aco-pg/src/*"],
       "@webiny/api-aco-pg": ["../api-aco-pg/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
       "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

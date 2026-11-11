@@ -25,10 +25,19 @@ export interface GraphQLResult {
  * Boots the full standalone SQL server, on the SQLite storage, on a random local port and returns a
  * function that sends one GraphQL request to it, plus a `close` to shut it down.
  */
+export interface CreateServerOptions {
+    /**
+     * Leave the timers faked after start, so a test fires the server's timers (the websocket
+     * heartbeat, the recoveries) with `vi.advanceTimersByTimeAsync`. The test restores real timers.
+     */
+    keepFakeTimers?: boolean;
+}
+
 export const createServer = async (
     extensions: CreateSqlApiHandlerConfig["extensions"] = () => [],
     /** Env overrides, applied after the defaults below, e.g. a blank value to test a missing one. */
-    env: Record<string, string> = {}
+    env: Record<string, string> = {},
+    options: CreateServerOptions = {}
 ) => {
     /**
      * On start, the server arms in-process timers (the scheduler's recovery run and the periodic
@@ -57,7 +66,9 @@ export const createServer = async (
         extensions,
         storage: createSqliteStorage({ knex: globalThis.__testKnex })
     }).finally(() => {
-        vi.useRealTimers();
+        if (!options.keepFakeTimers) {
+            vi.useRealTimers();
+        }
     });
 
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -92,5 +103,5 @@ export const createServer = async (
         await new Promise<void>(resolve => server.close(() => resolve()));
     };
 
-    return { graphql, close };
+    return { graphql, close, port, knex: globalThis.__testKnex };
 };

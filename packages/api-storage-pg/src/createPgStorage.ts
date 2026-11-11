@@ -1,15 +1,16 @@
 import type { Knex } from "knex";
 import { Container } from "@webiny/di";
-import { registerExtensions } from "@webiny/handler";
+import { RequestStorage } from "@webiny/api-core";
 import {
     ApiCoreSqlFeature,
-    registerSQLCore,
     runSqlSchemaSetup,
+    setSqlServiceManifestLoader,
+    SqlConnectionFeature,
     type SqlStorage,
     type SqlStorageExtensions
 } from "@webiny/api-core-sql";
 import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
-import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
+import { AuditLogsSqlFeature } from "@webiny/api-audit-logs-sql";
 
 export interface CreatePgStorageParams {
     /** The connection: `createPgConnection()` on a server, `createLambdaPgConnection()` on Lambda. */
@@ -33,29 +34,17 @@ const REQUIRED_MODULES = [
     }
 ];
 
-interface RegisterParams {
-    knex: Knex;
-    tableNamePrefix?: string;
-    schemaManaged: boolean;
-}
-
 /*
- * SQL core (tenancy, security, users, key-value store, service discovery), websockets and audit
- * logs, plus what the modules on the storage find in the container: the connection (`KnexClient`),
- * the table prefix and the schema-managed setting (`SqlSchemaConfig`).
+ * The storages of a request: SQL core (tenancy, security, users, key-value store), audit logs and
+ * the websocket connection registry. Each runs on the connection and table settings in the root.
  */
-async function registerStorage(container: Container, params: RegisterParams): Promise<void> {
-    const { knex, tableNamePrefix, schemaManaged } = params;
-
-    // Also points service discovery at the manifests table (`SqlServiceManifestLoader`).
-    ApiCoreSqlFeature.register(container, { knex, tableNamePrefix, schemaManaged });
-    WebsocketsSqlFeature.register(container, { tableNamePrefix });
-
-    await registerExtensions(container, [
-        registerSQLCore({ knex }),
-        registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix, schemaManaged })
-    ]);
-}
+const PgRequestStorage: RequestStorage.Interface = {
+    register(container) {
+        ApiCoreSqlFeature.register(container);
+        AuditLogsSqlFeature.register(container);
+        WebsocketsSqlFeature.register(container);
+    }
+};
 
 /**
  * The advisory lock every schema setup of one storage takes. Keyed by the table prefix, so storages
@@ -76,12 +65,19 @@ class PgStorage implements SqlStorage {
         this.schemaManaged = params.schemaManaged === true;
     }
 
-    public register(container: Container): Promise<void> {
-        return registerStorage(container, {
+    /*
+     * The root gets the connection and its settings, and service discovery reads the manifests on
+     * it. Every storage is registered per request, by `PgRequestStorage`.
+     */
+    public register(container: Container): void {
+        const connection = {
             knex: this.knex,
             tableNamePrefix: this.tableNamePrefix,
             schemaManaged: this.schemaManaged
-        });
+        };
+        SqlConnectionFeature.register(container, connection);
+        setSqlServiceManifestLoader(connection);
+        container.registerInstance(RequestStorage, PgRequestStorage);
     }
 
     /*
@@ -90,12 +86,9 @@ class PgStorage implements SqlStorage {
      * whole setup back. The parts that lock on their own (the CMS and the folder catalog) nest in this
      * transaction, so they don't wait for themselves.
      *
-     * The storage is registered in a container of its own, on that transaction, and the project's
-     * extensions are applied to it, so the modules the API runs (the CMS, the folder catalog) set up
-     * their tables with their settings.
-     *
-     * Like `register()`, it points service discovery at the connection it runs on; `register()`,
-     * which a transport calls after it, points it back.
+     * The setup's container holds the connection (the transaction) and a request's storages, and the
+     * project's extensions are applied to it, so the modules the API runs (the CMS, the folder
+     * catalog) set up their tables with their settings.
      */
     public async setupSchema(extensions?: SqlStorageExtensions): Promise<string[]> {
         const done = await this.knex.transaction(async trx => {
@@ -103,11 +96,12 @@ class PgStorage implements SqlStorage {
                 setupLockKey(this.tableNamePrefix)
             ]);
             const container = new Container();
-            await registerStorage(container, {
+            SqlConnectionFeature.register(container, {
                 knex: trx,
                 tableNamePrefix: this.tableNamePrefix,
                 schemaManaged: false
             });
+            PgRequestStorage.register(container);
             return runSqlSchemaSetup({ container, extensions, required: REQUIRED_MODULES });
         });
         this.schemaManaged = true;
@@ -121,6 +115,9 @@ class PgStorage implements SqlStorage {
  * CMS and no ACO. Those are modules the project adds with its extensions (`<HeadlessCmsPg />`,
  * `<AcoPg />`), which run on what the storage registers: the connection, the table prefix and the
  * schema-managed setting. Without the CMS module, `setupSchema()` fails, naming it.
+ *
+ * In the root it registers only the connection and its settings; its storages register in each
+ * request's container (`RequestStorage`).
  *
  * Identity is not part of it: each transport brings its own (self-hosted auth on the standalone
  * server, the project's identity provider on Lambda).

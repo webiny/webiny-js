@@ -5,6 +5,7 @@
     { "path": "../api-aco" },
     { "path": "../api-core-sql" },
     { "path": "../error" },
+    { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../api-core" }
   ],
@@ -21,6 +22,8 @@
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],

@@ -5,6 +5,7 @@
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-core-sql/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" }
   ],
@@ -21,6 +22,8 @@
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],

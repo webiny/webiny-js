@@ -8,7 +8,9 @@
     { "path": "../api-storage-pg/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../api-aco-pg/tsconfig.build.json" },
+    { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-headless-cms-pg/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -30,8 +32,12 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/api-aco-pg/*": ["../api-aco-pg/src/*"],
       "@webiny/api-aco-pg": ["../api-aco-pg/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
       "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

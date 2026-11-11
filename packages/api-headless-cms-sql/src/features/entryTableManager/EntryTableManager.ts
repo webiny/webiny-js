@@ -1,41 +1,32 @@
-import { KnexClient } from "@webiny/api-core-sql";
+import { getConnectionKey, getSchemaMemory, KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager as EntryTableManagerAbstraction } from "./abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 
+/*
+ * The CMS storage is registered per request, so a new instance is built for each one. Whether the
+ * entries table exists is kept for the process, per connection and table, in the schema memory.
+ */
 class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     private readonly knex;
     private readonly tableName;
-    private initialized = false;
-    private initPromise?: Promise<void>;
+    private readonly memory;
 
     constructor(knex: KnexClient.Interface, tableNameResolver: TableNameResolver.Interface) {
         this.knex = knex;
         this.tableName = tableNameResolver.resolve("entries");
-
-        const g = globalThis as Record<string, unknown>;
-        const managers = (g.__sqlTableManagers ??= []) as EntryTableManagerAbstraction.Interface[];
-        managers.push(this);
+        this.memory = getSchemaMemory(
+            `cms.sql.entries:${getConnectionKey(knex.client)}:${this.tableName}`
+        );
     }
 
     public reset(): void {
-        this.initialized = false;
-        this.initPromise = undefined;
+        this.memory.reset();
     }
 
-    public async ensureTable(): Promise<void> {
-        if (this.initialized) {
-            return;
-        }
-        // Memoize the in-flight init so concurrent callers (e.g. Promise.all entry creates) share a
-        // single hasTable+createTable and don't race into "table already exists". Clear on failure
-        // so a later call can retry.
-        if (!this.initPromise) {
-            this.initPromise = this.doEnsureTable().catch(err => {
-                this.initPromise = undefined;
-                throw err;
-            });
-        }
-        return this.initPromise;
+    public ensureTable(): Promise<void> {
+        // One hasTable+createTable per process: concurrent callers (e.g. Promise.all entry creates)
+        // share it instead of racing into "table already exists". A failed one is retried next call.
+        return this.memory.once(() => this.doEnsureTable());
     }
 
     private async doEnsureTable(): Promise<void> {
@@ -44,8 +35,6 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
         if (!exists) {
             await this.createTable();
         }
-
-        this.initialized = true;
     }
 
     public getTableName(): string {

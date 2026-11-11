@@ -1,16 +1,18 @@
 import type { Knex } from "knex";
 import { Container } from "@webiny/di";
-import { registerExtensions } from "@webiny/handler";
+import { RequestStorage } from "@webiny/api-core";
 import {
     ApiCoreSqlFeature,
-    registerSQLCore,
     runSqlSchemaSetup,
+    setSqlServiceManifestLoader,
+    SqlConnectionFeature,
+    SqlSchemaConfig,
     type SqlStorage,
     type SqlStorageExtensions
 } from "@webiny/api-core-sql";
 import { HeadlessCmsSqlFeature } from "@webiny/api-headless-cms-sql";
-import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
-import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
+import { AcoSqlFeature } from "@webiny/api-aco-sql";
+import { AuditLogsSqlFeature } from "@webiny/api-audit-logs-sql";
 import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
 
 export interface CreateSqliteStorageParams {
@@ -19,30 +21,23 @@ export interface CreateSqliteStorageParams {
     tableNamePrefix?: string;
 }
 
-interface RegisterParams {
-    knex: Knex;
-    tableNamePrefix?: string;
-    schemaManaged: boolean;
-}
-
 /*
- * SQL core (tenancy, security, users, key-value store, service discovery), the SQL CMS, ACO
- * folder-level permissions, audit logs and websockets. The SQL CMS has no settings, so it is part of
- * the storage rather than a module the project adds.
+ * The storages of a request: SQL core (tenancy, security, users, key-value store), the SQL CMS, ACO
+ * folder-level permissions, audit logs and the websocket connection registry. The SQL CMS has no
+ * settings, so it is part of the storage rather than a module the project adds. Each runs on the
+ * connection and table settings in the root.
  */
-async function registerStorage(container: Container, params: RegisterParams): Promise<void> {
-    const { knex, tableNamePrefix, schemaManaged } = params;
-
-    ApiCoreSqlFeature.register(container, { knex, tableNamePrefix, schemaManaged });
-    WebsocketsSqlFeature.register(container, { tableNamePrefix });
-    HeadlessCmsSqlFeature.register(container, { knex, tableNamePrefix });
-
-    await registerExtensions(container, [
-        registerSQLCore({ knex }),
-        registerAcoSqlStorageOperations({ knex, tableNamePrefix, schemaManaged }),
-        registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix, schemaManaged })
-    ]);
-}
+const SqliteRequestStorage: RequestStorage.Interface = {
+    register(container) {
+        ApiCoreSqlFeature.register(container);
+        HeadlessCmsSqlFeature.register(container, {
+            tableNamePrefix: container.resolve(SqlSchemaConfig).tableNamePrefix
+        });
+        AcoSqlFeature.register(container);
+        AuditLogsSqlFeature.register(container);
+        WebsocketsSqlFeature.register(container);
+    }
+};
 
 class SqliteStorage implements SqlStorage {
     public readonly knex: Knex;
@@ -54,12 +49,19 @@ class SqliteStorage implements SqlStorage {
         this.tableNamePrefix = params.tableNamePrefix;
     }
 
-    public register(container: Container): Promise<void> {
-        return registerStorage(container, {
+    /*
+     * The root gets the connection and its settings, and service discovery reads the manifests on
+     * it. Every storage is registered per request, by `SqliteRequestStorage`.
+     */
+    public register(container: Container): void {
+        const connection = {
             knex: this.knex,
             tableNamePrefix: this.tableNamePrefix,
             schemaManaged: this.schemaManaged
-        });
+        };
+        SqlConnectionFeature.register(container, connection);
+        setSqlServiceManifestLoader(connection);
+        container.registerInstance(RequestStorage, SqliteRequestStorage);
     }
 
     /*
@@ -70,11 +72,12 @@ class SqliteStorage implements SqlStorage {
      */
     public async setupSchema(extensions?: SqlStorageExtensions): Promise<string[]> {
         const container = new Container();
-        await registerStorage(container, {
+        SqlConnectionFeature.register(container, {
             knex: this.knex,
             tableNamePrefix: this.tableNamePrefix,
             schemaManaged: false
         });
+        SqliteRequestStorage.register(container);
         const done = await runSqlSchemaSetup({ container, extensions });
         this.schemaManaged = true;
         return done;
@@ -83,7 +86,9 @@ class SqliteStorage implements SqlStorage {
 
 /**
  * The SQLite storage of the Webiny API, for the standalone server with `<Infra.Sqlite>`. It reads no
- * build params and takes no settings beyond its table prefix.
+ * build params and takes no settings beyond its table prefix. In the root it registers only the
+ * connection and its settings; its storages register in each request's container
+ * (`RequestStorage`).
  */
 export function createSqliteStorage(params: CreateSqliteStorageParams): SqlStorage {
     return new SqliteStorage(params);

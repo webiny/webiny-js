@@ -4,11 +4,14 @@
   "references": [
     { "path": "../api-aco-sql/tsconfig.build.json" },
     { "path": "../api-audit-logs-sql/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-core-sql/tsconfig.build.json" },
     { "path": "../api-headless-cms-sql/tsconfig.build.json" },
     { "path": "../api-websockets-sql/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../api-core/tsconfig.build.json" }
+    { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-audit-logs/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -21,6 +24,8 @@
       "@webiny/api-aco-sql": ["../api-aco-sql/src"],
       "@webiny/api-audit-logs-sql/*": ["../api-audit-logs-sql/src/*"],
       "@webiny/api-audit-logs-sql": ["../api-audit-logs-sql/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/api-headless-cms-sql/*": ["../api-headless-cms-sql/src/*"],
@@ -29,8 +34,12 @@
       "@webiny/api-websockets-sql": ["../api-websockets-sql/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"]
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"]
     }
   }
 }

@@ -208,6 +208,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
             ok: true,
             done: [
                 "core",
+                "auditLogs",
                 "websockets",
                 "cms",
                 "aco",

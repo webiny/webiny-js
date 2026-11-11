@@ -88,7 +88,7 @@ describe("createPgStorage — schema setup", () => {
 
         const done = await createPgStorage({ knex }).setupSchema(postgresModules);
 
-        expect(done).toEqual(["core", "websockets", "cms", "aco"]);
+        expect(done).toEqual(["core", "auditLogs", "websockets", "cms", "aco"]);
         expect(statements[0]).toMatch(/^BEGIN/i);
         expect(statements[1]).toMatch(/^SELECT pg_advisory_xact_lock\(hashtext\(/);
         expect(statements[statements.length - 1]).toMatch(/^COMMIT/i);

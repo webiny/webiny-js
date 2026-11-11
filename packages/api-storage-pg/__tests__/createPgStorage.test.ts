@@ -4,7 +4,10 @@ import { Container } from "@webiny/di";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
-import { SqlSchemaConfig, SqlSchemaSetup } from "@webiny/api-core-sql";
+import { ApiCoreStorageOperationsFactory, RequestStorage } from "@webiny/api-core";
+import { KnexClient, SqlSchemaConfig, SqlSchemaSetup } from "@webiny/api-core-sql";
+import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { createPgStorage } from "~/index.js";
 
 /**
@@ -54,23 +57,38 @@ describe("createPgStorage", () => {
 
     it("registers SQL core, websockets and audit logs, with no CMS and no ACO", async () => {
         pglite = await startPglite();
-        const container = new Container();
+        const root = new Container();
 
-        await createPgStorage({ knex: pglite.knex, tableNamePrefix: "p" }).register(container);
+        createPgStorage({ knex: pglite.knex, tableNamePrefix: "p" }).register(root);
 
-        const steps = container.resolveAll(SqlSchemaSetup).map(step => step.name);
-        expect(steps).toEqual(["core", "websockets"]);
-
-        // What the modules on the storage read: the table prefix and the schema-managed setting.
-        const schemaConfig = container.resolve(SqlSchemaConfig);
+        // The root holds the connection and what the modules on the storage read: the table prefix
+        // and the schema-managed setting. No storage.
+        expect(root.resolve(KnexClient).client).toBe(pglite.knex);
+        const schemaConfig = root.resolve(SqlSchemaConfig);
         expect(schemaConfig.tableNamePrefix).toBe("p");
         expect(schemaConfig.isManaged()).toBe(false);
+        const storages = [ApiCoreStorageOperationsFactory, AuditLogsStorage, ConnectionRegistry];
+        for (const abstraction of storages) {
+            expect(() => root.resolve(abstraction)).toThrow();
+        }
+        expect(root.resolveAll(SqlSchemaSetup)).toEqual([]);
+
+        // A request's container, as `registerApiRequestStack` starts it, gets every storage.
+        const request = root.createChildContainer();
+        for (const storage of request.resolveAll(RequestStorage)) {
+            await storage.register(request);
+        }
+        for (const abstraction of storages) {
+            expect(request.resolve(abstraction)).toBeTruthy();
+        }
+        const steps = request.resolveAll(SqlSchemaSetup).map(step => step.name);
+        expect(steps).toEqual(["core", "auditLogs", "websockets"]);
     });
 
     it("registers schema-managed after its setup, or from the start when asked", async () => {
         pglite = await startPglite();
         const managed = new Container();
-        await createPgStorage({ knex: pglite.knex, schemaManaged: true }).register(managed);
+        createPgStorage({ knex: pglite.knex, schemaManaged: true }).register(managed);
         expect(managed.resolve(SqlSchemaConfig).isManaged()).toBe(true);
     });
 
@@ -85,7 +103,7 @@ describe("createPgStorage", () => {
 
         // And it doesn't go schema-managed on a failed setup.
         const container = new Container();
-        await storage.register(container);
+        storage.register(container);
         expect(container.resolve(SqlSchemaConfig).isManaged()).toBe(false);
     });
 });

@@ -1,4 +1,6 @@
 import type { Knex } from "knex";
+import { getSchemaMemory, type ISchemaMemory } from "./schemaMemory/getSchemaMemory.js";
+import { getConnectionKey } from "./schemaMemory/getConnectionKey.js";
 
 type TableCreator = (table: Knex.CreateTableBuilder) => void;
 
@@ -10,61 +12,48 @@ export interface TableManagerOptions {
     schemaManaged?: boolean;
 }
 
-interface ITableManager {
-    reset(): void;
-    resolve(tableName: string): string;
-    ensure(tableName: string, creator: (table: Knex.CreateTableBuilder) => void): Promise<void>;
-}
+/*
+ * Checks in flight, per memory and table, so concurrent first uses share one hasTable+createTable
+ * instead of racing into "table already exists".
+ */
+const pendingChecks = new Map<string, Promise<void>>();
 
-export class TableManager implements ITableManager {
+/**
+ * The tables of one SQL storage part (core, audit logs, login) on one connection. Built wherever the
+ * storage is built, which is once per request: it holds no state of its own. What it learns (which
+ * tables exist) is kept for the process, in one memory per connection and table prefix, so a new
+ * instance doesn't check a table again and a long-running server keeps one entry per connection, not
+ * one per request.
+ */
+export class TableManager {
     private readonly knex: Knex;
     private readonly prefix: string;
     private readonly schemaManaged: boolean;
-    private readonly verified = new Set<string>();
-    private readonly pending = new Map<string, Promise<void>>();
-    /* Tables declared by the storage operations using this manager, for deploy-time setup. */
+    /* Tables declared by the storage operations using this manager, for schema setup. */
     private readonly defined = new Map<string, TableCreator>();
+    private memoryOfTables?: ISchemaMemory;
 
     constructor(knex: Knex, prefix: string = "", options: TableManagerOptions = {}) {
         this.knex = knex;
         this.prefix = prefix ? `${prefix}_` : "";
         this.schemaManaged = options.schemaManaged === true;
-
-        const g = globalThis as Record<string, unknown>;
-        const managers = (g.__sqlTableManagers ??= []) as ITableManager[];
-        managers.push(this);
     }
 
-    /**
-     * Creates the declared tables of every manager in this process that uses `knex`. Deploy-time
-     * schema setup builds the storage operations (which declare their tables), then calls this.
-     * Managers of other knex instances (an earlier setup in a warm process) are left alone.
-     */
-    public static async setupAll(knex: Knex): Promise<void> {
-        const managers = ((globalThis as Record<string, unknown>).__sqlTableManagers ??
-            []) as ITableManager[];
-        for (const manager of managers) {
-            if (manager instanceof TableManager && manager.knex === knex) {
-                await manager.setup();
-            }
-        }
-    }
-
+    /** Forgets which tables this connection has (test setups drop all tables between tests). */
     public reset(): void {
-        this.verified.clear();
-        this.pending.clear();
+        this.memory.reset();
     }
 
     /**
      * Declares a table and returns the function that ensures it on first use. Declared tables are
-     * created together by `setup()` (deploy-time schema setup).
+     * created together by `setup()` (schema setup).
      */
     public define(tableName: string, creator: TableCreator): () => Promise<void> {
         this.defined.set(tableName, creator);
         return () => this.ensure(tableName, creator);
     }
 
-    /* Creates every declared table that doesn't exist yet. Runs at deploy time. */
+    /* Creates every declared table that doesn't exist yet. Runs at schema setup. */
     public async setup(): Promise<void> {
         for (const [tableName, creator] of this.defined) {
             await this.ensureTable(this.resolve(tableName), creator);
@@ -79,29 +68,40 @@ export class TableManager implements ITableManager {
         tableName: string,
         creator: (table: Knex.CreateTableBuilder) => void
     ): Promise<void> {
-        const resolved = this.resolve(tableName);
-
-        if (this.schemaManaged || this.verified.has(resolved)) {
+        if (this.schemaManaged) {
             return;
         }
 
-        // One TableManager serves every request, so concurrent first requests share a single
-        // hasTable+createTable instead of racing into "table already exists". Cleared on failure so
-        // a later call can retry.
-        const pending = this.pending.get(resolved);
+        const resolved = this.resolve(tableName);
+        const memory = this.memory;
+        if (memory.known.has(resolved)) {
+            return;
+        }
+
+        // Cleared on failure so a later call can retry.
+        const key = `${memory.key}:${resolved}`;
+        const pending = pendingChecks.get(key);
         if (pending) {
             return pending;
         }
 
         const check = this.ensureTable(resolved, creator).finally(() => {
             // Only remove our own entry: after reset() a newer check may own this table's slot.
-            if (this.pending.get(resolved) === check) {
-                this.pending.delete(resolved);
+            if (pendingChecks.get(key) === check) {
+                pendingChecks.delete(key);
             }
         });
-        this.pending.set(resolved, check);
+        pendingChecks.set(key, check);
 
         return check;
+    }
+
+    /* Made on first use: a schema-managed manager never needs it. */
+    private get memory(): ISchemaMemory {
+        this.memoryOfTables ??= getSchemaMemory(
+            `core.sql.tables:${getConnectionKey(this.knex)}:${this.prefix}`
+        );
+        return this.memoryOfTables;
     }
 
     private async ensureTable(
@@ -114,7 +114,10 @@ export class TableManager implements ITableManager {
             await this.createTable(resolved, creator);
         }
 
-        this.verified.add(resolved);
+        // A transaction can still roll back, and the table with it: only a committed table is known.
+        if (!this.knex.isTransaction) {
+            this.memory.known.add(resolved);
+        }
     }
 
     private async createTable(

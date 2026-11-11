@@ -3,6 +3,7 @@ export type { IWebsocketsServer, WebsocketsConnectionAuthenticator } from "~/ser
 export * from "~/adapter/abstractions.js";
 export * from "~/upgradeHandler/abstractions.js";
 export * from "~/connectionManager/abstractions.js";
+export { WebsocketsLiveSockets } from "~/liveSockets/abstractions.js";
 export { WebsocketsMessageBus } from "~/bus/abstractions.js";
 export { createBusMessageHandler } from "~/bus/createBusMessageHandler.js";
 
@@ -13,3 +14,15 @@ export { NodeWsAdapter } from "~/adapter/NodeWsAdapter.js";
 export { ServerWebsocketsTransport } from "~/transport/ServerWebsocketsTransport.js";
 export { InProcessMessageBus } from "~/bus/InProcessMessageBus.js";
 export { WebsocketsStandaloneFeature } from "~/WebsocketsStandaloneFeature.js";
+export { WebsocketsServerRootFeature } from "~/WebsocketsServerRootFeature.js";
+export { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
+export {
+    WebsocketsConnectionRowsEventType,
+    WebsocketsConnectionRowsEventHandler,
+    WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER
+} from "~/rows/WebsocketsConnectionRowsEvent.js";
+export type {
+    IWebsocketsConnectionRowsEvent,
+    WebsocketsConnectionRowsChange
+} from "~/rows/WebsocketsConnectionRowsEvent.js";
+export { WriteConnectionRowsHandler } from "~/rows/WriteConnectionRowsHandler.js";

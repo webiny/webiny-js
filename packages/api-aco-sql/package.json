@@ -23,6 +23,7 @@
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "knex": "^3.3.0"
   },

@@ -24,8 +24,7 @@ import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import {
-    ServerConnectionManager,
-    NodeWsAdapter,
+    WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
     WebsocketsConnectionManager,
     attachWebsocketsServer
@@ -63,11 +62,11 @@ export interface CreateWebinyApiHandlerConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * Register ALL root-container storage for this deployment (the DB feature + CMS storage ops +
-     * registries) AND the identity provider. Unlike the AWS base, the server base bakes in no DB or
-     * IdP assumption — the variant supplies the complete storage + auth wiring. `buildParams` are
-     * the build params the project was built with (requests register their own copy; root storage
-     * that needs a setting from them takes it from here).
+     * Register the storage for this deployment AND the identity provider in the root container.
+     * Unlike the AWS base, the server base bakes in no DB or IdP assumption — the variant supplies
+     * the complete storage + auth wiring. A storage that registers per request puts only its
+     * connection and a `RequestStorage` in the root (see `registerApiRequestStack`). `buildParams`
+     * are the build params the project was built with (requests register their own copy).
      */
     registerRootStorage: (
         container: Container,
@@ -135,12 +134,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             await config.registerRootStorage(rootContainer, { buildParams });
 
             // ── WebSockets transport (root) ────────────────────────────
-            // Live-socket registry + adapter live in the root as singletons: the connection manager
-            // is shared between the upgrade acceptor (attachWebsocketsServer, below) and the
-            // per-request ServerWebsocketsTransport that sends to those live sockets. The persistent
-            // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
-            rootContainer.register(ServerConnectionManager).inSingletonScope();
-            rootContainer.register(NodeWsAdapter).inSingletonScope();
+            // The live sockets, the connection manager and the adapter live in the root as
+            // singletons, shared between the upgrade acceptor (attachWebsocketsServer, below) and the
+            // per-request ServerWebsocketsTransport that sends to those live sockets. The connections'
+            // rows (ConnectionRegistry) are a storage, so they live in request containers: the
+            // manager changes them by dispatching an event, which runs in a fresh one.
+            WebsocketsServerRootFeature.register(rootContainer);
 
             /*
              * How a send reaches a socket another API process holds. Without a Redis URL there is
