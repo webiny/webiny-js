@@ -10,6 +10,7 @@ import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
+import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
 import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
@@ -39,6 +40,21 @@ interface StreamPart {
 
 const toMessage = (error: unknown): string => {
     return error instanceof Error ? error.message : String(error);
+};
+
+type ErrorEvent = Extract<AdminAssistantEvent, { type: "error" }>;
+
+/**
+ * The terminal error event. Only a project with no model set up gets a code: it is the one failure
+ * the client handles on its own. Codes from provider SDKs or Node (`ECONNRESET`) stay out, so the
+ * client has a known set to handle.
+ */
+const toErrorEvent = (error: unknown): ErrorEvent => {
+    const event: ErrorEvent = { type: "error", message: toMessage(error) };
+    if (error instanceof AiCapabilityNotConfiguredError) {
+        event.code = error.code;
+    }
+    return event;
 };
 
 interface ApprovalRequestPart {
@@ -105,7 +121,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         try {
             prepared = await this.prepare(params);
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
             return;
         }
 
@@ -195,7 +211,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 }
 
                 if (part.type === "error") {
-                    yield { type: "error", message: toMessage(part.error) };
+                    yield toErrorEvent(part.error);
                     return;
                 }
             }
@@ -222,7 +238,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 steps: (await result.steps).length
             };
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
         }
     }
 

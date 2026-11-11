@@ -581,6 +581,94 @@ jobs:
       contents: read
       actions: write
       id-token: write
+  vitest-pg-constants:
+    needs:
+      - build
+    name: Vitest (pg) - Constants
+    outputs:
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: v6
+        run: >-
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '["pg,sql"]')" >> "$GITHUB_OUTPUT"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  vitest-pg-run:
+    needs:
+      - constants
+      - vitest-pg-constants
+    name: ${{ matrix.testCommand.title }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 24
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-pg-constants.outputs.vitest-test-commands)
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
+      WEBINY_STORAGE: pg,sql
+      WEBINY_SQL_CLIENT: pglite
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: v6/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: v6
+      - name: Build packages
+        run: yarn build
+        working-directory: v6
+      - name: Run tests
+        run: ${{ matrix.testCommand.cmd }}
+        working-directory: v6
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
   e2eTests-ddb-setup:
     needs:
       - constants

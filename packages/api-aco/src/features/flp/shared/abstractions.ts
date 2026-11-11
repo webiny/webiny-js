@@ -87,6 +87,8 @@ export interface ICodeFlpsProvider {
      * Return all code-defined permissions that apply to the given folder type and path.
      */
     getPermissions(params: GetCodePermissionsParams): Promise<FolderPermission[]>;
+    /** All code-defined FLPs, as the registered `FlpFactory` implementations return them. */
+    listFlps(): Promise<CodeFlp[]>;
 }
 
 /**

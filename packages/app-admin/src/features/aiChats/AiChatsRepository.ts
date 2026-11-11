@@ -6,6 +6,23 @@ import type { AiChatSummary } from "./abstractions.js";
 import type { AiChatsPage } from "./abstractions.js";
 import type { SaveAiChatInput } from "./abstractions.js";
 import { messageOf } from "./messageOf.js";
+import type { AiChatSaveFailure } from "./abstractions.js";
+import { AiChatSaveError } from "./AiChatSaveError.js";
+import { AiChatsRequestError } from "./AiChatsRequestError.js";
+
+/** The server's code for a chat over the size it stores. */
+const CHAT_TOO_LARGE = "AiChat/TooLarge";
+
+/**
+ * A save that got an answer was refused; one that did not never reached the server. Only the first
+ * carries a code, and only "too large" needs a different fix than trying again.
+ */
+const saveFailureOf = (error: unknown): AiChatSaveFailure => {
+    if (!(error instanceof AiChatsRequestError)) {
+        return "unreachable";
+    }
+    return error.code === CHAT_TOO_LARGE ? "too-large" : "rejected";
+};
 
 /**
  * Registered as a singleton, so the assistant and the chats panel see one list.
@@ -45,7 +62,14 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 
     async save(input: SaveAiChatInput): Promise<AiChatSummary> {
-        const summary = await this.gateway.save(input);
+        let summary: AiChatSummary;
+        try {
+            summary = await this.gateway.save(input);
+        } catch (error) {
+            const message = messageOf(error);
+            const failure = saveFailureOf(error);
+            throw new AiChatSaveError(message, failure);
+        }
         this.upsert(summary);
         return summary;
     }

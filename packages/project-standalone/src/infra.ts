@@ -9,6 +9,7 @@ import { CiIs } from "@webiny/project/extensions/infra/index.js";
 import { CiIsNot } from "@webiny/project/extensions/infra/index.js";
 import { Sqlite } from "./extensions/Sqlite.js";
 import { Postgres } from "./extensions/Postgres.js";
+import { Pglite } from "./extensions/Pglite.js";
 import { FileStorage } from "./extensions/FileStorage.js";
 import { ApiUrl } from "./extensions/ApiUrl.js";
 import { AdminUrl } from "./extensions/AdminUrl.js";
@@ -37,6 +38,8 @@ export const Infra = {
     // Standalone hosting-type SQL storage (engine-named, like Infra.OpenSearch on AWS).
     Sqlite,
     Postgres,
+    // PGlite (Postgres compiled to WebAssembly) that `watch` / `serve` start next to the api: development only.
+    Pglite,
     // Standalone hosting-type local file storage (counterpart to the AWS S3 bucket).
     FileStorage,
     // Standalone hosting-type public API URL (the WEBINY_API_URL env var).

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import knex, { type Knex } from "knex";
 import type { ConnectionOptions } from "node:tls";
 import { toBoolean } from "@webiny/stdlib";
+import { withPgConnectionRetry } from "@webiny/api-core-sql";
 
 export interface CreatePostgresConnectionOptions {
     host?: string;
@@ -14,7 +15,14 @@ export interface CreatePostgresConnectionOptions {
      * Overrides values from env vars when both are set.
      */
     connection?: Partial<Knex.PgConnectionConfig>;
+    /**
+     * How long to retry a read or transaction that lost its connection (failover, restart), in
+     * milliseconds; 0 turns retries off. Default: `WEBINY_PG_RETRY_MS`, else 15,000.
+     */
+    retryMs?: number;
 }
+
+const DEFAULT_RETRY_MS = 15_000;
 
 const envBool = (name: string): boolean | undefined => {
     const value = process.env[name];
@@ -156,11 +164,24 @@ export function createPostgresConnection(options: CreatePostgresConnectionOption
         connectionConfig.keepAliveInitialDelayMillis = keepAliveInitialDelayMillis;
     }
 
-    return knex({
+    // A database that serves one connection at a time (`<Infra.Pglite>`) sets the pool size.
+    const poolMax = envInt("WEBINY_PG_POOL_MAX");
+
+    const client = knex({
         client: "pg",
         connection: {
             ...connectionConfig,
             ...options.connection
-        }
+        },
+        // knex's default minimum (2) must not exceed the maximum.
+        ...(poolMax !== undefined ? { pool: { min: Math.min(2, poolMax), max: poolMax } } : {})
     });
+
+    // Reads and transactions that lose their connection run again on a new one (see
+    // withPgConnectionRetry); writes outside a transaction are not retried.
+    const retryMs = options.retryMs ?? envInt("WEBINY_PG_RETRY_MS") ?? DEFAULT_RETRY_MS;
+    if (retryMs > 0) {
+        withPgConnectionRetry(client, { maxRetryMs: retryMs });
+    }
+    return client;
 }

@@ -12,10 +12,15 @@ interface IServiceManifestRow {
 export class SqlServiceManifestLoader implements IServiceManifestLoader {
     private readonly knex: Knex;
     private readonly tableManager: TableManager;
+    private readonly ensureTable: () => Promise<void>;
 
     constructor(knex: Knex, tableManager: TableManager) {
         this.knex = knex;
         this.tableManager = tableManager;
+        this.ensureTable = tableManager.define(TABLE_NAME, table => {
+            table.text("name").primary().notNullable();
+            table.text("manifest").notNullable();
+        });
     }
 
     async load() {
@@ -33,12 +38,5 @@ export class SqlServiceManifestLoader implements IServiceManifestLoader {
             name: row.name,
             manifest: JSON.parse(row.manifest)
         }));
-    }
-
-    private async ensureTable() {
-        await this.tableManager.ensure(TABLE_NAME, table => {
-            table.text("name").primary().notNullable();
-            table.text("manifest").notNullable();
-        });
     }
 }
