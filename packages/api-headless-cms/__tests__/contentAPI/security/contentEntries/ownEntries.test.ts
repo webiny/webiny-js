@@ -346,6 +346,75 @@ describe("Own Entries Permissions Checks", () => {
     });
 });
 
+const DELETE_MULTIPLE_TEST_ENTRIES = /* GraphQL */ `
+    mutation DeleteMultipleTestEntries($entries: [ID!]!) {
+        deleteMultipleTestEntries(entries: $entries) {
+            data {
+                id
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+describe("Own Entries Permissions Checks - read all, delete own", () => {
+    // Two roles: one can read all entries, the other can do everything with own entries only.
+    const createReadAllDeleteOwnPermissions = () => {
+        return [
+            ...new CmsTestPermissions({
+                groups: { rwd: "r" },
+                models: { rwd: "r" },
+                entries: { rwd: "r" }
+            }).getPermissions(),
+            ...new CmsTestPermissions({
+                groups: { rwd: "r" },
+                models: { rwd: "r" },
+                entries: { rwd: "rwd", own: true, pw: "pu" }
+            }).getPermissions()
+        ];
+    };
+
+    it("should delete only own entries via deleteMultiple", async () => {
+        const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
+        await manageApiA.setup();
+
+        const { manage: manageApiB } = useTestModelHandler({
+            identity: identityB,
+            permissions: createReadAllDeleteOwnPermissions()
+        });
+
+        const entryA = await manageApiA.createTestEntry();
+        expect(entryA.error).toBeNull();
+        const entryB = await manageApiB.createTestEntry();
+        expect(entryB.error).toBeNull();
+
+        // B can read A's entry, so it is found, but B must not be able to delete it.
+        const [response] = await manageApiB.invoke({
+            body: {
+                query: DELETE_MULTIPLE_TEST_ENTRIES,
+                variables: { entries: [entryA.data.entryId, entryB.data.entryId] }
+            }
+        });
+        expect(response.data.deleteMultipleTestEntries).toEqual({
+            data: [{ id: entryB.data.id }],
+            error: null
+        });
+
+        const stillThere = await manageApiA.getTestEntry({
+            variables: { revision: entryA.data.id }
+        });
+        expect(stillThere.data?.id).toBe(entryA.data.id);
+
+        const deleted = await manageApiA.getTestEntry({
+            variables: { revision: entryB.data.id }
+        });
+        expect(deleted.data).toBeNull();
+    });
+});
+
 describe("Own Entries Permissions Checks - singleton model", () => {
     const plugins = createPluginFromCmsModel({
         ...getCmsModel("categorySingleton"),
