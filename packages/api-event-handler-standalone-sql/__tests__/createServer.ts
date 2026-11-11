@@ -9,8 +9,7 @@ import type { CreateSqlApiHandlerConfig } from "~/createWebinyApiHandler.js";
 
 declare global {
     /**
-     * Set by the SQL storage test presets (@webiny/api-headless-cms-sql): SQLite in memory, or PGlite
-     * when WEBINY_SQL_CLIENT=pglite.
+     * Set by the SQL storage test preset (@webiny/api-headless-cms-sql): SQLite in memory.
      */
     var __testKnex: Knex;
 }

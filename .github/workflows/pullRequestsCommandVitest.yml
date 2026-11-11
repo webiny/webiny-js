@@ -75,8 +75,6 @@ jobs:
 
             | SQL | ⏳ Queued |
 
-            | PGlite | ⏳ Queued |
-
             | pg | ⏳ Queued |
     runs-on: ubuntu-latest
     env:
@@ -955,188 +953,6 @@ jobs:
     permissions:
       contents: read
       actions: write
-  vitest-pglite-constants:
-    needs:
-      - baseBranch
-      - build
-      - checkComment
-    name: Vitest (PGlite) - Constants
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
-    outputs:
-      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Mark "PGlite" as running
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-        run: >-
-          STATUS="🔄 Running"
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
-
-          sed -i "s@^| PGlite |.*@| PGlite | $STATUS |@" /tmp/vitest-comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
-          }}/head
-
-          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-      - id: list-vitest-test-commands
-        name: List Vitest Test Commands
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          echo "vitest-test-commands=$(node
-          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["sql"]')" >> "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  vitest-pglite-result:
-    needs:
-      - vitest-pglite-run
-      - checkComment
-    name: Vitest (PGlite) - Report status
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
-    if: always() && needs.checkComment.result == 'success'
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - name: Report "PGlite" result
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          RESULT: ${{ needs.vitest-pglite-run.result }}
-        run: >-
-          mapfile -t CONCS < <(gh api --paginate "repos/${{ github.repository
-          }}/actions/runs/${{ github.run_id }}/jobs" --jq '.jobs[] |
-          select(.name | startswith("PGlite / ")) | .conclusion')
-
-          TOTAL=${#CONCS[@]}
-
-          PASSED=0
-
-          for c in "${CONCS[@]}"; do if [ "$c" = "success" ]; then
-          PASSED=$((PASSED + 1)); fi; done
-
-          if [ "$TOTAL" -eq 0 ]; then
-            case "$RESULT" in
-              cancelled) STATUS="⚪ Cancelled" ;;
-              skipped) STATUS="⏭️ Skipped" ;;
-              *) STATUS="❌ Failed" ;;
-            esac
-          elif [ "$PASSED" -eq "$TOTAL" ]; then
-            STATUS="✅ $PASSED/$TOTAL passed"
-          else
-            STATUS="❌ $PASSED/$TOTAL passed"
-          fi
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
-
-          sed -i "s@^| PGlite |.*@| PGlite | $STATUS |@" /tmp/vitest-comment.txt
-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  vitest-pglite-run:
-    needs:
-      - baseBranch
-      - constants
-      - vitest-pglite-constants
-    name: PGlite / ${{ matrix.testCommand.title }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        node:
-          - 24
-        testCommand: >-
-          ${{
-          fromJSON(needs.vitest-pglite-constants.outputs.vitest-test-commands)
-          }}
-    runs-on: ${{ matrix.os }}
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: eu-central-1
-      WEBINY_STORAGE: sql
-      WEBINY_SQL_CLIENT: pglite
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
-          }}/head
-
-          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-      - name: Resolve Yarn cache folder
-        id: yarn-cache-folder
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: ${{ steps.yarn-cache-folder.outputs.path }}
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
-        run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Run tests
-        run: ${{ matrix.testCommand.cmd }}
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-    permissions:
-      contents: read
-      actions: write
   vitest-pg-constants:
     needs:
       - baseBranch
@@ -1330,7 +1146,6 @@ jobs:
       - vitest-ddb-run
       - vitest-ddb-os-run
       - vitest-sql-run
-      - vitest-pglite-run
       - vitest-pg-run
     if: always() && needs.checkComment.result == 'success'
     env:
@@ -1347,7 +1162,6 @@ jobs:
       R_DDB: ${{ needs.vitest-ddb-run.result }}
       R_DDB_OS: ${{ needs.vitest-ddb-os-run.result }}
       R_SQL: ${{ needs.vitest-sql-run.result }}
-      R_PGLITE: ${{ needs.vitest-pglite-run.result }}
       R_PG: ${{ needs.vitest-pg-run.result }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -1394,8 +1208,6 @@ jobs:
 
           add_failed "SQL / " "SQL"
 
-          add_failed "PGlite / " "PGlite"
-
           add_failed "pg / " "pg"
 
 
@@ -1407,8 +1219,6 @@ jobs:
 
           S_SQL=$(status_for "SQL / " "$R_SQL")
 
-          S_PGLITE=$(status_for "PGlite / " "$R_PGLITE")
-
           S_PG=$(status_for "pg / " "$R_PG")
 
 
@@ -1419,7 +1229,6 @@ jobs:
             echo "| DDB | $S_DDB |"
             echo "| DDB+OS | $S_DDB_OS |"
             echo "| SQL | $S_SQL |"
-            echo "| PGlite | $S_PGLITE |"
             echo "| pg | $S_PG |"
             if [ -s /tmp/failed.txt ]; then
               echo ""

@@ -24,7 +24,6 @@ import {
     DdbStorageOps,
     DdbOsStorageOps,
     SqlStorageOps,
-    PgliteStorageOps,
     PgStorageOps,
     type AbstractStorageOps
 } from "./storageOps/index.js";
@@ -32,7 +31,6 @@ import {
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
-const pgliteStorageOps = new PgliteStorageOps();
 const pgStorageOps = new PgStorageOps();
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -57,7 +55,7 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 // Live status table shown in the PR comment. Rows are updated in place as each
 // group progresses (Queued -> Running -> Passed/Failed) by the per-group jobs,
 // and the final `vitestStatusSummary` job mirrors the result into the PR body.
-const STATUS_GROUPS = ["No storage", "DDB", "DDB+OS", "SQL", "PGlite", "pg"];
+const STATUS_GROUPS = ["No storage", "DDB", "DDB+OS", "SQL", "pg"];
 
 const COMMENT_INTRO =
     "Vitest tests have been initiated (for more information, click " +
@@ -159,8 +157,8 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
 
-        // Both run on an in-process PGlite: no Postgres service.
-        if (storageOps instanceof PgliteStorageOps || storageOps instanceof PgStorageOps) {
+        // An in-process PGlite: no Postgres service.
+        if (storageOps instanceof PgStorageOps) {
             env["WEBINY_SQL_CLIENT"] = "pglite";
         }
     }
@@ -311,7 +309,6 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
         ...createVitestTestsJobs(sqlStorageOps),
-        ...createVitestTestsJobs(pgliteStorageOps),
         ...createVitestTestsJobs(pgStorageOps),
 
         // Once all groups are done, write the authoritative final status: it
@@ -327,7 +324,6 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                 "vitest-ddb-run",
                 "vitest-ddb-os-run",
                 "vitest-sql-run",
-                "vitest-pglite-run",
                 "vitest-pg-run"
             ],
             if: "always() && needs.checkComment.result == 'success'",
@@ -341,7 +337,6 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                 R_DDB: "${{ needs.vitest-ddb-run.result }}",
                 R_DDB_OS: "${{ needs.vitest-ddb-os-run.result }}",
                 R_SQL: "${{ needs.vitest-sql-run.result }}",
-                R_PGLITE: "${{ needs.vitest-pglite-run.result }}",
                 R_PG: "${{ needs.vitest-pg-run.result }}"
             },
             steps: [
@@ -381,14 +376,12 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                         `add_failed "DDB / " "DDB"`,
                         `add_failed "DDB+OS / " "DDB+OS"`,
                         `add_failed "SQL / " "SQL"`,
-                        `add_failed "PGlite / " "PGlite"`,
                         `add_failed "pg / " "pg"`,
                         ``,
                         `S_NONE=$(status_for "No storage / " "$R_NONE")`,
                         `S_DDB=$(status_for "DDB / " "$R_DDB")`,
                         `S_DDB_OS=$(status_for "DDB+OS / " "$R_DDB_OS")`,
                         `S_SQL=$(status_for "SQL / " "$R_SQL")`,
-                        `S_PGLITE=$(status_for "PGlite / " "$R_PGLITE")`,
                         `S_PG=$(status_for "pg / " "$R_PG")`,
                         ``,
                         `render_table() {`,
@@ -398,7 +391,6 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                         `  echo "| DDB | $S_DDB |"`,
                         `  echo "| DDB+OS | $S_DDB_OS |"`,
                         `  echo "| SQL | $S_SQL |"`,
-                        `  echo "| PGlite | $S_PGLITE |"`,
                         `  echo "| pg | $S_PG |"`,
                         `  if [ -s /tmp/failed.txt ]; then`,
                         `    echo ""`,
