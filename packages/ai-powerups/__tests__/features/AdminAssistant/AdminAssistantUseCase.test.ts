@@ -493,6 +493,58 @@ describe("AdminAssistantUseCase chats", () => {
         expect(requests).toHaveLength(0);
     });
 
+    // A decision from an older card, or one that leaves a waiting change unanswered.
+    it("refuses a decision for a change that is not the one waiting", async () => {
+        const stored: ModelMessage[] = [{ role: "user", content: "Add a folder" }, paused];
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: stored } });
+
+        const events = await run(useCase, {
+            chatId: "c1",
+            decisions: [{ approvalId: "a0", approved: true }]
+        });
+
+        expect(events).toEqual([
+            {
+                type: "error",
+                message: "This decision is not for the changes waiting in this chat."
+            }
+        ]);
+        expect(requests).toHaveLength(0);
+    });
+
+    it("refuses a decision that answers only some of the waiting changes", async () => {
+        const two = {
+            role: "assistant",
+            content: [
+                {
+                    type: "tool-approval-request",
+                    approvalId: "a1",
+                    toolCall: { toolName: "createFolder", input: { title: "Products" } }
+                },
+                {
+                    type: "tool-approval-request",
+                    approvalId: "a2",
+                    toolCall: { toolName: "createFolder", input: { title: "Orders" } }
+                }
+            ]
+        } as unknown as ModelMessage;
+        const stored: ModelMessage[] = [{ role: "user", content: "Add two folders" }, two];
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: stored } });
+
+        const events = await run(useCase, {
+            chatId: "c1",
+            decisions: [{ approvalId: "a1", approved: true }]
+        });
+
+        expect(events).toEqual([
+            {
+                type: "error",
+                message: "This decision is not for the changes waiting in this chat."
+            }
+        ]);
+        expect(requests).toHaveLength(0);
+    });
+
     it("reports a chat that is not there as an error, without running", async () => {
         const { useCase, requests } = setup();
 

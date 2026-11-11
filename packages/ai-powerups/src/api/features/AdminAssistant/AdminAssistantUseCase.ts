@@ -27,6 +27,7 @@ import { FOLLOW_UPS_TOOL } from "./followUps.js";
 import { followUpsTool } from "./followUps.js";
 import { readFollowUps } from "./followUps.js";
 import { unansweredApprovals } from "./unansweredApprovals.js";
+import { decidesExactly } from "./decidesExactly.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -297,6 +298,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         if (!params.prompt) {
             if (waiting.length === 0) {
                 throw new Error("Nothing in this chat is waiting for a decision.");
+            }
+            if (!decidesExactly(params.decisions, waiting)) {
+                throw new Error("This decision is not for the changes waiting in this chat.");
             }
             return [...stored, toApprovalMessage(params.decisions)];
         }
