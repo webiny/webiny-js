@@ -4,7 +4,12 @@ import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
-import { checkListAllPermissions, checkPermissions } from "./checkPermissions.js";
+import {
+    checkListAllPermissions,
+    checkPermissions,
+    checkTypePermissions,
+    createLockTypeAccess
+} from "./checkPermissions.js";
 import { IsEntryLockedUseCase } from "~/features/IsEntryLocked/abstractions.js";
 import { GetLockRecordUseCase } from "~/features/GetLockRecord/abstractions.js";
 import { GetLockedEntryLockRecordUseCase } from "~/features/GetLockedEntryLockRecord/abstractions.js";
@@ -251,7 +256,15 @@ export const createGraphQLSchema = async (
                         if (result.isFail()) {
                             throw result.error;
                         }
-                        return result.value;
+                        // Security: hide locks on entries of models the user can't read.
+                        const canAccessType = await createLockTypeAccess(context);
+                        const items = [];
+                        for (const item of result.value.items) {
+                            if (await canAccessType(item.type)) {
+                                items.push(item);
+                            }
+                        }
+                        return { ...result.value, items };
                     });
                 },
                 listAllLockRecords(_, args, context) {
@@ -269,7 +282,7 @@ export const createGraphQLSchema = async (
             RecordLockingMutation: {
                 async lockEntry(_, args, context) {
                     return resolve(async () => {
-                        await checkPermissions(context);
+                        await checkTypePermissions(context, args.type);
                         const useCase = context.container.resolve(LockEntryUseCase);
                         const result = await useCase.execute({
                             id: args.id,
@@ -283,7 +296,7 @@ export const createGraphQLSchema = async (
                 },
                 async updateEntryLock(_, args, context) {
                     return resolve(async () => {
-                        await checkPermissions(context);
+                        await checkTypePermissions(context, args.type);
                         const useCase = context.container.resolve(UpdateEntryLockUseCase);
                         const result = await useCase.execute({
                             id: args.id,
@@ -312,7 +325,7 @@ export const createGraphQLSchema = async (
                 },
                 async unlockEntryRequest(_, args, context) {
                     return resolve(async () => {
-                        await checkPermissions(context);
+                        await checkTypePermissions(context, args.type);
                         const useCase = context.container.resolve(UnlockEntryRequestUseCase);
                         const result = await useCase.execute({
                             id: args.id,
