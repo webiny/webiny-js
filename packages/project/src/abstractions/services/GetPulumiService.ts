@@ -1,6 +1,10 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import type { Pulumi, PulumiOptions } from "~/abstractions/pulumiTypes.js";
+import type { Pulumi } from "~/abstractions/pulumiTypes.js";
+import type { PulumiOptions } from "~/abstractions/pulumiTypes.js";
 import { type IAppModel } from "~/abstractions/models/index.js";
+
+type IPulumi = Pulumi;
+type IPulumiOptions = PulumiOptions;
 
 export type IGetPulumiServiceParams = Partial<{
     app?: IAppModel;
@@ -16,4 +20,6 @@ export const GetPulumiService = createAbstraction<IGetPulumiService>("GetPulumiS
 export namespace GetPulumiService {
     export type Interface = IGetPulumiService;
     export type Params = IGetPulumiServiceParams;
+    export type Pulumi = IPulumi;
+    export type Options = IPulumiOptions;
 }
