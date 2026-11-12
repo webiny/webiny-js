@@ -1,4 +1,6 @@
-import { AdminAfterDeploy, GetApp, UiService } from "@webiny/project/abstractions/index.js";
+import { AdminAfterDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { GetApp } from "@webiny/project/abstractions/index.js";
+import { UiService } from "@webiny/project/abstractions/index.js";
 import fs from "fs";
 import { type IDefaultStackOutput } from "~/pulumi/types.js";
 import { AdminStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";

@@ -11,8 +11,8 @@ import type { ServiceConfig } from "@webiny/aws-sdk/client-lambda-web/index.js";
 import { PutObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import type { LoggerService } from "@webiny/project/abstractions/index.js";
-import type { PulumiExportService } from "@webiny/project/abstractions/index.js";
-import type { WatchedLambdaFunctionsService } from "@webiny/project/abstractions/index.js";
+import type { PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
+import type { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import type { AppModel } from "@webiny/project/models/index.js";
 
 /**

@@ -1,4 +1,4 @@
-import { CoreBeforeDeploy } from "@webiny/project/abstractions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 import { CoreStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
 

@@ -1,8 +1,8 @@
-import { type IStackOutput } from "@webiny/project";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
 
 // TODO: split into this per-app stack outputs.
-export interface IDefaultStackOutput extends IStackOutput {
+export interface IDefaultStackOutput extends GetAppStackOutput.StackOutput {
     deploymentId: string;
     region: string;
     dynamoDbTable: string;
