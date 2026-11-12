@@ -73,7 +73,7 @@
     "type-fest": "^5.10.0",
     "typescript": "7.0.2",
     "validator": "^13.15.35",
-    "verdaccio": "^7.0.2",
+    "verdaccio": "^7.1.0",
     "vitest": "^5.1.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.2.0"
