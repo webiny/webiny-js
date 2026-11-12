@@ -2,6 +2,7 @@ import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { useGqlHandler } from "../../useGqlHandler";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
 import { WebsocketsSendToIdentityUseCase } from "~/features/websockets/index.js";
 
 export interface SentWebsocketMessage {
@@ -9,6 +10,19 @@ export interface SentWebsocketMessage {
     action?: string;
     data?: unknown;
 }
+
+/** Resolves a registered tool's handler by tool name, the way the assistant does at call time. */
+export const getTool = (container: Container, name: string) => {
+    const tool = container
+        .resolveAll(AiSdkToolDefinition)
+        .find(candidate => candidate.name === name);
+
+    if (!tool) {
+        throw new Error(`Tool "${name}" is not registered.`);
+    }
+
+    return container.resolveImplementation(tool.handler);
+};
 
 /**
  * Hands a test the request container of an installed, signed-in request, so it can run tools against
@@ -21,8 +35,10 @@ export const useToolHandler = () => {
 
     const captureRequest = (container: Container) => {
         requestContainer = container;
-        // In the request container: api-core registers a no-op send there, which would shadow a
-        // recorder registered in the root.
+        /*
+         * In the request container: api-core registers a no-op send there, which would shadow a
+         * recorder registered in the root.
+         */
         container.registerInstance(WebsocketsSendToIdentityUseCase, {
             async execute(identity, data) {
                 websocketMessages.push({
@@ -35,14 +51,19 @@ export const useToolHandler = () => {
         });
     };
 
+    const wcpLicense = createTestWcpLicense();
     const { install } = useGqlHandler({
-        wcpLicense: createTestWcpLicense(),
+        wcpLicense,
         registrations: [captureRequest]
     });
 
     const handler = async () => {
         // The install request leaves its container with the tenant and the identity already set.
-        await install.install();
+        const [body] = await install.install();
+
+        if (body.errors?.length) {
+            throw new Error(`The install request failed: ${body.errors[0].message}`);
+        }
 
         if (!requestContainer) {
             throw new Error("The install request did not reach the request container.");

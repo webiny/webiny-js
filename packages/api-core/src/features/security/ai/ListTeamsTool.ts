@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "~/features/ai/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 
 const inputSchema = z.object({});
