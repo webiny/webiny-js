@@ -1,17 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BreeSchedulerService, type IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
+import {
+    TimerSchedulerService,
+    type ITimerSchedulerServiceParams
+} from "~/TimerSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
-describe("BreeSchedulerService — trigger", () => {
+describe("TimerSchedulerService — trigger", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
-    let service: BreeSchedulerService;
-    let runAction: IBreeSchedulerServiceParams["runAction"];
+    let service: TimerSchedulerService;
+    let runAction: ITimerSchedulerServiceParams["runAction"];
 
     beforeEach(async () => {
         runAction = vi.fn().mockResolvedValue(undefined);
 
-        service = new BreeSchedulerService({
+        service = new TimerSchedulerService({
             logger: createMockLogger(),
             runAction
         });
@@ -31,7 +34,7 @@ describe("BreeSchedulerService — trigger", () => {
             scheduleFor: new Date(Date.now() + 2_000)
         });
 
-        /* Wait for the bree job to fire. */
+        /* Wait for the timer to fire. */
         await vi.waitFor(
             () => {
                 expect(runAction).toHaveBeenCalledWith("trigger-1", namespace, tenant);

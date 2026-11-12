@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Mock } from "vitest";
 import { WebinyError } from "@webiny/error";
-import { BreeSchedulerService } from "~/BreeSchedulerService.js";
+import { TimerSchedulerService } from "~/TimerSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 import type { ISchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 
@@ -10,10 +10,10 @@ type CreateInput = Parameters<ISchedulerService["create"]>[0];
 const futureDate = (ms: number) => new Date(Date.now() + ms);
 const pastDate = (ms: number) => new Date(Date.now() - ms);
 
-describe("BreeSchedulerService", () => {
+describe("TimerSchedulerService", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
-    let service: BreeSchedulerService;
+    let service: TimerSchedulerService;
     let runAction: Mock;
     let logger: ReturnType<typeof createMockLogger>;
 
@@ -21,7 +21,7 @@ describe("BreeSchedulerService", () => {
         runAction = vi.fn().mockResolvedValue(undefined);
         logger = createMockLogger();
 
-        service = new BreeSchedulerService({
+        service = new TimerSchedulerService({
             logger,
             runAction
         });
@@ -158,35 +158,6 @@ describe("BreeSchedulerService", () => {
 
         it("should return false for an unknown job", async () => {
             expect(await service.exists({ id: "unknown", namespace, tenant })).toBe(false);
-        });
-    });
-
-    describe("safeRemove logging", () => {
-        // safeRemove() ignores errors from bree.stop()/remove() and just logs them at debug level.
-        // It's there for the case where a job fires on its own (so bree forgets it) right before we
-        // try to delete it. To reach that branch, our `jobs` map has to still contain an id that bree
-        // no longer knows about — but in normal use create, delete, and firing all keep the two in
-        // sync, so there's no way to set that up through the public API. That's why this test reaches
-        // into the private `jobs` map directly: it's the only way to recreate the mismatch without
-        // making bree injectable, which felt like too much for a bit of defensive logging.
-        it("should log debug when stop/remove fail silently", async () => {
-            await service.create({
-                id: "schedule-1",
-                namespace,
-                tenant,
-                scheduleFor: futureDate(60_000)
-            });
-
-            // First delete removes the job from both the `jobs` map and bree.
-            await service.delete({ id: "schedule-1", namespace, tenant });
-
-            // Now add it back to the `jobs` map only, so bree no longer has it. exists() reads the
-            // `jobs` map, so the next delete gets past its "does not exist" check and calls
-            // safeRemove(), where bree throws for the unknown job and we log it at debug.
-            (service as any).jobs.set("schedule-1", { namespace, tenant });
-            await service.delete({ id: "schedule-1", namespace, tenant });
-
-            expect(logger.debug).toHaveBeenCalled();
         });
     });
 });

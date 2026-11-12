@@ -38,7 +38,7 @@ export interface RegisterApiRequestStackConfig {
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
      * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
      * capability. AWS supplies AWS adapters (API Gateway Management API / EventBridge / S3); the
-     * standalone server supplies in-process adapters (server WebSockets / Bree / local disk).
+     * standalone server supplies in-process adapters (server WebSockets / in-process scheduler / local disk).
      */
     transports?: {
         /**

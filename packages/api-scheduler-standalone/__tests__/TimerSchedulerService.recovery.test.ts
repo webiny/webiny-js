@@ -1,15 +1,18 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BreeSchedulerService, type IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
+import {
+    TimerSchedulerService,
+    type ITimerSchedulerServiceParams
+} from "~/TimerSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
 const futureDate = (ms: number) => new Date(Date.now() + ms);
 const pastDate = (ms: number) => new Date(Date.now() - ms);
 
-describe("BreeSchedulerService — recovery", () => {
+describe("TimerSchedulerService — recovery", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
-    let service: BreeSchedulerService;
-    let runAction: IBreeSchedulerServiceParams["runAction"];
+    let service: TimerSchedulerService;
+    let runAction: ITimerSchedulerServiceParams["runAction"];
 
     afterEach(async () => {
         await service.stop();
@@ -18,7 +21,7 @@ describe("BreeSchedulerService — recovery", () => {
     const createService = () => {
         runAction = vi.fn().mockResolvedValue(undefined);
 
-        service = new BreeSchedulerService({
+        service = new TimerSchedulerService({
             logger: createMockLogger(),
             runAction
         });
@@ -26,7 +29,7 @@ describe("BreeSchedulerService — recovery", () => {
         return service;
     };
 
-    it("should re-register future actions with bree", async () => {
+    it("should arm timers for future actions", async () => {
         const svc = createService();
         await svc.start();
 
