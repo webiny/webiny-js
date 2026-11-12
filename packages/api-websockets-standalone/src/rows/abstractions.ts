@@ -25,7 +25,8 @@ export type WebsocketsConnectionRowsChange =
     | { action: "write"; writes: WebsocketsConnectionRowWrite[] }
     /**
      * Removes the rows of every connection not seen since `olderThan` (an ISO date), in one
-     * request, and answers their ids.
+     * request, and answers the ids of the rows it removed. A row it couldn't remove stays, and the
+     * next sweep tries again.
      */
     | { action: "removeStale"; olderThan: string };
 

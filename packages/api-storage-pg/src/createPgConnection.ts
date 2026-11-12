@@ -2,6 +2,16 @@ import knex, { type Knex } from "knex";
 import { withPgConnectionRetry } from "@webiny/api-core-sql";
 import { DEFAULT_PG_RETRY_MS, readPgConnectionEnv } from "./readPgConnectionEnv.js";
 
+const definedOnly = <T extends Record<string, unknown>>(values: T): Partial<T> => {
+    return Object.fromEntries(Object.entries(values).filter(([, value]) => !!value)) as Partial<T>;
+};
+
+const assertSet = (value: unknown, message: string): void => {
+    if (!value) {
+        throw new Error(message);
+    }
+};
+
 export interface CreatePgConnectionOptions {
     host?: string;
     port?: number;
@@ -23,60 +33,55 @@ export interface CreatePgConnectionOptions {
 /**
  * A Knex client for Postgres, for a long-running process (the standalone server): Postgres, PGlite
  * (`<Infra.Pglite>`) or Aurora from a server. Connection parameters are read from the `WEBINY_PG_*`
- * env vars `<Infra.Postgres>` sets, with explicit options taking precedence. On AWS Lambda, use
+ * env vars `<Infra.Postgres>` sets, with explicit options taking precedence. A connection string
+ * (`WEBINY_PG_CONNECTION_STRING` or `options.connection.connectionString`) is enough on its own:
+ * node-postgres reads host, port, user, password and database from it. On AWS Lambda, use
  * `createLambdaPgConnection` (`@webiny/api-event-handler-aws-pg`) instead.
  */
 export function createPgConnection(options: CreatePgConnectionOptions = {}): Knex {
     const env = readPgConnectionEnv();
-    const host = options.host || env.connection.host;
-    const port = options.port || env.connection.port;
-    const user = options.user || env.connection.user;
-    const password = options.password || env.connection.password;
-    const database = options.database || env.connection.database;
+    // Env first, then the explicit options, then `options.connection`: validated as Knex gets it.
+    const connectionConfig: Knex.PgConnectionConfig = {
+        ...env.connection,
+        ...definedOnly({
+            host: options.host,
+            port: options.port,
+            user: options.user,
+            password: options.password,
+            database: options.database
+        }),
+        ...options.connection
+    };
 
-    if (!host) {
-        throw new Error(
+    // A connection string holds the whole connection; otherwise each part must be set.
+    if (!connectionConfig.connectionString) {
+        assertSet(
+            connectionConfig.host,
             'Postgres host is not set. Configure via <Infra.Postgres host="..." /> in webiny.config.'
         );
-    }
-    if (!port) {
-        throw new Error(
+        assertSet(
+            connectionConfig.port,
             "Postgres port is not set. Configure via <Infra.Postgres port={...} /> in webiny.config."
         );
-    }
-    if (!user) {
-        throw new Error(
+        assertSet(
+            connectionConfig.user,
             'Postgres user is not set. Configure via <Infra.Postgres user="..." /> in webiny.config.'
         );
-    }
-    if (!password) {
-        throw new Error(
+        assertSet(
+            connectionConfig.password,
             'Postgres password is not set. Configure via <Infra.Postgres password="..." /> in webiny.config.'
         );
-    }
-    if (!database) {
-        throw new Error(
+        assertSet(
+            connectionConfig.database,
             'Postgres database is not set. Configure via <Infra.Postgres database="..." /> in webiny.config.'
         );
     }
-
-    const connectionConfig: Knex.PgConnectionConfig = {
-        ...env.connection,
-        host,
-        port,
-        user,
-        password,
-        database
-    };
 
     const poolMax = env.poolMax;
 
     const client = knex({
         client: "pg",
-        connection: {
-            ...connectionConfig,
-            ...options.connection
-        },
+        connection: connectionConfig,
         // knex's default minimum (2) must not exceed the maximum.
         ...(poolMax !== undefined ? { pool: { min: Math.min(2, poolMax), max: poolMax } } : {})
     });

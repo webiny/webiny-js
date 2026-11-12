@@ -1,4 +1,5 @@
 import {
+    getConnectionKey,
     getSchemaMemory,
     KnexClient,
     SqlSchemaConfig,
@@ -32,8 +33,10 @@ class PgSchemaImpl implements Abstraction.Interface {
             values: tableNameResolver.resolve("values"),
             valueDeltas: tableNameResolver.resolve("value_deltas")
         };
-        // Test setups drop all tables between tests and reset every memory; the caches go with it.
-        this.memory = getSchemaMemory(`cms.pg.schema:${this.tables.search}`, () => {
+        // One memory per database and table set. Test setups drop all tables between tests and reset
+        // every memory; the caches go with it.
+        const memoryKey = `cms.pg.schema:${getConnectionKey(knex.client)}:${this.tables.search}`;
+        this.memory = getSchemaMemory(memoryKey, () => {
             scopeCache.clear();
             clearEstimateCache();
         });

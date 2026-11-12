@@ -19,6 +19,8 @@ export type {
 } from "./schemaSetup/index.js";
 export { getSchemaMemory } from "./schemaMemory/getSchemaMemory.js";
 export { getConnectionKey } from "./schemaMemory/getConnectionKey.js";
+export { ensureTable, createTableIfMissing, recordTable } from "./schemaMemory/ensureTable.js";
+export type { EnsureTableParams, TableCreator } from "./schemaMemory/ensureTable.js";
 export type { ISchemaMemory } from "./schemaMemory/getSchemaMemory.js";
 export type { SqlStorage } from "./storage/types.js";
 export * from "./connectionRetry/index.js";

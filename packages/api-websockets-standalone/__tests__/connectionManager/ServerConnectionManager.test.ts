@@ -6,7 +6,10 @@ import {
 import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER } from "~/rows/abstractions.js";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
-import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
+import {
+    createConnectionManager,
+    createMockLogger
+} from "~tests/helpers/createConnectionManager.js";
 import type { WebsocketsConnectionManager } from "~/abstractions.js";
 
 const createMockRegistry = (): IWebsocketsConnectionRegistry => ({
@@ -40,11 +43,13 @@ const createAddParams = (
 describe("ServerConnectionManager", () => {
     let registry: IWebsocketsConnectionRegistry;
     let manager: ServerConnectionManagerImpl;
+    let logger: ReturnType<typeof createMockLogger>;
 
     beforeEach(() => {
         registry = createMockRegistry();
+        logger = createMockLogger();
         // The rows change through events, whose handler runs on a request's registry: `registry`.
-        manager = createConnectionManager(registry, owner);
+        manager = createConnectionManager(registry, owner, new InMemoryLiveSockets(), logger);
     });
 
     describe("rows", () => {
@@ -323,6 +328,40 @@ describe("ServerConnectionManager", () => {
             expect(result).toEqual(["stale-1", "stale-2"]);
 
             vi.restoreAllMocks();
+        });
+
+        it("returns the rows it removed when a later one fails, and keeps the failed one's socket", async () => {
+            const stale = (connectionId: string) => ({
+                connectionId,
+                identity: { id: "u1", displayName: "U1", type: "admin" },
+                tenant: "root",
+                connectedOn: new Date().toISOString(),
+                endpoint: "ws://localhost/ws"
+            });
+            await manager.add(createAddParams("stale-1"));
+            await manager.add(createAddParams("stale-2"));
+            await manager.add(createAddParams("stale-3"));
+            vi.mocked(registry.listStale).mockResolvedValueOnce([
+                stale("stale-1"),
+                stale("stale-2"),
+                stale("stale-3")
+            ]);
+            vi.mocked(registry.unregister).mockImplementation(async ({ connectionId }) => {
+                if (connectionId === "stale-2") {
+                    throw new Error("connection lost");
+                }
+            });
+            const result = await manager.cleanup(60_000);
+
+            // stale-1 was deleted before the failure: its socket must still be closed.
+            expect(result).toEqual(["stale-1", "stale-3"]);
+            // stale-2's row is still there, so its socket stays for the next sweep.
+            expect(manager.getActiveConnectionIds()).toEqual(["stale-2"]);
+            expect(logger.error).toHaveBeenCalledTimes(1);
+            expect(logger.error).toHaveBeenCalledWith(
+                expect.objectContaining({ connectionId: "stale-2" }),
+                expect.any(String)
+            );
         });
 
         it("removes all the stale rows in one event, and forgets their sockets", async () => {

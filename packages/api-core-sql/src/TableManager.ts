@@ -1,8 +1,12 @@
 import type { Knex } from "knex";
 import { getSchemaMemory, type ISchemaMemory } from "./schemaMemory/getSchemaMemory.js";
 import { getConnectionKey } from "./schemaMemory/getConnectionKey.js";
-
-type TableCreator = (table: Knex.CreateTableBuilder) => void;
+import {
+    createTableIfMissing,
+    ensureTable,
+    recordTable,
+    type TableCreator
+} from "./schemaMemory/ensureTable.js";
 
 export interface TableManagerOptions {
     /**
@@ -12,12 +16,6 @@ export interface TableManagerOptions {
      */
     schemaManaged?: boolean | (() => boolean);
 }
-
-/*
- * Checks in flight, per memory and table, so concurrent first uses share one hasTable+createTable
- * instead of racing into "table already exists".
- */
-const pendingChecks = new Map<string, Promise<void>>();
 
 /**
  * The tables of one SQL storage part (core, audit logs, login) on one connection. Built wherever the
@@ -59,7 +57,9 @@ export class TableManager {
     /* Creates every declared table that doesn't exist yet. Runs at schema setup. */
     public async setup(): Promise<void> {
         for (const [tableName, creator] of this.defined) {
-            await this.ensureTable(this.resolve(tableName), creator);
+            const resolved = this.resolve(tableName);
+            await createTableIfMissing(this.knex, resolved, creator);
+            recordTable(this.knex, this.memory, resolved);
         }
     }
 
@@ -67,36 +67,16 @@ export class TableManager {
         return `${this.prefix}${tableName}`;
     }
 
-    public async ensure(
-        tableName: string,
-        creator: (table: Knex.CreateTableBuilder) => void
-    ): Promise<void> {
+    public async ensure(tableName: string, creator: TableCreator): Promise<void> {
         if (this.schemaManaged()) {
             return;
         }
-
-        const resolved = this.resolve(tableName);
-        const memory = this.memory;
-        if (memory.known.has(resolved)) {
-            return;
-        }
-
-        // Cleared on failure so a later call can retry.
-        const key = `${memory.key}:${resolved}`;
-        const pending = pendingChecks.get(key);
-        if (pending) {
-            return pending;
-        }
-
-        const check = this.ensureTable(resolved, creator).finally(() => {
-            // Only remove our own entry: after reset() a newer check may own this table's slot.
-            if (pendingChecks.get(key) === check) {
-                pendingChecks.delete(key);
-            }
+        await ensureTable({
+            knex: this.knex,
+            memory: this.memory,
+            tableName: this.resolve(tableName),
+            create: creator
         });
-        pendingChecks.set(key, check);
-
-        return check;
     }
 
     /* Made on first use: a schema-managed manager never needs it. */
@@ -105,38 +85,5 @@ export class TableManager {
             `core.sql.tables:${getConnectionKey(this.knex)}:${this.prefix}`
         );
         return this.memoryOfTables;
-    }
-
-    private async ensureTable(
-        resolved: string,
-        creator: (table: Knex.CreateTableBuilder) => void
-    ): Promise<void> {
-        const exists = await this.knex.schema.hasTable(resolved);
-
-        if (!exists) {
-            await this.createTable(resolved, creator);
-        }
-
-        // A transaction can still roll back, and the table with it: only a committed table is known.
-        if (!this.knex.isTransaction) {
-            this.memory.known.add(resolved);
-        }
-    }
-
-    private async createTable(
-        resolved: string,
-        creator: (table: Knex.CreateTableBuilder) => void
-    ): Promise<void> {
-        try {
-            await this.knex.schema.createTable(resolved, creator);
-        } catch (err) {
-            // Another process (or connection) may have created it in the meantime. If it exists now,
-            // that's success; otherwise the failure is real.
-            const exists = await this.knex.schema.hasTable(resolved);
-            if (exists) {
-                return;
-            }
-            throw err;
-        }
     }
 }

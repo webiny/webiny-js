@@ -9,8 +9,12 @@ export interface ISqlSchemaSetup {
      */
     readonly name: string;
     /**
-     * Creates the step's tables, indexes and functions that don't exist yet, whatever the
-     * schema-managed setting. Only adds; never alters or drops.
+     * Brings the step's tables, indexes and functions up to date, whatever the schema-managed
+     * setting. Safe to run again: what already exists is kept. It never drops a table or a column,
+     * but a step may migrate in place. The Postgres CMS, for one, adds columns
+     * (`ALTER TABLE … ADD COLUMN IF NOT EXISTS`), changes column statistics, replaces its trigger
+     * functions, replaces the old count triggers and rebuilds the count rows from the search table
+     * once. The database user that runs setup needs the rights for that.
      */
     setup(): Promise<void>;
 }
@@ -50,8 +54,8 @@ export interface ISqlSchemaSetupRunner {
     /**
      * Creates every table, index and function the API uses: opens the setup's transaction (on
      * Postgres, behind an advisory lock), builds a container on it the way a request's is built,
-     * and runs every `SqlSchemaSetup` step in it. Only adds what's missing; safe to run on every
-     * start or deploy. Afterwards the storage is schema-managed. Returns the names of the steps it
+     * and runs every `SqlSchemaSetup` step in it. Keeps what exists, and is safe to run on every
+     * start or deploy (see `ISqlSchemaSetup.setup` for what a step may migrate). Afterwards the storage is schema-managed. Returns the names of the steps it
      * ran.
      */
     run(params: SqlSchemaSetupRunParams): Promise<string[]>;

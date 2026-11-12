@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import knexFactory, { type Knex } from "knex";
 import { startPglite } from "./startPglite.js";
 
 /*
@@ -17,7 +18,7 @@ vi.mock("@webiny/aws-sdk/client-secrets-manager/index.js", () => {
 });
 
 const { createLambdaPgConnection } = await import("~/connection/createLambdaPgConnection.js");
-const { readPgPassword } = await import("~/connection/readPgPassword.js");
+const { readPgPassword, PG_SECRET_TTL_MS } = await import("~/connection/readPgPassword.js");
 
 const accessDenied = () =>
     Object.assign(new Error("not authorized"), { name: "AccessDeniedException" });
@@ -65,6 +66,109 @@ describe("the Postgres password on Lambda", () => {
             expect(secrets.send).toHaveBeenCalledTimes(1);
             expect(secrets.send.mock.calls[0][0].input).toEqual({ SecretId: "arn:secret:once" });
         });
+
+        it("is read again on the next connection after the database refuses the login", async () => {
+            for (const [name, value] of Object.entries(pglite.env)) {
+                vi.stubEnv(name, value);
+            }
+            vi.stubEnv("WEBINY_PG_SECRET_ARN", "arn:secret:rotated");
+            vi.stubEnv("WEBINY_PG_RETRY_MS", "0");
+            secrets.send.mockResolvedValue({
+                SecretString: JSON.stringify({ username: "postgres", password: "postgres" })
+            });
+
+            // PGlite takes any password: the pg client's login is refused once instead, as after a
+            // rotation, with the error code Postgres sends for a wrong password.
+            const probe = knexFactory({ client: "pg" });
+            const pgClient = Object.getPrototypeOf(probe.client) as {
+                acquireRawConnection(): Promise<unknown>;
+            };
+            await probe.destroy();
+            const login = vi
+                .spyOn(pgClient, "acquireRawConnection")
+                .mockRejectedValueOnce(
+                    Object.assign(new Error("password authentication failed"), { code: "28P01" })
+                );
+
+            const knex: Knex = createLambdaPgConnection();
+            try {
+                await expect(knex.raw("select 1 as one")).rejects.toThrow(
+                    "password authentication failed"
+                );
+                expect(secrets.send).toHaveBeenCalledTimes(1);
+
+                const result = await knex.raw("select 1 as one");
+                expect(result.rows).toEqual([{ one: 1 }]);
+                // The refused password was forgotten, so the next connection read the secret again.
+                expect(secrets.send).toHaveBeenCalledTimes(2);
+            } finally {
+                login.mockRestore();
+                await knex.destroy();
+            }
+        });
+
+        it("takes the credentials from a connection string that has them", async () => {
+            const { WEBINY_PG_HOST, WEBINY_PG_PORT } = pglite.env;
+            vi.stubEnv(
+                "WEBINY_PG_CONNECTION_STRING",
+                `postgres://postgres:postgres@${WEBINY_PG_HOST}:${WEBINY_PG_PORT}/postgres` // gitleaks:allow
+            );
+
+            const knex = createLambdaPgConnection();
+            try {
+                const result = await knex.raw("select 1 as one");
+                expect(result.rows).toEqual([{ one: 1 }]);
+                // Neither WEBINY_PG_PASSWORD nor a secret was needed.
+                expect(secrets.send).not.toHaveBeenCalled();
+            } finally {
+                await knex.destroy();
+            }
+        });
+
+        it("puts the host option and the secret's password into the connection string", async () => {
+            const { WEBINY_PG_HOST, WEBINY_PG_PORT } = pglite.env;
+            // The string names an address where nothing answers; the host option (the writer) wins.
+            vi.stubEnv(
+                "WEBINY_PG_CONNECTION_STRING",
+                `postgres://postgres@unreachable.invalid:${WEBINY_PG_PORT}/postgres`
+            );
+            vi.stubEnv("WEBINY_PG_SECRET_ARN", "arn:secret:string-without-password");
+            secrets.send.mockResolvedValue({
+                SecretString: JSON.stringify({ username: "postgres", password: "p@ss/word" })
+            });
+
+            const knex = createLambdaPgConnection({ host: WEBINY_PG_HOST });
+            try {
+                const result = await knex.raw("select 1 as one");
+                expect(result.rows).toEqual([{ one: 1 }]);
+                expect(secrets.send).toHaveBeenCalledTimes(1);
+
+                const settings = (knex.client as { connectionSettings: Knex.PgConnectionConfig })
+                    .connectionSettings;
+                const url = new URL(settings.connectionString as string);
+                expect(url.hostname).toBe(WEBINY_PG_HOST);
+                expect(decodeURIComponent(url.password)).toBe("p@ss/word");
+            } finally {
+                await knex.destroy();
+            }
+        });
+    });
+
+    it("reads the secret again once its password is PG_SECRET_TTL_MS old", async () => {
+        vi.useFakeTimers();
+        secrets.send.mockResolvedValue({ SecretString: JSON.stringify({ password: "pw" }) });
+        const env = { WEBINY_PG_SECRET_ARN: "arn:secret:ttl" };
+
+        await expect(readPgPassword(env)).resolves.toBe("pw");
+        await vi.advanceTimersByTimeAsync(PG_SECRET_TTL_MS - 1);
+        await expect(readPgPassword(env)).resolves.toBe("pw");
+        expect(secrets.send).toHaveBeenCalledTimes(1);
+
+        // Rotated meanwhile: the next read after the TTL gets the new password.
+        secrets.send.mockResolvedValue({ SecretString: JSON.stringify({ password: "rotated" }) });
+        await vi.advanceTimersByTimeAsync(1);
+        await expect(readPgPassword(env)).resolves.toBe("rotated");
+        expect(secrets.send).toHaveBeenCalledTimes(2);
     });
 
     it("uses WEBINY_PG_PASSWORD as is, without reading a secret", async () => {

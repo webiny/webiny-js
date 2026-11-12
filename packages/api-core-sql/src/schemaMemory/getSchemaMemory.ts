@@ -19,6 +19,11 @@ export interface ISchemaMemory {
     markReady(): void;
     /** Names this process has checked (tables, tenants). */
     readonly known: Set<string>;
+    /**
+     * Goes up on every `reset()`. Work that started before a reset must not record what it learned
+     * after it: compare the value taken at the start with the current one.
+     */
+    readonly generation: number;
     /** Forgets everything (test setups drop all tables between tests). */
     reset(): void;
 }
@@ -27,6 +32,7 @@ class SchemaMemory implements ISchemaMemory {
     public readonly known = new Set<string>();
     private pending?: Promise<void>;
     private ready = false;
+    private currentGeneration = 0;
 
     public constructor(
         public readonly key: string,
@@ -37,16 +43,30 @@ class SchemaMemory implements ISchemaMemory {
         if (this.ready) {
             return Promise.resolve();
         }
-        this.pending ??= create().then(
+        if (this.pending) {
+            return this.pending;
+        }
+        // A run that ends after a reset() must neither mark the tables ready nor clear a newer run.
+        const generation = this.currentGeneration;
+        const run: Promise<void> = create().then(
             () => {
-                this.ready = true;
+                if (this.currentGeneration === generation) {
+                    this.ready = true;
+                }
             },
             error => {
-                this.pending = undefined;
+                if (this.pending === run) {
+                    this.pending = undefined;
+                }
                 throw error;
             }
         );
-        return this.pending;
+        this.pending = run;
+        return run;
+    }
+
+    public get generation(): number {
+        return this.currentGeneration;
     }
 
     public isReady(): boolean {
@@ -58,6 +78,7 @@ class SchemaMemory implements ISchemaMemory {
     }
 
     public reset(): void {
+        this.currentGeneration += 1;
         this.pending = undefined;
         this.ready = false;
         this.known.clear();

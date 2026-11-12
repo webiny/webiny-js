@@ -5,6 +5,17 @@ import { toBoolean } from "@webiny/stdlib";
 
 type Env = Record<string, string | undefined>;
 
+/* The connection string's own TLS parameters (node-postgres reads these from it). */
+const CONNECTION_STRING_TLS = /[?&](ssl|sslmode|sslrootcert|sslcert|sslkey)=/i;
+
+const TLS_VARS = [
+    "WEBINY_PG_SSL",
+    "WEBINY_PG_SSL_CA",
+    "WEBINY_PG_SSL_KEY",
+    "WEBINY_PG_SSL_CERT",
+    "WEBINY_PG_SSL_REJECT_UNAUTHORIZED"
+];
+
 /** How long a read or transaction that lost its connection is retried by default, in milliseconds. */
 export const DEFAULT_PG_RETRY_MS = 15_000;
 
@@ -27,15 +38,19 @@ export interface PgConnectionEnv {
  * The Postgres connection settings in the env, under the `WEBINY_PG_*` names `<Infra.Postgres>`
  * sets. Shared by every handler that connects to Postgres (the standalone server and Lambda), so
  * they read the same variables the same way.
+ *
+ * TLS is set either in `WEBINY_PG_CONNECTION_STRING` (`sslmode`, `sslrootcert`, …) or with the
+ * `WEBINY_PG_SSL*` variables, not both: node-postgres lets the connection string's TLS settings
+ * replace the others, so a private CA in `WEBINY_PG_SSL_CA` would be dropped without a word.
  */
 export function readPgConnectionEnv(env: Env = process.env): PgConnectionEnv {
     const envBool = (name: string): boolean | undefined => {
         const value = env[name];
-        // Only convert when the var is actually set — an unset var must stay `undefined`, not become
-        // `false`. Callers rely on the `undefined` distinction (e.g. the SSL config is only applied
-        // when a WEBINY_PG_SSL* var is explicitly present); returning `false` for unset would always
-        // trigger it.
-        return value === undefined ? undefined : toBoolean(value);
+        // Only convert when the var is actually set — an unset (or empty) var must stay `undefined`,
+        // not become `false`. Callers rely on the `undefined` distinction (e.g. the SSL config is
+        // only applied when a WEBINY_PG_SSL* var is explicitly present); returning `false` for unset
+        // would always trigger it. Deploy tooling often exports unused vars as "", so "" is unset.
+        return value ? toBoolean(value) : undefined;
     };
 
     const envInt = (name: string): number | undefined => {
@@ -73,6 +88,14 @@ export function readPgConnectionEnv(env: Env = process.env): PgConnectionEnv {
     const connectionString = env.WEBINY_PG_CONNECTION_STRING;
     if (connectionString) {
         connection.connectionString = connectionString;
+        // An empty var configures nothing below, so it doesn't count as setting TLS.
+        const tlsVars = TLS_VARS.filter(name => !!env[name]);
+        if (CONNECTION_STRING_TLS.test(connectionString) && tlsVars.length > 0) {
+            throw new Error(
+                `TLS is set twice: in WEBINY_PG_CONNECTION_STRING and in ${tlsVars.join(", ")}. ` +
+                    "The connection string's TLS settings would replace the others, so set TLS in one place."
+            );
+        }
     }
 
     const sslCa = env.WEBINY_PG_SSL_CA;

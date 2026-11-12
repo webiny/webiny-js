@@ -59,4 +59,40 @@ describe("readPgConnectionEnv", () => {
         expect(env.connection.port).toBeUndefined();
         expect(env.poolMax).toBeUndefined();
     });
+
+    it("refuses TLS set both in the connection string and in WEBINY_PG_SSL* variables", () => {
+        // node-postgres would let `sslmode` replace the CA, and the private CA would be dropped.
+        expect(() =>
+            readPgConnectionEnv({
+                WEBINY_PG_CONNECTION_STRING: "postgres://u:p@db.local:5432/webiny?sslmode=require",
+                WEBINY_PG_SSL_REJECT_UNAUTHORIZED: "true"
+            })
+        ).toThrow(/TLS is set twice.*WEBINY_PG_SSL_REJECT_UNAUTHORIZED/);
+    });
+
+    it("takes TLS from either place alone", () => {
+        const fromString = readPgConnectionEnv({
+            WEBINY_PG_CONNECTION_STRING: "postgres://u:p@db.local:5432/webiny?sslmode=require"
+        });
+        expect(fromString.connection.ssl).toBeUndefined();
+
+        const fromVars = readPgConnectionEnv({
+            WEBINY_PG_CONNECTION_STRING: "postgres://u:p@db.local:5432/webiny",
+            WEBINY_PG_SSL: "true"
+        });
+        expect(fromVars.connection.ssl).toBe(true);
+    });
+
+    it("treats empty WEBINY_PG_SSL* variables as unset", () => {
+        // Deploy tooling often exports unused variables as empty strings.
+        const env = readPgConnectionEnv({
+            WEBINY_PG_CONNECTION_STRING: "postgres://u:p@db.local:5432/webiny?sslmode=require",
+            WEBINY_PG_SSL: "",
+            WEBINY_PG_SSL_CA: "",
+            WEBINY_PG_SSL_KEY: "",
+            WEBINY_PG_SSL_CERT: "",
+            WEBINY_PG_SSL_REJECT_UNAUTHORIZED: ""
+        });
+        expect(env.connection.ssl).toBeUndefined();
+    });
 });

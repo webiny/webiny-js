@@ -1,6 +1,7 @@
 import type { Knex } from "knex";
 import { createAbstraction } from "@webiny/feature/api";
 import {
+    getConnectionKey,
     getSchemaMemory,
     KnexClient,
     SqlSchemaConfig,
@@ -113,7 +114,10 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
             grants: resolveAcoTableName(tableNameConfig, "folder_grants"),
             state: resolveAcoTableName(tableNameConfig, "folder_catalog_state")
         };
-        this.memory = getSchemaMemory(`aco.pg.folderCatalog:${this.tables.folders}`);
+        // One memory per database and table set.
+        this.memory = getSchemaMemory(
+            `aco.pg.folderCatalog:${getConnectionKey(knex.client)}:${this.tables.folders}`
+        );
     }
 
     public getTables(): IFolderCatalogTables {
@@ -148,11 +152,14 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
         if (this.memory.isReady() || this.schemaConfig?.isManaged()) {
             return;
         }
+        const generation = this.memory.generation;
         await this.createIn(trx);
-        // Known to exist only once the caller's transaction commits.
+        // Known to exist only once the caller's transaction commits (and not after a reset).
         trx.executionPromise
             .then(() => {
-                this.memory.markReady();
+                if (this.memory.generation === generation) {
+                    this.memory.markReady();
+                }
             })
             .catch(() => undefined);
     }
