@@ -8,6 +8,7 @@ import { DatabaseSetup } from "@webiny/project/extensions/index.js";
 import { Postgres } from "@webiny/project-extensions-aws/extensions/Postgres.js";
 import { RdsProxy } from "@webiny/project-extensions-aws/extensions/RdsProxy.js";
 import "~/extensions/registerExtensionImplementations.js";
+import { HEADLESS_CMS_PG_DEFAULTS_BUILD_PARAM } from "~/extensions/RdsProxy.js";
 
 const sdkParams = { env: "dev" } as unknown as ProjectSdkParamsService.Params;
 
@@ -27,6 +28,8 @@ const asArray = (value: unknown) => (Array.isArray(value) ? value : value ? [val
 
 const coreBeforeDeployHooks = (config: Record<string, any>) =>
     asArray(config["Core/BeforeDeploy"]).map((hook: { src: string }) => hook.src.split("/").pop());
+
+const buildParams = (config: Record<string, any>) => asArray(config["Api/BuildParam"]);
 
 describe("Infra.Postgres and Infra.RdsProxy in an AWS project", () => {
     const originalHostingType = process.env.WEBINY_HOSTING_TYPE;
@@ -64,5 +67,19 @@ describe("Infra.Postgres and Infra.RdsProxy in an AWS project", () => {
         expect(enabled["Infra/RdsProxy"]).toEqual({ enabled: true });
         expect(coreBeforeDeployHooks(enabled)).toEqual(["EnsurePostgresWithRdsProxy.js"]);
         expect(coreBeforeDeployHooks(disabled)).toEqual([]);
+    });
+
+    it("turns bitmap hints off by default through a build param, only when the proxy is enabled", async () => {
+        const enabled = await renderConfig(<RdsProxy enabled />);
+        const disabled = await renderConfig(<RdsProxy enabled={false} />);
+        const absent = await renderConfig(null);
+
+        // The name `@webiny/api-headless-cms-pg` reads (`PG_CMS_DEFAULTS_BUILD_PARAM`).
+        expect(HEADLESS_CMS_PG_DEFAULTS_BUILD_PARAM).toBe("HeadlessCmsPgDefaults");
+        expect(buildParams(enabled)).toEqual([
+            { paramName: "HeadlessCmsPgDefaults", value: { bitmapHints: false } }
+        ]);
+        expect(buildParams(disabled)).toEqual([]);
+        expect(buildParams(absent)).toEqual([]);
     });
 });
