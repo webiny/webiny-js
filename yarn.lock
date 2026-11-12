@@ -14196,6 +14196,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/references@workspace:packages/references":
+  version: 0.0.0-use.local
+  resolution: "@webiny/references@workspace:packages/references"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/sdk-frontend@npm:0.0.0, @webiny/sdk-frontend@workspace:packages/sdk-frontend":
   version: 0.0.0-use.local
   resolution: "@webiny/sdk-frontend@workspace:packages/sdk-frontend"

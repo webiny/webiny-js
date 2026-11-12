@@ -1,0 +1,22 @@
+{
+  "name": "@webiny/references",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./references.json": "./references.json"
+  },
+  "files": [
+    "references.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/references"
+  },
+  "author": "Webiny Ltd.",
+  "description": "The versions a Webiny project's dependencies should be on. Read by the upgrade tool.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
