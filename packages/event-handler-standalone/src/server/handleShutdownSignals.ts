@@ -11,62 +11,45 @@ const SHUTDOWN_TIMEOUT_MS = 8000;
 
 interface IHandleShutdownSignalsParams {
     server: http.Server;
-    shutdown: () => Promise<void>;
+    /** Resolves once no HTTP request is in flight. */
+    requestsDrained: () => Promise<void>;
+    /** Gets the drain, so it can keep what requests still use open until they are done. */
+    shutdown: (requestsDrained: Promise<void>) => Promise<void>;
 }
 
 /**
  * Exits cleanly on the first SIGTERM or SIGINT: stops taking connections, then waits at most
- * `SHUTDOWN_TIMEOUT_MS` for both `shutdown` and the requests still in flight, then exits. A second
- * signal exits at once, for someone who pressed Ctrl+C twice. Handling a signal replaces Node's
- * default of exiting, so this always exits itself.
+ * `SHUTDOWN_TIMEOUT_MS` for both `shutdown` and the HTTP requests still in flight, then exits. A
+ * second signal exits at once, for someone who pressed Ctrl+C twice. Handling a signal replaces
+ * Node's default of exiting, so this always exits itself.
  */
 export function handleShutdownSignals(params: IHandleShutdownSignalsParams): void {
-    const { server, shutdown } = params;
+    const { server, requestsDrained, shutdown } = params;
     let stopping = false;
 
     const onSignal = async (signal: string) => {
         stopping = true;
         console.log(`[server] ${signal} received, shutting down`);
 
-        /*
-         * New connections are refused; idle keep-alive ones are closed, busy ones may finish.
-         * The callback runs once the last connection has ended, websockets included.
-         */
-        const connectionsClosed = new Promise<void>(resolve => {
-            server.close(() => resolve());
-        });
+        // New connections are refused; idle keep-alive ones are closed, busy ones may finish.
+        server.close();
         server.closeIdleConnections();
 
-        let timer: ReturnType<typeof setTimeout> | undefined;
-        const timeout = new Promise<"timeout">(resolve => {
-            timer = setTimeout(() => resolve("timeout"), SHUTDOWN_TIMEOUT_MS);
-        });
-        try {
-            const done = Promise.all([shutdown(), connectionsClosed]);
-            const result = await Promise.race([done, timeout]);
-            if (result === "timeout") {
-                // Requests and streams still open when time runs out are cut here, not by the exit.
-                server.closeAllConnections();
-            }
-        } catch (error) {
+        const drained = requestsDrained();
+        // A failed shutdown is reported, and requests in flight still get their time.
+        const shutdownDone = shutdown(drained).catch(error => {
             console.error("[server] shutdown failed:", error);
-        } finally {
-            clearTimeout(timer);
-        }
+        });
+
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const timeout = new Promise<void>(resolve => {
+            timer = setTimeout(resolve, SHUTDOWN_TIMEOUT_MS);
+        });
+        const done = Promise.all([shutdownDone, drained]);
+        await Promise.race([done, timeout]);
+        clearTimeout(timer);
         process.exit(0);
     };
-
-    /*
-     * A keep-alive connection whose request finishes during shutdown turns idle and would stay
-     * open, holding `server.close()` until the timeout. Close it as soon as it does.
-     */
-    server.on("request", (_: http.IncomingMessage, res: http.ServerResponse) => {
-        res.once("finish", () => {
-            if (stopping) {
-                server.closeIdleConnections();
-            }
-        });
-    });
 
     for (const signal of SHUTDOWN_SIGNALS) {
         process.on(signal, () => {
