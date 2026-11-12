@@ -1,18 +1,17 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import knexLib from "knex";
 import type { Knex } from "knex";
 import { TableManager } from "@webiny/api-core-sql/TableManager.js";
 import { Container } from "@webiny/feature/api";
 import type { StoredPasswordResetCode } from "@webiny/self-hosted-auth";
-import {
-    ListLivePasswordResetCodesStorageOperation,
-    SavePasswordResetCodeStorageOperation,
-    SetPasswordResetCodeHashStorageOperation
-} from "@webiny/self-hosted-auth";
-import {
-    KnexPasswordResetCodesTable,
-    PasswordResetCodesTable
-} from "~/passwordResetCodes/PasswordResetCodesTable.js";
+import { ListLivePasswordResetCodesStorageOperation } from "@webiny/self-hosted-auth";
+import { SavePasswordResetCodeStorageOperation } from "@webiny/self-hosted-auth";
+import { SetPasswordResetCodeHashStorageOperation } from "@webiny/self-hosted-auth";
+import { KnexPasswordResetCodesTable } from "~/passwordResetCodes/PasswordResetCodesTable.js";
+import { PasswordResetCodesTable } from "~/passwordResetCodes/PasswordResetCodesTable.js";
 import { SqlSavePasswordResetCode } from "~/passwordResetCodes/SqlSavePasswordResetCode.js";
 import { SqlSetPasswordResetCodeHash } from "~/passwordResetCodes/SqlSetPasswordResetCodeHash.js";
 import { SqlListLivePasswordResetCodes } from "~/passwordResetCodes/SqlListLivePasswordResetCodes.js";
@@ -20,7 +19,9 @@ import { SqlListLivePasswordResetCodes } from "~/passwordResetCodes/SqlListLiveP
 const connections: Knex[] = [];
 
 afterEach(async () => {
-    await Promise.all(connections.splice(0).map(knex => knex.destroy()));
+    const open = connections.splice(0);
+    const closing = open.map(knex => knex.destroy());
+    await Promise.all(closing);
 });
 
 const setup = () => {
@@ -32,10 +33,9 @@ const setup = () => {
     connections.push(knex);
 
     const container = new Container();
-    container.registerInstance(
-        PasswordResetCodesTable,
-        new KnexPasswordResetCodesTable(knex, new TableManager(knex, "test_"))
-    );
+    const tableManager = new TableManager(knex, "test_");
+    const table = new KnexPasswordResetCodesTable(knex, tableManager);
+    container.registerInstance(PasswordResetCodesTable, table);
     container.register(SqlSavePasswordResetCode);
     container.register(SqlSetPasswordResetCodeHash);
     container.register(SqlListLivePasswordResetCodes);
@@ -58,8 +58,13 @@ const request = (overrides: Partial<StoredPasswordResetCode> = {}): StoredPasswo
     ...overrides
 });
 
-const live = (ops: ReturnType<typeof setup>) => {
-    return ops.listLive.execute({ email: "admin@example.com", now: "2026-01-02T00:00:00.000Z" });
+// The hash of the one live row for the address.
+const liveHash = async (ops: ReturnType<typeof setup>) => {
+    const rows = await ops.listLive.execute({
+        email: "admin@example.com",
+        now: "2026-01-02T00:00:00.000Z"
+    });
+    return rows[0]!.codeHash;
 };
 
 describe("password reset codes on SQL", () => {
@@ -68,7 +73,8 @@ describe("password reset codes on SQL", () => {
 
         await ops.save.execute({ code: request() });
 
-        expect((await live(ops))[0]!.codeHash).toBeNull();
+        const codeHash = await liveHash(ops);
+        expect(codeHash).toBeNull();
     });
 
     it("sets the code on a request that has none", async () => {
@@ -78,10 +84,11 @@ describe("password reset codes on SQL", () => {
         const updated = await ops.setHash.execute({ id: "code-1", codeHash: "hash-1" });
 
         expect(updated).toBe(true);
-        expect((await live(ops))[0]!.codeHash).toBe("hash-1");
+        const codeHash = await liveHash(ops);
+        expect(codeHash).toBe("hash-1");
     });
 
-    /** A second run of the task must not replace a code that is already in a mailbox. */
+    // A second run of the task must not replace a code that is already in a mailbox.
     it("does not replace a code that is already set", async () => {
         const ops = setup();
         await ops.save.execute({ code: request() });
@@ -90,12 +97,15 @@ describe("password reset codes on SQL", () => {
         const updated = await ops.setHash.execute({ id: "code-1", codeHash: "hash-2" });
 
         expect(updated).toBe(false);
-        expect((await live(ops))[0]!.codeHash).toBe("hash-1");
+        const codeHash = await liveHash(ops);
+        expect(codeHash).toBe("hash-1");
     });
 
     it("reports a request that does not exist", async () => {
         const ops = setup();
 
-        expect(await ops.setHash.execute({ id: "missing", codeHash: "hash-1" })).toBe(false);
+        const updated = await ops.setHash.execute({ id: "missing", codeHash: "hash-1" });
+
+        expect(updated).toBe(false);
     });
 });

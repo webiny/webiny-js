@@ -14,8 +14,8 @@ import { normalizeEmail } from "~/api/domain/normalizeEmail.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUEST_WINDOW_MINUTES } from "~/api/domain/passwordResetPolicy.js";
-import { SEND_PASSWORD_RESET_CODE_TASK } from "~/api/features/SendPasswordResetCode/index.js";
-import type { SendPasswordResetCodeInput } from "~/api/features/SendPasswordResetCode/index.js";
+import { SEND_PASSWORD_RESET_CODE_TASK } from "~/api/features/SendPasswordResetCode/abstractions.js";
+import type { SendPasswordResetCodeInput } from "~/api/features/SendPasswordResetCode/abstractions.js";
 
 class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

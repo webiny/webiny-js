@@ -146,8 +146,8 @@ happens when a code is requested, and reports the same way regardless of whether
   a row with no code yet, and triggers the send task. Does the same for every address, so neither
   the answer nor how long it takes says whether there is an account. Surfaces two installation
   failures, and nothing about the address: mail is not configured, or the task could not start.
-- **Send code task.** A private background task that runs once. Resolves the credential, and on a
-  hit generates the code, sets its hash on the request row, and sends the mail. The code is
+- **Send code use case.** Run by a private background task that runs once. Resolves the
+  credential, and on a hit generates the code, sets its hash on the request row, and sends the mail. The code is
   generated here and not passed in, because task input is stored as it is. Setting the hash only
   succeeds on a row that has none, so a repeated run mails nothing.
 - **Reset with code use case.** Takes an address, a code, and a new password. Loads live codes for

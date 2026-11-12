@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { PasswordResetMailer } from "@webiny/self-hosted-auth";
 import { createServer } from "./createServer.js";
@@ -67,7 +69,7 @@ const waitFor = async (check: () => boolean, timeoutMs = 10_000) => {
     }
 };
 
-/**
+/*
  * The emailed reset, through the full standalone server: the request is anonymous and only starts
  * a background task, and the task mails the code. The mailer is replaced by one that records what it
  * would have sent, so no SMTP server is needed.
