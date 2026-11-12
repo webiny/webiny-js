@@ -1,14 +1,16 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/index.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { WebsocketEvent } from "@webiny/app/features/websocketEvents/index.js";
 import { ListCache } from "~/features/listCache/index.js";
-import type { Team } from "../../types.js";
-import { GetTeamGateway } from "../getTeam/abstractions.js";
-import { TeamsListCache } from "../listTeams/abstractions.js";
-import { TeamEventsFeature } from "./feature.js";
+import type { Team } from "~/features/accessManagement/types.js";
+import { GetTeamGateway } from "~/features/accessManagement/teams/getTeam/abstractions.js";
+import { TeamsListCache } from "~/features/accessManagement/teams/listTeams/abstractions.js";
+import { TeamEventsFeature } from "~/features/accessManagement/teams/teamEvents/feature.js";
 
 const team = (overrides: Partial<Team> = {}): Team => ({
     id: "team-1",
