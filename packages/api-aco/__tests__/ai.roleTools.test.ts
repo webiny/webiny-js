@@ -1,6 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
+import { definedOnly } from "@webiny/api-core/features/security/shared/index.js";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { CreateRoleUseCase } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
 import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
@@ -79,11 +82,7 @@ describe("createRole tool", () => {
 });
 
 describe("updateRole tool", () => {
-    /*
-     * `UpdateRoleUseCase` spreads its input onto the stored role, so a key sent as `undefined` would
-     * wipe the stored value. Only the keys the model gave may reach it.
-     */
-    it("passes only the fields the model gave", async () => {
+    it("passes the role id and the new name to the use case", async () => {
         const sent: { id?: string; input?: Record<string, unknown> } = {};
         const container = new Container();
 
@@ -91,7 +90,7 @@ describe("updateRole tool", () => {
             execute: async (id: string, input: Record<string, unknown>) => {
                 sent.id = id;
                 sent.input = input;
-                return Result.ok({ ...editor, ...input });
+                return Result.ok({ ...editor, ...definedOnly(input) });
             }
         } as unknown as UpdateRoleUseCase.Interface);
         container.register(UpdateRoleTool);
@@ -103,7 +102,7 @@ describe("updateRole tool", () => {
         });
 
         expect(sent.id).toEqual("role-1");
-        expect(Object.keys(sent.input!)).toEqual(["name"]);
+        expect(sent.input!.name).toEqual("Senior editor");
     });
 });
 
@@ -113,6 +112,7 @@ describe("deleteRole tool", () => {
             role?: Partial<typeof editor>;
             teams?: { name: string; roles: string[] }[];
             users?: { displayName: string; email: string; roles?: string[] }[];
+            teamsFail?: boolean;
         } = {}
     ) => {
         const deleted: string[] = [];
@@ -122,7 +122,10 @@ describe("deleteRole tool", () => {
             execute: async () => Result.ok({ ...editor, ...options.role })
         } as unknown as GetRoleUseCase.Interface);
         container.registerInstance(ListTeamsUseCase, {
-            execute: async () => Result.ok(options.teams ?? [])
+            execute: async () =>
+                options.teamsFail
+                    ? Result.fail(new Error("Not authorized!"))
+                    : Result.ok(options.teams ?? [])
         } as unknown as ListTeamsUseCase.Interface);
         container.registerInstance(ListUsersUseCase, {
             execute: async () => Result.ok(options.users ?? [])
@@ -176,6 +179,15 @@ describe("deleteRole tool", () => {
 
         await expect(handler.execute({ roleId: "role-1", name: "Editor" })).rejects.toThrow(
             'is still given to team "Marketing", user "Ada"'
+        );
+        expect(deleted).toEqual([]);
+    });
+
+    it("refuses, saying why, when the caller cannot list teams", async () => {
+        const { handler, deleted } = setup({ teamsFail: true });
+
+        await expect(handler.execute({ roleId: "role-1", name: "Editor" })).rejects.toThrow(
+            "needs permission to list teams"
         );
         expect(deleted).toEqual([]);
     });

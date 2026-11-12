@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { UpdateTeam } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
-import type { UpdateTeamInput } from "@webiny/api-core/features/security/teams/shared/types.js";
 
 const inputSchema = z.object({
     teamId: z.string().describe("Team id as returned by listTeams."),
@@ -33,24 +32,12 @@ class UpdateTeamToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private updateTeam: UpdateTeam.Interface) {}
 
     async execute(input: Input): Promise<UpdatedTeam> {
-        /*
-         * Only the keys the model sent. `UpdateTeam` spreads its validated input onto the stored team,
-         * and a key that is present but `undefined` survives validation, so passing `name: undefined`
-         * would wipe the stored name.
-         */
-        const changes: UpdateTeamInput = {};
-
-        if (input.name !== undefined) {
-            changes.name = input.name;
-        }
-        if (input.description !== undefined) {
-            changes.description = input.description;
-        }
-        if (input.roles !== undefined) {
-            changes.roles = input.roles;
-        }
-
-        const result = await this.updateTeam.execute(input.teamId, changes);
+        // A field the model left out arrives as `undefined`; `UpdateTeam` leaves those alone.
+        const result = await this.updateTeam.execute(input.teamId, {
+            name: input.name,
+            description: input.description,
+            roles: input.roles
+        });
 
         if (result.isFail()) {
             throw new Error(`Could not update the team: ${result.error.message}`);

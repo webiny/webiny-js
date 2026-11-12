@@ -1,10 +1,8 @@
 import { createFeature } from "@webiny/feature/api";
 import { NotifyRoleChangeUseCase } from "./NotifyRoleChangeUseCase.js";
-import {
-    NotifyOnRoleCreatedHandler,
-    NotifyOnRoleDeletedHandler,
-    NotifyOnRoleUpdatedHandler
-} from "./NotifyOnRoleChangeHandlers.js";
+import { NotifyOnRoleCreatedHandler } from "./NotifyOnRoleCreatedHandler.js";
+import { NotifyOnRoleUpdatedHandler } from "./NotifyOnRoleUpdatedHandler.js";
+import { NotifyOnRoleDeletedHandler } from "./NotifyOnRoleDeletedHandler.js";
 
 /** Tells the user's open admin tabs when a role is created, updated or deleted. */
 export const NotifyRoleChangeFeature = createFeature({

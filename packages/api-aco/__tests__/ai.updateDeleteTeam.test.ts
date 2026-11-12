@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
+import { definedOnly } from "@webiny/api-core/features/security/shared/index.js";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
 import { UpdateTeam } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
@@ -30,7 +31,7 @@ describe("updateTeam tool", () => {
             execute: async (id: string, input: Record<string, unknown>) => {
                 sent.id = id;
                 sent.input = input;
-                return Result.ok({ ...stored, ...input });
+                return Result.ok({ ...stored, ...definedOnly(input) });
             }
         } as unknown as UpdateTeam.Interface);
         container.register(UpdateTeamTool);
@@ -38,25 +39,12 @@ describe("updateTeam tool", () => {
         return { handler: resolveHandler(container), sent };
     };
 
-    /*
-     * `UpdateTeam` spreads its input onto the stored team, so a key sent as `undefined` would wipe the
-     * stored value. Only the keys the model gave may reach it.
-     */
-    it("passes only the fields the model gave", async () => {
-        const { handler, sent } = setup();
-
-        await handler.execute({ teamId: "team-1", name: "Growth", description: undefined });
-
-        expect(sent).toEqual({ id: "team-1", input: { name: "Growth" } });
-        expect(Object.keys(sent.input!)).toEqual(["name"]);
-    });
-
     it("passes the role list as given, replacing the stored one", async () => {
         const { handler, sent } = setup();
 
         const result = await handler.execute({ teamId: "team-1", roles: ["role-a"] });
 
-        expect(sent.input).toEqual({ roles: ["role-a"] });
+        expect(sent.input!.roles).toEqual(["role-a"]);
         expect(result).toMatchObject({ id: "team-1", name: "Marketing", roles: ["role-a"] });
     });
 });

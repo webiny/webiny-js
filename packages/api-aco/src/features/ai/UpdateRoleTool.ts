@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { UpdateRoleUseCase } from "@webiny/api-core/features/security/roles/UpdateRole/index.js";
-import type { UpdateRoleInput } from "@webiny/api-core/features/security/roles/shared/types.js";
 
 const inputSchema = z.object({
     roleId: z.string().describe("Role id as returned by listRoles."),
@@ -26,21 +26,11 @@ class UpdateRoleToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private updateRole: UpdateRoleUseCase.Interface) {}
 
     async execute(input: Input): Promise<UpdatedRole> {
-        /*
-         * Only the keys the model sent. `UpdateRoleUseCase` spreads its validated input onto the
-         * stored role, and a key that is present but `undefined` survives validation, so passing
-         * `name: undefined` would wipe the stored name. Same reason as in `updateTeam`.
-         */
-        const changes: UpdateRoleInput = {};
-
-        if (input.name !== undefined) {
-            changes.name = input.name;
-        }
-        if (input.description !== undefined) {
-            changes.description = input.description;
-        }
-
-        const result = await this.updateRole.execute(input.roleId, changes);
+        // A field the model left out arrives as `undefined`; `UpdateRoleUseCase` leaves those alone.
+        const result = await this.updateRole.execute(input.roleId, {
+            name: input.name,
+            description: input.description
+        });
 
         if (result.isFail()) {
             throw new Error(`Could not update the role: ${result.error.message}`);
@@ -59,7 +49,7 @@ const UpdateRoleToolHandler = AiSdkToolHandler.createImplementation({
 
 /**
  * Renames a role or changes its description. Permissions are out of reach for the same reason as in
- * `createRole`, and the slug stays because teams and users can be given a role by slug.
+ * `createRole`. The slug cannot change because `UpdateRoleUseCase` does not accept one.
  */
 class UpdateRoleToolImpl implements AiSdkToolDefinition.Interface<Input> {
     readonly name = "updateRole";

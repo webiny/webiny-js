@@ -1,12 +1,10 @@
 import { createImplementation } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
-import {
-    ROLE_CREATED_WEBSOCKET_ACTION,
-    ROLE_DELETED_WEBSOCKET_ACTION,
-    ROLE_UPDATED_WEBSOCKET_ACTION,
-    NotifyRoleChangeUseCase as UseCaseAbstraction
-} from "./abstractions.js";
+import { ROLE_CREATED_WEBSOCKET_ACTION } from "./abstractions.js";
+import { ROLE_DELETED_WEBSOCKET_ACTION } from "./abstractions.js";
+import { ROLE_UPDATED_WEBSOCKET_ACTION } from "./abstractions.js";
+import { NotifyRoleChangeUseCase as UseCaseAbstraction } from "./abstractions.js";
 
 const ACTIONS: Record<UseCaseAbstraction.Params["change"], string> = {
     created: ROLE_CREATED_WEBSOCKET_ACTION,

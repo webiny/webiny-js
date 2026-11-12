@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
 import { DeleteRoleUseCase } from "@webiny/api-core/features/security/roles/DeleteRole/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
@@ -27,11 +28,13 @@ interface DeletedRole {
  *
  * - The name is in the input so the approval shows which role goes; it is checked against the
  *   stored role, so what the user approved by name is what is removed.
- * - System roles (the full-access role the installer creates) are refused here. `DeleteRoleUseCase`
- *   only refuses roles defined in code, and losing full access is not something to do from a chat.
+ * - System roles (the Full Access role the installer creates) are refused. `DeleteRoleUseCase`
+ *   cannot refuse them itself: `RolesInstaller.uninstall()` uses it to roll back that same role.
  * - A role still given to a team or a user is refused, with their names. `DeleteRoleUseCase` would
  *   delete it and leave them holding the id of a role that no longer exists. Both the id and the
  *   slug are matched, since a record written before roles were resolved to ids can hold the slug.
+ *   The check goes through the list use cases, so it needs the caller's permission to list teams
+ *   and users. Without it the delete is refused and the error says why.
  */
 class DeleteRoleToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
@@ -85,12 +88,16 @@ class DeleteRoleToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
         const teams = await this.listTeams.execute();
         if (teams.isFail()) {
-            throw new Error(`Could not check which teams use the role: ${teams.error.message}`);
+            throw new Error(
+                `Could not check which teams still have the role, so nothing was deleted. Deleting a role here also needs permission to list teams: ${teams.error.message}`
+            );
         }
 
         const users = await this.listUsers.execute();
         if (users.isFail()) {
-            throw new Error(`Could not check which users have the role: ${users.error.message}`);
+            throw new Error(
+                `Could not check which users still have the role, so nothing was deleted. Deleting a role here also needs permission to list users: ${users.error.message}`
+            );
         }
 
         return [

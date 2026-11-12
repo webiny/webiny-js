@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreateRoleUseCase } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
 import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
 import { descriptionOnCreate } from "@webiny/api-core/features/security/shared/index.js";
@@ -57,10 +58,11 @@ class CreateRoleToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
             source = found.value.name;
         }
 
+        const description = descriptionOnCreate(input.description);
         const result = await this.createRole.execute({
             name: input.name,
             slug: input.slug,
-            description: descriptionOnCreate(input.description),
+            description,
             permissions
         });
 

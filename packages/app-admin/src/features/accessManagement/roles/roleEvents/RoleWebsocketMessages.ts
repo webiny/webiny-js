@@ -1,5 +1,6 @@
 import { WebsocketEventHandler } from "@webiny/app/features/websocketEvents/index.js";
-import { EventPublisher, type BaseEvent } from "@webiny/app/features/eventPublisher/index.js";
+import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
+import type { BaseEvent } from "@webiny/app/features/eventPublisher/index.js";
 import { RoleCreatedEvent } from "./RoleCreatedEvent.js";
 import { RoleUpdatedEvent } from "./RoleUpdatedEvent.js";
 import { RoleDeletedEvent } from "./RoleDeletedEvent.js";
@@ -30,7 +31,8 @@ class RoleWebsocketMessagesImpl implements WebsocketEventHandler.Interface {
         }
 
         const { data } = event.payload as unknown as { data: RoleMessageData };
-        await this.eventPublisher.publish(toEvent(data.id));
+        const roleEvent = toEvent(data.id);
+        await this.eventPublisher.publish(roleEvent);
     }
 }
 
