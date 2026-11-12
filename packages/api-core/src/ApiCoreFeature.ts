@@ -23,6 +23,7 @@ import { AiFeature } from "~/features/ai/feature.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { HttpClientFeature } from "~/features/httpClient/feature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
+import { NullSendToIdentityUseCase } from "~/features/websockets/index.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 import { RequestContextFeature } from "~/features/requestContext/index.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
@@ -62,6 +63,7 @@ export const ApiCoreFeature = createFeature({
         IdpAuthenticatorFeature.register(container);
         RequestContextFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
+        container.register(NullSendToIdentityUseCase);
         WebhookProviderFeature.register(container);
 
         // Core API GraphQL schema: a base factory (root types + scalars) plus one

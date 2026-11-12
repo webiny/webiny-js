@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { KickOutCurrentUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { ILockRecord } from "~/domain/index.js";

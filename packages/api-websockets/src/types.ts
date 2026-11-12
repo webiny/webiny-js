@@ -1,9 +1,8 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
-export type IWebsocketsIdentity = Pick<SecurityIdentity, "id" | "displayName" | "type">;
+export type { IWebsocketsIdentity } from "@webiny/api-core/features/websockets/index.js";
 
 export interface Context extends ApiCoreContext {}
 

@@ -1,19 +1,11 @@
 import type { GenericRecord } from "@webiny/api/types.js";
 import { createAbstraction } from "@webiny/feature/api";
+import type {
+    IWebsocketsTransportSendData,
+    IWebsocketsTransportSendDataError
+} from "@webiny/api-core/features/websockets/index.js";
 
-export interface IWebsocketsTransportSendDataError {
-    message: string;
-    code: string;
-    data?: GenericRecord;
-    stack?: string;
-}
-
-export interface IWebsocketsTransportSendData<T extends GenericRecord> {
-    messageId?: string;
-    action?: string;
-    data?: T;
-    error?: IWebsocketsTransportSendDataError;
-}
+export type { IWebsocketsTransportSendData, IWebsocketsTransportSendDataError };
 
 export interface IWebsocketsTransportSendConnection {
     connectionId: string;

@@ -6,7 +6,7 @@ import {
     TEAM_CREATED_WEBSOCKET_ACTION,
     TEAM_DELETED_WEBSOCKET_ACTION,
     TEAM_UPDATED_WEBSOCKET_ACTION
-} from "~/features/team/NotifyTeamChange/index.js";
+} from "@webiny/api-core/features/security/teams/NotifyTeamChange/index.js";
 
 const getTool = (container: Container, name: string) => {
     const tool = container

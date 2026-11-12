@@ -6,7 +6,7 @@ import { processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import { AcoFeature } from "@webiny/api-aco";
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "@webiny/api-aco/features/folder/CreateFolder/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";

@@ -4,9 +4,9 @@ import { expect } from "vitest";
 import type { Container } from "@webiny/di";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { useHandler } from "~tests/utils/useHandler";
-import { ROLE_CREATED_WEBSOCKET_ACTION } from "~/features/role/NotifyRoleChange/index.js";
-import { ROLE_DELETED_WEBSOCKET_ACTION } from "~/features/role/NotifyRoleChange/index.js";
-import { ROLE_UPDATED_WEBSOCKET_ACTION } from "~/features/role/NotifyRoleChange/index.js";
+import { ROLE_CREATED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/roles/NotifyRoleChange/index.js";
+import { ROLE_DELETED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/roles/NotifyRoleChange/index.js";
+import { ROLE_UPDATED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/roles/NotifyRoleChange/index.js";
 
 const getTool = (container: Container, name: string) => {
     const tool = container

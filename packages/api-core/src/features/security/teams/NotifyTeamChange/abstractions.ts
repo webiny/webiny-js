@@ -20,7 +20,7 @@ export interface INotifyTeamChangeUseCase {
 }
 
 export const NotifyTeamChangeUseCase = createAbstraction<INotifyTeamChangeUseCase>(
-    "Aco/NotifyTeamChangeUseCase"
+    "Security/NotifyTeamChangeUseCase"
 );
 
 export namespace NotifyTeamChangeUseCase {
