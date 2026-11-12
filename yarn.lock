@@ -733,6 +733,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-secrets-manager@npm:^3.1161.0":
+  version: 3.1164.0
+  resolution: "@aws-sdk/client-secrets-manager@npm:3.1164.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/credential-provider-node": "npm:^3.972.94"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/03a55613917aa13a6c803fe7b590e1f0fe6f2cf9b71e7a4de4bbde707457893781400ae5420409f544fed3dcc01b68e14ec21ad6a738e75dc2b97e82eb756b77
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sfn@npm:^3.1161.0":
   version: 3.1161.0
   resolution: "@aws-sdk/client-sfn@npm:3.1161.0"
@@ -799,6 +815,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/core@npm:^3.980.1":
+  version: 3.980.1
+  resolution: "@aws-sdk/core@npm:3.980.1"
+  dependencies:
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@aws-sdk/xml-builder": "npm:^3.972.42"
+    "@aws/lambda-invoke-store": "npm:^0.3.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/signature-v4": "npm:^5.7.5"
+    "@smithy/types": "npm:^4.19.0"
+    bowser: "npm:^2.11.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/b255d5301e7c3b0eaf09f924bdc6ecf9d57236556c1cc27af1c4812c5e3510a72dfa3f7fbc71df48b08ab33fccd6147c52a9f365f0e9406b07979a525fef3fe6
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-cognito-identity@npm:^3.972.79":
   version: 3.972.79
   resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.972.79"
@@ -825,6 +857,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-env@npm:^3.972.82":
+  version: 3.972.82
+  resolution: "@aws-sdk/credential-provider-env@npm:3.972.82"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/17095f9efdba037c5121ac074e8cea03a9579d2fb38525c60acd077ebc433f631c2783d4573f54990bccd1de486dcad622e13df379c8d5a00da5a5f99478a020
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-http@npm:^3.972.82":
   version: 3.972.82
   resolution: "@aws-sdk/credential-provider-http@npm:3.972.82"
@@ -837,6 +882,21 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/5694f320e3768984d8d517376c868494c2711913850bd9b3f9db68ec53484627eed6a2f1dfd75c57b7c7bd2e509dbf3a8cec2947c47312dc3e2c303615ed32ad
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-http@npm:^3.972.84":
+  version: 3.972.84
+  resolution: "@aws-sdk/credential-provider-http@npm:3.972.84"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/b5e7d7c9f23871ea2c7290d189b04dd7e1c89acbd98239335b12408556f42be85bd0771a4cbf79c55a146fd3823bfb340470a4ec0ea0c5f20054295ca5037444
   languageName: node
   linkType: hard
 
@@ -861,6 +921,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-ini@npm:^3.973.27":
+  version: 3.973.27
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.973.27"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/credential-provider-env": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-http": "npm:^3.972.84"
+    "@aws-sdk/credential-provider-login": "npm:^3.972.89"
+    "@aws-sdk/credential-provider-process": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-sso": "npm:^3.973.26"
+    "@aws-sdk/credential-provider-web-identity": "npm:^3.972.88"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/credential-provider-imds": "npm:^4.5.2"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/f1ded0720f40e35a05eb6fe374ff6cdf0c9cde3015b7a85d8b9f366ec2d2e1d1b1eef3c269c503535b4818259b26a01c1bbeee27bd4dddd4eade3b9de973542f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-login@npm:^3.972.87":
   version: 3.972.87
   resolution: "@aws-sdk/credential-provider-login@npm:3.972.87"
@@ -872,6 +953,20 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/f9e2fcdba78712e9604048a8eacffda554cfa7dbcea6c0de071cd047491ff27f6af57fca59acf26210e2f40c0fa4aaafdd6ad631065d19d4d8cad6d4f44ec0e1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-login@npm:^3.972.89":
+  version: 3.972.89
+  resolution: "@aws-sdk/credential-provider-login@npm:3.972.89"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/11b8929467162c98fe50ed7f2534879beeed8c7cd689187e40ec901677697690c5b654254cb47787c0e2f64224b271ad8296fc5a313b1103ef07331b9e42a7b0
   languageName: node
   linkType: hard
 
@@ -894,6 +989,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-node@npm:^3.972.94":
+  version: 3.972.94
+  resolution: "@aws-sdk/credential-provider-node@npm:3.972.94"
+  dependencies:
+    "@aws-sdk/credential-provider-env": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-http": "npm:^3.972.84"
+    "@aws-sdk/credential-provider-ini": "npm:^3.973.27"
+    "@aws-sdk/credential-provider-process": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-sso": "npm:^3.973.26"
+    "@aws-sdk/credential-provider-web-identity": "npm:^3.972.88"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/credential-provider-imds": "npm:^4.5.2"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/dbfde5a17a37dba1da31ca95f7ce7476fb8adc8a942f8cf1bed9cc43c31c91f013501e363e49bfcefdbd178deeb6d29651fc20c55ae3c6eefb653921f3e7cfaf
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-process@npm:^3.972.80":
   version: 3.972.80
   resolution: "@aws-sdk/credential-provider-process@npm:3.972.80"
@@ -904,6 +1018,19 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/aa29726fcce498b8e830ea5e22271becaa912c245edcdc664c80aac1c147b09fdb1b30cf28cc047358dced0346cc4edf3272516766c496b9b096f17f0cfdc52f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-process@npm:^3.972.82":
+  version: 3.972.82
+  resolution: "@aws-sdk/credential-provider-process@npm:3.972.82"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/f770f6f72d38ff72a9cab0e9d731bedb1d24047d4b0f072ff05f8191371984cdb10023da0054d7077be3dd27f206a556167924cdb1267d53f669d9c5e0fc556c
   languageName: node
   linkType: hard
 
@@ -922,6 +1049,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-sso@npm:^3.973.26":
+  version: 3.973.26
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.973.26"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/token-providers": "npm:3.1164.0"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/11f90c8f3dcd7a108f83feb6af8986394a42e70fa28ca339bef59c9bc84fc942ac2bfa87902c0dc91284ecfe0e9090920814b333df63ce2deab18122854af75f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-web-identity@npm:^3.972.86":
   version: 3.972.86
   resolution: "@aws-sdk/credential-provider-web-identity@npm:3.972.86"
@@ -933,6 +1075,20 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/97bde4089548f09634ea0b8a83c8840eed7a6fe4c37d79eb9cef2a1a781e67201cce088119d15d5c96825817895a139ed05ce524321942bfc8e51e7085434105
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-web-identity@npm:^3.972.88":
+  version: 3.972.88
+  resolution: "@aws-sdk/credential-provider-web-identity@npm:3.972.88"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/cb3716d86acfbb55c7084778a2c6594eb78df5ff90cc58cd0a3c75445df30597431546f6ccf0b1c5dd3f6a6acfed754783d9f4f16175074c8e586ab69c154115
   languageName: node
   linkType: hard
 
@@ -1068,6 +1224,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/nested-clients@npm:^3.998.1":
+  version: 3.998.1
+  resolution: "@aws-sdk/nested-clients@npm:3.998.1"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/signature-v4-multi-region": "npm:^3.996.51"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/da432bb197fd0a20bc4690495db84a251d1fcae3ae2d0cbc9a838917d53df5a621c2f34ee42161e8a2805415c79a5de4d0696854737a9ca32a9a4aee6dcb6cfa
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/s3-presigned-post@npm:^3.1161.0":
   version: 3.1161.0
   resolution: "@aws-sdk/s3-presigned-post@npm:3.1161.0"
@@ -1120,6 +1292,20 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/c85ae391a9dbc9b85ad468262a6d22e485045bfcb78d7241a0d11029d800eca0f1ce8b99ed2c51e72a7bf2504277c906f71747cb8231d90e1078886e86885873
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/token-providers@npm:3.1164.0":
+  version: 3.1164.0
+  resolution: "@aws-sdk/token-providers@npm:3.1164.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/3a3d7fb9926362e78d5f112d436de3754571225bc048f357013edf54462751ca1af5058fcc6d2b679bd2558f877ed40d16f69d8976a6bf47434dc630e58afbe4
   languageName: node
   linkType: hard
 
@@ -10604,6 +10790,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-pg@workspace:packages/api-aco-pg"
   dependencies:
+    "@types/react": "npm:19.3.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
@@ -10615,11 +10802,14 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/shared-aco": "npm:0.0.0"
     knex: "npm:^3.3.0"
+    react: "npm:19.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -10629,8 +10819,10 @@ __metadata:
   dependencies:
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
@@ -10700,6 +10892,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
@@ -10860,6 +11053,7 @@ __metadata:
     "@webiny/api-opensearch-aws": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
@@ -10890,6 +11084,7 @@ __metadata:
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -10898,6 +11093,37 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-event-handler-aws-pg@workspace:packages/api-event-handler-aws-pg":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-event-handler-aws-pg@workspace:packages/api-event-handler-aws-pg"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.14"
+    "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@webiny/api-aco-pg": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-event-handler-aws": "npm:0.0.0"
+    "@webiny/api-event-handler-core": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    knex: "npm:^3.3.0"
+    pg: "npm:^8.23.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
@@ -10921,7 +11147,6 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks-aws": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
@@ -10965,6 +11190,7 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     pino: "npm:^10.4.0"
     rimraf: "npm:^6.1.3"
@@ -10975,52 +11201,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-event-handler-standalone-pg@npm:0.0.0, @webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg"
-  dependencies:
-    "@electric-sql/pglite": "npm:^0.5.14"
-    "@electric-sql/pglite-socket": "npm:^0.2.17"
-    "@webiny/api-aco-pg": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-event-handler-standalone-sql": "npm:0.0.0"
-    "@webiny/api-headless-cms-pg": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    knex: "npm:^3.3.0"
-    rimraf: "npm:^6.1.3"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.0.5"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-event-handler-standalone-sql@npm:0.0.0, @webiny/api-event-handler-standalone-sql@workspace:packages/api-event-handler-standalone-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-standalone-sql@workspace:packages/api-event-handler-standalone-sql"
   dependencies:
+    "@electric-sql/pglite": "npm:^0.5.14"
+    "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@types/ws": "npm:^8.18.2"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-aco-sql": "npm:0.0.0"
+    "@webiny/api-aco-pg": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-audit-logs-sql": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-event-handler-standalone": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-storage-sqlite": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/api-websockets-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.21"
-    better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
-    pg: "npm:^8.23.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+    ws: "npm:^8.22.1"
   languageName: unknown
   linkType: soft
 
@@ -11366,6 +11575,7 @@ __metadata:
   dependencies:
     "@electric-sql/pglite": "npm:^0.5.14"
     "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@types/react": "npm:19.3.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11377,11 +11587,14 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     knex: "npm:^3.3.0"
     pg: "npm:^8.23.1"
+    react: "npm:19.3.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -11407,8 +11620,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql"
   dependencies:
-    "@electric-sql/pglite": "npm:^0.5.14"
-    "@electric-sql/pglite-socket": "npm:^0.2.17"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11421,7 +11632,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
-    pg: "npm:^8.23.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
   languageName: unknown
@@ -11765,6 +11975,57 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-storage-pg@npm:0.0.0, @webiny/api-storage-pg@workspace:packages/api-storage-pg":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-storage-pg@workspace:packages/api-storage-pg"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.14"
+    "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-sql": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-sql": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/stdlib": "npm:^0.0.21"
+    knex: "npm:^3.3.0"
+    pg: "npm:^8.23.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-storage-sqlite@npm:0.0.0, @webiny/api-storage-sqlite@workspace:packages/api-storage-sqlite":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-storage-sqlite@workspace:packages/api-storage-sqlite"
+  dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-sql": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-sql": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms-sql": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-sql": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    better-sqlite3: "npm:^13.0.3"
+    knex: "npm:^3.3.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-sync-ddb-to-opensearch@npm:0.0.0, @webiny/api-sync-ddb-to-opensearch@workspace:packages/api-sync-ddb-to-opensearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-sync-ddb-to-opensearch@workspace:packages/api-sync-ddb-to-opensearch"
@@ -11990,6 +12251,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/event-handler-standalone": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -12793,6 +13055,7 @@ __metadata:
     "@aws-sdk/client-lambda": "npm:^3.1161.0"
     "@aws-sdk/client-s3": "npm:^3.1161.0"
     "@aws-sdk/client-scheduler": "npm:^3.1161.0"
+    "@aws-sdk/client-secrets-manager": "npm:^3.1161.0"
     "@aws-sdk/client-sfn": "npm:^3.1161.0"
     "@aws-sdk/client-sqs": "npm:^3.1161.0"
     "@aws-sdk/client-sts": "npm:^3.1161.0"
@@ -13744,8 +14007,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-standalone-template@workspace:packages/project-standalone-template"
   dependencies:
-    "@webiny/api-event-handler-standalone-pg": "npm:0.0.0"
     "@webiny/api-event-handler-standalone-sql": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-storage-sqlite": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"

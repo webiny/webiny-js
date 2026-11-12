@@ -9,8 +9,9 @@
   "description": "A Webiny standalone project template.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-event-handler-standalone-pg": "0.0.0",
     "@webiny/api-event-handler-standalone-sql": "0.0.0",
+    "@webiny/api-storage-pg": "0.0.0",
+    "@webiny/api-storage-sqlite": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-serverless-cms": "0.0.0",
     "@webiny/build-tools": "0.0.0",
@@ -22,7 +23,7 @@
   "adio": {
     "ignore": {
       "dependencies": [
-        "@webiny/api-event-handler-standalone-pg"
+        "@webiny/api-storage-pg"
       ]
     }
   },

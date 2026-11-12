@@ -8,16 +8,11 @@ import { type ResolvedPglite } from "@webiny/project-extensions-standalone/exten
 export type ServerDbDriver = "sqlite" | "postgres";
 
 /**
- * How content (CMS entries, ACO folders) is stored. `sql` is the generic SQL storage that runs on
- * any SQL engine; `pg` is the Postgres-native storage (jsonb entries, a typed search table,
- * an in-transaction folder catalog). The two keep data in different tables, so this is chosen once
- * per project: switching does not move existing data.
+ * The api's database. The driver picks the storage too: SQLite runs the SQLite storage
+ * (`@webiny/api-storage-sqlite`), Postgres and PGlite the Postgres storage (`@webiny/api-storage-pg`).
  */
-export type ServerStorage = "sql" | "pg";
-
 export interface StandaloneDatabase {
     driver: ServerDbDriver;
-    storage: ServerStorage;
     /** Set for `<Infra.Pglite>`: the database `watch` / `serve` start for the api. */
     pglite?: ResolvedPglite;
 }
@@ -57,17 +52,12 @@ export const getStandaloneDatabase = async (
     }
 
     if (pglite.length > 0) {
-        return {
-            driver: "postgres",
-            storage: "pg",
-            pglite: resolvePglite(pglite[0].params)
-        };
+        return { driver: "postgres", pglite: resolvePglite(pglite[0].params) };
     }
     if (postgres.length > 0) {
-        return { driver: "postgres", storage: postgres[0].params.storage ?? "pg" };
+        return { driver: "postgres" };
     }
-    // The Postgres-native storage needs Postgres; SQLite always uses the generic SQL storage.
-    return { driver: "sqlite", storage: "sql" };
+    return { driver: "sqlite" };
 };
 
 /** The driver alone: which SQL client the api connects with. */

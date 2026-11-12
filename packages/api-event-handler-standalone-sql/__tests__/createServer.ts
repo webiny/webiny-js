@@ -3,13 +3,13 @@ import os from "node:os";
 import nodePath from "node:path";
 import type { Knex } from "knex";
 import { vi } from "vitest";
+import { createSqliteStorage } from "@webiny/api-storage-sqlite";
 import { createSqlApiHandler } from "~/createWebinyApiHandler.js";
 import type { CreateSqlApiHandlerConfig } from "~/createWebinyApiHandler.js";
 
 declare global {
     /**
-     * Set by the SQL storage test presets (@webiny/api-headless-cms-sql): SQLite in memory, or PGlite
-     * when WEBINY_SQL_CLIENT=pglite.
+     * Set by the SQL storage test preset (@webiny/api-headless-cms-sql): SQLite in memory.
      */
     var __testKnex: Knex;
 }
@@ -22,13 +22,22 @@ export interface GraphQLResult {
 }
 
 /**
- * Boots the full standalone SQL server on a random local port and returns a function that sends one
- * GraphQL request to it, plus a `close` to shut it down.
+ * Boots the full standalone SQL server, on the SQLite storage, on a random local port and returns a
+ * function that sends one GraphQL request to it, plus a `close` to shut it down.
  */
+export interface CreateServerOptions {
+    /**
+     * Leave the timers faked after start, so a test fires the server's timers (the websocket
+     * heartbeat, the recoveries) with `vi.advanceTimersByTimeAsync`. The test restores real timers.
+     */
+    keepFakeTimers?: boolean;
+}
+
 export const createServer = async (
     extensions: CreateSqlApiHandlerConfig["extensions"] = () => [],
     /** Env overrides, applied after the defaults below, e.g. a blank value to test a missing one. */
-    env: Record<string, string> = {}
+    env: Record<string, string> = {},
+    options: CreateServerOptions = {}
 ) => {
     /**
      * On start, the server arms in-process timers (the scheduler's recovery run and the periodic
@@ -55,9 +64,11 @@ export const createServer = async (
 
     const server = await createSqlApiHandler({
         extensions,
-        knex: globalThis.__testKnex
+        storage: createSqliteStorage({ knex: globalThis.__testKnex })
     }).finally(() => {
-        vi.useRealTimers();
+        if (!options.keepFakeTimers) {
+            vi.useRealTimers();
+        }
     });
 
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -92,5 +103,5 @@ export const createServer = async (
         await new Promise<void>(resolve => server.close(() => resolve()));
     };
 
-    return { graphql, close };
+    return { graphql, close, port, knex: globalThis.__testKnex };
 };

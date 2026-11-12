@@ -1,6 +1,12 @@
 import type { Knex } from "knex";
 import { createAbstraction } from "@webiny/feature/api";
-import { KnexClient } from "@webiny/api-core-sql";
+import {
+    getConnectionKey,
+    getSchemaMemory,
+    KnexClient,
+    SqlSchemaConfig,
+    type ISchemaMemory
+} from "@webiny/api-core-sql";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 
 export interface IFolderCatalogTables {
@@ -13,8 +19,13 @@ export interface IFolderCatalogTables {
 }
 
 export interface IFolderCatalogSchema {
-    /** Creates the catalog tables once per process, on a connection of its own. */
+    /**
+     * Creates the catalog tables once per process, on a connection of its own; a no-op when the
+     * schema is managed (`SqlSchemaConfig`).
+     */
     ensure(): Promise<void>;
+    /** Creates the catalog tables, whatever the mode (the storage's schema setup). */
+    setup(): Promise<void>;
     /**
      * The same, inside the caller's transaction. For write paths that already hold a transaction:
      * waiting for a second connection there can wait forever on a small pool.
@@ -86,23 +97,27 @@ const resolveAcoTableName = (config: TableNameResolverConfig.Interface, name: st
 
 class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
     private readonly tables: IFolderCatalogTables;
-    private initPromise?: Promise<void>;
-    private ready = false;
-    private readonly builtTenants = new Set<string>();
+    /*
+     * Whether this process has created the tables, and the tenants it has seen built. Process-wide
+     * rather than per instance: the module is registered per request, with the project's extensions.
+     * Test setups drop all tables between tests and reset every memory.
+     */
+    private readonly memory: ISchemaMemory;
 
     public constructor(
         private readonly knex: KnexClient.Interface,
-        tableNameConfig: TableNameResolverConfig.Interface
+        tableNameConfig: TableNameResolverConfig.Interface,
+        private readonly schemaConfig?: SqlSchemaConfig.Interface
     ) {
         this.tables = {
             folders: resolveAcoTableName(tableNameConfig, "folders"),
             grants: resolveAcoTableName(tableNameConfig, "folder_grants"),
             state: resolveAcoTableName(tableNameConfig, "folder_catalog_state")
         };
-        // Test setups drop all tables between tests and call reset() on every registered manager.
-        const g = globalThis as Record<string, unknown>;
-        const managers = (g.__sqlTableManagers ??= []) as FolderCatalogSchema.Interface[];
-        managers.push(this);
+        // One memory per database and table set.
+        this.memory = getSchemaMemory(
+            `aco.pg.folderCatalog:${getConnectionKey(knex.client)}:${this.tables.folders}`
+        );
     }
 
     public getTables(): IFolderCatalogTables {
@@ -110,46 +125,66 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
     }
 
     public isKnownBuilt(tenant: string): boolean {
-        return this.builtTenants.has(tenant);
+        return this.memory.known.has(tenant);
     }
 
     public rememberBuilt(tenant: string): void {
-        this.builtTenants.add(tenant);
+        this.memory.known.add(tenant);
     }
 
     public reset(): void {
-        this.initPromise = undefined;
-        this.ready = false;
-        this.builtTenants.clear();
+        this.memory.reset();
     }
 
     public ensure(): Promise<void> {
-        if (!this.initPromise) {
-            this.initPromise = this.create().catch(err => {
-                this.initPromise = undefined;
-                throw err;
-            });
+        if (this.schemaConfig?.isManaged()) {
+            // Set up before the API took traffic: no DDL (and no advisory lock) on a cold start.
+            return Promise.resolve();
         }
-        return this.initPromise;
+        const knex = this.knex.client;
+        if (knex.isTransaction) {
+            // The connection is a transaction (schema setup): `once()` would mark the tables
+            // ready before it commits.
+            return this.ensureIn(knex as Knex.Transaction);
+        }
+        return this.memory.once(() => this.create());
+    }
+
+    public setup(): Promise<void> {
+        const knex = this.knex.client;
+        if (knex.isTransaction) {
+            // Schema setup runs in one transaction, and a later step can still roll it back.
+            return this.createInAndRememberOnCommit(knex as Knex.Transaction);
+        }
+        return this.create();
     }
 
     public async ensureIn(trx: Knex.Transaction): Promise<void> {
-        if (this.ready) {
+        if (this.memory.isReady() || this.schemaConfig?.isManaged()) {
             return;
         }
-        await this.createIn(trx);
-        // Known to exist only once the caller's transaction commits.
-        trx.executionPromise
-            .then(() => {
-                this.ready = true;
-                this.initPromise ??= Promise.resolve();
-            })
-            .catch(() => undefined);
+        await this.createInAndRememberOnCommit(trx);
     }
 
     private async create(): Promise<void> {
+        const generation = this.memory.generation;
         await this.knex.client.transaction(trx => this.createIn(trx));
-        this.ready = true;
+        if (this.memory.generation === generation) {
+            this.memory.markReady();
+        }
+    }
+
+    private async createInAndRememberOnCommit(trx: Knex.Transaction): Promise<void> {
+        const generation = this.memory.generation;
+        await this.createIn(trx);
+        // Known to exist only once the transaction commits (and not after a reset).
+        trx.executionPromise
+            .then(() => {
+                if (this.memory.generation === generation) {
+                    this.memory.markReady();
+                }
+            })
+            .catch(() => undefined);
     }
 
     private async createIn(trx: Knex.Transaction): Promise<void> {
@@ -163,5 +198,5 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
 
 export const FolderCatalogSchemaImplementation = FolderCatalogSchema.createImplementation({
     implementation: FolderCatalogSchemaImpl,
-    dependencies: [KnexClient, TableNameResolverConfig]
+    dependencies: [KnexClient, TableNameResolverConfig, [SqlSchemaConfig, { optional: true }]]
 });

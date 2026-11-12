@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { FolderCatalogSchemaImplementation } from "~/catalog/FolderCatalogSchema.js";
+import { AcoPgSchemaSetup } from "~/catalog/AcoPgSchemaSetup.js";
 import { FolderCatalogImplementation } from "~/catalog/FolderCatalog.js";
 import { FolderCatalogSearchIndexer } from "~/features/FolderCatalogSearchIndexer.js";
 import { PgFolderPermissionsRepository } from "~/features/PgFolderPermissionsRepository.js";
@@ -15,13 +16,17 @@ import { PgUserFolderCandidates } from "~/features/PgUserFolderCandidates.js";
  * the same transaction, so permissions and descendant paths are never behind. Inherited
  * permissions are worked out when reading.
  *
- * Register next to `HeadlessCmsPgFeature`, instead of `TaskCatalogFlpFeature`.
+ * Register next to `HeadlessCmsPgFeature`, instead of `TaskCatalogFlpFeature`, in each request's
+ * container (`<AcoPg />` adds it with the project's extensions). What it keeps for the process
+ * (which tables exist, which tenants are built) lives in a process-wide memory. It also registers
+ * its `aco` schema setup step.
  */
 export const AcoPgFeature = createFeature({
     name: "Aco/Pg",
     register(container: Container) {
-        // Remembers that the tables exist and which tenants are built, so it lives for the process.
         container.register(FolderCatalogSchemaImplementation).inSingletonScope();
+        // The `aco` schema setup step: the catalog's tables.
+        container.register(AcoPgSchemaSetup);
         container.register(FolderCatalogImplementation);
         container.registerDecorator(FolderCatalogSearchIndexer);
 

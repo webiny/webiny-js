@@ -95,7 +95,7 @@ export const createSchemaSql = (
 
     /*
      * One partial btree per scalar slot serves sort, ranges and prefix filters. Test runs recreate the
-     * schema before every test, so they can skip these (`PgSlotIndexes` build param false): they
+     * schema before every test, so they can skip these (`slotIndexes: false` in `<HeadlessCmsPg>`): they
      * affect speed, never results.
      */
     if (!options.slotIndexes) {

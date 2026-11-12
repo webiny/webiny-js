@@ -1,23 +1,21 @@
 import type { Container } from "@webiny/di";
-import type { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
-import { createLogger } from "@webiny/api-event-handler-core";
+import { ApiRequestRegistration, createLogger } from "@webiny/api-event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { pinoLambdaDestination } from "pino-lambda";
 import { StructuredLogFormatter } from "pino-lambda";
 import type { WebinyApiCompositionConfig } from "./types.js";
+import { registerWebinyApiChild } from "./registerWebinyApiChild.js";
 
 /**
- * ROOT container registration that is not transport-specific: database, caches, and the storage
- * variant. Shared by both AWS Lambda composition roots.
+ * ROOT container registration that is not transport-specific: logger, caches, and the storage
+ * variant (which brings its own database). Shared by both AWS Lambda composition roots.
  */
 export async function registerWebinyApiRoot(
     container: Container,
-    config: WebinyApiCompositionConfig,
-    documentClient: ReturnType<typeof getDocumentClient>
+    config: WebinyApiCompositionConfig
 ): Promise<void> {
     // ── Logger ─────────────────────────────────────────────────
     // One per Lambda instance, in CloudWatch's structured format. Every request container inherits it.
@@ -25,9 +23,6 @@ export async function registerWebinyApiRoot(
     const destination = pinoLambdaDestination({ formatter });
     const logger = createLogger(destination);
     container.registerInstance(Logger, logger);
-
-    // ── Database ───────────────────────────────────────────────
-    DynamoDBCoreFeature.register(container, { documentClient });
 
     // Identity providers are not registered here. Each one comes from its project extension (e.g.
     // `<Cognito/>` registers CognitoIdpFeature), which registers in the request container. The
@@ -45,6 +40,13 @@ export async function registerWebinyApiRoot(
     // Root, so identity providers' signing keys are fetched once per process, not per request.
     JwksStoreFeature.register(container);
 
-    // ── Storage (variant-specific: CMS storage ops, DDB registries, OpenSearch core) ──
-    await config.registerRootStorage(container, { documentClient });
+    // ── Request registration ───────────────────────────────────
+    // What every request's container gets (`child`), for work outside a request that needs a
+    // container a request would have: the SQL schema setup builds one on its own connection.
+    container.registerInstance(ApiRequestRegistration, {
+        register: requestContainer => registerWebinyApiChild(requestContainer, config)
+    });
+
+    // ── Storage (variant-specific: database, CMS storage ops, registries, OpenSearch core) ──
+    await config.registerRootStorage(container);
 }

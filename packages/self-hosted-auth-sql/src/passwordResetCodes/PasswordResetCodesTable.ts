@@ -1,6 +1,8 @@
 import type { Knex } from "knex";
 import { createAbstraction } from "@webiny/feature/api";
+import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
 import { TableManager } from "@webiny/api-core-sql/TableManager.js";
+import { createTableManager } from "~/createTableManager.js";
 import type { StoredPasswordResetCode } from "@webiny/self-hosted-auth";
 
 const TABLE_NAME = "webiny_self_hosted_password_reset_codes";
@@ -50,9 +52,7 @@ export interface IPasswordResetCodesTable {
  * The table the reset code operations share: the schema, the prefixing and the lazy create, in one
  * place rather than in each of the six.
  *
- * It is also why they share a single `TableManager`. That class caches which tables it has verified
- * per instance and registers itself in a global list, so one per operation would mean six existence
- * checks per container and six entries in that list.
+ * Built per request, on the container's connection and table settings (`SqlPasswordResetCodesTable`).
  */
 export const PasswordResetCodesTable = createAbstraction<IPasswordResetCodesTable>(
     "SelfHostedAuth/Sql/PasswordResetCodesTable"
@@ -89,3 +89,18 @@ export class KnexPasswordResetCodesTable implements IPasswordResetCodesTable {
         return this.knex<IPasswordResetCodeRow>(this.tableManager.resolve(TABLE_NAME));
     }
 }
+
+/** The reset codes table on the container's connection and table settings. */
+class SqlPasswordResetCodesTableImpl
+    extends KnexPasswordResetCodesTable
+    implements PasswordResetCodesTable.Interface
+{
+    public constructor(knex: KnexClient.Interface, schemaConfig?: SqlSchemaConfig.Interface) {
+        super(knex.client, createTableManager(knex, schemaConfig));
+    }
+}
+
+export const SqlPasswordResetCodesTable = PasswordResetCodesTable.createImplementation({
+    implementation: SqlPasswordResetCodesTableImpl,
+    dependencies: [KnexClient, [SqlSchemaConfig, { optional: true }]]
+});

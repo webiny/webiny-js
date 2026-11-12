@@ -1,16 +1,20 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { TableName as TableNameAbstraction } from "~/TableName/abstractions.js";
-import { TableName } from "~/TableName/TableName.js";
-import { WebsocketsConnectionRegistry } from "./WebsocketsConnectionRegistry.js";
+import { SchemaConfigTableName } from "~/TableName/SchemaConfigTableName.js";
+import {
+    WebsocketsConnectionRegistry,
+    WebsocketsSchemaSetup
+} from "./WebsocketsConnectionRegistry.js";
 
-export interface WebsocketsSqlConfig {
-    tableNamePrefix?: string;
-}
-
-export const WebsocketsSqlFeature = createFeature<WebsocketsSqlConfig | undefined>({
+/**
+ * The websocket connection registry on SQL, and its `websockets` schema setup step. Registered per
+ * request, it runs on the connection (`KnexClient`) and the table prefix (`SqlSchemaConfig`) the SQL
+ * storage keeps in the root.
+ */
+export const WebsocketsSqlFeature = createFeature({
     name: "WebsocketsSql",
-    register(container: Container, config?) {
-        container.registerInstance(TableNameAbstraction, new TableName(config?.tableNamePrefix));
+    register(container: Container) {
+        container.register(SchemaConfigTableName);
         container.register(WebsocketsConnectionRegistry);
+        container.register(WebsocketsSchemaSetup);
     }
 });

@@ -11,6 +11,7 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
+    { "path": "../project" },
     { "path": "../shared-aco" }
   ],
   "compilerOptions": {
@@ -38,6 +39,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
       "@webiny/shared-aco/*": ["../shared-aco/src/*"],
       "@webiny/shared-aco": ["../shared-aco/src"]
     }
