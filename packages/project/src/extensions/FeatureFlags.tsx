@@ -7,7 +7,7 @@ import { setProjectFeatureFlags } from "~/services/GetProjectConfigService/Featu
 
 export const FeatureFlags = defineExtension({
     type: "FeatureFlags",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable or disable features.",
     paramsSchema: z.object({
         // Follows `IFeatureFlagsDto` from `packages/feature-flags/src/types.ts`.

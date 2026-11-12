@@ -160,7 +160,7 @@ async function updateExtensionsTsx(ctx: any) {
 
 export const AdminBuildParam = defineExtension({
     type: "Admin/BuildParam",
-    tags: { runtimeContext: "app-build", appName: "admin" },
+    tags: { runtimeContext: "app-build", appName: "admin", hosting: "all" },
     description: "Add build-time parameter to Admin app.",
     multiple: true,
     paramsSchema: () => {

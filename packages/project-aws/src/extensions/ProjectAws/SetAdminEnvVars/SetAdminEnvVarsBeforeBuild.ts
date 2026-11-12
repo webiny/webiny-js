@@ -1,5 +1,8 @@
 import { AdminBeforeBuild, ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
-import { CoreStackOutputService, ApiStackOutputService } from "../../../abstractions/index.js";
+import {
+    CoreStackOutputService,
+    ApiStackOutputService
+} from "@webiny/project-extensions-aws/abstractions/index.js";
 import { SetAdminEnvVars } from "./SetAdminEnvVars.js";
 
 class SetAdminEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {

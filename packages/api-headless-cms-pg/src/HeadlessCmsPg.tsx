@@ -63,7 +63,7 @@ const settingsSchema = {
  */
 export const HeadlessCmsPg = defineExtension({
     type: "Project/HeadlessCmsPg",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Store CMS content in Postgres, with the Postgres-native CMS storage.",
     paramsSchema: z.object(settingsSchema),
     render: ({ indexMode, ...props }) => {

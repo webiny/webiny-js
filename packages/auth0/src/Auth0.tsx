@@ -1,13 +1,13 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { Api } from "@webiny/project-aws/api.js";
-import { Admin } from "@webiny/project-aws/admin.js";
-import { Infra } from "@webiny/project-aws/infra.js";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
+import { Infra } from "@webiny/project-extensions";
 import { z } from "zod";
 
 export const Auth0 = defineExtension({
     type: "Project/Auth0",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable and configure Auth0 authentication.",
     paramsSchema: z.object({
         issuer: z.string().describe("Auth0 issuer URL."),

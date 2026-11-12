@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const ApiBeforeDeploy = defineExtension({
     type: "Api/BeforeDeploy",
-    tags: { runtimeContext: "project", application: "api" },
+    tags: { runtimeContext: "project", application: "api", hosting: "aws" },
     description: "Add custom logic to be executed before the API deployment process.",
     multiple: true,
     paramsSchema: ({ project }) => {

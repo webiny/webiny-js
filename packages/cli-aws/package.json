@@ -17,6 +17,7 @@
     "@webiny/di": "^2.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "@webiny/project-aws-template": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
@@ -37,5 +38,12 @@
   },
   "bin": {
     "webiny": "./bin.js"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/project-aws-template"
+      ]
+    }
   }
 }

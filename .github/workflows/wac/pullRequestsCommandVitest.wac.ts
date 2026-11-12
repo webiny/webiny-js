@@ -19,6 +19,7 @@ import {
 } from "./utils/index.js";
 import { VALKEY_SERVICE } from "./utils/index.js";
 import { VALKEY_TEST_URL } from "./utils/index.js";
+import { commentRowUpdateRun } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     DdbStorageOps,
@@ -75,13 +76,16 @@ const COMMENT_ENV = {
     COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
 };
 
-// Read the comment, overwrite a single group's row (matched by label, so the
-// update is independent of the row's current status), and write it back.
+/*
+ * Read the comment, overwrite a single group's row (matched by label, so the update is independent of
+ * the row's current status), and write it back, retrying if another group's write replaced it. Must
+ * be the last command of its step (see commentRowUpdateRun). The "Heal PR comment" job rewrites every
+ * row once after all of them.
+ */
 const updateCommentRowRun = (group: string) =>
     [
-        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt`,
-        `sed -i "s@^| ${group} |.*@| ${group} | $STATUS |@" /tmp/vitest-comment.txt`,
-        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt`
+        `row="| ${group} | $STATUS |"`,
+        commentRowUpdateRun({ label: group, bodyFile: "/tmp/vitest-comment.txt" })
     ].join("\n");
 
 const createMarkRunningStep = (group: string) => ({
@@ -318,13 +322,23 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             name: "Vitest status summary",
             // Rewrites the status comment and the PR description.
             permissions: { "pull-requests": "write" },
+            /*
+             * The `-result` jobs write their group's row into the comment, so this waits for them
+             * too: rewriting the table while one of them is still writing would let its write put
+             * other rows back to an older state, with nothing left to repair them.
+             */
             needs: [
                 "checkComment",
                 "vitest-run",
                 "vitest-ddb-run",
                 "vitest-ddb-os-run",
                 "vitest-sql-run",
-                "vitest-pg-run"
+                "vitest-pg-run",
+                "vitest-result",
+                "vitest-ddb-result",
+                "vitest-ddb-os-result",
+                "vitest-sql-result",
+                "vitest-pg-result"
             ],
             if: "always() && needs.checkComment.result == 'success'",
             checkout: false,

@@ -29,7 +29,7 @@ export class SetupStandaloneWebinyProject {
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
         // Standalone hosting-type dependencies. The `webiny` CLI (server bin) sets
-        // WEBINY_HOSTING_TYPE=standalone; `@webiny/project-standalone` provides the server `Infra.*` extensions
+        // WEBINY_HOSTING_TYPE=standalone; `@webiny/project-standalone` registers the standalone hosting type
         // and resolves `@webiny/project-standalone-template` (the workspace base config) at build time;
         // `@webiny/self-hosted-auth` is the built-in JWT identity provider (replaces Cognito).
         addProjectDependencies(projectRootFolderPath, {

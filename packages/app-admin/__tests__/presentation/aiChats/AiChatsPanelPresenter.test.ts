@@ -20,11 +20,20 @@ const setup = (
     const chats = createFakeChats(saved);
 
     const assistant: AdminAssistantPresenter.Interface = {
-        vm: { turns: [], busy: false, chatId: activeChatId, opening: false, storageError: null },
+        vm: {
+            turns: [],
+            busy: false,
+            chatId: activeChatId,
+            opening: false,
+            storageError: null,
+            saveFailure: null,
+            setupRequired: false
+        },
         ask: vi.fn(),
         decide: vi.fn(),
         reset: vi.fn(),
-        open: vi.fn(async () => {})
+        open: vi.fn(async () => {}),
+        retry: vi.fn()
     };
 
     container.registerInstance(AiChatsRepository, chats.repository);

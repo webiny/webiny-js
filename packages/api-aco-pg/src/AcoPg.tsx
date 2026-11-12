@@ -9,7 +9,7 @@ import { ApiExtension, defineExtension } from "@webiny/project/extensions/index.
  */
 export const AcoPg = defineExtension({
     type: "Project/AcoPg",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Keep folder-level permissions in a Postgres folder catalog.",
     paramsSchema: z.object({}),
     render: () => {

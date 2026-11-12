@@ -22,7 +22,7 @@ const ADMIN_PASSWORD_POLICY: PasswordPolicy.Rules = { minimumLength: MINIMUM_PAS
  */
 export const SelfHostedAuth = defineExtension({
     type: "Project/SelfHostedAuth",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable the self-hosted identity provider (login screen + JWT auth).",
     paramsSchema: z.object({
         signingSecret: z

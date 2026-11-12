@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const CliCommand = defineExtension({
     type: "Cli/Command",
-    tags: { runtimeContext: "cli" },
+    tags: { runtimeContext: "cli", hosting: "all" },
     description: "An extension for defining CLI commands.",
     multiple: true,
     paramsSchema: ({ project }) => {

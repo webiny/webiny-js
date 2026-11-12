@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const BeforeDeploy = defineExtension({
     type: "Project/BeforeDeploy",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Add custom logic to be executed before the PROJECT deploy process.",
     multiple: true,
     paramsSchema: ({ project }) => {

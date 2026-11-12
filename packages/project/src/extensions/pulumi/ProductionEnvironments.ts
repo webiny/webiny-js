@@ -19,7 +19,7 @@ const Registrar: React.FC<RegistrarProps> = ({ environments }) => {
 
 export const ProductionEnvironments = defineExtension({
     type: "Infra/ProductionEnvironments",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Provide names for environments that are considered production environments.",
     paramsSchema: z.object({
         environments: z.array(

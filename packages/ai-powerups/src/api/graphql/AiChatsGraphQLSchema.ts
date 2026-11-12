@@ -4,7 +4,6 @@ import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js"
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { ListAiChatsUseCase } from "~/api/features/AiChats/ListAiChats/index.js";
 import { GetAiChatUseCase } from "~/api/features/AiChats/GetAiChat/index.js";
-import { SaveAiChatUseCase } from "~/api/features/AiChats/SaveAiChat/index.js";
 import { DeleteAiChatUseCase } from "~/api/features/AiChats/DeleteAiChat/index.js";
 
 const TYPE_DEFS = /* GraphQL */ `
@@ -21,13 +20,6 @@ const TYPE_DEFS = /* GraphQL */ `
         createdOn: DateTime!
         savedOn: DateTime!
         # The model messages, replayed verbatim to continue the chat.
-        messages: JSON!
-    }
-
-    input AiChatInput {
-        # Omit to start a new chat.
-        id: ID
-        title: String
         messages: JSON!
     }
 
@@ -60,8 +52,7 @@ const TYPE_DEFS = /* GraphQL */ `
     }
 
     extend type AiPowerUpsMutation {
-        # Creates the chat when \`data.id\` is omitted, and overwrites it otherwise.
-        saveAiChat(data: AiChatInput!): AiChatResponse!
+        # Chats are saved by the assistant itself, after each run; there is no save operation.
         deleteAiChat(id: ID!): AiChatDeleteResponse!
     }
 `;
@@ -69,14 +60,6 @@ const TYPE_DEFS = /* GraphQL */ `
 interface ListAiChatsArgs {
     limit?: number;
     after?: string;
-}
-
-interface SaveAiChatArgs {
-    data: {
-        id?: string | null;
-        title?: string | null;
-        messages: SaveAiChatUseCase.Input["messages"];
-    };
 }
 
 class AiChatsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
@@ -117,29 +100,6 @@ class AiChatsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 return async ({ args }) => {
                     return resolve(async () => {
                         const result = await getAiChat.execute(args.id);
-                        if (result.isFail()) {
-                            throw result.error;
-                        }
-                        return result.value;
-                    });
-                };
-            }
-        });
-
-        builder.addResolver<SaveAiChatArgs>({
-            path: "AiPowerUpsMutation.saveAiChat",
-            dependencies: [SaveAiChatUseCase],
-            resolver(saveAiChat: SaveAiChatUseCase.Interface) {
-                return async ({ args }) => {
-                    // GraphQL clients send an unset optional field as null; the use case wants it absent.
-                    const input: SaveAiChatUseCase.Input = {
-                        id: args.data.id ?? undefined,
-                        title: args.data.title ?? undefined,
-                        messages: args.data.messages
-                    };
-
-                    return resolve(async () => {
-                        const result = await saveAiChat.execute(input);
                         if (result.isFail()) {
                             throw result.error;
                         }

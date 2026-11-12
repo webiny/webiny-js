@@ -3,8 +3,6 @@ import { AiChatsGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AiChat } from "./abstractions.js";
 import type { AiChatSummary } from "./abstractions.js";
 import type { AiChatsPage } from "./abstractions.js";
-import type { SaveAiChatInput } from "./abstractions.js";
-import { AiChatsRequestError } from "./AiChatsRequestError.js";
 
 const ERROR_FIELDS = /* GraphQL */ `
     error {
@@ -50,22 +48,6 @@ const GET_AI_CHAT = /* GraphQL */ `
     }
 `;
 
-const SAVE_AI_CHAT = /* GraphQL */ `
-    mutation SaveAiChat($data: AiChatInput!) {
-        aiPowerUps {
-            saveAiChat(data: $data) {
-                data {
-                    id
-                    title
-                    createdOn
-                    savedOn
-                }
-                ${ERROR_FIELDS}
-            }
-        }
-    }
-`;
-
 const DELETE_AI_CHAT = /* GraphQL */ `
     mutation DeleteAiChat($id: ID!) {
         aiPowerUps {
@@ -98,21 +80,16 @@ interface GetResponse {
     aiPowerUps: { getAiChat: Response<AiChat> };
 }
 
-interface SaveResponse {
-    aiPowerUps: { saveAiChat: Response<AiChatSummary> };
-}
-
 interface DeleteResponse {
     aiPowerUps: { deleteAiChat: Response<boolean> };
 }
 
 /**
  * Every operation answers `{ data, error }`; a missing `data` without an error is still a failure.
- * The error keeps the server's code, so the caller can tell "too large" from any other refusal.
  */
 function unwrap<TData, TMeta>(response: Response<TData, TMeta>): TData {
     if (response.error) {
-        throw new AiChatsRequestError(response.error.message, response.error.code ?? "");
+        throw new Error(response.error.message);
     }
     if (response.data === null) {
         throw new Error("The API returned no data.");
@@ -148,15 +125,6 @@ class AiChatsGatewayImpl implements GatewayAbstraction.Interface {
         });
 
         return unwrap(response.aiPowerUps.getAiChat);
-    }
-
-    async save(input: SaveAiChatInput): Promise<AiChatSummary> {
-        const response = await this.client.execute<SaveResponse>({
-            query: SAVE_AI_CHAT,
-            variables: { data: input }
-        });
-
-        return unwrap(response.aiPowerUps.saveAiChat);
     }
 
     async delete(id: string): Promise<void> {

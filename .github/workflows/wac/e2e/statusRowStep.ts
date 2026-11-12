@@ -1,3 +1,6 @@
+import type { NormalJob } from "github-actions-wac";
+import { commentRowUpdateRun } from "../utils/index.js";
+
 export interface StatusRow {
     // The row's label in the status comment's first column, e.g. "DDB" or "Standalone (SQLite)".
     label: string;
@@ -8,18 +11,12 @@ export interface StatusRow {
     env?: Record<string, string>;
 }
 
-// Matches the row by its label and replaces the WHOLE line, rather than matching the exact text it
-// currently holds. The row's contents change during a run - "🔄 Deploying..." becomes "✅ Ready"
-// with a URL once the deploy finishes - so an exact-match substitution silently stops matching
-// depending on how far the job got.
-//
-// The labels are not regex-safe: "DDB+OS" contains a quantifier and "Standalone (SQLite)" contains a
-// group, and this is an EXTENDED regular expression (`sed -E`), so both would otherwise match
-// something other than themselves - "Standalone (SQLite)" would only match the literal text
-// "Standalone SQLite" and silently never fire.
-const rowPattern = (label: string) => label.replace(/[\\.[\]{}()*+?^$|]/g, String.raw`\$&`);
-
 interface StatusRowStepParams {
+    /*
+     * The step's id. The row it writes is also its `row` output, which the report job hands to
+     * the job that rewrites the whole table at the end (createFinalStatusCommentJob).
+     */
+    id?: string;
     name: string;
     // The step's `if`.
     condition: string;
@@ -27,16 +24,19 @@ interface StatusRowStepParams {
     status: string;
 }
 
+type JobStep = NonNullable<NormalJob["steps"]>[number];
+
 /**
- * One step that rewrites a variant's row in the `/e2e` status comment.
+ * One step that rewrites a variant's row in the `/e2e` status comment. See commentRowUpdateRun for
+ * how the row survives other jobs writing at the same time. The row it writes is also the step's
+ * `row` output.
  */
 export const createStatusRowStep = (
     row: StatusRow,
-    { name, condition, status }: StatusRowStepParams
+    { id, name, condition, status }: StatusRowStepParams
 ) => {
     const url = row.urlExpression ?? "-";
-
-    return {
+    const step: JobStep = {
         name,
         if: condition,
         env: {
@@ -45,9 +45,14 @@ export const createStatusRowStep = (
             ...row.env
         },
         run: [
-            `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-            `sed -i -E "s@^\\| ${rowPattern(row.label)} \\|.*@| ${row.label} | ${status} | ${url} |@" /tmp/comment.txt`,
-            `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
+            "set -euo pipefail",
+            `row="| ${row.label} | ${status} | ${url} |"`,
+            'echo "row=$row" >> $GITHUB_OUTPUT',
+            commentRowUpdateRun({ label: row.label, bodyFile: "/tmp/comment.txt" })
         ].join("\n")
     };
+    if (id) {
+        step.id = id;
+    }
+    return step;
 };

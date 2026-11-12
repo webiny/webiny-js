@@ -12,7 +12,7 @@
     { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
-    { "path": "../project-aws/tsconfig.build.json" },
+    { "path": "../project-extensions/tsconfig.build.json" },
     { "path": "../api-headless-cms-testing/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -42,8 +42,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/project-extensions/*": ["../project-extensions/src/*"],
+      "@webiny/project-extensions": ["../project-extensions/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"]
     }

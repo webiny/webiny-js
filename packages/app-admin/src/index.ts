@@ -137,7 +137,6 @@ export type {
     AiChat,
     AiChatSummary,
     AiChatsPage,
-    SaveAiChatInput,
     AiChatSaveFailure
 } from "./features/aiChats/index.js";
 export { AiChatsPanelFeature, AiChatsPanelPresenter } from "./presentation/aiChats/index.js";

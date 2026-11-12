@@ -6,6 +6,8 @@ import { RevokeFolderAccessTool } from "./RevokeFolderAccessTool.js";
 import { CreateFolderTool } from "./CreateFolderTool.js";
 import { DeleteFolderTool } from "./DeleteFolderTool.js";
 import { CreateTeamTool } from "./CreateTeamTool.js";
+import { UpdateTeamTool } from "./UpdateTeamTool.js";
+import { DeleteTeamTool } from "./DeleteTeamTool.js";
 import { ListRolesTool } from "./ListRolesTool.js";
 
 /**
@@ -26,6 +28,8 @@ export const AcoAiToolsFeature = createFeature({
         container.register(CreateFolderTool);
         container.register(DeleteFolderTool);
         container.register(CreateTeamTool);
+        container.register(UpdateTeamTool);
+        container.register(DeleteTeamTool);
         container.register(ListRolesTool);
     }
 });
