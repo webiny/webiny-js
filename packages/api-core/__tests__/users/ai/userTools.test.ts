@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import type { Container } from "@webiny/di";
-import { AiSdkToolDefinition } from "~/features/ai/index.js";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { DeleteUserUseCase } from "~/features/users/DeleteUser/index.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
@@ -10,22 +9,10 @@ import {
     USER_DELETED_WEBSOCKET_ACTION,
     USER_UPDATED_WEBSOCKET_ACTION
 } from "~/features/users/NotifyUserChange/index.js";
-import { useToolHandler } from "../../security/ai/useToolHandler";
+import { getTool, useToolHandler } from "../../security/ai/useToolHandler";
 
 // The identity TestAuthenticator signs every request in as.
 const SIGNED_IN_ID = "123456789";
-
-const getTool = (container: Container, name: string) => {
-    const tool = container
-        .resolveAll(AiSdkToolDefinition)
-        .find(candidate => candidate.name === name);
-
-    if (!tool) {
-        throw new Error(`Tool "${name}" is not registered.`);
-    }
-
-    return container.resolveImplementation(tool.handler);
-};
 
 const createUser = async (
     container: Container,
