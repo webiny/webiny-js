@@ -1,48 +1,36 @@
 import { Result } from "@webiny/feature/api";
 import { mdbid } from "@webiny/utils";
-import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { RequestPasswordResetUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { RequestPasswordResetInput } from "./abstractions.js";
 import { MailerNotConfiguredError } from "~/api/domain/errors.js";
+import { PasswordResetTaskError } from "~/api/domain/errors.js";
 import { TooManyResetRequestsError } from "~/api/domain/errors.js";
-import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
-import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { normalizeEmail } from "~/api/domain/normalizeEmail.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
-import { RESET_REQUEST_MIN_DURATION_MS } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUEST_WINDOW_MINUTES } from "~/api/domain/passwordResetPolicy.js";
+import { SEND_PASSWORD_RESET_CODE_TASK } from "~/api/features/SendPasswordResetCode/index.js";
+import type { SendPasswordResetCodeInput } from "~/api/features/SendPasswordResetCode/index.js";
 
 class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private codes: PasswordResetCodesRepository.Interface,
-        private credentials: CredentialsRepository.Interface,
-        private generator: PasswordResetCodeGenerator.Interface,
-        private hasher: Hasher.Interface,
         private mailer: PasswordResetMailer.Interface,
+        private taskService: TaskService.Interface,
         private logger: Logger.Interface
     ) {}
 
+    /**
+     * Records the request and hands the rest to `SendPasswordResetCodeTask`. Every step here is the
+     * same for an address with an account and one without: the account is not looked up until the
+     * task runs, so neither the answer nor the time it takes says anything about it.
+     */
     async execute(
-        input: RequestPasswordResetInput
-    ): Promise<Result<true, UseCaseAbstraction.Error>> {
-        const startedAt = Date.now();
-
-        try {
-            return await this.requestCode(input);
-        } finally {
-            // Every exit waits, not just the successful ones, so the answer takes the same time
-            // whether or not the address has an account. Awaiting in `finally` holds the returned
-            // promise, which is the point: the caller must not learn anything from how fast it came.
-            await holdUntilFloor(startedAt);
-        }
-    }
-
-    private async requestCode(
         input: RequestPasswordResetInput
     ): Promise<Result<true, UseCaseAbstraction.Error>> {
         const email = input.email.trim();
@@ -71,20 +59,16 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new TooManyResetRequestsError());
         }
 
-        // Generated, hashed and stored for every address, including addresses with no account. The
-        // row is what the request limit counts, so writing it only for real accounts would make the
-        // limit itself answer the question the identical responses refuse to answer. Spending the
-        // hash either way also keeps the two paths costing roughly the same, the way `LoginUseCase`
-        // verifies against a throwaway hash for an unknown user.
-        const code = this.generator.generate();
-        const codeHash = await this.hasher.hash(code);
-
+        // Written for every address, including addresses with no account. The row is what the
+        // request limit counts, so writing it only for real accounts would make the limit itself
+        // answer the question the identical responses refuse to answer. The task sets the code hash
+        // if there is an account to mail it to.
         const expiresOn = new Date(now.getTime() + RESET_CODE_TTL_MINUTES * 60_000);
 
         const stored: StoredPasswordResetCode = {
             id: mdbid(),
             email: key,
-            codeHash,
+            codeHash: null,
             createdOn: now.toISOString(),
             expiresOn: expiresOn.toISOString(),
             usedOn: null,
@@ -96,53 +80,24 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(issued.error);
         }
 
-        // `CredentialsRepository` normalizes the address, the same way it does for `LoginUseCase`.
-        const found = await this.credentials.getByEmail({ email });
-        if (found.isFail()) {
-            return Result.fail(found.error);
-        }
+        const triggered = await this.taskService.trigger<SendPasswordResetCodeInput>({
+            definition: SEND_PASSWORD_RESET_CODE_TASK,
+            input: { codeId: stored.id, email }
+        });
 
-        const credential = found.value;
-        if (credential) {
-            const sent = await this.mailer.send({ email: credential.email, code });
-
-            if (!sent) {
-                // Not reported to the caller. A delivery failure only ever happens for an address
-                // that has an account, so surfacing it would say plainly which addresses those are.
-                // The operator gets it from the log, where the user cannot see it.
-                this.logger.error(
-                    { email: credential.email },
-                    "Could not deliver a password reset code."
-                );
-            }
+        if (triggered.isFail()) {
+            this.logger.error(
+                { error: triggered.error.message },
+                "Could not start the task that mails a password reset code."
+            );
+            return Result.fail(new PasswordResetTaskError());
         }
 
         return Result.ok(true);
     }
 }
 
-const holdUntilFloor = async (startedAt: number): Promise<void> => {
-    const remaining = RESET_REQUEST_MIN_DURATION_MS - (Date.now() - startedAt);
-
-    if (remaining <= 0) {
-        return;
-    }
-
-    // The global `setTimeout` rather than the one from `node:timers/promises`, which reads better
-    // but is not what a fake clock replaces. Tests would then wait a real second each.
-    await new Promise<void>(resolve => {
-        setTimeout(resolve, remaining);
-    });
-};
-
 export const RequestPasswordResetUseCase = UseCaseAbstraction.createImplementation({
     implementation: RequestPasswordResetUseCaseImpl,
-    dependencies: [
-        PasswordResetCodesRepository,
-        CredentialsRepository,
-        PasswordResetCodeGenerator,
-        Hasher,
-        PasswordResetMailer,
-        Logger
-    ]
+    dependencies: [PasswordResetCodesRepository, PasswordResetMailer, TaskService, Logger]
 });

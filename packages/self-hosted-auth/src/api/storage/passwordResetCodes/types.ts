@@ -10,7 +10,12 @@ export interface StoredPasswordResetCode {
     id: string;
     /** The address the code was requested for, whether or not an account exists for it. */
     email: string;
-    codeHash: string;
+    /**
+     * Null until the task that mails the code sets it. The request writes the row first, because
+     * the request limit counts rows, and only the task knows whether there is an account to mail.
+     * A row without a hash matches no code.
+     */
+    codeHash: string | null;
     createdOn: string;
     expiresOn: string;
     /** Set when the code is spent, or when a later request supersedes it. Never unset. */

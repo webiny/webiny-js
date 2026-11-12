@@ -142,10 +142,14 @@ happens when a code is requested, and reports the same way regardless of whether
   implementation over `MailerService` from `@webiny/api-mailer`. This keeps subject and body in one
   replaceable place, lets a project send through something other than SMTP, and keeps the use case
   free of templating. It is also what reports "no transport configured" upward.
-- **Request reset use case.** Takes an address. Checks the request limit, records the attempt,
-  resolves the credential, and on a hit generates, hashes, stores, and sends. Returns the same
-  success for a miss. Surfaces exactly one distinguishable failure, which is that mail is not
-  configured.
+- **Request reset use case.** Takes an address. Checks the request limit, records the attempt as
+  a row with no code yet, and triggers the send task. Does the same for every address, so neither
+  the answer nor how long it takes says whether there is an account. Surfaces two installation
+  failures, and nothing about the address: mail is not configured, or the task could not start.
+- **Send code task.** A private background task that runs once. Resolves the credential, and on a
+  hit generates the code, sets its hash on the request row, and sends the mail. The code is
+  generated here and not passed in, because task input is stored as it is. Setting the hash only
+  succeeds on a row that has none, so a repeated run mails nothing.
 - **Reset with code use case.** Takes an address, a code, and a new password. Loads live codes for
   the address, verifies the hash, increments the attempt count on failure, and on success marks the
   code used, invalidates the rest for that address, and delegates to the existing

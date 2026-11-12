@@ -1,66 +1,46 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Container } from "@webiny/feature/api";
-import { Hasher } from "@webiny/api-core/features/hashing/index.js";
+import { describe, expect, it, vi } from "vitest";
+import { Container, Result } from "@webiny/feature/api";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
-import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
-import type { StorageCredential } from "~/api/storage/credentials/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
-import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
-import { RESET_REQUEST_MIN_DURATION_MS } from "~/api/domain/passwordResetPolicy.js";
 import {
     RequestPasswordResetFeature,
     RequestPasswordResetUseCase
 } from "~/api/features/RequestPasswordReset/index.js";
+import { SEND_PASSWORD_RESET_CODE_TASK } from "~/api/features/SendPasswordResetCode/index.js";
 import { createInMemoryPasswordResetCodes } from "./helpers/inMemoryPasswordResetCodes.js";
 
 const EMAIL = "admin@example.com";
-const CODE = "424242";
-
-const credential: StorageCredential = {
-    userId: "user-123",
-    email: EMAIL,
-    passwordHash: "scrypt$16384$8$1$c2FsdA==$aGFzaA==",
-    createdOn: "2026-01-01T00:00:00.000Z",
-    updatedOn: "2026-01-01T00:00:00.000Z"
-};
 
 interface SetupOptions {
-    credential?: StorageCredential | null;
     mailerConfigured?: boolean;
-    sendSucceeds?: boolean;
+    triggerFails?: boolean;
 }
 
 const setup = (options: SetupOptions = {}) => {
     const container = new Container();
 
     const codes = createInMemoryPasswordResetCodes();
-    const send = vi.fn(async () => options.sendSucceeds ?? true);
+    const send = vi.fn(async () => true);
     const logError = vi.fn();
+    const trigger = vi.fn(async () => {
+        if (options.triggerFails) {
+            return Result.fail(new Error("No transport.") as never);
+        }
+        return Result.ok({ id: "task-1" } as never);
+    });
 
     codes.register(container);
-
-    // The real repositories over the in-memory stores, so these cases cover the layers the use case
-    // actually talks to rather than stand-ins for them.
     PasswordResetCodesRepositoryFeature.register(container);
-
-    const seededCredentials = options.credential ? [options.credential] : [];
-    createInMemoryCredentials(seededCredentials).register(container);
-    CredentialsRepositoryFeature.register(container);
-
-    container.registerInstance(PasswordResetCodeGenerator, { generate: () => CODE });
-
-    container.registerInstance(Hasher, {
-        hash: async (value: string) => `hashed:${value}`,
-        verify: async (value: string, storedHash: string) => `hashed:${value}` === storedHash
-    });
 
     container.registerInstance(PasswordResetMailer, {
         isConfigured: async () => options.mailerConfigured ?? true,
         send
     });
+
+    container.registerInstance(TaskService, { trigger } as unknown as TaskService.Interface);
 
     container.registerInstance(Logger, {
         info: vi.fn(),
@@ -75,84 +55,58 @@ const setup = (options: SetupOptions = {}) => {
 
     const useCase = container.resolve(RequestPasswordResetUseCase);
 
-    /**
-     * Every answer is held to `RESET_REQUEST_MIN_DURATION_MS` so its timing says nothing. On a fake
-     * clock that costs nothing, which is why these cases run it this way: waiting for real would
-     * add a second per case for a delay that has its own two tests below.
-     */
-    const request = async (email: string) => {
-        const result = useCase.execute({ email });
-        await vi.advanceTimersByTimeAsync(RESET_REQUEST_MIN_DURATION_MS);
+    const request = (email: string) => useCase.execute({ email });
 
-        return result;
-    };
-
-    return {
-        useCase,
-        request,
-        codes,
-        send,
-        logError
-    };
+    return { request, codes, send, trigger, logError };
 };
 
 describe("RequestPasswordResetUseCase", () => {
-    beforeEach(() => {
-        vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-        vi.useRealTimers();
-    });
-
-    it("emails a code when the address has an account", async () => {
-        const { request, send } = setup({ credential });
+    it("records the request and starts the task that mails the code", async () => {
+        const { request, codes, trigger } = setup();
 
         const result = await request(EMAIL);
 
         expect(result.isFail()).toBe(false);
-        expect(send).toHaveBeenCalledWith({ email: EMAIL, code: CODE });
-    });
-
-    it("stores only a hash of the code, never the code", async () => {
-        const { request, codes } = setup({ credential });
-
-        await request(EMAIL);
-
-        expect(codes.rows[0]!.codeHash).toBe(`hashed:${CODE}`);
-        // No field carries the code itself. Checked field by field rather than over the serialized
-        // row, because the fake hasher spells the value it was given into its output and a real one
-        // would not.
-        expect(Object.values(codes.rows[0]!)).not.toContain(CODE);
+        expect(codes.rows).toHaveLength(1);
+        expect(trigger).toHaveBeenCalledWith({
+            definition: SEND_PASSWORD_RESET_CODE_TASK,
+            input: { codeId: codes.rows[0]!.id, email: EMAIL }
+        });
     });
 
     /**
-     * The point of the whole design. Somebody working through a list of addresses has to get the
-     * same answer for every one of them, or this screen becomes a way to find out who has an
-     * account here.
+     * The point of moving the send to a task. Waiting on an SMTP server is time an attacker can
+     * measure, and only an address with an account would ever wait for one.
      */
-    it("answers an unknown address exactly as it answers a known one", async () => {
-        const known = await setup({ credential }).request(EMAIL);
-        const unknown = await setup({ credential: null }).request("nobody@example.com");
+    it("sends no mail itself, so a slow mail server cannot slow the answer", async () => {
+        const { request, send } = setup();
 
-        expect(known.isFail()).toBe(false);
-        expect(unknown.isFail()).toBe(false);
-    });
-
-    it("sends nothing when the address has no account", async () => {
-        const { request, send } = setup({ credential: null });
-
-        await request("nobody@example.com");
+        await request(EMAIL);
 
         expect(send).not.toHaveBeenCalled();
     });
 
     /**
-     * Follows from the identical responses above. If rows existed only for real accounts, the
-     * request limit would start answering the question the responses refuse to.
+     * The code is generated by the task, which stores its hash. The task input is stored in the
+     * tasks table as it is, so neither the code nor its hash may travel in it.
      */
-    it("records the request for an address with no account, so the limit counts it", async () => {
-        const { request, codes } = setup({ credential: null });
+    it("stores the request without a code and passes no code to the task", async () => {
+        const { request, codes, trigger } = setup();
+
+        await request(EMAIL);
+
+        expect(codes.rows[0]!.codeHash).toBeNull();
+        const [params] = trigger.mock.calls[0]! as unknown as [{ input: object }];
+        expect(Object.keys(params.input).sort()).toEqual(["codeId", "email"]);
+    });
+
+    /**
+     * Follows from the identical responses. If rows existed only for real accounts, the request
+     * limit would start answering the question the responses refuse to. The account is not even
+     * known here, so every address gets the same row.
+     */
+    it("records every request, so the limit counts addresses with no account too", async () => {
+        const { request, codes } = setup();
 
         await request("nobody@example.com");
 
@@ -160,7 +114,7 @@ describe("RequestPasswordResetUseCase", () => {
     });
 
     it("stops issuing codes once the window is full", async () => {
-        const { request } = setup({ credential });
+        const { request, trigger } = setup();
 
         for (let attempt = 0; attempt < RESET_REQUESTS_PER_WINDOW; attempt++) {
             const allowed = await request(EMAIL);
@@ -171,10 +125,11 @@ describe("RequestPasswordResetUseCase", () => {
 
         expect(refused.isFail()).toBe(true);
         expect(refused.isFail() && refused.error.code).toBe("TOO_MANY_RESET_REQUESTS");
+        expect(trigger).toHaveBeenCalledTimes(RESET_REQUESTS_PER_WINDOW);
     });
 
     it("counts the limit per address, not across all of them", async () => {
-        const { request } = setup({ credential });
+        const { request } = setup();
 
         for (let attempt = 0; attempt < RESET_REQUESTS_PER_WINDOW; attempt++) {
             await request(EMAIL);
@@ -190,7 +145,7 @@ describe("RequestPasswordResetUseCase", () => {
      * lowercased address, the same form credentials are stored and looked up in.
      */
     it("counts addresses that differ only in capitals as one", async () => {
-        const { request } = setup({ credential });
+        const { request } = setup();
 
         for (let attempt = 0; attempt < RESET_REQUESTS_PER_WINDOW; attempt++) {
             await request(EMAIL);
@@ -203,18 +158,18 @@ describe("RequestPasswordResetUseCase", () => {
     });
 
     it("refuses before looking at the address when the installation cannot send mail", async () => {
-        const { request, codes, send } = setup({ credential, mailerConfigured: false });
+        const { request, codes, trigger } = setup({ mailerConfigured: false });
 
         const result = await request(EMAIL);
 
         expect(result.isFail()).toBe(true);
         expect(result.isFail() && result.error.code).toBe("MAILER_NOT_CONFIGURED");
         expect(codes.rows).toHaveLength(0);
-        expect(send).not.toHaveBeenCalled();
+        expect(trigger).not.toHaveBeenCalled();
     });
 
     it("names the CLI escape hatch when mail is not configured", async () => {
-        const { request } = setup({ credential, mailerConfigured: false });
+        const { request } = setup({ mailerConfigured: false });
 
         const result = await request(EMAIL);
 
@@ -222,57 +177,16 @@ describe("RequestPasswordResetUseCase", () => {
     });
 
     /**
-     * Delivery only ever fails for an address that has an account, so reporting it would say
-     * plainly which addresses those are. It goes to the log, where the user cannot read it.
+     * Reported, unlike a failed delivery. The task is started before the account is looked up, so a
+     * failure here is the same for every address.
      */
-    it("reports success but logs when the code could not be delivered", async () => {
-        const { request, logError } = setup({ credential, sendSucceeds: false });
+    it("reports and logs when the task cannot be started", async () => {
+        const { request, logError } = setup({ triggerFails: true });
 
         const result = await request(EMAIL);
 
-        expect(result.isFail()).toBe(false);
-        expect(logError).toHaveBeenCalled();
-    });
-
-    /**
-     * Everything before the last step costs the same for both, but only a real account gets an
-     * email sent, and waiting on an SMTP server is time an attacker can measure. Every answer is
-     * held to the same floor so there is nothing to measure.
-     */
-    it("answers no faster than the floor, so the wait says nothing", async () => {
-        const { useCase } = setup({ credential: null });
-
-        let settled = false;
-        const run = useCase.execute({ email: "nobody@example.com" }).then(result => {
-            settled = true;
-            return result;
-        });
-
-        await vi.advanceTimersByTimeAsync(RESET_REQUEST_MIN_DURATION_MS - 1);
-        expect(settled).toBe(false);
-
-        await vi.advanceTimersByTimeAsync(1);
-        await run;
-
-        expect(settled).toBe(true);
-    });
-
-    /** The refusals wait too. A fast "no" would say the address had been asked about lately. */
-    it("holds a refused request to the floor as well", async () => {
-        const { useCase } = setup({ credential, mailerConfigured: false });
-
-        let settled = false;
-        const run = useCase.execute({ email: EMAIL }).then(result => {
-            settled = true;
-            return result;
-        });
-
-        await vi.advanceTimersByTimeAsync(RESET_REQUEST_MIN_DURATION_MS - 1);
-        expect(settled).toBe(false);
-
-        await vi.advanceTimersByTimeAsync(1);
-        const result = await run;
-
         expect(result.isFail()).toBe(true);
+        expect(result.isFail() && result.error.code).toBe("PASSWORD_RESET_TASK_ERROR");
+        expect(logError).toHaveBeenCalled();
     });
 });

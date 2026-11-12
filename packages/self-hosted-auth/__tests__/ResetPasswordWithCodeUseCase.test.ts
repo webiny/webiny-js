@@ -134,6 +134,32 @@ describe("ResetPasswordWithCodeUseCase", () => {
      * at all to a script, so the code is not protected by being hard to guess. It is protected by
      * dying after a few wrong ones.
      */
+    /**
+     * A request row the task has not given a code yet, or never will because the address has no
+     * account. It must not match anything, and a guess against it must not count as an attempt.
+     */
+    it("skips a request with no code yet without counting a guess against it", async () => {
+        const pending = storedCode({ id: "pending", codeHash: null });
+        const { useCase, codes, setPassword } = setup({ rows: [pending] });
+
+        const result = await useCase.execute({ email: EMAIL, code: CODE, password: PASSWORD });
+
+        expect(result.isFail() && result.error.code).toBe("INVALID_RESET_CODE");
+        expect(setPassword).not.toHaveBeenCalled();
+        expect(codes.rows[0]!.attempts).toBe(0);
+    });
+
+    it("finds the code behind a newer request that has no code yet", async () => {
+        const older = storedCode({ id: "older", createdOn: anHourAgo() });
+        const pending = storedCode({ id: "pending", codeHash: null });
+        const { useCase, setPassword } = setup({ rows: [older, pending] });
+
+        const result = await useCase.execute({ email: EMAIL, code: CODE, password: PASSWORD });
+
+        expect(result.isFail()).toBe(false);
+        expect(setPassword).toHaveBeenCalled();
+    });
+
     it("kills the code once the guesses run out, even with the right code after", async () => {
         const { useCase } = setup();
 
