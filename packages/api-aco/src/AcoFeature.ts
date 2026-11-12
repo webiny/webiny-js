@@ -42,6 +42,7 @@ import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpt
 import { AcoAiToolsFeature } from "~/features/ai/index.js";
 import { NotifyFolderChangeFeature } from "~/features/folder/NotifyFolderChange/index.js";
 import { NotifyTeamChangeFeature } from "~/features/team/NotifyTeamChange/index.js";
+import { NotifyRoleChangeFeature } from "~/features/role/NotifyRoleChange/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("api-aco/AcoSchemaFactoryImpl");
@@ -90,6 +91,7 @@ export const AcoFeature = createFeature({
         FolderCatalogSyncHandlersFeature.register(container);
         NotifyFolderChangeFeature.register(container);
         NotifyTeamChangeFeature.register(container);
+        NotifyRoleChangeFeature.register(container);
         EnsureFolderIsEmptyOnDeleteFeature.register(container);
         EnsureHcmsFolderIsEmptyOnDeleteFeature.register(container);
 
