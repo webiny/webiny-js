@@ -1,8 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-    TimerSchedulerService,
-    type ITimerSchedulerServiceParams
-} from "~/TimerSchedulerService.js";
+import { TimerSchedulerService } from "~/TimerSchedulerService.js";
+import type { ITimerSchedulerServiceParams } from "~/TimerSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
 const futureDate = (ms: number) => new Date(Date.now() + ms);

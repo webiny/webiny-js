@@ -1,6 +1,13 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { TimerSchedulerService } from "~/TimerSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
+
+const futureDate = (ms: number) => new Date(Date.now() + ms);
+const pastDate = (ms: number) => new Date(Date.now() - ms);
 
 /*
  * Many actions due at the same moment: each process has a timer for every one of them, so they all
@@ -34,15 +41,14 @@ describe("TimerSchedulerService — actions due together", () => {
         });
         await service.start();
 
-        const dueAt = new Date(Date.now() + 500);
-        await service.recover(
-            Array.from({ length: 300 }, (_, i) => ({
-                id: `action-${i}`,
-                namespace,
-                tenant,
-                scheduledFor: dueAt
-            }))
-        );
+        const dueAt = futureDate(500);
+        const actions = Array.from({ length: 300 }, (_, i) => ({
+            id: `action-${i}`,
+            namespace,
+            tenant,
+            scheduledFor: dueAt
+        }));
+        await service.recover(actions);
 
         await vi.waitFor(() => expect(ran.size).toBe(300), { timeout: 10_000, interval: 50 });
 
@@ -61,7 +67,7 @@ describe("TimerSchedulerService — actions due together", () => {
             id: "far-1",
             namespace,
             tenant,
-            scheduleFor: new Date(Date.now() + 40 * day)
+            scheduleFor: futureDate(40 * day)
         });
 
         await vi.advanceTimersByTimeAsync(39 * day);
@@ -83,8 +89,8 @@ describe("TimerSchedulerService — actions due together", () => {
         await service.start();
 
         await service.recover([
-            { id: "fails", namespace, tenant, scheduledFor: new Date(Date.now() - 1_000) },
-            { id: "runs", namespace, tenant, scheduledFor: new Date(Date.now() - 1_000) }
+            { id: "fails", namespace, tenant, scheduledFor: pastDate(1_000) },
+            { id: "runs", namespace, tenant, scheduledFor: pastDate(1_000) }
         ]);
 
         expect(runAction).toHaveBeenCalledWith("runs", namespace, tenant);

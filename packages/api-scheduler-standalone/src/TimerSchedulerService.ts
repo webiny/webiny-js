@@ -193,21 +193,20 @@ export class TimerSchedulerService implements SchedulerService.Interface {
             return;
         }
 
-        const delay = Math.min(scheduledFor.getTime() - Date.now(), MAX_TIMER_DELAY_MS);
-        const timer = setTimeout(
-            () => {
-                if (this.jobs.get(id)?.timer !== timer) {
-                    return;
-                }
-                this.jobs.delete(id);
-                if (scheduledFor.getTime() > Date.now()) {
-                    this.arm(id, namespace, tenant, scheduledFor);
-                    return;
-                }
-                void this.trigger(id, namespace, tenant);
-            },
-            Math.max(delay, 0)
-        );
+        const untilDue = scheduledFor.getTime() - Date.now();
+        const capped = Math.min(untilDue, MAX_TIMER_DELAY_MS);
+        const delay = Math.max(capped, 0);
+        const timer = setTimeout(() => {
+            if (this.jobs.get(id)?.timer !== timer) {
+                return;
+            }
+            this.jobs.delete(id);
+            if (scheduledFor.getTime() > Date.now()) {
+                this.arm(id, namespace, tenant, scheduledFor);
+                return;
+            }
+            void this.trigger(id, namespace, tenant);
+        }, delay);
         // An armed action alone should not keep the process running.
         timer.unref();
 

@@ -43,11 +43,8 @@ export function registerSchedulerServer(rootContainer: Container): void {
                     scheduleFor: new Date().toISOString()
                 }
             };
-            try {
-                await dispatcher.dispatch(event);
-            } catch (err) {
-                logger.error({ error: err, id, tenant }, "[scheduler] scheduled action failed");
-            }
+            // A failure is logged by the scheduler, which runs the action.
+            await dispatcher.dispatch(event);
         }
     });
 
