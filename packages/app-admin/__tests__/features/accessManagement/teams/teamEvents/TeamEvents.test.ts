@@ -74,6 +74,31 @@ describe("team events", () => {
         expect(cache.getItems()).toEqual([fromServer]);
     });
 
+    it("replaces an updated team in place, keeping the list order", async () => {
+        const fromServer = team({ id: "team-2", name: "Sales (renamed)" });
+        const { receive, fetched, cache } = setup(fromServer);
+        cache.setItems([team(), team({ id: "team-2", name: "Sales" }), team({ id: "team-3" })]);
+
+        await receive({ action: "security.team.updated", data: { id: "team-2" } });
+
+        expect(fetched).toEqual(["team-2"]);
+        expect(cache.getItems().map(item => [item.id, item.name])).toEqual([
+            ["team-1", "Marketing"],
+            ["team-2", "Sales (renamed)"],
+            ["team-3", "Marketing"]
+        ]);
+    });
+
+    it("removes a deleted team without reading it back", async () => {
+        const { receive, fetched, cache } = setup(team());
+        cache.setItems([team(), team({ id: "team-2" })]);
+
+        await receive({ action: "security.team.deleted", data: { id: "team-1" } });
+
+        expect(fetched).toEqual([]);
+        expect(cache.getItems().map(item => item.id)).toEqual(["team-2"]);
+    });
+
     it("ignores messages that are not about teams", async () => {
         const { receive, fetched, cache } = setup(team());
 
