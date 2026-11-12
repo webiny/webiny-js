@@ -27,14 +27,14 @@ interface ProductValues {
 const isPg = (process.env.WEBINY_STORAGE || "").split(",").includes("pg");
 
 describe("SDK GraphQL - CMS search modes", () => {
-    // pg's count cap (the `PgCountCap` build param) for the next requests; null: the default.
+    // pg's count cap (in the `HeadlessCmsPg` build param) for the next requests; null: the default.
     let countCap: number | null = null;
     const { sdk } = useWebinySdk({
         afterSetup: requestContainer => {
             if (countCap !== null) {
                 requestContainer.registerInstance(BuildParam, {
-                    key: "PgCountCap",
-                    value: countCap
+                    key: "HeadlessCmsPg",
+                    value: { countCap }
                 });
             }
         }
@@ -363,7 +363,7 @@ describe("SDK GraphQL - CMS search modes", () => {
     });
 
     /**
-     * pg counts matches up to a cap (the `PgCountCap` build param, 10,000 by default) and picks
+     * pg counts matches up to a cap (`countCap` in the `HeadlessCmsPg` build param, 10,000 by default) and picks
      * the query plan from that count: few matches are read through the search indexes and sorted,
      * many are found by walking the sort index. Both plans must return the same pages.
      */

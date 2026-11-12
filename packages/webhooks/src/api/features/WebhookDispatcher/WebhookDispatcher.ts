@@ -3,8 +3,10 @@ import {
     WebhookProvider
 } from "@webiny/api-core/features/webhooks/index.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { IWebhookDispatcherData } from "@webiny/api-core/features/webhooks/WebhookDispatcher/abstractions.js";
@@ -16,7 +18,9 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
         private readonly createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
         private readonly taskService: TaskService.Interface,
         private readonly provider: WebhookProvider.Interface,
-        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface
+        private readonly getSettingsRepository: GetWebhookSettingsRepository.Interface,
+        private readonly updateDeliveryRepository: UpdateWebhookDeliveryRepository.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async dispatch<T extends IWebhookDispatcherData = IWebhookDispatcherData>(
@@ -62,7 +66,9 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
                 continue;
             }
 
-            await this.taskService.trigger<ISendWebhookTaskInput>({
+            // The event's own write has already succeeded, so a delivery that can't be queued is
+            // logged and marked failed, and doesn't fail the write.
+            const triggered = await this.taskService.trigger<ISendWebhookTaskInput>({
                 definition: SEND_WEBHOOK_TASK,
                 name: `Webhook: ${webhook.slug} — ${event.eventName}`,
                 input: {
@@ -71,6 +77,26 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
                     deliveryId: deliveryResult.value.id
                 }
             });
+            if (triggered.isFail()) {
+                this.logger.error(
+                    {
+                        error: triggered.error,
+                        webhookId: webhook.id,
+                        deliveryId: deliveryResult.value.id
+                    },
+                    "Could not queue the webhook delivery."
+                );
+                const marked = await this.updateDeliveryRepository.execute(
+                    deliveryResult.value.id,
+                    { status: "failed" }
+                );
+                if (marked.isFail()) {
+                    this.logger.error(
+                        { error: marked.error, deliveryId: deliveryResult.value.id },
+                        "Could not mark the unqueued webhook delivery as failed."
+                    );
+                }
+            }
         }
     }
 }
@@ -82,6 +108,8 @@ export const WebhookDispatcher = WebhookDispatcherAbstraction.createImplementati
         CreateWebhookDeliveryRepository,
         TaskService,
         WebhookProvider,
-        GetWebhookSettingsRepository
+        GetWebhookSettingsRepository,
+        UpdateWebhookDeliveryRepository,
+        Logger
     ]
 });

@@ -1,10 +1,10 @@
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
-import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
+import type { LocalSockets } from "./types.js";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
 
 export interface ISendToLocalSocketsParams {
-    connectionManager: WebsocketsConnectionManager.Interface<unknown>;
+    connectionManager: LocalSockets;
     adapter: WebsocketsServerAdapter.Interface<unknown>;
     logger: Logger.Interface;
     connectionIds: string[];

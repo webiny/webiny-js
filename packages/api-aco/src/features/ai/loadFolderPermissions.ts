@@ -3,7 +3,10 @@ import type { Folder, FolderPermission } from "~/types.js";
 
 export interface LoadedFolderPermissions {
     folder: Folder;
-    /** Rules set on this folder. The only ones it may change. */
+    /**
+     * Rules set on this folder. The only ones it may change. Code-defined rules (`plugin`) are left
+     * out: they are merged in on read, and the update refuses any that are sent back.
+     */
     direct: FolderPermission[];
     /** Targets granted by an ancestor or a role. Writing these back would detach the inheritance. */
     inheritedTargets: Set<string>;
@@ -32,7 +35,7 @@ export const loadFolderPermissions = async (
 
     return {
         folder,
-        direct: permissions.filter(permission => !permission.inheritedFrom),
+        direct: permissions.filter(permission => !permission.inheritedFrom && !permission.plugin),
         inheritedTargets: new Set(
             permissions.filter(permission => permission.inheritedFrom).map(p => String(p.target))
         )

@@ -1,4 +1,10 @@
-import { KnexClient, isSqlSchemaManaged } from "@webiny/api-core-sql";
+import {
+    getConnectionKey,
+    getSchemaMemory,
+    KnexClient,
+    SqlSchemaConfig,
+    type ISchemaMemory
+} from "@webiny/api-core-sql";
 import { TableNameResolver } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 import { PgSchema as Abstraction } from "./abstractions.js";
 import { createSchemaSql } from "./createSchemaSql.js";
@@ -8,12 +14,17 @@ import { clearEstimateCache } from "~/features/search/estimateCache.js";
 
 class PgSchemaImpl implements Abstraction.Interface {
     private readonly tables: Abstraction.Tables;
-    private initPromise?: Promise<void>;
+    /*
+     * Whether this process has created the tables. Process-wide rather than per instance: the
+     * module is registered per request, with the project's extensions.
+     */
+    private readonly memory: ISchemaMemory;
 
     public constructor(
         private readonly knex: KnexClient.Interface,
         tableNameResolver: TableNameResolver.Interface,
-        private readonly config: PgStorageConfig.Interface
+        private readonly config: PgStorageConfig.Interface,
+        private readonly schemaConfig?: SqlSchemaConfig.Interface
     ) {
         this.tables = {
             entries: tableNameResolver.resolve("entries"),
@@ -22,10 +33,13 @@ class PgSchemaImpl implements Abstraction.Interface {
             values: tableNameResolver.resolve("values"),
             valueDeltas: tableNameResolver.resolve("value_deltas")
         };
-        // Test setups drop all tables between tests and call reset() on every registered manager.
-        const g = globalThis as Record<string, unknown>;
-        const managers = (g.__sqlTableManagers ??= []) as Abstraction.Interface[];
-        managers.push(this);
+        // One memory per database and table set. Test setups drop all tables between tests and reset
+        // every memory; the caches go with it.
+        const memoryKey = `cms.pg.schema:${getConnectionKey(knex.client)}:${this.tables.search}`;
+        this.memory = getSchemaMemory(memoryKey, () => {
+            scopeCache.clear();
+            clearEstimateCache();
+        });
     }
 
     public getTables(): Abstraction.Tables {
@@ -33,23 +47,15 @@ class PgSchemaImpl implements Abstraction.Interface {
     }
 
     public reset(): void {
-        this.initPromise = undefined;
-        scopeCache.clear();
-        clearEstimateCache();
+        this.memory.reset();
     }
 
     public ensure(): Promise<void> {
-        if (isSqlSchemaManaged()) {
-            // Created at deploy time: no DDL (and no advisory lock) on a cold start.
+        if (this.schemaConfig?.isManaged()) {
+            // Set up before the API took traffic: no DDL (and no advisory lock) on a cold start.
             return Promise.resolve();
         }
-        if (!this.initPromise) {
-            this.initPromise = this.create().catch(err => {
-                this.initPromise = undefined;
-                throw err;
-            });
-        }
-        return this.initPromise;
+        return this.memory.once(() => this.create());
     }
 
     public setup(): Promise<void> {
@@ -70,5 +76,10 @@ class PgSchemaImpl implements Abstraction.Interface {
 
 export const PgSchemaManager = Abstraction.createImplementation({
     implementation: PgSchemaImpl,
-    dependencies: [KnexClient, TableNameResolver, PgStorageConfig]
+    dependencies: [
+        KnexClient,
+        TableNameResolver,
+        PgStorageConfig,
+        [SqlSchemaConfig, { optional: true }]
+    ]
 });

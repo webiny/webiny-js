@@ -11,34 +11,26 @@ const configWith = (extensions: Record<string, Array<{ params: Record<string, un
 const postgres = { host: "db", port: 5432, user: "u", password: "p", database: "webiny" };
 
 describe("getStandaloneDatabase", () => {
-    it("uses the Postgres-native storage on Postgres by default", async () => {
+    it("connects to Postgres", async () => {
         const database = await getStandaloneDatabase(
             configWith({ "Infra/Postgres": [{ params: postgres }] }) as any
         );
-        expect(database).toEqual({ driver: "postgres", storage: "pg" });
+        expect(database).toEqual({ driver: "postgres" });
     });
 
-    it("uses the generic SQL storage on Postgres when asked to", async () => {
-        const database = await getStandaloneDatabase(
-            configWith({ "Infra/Postgres": [{ params: { ...postgres, storage: "sql" } }] }) as any
-        );
-        expect(database).toEqual({ driver: "postgres", storage: "sql" });
-    });
-
-    it("uses the generic SQL storage on SQLite", async () => {
+    it("connects to SQLite", async () => {
         const database = await getStandaloneDatabase(
             configWith({ "Infra/Sqlite": [{ params: { filename: "db.sqlite" } }] }) as any
         );
-        expect(database).toEqual({ driver: "sqlite", storage: "sql" });
+        expect(database).toEqual({ driver: "sqlite" });
     });
 
-    it("runs PGlite with the Postgres-native storage", async () => {
+    it("runs PGlite as Postgres", async () => {
         const defaults = await getStandaloneDatabase(
             configWith({ "Infra/Pglite": [{ params: {} }] }) as any
         );
         expect(defaults).toEqual({
             driver: "postgres",
-            storage: "pg",
             // No port configured: a free one is picked when the database starts.
             pglite: { port: null, dataDir: path.join(process.cwd(), ".webiny/postgres") }
         });

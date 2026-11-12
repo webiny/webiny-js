@@ -1,27 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api/index.js";
 
 /**
- * Build param names of the Postgres CMS storage settings. Set them with `<Api.BuildParam>`, or
- * through the `<Infra.Postgres>` extension's props; `readPgStorageSettings()` reads them.
+ * The build param that holds the settings of the Postgres CMS storage, as one object
+ * (`IPgStorageSettings`). `<HeadlessCmsPg>` in `webiny.config.tsx` sets it; `PgStorageConfig` reads
+ * it. No other part of the API reads it.
  */
-export const PG_BUILD_PARAMS = {
-    /* "lean" or "indexed": the index mode of new scopes. */
-    indexMode: "PgIndexMode",
-    /* Milliseconds a process may use a cached scope mode for queries. */
-    indexModeTtlMs: "PgIndexModeTtlMs",
-    /* Milliseconds a row estimate is kept; 0 turns the estimate cache off. */
-    estimateTtlMs: "PgEstimateTtlMs",
-    /* Slot columns one model's own fields may use. */
-    fieldBudget: "PgFieldBudget",
-    /* false skips the per-slot btree indexes (test runs). */
-    slotIndexes: "PgSlotIndexes",
-    /* Matches a list counts exactly; above it the total is the cap. */
-    countCap: "PgCountCap",
-    /* false leaves the planner settings alone when collecting matches (RDS Proxy pinning). */
-    bitmapHints: "PgBitmapHints",
-    /* true: all tenants share one table set. */
-    sharedTables: "CmsSharedTables"
-} as const;
+export const PG_CMS_BUILD_PARAM = "HeadlessCmsPg";
 
 export interface IPgStorageConfig {
     /**
@@ -48,18 +32,17 @@ export interface IPgStorageConfig {
     readonly countCap: number;
     /* Whether matches are collected with bitmap-only planner settings (see readListPage). */
     readonly bitmapHints: boolean;
+    /* true: all tenants share one table set. */
+    readonly sharedTables: boolean;
 }
 
 /**
- * The storage's settings as `HeadlessCmsPgFeature.register()` takes them: each one optional, unset
- * means the default. `readPgStorageSettings()` reads them from the API's build params.
+ * The storage's settings as the `HeadlessCmsPg` build param holds them: each one optional, unset
+ * means the default.
  */
-export interface IPgStorageSettings extends Partial<IPgStorageConfig> {
-    /* true: all tenants share one table set. */
-    readonly sharedTables?: boolean;
-}
+export type IPgStorageSettings = Partial<IPgStorageConfig>;
 
-/** Settings of the Postgres CMS storage, as passed to `HeadlessCmsPgFeature.register()`. */
+/** Settings of the Postgres CMS storage, read from the `HeadlessCmsPg` build param. */
 export const PgStorageConfig = createAbstraction<IPgStorageConfig>("Cms/Pg/StorageConfig");
 
 export namespace PgStorageConfig {
