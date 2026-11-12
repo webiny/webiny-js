@@ -67,8 +67,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         const logger = new NullLogger();
         container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
-        // In the request container: api-core registers a no-op send there, which would shadow a
-        // recorder registered in the root.
+        /*
+         * In the request container: api-core registers a no-op send there, which would shadow a
+         * recorder registered in the root.
+         */
         container.registerInstance(WebsocketsSendToIdentityUseCase, {
             execute: async (identity, data) => {
                 websocketMessages.push({

@@ -2,11 +2,9 @@ import { describe, it, expect } from "vitest";
 import type { Container } from "@webiny/di";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { useHandler } from "~tests/utils/useHandler";
-import {
-    TEAM_CREATED_WEBSOCKET_ACTION,
-    TEAM_DELETED_WEBSOCKET_ACTION,
-    TEAM_UPDATED_WEBSOCKET_ACTION
-} from "@webiny/api-core/features/security/teams/NotifyTeamChange/index.js";
+import { TEAM_CREATED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/teams/NotifyTeamChange/index.js";
+import { TEAM_DELETED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/teams/NotifyTeamChange/index.js";
+import { TEAM_UPDATED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/teams/NotifyTeamChange/index.js";
 
 const getTool = (container: Container, name: string) => {
     const tool = container

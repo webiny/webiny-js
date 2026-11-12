@@ -3,7 +3,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { WebsocketsSendToConnectionsUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
-import { WebsocketServiceError } from "~/features/shared/errors.js";
+import { WebsocketServiceError } from "@webiny/api-core/features/websockets/index.js";
 
 class SendToConnectionsUseCaseImpl implements WebsocketsSendToConnectionsUseCase.Interface {
     public constructor(private readonly transport: WebsocketsTransport.Interface) {}

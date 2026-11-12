@@ -1,14 +1,15 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { IWebsocketsIdentity, IWebsocketsTransportSendData } from "../types.js";
-import type { WebsocketsError } from "../errors.js";
+import type { IWebsocketsIdentity } from "../types.js";
+import type { IWebsocketsTransportSendData } from "../types.js";
+import type { WebsocketServiceError } from "../WebsocketServiceError.js";
 
 export interface ISendToIdentityUseCase {
     execute<T extends GenericRecord = GenericRecord>(
         identity: Pick<IWebsocketsIdentity, "id">,
         data: IWebsocketsTransportSendData<T>
-    ): Promise<Result<void, WebsocketsError>>;
+    ): Promise<Result<void, WebsocketServiceError>>;
 }
 
 /**
