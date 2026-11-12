@@ -9,15 +9,12 @@ import { redirectMocks } from "./mocks/redirect.mock.js";
 
 const INVALIDATED = { caller: "wb.redirects", paths: ["/wb/redirects"] };
 
-const CDN_CACHE_CONTROL = "public, max-age=0, s-maxage=31536000";
-
 const setup = () => {
     const invalidate = vi.fn(async () => {});
-    const getCacheControl = () => CDN_CACHE_CONTROL;
     const handler = useGraphQlHandler({
         legacyPlugins: [
             (container: Container) => {
-                container.registerInstance(CdnCache, { invalidate, getCacheControl });
+                container.registerInstance(CdnCache, { invalidate });
             }
         ]
     });
@@ -59,22 +56,13 @@ describe("Redirects and the CDN cache", () => {
 });
 
 describe("The Cache-Control header on /wb/redirects", () => {
-    // Nothing invalidates a cache in front of a standalone API, so it must check back every time.
-    it("tells caches to revalidate when the deployment has no CDN", async () => {
+    // Only the CDN is invalidated on a redirect write, so only it may keep the list for long.
+    it("lets shared caches keep the list and makes every other cache check back", async () => {
         const { handler } = useGraphQlHandler({});
 
         const response = await getRedirects(handler);
 
         expect(response.statusCode).toEqual(200);
-        expect(response.headers["cache-control"]).toEqual("no-cache");
-    });
-
-    it("uses the CDN cache's header when the deployment has a CDN", async () => {
-        const { handler } = setup();
-
-        const response = await getRedirects(handler.handler);
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["cache-control"]).toEqual(CDN_CACHE_CONTROL);
+        expect(response.headers["cache-control"]).toEqual("public, max-age=0, s-maxage=31536000");
     });
 });

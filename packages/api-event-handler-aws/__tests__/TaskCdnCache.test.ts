@@ -71,11 +71,4 @@ describe("TaskCdnCache", () => {
             "Could not invalidate the CDN."
         );
     });
-
-    it("lets only CloudFront keep a response for a year, since only it is invalidated", () => {
-        const trigger = vi.fn(async () => Result.ok({} as any));
-        const { cdnCache } = setup(trigger);
-
-        expect(cdnCache.getCacheControl()).toEqual("public, max-age=0, s-maxage=31536000");
-    });
 });

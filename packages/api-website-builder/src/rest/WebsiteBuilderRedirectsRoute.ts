@@ -3,13 +3,17 @@ import { HttpRouteHandler } from "@webiny/event-handler-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
-import { CdnCache } from "@webiny/api-core/features/cdnCache/index.js";
+
+/*
+ * `s-maxage` is read only by shared caches, so CloudFront on AWS keeps the list until a redirect
+ * write invalidates it. `max-age=0` makes every other cache, which nothing invalidates, check back.
+ */
+const CACHE_CONTROL = "public, max-age=0, s-maxage=31536000";
 
 class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
     constructor(
         private identityCtx: IdentityContext.Interface,
-        private getActiveRedirects: GetActiveRedirectsUseCase.Interface,
-        private cdnCache: CdnCache.Interface
+        private getActiveRedirects: GetActiveRedirectsUseCase.Interface
     ) {}
 
     async handle(_request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
@@ -24,18 +28,13 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
         }
         const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
-        /*
-         * A redirect write invalidates /wb/redirects through the CDN cache, so it decides how long
-         * the list may be cached.
-         */
-        const cacheControl = this.cdnCache.getCacheControl();
-        return response.header("cache-control", cacheControl).json(redirectsDto);
+        return response.header("cache-control", CACHE_CONTROL).json(redirectsDto);
     }
 }
 
 export const WebsiteBuilderRedirectsRoute = HttpRouteHandler.createImplementation({
     implementation: WebsiteBuilderRedirectsRouteImpl,
-    dependencies: [IdentityContext, GetActiveRedirectsUseCase, CdnCache]
+    dependencies: [IdentityContext, GetActiveRedirectsUseCase]
 });
 
 class WebsiteBuilderRedirectsRouteDefinitionImpl implements HttpRouteDefinition.Interface {

@@ -32,15 +32,6 @@ class TaskCdnCacheImpl implements CdnCache.Interface {
             this.logger.error({ error, ...params }, "Could not invalidate the CDN.");
         }
     }
-
-    getCacheControl(): string {
-        /*
-         * `s-maxage` is for shared caches, so CloudFront keeps the response for a year and drops it
-         * when `invalidate` runs. Browsers and other caches get `max-age=0`, because nothing
-         * invalidates their copy.
-         */
-        return "public, max-age=0, s-maxage=31536000";
-    }
 }
 
 export const TaskCdnCache = CdnCache.createImplementation({
