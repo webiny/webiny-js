@@ -19,7 +19,6 @@
   "dependencies": {
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
-    "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"

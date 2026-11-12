@@ -17,6 +17,7 @@ import { GetTeamFeature } from "~/features/accessManagement/teams/getTeam/featur
 import { CreateTeamFeature } from "~/features/accessManagement/teams/createTeam/feature.js";
 import { UpdateTeamFeature } from "~/features/accessManagement/teams/updateTeam/feature.js";
 import { DeleteTeamFeature } from "~/features/accessManagement/teams/deleteTeam/feature.js";
+import { TeamEventsFeature } from "~/features/accessManagement/teams/teamEvents/feature.js";
 import { ListApiKeysFeature } from "~/features/accessManagement/apiKeys/listApiKeys/feature.js";
 import { GetApiKeyFeature } from "~/features/accessManagement/apiKeys/getApiKey/feature.js";
 import { CreateApiKeyFeature } from "~/features/accessManagement/apiKeys/createApiKey/feature.js";
@@ -106,6 +107,7 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={CreateTeamFeature} />
             <RegisterFeature feature={UpdateTeamFeature} />
             <RegisterFeature feature={DeleteTeamFeature} />
+            <RegisterFeature feature={TeamEventsFeature} />
             <RegisterFeature feature={TeamsPresenterFeature} />
             <RegisterFeature feature={TeamsAutocompletePresenterFeature} />
             <RegisterFeature feature={ListApiKeysFeature} />
