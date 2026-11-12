@@ -1,4 +1,5 @@
 export * from "./createCheckoutPrSteps.js";
+export * from "./createConfigureApiRouteSteps.js";
 export * from "./createConfigureBugReporterSteps.js";
 export * from "./createDeployWebinySteps.js";
 export * from "./createSetupVerdaccioSteps.js";

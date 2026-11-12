@@ -11,6 +11,7 @@ import {
 import { VALKEY_SERVICE } from "./utils/index.js";
 import { VALKEY_TEST_URL } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
+import { createConfigureApiRouteSteps } from "./steps/index.js";
 import { createConfigureBugReporterSteps } from "./steps/index.js";
 import { createDeployWebinySteps } from "./steps/index.js";
 import { createGlobalBuildCacheSteps } from "./steps/index.js";
@@ -172,6 +173,10 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                 workingDirectory: DIR_WEBINY_JS,
                 projectPath: PATH_TEST_PROJECT
             }),
+            ...createConfigureApiRouteSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                projectPath: PATH_TEST_PROJECT
+            }),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_TEST_PROJECT,
@@ -228,6 +233,13 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                 "working-directory": DIR_TEST_PROJECT,
                 run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
             },
+            {
+                // The API's CloudFront URL, which e2e/tests/apiRoute.e2e.ts calls.
+                name: "Extract API URL",
+                id: "api-url",
+                "working-directory": DIR_TEST_PROJECT,
+                run: `echo "api-url=$(yarn webiny output api --env dev --json 2>/dev/null | jq -r '.apiUrl // empty')" >> $GITHUB_OUTPUT`
+            },
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
@@ -237,6 +249,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
             ...createUnlicensedE2eSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                apiUrl: "${{ steps.api-url.outputs.api-url }}",
                 artifactName: `e2e-test-results-${storageOps.shortId}`
             })
         ]

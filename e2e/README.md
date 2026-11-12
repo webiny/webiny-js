@@ -12,6 +12,8 @@ yarn e2e:headed               # watch it in a browser
 
 The tests run against the admin at `E2E_ADMIN_URL`, `https://wby3.localhost` by default. They sign in as `admin@webiny.com` unless `E2E_ADMIN_EMAIL` and `E2E_ADMIN_PASSWORD` say otherwise.
 
+`tests/apiRoute.e2e.ts` calls the API directly at `E2E_API_URL` and is skipped when that is unset. It needs the two `<Api.Route>` entries CI adds to every project before it builds (`.github/workflows/wac/utils/runNodeScripts/configureApiRoute.js`). To run it locally, run that script on your project, rebuild the API, and set `E2E_API_URL` to the API's own address, not the admin's.
+
 `ANTHROPIC_API_KEY` is only needed for tests with agent steps. Without it no model is configured, and the first agent step stops the run with `MODEL_UNAVAILABLE`. Today every test with agent steps is tagged `wcp`, so `yarn e2e --exclude-tag wcp` runs without a key.
 
 Anything after the script name goes to `e2e run`. File paths are relative to `e2e/`:
@@ -60,6 +62,7 @@ Folders are for feature areas. Tags are for what a test needs from the project. 
 ```
 tests/
   auth.setup.e2e.ts             signs in once and saves the session
+  apiRoute.e2e.ts               tags: api-route
   fileManager/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
     uploadAndDeliver.e2e.ts     tags: file-manager
