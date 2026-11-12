@@ -41,7 +41,32 @@ const graphql = async <T>(
     if (body.errors?.length) {
         throw new Error(`${path}: ${body.errors.map(error => error.message).join("; ")}`);
     }
+    throwOnWebinyError(path, body.data);
     return body.data as T;
+};
+
+/*
+ * Webiny reports a failed operation in the response's own `error` field, with HTTP 200 and no
+ * GraphQL `errors`. Without this check a rejected model would only show up as a missing type in
+ * the next query. Nested once, for namespaced operations like `scheduler.scheduleAction`.
+ */
+const throwOnWebinyError = (path: string, value: unknown, depth = 0): void => {
+    if (!value || typeof value !== "object" || depth > 2) {
+        return;
+    }
+    const error = (value as { error?: { message?: string; code?: string } }).error;
+    if (error) {
+        throw new Error(`${path}: ${error.code ?? "Error"}: ${error.message}`);
+    }
+    for (const child of Object.values(value)) {
+        throwOnWebinyError(path, child, depth + 1);
+    }
+};
+
+// lodash `camelCase` splits words at digits, and the CMS rejects API names that don't survive it,
+// so the per-run suffix is letters only.
+const lettersOnly = (value: number) => {
+    return value.toString().replace(/\d/g, digit => "abcdefghij"[Number(digit)]);
 };
 
 test(
@@ -78,10 +103,10 @@ test(
         await browser.unrouteAll();
 
         // Fresh per run, so a model left over from an earlier run never collides.
-        const suffix = Date.now().toString(36);
-        const modelId = `e2eScheduled${suffix}`;
-        const singularApiName = `E2eScheduled${suffix}`;
-        const pluralApiName = `E2eScheduleds${suffix}`;
+        const suffix = lettersOnly(Date.now());
+        const modelId = `endToEndScheduled${suffix}`;
+        const singularApiName = `EndToEndScheduled${suffix}`;
+        const pluralApiName = `EndToEndScheduleds${suffix}`;
 
         const groups = await graphql<{
             listContentModelGroups: { data: { id: string; slug: string }[] };
@@ -103,7 +128,7 @@ test(
             `,
             {
                 data: {
-                    name: `E2E scheduled ${suffix}`,
+                    name: `End to end scheduled ${suffix}`,
                     modelId,
                     singularApiName,
                     pluralApiName,
