@@ -390,6 +390,11 @@ describe("Own Entries Permissions Checks - read all, delete own", () => {
         expect(entryA.error).toBeNull();
         const entryB = await manageApiB.createTestEntry();
         expect(entryB.error).toBeNull();
+        // Published, so the entry has both the latest and the published record in every storage.
+        const publishedB = await manageApiB.publishTestEntry({
+            variables: { revision: entryB.data.id }
+        });
+        expect(publishedB.error).toBeNull();
 
         // B can read A's entry, so it is found, but B must not be able to delete it.
         const [response] = await manageApiB.invoke({
