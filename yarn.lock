@@ -13443,6 +13443,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/dependency-versions@workspace:packages/dependency-versions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/dependency-versions@workspace:packages/dependency-versions"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/di@npm:^2.0.0":
   version: 2.0.0
   resolution: "@webiny/di@npm:2.0.0"
@@ -14193,12 +14199,6 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     react: "npm:19.3.1"
     vitest: "npm:^5.0.5"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/references@workspace:packages/references":
-  version: 0.0.0-use.local
-  resolution: "@webiny/references@workspace:packages/references"
   languageName: unknown
   linkType: soft
 

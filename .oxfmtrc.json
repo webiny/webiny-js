@@ -37,7 +37,7 @@
     "packages/project-standalone-template/template/appTemplates/",
     "coverage/**",
     "packages/cli-core/files/**/*.json",
-    "packages/references/references.json",
+    "packages/dependency-versions/references.json",
     "packages/create-webiny-project/utils/binaries/**",
     ".github/workflows/**/*.yml",
     "./nextjs/",
