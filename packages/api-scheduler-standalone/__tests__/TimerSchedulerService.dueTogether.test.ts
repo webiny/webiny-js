@@ -96,4 +96,18 @@ describe("TimerSchedulerService — actions due together", () => {
         expect(runAction).toHaveBeenCalledWith("runs", namespace, tenant);
         expect(logger.error).toHaveBeenCalledTimes(1);
     });
+
+    it("runs actions again after a stop and a new start", async () => {
+        const runAction = vi.fn().mockResolvedValue(undefined);
+        service = new TimerSchedulerService({ logger: createMockLogger(), runAction });
+        await service.start();
+        await service.stop();
+        await service.start();
+
+        await service.recover([
+            { id: "after-restart", namespace, tenant, scheduledFor: pastDate(1_000) }
+        ]);
+
+        expect(runAction).toHaveBeenCalledWith("after-restart", namespace, tenant);
+    });
 });

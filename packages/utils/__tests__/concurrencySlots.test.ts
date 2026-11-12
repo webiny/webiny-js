@@ -1,11 +1,11 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { IterationSlots } from "~/loop/IterationSlots.js";
+import { ConcurrencySlots } from "~/ConcurrencySlots.js";
 
-describe("IterationSlots", () => {
+describe("ConcurrencySlots", () => {
     it("grants up to its size at once", async () => {
-        const slots = new IterationSlots(2);
+        const slots = new ConcurrencySlots(2);
 
         expect(await slots.acquire()).toBe(true);
         expect(await slots.acquire()).toBe(true);
@@ -14,7 +14,7 @@ describe("IterationSlots", () => {
     });
 
     it("makes the next caller wait for a slot, and hands it over in order", async () => {
-        const slots = new IterationSlots(1);
+        const slots = new ConcurrencySlots(1);
         await slots.acquire();
         const order: string[] = [];
 
@@ -32,7 +32,7 @@ describe("IterationSlots", () => {
     });
 
     it("frees a slot nobody is waiting for", async () => {
-        const slots = new IterationSlots(1);
+        const slots = new ConcurrencySlots(1);
         await slots.acquire();
 
         slots.release();
@@ -41,7 +41,7 @@ describe("IterationSlots", () => {
     });
 
     it("turns away those waiting, and later callers, once closed", async () => {
-        const slots = new IterationSlots(1);
+        const slots = new ConcurrencySlots(1);
         await slots.acquire();
         const waiting = slots.acquire();
 

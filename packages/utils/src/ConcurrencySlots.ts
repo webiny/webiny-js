@@ -1,10 +1,10 @@
 type Grant = (granted: boolean) => void;
 
 /**
- * Limits how many task iterations run at once. An iteration takes a slot before it runs and gives it
- * back after; one that finds them all taken waits in line, first come first served.
+ * Limits how many pieces of work run at once. Work takes a slot before it runs and gives it back
+ * after; work that finds them all taken waits in line, first come first served.
  */
-export class IterationSlots {
+export class ConcurrencySlots {
     private readonly size: number;
     private used = 0;
     private readonly waiting: Grant[] = [];
