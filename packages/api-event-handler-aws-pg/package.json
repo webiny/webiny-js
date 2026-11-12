@@ -21,8 +21,11 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-event-handler-aws": "0.0.0",
+    "@webiny/api-event-handler-core": "0.0.0",
     "@webiny/api-storage-pg": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "knex": "^3.3.0",
     "pg": "^8.23.1"
   },

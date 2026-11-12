@@ -2,11 +2,12 @@ import type { Container } from "@webiny/di";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
-import { createLogger } from "@webiny/api-event-handler-core";
+import { ApiRequestRegistration, createLogger } from "@webiny/api-event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { pinoLambdaDestination } from "pino-lambda";
 import { StructuredLogFormatter } from "pino-lambda";
 import type { WebinyApiCompositionConfig } from "./types.js";
+import { registerWebinyApiChild } from "./registerWebinyApiChild.js";
 
 /**
  * ROOT container registration that is not transport-specific: logger, caches, and the storage
@@ -38,6 +39,13 @@ export async function registerWebinyApiRoot(
     EncryptionKeyCacheFeature.register(container);
     // Root, so identity providers' signing keys are fetched once per process, not per request.
     JwksStoreFeature.register(container);
+
+    // ── Request registration ───────────────────────────────────
+    // What every request's container gets (`child`), for work outside a request that needs a
+    // container a request would have: the SQL schema setup builds one on its own connection.
+    container.registerInstance(ApiRequestRegistration, {
+        register: requestContainer => registerWebinyApiChild(requestContainer, config)
+    });
 
     // ── Storage (variant-specific: database, CMS storage ops, registries, OpenSearch core) ──
     await config.registerRootStorage(container);

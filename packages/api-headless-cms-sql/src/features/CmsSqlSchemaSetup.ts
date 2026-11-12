@@ -18,7 +18,7 @@ class CmsSqlSchemaSetupImpl implements SqlSchemaSetup.Interface {
     public async setup(): Promise<void> {
         await this.models.setup(this.tables.resolve("models"));
         await this.groups.setup(this.tables.resolve("groups"));
-        await this.entries.ensureTable();
+        await this.entries.setup();
     }
 }
 

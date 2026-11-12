@@ -33,7 +33,7 @@ describe("api-event-handler-aws-pg — storages per request", () => {
 
     beforeAll(async () => {
         pglite = await startPglite();
-        await pglite.setupSchema();
+        await pglite.runSchemaSetupEvent();
         knex = pglite.createKnex();
     });
 

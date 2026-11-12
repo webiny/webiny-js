@@ -8,7 +8,7 @@ import { WebsocketsMessageBus } from "~/bus/abstractions.js";
 import { sendToLocalSockets } from "~/delivery/sendToLocalSockets.js";
 import { disconnectLocalSockets } from "~/delivery/disconnectLocalSockets.js";
 import type { LocalSockets } from "~/delivery/types.js";
-import { unregister } from "~/rows/WriteConnectionRowsHandler.js";
+import { unregisterConnection } from "~/rows/unregisterConnection.js";
 
 type ToMessage = (connectionIds: string[]) => WebsocketsMessageBus.Message;
 
@@ -118,7 +118,7 @@ export class ServerWebsocketsTransportImpl implements WebsocketsTransport.Interf
 
     private async remove(connectionId: string): Promise<void> {
         this.sockets.remove(connectionId);
-        await unregister(this.registry, connectionId);
+        await unregisterConnection(this.registry, connectionId);
     }
 }
 

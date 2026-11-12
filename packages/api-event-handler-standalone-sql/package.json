@@ -20,6 +20,7 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
+    "@webiny/api-event-handler-core": "0.0.0",
     "@webiny/api-event-handler-standalone": "0.0.0",
     "@webiny/di": "^2.0.0",
     "@webiny/handler": "0.0.0",

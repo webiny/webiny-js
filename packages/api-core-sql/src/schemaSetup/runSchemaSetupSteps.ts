@@ -1,10 +1,7 @@
+import type { Knex } from "knex";
 import type { Container } from "@webiny/feature/api";
-import { registerBuildParams, registerExtensions } from "@webiny/handler";
-import { ApiCoreFeature } from "@webiny/api-core";
-import { SqlSchemaSetup } from "./abstractions.js";
-
-/** The project's API extensions, as the handlers take them (`extensions()`). */
-export type SqlStorageExtensions = Parameters<typeof registerExtensions>[1];
+import { SqlConnectionFeature } from "~/connection/SqlConnectionFeature.js";
+import { SqlSchemaSetup, type ISqlSchemaSetupRequest } from "./abstractions.js";
 
 export interface RequiredSqlSchemaSetup {
     /** The step's name (`SqlSchemaSetup.name`). */
@@ -13,36 +10,37 @@ export interface RequiredSqlSchemaSetup {
     message: string;
 }
 
-export interface RunSqlSchemaSetupParams {
-    /** A container of its own, with the storage registered in it. */
-    container: Container;
-    /** The project's API extensions: the modules among them register their own steps. */
-    extensions?: SqlStorageExtensions;
+export interface RunSchemaSetupStepsParams {
+    /** The root container the storage is registered in. The setup's container is its child. */
+    root: Container;
+    /** The setup's connection: a transaction the runner opened. */
+    knex: Knex;
+    tableNamePrefix?: string;
+    /** Registers a request's parts in the setup's container. */
+    request: ISqlSchemaSetupRequest;
     /** Steps the storage can't run without (a module the project must add). */
     required?: RequiredSqlSchemaSetup[];
 }
 
 /**
- * Runs every schema setup step in `container`, after applying the project's extensions the way a
- * request does: build params first, then the extensions. The modules among the extensions (the
- * Postgres CMS, the folder catalog) register their own steps, so setup creates the tables of exactly
- * the modules the API runs, with their settings.
+ * The part of schema setup every SQL storage shares, run inside the runner's transaction. It builds
+ * a container on the setup's connection the way a request's is built, and runs every schema setup
+ * step in it.
  *
- * Extensions only register, but some decide whether to while they do: they read the feature flags or
- * the license (`WcpContext`), as in a request. So, as a request does, the build params come first,
- * then the core API (`ApiCoreFeature`, which has both), then the extensions. The license isn't
- * loaded: a module gated on it registers nothing here. The storage modules (CMS, folder catalog)
- * aren't gated.
+ * The container is a child of the root, so it has what a request has (the logger, the storages'
+ * `RequestStorage`). The setup's connection is registered in it first, with schema-managed off:
+ * every storage the request registers runs on it, including the ones built while the request
+ * registers and the modules' singletons, which are built in the container that registers them.
  *
  * Checks `required` before running anything, so a missing module fails before any DDL. Returns the
  * names of the steps it ran, in order.
  */
-export async function runSqlSchemaSetup(params: RunSqlSchemaSetupParams): Promise<string[]> {
-    const { container, extensions = [], required = [] } = params;
+export async function runSchemaSetupSteps(params: RunSchemaSetupStepsParams): Promise<string[]> {
+    const { root, knex, tableNamePrefix, request, required = [] } = params;
 
-    await registerBuildParams(container, extensions);
-    ApiCoreFeature.register(container, { wcpLicense: undefined });
-    await registerExtensions(container, extensions);
+    const container = root.createChildContainer();
+    SqlConnectionFeature.register(container, { knex, tableNamePrefix, schemaManaged: false });
+    await request.register(container);
 
     const steps = resolveSteps(container, required);
     for (const step of required) {

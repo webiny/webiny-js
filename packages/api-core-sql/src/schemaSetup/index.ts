@@ -1,7 +1,4 @@
-export { SqlSchemaSetup } from "./abstractions.js";
-export { runSqlSchemaSetup } from "./runSqlSchemaSetup.js";
-export type {
-    RequiredSqlSchemaSetup,
-    RunSqlSchemaSetupParams,
-    SqlStorageExtensions
-} from "./runSqlSchemaSetup.js";
+export { SqlSchemaSetup, SqlSchemaSetupRunner } from "./abstractions.js";
+export type { ISqlSchemaSetupRequest, SqlSchemaSetupRunParams } from "./abstractions.js";
+export { runSchemaSetupSteps } from "./runSchemaSetupSteps.js";
+export type { RequiredSqlSchemaSetup, RunSchemaSetupStepsParams } from "./runSchemaSetupSteps.js";

@@ -3,18 +3,19 @@ import type { Knex } from "knex";
 import { KnexClientFeature } from "./feature/KnexClient/index.js";
 
 export { createApiCoreSql } from "./createApiCoreSql.js";
-export { ApiCoreSqlFeature } from "./ApiCoreSqlFeature.js";
+export { ApiCoreSqlFeature } from "./coreStorage/index.js";
 export { SqlConnectionFeature, setSqlServiceManifestLoader } from "./connection/index.js";
 export type { SqlConnectionConfig } from "./connection/index.js";
 export { getSqlTablePrefix } from "./getSqlTablePrefix.js";
 export { TableManager } from "./TableManager.js";
 export type { TableManagerOptions } from "./TableManager.js";
 export { SqlSchemaConfig } from "./schemaConfig/index.js";
-export { SqlSchemaSetup, runSqlSchemaSetup } from "./schemaSetup/index.js";
+export { SqlSchemaSetup, SqlSchemaSetupRunner, runSchemaSetupSteps } from "./schemaSetup/index.js";
 export type {
+    ISqlSchemaSetupRequest,
     RequiredSqlSchemaSetup,
-    RunSqlSchemaSetupParams,
-    SqlStorageExtensions
+    RunSchemaSetupStepsParams,
+    SqlSchemaSetupRunParams
 } from "./schemaSetup/index.js";
 export { getSchemaMemory } from "./schemaMemory/getSchemaMemory.js";
 export { getConnectionKey } from "./schemaMemory/getConnectionKey.js";

@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-core-sql/tsconfig.build.json" },
+    { "path": "../api-event-handler-core/tsconfig.build.json" },
     { "path": "../api-event-handler-standalone/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../self-hosted-auth/tsconfig.build.json" },
@@ -28,6 +29,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
+      "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
+      "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/api-event-handler-standalone/*": ["../api-event-handler-standalone/src/*"],
       "@webiny/api-event-handler-standalone": ["../api-event-handler-standalone/src"],
       "@webiny/handler/*": ["../handler/src/*"],

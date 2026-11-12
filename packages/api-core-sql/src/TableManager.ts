@@ -7,9 +7,10 @@ type TableCreator = (table: Knex.CreateTableBuilder) => void;
 export interface TableManagerOptions {
     /**
      * The schema was set up before the API took traffic (see `SqlSchemaConfig`): `ensure()` then
-     * never checks for or creates a table. `setup()` still creates them.
+     * never checks for or creates a table. `setup()` still creates them. A function when it can
+     * change (a server turns it on once its schema setup at start ran): read on every `ensure()`.
      */
-    schemaManaged?: boolean;
+    schemaManaged?: boolean | (() => boolean);
 }
 
 /*
@@ -28,7 +29,7 @@ const pendingChecks = new Map<string, Promise<void>>();
 export class TableManager {
     private readonly knex: Knex;
     private readonly prefix: string;
-    private readonly schemaManaged: boolean;
+    private readonly schemaManaged: () => boolean;
     /* Tables declared by the storage operations using this manager, for schema setup. */
     private readonly defined = new Map<string, TableCreator>();
     private memoryOfTables?: ISchemaMemory;
@@ -36,7 +37,9 @@ export class TableManager {
     constructor(knex: Knex, prefix: string = "", options: TableManagerOptions = {}) {
         this.knex = knex;
         this.prefix = prefix ? `${prefix}_` : "";
-        this.schemaManaged = options.schemaManaged === true;
+        const schemaManaged = options.schemaManaged;
+        this.schemaManaged =
+            typeof schemaManaged === "function" ? schemaManaged : () => schemaManaged === true;
     }
 
     /** Forgets which tables this connection has (test setups drop all tables between tests). */
@@ -68,7 +71,7 @@ export class TableManager {
         tableName: string,
         creator: (table: Knex.CreateTableBuilder) => void
     ): Promise<void> {
-        if (this.schemaManaged) {
+        if (this.schemaManaged()) {
             return;
         }
 

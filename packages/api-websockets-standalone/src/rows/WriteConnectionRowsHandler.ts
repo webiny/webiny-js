@@ -2,58 +2,65 @@ import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import type { EventContext } from "@webiny/event-handler-core";
 import {
     WebsocketsConnectionRowsEventHandler,
-    type IWebsocketsConnectionRowsEvent
-} from "./WebsocketsConnectionRowsEvent.js";
+    type IWebsocketsConnectionRowsEvent,
+    type WebsocketsConnectionRowWrite,
+    type WebsocketsConnectionRowWriteFailure,
+    type WebsocketsConnectionRowsResult
+} from "./abstractions.js";
+import { unregisterConnection } from "./unregisterConnection.js";
 
 /**
  * Applies a change to the connection registry's rows, in the request container the event runs in,
  * on that request's registry (the storage registers it there).
  */
-export class WriteConnectionRowsHandlerImpl
-    implements WebsocketsConnectionRowsEventHandler.Interface
-{
+class WriteConnectionRowsHandlerImpl implements WebsocketsConnectionRowsEventHandler.Interface {
     public constructor(private readonly registry: ConnectionRegistry.Interface) {}
 
     public async execute(
         ctx: EventContext<IWebsocketsConnectionRowsEvent>
-    ): Promise<string[] | null> {
+    ): Promise<WebsocketsConnectionRowsResult> {
         const change = ctx.event;
         switch (change.action) {
-            case "register":
-                await this.registry.register(change.connection);
-                return null;
-            case "unregister":
-                await unregister(this.registry, change.connectionId);
-                return null;
-            case "updateLastSeen":
-                await this.registry.updateLastSeen(change.connectionId);
-                return null;
+            case "write": {
+                const failures: (WebsocketsConnectionRowWriteFailure | null)[] = [];
+                for (const write of change.writes) {
+                    failures.push(await this.apply(write));
+                }
+                return failures;
+            }
             case "removeStale": {
                 const stale = await this.registry.listStale(new Date(change.olderThan));
                 const connectionIds = stale.map(connection => connection.connectionId);
                 for (const connectionId of connectionIds) {
-                    await unregister(this.registry, connectionId);
+                    await unregisterConnection(this.registry, connectionId);
                 }
                 return connectionIds;
             }
         }
     }
-}
 
-/** Removes a connection's row. One already gone (removed by another process) is not an error. */
-export const unregister = async (
-    registry: ConnectionRegistry.Interface,
-    connectionId: string
-): Promise<void> => {
-    try {
-        await registry.unregister({ connectionId });
-    } catch (err) {
-        if ((err as { code?: string }).code === "CONNECTION_NOT_FOUND") {
-            return;
+    private async apply(
+        write: WebsocketsConnectionRowWrite
+    ): Promise<WebsocketsConnectionRowWriteFailure | null> {
+        try {
+            switch (write.action) {
+                case "register":
+                    await this.registry.register(write.connection);
+                    break;
+                case "unregister":
+                    await unregisterConnection(this.registry, write.connectionId);
+                    break;
+                case "updateLastSeen":
+                    await this.registry.updateLastSeen(write.connectionId);
+                    break;
+            }
+            return null;
+        } catch (err) {
+            const error = err as { message?: string; code?: string };
+            return { message: error.message ?? String(err), code: error.code };
         }
-        throw err;
     }
-};
+}
 
 export const WriteConnectionRowsHandler = WebsocketsConnectionRowsEventHandler.createImplementation(
     {

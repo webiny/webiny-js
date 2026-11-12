@@ -6,17 +6,23 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { createWebinyApiHandler } from "@webiny/api-event-handler-aws";
 import { createPgStorage } from "@webiny/api-storage-pg";
-import { createAwsPgApiHandler, createAwsPgMigrateHandler } from "~/index.js";
+import {
+    createAwsPgApiHandler,
+    SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
+    type ISqlSchemaSetupEventPayload,
+    type ISqlSchemaSetupResult
+} from "~/index.js";
 import { postgresModules, startPglite } from "./startPglite.js";
 import { readCatalog } from "./readCatalog.js";
 
 /**
- * The deploy-time migration, as a deployment runs it: the api deploy invokes it with `core`, `api`
- * and `scheduler`, the API then runs schema-managed (it never checks for or creates tables), and the
- * admin deploy invokes it again with `admin` alone.
+ * The deploy-time schema setup, as a deployment runs it: it invokes the API's own function with the
+ * schema-setup event. The api deploy passes `core`, `api` and `scheduler`, the API then runs
+ * schema-managed (it never checks for or creates tables), and the admin deploy invokes it again
+ * with `admin` alone.
  *
  * The tests run in order on one database, each step on what the steps before it left. PGlite serves
- * one connection at a time, so the API's connection is closed before the migration runs again.
+ * one connection at a time, so the API's connection is closed before the setup runs again.
  */
 
 const MANIFESTS = {
@@ -77,7 +83,7 @@ type ApiHandler = ReturnType<typeof createAwsPgApiHandler>;
 
 /**
  * Installs the system, creates a content model and an entry, publishes it and lists it on
- * /cms/read. Each request gets a handler of its own from `createHandler`, as a new execution
+ * /cms/read and /cms/preview. Each request gets a handler of its own from `createHandler`, as a new execution
  * environment would build it.
  */
 const installAndServeCms = async (createHandler: () => ApiHandler) => {
@@ -151,11 +157,17 @@ const installAndServeCms = async (createHandler: () => ApiHandler) => {
     expect(
         read.listNotes.data.map((note: { values: { title: string } }) => note.values.title)
     ).toEqual(["Schema managed"]);
+
+    const preview = await send("/cms/preview", LIST_NOTES);
+    expect(preview.listNotes.error).toBeNull();
+    expect(
+        preview.listNotes.data.map((note: { values: { title: string } }) => note.values.title)
+    ).toEqual(["Schema managed"]);
 };
 
-describe("api-event-handler-aws-pg — migrate handler", () => {
+describe("api-event-handler-aws-pg — schema-setup event", () => {
     let pglite: Awaited<ReturnType<typeof startPglite>>;
-    /** A connection the test reads the database with; closed before every migration. */
+    /** A connection the test reads the database with; closed before every setup. */
     let inspector: Knex | undefined;
 
     const inspect = () => {
@@ -169,12 +181,16 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     };
 
     /**
-     * The migrate handler as a deployment builds it: its own connection from the `WEBINY_PG_*`
-     * settings, to the writer (`WEBINY_PG_WRITER_HOST`), not to `WEBINY_PG_HOST`.
+     * The API's function as a deployment builds it, invoked with the schema-setup event. Its
+     * connections come from the `WEBINY_PG_*` settings: the setup's goes to the writer
+     * (`WEBINY_PG_WRITER_HOST`), not to the API's `WEBINY_PG_HOST`.
      */
-    const migrate = async (event?: Parameters<ReturnType<typeof createAwsPgMigrateHandler>>[0]) => {
+    const runSetup = async (
+        payload: ISqlSchemaSetupEventPayload = {}
+    ): Promise<ISqlSchemaSetupResult> => {
         await closeInspector();
-        return createAwsPgMigrateHandler({ extensions: () => postgresModules })(event);
+        const handler = createAwsPgApiHandler({ extensions: () => postgresModules });
+        return handler({ [SQL_SCHEMA_SETUP_EVENT_IDENTIFIER]: payload });
     };
 
     beforeAll(async () => {
@@ -183,7 +199,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
             vi.stubEnv(name, value);
         }
         vi.stubEnv("WEBINY_PG_WRITER_HOST", pglite.env.WEBINY_PG_HOST);
-        // The API's host: the migration must not use it (nothing answers there).
+        // The API's host: the setup must not use it (nothing answers there).
         vi.stubEnv("WEBINY_PG_HOST", "unreachable.invalid");
         vi.stubEnv("WEBINY_PG_PASSWORD", "postgres");
         vi.stubEnv("WEBINY_PG_RETRY_MS", "0");
@@ -202,7 +218,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     let catalogAfterFirstRun: string[];
 
     it("creates the schema, sets idle_session_timeout and stores the deployed manifests", async () => {
-        const result = await migrate({ serviceManifests: deployedManifests });
+        const result = await runSetup({ serviceManifests: deployedManifests });
 
         expect(result).toEqual({
             ok: true,
@@ -235,7 +251,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     it("succeeds again and creates nothing new", async () => {
         const manifestsBefore = await readManifestRows(inspect());
 
-        const result = await migrate({ serviceManifests: deployedManifests });
+        const result = await runSetup({ serviceManifests: deployedManifests });
 
         expect(result.ok).toBe(true);
         expect(await readCatalog(inspect())).toEqual(catalogAfterFirstRun);
@@ -255,7 +271,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
                 });
             });
 
-            // The API changed no schema: everything it used was there after the migration.
+            // The API changed no schema: everything it used was there after the setup.
             expect(statements.filter(sql => DDL.test(sql))).toEqual([]);
             expect(await readCatalog(knex)).toEqual(catalogAfterFirstRun);
         } finally {
@@ -264,7 +280,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     });
 
     it("sees the API create tables when the schema isn't managed (the control)", async () => {
-        // A database of its own, with no migration: the same storage, schema-managed off, creates
+        // A database of its own, with no setup: the same storage, schema-managed off, creates
         // each table on first use, and the test above would see it.
         const empty = await startPglite();
         const knex = empty.createKnex();
@@ -300,7 +316,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     it("stores `admin` alone and leaves `core`, `api` and `scheduler` as they were", async () => {
         const deployedRows = await readManifestRows(inspect());
 
-        const result = await migrate({
+        const result = await runSetup({
             serviceManifests: [{ name: "admin", manifest: ADMIN_MANIFEST }]
         });
         expect(result.done).toContain("service manifests: admin");
@@ -311,7 +327,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
 
         // A later admin deploy replaces `admin`, and still nothing else.
         const changedAdmin = { url: "https://admin.example.org" };
-        await migrate({ serviceManifests: [{ name: "admin", manifest: changedAdmin }] });
+        await runSetup({ serviceManifests: [{ name: "admin", manifest: changedAdmin }] });
 
         expect((await readManifestRows(inspect())).filter(row => row.name !== "admin")).toEqual(
             deployedRows
@@ -322,7 +338,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     it("leaves every manifest as it was when it's given none", async () => {
         const rowsBefore = await readManifestRows(inspect());
 
-        const result = await migrate();
+        const result = await runSetup();
 
         expect(result.done.some(line => line.startsWith("service manifests"))).toBe(false);
         expect(await readManifestRows(inspect())).toEqual(rowsBefore);
@@ -331,7 +347,7 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
     it("refuses a bad idle_session_timeout before it changes anything", async () => {
         vi.stubEnv("WEBINY_PG_IDLE_SESSION_TIMEOUT_MS", "ten minutes");
         try {
-            await expect(migrate()).rejects.toThrow(
+            await expect(runSetup()).rejects.toThrow(
                 'WEBINY_PG_IDLE_SESSION_TIMEOUT_MS must be a whole number of milliseconds (0 turns it off), not "ten minutes".'
             );
         } finally {

@@ -1,7 +1,7 @@
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 import { WebsocketsLiveSockets } from "./abstractions.js";
 
-export class InMemoryLiveSocketsImpl implements WebsocketsLiveSockets.Interface {
+class InMemoryLiveSocketsImpl implements WebsocketsLiveSockets.Interface {
     private readonly sockets = new Map<string, unknown>();
     private readonly metadata = new Map<string, WebsocketsConnectionManager.ConnectionMetadata>();
 

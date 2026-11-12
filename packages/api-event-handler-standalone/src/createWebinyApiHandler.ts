@@ -22,7 +22,7 @@ import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
-import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
 import {
     WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
@@ -96,6 +96,55 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     // One per process, to stdout. The root singletons below log through it, and so does every request.
     const logger = createLogger();
 
+    /*
+     * What every request's container gets (`child`). Also in the root as `ApiRequestRegistration`,
+     * for work outside a request that needs a container a request would have: the SQL schema setup
+     * builds one on its own connection.
+     */
+    const registerRequest = async (container: Container): Promise<void> => {
+        // The transport-agnostic per-request stack. The realtime hook installs the server
+        // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
+        // shared connection manager + adapter from the root. Scheduler is NOT a per-request
+        // transport here — it's a root singleton wired in `root` + `onServer` (see below).
+        await registerApiRequestStack(container, {
+            extensions: config.extensions,
+            // Why hooks (and not just registering the transports ourselves): `.register()` calls
+            // are otherwise order-independent — you can register Features in any order, because
+            // they only REGISTER, they don't RESOLVE during registration (resolution happens
+            // later, in Initializers / SchemaFactories). The one thing that makes order matter is
+            // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
+            // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
+            // our transport MUST be registered AFTER that Feature. These hooks are the seams
+            // `registerApiRequestStack` provides for exactly that — each runs right after its Null
+            // default, so the override is guaranteed without the caller knowing the internal order.
+            transports: {
+                /*
+                 * Public URLs and crypto secrets: no deploy step to discover them from, so they
+                 * come from env (StandaloneConfig, registered on the root).
+                 */
+                hostingConfig: requestContainer => {
+                    ConfigPublicUrlsFeature.register(requestContainer);
+                    StandaloneCryptoConfigFeature.register(requestContainer);
+                },
+                // Server WebSockets transport; resolves the shared connection manager + adapter
+                // from the root (registered as singletons in `root`).
+                realtime: requestContainer => {
+                    WebsocketsStandaloneFeature.register(requestContainer);
+                },
+                // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
+                // delivery Lambda), the single-process server stores files on disk and serves them
+                // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
+                // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
+                fileManager: requestContainer => {
+                    FileManagerStandaloneFeature.register(
+                        requestContainer,
+                        standaloneConfig.fileStorage
+                    );
+                }
+            }
+        });
+    };
+
     return createServerHandler({
         root: async rootContainer => {
             /*
@@ -129,6 +178,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // Preview-as. Mirrors the AWS handler.
             rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
+
+            rootContainer.registerInstance(ApiRequestRegistration, { register: registerRequest });
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer, { buildParams });
@@ -187,47 +238,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         child: async container => {
-            // The transport-agnostic per-request stack. The realtime hook installs the server
-            // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
-            // shared connection manager + adapter from the root. Scheduler is NOT a per-request
-            // transport here — it's a root singleton wired in `root` + `onServer` (see above).
-            await registerApiRequestStack(container, {
-                extensions: config.extensions,
-                // Why hooks (and not just registering the transports ourselves): `.register()` calls
-                // are otherwise order-independent — you can register Features in any order, because
-                // they only REGISTER, they don't RESOLVE during registration (resolution happens
-                // later, in Initializers / SchemaFactories). The one thing that makes order matter is
-                // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
-                // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
-                // our transport MUST be registered AFTER that Feature. These hooks are the seams
-                // `registerApiRequestStack` provides for exactly that — each runs right after its Null
-                // default, so the override is guaranteed without the caller knowing the internal order.
-                transports: {
-                    /*
-                     * Public URLs and crypto secrets: no deploy step to discover them from, so they
-                     * come from env (StandaloneConfig, registered on the root).
-                     */
-                    hostingConfig: requestContainer => {
-                        ConfigPublicUrlsFeature.register(requestContainer);
-                        StandaloneCryptoConfigFeature.register(requestContainer);
-                    },
-                    // Server WebSockets transport; resolves the shared connection manager + adapter
-                    // from the root (registered as singletons above).
-                    realtime: requestContainer => {
-                        WebsocketsStandaloneFeature.register(requestContainer);
-                    },
-                    // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
-                    // delivery Lambda), the single-process server stores files on disk and serves them
-                    // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
-                    // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
-                    fileManager: requestContainer => {
-                        FileManagerStandaloneFeature.register(
-                            requestContainer,
-                            standaloneConfig.fileStorage
-                        );
-                    }
-                }
-            });
+            await registerRequest(container);
         },
 
         onServer: async (server, rootContainer) => {

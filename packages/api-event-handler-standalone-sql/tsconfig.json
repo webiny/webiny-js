@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-core" },
     { "path": "../api-core-sql" },
+    { "path": "../api-event-handler-core" },
     { "path": "../api-event-handler-standalone" },
     { "path": "../handler" },
     { "path": "../self-hosted-auth" },
@@ -28,6 +29,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
+      "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
+      "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/api-event-handler-standalone/*": ["../api-event-handler-standalone/src/*"],
       "@webiny/api-event-handler-standalone": ["../api-event-handler-standalone/src"],
       "@webiny/handler/*": ["../handler/src/*"],

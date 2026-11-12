@@ -17,12 +17,12 @@ export { WebsocketsStandaloneFeature } from "~/WebsocketsStandaloneFeature.js";
 export { WebsocketsServerRootFeature } from "~/WebsocketsServerRootFeature.js";
 export { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 export {
-    WebsocketsConnectionRowsEventType,
     WebsocketsConnectionRowsEventHandler,
     WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER
-} from "~/rows/WebsocketsConnectionRowsEvent.js";
+} from "~/rows/abstractions.js";
 export type {
     IWebsocketsConnectionRowsEvent,
     WebsocketsConnectionRowsChange
-} from "~/rows/WebsocketsConnectionRowsEvent.js";
+} from "~/rows/abstractions.js";
+export { WebsocketsConnectionRowsEventType } from "~/rows/WebsocketsConnectionRowsEventType.js";
 export { WriteConnectionRowsHandler } from "~/rows/WriteConnectionRowsHandler.js";

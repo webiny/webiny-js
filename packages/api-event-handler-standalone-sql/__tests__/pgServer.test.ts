@@ -196,10 +196,24 @@ describe("api-event-handler-standalone-sql — full server on Postgres", () => {
         const server = await createPgServer();
 
         try {
-            // Before the first request, every table is there: core, the CMS and the folder catalog.
-            expect(await tablesLike(server.knex, "webiny_service_manifests")).toHaveLength(1);
-            expect(await tablesLike(server.knex, "webiny_cms_entries")).toHaveLength(1);
-            expect(await tablesLike(server.knex, "webiny_aco_folders")).toHaveLength(1);
+            // Before the first request, every table is there: core, audit logs, websockets, the
+            // login tables (the transport's storage), the CMS and the folder catalog. The storage
+            // was given no extensions: the setup's container was built as a request's.
+            const tables = [
+                "webiny_service_manifests",
+                "webiny_audit_logs",
+                "WebsocketsConnections",
+                "webiny_self_hosted_credentials",
+                "webiny_self_hosted_password_reset_codes",
+                "webiny_cms_entries",
+                "webiny_aco_folders"
+            ];
+            for (const table of tables) {
+                expect([table, await tablesLike(server.knex, table)]).toEqual([
+                    table,
+                    [expect.stringMatching(new RegExp(`${table}$`))]
+                ]);
+            }
 
             const token = await installAndLogIn(server);
             const send = async (path: string, query: string, variables = {}) => {

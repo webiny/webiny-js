@@ -22,7 +22,7 @@ export interface IWebsocketsLiveSockets<TSocket> {
  * holds them) are in the connection registry, a storage, which requests write.
  */
 export const WebsocketsLiveSockets =
-    createAbstraction<IWebsocketsLiveSockets<unknown>>("WebsocketsLiveSockets");
+    createAbstraction<IWebsocketsLiveSockets<unknown>>("Websockets/LiveSockets");
 
 export namespace WebsocketsLiveSockets {
     export type Interface<TSocket = unknown> = IWebsocketsLiveSockets<TSocket>;

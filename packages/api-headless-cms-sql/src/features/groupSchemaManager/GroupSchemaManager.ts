@@ -1,19 +1,27 @@
-import { getSchemaMemory, KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
+import {
+    getConnectionKey,
+    getSchemaMemory,
+    KnexClient,
+    SqlSchemaConfig
+} from "@webiny/api-core-sql";
 import { GroupSchemaManager as GroupSchemaManagerAbstraction } from "./abstractions.js";
 
 class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface {
     private readonly knex;
     /*
-     * Tables checked by this process. Process-wide rather than per instance: the Postgres CMS
-     * registers this manager per request.
+     * Tables checked by this process, per connection. Process-wide rather than per instance: the
+     * Postgres CMS registers this manager per request.
      */
-    private readonly verified = getSchemaMemory("cms.sql.GroupSchemaManager").known;
+    private readonly verified;
 
     constructor(
         knex: KnexClient.Interface,
         private readonly schemaConfig?: SqlSchemaConfig.Interface
     ) {
         this.knex = knex;
+        this.verified = getSchemaMemory(
+            `cms.sql.GroupSchemaManager:${getConnectionKey(knex.client)}`
+        ).known;
     }
 
     public reset(): void {
@@ -51,7 +59,10 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
             });
         }
 
-        this.verified.add(tableName);
+        // A transaction can still roll back, and the table with it: only a committed table is known.
+        if (!this.knex.client.isTransaction) {
+            this.verified.add(tableName);
+        }
     }
 }
 

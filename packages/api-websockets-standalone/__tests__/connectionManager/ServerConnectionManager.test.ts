@@ -3,8 +3,8 @@ import {
     LAST_SEEN_WRITE_INTERVAL,
     ServerConnectionManagerImpl
 } from "~/connectionManager/ServerConnectionManager.js";
-import { InMemoryLiveSocketsImpl } from "~/liveSockets/InMemoryLiveSockets.js";
-import { WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER } from "~/rows/WebsocketsConnectionRowsEvent.js";
+import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
+import { WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER } from "~/rows/abstractions.js";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
 import type { WebsocketsConnectionManager } from "~/abstractions.js";
@@ -55,7 +55,7 @@ describe("ServerConnectionManager", () => {
         it("changes the rows only by dispatching events", async () => {
             const dispatcher = { dispatch: vi.fn().mockResolvedValue(null) };
             const rootManager = new ServerConnectionManagerImpl(
-                new InMemoryLiveSocketsImpl(),
+                new InMemoryLiveSockets(),
                 dispatcher,
                 owner
             );
@@ -71,11 +71,76 @@ describe("ServerConnectionManager", () => {
 
             const actions = dispatcher.dispatch.mock.calls.map(([event]) => {
                 expect(event[WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER]).toBe(true);
-                return event.action;
+                return event.action === "write"
+                    ? event.writes.map((write: { action: string }) => write.action)
+                    : event.action;
             });
-            expect(actions).toEqual(["register", "updateLastSeen", "unregister", "removeStale"]);
+            expect(actions).toEqual([
+                ["register"],
+                ["updateLastSeen"],
+                ["unregister"],
+                "removeStale"
+            ]);
             expect(rootManager.getSocket("conn-events")).toBeUndefined();
             clock.mockRestore();
+        });
+
+        /*
+         * Every event builds a request container: a burst of connects and disconnects (clients
+         * reconnecting after a restart) is batched, one event in flight at a time.
+         */
+        it("batches the row writes queued while an event is in flight", async () => {
+            const sent: string[][] = [];
+            let release: () => void = () => {};
+            const dispatcher = {
+                dispatch: vi.fn(async (event: { writes: { action: string }[] }) => {
+                    sent.push(event.writes.map(write => write.action));
+                    if (sent.length === 1) {
+                        await new Promise<void>(resolve => {
+                            release = resolve;
+                        });
+                    }
+                    return event.writes.map(() => null);
+                })
+            };
+            const rootManager = new ServerConnectionManagerImpl(
+                new InMemoryLiveSockets(),
+                dispatcher,
+                owner
+            );
+
+            const first = rootManager.add(createAddParams("burst-0"));
+            await vi.waitFor(() => expect(sent).toHaveLength(1));
+            const rest = Promise.all([
+                rootManager.add(createAddParams("burst-1")),
+                rootManager.add(createAddParams("burst-2")),
+                rootManager.remove("burst-0")
+            ]);
+            release();
+            await Promise.all([first, rest]);
+
+            expect(sent).toEqual([["register"], ["register", "register", "unregister"]]);
+        });
+
+        it("fails only the writes that failed in a batch", async () => {
+            vi.mocked(registry.register).mockImplementation(async params => {
+                if (params.connectionId === "batch-bad") {
+                    throw Object.assign(new Error("Duplicate"), { code: "DUPLICATE" });
+                }
+                return {} as never;
+            });
+
+            const [good, bad] = await Promise.allSettled([
+                manager.add(createAddParams("batch-good")),
+                manager.add(createAddParams("batch-bad"))
+            ]);
+
+            expect(registry.register).toHaveBeenCalledTimes(2);
+            expect(good.status).toBe("fulfilled");
+            expect(bad).toMatchObject({
+                status: "rejected",
+                reason: { message: "Duplicate", code: "DUPLICATE" }
+            });
         });
     });
 
@@ -261,9 +326,15 @@ describe("ServerConnectionManager", () => {
         });
 
         it("removes all the stale rows in one event, and forgets their sockets", async () => {
-            const dispatcher = { dispatch: vi.fn().mockResolvedValue(["stale-a", "stale-b"]) };
+            const dispatcher = {
+                dispatch: vi.fn(async (event: { action: string; writes?: unknown[] }) => {
+                    return event.action === "removeStale"
+                        ? ["stale-a", "stale-b"]
+                        : event.writes?.map(() => null);
+                })
+            };
             const rootManager = new ServerConnectionManagerImpl(
-                new InMemoryLiveSocketsImpl(),
+                new InMemoryLiveSockets(),
                 dispatcher,
                 owner
             );

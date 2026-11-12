@@ -4,8 +4,10 @@ import { WebsocketsLiveSockets } from "~/liveSockets/abstractions.js";
 import {
     WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER,
     type IWebsocketsConnectionRowsEvent,
+    type WebsocketsConnectionRowWrite,
+    type WebsocketsConnectionRowWriteFailure,
     type WebsocketsConnectionRowsChange
-} from "~/rows/WebsocketsConnectionRowsEvent.js";
+} from "~/rows/abstractions.js";
 import { WebsocketsConnectionManager } from "./abstractions.js";
 
 /**
@@ -15,10 +17,23 @@ import { WebsocketsConnectionManager } from "./abstractions.js";
  */
 export const LAST_SEEN_WRITE_INTERVAL = 60_000;
 
+/** The most row writes one event (one request container) applies. */
+export const MAX_ROW_WRITES_PER_EVENT = 100;
+
+interface QueuedRowWrite {
+    write: WebsocketsConnectionRowWrite;
+    resolve: () => void;
+    reject: (error: unknown) => void;
+}
+
 export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.Interface<unknown> {
     /** When each live connection's `lastSeen` was last written (epoch ms). */
     private readonly lastSeenWrittenAt = new Map<string, number>();
     private lastSeenWriteInterval = LAST_SEEN_WRITE_INTERVAL;
+    /** Row writes waiting for the next event. */
+    private readonly queue: QueuedRowWrite[] = [];
+    /** Whether a batch of row writes is being sent. */
+    private flushing = false;
 
     public constructor(
         private readonly sockets: WebsocketsLiveSockets.Interface,
@@ -47,7 +62,7 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
         // identity, so without this registry row a targeted send finds nobody. The registry stores
         // `connectedOn` as an ISO string (it compares connections against a recency cutoff), so we
         // convert the epoch-ms `connectedAt`.
-        await this.change({
+        await this.write({
             action: "register",
             connection: {
                 connectionId: params.connectionId,
@@ -64,7 +79,7 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
 
     public async remove(connectionId: string): Promise<void> {
         this.forget(connectionId);
-        await this.change({ action: "unregister", connectionId });
+        await this.write({ action: "unregister", connectionId });
     }
 
     public getSocket(connectionId: string): unknown | undefined {
@@ -88,7 +103,7 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             this.lastSeenWrittenAt.set(connectionId, now);
         }
         try {
-            await this.change({ action: "updateLastSeen", connectionId });
+            await this.write({ action: "updateLastSeen", connectionId });
         } catch (error) {
             // Not written: let the next message try again.
             if (this.lastSeenWrittenAt.get(connectionId) === now) {
@@ -103,7 +118,7 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
         this.lastSeenWriteInterval = Math.min(LAST_SEEN_WRITE_INTERVAL, Math.floor(maxAge / 4));
         const olderThan = new Date(Date.now() - maxAge).toISOString();
         // One event removes all the stale rows, so a mass disconnect is one request, not one each.
-        const stale = (await this.change({ action: "removeStale", olderThan })) ?? [];
+        const stale = (await this.change<string[]>({ action: "removeStale", olderThan })) ?? [];
         for (const connectionId of stale) {
             this.forget(connectionId);
         }
@@ -127,13 +142,58 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
         this.lastSeenWrittenAt.set(connectionId, writtenAt);
     }
 
+    /**
+     * Queues a row write and settles when it is applied. Every event builds a request container,
+     * so writes are batched: one batch is sent at a time, and the writes queued meanwhile (a burst
+     * of reconnects after a restart, a mass disconnect) go together in the next one. Writes are
+     * applied in the order they were queued.
+     */
+    private write(write: WebsocketsConnectionRowWrite): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.queue.push({ write, resolve, reject });
+            if (!this.flushing) {
+                this.flushing = true;
+                void this.flush();
+            }
+        });
+    }
+
+    private async flush(): Promise<void> {
+        try {
+            // Let the writes queued in the same turn join the first batch.
+            await Promise.resolve();
+            while (this.queue.length > 0) {
+                const batch = this.queue.splice(0, MAX_ROW_WRITES_PER_EVENT);
+                try {
+                    const failures = await this.change<
+                        (WebsocketsConnectionRowWriteFailure | null)[]
+                    >({ action: "write", writes: batch.map(queued => queued.write) });
+                    batch.forEach((queued, index) => {
+                        const failure = failures?.[index];
+                        if (failure) {
+                            queued.reject(Object.assign(new Error(failure.message), failure));
+                            return;
+                        }
+                        queued.resolve();
+                    });
+                } catch (error) {
+                    for (const queued of batch) {
+                        queued.reject(error);
+                    }
+                }
+            }
+        } finally {
+            this.flushing = false;
+        }
+    }
+
     /* The rows are a storage: the change runs in a fresh request container, on its registry. */
-    private change(change: WebsocketsConnectionRowsChange): Promise<string[] | null> {
+    private change<TResult>(change: WebsocketsConnectionRowsChange): Promise<TResult | null> {
         const event: IWebsocketsConnectionRowsEvent = {
             [WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER]: true,
             ...change
         };
-        return this.dispatcher.dispatch<string[] | null>(event);
+        return this.dispatcher.dispatch<TResult | null>(event);
     }
 }
 

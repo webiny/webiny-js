@@ -1,14 +1,14 @@
 import type { Knex } from "knex";
-import { Container } from "@webiny/di";
+import type { Container } from "@webiny/di";
 import { RequestStorage } from "@webiny/api-core";
 import {
     ApiCoreSqlFeature,
-    runSqlSchemaSetup,
+    runSchemaSetupSteps,
     setSqlServiceManifestLoader,
     SqlConnectionFeature,
     SqlSchemaConfig,
-    type SqlStorage,
-    type SqlStorageExtensions
+    SqlSchemaSetupRunner,
+    type SqlStorage
 } from "@webiny/api-core-sql";
 import { HeadlessCmsSqlFeature } from "@webiny/api-headless-cms-sql";
 import { AcoSqlFeature } from "@webiny/api-aco-sql";
@@ -39,10 +39,44 @@ const SqliteRequestStorage: RequestStorage.Interface = {
     }
 };
 
+/** Whether the storage's schema is set up. Shared by the storage's root settings and its runner. */
+interface SchemaState {
+    managed: boolean;
+}
+
+/*
+ * SQLite has one writer, so setup takes no lock: a plain transaction, so a failure leaves nothing
+ * half-made. It creates the tables the lazy checks would: those of core, audit logs, websockets, the
+ * CMS (models, groups, entries) and ACO, plus the transport's login tables and any module's in the
+ * project's extensions.
+ */
+class SqliteSchemaSetupRunner implements SqlSchemaSetupRunner.Interface {
+    public constructor(
+        private readonly root: Container,
+        private readonly knex: Knex,
+        private readonly tableNamePrefix: string | undefined,
+        private readonly state: SchemaState
+    ) {}
+
+    public async run(params: SqlSchemaSetupRunner.RunParams): Promise<string[]> {
+        const knex = params.knex ?? this.knex;
+        const done = await knex.transaction(async trx => {
+            return runSchemaSetupSteps({
+                root: this.root,
+                knex: trx,
+                tableNamePrefix: this.tableNamePrefix,
+                request: params.request
+            });
+        });
+        this.state.managed = true;
+        return done;
+    }
+}
+
 class SqliteStorage implements SqlStorage {
     public readonly knex: Knex;
     public readonly tableNamePrefix?: string;
-    private schemaManaged = false;
+    private readonly state: SchemaState = { managed: false };
 
     public constructor(params: CreateSqliteStorageParams) {
         this.knex = params.knex;
@@ -50,45 +84,34 @@ class SqliteStorage implements SqlStorage {
     }
 
     /*
-     * The root gets the connection and its settings, and service discovery reads the manifests on
-     * it. Every storage is registered per request, by `SqliteRequestStorage`.
+     * The root gets the connection and its settings, the schema setup runner, and service discovery
+     * reads the manifests on the connection. Every storage is registered per request, by
+     * `SqliteRequestStorage`.
      */
     public register(container: Container): void {
-        const connection = {
-            knex: this.knex,
-            tableNamePrefix: this.tableNamePrefix,
-            schemaManaged: this.schemaManaged
-        };
-        SqlConnectionFeature.register(container, connection);
-        setSqlServiceManifestLoader(connection);
-        container.registerInstance(RequestStorage, SqliteRequestStorage);
-    }
-
-    /*
-     * SQLite has one writer, so setup takes no lock, and it runs on the connection itself rather than
-     * in one transaction. It creates the tables the lazy checks would: those of core, audit logs,
-     * websockets, the CMS (models, groups, entries) and ACO, plus any module's in the project's
-     * extensions.
-     */
-    public async setupSchema(extensions?: SqlStorageExtensions): Promise<string[]> {
-        const container = new Container();
         SqlConnectionFeature.register(container, {
             knex: this.knex,
             tableNamePrefix: this.tableNamePrefix,
-            schemaManaged: false
+            schemaManaged: () => this.state.managed
         });
-        SqliteRequestStorage.register(container);
-        const done = await runSqlSchemaSetup({ container, extensions });
-        this.schemaManaged = true;
-        return done;
+        setSqlServiceManifestLoader({
+            knex: this.knex,
+            tableNamePrefix: this.tableNamePrefix,
+            schemaManaged: () => this.state.managed
+        });
+        container.registerInstance(RequestStorage, SqliteRequestStorage);
+        container.registerInstance(
+            SqlSchemaSetupRunner,
+            new SqliteSchemaSetupRunner(container, this.knex, this.tableNamePrefix, this.state)
+        );
     }
 }
 
 /**
  * The SQLite storage of the Webiny API, for the standalone server with `<Infra.Sqlite>`. It reads no
  * build params and takes no settings beyond its table prefix. In the root it registers only the
- * connection and its settings; its storages register in each request's container
- * (`RequestStorage`).
+ * connection and its settings, and its `SqlSchemaSetupRunner`; its storages register in each
+ * request's container (`RequestStorage`).
  */
 export function createSqliteStorage(params: CreateSqliteStorageParams): SqlStorage {
     return new SqliteStorage(params);

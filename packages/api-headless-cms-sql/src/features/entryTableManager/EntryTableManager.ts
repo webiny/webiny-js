@@ -1,4 +1,9 @@
-import { getConnectionKey, getSchemaMemory, KnexClient } from "@webiny/api-core-sql";
+import {
+    getConnectionKey,
+    getSchemaMemory,
+    KnexClient,
+    SqlSchemaConfig
+} from "@webiny/api-core-sql";
 import { EntryTableManager as EntryTableManagerAbstraction } from "./abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 
@@ -10,8 +15,13 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     private readonly knex;
     private readonly tableName;
     private readonly memory;
+    private inTransaction?: Promise<void>;
 
-    constructor(knex: KnexClient.Interface, tableNameResolver: TableNameResolver.Interface) {
+    constructor(
+        knex: KnexClient.Interface,
+        tableNameResolver: TableNameResolver.Interface,
+        private readonly schemaConfig?: SqlSchemaConfig.Interface
+    ) {
         this.knex = knex;
         this.tableName = tableNameResolver.resolve("entries");
         this.memory = getSchemaMemory(
@@ -20,13 +30,38 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     }
 
     public reset(): void {
+        this.inTransaction = undefined;
         this.memory.reset();
     }
 
     public ensureTable(): Promise<void> {
+        // Schema setup created the table before the API took traffic: no check on the request path.
+        if (this.schemaConfig?.isManaged()) {
+            return Promise.resolve();
+        }
+        // A transaction can still roll back, and the table with it: only a committed table is known
+        // to the process. Inside one, the check is shared by this instance's callers only.
+        if (this.knex.client.isTransaction) {
+            if (this.memory.isReady()) {
+                return Promise.resolve();
+            }
+            this.inTransaction ??= this.doEnsureTable().catch(error => {
+                this.inTransaction = undefined;
+                throw error;
+            });
+            return this.inTransaction;
+        }
         // One hasTable+createTable per process: concurrent callers (e.g. Promise.all entry creates)
         // share it instead of racing into "table already exists". A failed one is retried next call.
         return this.memory.once(() => this.doEnsureTable());
+    }
+
+    public async setup(): Promise<void> {
+        await this.doEnsureTable();
+        // A transaction can still roll back, and the table with it: only a committed table is known.
+        if (!this.knex.client.isTransaction) {
+            this.memory.markReady();
+        }
     }
 
     private async doEnsureTable(): Promise<void> {
@@ -74,5 +109,5 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
 
 export const EntryTableManager = EntryTableManagerAbstraction.createImplementation({
     implementation: EntryTableManagerImpl,
-    dependencies: [KnexClient, TableNameResolver]
+    dependencies: [KnexClient, TableNameResolver, [SqlSchemaConfig, { optional: true }]]
 });

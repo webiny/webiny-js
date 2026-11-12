@@ -2,7 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { ServerConnectionManager } from "~/connectionManager/ServerConnectionManager.js";
 import { NodeWsAdapter } from "~/adapter/NodeWsAdapter.js";
-import { WebsocketsConnectionRowsEventType } from "~/rows/WebsocketsConnectionRowsEvent.js";
+import { WebsocketsConnectionRowsEventType } from "~/rows/WebsocketsConnectionRowsEventType.js";
 import { WriteConnectionRowsHandler } from "~/rows/WriteConnectionRowsHandler.js";
 
 /**

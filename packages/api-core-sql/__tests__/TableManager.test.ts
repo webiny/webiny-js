@@ -7,8 +7,9 @@ import type { Knex } from "knex";
 import { Container } from "@webiny/feature/api";
 import { ApiCoreStorageOperationsFactory } from "@webiny/api-core";
 import { TableManager } from "~/TableManager.js";
-import { ApiCoreSqlFeature } from "~/ApiCoreSqlFeature.js";
-import { SqlConnectionFeature } from "~/connection/index.js";
+import { ApiCoreSqlFeature } from "~/coreStorage/index.js";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
+import { SqlConnectionFeature, setSqlServiceManifestLoader } from "~/connection/index.js";
 import { SqlSchemaSetup } from "~/schemaSetup/index.js";
 
 const createKnex = (): Knex => {
@@ -102,6 +103,51 @@ describe("TableManager", () => {
 
         expect(checks()).toBe(0);
         expect(await knex.schema.hasTable("managed_items")).toBe(false);
+    });
+
+    it("reads a schema-managed function on every ensure, so a later switch takes effect", async () => {
+        knex = createKnex();
+        const checks = countTableChecks(knex);
+        let managed = false;
+        const tableManager = new TableManager(knex, "live", { schemaManaged: () => managed });
+
+        managed = true;
+        await tableManager.ensure("items", createItemsTable);
+
+        expect(checks()).toBe(0);
+        expect(await knex.schema.hasTable("live_items")).toBe(false);
+
+        managed = false;
+        await tableManager.ensure("items", createItemsTable);
+
+        expect(await knex.schema.hasTable("live_items")).toBe(true);
+    });
+});
+
+describe("setSqlServiceManifestLoader", () => {
+    let knex: Knex | undefined;
+
+    afterEach(async () => {
+        ServiceDiscovery.clear();
+        await knex?.destroy();
+        knex = undefined;
+    });
+
+    /*
+     * A server registers its storage (and sets the loader) before its schema setup at start, then
+     * turns schema-managed on: the loader must follow, not keep the setting it was given.
+     */
+    it("follows a schema-managed setting that is turned on after the loader was set", async () => {
+        knex = createKnex();
+        const checks = countTableChecks(knex);
+        let managed = false;
+        setSqlServiceManifestLoader({ knex, schemaManaged: () => managed });
+
+        managed = true;
+        await expect(ServiceDiscovery.load()).rejects.toThrow(/no such table/);
+
+        expect(checks()).toBe(0);
+        expect(await knex.schema.hasTable("webiny_service_manifests")).toBe(false);
     });
 });
 

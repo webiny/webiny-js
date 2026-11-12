@@ -24,7 +24,6 @@
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-headless-cms-sql": "0.0.0",
     "@webiny/api-websockets-sql": "0.0.0",
-    "@webiny/handler": "0.0.0",
     "better-sqlite3": "^13.0.3",
     "knex": "^3.3.0"
   },

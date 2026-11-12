@@ -8,10 +8,10 @@
     { "path": "../api-core-sql" },
     { "path": "../api-headless-cms-sql" },
     { "path": "../api-websockets-sql" },
-    { "path": "../handler" },
     { "path": "../api-aco" },
     { "path": "../api-audit-logs" },
-    { "path": "../api-websockets" }
+    { "path": "../api-websockets" },
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -32,14 +32,14 @@
       "@webiny/api-headless-cms-sql": ["../api-headless-cms-sql/src"],
       "@webiny/api-websockets-sql/*": ["../api-websockets-sql/src/*"],
       "@webiny/api-websockets-sql": ["../api-websockets-sql/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
-      "@webiny/api-websockets": ["../api-websockets/src"]
+      "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

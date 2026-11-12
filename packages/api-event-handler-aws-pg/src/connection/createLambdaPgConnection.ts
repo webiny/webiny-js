@@ -4,7 +4,7 @@ import { DEFAULT_PG_RETRY_MS, readPgConnectionEnv } from "@webiny/api-storage-pg
 import { readPgPassword } from "./readPgPassword.js";
 
 export interface CreateLambdaPgConnectionOptions {
-    /** Overrides `WEBINY_PG_HOST` (the migrate function connects to the cluster's writer). */
+    /** Overrides `WEBINY_PG_HOST` (the schema setup connects to the cluster's writer). */
     host?: string;
 }
 

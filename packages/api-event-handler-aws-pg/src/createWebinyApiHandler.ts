@@ -10,8 +10,9 @@
  *
  * Two entry points share that wiring: the buffered API Gateway handler and the response-streaming
  * Function URL handler. They are separate Lambda functions built from the same bundle. The tables
- * are created at deploy time by `createAwsPgMigrateHandler`, so the API runs schema-managed from the
- * start: it never checks for or creates tables.
+ * are created at deploy time, by the deployment invoking the API's function with the schema-setup
+ * event (`SqlSchemaSetupEvent`), so the API runs schema-managed from the start: it never checks for
+ * or creates tables.
  */
 import type { Knex } from "knex";
 import {
@@ -21,7 +22,12 @@ import {
 } from "@webiny/api-event-handler-aws";
 import { getSqlTablePrefix } from "@webiny/api-core-sql";
 import { createPgStorage } from "@webiny/api-storage-pg";
-import { getLambdaPgKnex } from "~/connection/createLambdaPgConnection.js";
+import {
+    createLambdaPgConnection,
+    getLambdaPgKnex
+} from "~/connection/createLambdaPgConnection.js";
+import { SqlSchemaSetupConnection } from "~/schemaSetup/index.js";
+import { SqlSchemaSetupFeature } from "~/schemaSetup/feature.js";
 
 export interface CreateAwsPgApiHandlerConfig extends Pick<BaseConfig, "extensions"> {
     /**
@@ -32,7 +38,20 @@ export interface CreateAwsPgApiHandlerConfig extends Pick<BaseConfig, "extension
     knex?: Knex;
     /** Table name prefix. Defaults to `WEBINY_SQL_TABLE_PREFIX`. */
     tableNamePrefix?: string;
+    /**
+     * Opens the connection the schema-setup event runs on; the handler closes it when it's done.
+     * Defaults to a connection to `WEBINY_PG_WRITER_HOST`, else `WEBINY_PG_HOST`: schema changes go
+     * to the cluster's writer, not through RDS Proxy. Injectable so tests can point it at a local
+     * Postgres.
+     */
+    createSetupKnex?: () => Knex;
 }
+
+const openWriterConnection = (): Knex => {
+    return createLambdaPgConnection({
+        host: process.env.WEBINY_PG_WRITER_HOST || process.env.WEBINY_PG_HOST
+    });
+};
 
 /**
  * The storage half of the composition, shared by the buffered and the response-streaming entry points
@@ -49,10 +68,16 @@ function storageConfig(
             const storage = createPgStorage({
                 knex: config.knex ?? getLambdaPgKnex(),
                 tableNamePrefix: config.tableNamePrefix ?? (getSqlTablePrefix() || undefined),
-                // The migrate handler set the schema up before the deploy finished.
+                // The schema-setup event set the schema up before the deploy finished.
                 schemaManaged: true
             });
-            await storage.register(container);
+            storage.register(container);
+
+            // The deploy-time schema setup: an event the deployment invokes this function with.
+            SqlSchemaSetupFeature.register(container);
+            container.registerInstance(SqlSchemaSetupConnection, {
+                open: config.createSetupKnex ?? openWriterConnection
+            });
         }
     };
 }

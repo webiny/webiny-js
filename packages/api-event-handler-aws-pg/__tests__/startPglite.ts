@@ -4,11 +4,11 @@ import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { HeadlessCmsPgExtension } from "@webiny/api-headless-cms-pg";
 import { AcoPgExtension } from "@webiny/api-aco-pg";
-import { createAwsPgMigrateHandler } from "~/index.js";
+import { createAwsPgApiHandler, SQL_SCHEMA_SETUP_EVENT_IDENTIFIER } from "~/index.js";
 
 /**
  * The Postgres modules a project adds with `<HeadlessCmsPg />` and `<AcoPg />`, as they land in its
- * `extensions.ts`: every API and migrate handler of a Postgres project gets them.
+ * `extensions.ts`: every function of a Postgres project's API gets them.
  */
 export const postgresModules = [
     createRegisterExtensionPlugin(ctx => {
@@ -53,12 +53,24 @@ export const startPglite = async () => {
     };
 
     /**
-     * Sets the schema up as a deploy does, with the migrate handler on a connection of its own (which
-     * it closes). The API handlers are schema-managed: they expect it done. Run it before any other
-     * client of this database connects.
+     * Sets the schema up as a deploy does: it invokes the API's function with the schema-setup
+     * event, which runs on a connection of its own (and closes it). The API handlers are
+     * schema-managed: they expect it done. Run it before any other client of this database
+     * connects.
      */
-    const setupSchema = async () => {
-        await createAwsPgMigrateHandler({ extensions: () => postgresModules, createKnex })();
+    const runSchemaSetupEvent = async () => {
+        // The API's own connection: the event doesn't use it, so it never connects.
+        const knex = createKnex();
+        try {
+            const handler = createAwsPgApiHandler({
+                extensions: () => postgresModules,
+                knex,
+                createSetupKnex: createKnex
+            });
+            return await handler({ [SQL_SCHEMA_SETUP_EVENT_IDENTIFIER]: {} });
+        } finally {
+            await knex.destroy();
+        }
     };
 
     const stop = async () => {
@@ -66,5 +78,5 @@ export const startPglite = async () => {
         await db.close();
     };
 
-    return { env, createKnex, setupSchema, stop };
+    return { env, createKnex, runSchemaSetupEvent, stop };
 };

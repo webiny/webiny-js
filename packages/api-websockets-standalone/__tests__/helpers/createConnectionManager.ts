@@ -1,9 +1,9 @@
 import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import type { EventDispatcher } from "@webiny/event-handler-core";
 import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
-import { InMemoryLiveSocketsImpl } from "~/liveSockets/InMemoryLiveSockets.js";
-import { WriteConnectionRowsHandlerImpl } from "~/rows/WriteConnectionRowsHandler.js";
-import type { IWebsocketsConnectionRowsEvent } from "~/rows/WebsocketsConnectionRowsEvent.js";
+import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
+import { WriteConnectionRowsHandler } from "~/rows/WriteConnectionRowsHandler.js";
+import type { IWebsocketsConnectionRowsEvent } from "~/rows/abstractions.js";
 
 /**
  * Dispatches the connection rows events the manager sends the way the server's dispatcher does in
@@ -12,7 +12,7 @@ import type { IWebsocketsConnectionRowsEvent } from "~/rows/WebsocketsConnection
 export const createRowsDispatcher = (
     registry: ConnectionRegistry.Interface
 ): EventDispatcher.Interface => {
-    const handler = new WriteConnectionRowsHandlerImpl(registry);
+    const handler = new WriteConnectionRowsHandler(registry);
     return {
         dispatch: async <TResult = unknown>(event: unknown) => {
             const ctx = { event: event as IWebsocketsConnectionRowsEvent, metadata: {} };
@@ -26,7 +26,7 @@ export const createRowsDispatcher = (
 export const createConnectionManager = (
     registry: ConnectionRegistry.Interface,
     owner: { id: string },
-    sockets = new InMemoryLiveSocketsImpl()
+    sockets = new InMemoryLiveSockets()
 ): ServerConnectionManagerImpl => {
     return new ServerConnectionManagerImpl(sockets, createRowsDispatcher(registry), owner);
 };

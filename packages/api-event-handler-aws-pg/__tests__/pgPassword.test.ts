@@ -49,7 +49,7 @@ describe("the Postgres password on Lambda", () => {
                 SecretString: JSON.stringify({ username: "postgres", password: "postgres" })
             });
 
-            // Three clients (the API's, and two migrations), each opening its own connections.
+            // Three clients (the API's, and two schema setups), each opening its own connections.
             for (let client = 0; client < 3; client++) {
                 const knex = createLambdaPgConnection();
                 for (let query = 0; query < 2; query++) {

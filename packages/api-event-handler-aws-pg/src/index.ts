@@ -1,11 +1,18 @@
 export { createAwsPgApiHandler, createAwsPgStreamApiHandler } from "./createWebinyApiHandler.js";
 export type { CreateAwsPgApiHandlerConfig } from "./createWebinyApiHandler.js";
-export { createAwsPgMigrateHandler } from "./createMigrateHandler.js";
+export {
+    SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
+    SqlSchemaSetupConnection,
+    SqlSchemaSetupEventHandler,
+    SqlSchemaSetupService
+} from "./schemaSetup/index.js";
 export type {
-    AwsPgMigrateEvent,
-    AwsPgMigrateResult,
-    CreateAwsPgMigrateHandlerConfig
-} from "./createMigrateHandler.js";
+    ISqlSchemaSetupEvent,
+    ISqlSchemaSetupEventPayload,
+    ISqlSchemaSetupResult,
+    ISqlSchemaSetupService,
+    SqlSchemaSetupServiceParams
+} from "./schemaSetup/index.js";
 export {
     createLambdaPgConnection,
     getLambdaPgKnex

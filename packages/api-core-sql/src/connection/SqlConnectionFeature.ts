@@ -12,10 +12,14 @@ export interface SqlConnectionConfig {
     /**
      * The schema was set up before the API took traffic (the storage's schema setup ran), so no
      * storage code checks for or creates tables at runtime. Off by default: tables are created on
-     * first use.
+     * first use. A function when it can change: a server turns it on once its setup at start ran.
      */
-    schemaManaged?: boolean;
+    schemaManaged?: boolean | (() => boolean);
 }
+
+const isManaged = (schemaManaged: SqlConnectionConfig["schemaManaged"]): boolean => {
+    return typeof schemaManaged === "function" ? schemaManaged() : schemaManaged === true;
+};
 
 /**
  * What a SQL storage puts in the root container, once per process: the connection (`KnexClient`)
@@ -30,7 +34,7 @@ export const SqlConnectionFeature = createFeature<SqlConnectionConfig>({
     register(container, { knex, tableNamePrefix, schemaManaged = false }) {
         KnexClientFeature.register(container, knex);
         container.registerInstance(SqlSchemaConfig, {
-            isManaged: () => schemaManaged,
+            isManaged: () => isManaged(schemaManaged),
             tableNamePrefix
         });
     }
@@ -42,7 +46,7 @@ export const SqlConnectionFeature = createFeature<SqlConnectionConfig>({
  */
 export const setSqlServiceManifestLoader = (config: SqlConnectionConfig): void => {
     const tableManager = new TableManager(config.knex, config.tableNamePrefix, {
-        schemaManaged: config.schemaManaged
+        schemaManaged: () => isManaged(config.schemaManaged)
     });
     ServiceDiscovery.setLoader(new SqlServiceManifestLoader(config.knex, tableManager));
 };
