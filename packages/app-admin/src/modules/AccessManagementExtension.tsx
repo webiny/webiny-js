@@ -12,6 +12,7 @@ import { GetRoleFeature } from "~/features/accessManagement/roles/getRole/featur
 import { CreateRoleFeature } from "~/features/accessManagement/roles/createRole/feature.js";
 import { UpdateRoleFeature } from "~/features/accessManagement/roles/updateRole/feature.js";
 import { DeleteRoleFeature } from "~/features/accessManagement/roles/deleteRole/feature.js";
+import { RoleEventsFeature } from "~/features/accessManagement/roles/roleEvents/feature.js";
 import { ListTeamsFeature } from "~/features/accessManagement/teams/listTeams/feature.js";
 import { GetTeamFeature } from "~/features/accessManagement/teams/getTeam/feature.js";
 import { CreateTeamFeature } from "~/features/accessManagement/teams/createTeam/feature.js";
@@ -100,6 +101,7 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={CreateRoleFeature} />
             <RegisterFeature feature={UpdateRoleFeature} />
             <RegisterFeature feature={DeleteRoleFeature} />
+            <RegisterFeature feature={RoleEventsFeature} />
             <RegisterFeature feature={RolesPresenterFeature} />
             <RegisterFeature feature={RolesAutocompletePresenterFeature} />
             <RegisterFeature feature={ListTeamsFeature} />

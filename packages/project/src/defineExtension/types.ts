@@ -7,7 +7,7 @@ import { type ExtensionHosting } from "~/extensions/hosting/hostingType.js";
 export type ExtensionTags = {
     [key: string]: string | undefined;
     appName?: AppName;
-    runtimeContext?: "app-build" | "project" | "cli" | "pulumi";
+    runtimeContext?: "app-build" | "project" | "cli";
     hosting?: ExtensionHosting;
 };
 

@@ -13,10 +13,10 @@ import { getStandaloneDatabase } from "./getStandaloneDbDriver.js";
  * Make the deployed build/ folder runnable on its own:
  *  - start.mjs: handler.mjs only EXPORTS the (async) handler, so a deploy needs an entry that imports
  *    it and listens. Copied verbatim from the start.mjs template next to this file.
- *  - package.json {"type":"module"} + start script: once build/ is copied out of the repo it has no
- *    parent package.json to inherit the module type from, so the raw-.js pollWorker asset would load
- *    as CJS and its `import` would throw. (In-repo, build/ sits under the app whose package.json is
- *    already type:module, so dev/watch resolves it by walking up — this is only for standalone build/.)
+ *  - package.json with a start script, so `npm start` in build/ runs the server.
+ *    `"type": "module"` was added for the scheduler's raw-.js worker file, which no longer exists;
+ *    the bundle itself emits only .mjs files. It stays until a standalone deploy confirms that
+ *    nothing else copied into build/ needs it.
  */
 class EmitDeployEntryImpl implements ApiAfterBuild.Interface {
     constructor(

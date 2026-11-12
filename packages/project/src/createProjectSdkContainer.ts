@@ -30,38 +30,34 @@ import {
     serve
 } from "./features/index.js";
 
-import {
-    getAppService,
-    buildAppWorkspaceService,
-    buildProjectWorkspaceService,
-    getAppPackagesService,
-    getCwdService,
-    getIsCiService,
-    getNpmVersionService,
-    getNpxVersionService,
-    getProjectConfigService,
-    getProjectIdService,
-    getProjectInstallationIdService,
-    getProjectService,
-    getProjectVersionService,
-    getPulumiVersionService,
-    getYarnVersionService,
-    initProjectSdkService,
-    installExtensionService,
-    listPackagesInAppWorkspaceService,
-    listPackagesService,
-    loadEnvVarsService,
-    localStorageService,
-    loggerService,
-    projectInfoService,
-    projectSdkParamsService,
-    setProjectIdService,
-    stackOutputCacheService,
-    stdioService,
-    uiService,
-    validateProjectConfigService,
-    wcpService
-} from "./services/index.js";
+import { getAppService } from "./services/index.js";
+import { buildAppWorkspaceService } from "./services/index.js";
+import { buildProjectWorkspaceService } from "./services/index.js";
+import { getAppPackagesService } from "./services/index.js";
+import { getCwdService } from "./services/index.js";
+import { getIsCiService } from "./services/index.js";
+import { getNpmVersionService } from "./services/index.js";
+import { getNpxVersionService } from "./services/index.js";
+import { getProjectConfigService } from "./services/index.js";
+import { getProjectIdService } from "./services/index.js";
+import { getProjectInstallationIdService } from "./services/index.js";
+import { getProjectService } from "./services/index.js";
+import { getProjectVersionService } from "./services/index.js";
+import { getYarnVersionService } from "./services/index.js";
+import { initProjectSdkService } from "./services/index.js";
+import { installExtensionService } from "./services/index.js";
+import { listPackagesInAppWorkspaceService } from "./services/index.js";
+import { listPackagesService } from "./services/index.js";
+import { loadEnvVarsService } from "./services/index.js";
+import { localStorageService } from "./services/index.js";
+import { loggerService } from "./services/index.js";
+import { projectInfoService } from "./services/index.js";
+import { projectSdkParamsService } from "./services/index.js";
+import { setProjectIdService } from "./services/index.js";
+import { stdioService } from "./services/index.js";
+import { uiService } from "./services/index.js";
+import { validateProjectConfigService } from "./services/index.js";
+import { wcpService } from "./services/index.js";
 
 import {
     GetProjectConfig,
@@ -97,7 +93,6 @@ export const createProjectSdkContainer = async (
     container.register(getProjectInstallationIdService).inSingletonScope();
     container.register(getProjectService).inSingletonScope();
     container.register(getProjectVersionService).inSingletonScope();
-    container.register(getPulumiVersionService).inSingletonScope();
     container.register(getYarnVersionService).inSingletonScope();
     container.register(initProjectSdkService).inSingletonScope();
     container.register(installExtensionService).inSingletonScope();
@@ -109,7 +104,6 @@ export const createProjectSdkContainer = async (
     container.register(projectInfoService).inSingletonScope();
     container.register(projectSdkParamsService).inSingletonScope();
     container.register(setProjectIdService).inSingletonScope();
-    container.register(stackOutputCacheService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
     container.register(validateProjectConfigService).inSingletonScope();
@@ -202,7 +196,7 @@ export const createProjectSdkContainer = async (
         return projectConfigValidator.execute(projectExtensions);
     });
 
-    // Initialize project SDK extensions (env vars, hooks, pulumi, implementations, decorators).
+    // Initialize project SDK extensions (env vars, hooks, hosting setup, implementations, decorators).
     const initProjectSdk = container.resolve(InitProjectSdkService);
     await traceAsync("register project SDK extensions", () => initProjectSdk.execute(container));
 

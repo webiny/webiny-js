@@ -1,0 +1,103 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { TimerSchedulerService } from "~/TimerSchedulerService.js";
+import type { ITimerSchedulerServiceParams } from "~/TimerSchedulerService.js";
+import { createMockLogger } from "./createMockLogger.js";
+
+const futureDate = (ms: number) => new Date(Date.now() + ms);
+const pastDate = (ms: number) => new Date(Date.now() - ms);
+
+describe("TimerSchedulerService — recovery", () => {
+    const namespace = "Test/SomeEntry";
+    const tenant = "root";
+    let service: TimerSchedulerService;
+    let runAction: ITimerSchedulerServiceParams["runAction"];
+
+    afterEach(async () => {
+        await service.stop();
+    });
+
+    const createService = () => {
+        runAction = vi.fn().mockResolvedValue(undefined);
+
+        service = new TimerSchedulerService({
+            logger: createMockLogger(),
+            runAction
+        });
+
+        return service;
+    };
+
+    it("should arm timers for future actions", async () => {
+        const svc = createService();
+        await svc.start();
+
+        await svc.recover([
+            {
+                id: "future-1",
+                namespace,
+                tenant,
+                scheduledFor: futureDate(60_000)
+            },
+            {
+                id: "future-2",
+                namespace,
+                tenant,
+                scheduledFor: futureDate(120_000)
+            }
+        ]);
+
+        expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
+        expect(await svc.exists({ id: "future-2", namespace, tenant })).toBe(true);
+        expect(runAction).not.toHaveBeenCalled();
+    });
+
+    it("should fire overdue actions immediately", async () => {
+        const svc = createService();
+        await svc.start();
+
+        await svc.recover([
+            {
+                id: "overdue-1",
+                namespace,
+                tenant,
+                scheduledFor: pastDate(60_000)
+            }
+        ]);
+
+        expect(runAction).toHaveBeenCalledWith("overdue-1", namespace, tenant);
+        expect(await svc.exists({ id: "overdue-1", namespace, tenant })).toBe(false);
+    });
+
+    it("should handle a mix of overdue and future actions", async () => {
+        const svc = createService();
+        await svc.start();
+
+        await svc.recover([
+            {
+                id: "overdue-1",
+                namespace,
+                tenant,
+                scheduledFor: pastDate(60_000)
+            },
+            {
+                id: "future-1",
+                namespace,
+                tenant,
+                scheduledFor: futureDate(60_000)
+            }
+        ]);
+
+        expect(runAction).toHaveBeenCalledTimes(1);
+        expect(runAction).toHaveBeenCalledWith("overdue-1", namespace, tenant);
+        expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
+    });
+
+    it("should be a noop with an empty list", async () => {
+        const svc = createService();
+        await svc.start();
+
+        await svc.recover([]);
+
+        expect(runAction).not.toHaveBeenCalled();
+    });
+});

@@ -3,6 +3,7 @@ import { createAbstraction } from "@webiny/project/abstractions/createAbstractio
 export interface ICoreStackOutput {
     region?: string;
     deploymentId?: string;
+    iotAuthorizerName?: string;
     databaseSetup?: string;
     opensearchDomainEndpoint?: string;
     opensearchDomainArn?: string;
