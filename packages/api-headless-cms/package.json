@@ -57,7 +57,7 @@
     "@webiny/wcp": "0.0.0",
     "apollo-graphql": "^0.9.7",
     "graphql": "^16.15.0",
-    "oxfmt": "^0.77.0",
+    "oxfmt": "^0.78.0",
     "rimraf": "^6.1.4",
     "typescript": "7.0.2",
     "vitest": "^5.1.0",
