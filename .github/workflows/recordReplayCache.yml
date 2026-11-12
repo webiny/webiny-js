@@ -112,6 +112,11 @@ jobs:
           node
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: webiny-js
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -248,6 +253,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
           E2E_CACHE_MODE: read-write
         run: >-
@@ -401,6 +407,11 @@ jobs:
           node
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: webiny-js
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -539,6 +550,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
           E2E_CACHE_MODE: read-write
         run: >-

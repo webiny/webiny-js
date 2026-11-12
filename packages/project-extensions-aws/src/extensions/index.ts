@@ -5,7 +5,6 @@ export * from "./ApiCustomDomains.js";
 export * from "./ApiLambdaFunction.js";
 export * from "./ApiMaxBundleSize.js";
 export * from "./ApiPulumi.js";
-export * from "./ApiRoute.js";
 export * from "./ApiStackOutputValue.js";
 export * from "./AutoInstall.js";
 export * from "./AwsDefaultRegion.js";
