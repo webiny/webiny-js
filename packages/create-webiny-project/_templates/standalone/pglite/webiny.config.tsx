@@ -27,8 +27,12 @@ export const Extensions = () => {
                 is configured here. `Admin.ApiUrl` points the admin bundle at it; `Infra.ApiUrl` tells
                 the API its own origin (used for the file-upload URL + file srcPrefix).
                 `Infra.AdminUrl` tells it where the admin app is served from (handed to websites, e.g.
-                the Next.js starter kit). */}
-            <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
+                the Next.js starter kit).
+                Without WEBINY_API_URL the admin bundle gets `/api`, resolved against the page's own
+                origin: that is where `webiny watch` and `webiny serve` put the API behind their
+                proxy. Set WEBINY_API_URL when building for an API on another domain, or for
+                `--no-proxy`. */}
+            <Admin.ApiUrl url={process.env.WEBINY_API_URL || "/api"} />
             <Infra.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
             <Infra.AdminUrl url={process.env.WEBINY_ADMIN_URL || "http://localhost:3001"} />
 
