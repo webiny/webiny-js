@@ -1,21 +1,23 @@
+import { SqlSchemaConfig } from "@webiny/api-core-sql";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
+import { PgStorageConfig } from "./abstractions.js";
 
-export interface IPgTableNames {
-    tableNamePrefix?: string;
-    tableNameSuffix?: string;
-    sharedTables?: boolean;
+/**
+ * The table names of the storage: the SQL storage's table prefix (`SqlSchemaConfig`, registered by
+ * the storage the module runs on) and the module's `sharedTables` setting.
+ */
+class PgTableNameResolverConfigImpl implements TableNameResolverConfig.Interface {
+    public readonly sharedTables: boolean;
+    public readonly tableNamePrefix?: string;
+    public readonly tableNameSuffix = undefined;
+
+    public constructor(schemaConfig: SqlSchemaConfig.Interface, config: PgStorageConfig.Interface) {
+        this.tableNamePrefix = schemaConfig.tableNamePrefix || undefined;
+        this.sharedTables = config.sharedTables;
+    }
 }
 
-/** The table names of the storage, from the feature's config. */
-export const createPgTableNameResolverConfig = (names: IPgTableNames) => {
-    class PgTableNameResolverConfigImpl implements TableNameResolverConfig.Interface {
-        public readonly sharedTables = names.sharedTables === true;
-        public readonly tableNamePrefix = names.tableNamePrefix;
-        public readonly tableNameSuffix = names.tableNameSuffix;
-    }
-
-    return TableNameResolverConfig.createImplementation({
-        implementation: PgTableNameResolverConfigImpl,
-        dependencies: []
-    });
-};
+export const PgTableNameResolverConfig = TableNameResolverConfig.createImplementation({
+    implementation: PgTableNameResolverConfigImpl,
+    dependencies: [SqlSchemaConfig, PgStorageConfig]
+});

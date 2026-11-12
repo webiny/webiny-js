@@ -4,14 +4,14 @@
  * A web function runs a plain Node HTTP server instead of an event handler: Lambda passes the listen
  * address in `AWS_LAMBDA_HTTP_ENDPOINT` and forwards each HTTP request to it. So the transport here is
  * the standalone Node HTTP one (`NodeHttpFeature` + the `NodeHttp*` decorators), while everything
- * behind it is the AWS composition the other two AWS handlers use: DynamoDB, the storage variant, and
- * the per-request stack with the AWS transports (S3, EventBridge Scheduler, API Gateway WebSockets).
+ * behind it is the AWS composition the other two AWS handlers use: the storage variant (database
+ * included) and the per-request stack with the AWS transports (S3, EventBridge Scheduler, API Gateway
+ * WebSockets).
  *
  * Web functions only serve HTTP. Every other invocation (background tasks, EventBridge, scheduled
  * actions, WebSocket `$connect`) still targets the regular `graphql` Lambda, so none of those event
  * types are registered here.
  */
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createServerHandler } from "@webiny/event-handler-standalone";
 import { NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
@@ -48,8 +48,7 @@ export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfi
             // dispatcher, and Step Functions invokes the regular `graphql` Lambda, never this one.
             BackgroundTasksAwsFeature.register(container);
 
-            const documentClient = config.documentClient ?? getDocumentClient();
-            await registerWebinyApiRoot(container, config, documentClient);
+            await registerWebinyApiRoot(container, config);
         },
 
         child: async container => {

@@ -17,6 +17,7 @@ interface TaskParams<T> {
     onDone?: TaskHandler.Interface["onDone"];
     onError?: TaskHandler.Interface["onError"];
     onAbort?: TaskHandler.Interface["onAbort"];
+    onBeforeTrigger?: TaskHandler.Interface["onBeforeTrigger"];
 }
 
 export function createTaskDefinition<
@@ -37,6 +38,7 @@ export function createTaskDefinition<
         onDone = params.onDone;
         onError = params.onError;
         onAbort = params.onAbort;
+        onBeforeTrigger = params.onBeforeTrigger;
     }
 
     // The handler must go through `createImplementation`: `resolveImplementation` reads dependency

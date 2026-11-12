@@ -1,8 +1,7 @@
 import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import { HeadlessCmsPgFeature } from "../../src/index.js";
-import { RequestPgStorageConfig } from "./RequestPgStorageConfig.js";
 import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
-import { registerSQLCore } from "@webiny/api-core-sql";
+import { registerSQLCore, SqlSchemaConfig } from "@webiny/api-core-sql";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 /*
@@ -28,9 +27,14 @@ setStorageOps("cms", () => {
             knex
         }),
         createRegisterExtensionPlugin(context => {
-            HeadlessCmsPgFeature.register(context.container, { knex, tableNamePrefix });
-            // Settings from each request's build params (registered last, so it wins).
-            context.container.register(RequestPgStorageConfig);
+            // What the Postgres SQL storage registers for the modules on it: the table prefix.
+            context.container.registerInstance(SqlSchemaConfig, {
+                isManaged: () => false,
+                tableNamePrefix
+            });
+            // Settings come from each request's `HeadlessCmsPg` build param, so a test can change
+            // one for its next requests.
+            HeadlessCmsPgFeature.register(context.container);
         }),
         createRegisterExtensionPlugin(({ container }) => {
             const sortingRegistry = container.resolve(FieldSortingRegistry);

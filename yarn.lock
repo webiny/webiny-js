@@ -749,6 +749,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-secrets-manager@npm:^3.1161.0":
+  version: 3.1164.0
+  resolution: "@aws-sdk/client-secrets-manager@npm:3.1164.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/credential-provider-node": "npm:^3.972.94"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/03a55613917aa13a6c803fe7b590e1f0fe6f2cf9b71e7a4de4bbde707457893781400ae5420409f544fed3dcc01b68e14ec21ad6a738e75dc2b97e82eb756b77
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sfn@npm:^3.1161.0":
   version: 3.1161.0
   resolution: "@aws-sdk/client-sfn@npm:3.1161.0"
@@ -815,6 +831,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/core@npm:^3.980.1":
+  version: 3.980.1
+  resolution: "@aws-sdk/core@npm:3.980.1"
+  dependencies:
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@aws-sdk/xml-builder": "npm:^3.972.42"
+    "@aws/lambda-invoke-store": "npm:^0.3.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/signature-v4": "npm:^5.7.5"
+    "@smithy/types": "npm:^4.19.0"
+    bowser: "npm:^2.11.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/b255d5301e7c3b0eaf09f924bdc6ecf9d57236556c1cc27af1c4812c5e3510a72dfa3f7fbc71df48b08ab33fccd6147c52a9f365f0e9406b07979a525fef3fe6
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-cognito-identity@npm:^3.972.79":
   version: 3.972.79
   resolution: "@aws-sdk/credential-provider-cognito-identity@npm:3.972.79"
@@ -841,6 +873,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-env@npm:^3.972.82":
+  version: 3.972.82
+  resolution: "@aws-sdk/credential-provider-env@npm:3.972.82"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/17095f9efdba037c5121ac074e8cea03a9579d2fb38525c60acd077ebc433f631c2783d4573f54990bccd1de486dcad622e13df379c8d5a00da5a5f99478a020
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-http@npm:^3.972.82":
   version: 3.972.82
   resolution: "@aws-sdk/credential-provider-http@npm:3.972.82"
@@ -853,6 +898,21 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/5694f320e3768984d8d517376c868494c2711913850bd9b3f9db68ec53484627eed6a2f1dfd75c57b7c7bd2e509dbf3a8cec2947c47312dc3e2c303615ed32ad
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-http@npm:^3.972.84":
+  version: 3.972.84
+  resolution: "@aws-sdk/credential-provider-http@npm:3.972.84"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/b5e7d7c9f23871ea2c7290d189b04dd7e1c89acbd98239335b12408556f42be85bd0771a4cbf79c55a146fd3823bfb340470a4ec0ea0c5f20054295ca5037444
   languageName: node
   linkType: hard
 
@@ -877,6 +937,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-ini@npm:^3.973.27":
+  version: 3.973.27
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.973.27"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/credential-provider-env": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-http": "npm:^3.972.84"
+    "@aws-sdk/credential-provider-login": "npm:^3.972.89"
+    "@aws-sdk/credential-provider-process": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-sso": "npm:^3.973.26"
+    "@aws-sdk/credential-provider-web-identity": "npm:^3.972.88"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/credential-provider-imds": "npm:^4.5.2"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/f1ded0720f40e35a05eb6fe374ff6cdf0c9cde3015b7a85d8b9f366ec2d2e1d1b1eef3c269c503535b4818259b26a01c1bbeee27bd4dddd4eade3b9de973542f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-login@npm:^3.972.87":
   version: 3.972.87
   resolution: "@aws-sdk/credential-provider-login@npm:3.972.87"
@@ -888,6 +969,20 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/f9e2fcdba78712e9604048a8eacffda554cfa7dbcea6c0de071cd047491ff27f6af57fca59acf26210e2f40c0fa4aaafdd6ad631065d19d4d8cad6d4f44ec0e1
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-login@npm:^3.972.89":
+  version: 3.972.89
+  resolution: "@aws-sdk/credential-provider-login@npm:3.972.89"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/11b8929467162c98fe50ed7f2534879beeed8c7cd689187e40ec901677697690c5b654254cb47787c0e2f64224b271ad8296fc5a313b1103ef07331b9e42a7b0
   languageName: node
   linkType: hard
 
@@ -910,6 +1005,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-node@npm:^3.972.94":
+  version: 3.972.94
+  resolution: "@aws-sdk/credential-provider-node@npm:3.972.94"
+  dependencies:
+    "@aws-sdk/credential-provider-env": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-http": "npm:^3.972.84"
+    "@aws-sdk/credential-provider-ini": "npm:^3.973.27"
+    "@aws-sdk/credential-provider-process": "npm:^3.972.82"
+    "@aws-sdk/credential-provider-sso": "npm:^3.973.26"
+    "@aws-sdk/credential-provider-web-identity": "npm:^3.972.88"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/credential-provider-imds": "npm:^4.5.2"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/dbfde5a17a37dba1da31ca95f7ce7476fb8adc8a942f8cf1bed9cc43c31c91f013501e363e49bfcefdbd178deeb6d29651fc20c55ae3c6eefb653921f3e7cfaf
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-process@npm:^3.972.80":
   version: 3.972.80
   resolution: "@aws-sdk/credential-provider-process@npm:3.972.80"
@@ -920,6 +1034,19 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/aa29726fcce498b8e830ea5e22271becaa912c245edcdc664c80aac1c147b09fdb1b30cf28cc047358dced0346cc4edf3272516766c496b9b096f17f0cfdc52f
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-process@npm:^3.972.82":
+  version: 3.972.82
+  resolution: "@aws-sdk/credential-provider-process@npm:3.972.82"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/f770f6f72d38ff72a9cab0e9d731bedb1d24047d4b0f072ff05f8191371984cdb10023da0054d7077be3dd27f206a556167924cdb1267d53f669d9c5e0fc556c
   languageName: node
   linkType: hard
 
@@ -938,6 +1065,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/credential-provider-sso@npm:^3.973.26":
+  version: 3.973.26
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.973.26"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/token-providers": "npm:3.1164.0"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/11f90c8f3dcd7a108f83feb6af8986394a42e70fa28ca339bef59c9bc84fc942ac2bfa87902c0dc91284ecfe0e9090920814b333df63ce2deab18122854af75f
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/credential-provider-web-identity@npm:^3.972.86":
   version: 3.972.86
   resolution: "@aws-sdk/credential-provider-web-identity@npm:3.972.86"
@@ -949,6 +1091,20 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/97bde4089548f09634ea0b8a83c8840eed7a6fe4c37d79eb9cef2a1a781e67201cce088119d15d5c96825817895a139ed05ce524321942bfc8e51e7085434105
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/credential-provider-web-identity@npm:^3.972.88":
+  version: 3.972.88
+  resolution: "@aws-sdk/credential-provider-web-identity@npm:3.972.88"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/cb3716d86acfbb55c7084778a2c6594eb78df5ff90cc58cd0a3c75445df30597431546f6ccf0b1c5dd3f6a6acfed754783d9f4f16175074c8e586ab69c154115
   languageName: node
   linkType: hard
 
@@ -1084,6 +1240,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/nested-clients@npm:^3.998.1":
+  version: 3.998.1
+  resolution: "@aws-sdk/nested-clients@npm:3.998.1"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/signature-v4-multi-region": "npm:^3.996.51"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/da432bb197fd0a20bc4690495db84a251d1fcae3ae2d0cbc9a838917d53df5a621c2f34ee42161e8a2805415c79a5de4d0696854737a9ca32a9a4aee6dcb6cfa
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/s3-presigned-post@npm:^3.1161.0":
   version: 3.1161.0
   resolution: "@aws-sdk/s3-presigned-post@npm:3.1161.0"
@@ -1136,6 +1308,20 @@ __metadata:
     "@smithy/types": "npm:^4.19.0"
     tslib: "npm:^2.6.2"
   checksum: 10/c85ae391a9dbc9b85ad468262a6d22e485045bfcb78d7241a0d11029d800eca0f1ce8b99ed2c51e72a7bf2504277c906f71747cb8231d90e1078886e86885873
+  languageName: node
+  linkType: hard
+
+"@aws-sdk/token-providers@npm:3.1164.0":
+  version: 3.1164.0
+  resolution: "@aws-sdk/token-providers@npm:3.1164.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.980.1"
+    "@aws-sdk/nested-clients": "npm:^3.998.1"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/3a3d7fb9926362e78d5f112d436de3754571225bc048f357013edf54462751ca1af5058fcc6d2b679bd2558f877ed40d16f69d8976a6bf47434dc630e58afbe4
   languageName: node
   linkType: hard
 
@@ -1420,13 +1606,6 @@ __metadata:
   bin:
     specificity: bin/cli.js
   checksum: 10/f100c0a1659cf9655e248f38e8614e4b0acf21d9a53cd2913d2c5701633ac4e193f9a3398ad4cc4697b7e71b4f1bf079b2e4f0d640a3b5e65c7b82ef0c0d5808
-  languageName: node
-  linkType: hard
-
-"@breejs/later@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "@breejs/later@npm:4.2.0"
-  checksum: 10/ddead3d5160c2eb9e98d059e87183a6cde565dd4a4a9c281a603b0fc2d7d9f99f6047e594b9e4443291b1a2ec84633cb7b69f3cda9794cb6de28fb704f26396e
   languageName: node
   linkType: hard
 
@@ -10627,6 +10806,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco-pg@workspace:packages/api-aco-pg"
   dependencies:
+    "@types/react": "npm:19.3.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
@@ -10638,11 +10818,14 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/shared-aco": "npm:0.0.0"
     knex: "npm:^3.3.0"
+    react: "npm:19.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -10652,8 +10835,10 @@ __metadata:
   dependencies:
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
@@ -10723,6 +10908,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
@@ -10883,6 +11069,7 @@ __metadata:
     "@webiny/api-opensearch-aws": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
@@ -10913,6 +11100,7 @@ __metadata:
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cognito": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -10921,6 +11109,37 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-event-handler-aws-pg@workspace:packages/api-event-handler-aws-pg":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-event-handler-aws-pg@workspace:packages/api-event-handler-aws-pg"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.14"
+    "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@webiny/api-aco-pg": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-event-handler-aws": "npm:0.0.0"
+    "@webiny/api-event-handler-core": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    knex: "npm:^3.3.0"
+    pg: "npm:^8.23.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
@@ -10944,7 +11163,6 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks-aws": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
@@ -10991,6 +11209,7 @@ __metadata:
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/event-handler-standalone": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     pino: "npm:^10.4.0"
     rimraf: "npm:^6.1.3"
@@ -11001,52 +11220,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-event-handler-standalone-pg@npm:0.0.0, @webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-standalone-pg@workspace:packages/api-event-handler-standalone-pg"
-  dependencies:
-    "@electric-sql/pglite": "npm:^0.5.14"
-    "@electric-sql/pglite-socket": "npm:^0.2.17"
-    "@webiny/api-aco-pg": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-event-handler-standalone-sql": "npm:0.0.0"
-    "@webiny/api-headless-cms-pg": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    knex: "npm:^3.3.0"
-    rimraf: "npm:^6.1.3"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.0.5"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-event-handler-standalone-sql@npm:0.0.0, @webiny/api-event-handler-standalone-sql@workspace:packages/api-event-handler-standalone-sql":
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-standalone-sql@workspace:packages/api-event-handler-standalone-sql"
   dependencies:
+    "@electric-sql/pglite": "npm:^0.5.14"
+    "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@types/ws": "npm:^8.18.2"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-aco-sql": "npm:0.0.0"
+    "@webiny/api-aco-pg": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-audit-logs-sql": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-event-handler-standalone": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-storage-sqlite": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/api-websockets-sql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.21"
-    better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
-    pg: "npm:^8.23.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+    ws: "npm:^8.22.1"
   languageName: unknown
   linkType: soft
 
@@ -11392,6 +11594,7 @@ __metadata:
   dependencies:
     "@electric-sql/pglite": "npm:^0.5.14"
     "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@types/react": "npm:19.3.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11403,11 +11606,14 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     knex: "npm:^3.3.0"
     pg: "npm:^8.23.1"
+    react: "npm:19.3.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -11433,8 +11639,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-sql@workspace:packages/api-headless-cms-sql"
   dependencies:
-    "@electric-sql/pglite": "npm:^0.5.14"
-    "@electric-sql/pglite-socket": "npm:^0.2.17"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11447,7 +11651,6 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
-    pg: "npm:^8.23.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
   languageName: unknown
@@ -11723,7 +11926,6 @@ __metadata:
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
-    bree: "npm:^9.2.9"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
   languageName: unknown
@@ -11789,6 +11991,57 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-storage-pg@npm:0.0.0, @webiny/api-storage-pg@workspace:packages/api-storage-pg":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-storage-pg@workspace:packages/api-storage-pg"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.14"
+    "@electric-sql/pglite-socket": "npm:^0.2.17"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-sql": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-sql": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/stdlib": "npm:^0.0.21"
+    knex: "npm:^3.3.0"
+    pg: "npm:^8.23.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-storage-sqlite@npm:0.0.0, @webiny/api-storage-sqlite@workspace:packages/api-storage-sqlite":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-storage-sqlite@workspace:packages/api-storage-sqlite"
+  dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-sql": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-sql": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms-sql": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-sql": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    better-sqlite3: "npm:^13.0.3"
+    knex: "npm:^3.3.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -12017,6 +12270,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/event-handler-standalone": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -12821,6 +13075,7 @@ __metadata:
     "@aws-sdk/client-lambda-web": "npm:3.1161.0"
     "@aws-sdk/client-s3": "npm:^3.1161.0"
     "@aws-sdk/client-scheduler": "npm:^3.1161.0"
+    "@aws-sdk/client-secrets-manager": "npm:^3.1161.0"
     "@aws-sdk/client-sfn": "npm:^3.1161.0"
     "@aws-sdk/client-sqs": "npm:^3.1161.0"
     "@aws-sdk/client-sts": "npm:^3.1161.0"
@@ -13205,6 +13460,12 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:^7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/dependency-versions@workspace:packages/dependency-versions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/dependency-versions@workspace:packages/dependency-versions"
   languageName: unknown
   linkType: soft
 
@@ -13774,8 +14035,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-standalone-template@workspace:packages/project-standalone-template"
   dependencies:
-    "@webiny/api-event-handler-standalone-pg": "npm:0.0.0"
     "@webiny/api-event-handler-standalone-sql": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-storage-sqlite": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15142,22 +15404,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bree@npm:^9.2.9":
-  version: 9.2.9
-  resolution: "bree@npm:9.2.9"
-  dependencies:
-    "@breejs/later": "npm:^4.2.0"
-    combine-errors: "npm:^3.0.3"
-    cron-validate: "npm:^1.5.3"
-    human-interval: "npm:^2.0.1"
-    is-invalid-path: "npm:^0.1.0"
-    ms: "npm:^2.1.3"
-    p-wait-for: "npm:3"
-    safe-timers: "npm:^1.1.0"
-  checksum: 10/3346841db02bd3a83354a4452d293fa999d49daec8d612d7e0737568687ccd79865b843ee849fb3841943dd80afbc7cc084184b16d4822811715f5bfaabd13cd
-  languageName: node
-  linkType: hard
-
 "broadcast-channel@npm:~7.3.0":
   version: 7.3.0
   resolution: "broadcast-channel@npm:7.3.0"
@@ -15846,16 +16092,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"combine-errors@npm:^3.0.3":
-  version: 3.0.4
-  resolution: "combine-errors@npm:3.0.4"
-  dependencies:
-    custom-error-instance: "npm:2.1.1"
-    lodash.uniqby: "npm:4.5.0"
-  checksum: 10/c4966e134a8dc5e233ff26343ce0e5ba046ba792cd08716a8e79d2dff5003f25a5c42930c916f184801db361e2219826cb546a41fa04587ea84907e94bb13a2d
-  languageName: node
-  linkType: hard
-
 "commander@npm:15.0.0":
   version: 15.0.0
   resolution: "commander@npm:15.0.0"
@@ -16155,15 +16391,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cron-validate@npm:^1.5.3":
-  version: 1.5.3
-  resolution: "cron-validate@npm:1.5.3"
-  dependencies:
-    yup: "npm:1.7.1"
-  checksum: 10/2b249f9be56d9de27d985351547d1bbdf1f912e3d42eac07fb0c2b7a2e3c4ebe59a6b18186546393cf18ef798ccc0d0e16716b10b68acb6147e8a5d405b286a4
-  languageName: node
-  linkType: hard
-
 "cross-env@npm:^10.1.0":
   version: 10.1.0
   resolution: "cross-env@npm:10.1.0"
@@ -16291,13 +16518,6 @@ __metadata:
   version: 3.2.3
   resolution: "csstype@npm:3.2.3"
   checksum: 10/ad41baf7e2ffac65ab544d79107bf7cd1a4bb9bab9ac3302f59ab4ba655d5e30942a8ae46e10ba160c6f4ecea464cc95b975ca2fefbdeeacd6ac63f12f99fe1f
-  languageName: node
-  linkType: hard
-
-"custom-error-instance@npm:2.1.1":
-  version: 2.1.1
-  resolution: "custom-error-instance@npm:2.1.1"
-  checksum: 10/2898b8aa595cbe0d9d916405b708757408f5f54dc787512c7dd160a5f011d42cb62cdab9e3e6a9a92a1e05c676f51869c297e3c76ff9b669ffd1a1594ee11156
   languageName: node
   linkType: hard
 
@@ -18461,15 +18681,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"human-interval@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "human-interval@npm:2.0.1"
-  dependencies:
-    numbered: "npm:^1.1.0"
-  checksum: 10/8f1b37485f554d1f7a3fa2cefdbd9cee2df3ff2cfb86ae1db9f58f2db9d524d44863c2d291f04c810317f2fa7ceeda2188281985c7d65b3774d53c9e835ed55c
-  languageName: node
-  linkType: hard
-
 "human-signals@npm:^2.1.0":
   version: 2.1.0
   resolution: "human-signals@npm:2.1.0"
@@ -18839,13 +19050,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-extglob@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "is-extglob@npm:1.0.0"
-  checksum: 10/5eea8517feeae5206547c0fc838c1416ec763b30093c286e1965a05f46b74a59ad391f912565f3b67c9c31cab4769ab9c35420e016b608acb47309be8d0d6e94
-  languageName: node
-  linkType: hard
-
 "is-extglob@npm:^2.1.1":
   version: 2.1.1
   resolution: "is-extglob@npm:2.1.1"
@@ -18879,15 +19083,6 @@ __metadata:
     has-tostringtag: "npm:^1.0.2"
     safe-regex-test: "npm:^1.1.0"
   checksum: 10/cc50fa01034356bdfda26983c5457103240f201f4663c0de1257802714e40d36bcff7aee21091d37bbba4be962fa5c6475ce7ddbc0abfa86d6bef466e41e50a5
-  languageName: node
-  linkType: hard
-
-"is-glob@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "is-glob@npm:2.0.1"
-  dependencies:
-    is-extglob: "npm:^1.0.0"
-  checksum: 10/089f5f93640072491396a5f075ce73e949a90f35832b782bc49a6b7637d58e392d53cb0b395e059ccab70fcb82ff35d183f6f9ebbcb43227a1e02e3fed5430c9
   languageName: node
   linkType: hard
 
@@ -18936,15 +19131,6 @@ __metadata:
   version: 2.0.0
   resolution: "is-interactive@npm:2.0.0"
   checksum: 10/e8d52ad490bed7ae665032c7675ec07732bbfe25808b0efbc4d5a76b1a1f01c165f332775c63e25e9a03d319ebb6b24f571a9e902669fc1e40b0a60b5be6e26c
-  languageName: node
-  linkType: hard
-
-"is-invalid-path@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "is-invalid-path@npm:0.1.0"
-  dependencies:
-    is-glob: "npm:^2.0.0"
-  checksum: 10/184dd40d9c7a765506e4fdcd7e664f86de68a4d5d429964b160255fe40de1b4323d1b4e6ea76ff87debf788a330e4f27cb1dfe5fc2420405e1c8a16a6ed87092
   languageName: node
   linkType: hard
 
@@ -20029,55 +20215,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash._baseiteratee@npm:~4.7.0":
-  version: 4.7.0
-  resolution: "lodash._baseiteratee@npm:4.7.0"
-  dependencies:
-    lodash._stringtopath: "npm:~4.8.0"
-  checksum: 10/acc155e7d1fdffb3e83cededef8b5f6b4a23989c7abb4fd56638da044e15687dd6cc22f9f96bdcea3db85569a2605c903c8824efdbfd759cde0ff77dfed294be
-  languageName: node
-  linkType: hard
-
-"lodash._basetostring@npm:~4.12.0":
-  version: 4.12.0
-  resolution: "lodash._basetostring@npm:4.12.0"
-  checksum: 10/ccaf83827f86be5c9daeb7b939f761d6a43f0de0781bc3b6772fcb8568fbcbfa1e1082c66e5e12dd23e00ac40a18349c5a793a6a552e3574cbbcb3e1545fcb4c
-  languageName: node
-  linkType: hard
-
-"lodash._baseuniq@npm:~4.6.0":
-  version: 4.6.0
-  resolution: "lodash._baseuniq@npm:4.6.0"
-  dependencies:
-    lodash._createset: "npm:~4.0.0"
-    lodash._root: "npm:~3.0.0"
-  checksum: 10/255b36dd2d6e990d2aece65e40b4d31304e37df3da84ed0194dacbfcc44f537b7ce3a935155f729ac571a14c6ae4737b5f6b6e6b1cc97948067e66fd3c2d4510
-  languageName: node
-  linkType: hard
-
-"lodash._createset@npm:~4.0.0":
-  version: 4.0.3
-  resolution: "lodash._createset@npm:4.0.3"
-  checksum: 10/a16234cc1ab861e91719dbcd4a0dfe293ddf613c415b2d8963254ef9599bb6313c98eeba35a95daa7e2ae6ca9f0013b47dad7b8616ca247e7296a75f567a42a6
-  languageName: node
-  linkType: hard
-
-"lodash._root@npm:~3.0.0":
-  version: 3.0.1
-  resolution: "lodash._root@npm:3.0.1"
-  checksum: 10/3e12c6f409ae13164a8db358f44a691f1e038dad4e25463802980d0ed641ed118c147b65657501c51778c885422b913264dfbe33ec0c5d676443dd630a7e685a
-  languageName: node
-  linkType: hard
-
-"lodash._stringtopath@npm:~4.8.0":
-  version: 4.8.0
-  resolution: "lodash._stringtopath@npm:4.8.0"
-  dependencies:
-    lodash._basetostring: "npm:~4.12.0"
-  checksum: 10/fe8829dae5ac15764b7a3ca8c45f13baa3a5c2922d86eacbd65d79b6b51842b91a226bf050a88ff5146f9ab7ffcd7966233ba3a51ac5cfcb70220c7675a82749
-  languageName: node
-  linkType: hard
-
 "lodash.camelcase@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
@@ -20131,16 +20268,6 @@ __metadata:
   version: 4.1.1
   resolution: "lodash.once@npm:4.1.1"
   checksum: 10/202f2c8c3d45e401b148a96de228e50ea6951ee5a9315ca5e15733d5a07a6b1a02d9da1e7fdf6950679e17e8ca8f7190ec33cae47beb249b0c50019d753f38f3
-  languageName: node
-  linkType: hard
-
-"lodash.uniqby@npm:4.5.0":
-  version: 4.5.0
-  resolution: "lodash.uniqby@npm:4.5.0"
-  dependencies:
-    lodash._baseiteratee: "npm:~4.7.0"
-    lodash._baseuniq: "npm:~4.6.0"
-  checksum: 10/40a4fdd4c31323fcb6db91ec3124020333212ca1f13e75cc9939decdd33e8b176d204fb277be36a51a855c2c90e14d67932b3b130b2f0eedc729e4cb9cdcaed1
   languageName: node
   linkType: hard
 
@@ -21286,13 +21413,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"numbered@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "numbered@npm:1.1.0"
-  checksum: 10/281030927794171ecff783facfaebcd2f1e3d1ff74fbd5739c4d5968d8d21ba0f60c41f6e4b9d3a72e823889444bdfe6030147e0155e61458741ad41e7fc5af2
-  languageName: node
-  linkType: hard
-
 "oauth4webapi@npm:^3.8.8":
   version: 3.8.8
   resolution: "oauth4webapi@npm:3.8.8"
@@ -22105,7 +22225,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-timeout@npm:^3.0.0, p-timeout@npm:^3.2.0":
+"p-timeout@npm:^3.2.0":
   version: 3.2.0
   resolution: "p-timeout@npm:3.2.0"
   dependencies:
@@ -22118,15 +22238,6 @@ __metadata:
   version: 2.2.0
   resolution: "p-try@npm:2.2.0"
   checksum: 10/f8a8e9a7693659383f06aec604ad5ead237c7a261c18048a6e1b5b85a5f8a067e469aa24f5bc009b991ea3b058a87f5065ef4176793a200d4917349881216cae
-  languageName: node
-  linkType: hard
-
-"p-wait-for@npm:3":
-  version: 3.2.0
-  resolution: "p-wait-for@npm:3.2.0"
-  dependencies:
-    p-timeout: "npm:^3.0.0"
-  checksum: 10/7f6840e9233d96836a233dee9c5b1c711bfdf76228d0eaea68fa74a79418f5eef6dc1915dadd28d17312a99f6a53daa308b1c18b779bc9c1dabcae3d6b35a086
   languageName: node
   linkType: hard
 
@@ -22877,13 +22988,6 @@ __metadata:
     object-assign: "npm:^4.1.1"
     react-is: "npm:^16.13.1"
   checksum: 10/7d959caec002bc964c86cdc461ec93108b27337dabe6192fb97d69e16a0c799a03462713868b40749bfc1caf5f57ef80ac3e4ffad3effa636ee667582a75e2c0
-  languageName: node
-  linkType: hard
-
-"property-expr@npm:^2.0.5":
-  version: 2.0.6
-  resolution: "property-expr@npm:2.0.6"
-  checksum: 10/89977f4bb230736c1876f460dd7ca9328034502fd92e738deb40516d16564b850c0bbc4e052c3df88b5b8cd58e51c93b46a94bea049a3f23f4a022c038864cab
   languageName: node
   linkType: hard
 
@@ -24025,13 +24129,6 @@ __metadata:
   version: 2.5.0
   resolution: "safe-stable-stringify@npm:2.5.0"
   checksum: 10/2697fa186c17c38c3ca5309637b4ac6de2f1c3d282da27cd5e1e3c88eca0fb1f9aea568a6aabdf284111592c8782b94ee07176f17126031be72ab1313ed46c5c
-  languageName: node
-  linkType: hard
-
-"safe-timers@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "safe-timers@npm:1.1.0"
-  checksum: 10/6387c1e09fae12c4b96fb62e2575ace9ec6b1f73ad73d937e0ecc79de92cb64e56dbbfa60a8d5d7c54c035960457fa59cffd5d6b396fe0d82ed8042c889a7f1a
   languageName: node
   linkType: hard
 
@@ -25506,13 +25603,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tiny-case@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "tiny-case@npm:1.0.3"
-  checksum: 10/3f7a30c39d5b0e1bc097b0b271bec14eb5b836093db034f35a0de26c14422380b50dc12bfd37498cf35b192f5df06f28a710712c87ead68872a9e37ad6f6049d
-  languageName: node
-  linkType: hard
-
 "tiny-emitter@npm:2.1.0":
   version: 2.1.0
   resolution: "tiny-emitter@npm:2.1.0"
@@ -25655,13 +25745,6 @@ __metadata:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
   checksum: 10/952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
-  languageName: node
-  linkType: hard
-
-"toposort@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "toposort@npm:2.0.2"
-  checksum: 10/6f128353e4ed9739e49a28fb756b0a00f3752b29fc9b862ff781446598ee3b486cd229697feebc4eabd916eac5de219f3dae450c585bf13673f6b133a7226e06
   languageName: node
   linkType: hard
 
@@ -25850,13 +25933,6 @@ __metadata:
   version: 4.1.0
   resolution: "type-detect@npm:4.1.0"
   checksum: 10/e363bf0352427a79301f26a7795a27718624c49c576965076624eb5495d87515030b207217845f7018093adcbe169b2d119bb9b7f1a31a92bfbb1ab9639ca8dd
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "type-fest@npm:2.19.0"
-  checksum: 10/7bf9e8fdf34f92c8bb364c0af14ca875fac7e0183f2985498b77be129dc1b3b1ad0a6b3281580f19e48c6105c037fb966ad9934520c69c6434d17fd0af4eed78
   languageName: node
   linkType: hard
 
@@ -27164,18 +27240,6 @@ __metadata:
   version: 2.2.0
   resolution: "yoctocolors@npm:2.2.0"
   checksum: 10/8b2761daad30ca3b5b717fc12d9a30aea23f8d757d355b29b6b53c3a570de236fd85b17040c5196b18573fe38a4a981f48f111efa9a29c743e0878e26137b2b1
-  languageName: node
-  linkType: hard
-
-"yup@npm:1.7.1":
-  version: 1.7.1
-  resolution: "yup@npm:1.7.1"
-  dependencies:
-    property-expr: "npm:^2.0.5"
-    tiny-case: "npm:^1.0.3"
-    toposort: "npm:^2.0.2"
-    type-fest: "npm:^2.19.0"
-  checksum: 10/90cef0ebe3ba37d329e9e3f2a7a20b3d84572aeccffd81681e5eaaf6145cb03c0737603f3f57bc60723592cc0323886e69f4e0f76ccb299ca3f9ce8ead3b6496
   languageName: node
   linkType: hard
 

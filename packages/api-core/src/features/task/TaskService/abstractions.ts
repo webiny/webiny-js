@@ -36,6 +36,13 @@ export interface ITaskAbortParams {
     message?: string;
 }
 
+/**
+ * Every method returns its failures and never rejects: an unknown definition, an `onBeforeTrigger`
+ * hook that throws or a transport that can't send the task all come back as `Result.fail`. Two
+ * cases are logged and reported as a success, because the work has already happened: `trigger`
+ * when the transport took the task but its event response couldn't be stored, and `abort` when
+ * the task is aborted but its `onAbort` hook throws.
+ */
 export interface ITaskService {
     trigger: <
         T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,

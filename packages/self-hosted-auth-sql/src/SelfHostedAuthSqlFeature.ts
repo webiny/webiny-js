@@ -1,29 +1,25 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Knex } from "knex";
-import { TableManager } from "@webiny/api-core-sql/TableManager.js";
 import { CredentialsSqlFeature } from "./credentials/index.js";
 import { PasswordResetCodesSqlFeature } from "./passwordResetCodes/index.js";
-
-export interface SelfHostedAuthSqlConfig {
-    knex: Knex;
-    tableNamePrefix?: string;
-}
+import { SelfHostedAuthSchemaSetup } from "./SelfHostedAuthSchemaSetup.js";
 
 /**
  * Registers the SQL implementations of the self-hosted auth storage operations: four for
  * credentials, six for the codes the self-service password reset emails. Register this alongside
  * `SelfHostedAuthApiFeature`, which consumes the abstractions.
  *
- * One `TableManager` for both tables. It caches which tables it has verified per instance and
- * registers itself in a global list, so one per operation would mean ten existence checks per
- * container and ten entries in that list.
+ * It runs on the connection (`KnexClient`) and the table settings (`SqlSchemaConfig`: prefix and
+ * schema-managed) in the container, which the SQL storage keeps in the root. The standalone server
+ * registers it per request.
+ *
+ * It also registers the `selfHostedAuth` schema setup step, which creates both tables.
  */
-export const SelfHostedAuthSqlFeature = createFeature<SelfHostedAuthSqlConfig>({
+export const SelfHostedAuthSqlFeature = createFeature({
     name: "SelfHostedAuthSql",
-    register(container, { knex, tableNamePrefix }) {
-        const tableManager = new TableManager(knex, tableNamePrefix);
+    register(container) {
+        CredentialsSqlFeature.register(container);
+        PasswordResetCodesSqlFeature.register(container);
 
-        CredentialsSqlFeature.register(container, { knex, tableManager });
-        PasswordResetCodesSqlFeature.register(container, { knex, tableManager });
+        container.register(SelfHostedAuthSchemaSetup);
     }
 });

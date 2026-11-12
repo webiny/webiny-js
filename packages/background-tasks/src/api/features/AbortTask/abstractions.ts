@@ -6,6 +6,8 @@ import {
     TaskNotFoundError,
     TaskAbortError
 } from "~/api/domain/errors.js";
+import { TaskLogNotFoundError } from "~/api/domain/errors.js";
+import { BackgroundTaskPersistenceError } from "~/api/domain/errors.js";
 
 export interface IAbortTaskUseCase {
     execute<
@@ -25,6 +27,8 @@ export interface IAbortTaskUseCaseErrors {
     definitionNotFound: TaskDefinitionNotFoundError;
     taskNotFound: TaskNotFoundError;
     abortError: TaskAbortError;
+    logNotFound: TaskLogNotFoundError;
+    persistence: BackgroundTaskPersistenceError;
 }
 
 type UseCaseError = IAbortTaskUseCaseErrors[keyof IAbortTaskUseCaseErrors];

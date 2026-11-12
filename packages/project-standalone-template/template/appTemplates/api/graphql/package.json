@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
-    "@webiny/api-event-handler-standalone-pg": "latest",
     "@webiny/api-event-handler-standalone-sql": "latest",
     "@webiny/api-aco": "latest",
     "@webiny/api-core": "latest",
@@ -13,6 +12,8 @@
     "@webiny/api-headless-cms-aco": "latest",
     "@webiny/api-mailer": "latest",
     "@webiny/api-record-locking": "latest",
+    "@webiny/api-storage-pg": "latest",
+    "@webiny/api-storage-sqlite": "latest",
     "@webiny/api-website-builder": "latest",
     "@webiny/api-websockets": "latest",
     "@webiny/api-workflows": "latest",

@@ -8,17 +8,15 @@
  * Function URL handler. They are separate Lambda functions built from the same bundle. The Lambda web
  * function's entry is `startAwsDdbWebApi`, in its own file.
  */
-import {
-    createWebinyApiHandler as createBaseHandler,
-    createWebinyStreamApiHandler as createBaseStreamHandler,
-    type CreateWebinyApiHandlerConfig as BaseConfig
-} from "@webiny/api-event-handler-aws";
-import { registerRootStorage } from "./registerRootStorage.js";
+import { createWebinyApiHandler as createBaseHandler } from "@webiny/api-event-handler-aws";
+import { createWebinyStreamApiHandler as createBaseStreamHandler } from "@webiny/api-event-handler-aws";
+import { storageConfig } from "./storageConfig.js";
+import type { CreateAwsDdbApiHandlerConfig } from "./storageConfig.js";
 
-export type CreateAwsDdbApiHandlerConfig = Pick<BaseConfig, "extensions" | "documentClient">;
+export type { CreateAwsDdbApiHandlerConfig };
 
 export function createAwsDdbApiHandler(config: CreateAwsDdbApiHandlerConfig) {
-    return createBaseHandler({ ...config, registerRootStorage });
+    return createBaseHandler(storageConfig(config));
 }
 
 /**
@@ -26,5 +24,5 @@ export function createAwsDdbApiHandler(config: CreateAwsDdbApiHandlerConfig) {
  * `InvokeMode: RESPONSE_STREAM`. Identical storage; only the transport differs.
  */
 export function createAwsDdbStreamApiHandler(config: CreateAwsDdbApiHandlerConfig) {
-    return createBaseStreamHandler({ ...config, registerRootStorage });
+    return createBaseStreamHandler(storageConfig(config));
 }

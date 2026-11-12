@@ -130,18 +130,6 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize, web = fal
                         resourceRegExp: /^bufferutil$/,
                         contextRegExp: /[\\/]ws[\\/]/
                     })
-                ],
-                // bree's root-jobs loader does `await import(importUrl)` on a path it builds at runtime,
-                // which rspack can't resolve statically, so it reports a critical dependency. That import
-                // sits behind `if (this.config.root && ...)` (node_modules/bree/src/index.js), and
-                // BreeSchedulerService constructs Bree with `root: false` — the branch never runs, and
-                // nothing is missing from the bundle. Matched narrowly so a genuine expression-based
-                // import anywhere else still gets reported.
-                ignoreWarnings: [
-                    {
-                        module: /node_modules[\\/]bree[\\/]/,
-                        message: /Critical dependency: the request of a dependency is an expression/
-                    }
                 ]
             }
         },

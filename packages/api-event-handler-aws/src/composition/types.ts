@@ -1,16 +1,14 @@
 import type { Container } from "@webiny/di";
-import type { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { registerExtensions } from "@webiny/handler";
-
-export interface RegisterRootStorageContext {
-    documentClient: ReturnType<typeof getDocumentClient>;
-}
 
 /**
  * The transport-agnostic half of a Webiny AWS Lambda composition root, shared by the buffered API
  * Gateway handler (`createWebinyApiHandler`) and the response-streaming Function URL handler
  * (`createWebinyStreamApiHandler`) so the two cannot drift on storage, identity providers, or the
  * per-request feature stack.
+ *
+ * The base assumes no database. The storage variant registers its database, and everything
+ * built on it, in `registerRootStorage`.
  */
 export interface WebinyApiCompositionConfig {
     /**
@@ -19,17 +17,9 @@ export interface WebinyApiCompositionConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * DynamoDB document client. Defaults to the standard AWS client (`getDocumentClient()`).
-     * Injectable so integration tests can point the handler at a local (dynalite) DynamoDB.
+     * Register the storage-variant features in the ROOT container: the database client, the CMS
+     * storage operations, the storage registries, and (for the OpenSearch variant) the OpenSearch
+     * core. Supplied by the variant package.
      */
-    documentClient?: ReturnType<typeof getDocumentClient>;
-    /**
-     * Register the storage-variant features in the ROOT container: the CMS storage operations, the
-     * DDB storage registries, and (for the OpenSearch variant) the OpenSearch core. Supplied by the
-     * variant package.
-     */
-    registerRootStorage: (
-        container: Container,
-        ctx: RegisterRootStorageContext
-    ) => void | Promise<void>;
+    registerRootStorage: (container: Container) => void | Promise<void>;
 }
