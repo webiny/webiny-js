@@ -1,6 +1,5 @@
 import type { NormalJob } from "github-actions-wac";
-import { createConfigureApiRouteSteps } from "../steps/index.js";
-import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { createJob } from "../jobs/index.js";
 import { ACTION } from "../utils/index.js";
@@ -214,15 +213,11 @@ const createBuildStandaloneProjectSteps = (
         name: "Create a new standalone Webiny project",
         run: `npx create-webiny-project@local-npm ${DIR_STANDALONE_PROJECT} --tag local-npm --no-interactive --hosting-type standalone --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
     },
-    ...createConfigureBugReporterSteps({
+    ...createConfigureTestProjectSteps({
         workingDirectory,
         projectPath: PATH_STANDALONE_PROJECT,
-        if: bugReporterIf
-    }),
-    ...createConfigureApiRouteSteps({
-        workingDirectory,
-        projectPath: PATH_STANDALONE_PROJECT,
-        if: apiRouteIf
+        bugReporterIf,
+        apiRouteIf
     }),
     {
         name: "Print CLI version",

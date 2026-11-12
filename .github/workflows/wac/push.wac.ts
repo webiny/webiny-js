@@ -11,8 +11,7 @@ import {
 import { VALKEY_SERVICE } from "./utils/index.js";
 import { VALKEY_TEST_URL } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
-import { createConfigureApiRouteSteps } from "./steps/index.js";
-import { createConfigureBugReporterSteps } from "./steps/index.js";
+import { createConfigureTestProjectSteps } from "./steps/index.js";
 import { createDeployWebinySteps } from "./steps/index.js";
 import { createGlobalBuildCacheSteps } from "./steps/index.js";
 import { createInstallBuildSteps } from "./steps/index.js";
@@ -169,11 +168,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                       }
                   ]
                 : []),
-            ...createConfigureBugReporterSteps({
-                workingDirectory: DIR_WEBINY_JS,
-                projectPath: PATH_TEST_PROJECT
-            }),
-            ...createConfigureApiRouteSteps({
+            ...createConfigureTestProjectSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 projectPath: PATH_TEST_PROJECT
             }),

@@ -1,7 +1,6 @@
 import type { NormalJob } from "github-actions-wac";
 import { createCheckoutPrSteps } from "../steps/index.js";
-import { createConfigureApiRouteSteps } from "../steps/index.js";
-import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { ACTION } from "../utils/index.js";
@@ -140,15 +139,11 @@ export const createAwsJobs = (
                       }
                   ]
                 : []),
-            ...createConfigureBugReporterSteps({
+            ...createConfigureTestProjectSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 projectPath: PATH_TEST_PROJECT,
-                if: bugReporter?.has
-            }),
-            ...createConfigureApiRouteSteps({
-                workingDirectory: DIR_WEBINY_JS,
-                projectPath: PATH_TEST_PROJECT,
-                if: apiRoute?.has
+                bugReporterIf: bugReporter?.has,
+                apiRouteIf: apiRoute?.has
             }),
             {
                 name: "Print CLI version",
