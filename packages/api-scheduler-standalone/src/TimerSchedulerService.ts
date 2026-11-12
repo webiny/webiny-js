@@ -1,5 +1,3 @@
-import Bree from "bree";
-import { fileURLToPath } from "node:url";
 import { WebinyError } from "@webiny/error";
 import {
     type ISchedulerServiceCreateParams,
@@ -8,11 +6,18 @@ import {
 } from "@webiny/api-scheduler/shared/abstractions.js";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 
-// bree loads this file at runtime via `new Worker(path)`. Referencing it through `new URL` (rather
-// than path.join) makes the app bundler emit pollWorker into build/ as an asset, resolved relative
-// to this module (the server build sets assetPrefix "auto"); fileURLToPath then hands bree a plain
-// path string. Un-bundled (dev), import.meta.url is real and it resolves to the dist/jobs file.
-const workerPath = fileURLToPath(new URL("./jobs/pollWorker.js", import.meta.url));
+/*
+ * The longest delay `setTimeout` takes (2^31 - 1 ms, about 24.8 days). A longer one fires at once, so
+ * an action due later than this gets a timer for this long and is re-armed when it fires.
+ */
+const MAX_TIMER_DELAY_MS = 2 ** 31 - 1;
+
+/*
+ * How many actions this process runs at the same time. Each one runs in a request container of its
+ * own and talks to the database, so hundreds due at the same moment are run this many at a time
+ * rather than all at once.
+ */
+const DEFAULT_MAX_CONCURRENT_ACTIONS = 10;
 
 export interface IPendingAction {
     id: string;
@@ -25,72 +30,65 @@ interface IScheduledJob {
     namespace: string;
     tenant: string;
     scheduledFor: Date;
+    timer: ReturnType<typeof setTimeout>;
 }
 
-export interface IBreeSchedulerServiceParams {
+export interface ITimerSchedulerServiceParams {
     logger: Logger.Interface;
     runAction: (id: string, namespace: string, tenant: string) => Promise<void>;
+    maxConcurrentActions?: number;
 }
 
 /**
- * One-shot bree job per scheduled action — mirrors EventBridge behaviour. This is a long-lived root
- * SINGLETON (started once at boot): it holds this process's live timers for ALL tenants, so each job
- * records its own tenant and `runAction` is called with it (the action runs outside any request, so
- * the tenant can't be read from a request context).
+ * One in-process timer per scheduled action, the standalone counterpart of an EventBridge schedule.
+ * This is a long-lived root SINGLETON (started once at boot): it holds this process's live timers for
+ * ALL tenants, so each job records its own tenant and `runAction` is called with it (the action runs
+ * outside any request, so the tenant can't be read from a request context).
  *
  * With several processes, each holds its own timers for the same actions: `recover` runs again on a
  * timer to arm what this process has not seen, and whoever supplies `runAction` makes sure an action
  * runs once.
  */
-export class BreeSchedulerService implements SchedulerService.Interface {
-    private readonly bree;
+export class TimerSchedulerService implements SchedulerService.Interface {
     private readonly jobs = new Map<string, IScheduledJob>();
     private readonly logger;
     private readonly runAction;
+    private readonly maxConcurrentActions;
     // Triggers started and not finished yet, so a shutdown can wait for them.
     private readonly running = new Set<Promise<void>>();
+    // Triggers waiting for one of the `maxConcurrentActions` slots.
+    private readonly waiting: Array<() => void> = [];
+    private active = 0;
     /*
      * Set by `stop`. A recovery that started before the stop runs overdue actions one by one and can
-     * still be going after it; this keeps it from starting more actions or arming timers on a Bree
-     * that is stopped. Actions it skips stay stored and are picked up by another process's recovery.
+     * still be going after it; this keeps it from starting more actions or arming timers. Actions it
+     * skips stay stored and are picked up by another process's recovery.
      */
     private stopped = false;
 
-    public constructor(params: IBreeSchedulerServiceParams) {
+    public constructor(params: ITimerSchedulerServiceParams) {
         this.logger = params.logger;
         this.runAction = params.runAction;
-
-        this.bree = new Bree({
-            root: false,
-            jobs: [],
-            logger: false,
-            /*
-             * Bree runs each job as a script in a worker thread; it cannot call a function. Running an
-             * action needs the DI container, database and tenancy, which only the main thread has, so
-             * the job script (`jobs/pollWorker.js`) only posts "poll" and exits. Bree passes that
-             * message here, in the main thread of the Webiny API process that started Bree, and the
-             * action runs in this process. `name` is the job's name, which is the action id.
-             */
-            workerMessageHandler: async ({ name }) => {
-                const job = this.jobs.get(name);
-                if (!job) {
-                    return;
-                }
-
-                this.jobs.delete(name);
-                await this.trigger(name, job.namespace, job.tenant);
-            }
-        });
+        this.maxConcurrentActions = params.maxConcurrentActions ?? DEFAULT_MAX_CONCURRENT_ACTIONS;
     }
 
     public async start(): Promise<void> {
         this.stopped = false;
-        await this.bree.start();
     }
 
+    /**
+     * Clears every timer and keeps waiting triggers from starting. Triggers already running are not
+     * interrupted; `waitForRunning` waits for them.
+     */
     public async stop(): Promise<void> {
         this.stopped = true;
-        await this.bree.stop();
+        for (const job of this.jobs.values()) {
+            clearTimeout(job.timer);
+        }
+        this.jobs.clear();
+        for (const release of this.waiting.splice(0)) {
+            release();
+        }
     }
 
     /**
@@ -127,7 +125,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             return this.update(params);
         }
 
-        await this.arm(id, { namespace, tenant, scheduledFor: scheduleFor });
+        this.arm(id, namespace, tenant, scheduleFor);
     }
 
     public async update(params: ISchedulerServiceUpdateParams): Promise<void> {
@@ -141,7 +139,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             );
         }
 
-        await this.safeRemove(id);
+        this.disarm(id);
         await this.create(params);
     }
 
@@ -152,7 +150,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             throw new WebinyError(`Cannot delete schedule "${id}" because it does not exist.`);
         }
 
-        await this.safeRemove(id);
+        this.disarm(id);
     }
 
     public async exists(params: SchedulerService.ExistsParams): Promise<boolean> {
@@ -163,7 +161,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     /**
      * (Re)arm timers for a batch of persisted pending actions. Runs at boot (per tenant) to restore
      * schedules after a restart, and then on a timer, so this process also arms actions another
-     * process scheduled or moved. Overdue actions fire immediately.
+     * process scheduled or moved. Overdue actions run one by one, before the next action is looked at.
      *
      * An action already armed for the same time is left as it is; one armed for a different time was
      * moved by another process and is re-armed.
@@ -176,7 +174,6 @@ export class BreeSchedulerService implements SchedulerService.Interface {
                 return;
             }
             if (action.scheduledFor <= now) {
-                /* Overdue — execute immediately. */
                 await this.trigger(action.id, action.namespace, action.tenant);
                 continue;
             }
@@ -185,61 +182,82 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             if (armed && armed.scheduledFor.getTime() === action.scheduledFor.getTime()) {
                 continue;
             }
-            if (armed) {
-                await this.safeRemove(action.id);
-            }
 
-            await this.arm(action.id, {
-                namespace: action.namespace,
-                tenant: action.tenant,
-                scheduledFor: action.scheduledFor
-            });
+            this.disarm(action.id);
+            this.arm(action.id, action.namespace, action.tenant, action.scheduledFor);
         }
     }
 
-    private async arm(id: string, job: IScheduledJob): Promise<void> {
+    private arm(id: string, namespace: string, tenant: string, scheduledFor: Date): void {
         if (this.stopped) {
             return;
         }
-        this.jobs.set(id, job);
 
-        await this.bree.add({
-            name: id,
-            date: job.scheduledFor,
-            path: workerPath
-        });
+        const untilDue = scheduledFor.getTime() - Date.now();
+        const capped = Math.min(untilDue, MAX_TIMER_DELAY_MS);
+        const delay = Math.max(capped, 0);
+        const timer = setTimeout(() => {
+            if (this.jobs.get(id)?.timer !== timer) {
+                return;
+            }
+            this.jobs.delete(id);
+            if (scheduledFor.getTime() > Date.now()) {
+                this.arm(id, namespace, tenant, scheduledFor);
+                return;
+            }
+            void this.trigger(id, namespace, tenant);
+        }, delay);
+        // An armed action alone should not keep the process running.
+        timer.unref();
 
-        await this.bree.start(id);
+        this.jobs.set(id, { namespace, tenant, scheduledFor, timer });
+    }
+
+    private disarm(id: string): void {
+        const job = this.jobs.get(id);
+        if (!job) {
+            return;
+        }
+        clearTimeout(job.timer);
+        this.jobs.delete(id);
     }
 
     private async trigger(id: string, namespace: string, tenant: string): Promise<void> {
+        await this.acquire();
         if (this.stopped) {
+            this.release();
             return;
         }
         const triggered = this.runAction(id, namespace, tenant);
         this.running.add(triggered);
         try {
             await triggered;
+        } catch (error) {
+            this.logger.error({ error, id, tenant }, "[scheduler] scheduled action failed");
         } finally {
             this.running.delete(triggered);
+            this.release();
         }
     }
 
-    private async safeRemove(id: string): Promise<void> {
-        this.jobs.delete(id);
-
-        try {
-            await this.bree.stop(id);
-        } catch {
-            this.logger.debug(`Could not stop bree job "${id}" — it may have already fired.`);
+    private acquire(): Promise<void> {
+        if (this.active < this.maxConcurrentActions) {
+            this.active++;
+            return Promise.resolve();
         }
+        return new Promise(resolve => {
+            this.waiting.push(() => {
+                this.active++;
+                resolve();
+            });
+        });
+    }
 
-        try {
-            await this.bree.remove(id);
-        } catch {
-            this.logger.debug(
-                `Could not remove bree job "${id}" — it may have already been removed.`
-            );
+    private release(): void {
+        this.active--;
+        const next = this.waiting.shift();
+        if (next) {
+            next();
         }
     }
 }

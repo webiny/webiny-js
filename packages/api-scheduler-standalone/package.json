@@ -15,13 +15,12 @@
     "scheduler:server"
   ],
   "author": "Webiny Ltd",
-  "description": "Standalone cron-based implementation for the Webiny action scheduler.",
+  "description": "Standalone in-process timer implementation for the Webiny action scheduler.",
   "license": "MIT",
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "bree": "^9.2.9"
+    "@webiny/error": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

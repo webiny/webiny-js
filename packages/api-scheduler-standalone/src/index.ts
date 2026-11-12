@@ -1,2 +1,2 @@
-export { BreeSchedulerService } from "./BreeSchedulerService.js";
-export type { IPendingAction, IBreeSchedulerServiceParams } from "./BreeSchedulerService.js";
+export { TimerSchedulerService } from "./TimerSchedulerService.js";
+export type { IPendingAction, ITimerSchedulerServiceParams } from "./TimerSchedulerService.js";

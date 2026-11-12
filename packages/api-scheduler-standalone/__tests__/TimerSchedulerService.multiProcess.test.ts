@@ -3,8 +3,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
-import { BreeSchedulerService } from "~/BreeSchedulerService.js";
-import type { IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
+import { TimerSchedulerService } from "~/TimerSchedulerService.js";
+import type { ITimerSchedulerServiceParams } from "~/TimerSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
 const futureDate = (ms: number) => new Date(Date.now() + ms);
@@ -14,19 +14,19 @@ const pastDate = (ms: number) => new Date(Date.now() - ms);
  * With several processes, recovery runs every minute and passes the same actions again, so recover
  * has to be safe to repeat, and pick up an action another process moved.
  */
-describe("BreeSchedulerService — repeated recovery and shutdown", () => {
+describe("TimerSchedulerService — repeated recovery and shutdown", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
-    let service: BreeSchedulerService;
-    let runAction: IBreeSchedulerServiceParams["runAction"];
+    let service: TimerSchedulerService;
+    let runAction: ITimerSchedulerServiceParams["runAction"];
 
     afterEach(async () => {
         await service.stop();
     });
 
-    const createService = (trigger?: IBreeSchedulerServiceParams["runAction"]) => {
+    const createService = (trigger?: ITimerSchedulerServiceParams["runAction"]) => {
         runAction = trigger ?? vi.fn().mockResolvedValue(undefined);
-        service = new BreeSchedulerService({ logger: createMockLogger(), runAction });
+        service = new TimerSchedulerService({ logger: createMockLogger(), runAction });
         return service;
     };
 

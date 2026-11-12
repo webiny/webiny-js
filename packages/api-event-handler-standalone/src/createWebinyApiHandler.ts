@@ -6,7 +6,7 @@
  * RequestIdentityLoader / RequestTenantLoader). The per-request feature stack is the transport-agnostic
  * `registerApiRequestStack` from `@webiny/api-event-handler-core` — the SAME stack the AWS handler uses.
  * The realtime transport hook installs the server WebSockets transport (vs AWS's API Gateway Management
- * API) with a SINGLE-PROCESS, in-process implementation. Background tasks and the Bree scheduler are
+ * API) with a SINGLE-PROCESS, in-process implementation. Background tasks and the scheduler are
  * ROOT-container singletons (below) — mirroring how the AWS handler registers background tasks at root,
  * and the WebSockets connection manager — rather than per-request transports; the scheduler fires timers
  * in-process (vs AWS's EventBridge). The storage variant (and identity provider) is injected via
@@ -174,7 +174,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             BackgroundTasksStandaloneFeature.register(rootContainer);
 
             // ── Scheduler (root) ───────────────────────────────────────
-            // The Bree scheduler is a single long-lived instance for ALL tenants, started once at boot
+            // The scheduler is a single long-lived instance for ALL tenants, started once at boot
             // (onServer, below) — the counterpart of the WebSockets connection manager, NOT a per-request
             // transport. Registered here as SchedulerService (per-request create/update/delete during
             // mutations manipulate this one live timer set) plus the run/recover event handlers. When a
