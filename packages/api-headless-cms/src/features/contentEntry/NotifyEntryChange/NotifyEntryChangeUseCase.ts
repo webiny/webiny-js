@@ -15,8 +15,8 @@ const ACTIONS: Record<UseCaseAbstraction.Params["change"], string> = {
 };
 
 /*
- * Called by the entry tools, not from the entry lifecycle events the way team, role and user changes
- * are announced. Entries are written in bulk (imports, bulk actions, scheduled publishing), and a
+ * Called explicitly (today by the assistant's entry tools), not from the entry lifecycle events the
+ * way team, role and user changes are announced. Entries are written in bulk (imports, bulk actions, scheduled publishing), and a
  * message per write would mean a websocket send per entry and an admin read-back per message.
  *
  * The change is saved whether or not the message goes out, so a failed send is swallowed rather than

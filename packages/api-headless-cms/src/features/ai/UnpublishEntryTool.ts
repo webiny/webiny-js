@@ -3,7 +3,7 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/index.js";
-import { NotifyEntryChangeUseCase } from "./NotifyEntryChange/index.js";
+import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 

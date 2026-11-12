@@ -13,7 +13,7 @@ import {
     ENTRY_CREATED_WEBSOCKET_ACTION,
     ENTRY_DELETED_WEBSOCKET_ACTION,
     ENTRY_UPDATED_WEBSOCKET_ACTION
-} from "~/features/ai/NotifyEntryChange/index.js";
+} from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "../lifecycleHooks/mocks/article.model";
 import { createModelPlugin } from "~/plugins/index.js";

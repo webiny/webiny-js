@@ -4,8 +4,9 @@ import { RemoveDeletedEntryFromCache } from "./RemoveDeletedEntryFromCache.js";
 import { EntryWebsocketMessages } from "./EntryWebsocketMessages.js";
 
 /**
- * Keeps the entries lists current when the assistant creates, changes or deletes entries. Needs
- * `GetEntryFeature` and the model features in the same container.
+ * Keeps the entries lists current when the assistant creates, changes or deletes entries. Register it
+ * once, in the container the websocket bridge publishes from, alongside `ContentEntryFeature` and
+ * `ModelFeature`, whose `GetEntryUseCase` and `GetModelUseCase` the refresh handler uses.
  */
 export const EntryEventsFeature = createFeature({
     name: "Cms/EntryEvents",

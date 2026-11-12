@@ -4,7 +4,8 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/index.js";
-import { NotifyEntryChangeUseCase } from "./NotifyEntryChange/index.js";
+import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { getLatestEntryRevision } from "./models.js";
 import { getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 
@@ -37,14 +38,8 @@ class UpdateEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     async execute(input: Input): Promise<EntrySummary & { newRevision: boolean }> {
         const model = await getWritableModel(this.getModel, input.modelId);
 
-        const latest = await this.getLatestRevision.execute(model, { id: input.entryId });
-        if (latest.isFail()) {
-            throw new Error(
-                `Entry "${input.entryId}" not found in "${input.modelId}": ${latest.error.message}. Call queryEntries for valid entry IDs.`
-            );
-        }
+        const revision = await getLatestEntryRevision(this.getLatestRevision, model, input.entryId);
 
-        const revision = latest.value;
         const newRevision = Boolean(revision.locked);
 
         const result = newRevision

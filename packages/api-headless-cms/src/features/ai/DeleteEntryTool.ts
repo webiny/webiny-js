@@ -3,7 +3,8 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { MoveEntryToBinUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
-import { NotifyEntryChangeUseCase } from "./NotifyEntryChange/index.js";
+import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { getLatestEntryRevision } from "./models.js";
 import { getWritableModel } from "./models.js";
 
 const inputSchema = z.object({
@@ -39,14 +40,8 @@ class DeleteEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     async execute(input: Input): Promise<DeletedEntry> {
         const model = await getWritableModel(this.getModel, input.modelId);
 
-        const latest = await this.getLatestRevision.execute(model, { id: input.entryId });
-        if (latest.isFail()) {
-            throw new Error(
-                `Entry "${input.entryId}" not found in "${input.modelId}": ${latest.error.message}. Call queryEntries for valid entry IDs.`
-            );
-        }
+        const entry = await getLatestEntryRevision(this.getLatestRevision, model, input.entryId);
 
-        const entry = latest.value;
         const title = String(entry.values[model.titleFieldId] ?? entry.id);
 
         if (title !== input.title) {

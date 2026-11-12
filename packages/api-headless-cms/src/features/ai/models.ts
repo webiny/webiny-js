@@ -1,6 +1,7 @@
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 import type { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
-import type { CmsModel } from "~/types/index.js";
+import type { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import type { CmsEntry, CmsModel } from "~/types/index.js";
 
 const HIDDEN_MODEL_GROUP = "hidden";
 
@@ -43,4 +44,21 @@ export const getWritableModel = async (
     }
 
     return model;
+};
+
+/** Loads an entry's latest revision, with the error the entry write tools give for a wrong id. */
+export const getLatestEntryRevision = async (
+    getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
+    model: CmsModel,
+    entryId: string
+): Promise<CmsEntry> => {
+    const result = await getLatestRevision.execute(model, { id: entryId });
+
+    if (result.isFail()) {
+        throw new Error(
+            `Entry "${entryId}" not found in "${model.modelId}": ${result.error.message}. Call queryEntries for valid entry IDs.`
+        );
+    }
+
+    return result.value;
 };

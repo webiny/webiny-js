@@ -19,7 +19,6 @@ import { SearchContentEntriesFeature } from "./searchContentEntries/feature.js";
 import { GetContentEntriesFeature } from "./getContentEntries/feature.js";
 import { ReferenceTitlesFeature } from "./referenceTitles/feature.js";
 import { ValueTransformersFeature } from "./valueTransformers/feature.js";
-import { EntryEventsFeature } from "./entryEvents/feature.js";
 import { EntryGraphQLFields } from "./EntryGraphQLFields.js";
 
 export const ContentEntryFeature = createFeature({
@@ -30,7 +29,6 @@ export const ContentEntryFeature = createFeature({
 
         ValueTransformersFeature.register(container);
         GetEntryFeature.register(container);
-        EntryEventsFeature.register(container);
         ListEntriesFeature.register(container);
         SearchContentEntriesFeature.register(container);
         GetContentEntriesFeature.register(container);

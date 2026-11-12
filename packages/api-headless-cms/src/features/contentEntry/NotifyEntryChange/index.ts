@@ -1,3 +1,4 @@
+export { NotifyEntryChangeFeature } from "./feature.js";
 export {
     NotifyEntryChangeUseCase,
     ENTRY_CREATED_WEBSOCKET_ACTION,

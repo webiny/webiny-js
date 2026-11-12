@@ -7,7 +7,6 @@ import { UpdateEntryTool } from "./UpdateEntryTool.js";
 import { PublishEntryTool } from "./PublishEntryTool.js";
 import { UnpublishEntryTool } from "./UnpublishEntryTool.js";
 import { DeleteEntryTool } from "./DeleteEntryTool.js";
-import { NotifyEntryChangeUseCase } from "./NotifyEntryChange/NotifyEntryChangeUseCase.js";
 
 /**
  * CMS tools for AI callers. Registered as `AiSdkToolDefinition` implementations, so any caller that
@@ -28,6 +27,5 @@ export const CmsAiToolsFeature = createFeature({
         container.register(PublishEntryTool);
         container.register(UnpublishEntryTool);
         container.register(DeleteEntryTool);
-        container.register(NotifyEntryChangeUseCase);
     }
 });

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
-import { NotifyEntryChangeUseCase } from "./NotifyEntryChange/index.js";
+import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 
