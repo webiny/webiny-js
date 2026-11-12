@@ -1,4 +1,3 @@
-import type React from "react";
 import { AdminAfterBuild } from "@webiny/project/extensions/index.js";
 import { AdminAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminBeforeBuild } from "@webiny/project/extensions/index.js";
@@ -44,12 +43,14 @@ import { BlueGreenDeployments } from "@webiny/project-extensions-aws/extensions/
 import { CorePulumi } from "@webiny/project-extensions-aws/extensions/index.js";
 import { DynamoDbPitr } from "@webiny/project-extensions-aws/extensions/index.js";
 import { OpenSearch } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Postgres as AwsPostgres } from "@webiny/project-extensions-aws/extensions/index.js";
+import { RdsProxy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/index.js";
 import { Vpc } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Postgres as StandalonePostgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
 
@@ -59,13 +60,20 @@ export { useEnv };
  * The AWS versions pass the secrets as build params, baked into the API bundle; the standalone
  * versions pass them as env vars, which the standalone API reads when it starts.
  */
-const Encryption = createHostingSwitch<React.ComponentProps<typeof AwsEncryption>>(
+const Encryption = createHostingSwitch(
     { aws: AwsEncryption, standalone: StandaloneEncryption },
     "aws"
 );
-const Hashing = createHostingSwitch<React.ComponentProps<typeof AwsHashing>>(
-    { aws: AwsHashing, standalone: StandaloneHashing },
-    "aws"
+const Hashing = createHostingSwitch({ aws: AwsHashing, standalone: StandaloneHashing }, "aws");
+
+/*
+ * The AWS version creates an Aurora PostgreSQL cluster in the core app and takes its capacity
+ * settings; the standalone version connects to a database you run and takes its connection
+ * settings. Falls back to the standalone version, which `Infra.Postgres` was before AWS had one.
+ */
+const Postgres = createHostingSwitch(
+    { aws: AwsPostgres, standalone: StandalonePostgres },
+    "standalone"
 );
 
 // Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
@@ -92,8 +100,12 @@ export const Infra = {
     Encryption,
     EnvVar,
 
+    // Every hosting type, with a different version per hosting type.
+    Postgres,
+
     // AWS.
     Vpc,
+    RdsProxy,
     BlueGreenDeployments,
     // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
     OpenSearch,
@@ -116,7 +128,6 @@ export const Infra = {
 
     // Standalone.
     Sqlite,
-    Postgres,
     Pglite,
     FileStorage,
     ApiUrl,
