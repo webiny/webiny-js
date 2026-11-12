@@ -4,7 +4,7 @@ import { TeamCreatedEvent } from "./TeamCreatedEvent.js";
 import { TeamUpdatedEvent } from "./TeamUpdatedEvent.js";
 import { TeamDeletedEvent } from "./TeamDeletedEvent.js";
 
-// Sent by the api when a team changes; see `NotifyTeamChangeUseCase` in @webiny/api-aco.
+// Sent by the api when a team changes; see `NotifyTeamChangeUseCase` in @webiny/api-core.
 const TEAM_CREATED_ACTION = "security.team.created";
 const TEAM_UPDATED_ACTION = "security.team.updated";
 const TEAM_DELETED_ACTION = "security.team.deleted";

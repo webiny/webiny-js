@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy.js";
+import { reaction } from "mobx";
 import { useFeature } from "@webiny/app";
 import { Avatar, Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -12,6 +13,7 @@ import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { SearchUI } from "~/components/SearchUI.js";
 import { ListUsersFeature } from "~/features/adminUsers/users/listUsers/index.js";
 import { DeleteUserFeature } from "~/features/adminUsers/users/deleteUser/index.js";
+import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
 import { deserializeSorters } from "../utils.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 import type { UserItem } from "~/presentation/adminUsers/UserItem.js";
@@ -58,6 +60,7 @@ const UsersDataList = () => {
 
     const { useCase: listUsers } = useFeature(ListUsersFeature);
     const { useCase: deleteUser } = useFeature(DeleteUserFeature);
+    const { revision } = useFeature(UserEventsFeature);
 
     const fetchUsers = useCallback(() => {
         setUsersLoading(true);
@@ -70,6 +73,17 @@ const UsersDataList = () => {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    // A user changed on the server, by the assistant or in another tab. Read the list again in place,
+    // without the loading state, so the rows do not flash.
+    useEffect(() => {
+        return reaction(
+            () => revision.list,
+            () => {
+                listUsers.execute().then(data => setUsers((data || []) as UserItem[]));
+            }
+        );
+    }, [revision, listUsers]);
 
     const filterUsers = useCallback<FilterUsersCallable>(
         ({ email, firstName, lastName }) => {

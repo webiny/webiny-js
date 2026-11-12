@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import isEmpty from "lodash/isEmpty.js";
+import { reaction } from "mobx";
 import omit from "lodash/omit.js";
 import { useFeature } from "@webiny/app";
 import { useRoute, useRouter } from "@webiny/app";
@@ -7,6 +8,7 @@ import { GetUserFeature } from "~/features/adminUsers/users/getUser/index.js";
 import type { IGetUserGatewayResult } from "~/features/adminUsers/users/getUser/abstractions/GetUserGateway.js";
 import { CreateUserFeature } from "~/features/adminUsers/users/createUser/index.js";
 import { UpdateUserFeature } from "~/features/adminUsers/users/updateUser/index.js";
+import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 import { useToast } from "@webiny/admin-ui";
 
@@ -34,6 +36,7 @@ export function useUserForm() {
     const { useCase: getUser } = useFeature(GetUserFeature);
     const { useCase: createUser } = useFeature(CreateUserFeature);
     const { useCase: updateUser } = useFeature(UpdateUserFeature);
+    const { revision } = useFeature(UserEventsFeature);
 
     const id = route.params.id;
     const newUser = route.params.new === true;
@@ -65,6 +68,23 @@ export function useUserForm() {
                 setUserLoading(false);
             });
     }, [id]);
+
+    // The open user changed on the server, by the assistant or in another tab. Show what is stored
+    // now. A failed read is ignored: the user was most likely deleted, and the list drops it.
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+        return reaction(
+            () => revision.user(id),
+            () => {
+                getUser
+                    .execute({ id })
+                    .then(setUser)
+                    .catch(() => undefined);
+            }
+        );
+    }, [id, revision]);
 
     const loading = userLoading || mutationLoading;
 

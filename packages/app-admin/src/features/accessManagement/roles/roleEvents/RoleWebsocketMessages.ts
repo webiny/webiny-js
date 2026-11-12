@@ -5,7 +5,7 @@ import { RoleCreatedEvent } from "./RoleCreatedEvent.js";
 import { RoleUpdatedEvent } from "./RoleUpdatedEvent.js";
 import { RoleDeletedEvent } from "./RoleDeletedEvent.js";
 
-// Sent by the api when a role changes; see `NotifyRoleChangeUseCase` in @webiny/api-aco.
+// Sent by the api when a role changes; see `NotifyRoleChangeUseCase` in @webiny/api-core.
 const ROLE_CREATED_ACTION = "security.role.created";
 const ROLE_UPDATED_ACTION = "security.role.updated";
 const ROLE_DELETED_ACTION = "security.role.deleted";
