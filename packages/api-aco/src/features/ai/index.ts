@@ -8,6 +8,7 @@ export { DeleteRoleTool } from "./DeleteRoleTool.js";
 export { GrantFolderAccessTool } from "./GrantFolderAccessTool.js";
 export { RevokeFolderAccessTool } from "./RevokeFolderAccessTool.js";
 export { CreateFolderTool } from "./CreateFolderTool.js";
+export { UpdateFolderTool } from "./UpdateFolderTool.js";
 export { DeleteFolderTool } from "./DeleteFolderTool.js";
 export { CreateTeamTool } from "./CreateTeamTool.js";
 export { UpdateTeamTool } from "./UpdateTeamTool.js";

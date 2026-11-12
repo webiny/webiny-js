@@ -11,6 +11,7 @@ import {
     FOLDER_UPDATED_WEBSOCKET_ACTION
 } from "~/features/folder/NotifyFolderChange/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
+import { FlpFactory } from "~/features/flp/shared/abstractions.js";
 
 interface AccessResult {
     folderId: string;
@@ -64,6 +65,33 @@ describe("Folder access AI tools", () => {
         });
 
         return created.value;
+    };
+
+    /*
+     * Code-defined rules are merged into the folder on read with `plugin: true`, and an update that
+     * sends one back is refused. A tool that writes the folder's permissions back must leave them out.
+     */
+    const createFolderWithCodeRule = async (container: Container, slug: string) => {
+        container.registerInstance(FlpFactory, {
+            async execute() {
+                return [
+                    {
+                        type: "type1",
+                        path: `/${slug}`,
+                        permissions: [{ user: "5678", level: "viewer" as const }]
+                    }
+                ];
+            }
+        });
+
+        const folder = await createRootFolder(container, slug);
+
+        const found = await container.resolve(GetFolderUseCase).execute(folder.id);
+        expect(found.value.permissions).toContainEqual(
+            expect.objectContaining({ target: "admin:5678", plugin: true })
+        );
+
+        return folder;
     };
 
     /*
@@ -207,6 +235,182 @@ describe("Folder access AI tools", () => {
         });
     });
 
+    describe("updateFolder", () => {
+        const createChildFolder = async (container: Container, slug: string, parentId: string) => {
+            const created = await container.resolve(CreateFolderUseCase).execute({
+                title: slug,
+                type: "type1",
+                slug,
+                parentId
+            });
+
+            return created.value;
+        };
+
+        it("should rename a folder, keep its slug and access rules, and tell the user's tabs", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "update-rename");
+            await getTool(context.container, "grantFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234",
+                level: "viewer"
+            });
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "updateFolder").execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    title: "Renamed"
+                })
+            ).resolves.toMatchObject({
+                id: folder.id,
+                title: "Renamed",
+                slug: folder.slug,
+                path: folder.path
+            });
+
+            expect(await readFlpPermissions(context.container, folder.id)).toEqual([
+                { target: "admin:1234", level: "viewer" }
+            ]);
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should rename a folder that has a code-defined access rule", async () => {
+            const context = await handler();
+            const folder = await createFolderWithCodeRule(context.container, "update-code-rule");
+
+            await expect(
+                getTool(context.container, "updateFolder").execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    title: "Renamed"
+                })
+            ).resolves.toMatchObject({ title: "Renamed" });
+        });
+
+        it("should move a folder under another folder and back to the root", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "update-move");
+            const target = await createRootFolder(context.container, "update-move-target");
+            const update = getTool(context.container, "updateFolder");
+
+            await expect(
+                update.execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    parentId: target.id
+                })
+            ).resolves.toMatchObject({
+                parentId: target.id,
+                path: `${target.path}/${folder.slug}`
+            });
+
+            await expect(
+                update.execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    parentId: null
+                })
+            ).resolves.toMatchObject({ parentId: null, path: folder.path });
+        });
+
+        it("should refuse when the current title does not match the folder", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "update-mismatch");
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "updateFolder").execute({
+                    folderId: folder.id,
+                    currentTitle: "Something else",
+                    title: "Renamed"
+                })
+            ).rejects.toThrow(/nothing was updated/);
+
+            const found = await context.container.resolve(GetFolderUseCase).execute(folder.id);
+            expect(found.value.title).toBe(folder.title);
+            expect(websocketMessages).toEqual([]);
+        });
+
+        it("should refuse an update that changes nothing", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "update-nothing");
+
+            await expect(
+                getTool(context.container, "updateFolder").execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title
+                })
+            ).rejects.toThrow(/Nothing to update/);
+        });
+
+        /*
+         * The folder feature itself accepts both moves below. Either would leave the subtree with no
+         * path back to the root.
+         */
+        it("should refuse to move a folder into itself or its own subfolder", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "update-cycle");
+            const child = await createChildFolder(
+                context.container,
+                "update-cycle-child",
+                folder.id
+            );
+            const grandchild = await createChildFolder(
+                context.container,
+                "update-cycle-grandchild",
+                child.id
+            );
+            const update = getTool(context.container, "updateFolder");
+            websocketMessages.length = 0;
+
+            await expect(
+                update.execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    parentId: folder.id
+                })
+            ).rejects.toThrow(/cannot be moved into itself/);
+
+            await expect(
+                update.execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    parentId: grandchild.id
+                })
+            ).rejects.toThrow(/inside the folder being moved/);
+
+            const found = await context.container.resolve(GetFolderUseCase).execute(folder.id);
+            expect(found.value.parentId ?? null).toBe(null);
+            expect(websocketMessages).toEqual([]);
+        });
+
+        it("should refuse to move a folder under a folder of another type", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "update-type");
+            const other = await context.container.resolve(CreateFolderUseCase).execute({
+                title: "update-type-other",
+                type: "type2",
+                slug: "update-type-other",
+                parentId: null
+            });
+
+            await expect(
+                getTool(context.container, "updateFolder").execute({
+                    folderId: folder.id,
+                    currentTitle: folder.title,
+                    parentId: other.value.id
+                })
+            ).rejects.toThrow(/can only move within its own type/);
+        });
+    });
+
     describe("grantFolderAccess", () => {
         it("should grant access and project it onto the FLP record", async () => {
             const context = await handler();
@@ -230,6 +434,21 @@ describe("Folder access AI tools", () => {
 
             expect(result.permissions).toEqual([{ target: "admin:1234", level: "viewer" }]);
             expect(result.replacedExistingLevel).toBeUndefined();
+
+            await expect(readFlpPermissions(context.container, folder.id)).resolves.toEqual([
+                { target: "admin:1234", level: "viewer" }
+            ]);
+        });
+
+        it("should grant access on a folder that has a code-defined access rule", async () => {
+            const context = await handler();
+            const folder = await createFolderWithCodeRule(context.container, "grant-code-rule");
+
+            await getTool(context.container, "grantFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234",
+                level: "viewer"
+            });
 
             await expect(readFlpPermissions(context.container, folder.id)).resolves.toEqual([
                 { target: "admin:1234", level: "viewer" }
