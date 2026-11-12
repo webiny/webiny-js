@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { ListRolesUseCase } from "@webiny/api-core/features/security/roles/ListRoles/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "~/features/ai/index.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 
 const inputSchema = z.object({});
 

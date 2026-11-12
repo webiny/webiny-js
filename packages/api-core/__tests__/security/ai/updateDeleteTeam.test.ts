@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { definedOnly } from "@webiny/api-core/features/security/shared/index.js";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
-import { UpdateTeam } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
-import { DeleteTeam } from "@webiny/api-core/features/security/teams/DeleteTeam/index.js";
-import { UpdateTeamTool } from "~/features/ai/UpdateTeamTool.js";
-import { DeleteTeamTool } from "~/features/ai/DeleteTeamTool.js";
+import { definedOnly } from "~/features/security/shared/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { GetTeamUseCase } from "~/features/security/teams/GetTeam/index.js";
+import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
+import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
+import { UpdateTeamTool } from "~/features/security/ai/UpdateTeamTool.js";
+import { DeleteTeamTool } from "~/features/security/ai/DeleteTeamTool.js";
 
 const stored = {
     id: "team-1",

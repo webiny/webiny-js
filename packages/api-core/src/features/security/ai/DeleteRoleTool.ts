@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
-import { DeleteRoleUseCase } from "@webiny/api-core/features/security/roles/DeleteRole/index.js";
-import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
-import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
+import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
+import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
+import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
+import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
 
 const inputSchema = z.object({
     roleId: z.string().describe("Role id as returned by listRoles."),

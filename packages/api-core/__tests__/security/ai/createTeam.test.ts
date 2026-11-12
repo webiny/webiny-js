@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { CreateTeam } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
-import { CreateTeamTool } from "~/features/ai/CreateTeamTool.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
+import { CreateTeamTool } from "~/features/security/ai/CreateTeamTool.js";
 
 interface CreatedTeam {
     roles: string[];

@@ -2,11 +2,11 @@ import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
 import type { Container } from "@webiny/di";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { useHandler } from "~tests/utils/useHandler";
-import { ROLE_CREATED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/roles/NotifyRoleChange/index.js";
-import { ROLE_DELETED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/roles/NotifyRoleChange/index.js";
-import { ROLE_UPDATED_WEBSOCKET_ACTION } from "@webiny/api-core/features/security/roles/NotifyRoleChange/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { useToolHandler } from "./useToolHandler";
+import { ROLE_CREATED_WEBSOCKET_ACTION } from "~/features/security/roles/NotifyRoleChange/index.js";
+import { ROLE_DELETED_WEBSOCKET_ACTION } from "~/features/security/roles/NotifyRoleChange/index.js";
+import { ROLE_UPDATED_WEBSOCKET_ACTION } from "~/features/security/roles/NotifyRoleChange/index.js";
 
 const getTool = (container: Container, name: string) => {
     const tool = container
@@ -26,7 +26,7 @@ const getTool = (container: Container, name: string) => {
  * and use cases, so the delete guards are checked against stored teams too.
  */
 describe("role tools and change notifications", () => {
-    const { handler, websocketMessages } = useHandler();
+    const { handler, websocketMessages } = useToolHandler();
 
     // A tool handler returns `unknown`, so the result has to be cast; an annotation does not compile.
     const createRole = async (container: Container, slug: string) => {

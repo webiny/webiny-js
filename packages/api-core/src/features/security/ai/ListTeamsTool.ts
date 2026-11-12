@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "~/features/ai/index.js";
+import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 
 const inputSchema = z.object({});
 
