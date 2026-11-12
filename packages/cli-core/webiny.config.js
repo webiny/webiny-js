@@ -11,10 +11,9 @@ export default {
             // `references.json` lists the versions a project's dependencies should be on. The
             // upgrade tool (webiny-upgrades-v6) reads it from the installed package, so it has to
             // be published. Packages are published from `dist`.
-            fs.cpSync(
-                path.join(dirname, "files", "references.json"),
-                path.join(dirname, "dist", "files", "references.json")
-            );
+            const source = path.join(dirname, "files", "references.json");
+            const target = path.join(dirname, "dist", "files", "references.json");
+            fs.cpSync(source, target);
         },
         watch: createWatchPackage({ cwd: dirname })
     }
