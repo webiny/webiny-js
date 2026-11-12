@@ -1,4 +1,4 @@
-import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
+import { GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 import { AdminStackOutputService as AdminStackOutputServiceAbstraction } from "@webiny/project-extensions-aws/abstractions/index.js";
 
 export class DefaultAdminStackOutputServiceAbstraction

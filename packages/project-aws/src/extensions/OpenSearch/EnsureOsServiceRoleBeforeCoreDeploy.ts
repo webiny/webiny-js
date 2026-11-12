@@ -1,4 +1,5 @@
-import { CoreBeforeDeploy, UiService } from "@webiny/project/abstractions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { UiService } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 import { IAM } from "@webiny/aws-sdk/client-iam/index.js";
 

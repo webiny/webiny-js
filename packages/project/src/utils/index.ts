@@ -12,3 +12,4 @@ export * from "./toImportSpecifier.js";
 export * from "./trace/index.js";
 export * from "./projectSdkContext.js";
 export * from "./registerExtension.js";
+export * from "./registerSrcExtensions.js";
