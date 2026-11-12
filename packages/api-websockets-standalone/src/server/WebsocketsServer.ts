@@ -9,6 +9,7 @@ import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import { DefaultUpgradeHandlerImpl } from "~/upgradeHandler/DefaultUpgradeHandler.js";
 import { HeartbeatManager } from "~/heartbeat/HeartbeatManager.js";
+import { WEBSOCKETS_PATH } from "./constants.js";
 import type {
     CreateWebsocketsServerParams,
     AttachWebsocketsServerParams,
@@ -36,9 +37,12 @@ interface IHandshake {
     tenant: string;
 }
 
+// Answers an upgrade with an HTTP error. `end` rather than `destroy`, so the response is flushed first.
 const refuse = (socket: Duplex, statusCode: number, reason: string): void => {
-    socket.write(`HTTP/1.1 ${statusCode} ${reason}\r\n\r\n`);
-    socket.destroy();
+    socket.once("finish", () => socket.destroy());
+    socket.end(
+        `HTTP/1.1 ${statusCode} ${reason}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`
+    );
 };
 
 interface WebsocketsServerParams {
@@ -156,6 +160,16 @@ class WebsocketsServer implements IWebsocketsServer {
                     console.error("WebSocket upgrade socket error:", error.message);
                 });
 
+                /*
+                 * Checked here and not in the upgrade handler, which is meant to be replaceable. The
+                 * server shares its HTTP server with the API, so no other path may ever upgrade.
+                 */
+                const url = new URL(request.url ?? "/", "http://localhost");
+                if (url.pathname !== WEBSOCKETS_PATH) {
+                    refuse(socket, 404, "Not Found");
+                    return;
+                }
+
                 try {
                     const decision = await this.upgradeHandler.shouldUpgrade(request);
                     if (!decision.allowed) {
@@ -168,7 +182,7 @@ class WebsocketsServer implements IWebsocketsServer {
                      * would still write a registry row, and nothing would stop a client opening
                      * as many of them as it likes.
                      */
-                    const handshake = await this.authenticateUpgrade(request);
+                    const handshake = await this.authenticateUpgrade(url);
                     if (!handshake) {
                         refuse(socket, 401, "Unauthorized");
                         return;
@@ -261,8 +275,7 @@ class WebsocketsServer implements IWebsocketsServer {
      * identity. Returns `null` when there is no token or it doesn't resolve to one, and the upgrade
      * is refused.
      */
-    private async authenticateUpgrade(request: IncomingMessage): Promise<IHandshake | null> {
-        const url = new URL(request.url ?? "/", "http://localhost");
+    private async authenticateUpgrade(url: URL): Promise<IHandshake | null> {
         const token = url.searchParams.get("token") ?? "";
         if (!token) {
             return null;

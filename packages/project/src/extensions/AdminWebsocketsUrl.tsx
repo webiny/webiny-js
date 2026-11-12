@@ -6,10 +6,11 @@ import { EnvVar } from "./EnvVar.js";
 /**
  * Sets a dedicated WebSocket URL for the Admin app, baked into the admin bundle as
  * `WEBINY_ADMIN_WS_API_URL`. This is optional: when omitted, the admin derives the WebSocket URL
- * from the API URL (same origin, http -> ws), which is what the standalone hosting type needs by
- * default. Set it only when WebSockets are served from a different origin than the API. The value
- * names the server; the admin appends the `/ws` path it takes upgrades on. Because the
- * config is evaluated at build time, the value can come from any env var the user chooses, e.g.
+ * from the API URL (same origin, http -> ws, plus the `/ws` path the standalone server takes
+ * upgrades on), which is what the standalone hosting type needs by default. Set it only when that
+ * derivation lands in the wrong place: WebSockets on a different origin, or a proxy that rewrites
+ * the path. The value is the full socket URL and is used as is. Because the config is evaluated at
+ * build time, the value can come from any env var the user chooses, e.g.
  * `<Admin.WebsocketsUrl url={process.env.MY_WS_URL} />`.
  */
 export const AdminWebsocketsUrl = defineExtension({
@@ -19,7 +20,9 @@ export const AdminWebsocketsUrl = defineExtension({
     paramsSchema: z.object({
         url: z
             .string()
-            .describe("The WebSocket origin, e.g. wss://ws.example.com or ws://localhost:3002")
+            .describe(
+                "The full WebSocket URL, e.g. wss://ws.example.com/ws or ws://localhost:3002/ws"
+            )
     }),
     render: props => {
         return <EnvVar varName="WEBINY_ADMIN_WS_API_URL" value={props.url} />;

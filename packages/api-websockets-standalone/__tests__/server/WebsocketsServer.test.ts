@@ -26,7 +26,7 @@ const owner = { id: "host-a:1:aaaa" };
 const VALID_TOKEN = "valid-token";
 const user = { id: "user-1", displayName: "User One", type: "admin" };
 
-/* Resolves `VALID_TOKEN` to `user` and every other token to nothing. */
+// Resolves `VALID_TOKEN` to `user` and every other token to nothing.
 const authenticate = async (token: string) => {
     if (token === VALID_TOKEN) {
         return user;
@@ -366,7 +366,8 @@ describe("WebsocketsServer", () => {
         });
 
         it("refuses an upgrade on any path but /ws with a 404", async () => {
-            const outcome = await attemptUpgrade(server.port(), `/graphql?token=${VALID_TOKEN}`);
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, `/graphql?token=${VALID_TOKEN}`);
 
             expect(outcome).toBe(404);
             expect(authenticateSpy).not.toHaveBeenCalled();
@@ -374,7 +375,8 @@ describe("WebsocketsServer", () => {
         });
 
         it("refuses an upgrade without a token with a 401", async () => {
-            const outcome = await attemptUpgrade(server.port(), "/ws?tenant=root");
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, "/ws?tenant=root");
 
             expect(outcome).toBe(401);
             expect(authenticateSpy).not.toHaveBeenCalled();
@@ -382,7 +384,8 @@ describe("WebsocketsServer", () => {
         });
 
         it("refuses an upgrade whose token resolves to no identity with a 401", async () => {
-            const outcome = await attemptUpgrade(server.port(), "/ws?token=expired&tenant=root");
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, "/ws?token=expired&tenant=root");
 
             expect(outcome).toBe(401);
             expect(authenticateSpy).toHaveBeenCalledWith("expired");
@@ -393,7 +396,8 @@ describe("WebsocketsServer", () => {
             const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
             authenticateSpy.mockRejectedValueOnce(new Error("database unreachable"));
 
-            const outcome = await attemptUpgrade(server.port(), `/ws?token=${VALID_TOKEN}`);
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, `/ws?token=${VALID_TOKEN}`);
 
             expect(outcome).toBe(500);
             expect(registry.register).not.toHaveBeenCalled();
@@ -401,13 +405,13 @@ describe("WebsocketsServer", () => {
         });
 
         it("registers an accepted connection under the identity and tenant", async () => {
-            const client = await connectClient(server.port());
+            const port = server.port();
+            const client = await connectClient(port);
             await new Promise(resolve => setTimeout(resolve, 50));
 
+            const registered = expect.objectContaining({ identity: user, tenant: "root" });
             expect(registry.register).toHaveBeenCalledTimes(1);
-            expect(registry.register).toHaveBeenCalledWith(
-                expect.objectContaining({ identity: user, tenant: "root" })
-            );
+            expect(registry.register).toHaveBeenCalledWith(registered);
             await closeClient(client);
         });
     });

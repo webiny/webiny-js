@@ -41,19 +41,25 @@ export const resolveApiUrl = (): string => {
 // The GraphQL endpoint derived from the resolved API URL.
 export const resolveGraphqlUrl = (): string => `${resolveApiUrl()}/graphql`;
 
-// The one path a standalone API takes WebSocket upgrades on. Same value as `WEBSOCKETS_PATH` in
-// @webiny/api-websockets-standalone, which an admin package can't import.
+/*
+ * The one path a standalone API takes WebSocket upgrades on. Same value as `WEBSOCKETS_PATH` in
+ * @webiny/api-websockets-standalone, which an admin package can't import.
+ */
 const STANDALONE_WEBSOCKETS_PATH = "/ws";
 
-// Resolve the WebSocket URL for the admin, in order:
-//   1. REACT_APP_WEBSOCKET_URL   — AWS: the dedicated API Gateway WebSocket URL, used as is.
-//   2. WEBINY_ADMIN_WS_API_URL   — standalone: where the WS server is (baked via `<Admin.WebsocketsUrl>`),
-//                                  only needed when WS is served from a different origin than the API.
-//   3. derived from the API URL  — standalone default: the server handles WS upgrades on its own
-//                                  origin, so use the API origin with http(s) swapped for ws(s).
-// Both standalone values name the server, not the socket path; `/ws` is appended to them.
-// Returns "" when none is configured (real-time updates are then disabled). This is one of the few
-// spots allowed to read process.env — it runs at the admin composition root, like resolveApiUrl.
+/*
+ * Resolve the WebSocket URL for the admin, in order:
+ *   1. REACT_APP_WEBSOCKET_URL   — AWS: the dedicated API Gateway WebSocket URL.
+ *   2. WEBINY_ADMIN_WS_API_URL   — standalone: the full socket URL (baked via `<Admin.WebsocketsUrl>`),
+ *                                  only needed when WS is served from somewhere the default can't
+ *                                  derive, like a different origin or a proxy that rewrites the path.
+ *   3. derived from the API URL  — standalone default: the server handles WS upgrades on its own
+ *                                  origin, so use the API URL with http(s) swapped for ws(s) and the
+ *                                  `/ws` path appended.
+ * The two configured values are used as is, so both name the socket itself. Returns "" when none
+ * is configured (real-time updates are then disabled). This is one of the few spots allowed to read
+ * process.env — it runs at the admin composition root, like resolveApiUrl.
+ */
 export const resolveWebsocketUrl = (): string => {
     const awsExplicit = process.env.REACT_APP_WEBSOCKET_URL;
     if (awsExplicit && awsExplicit !== "undefined") {
@@ -62,7 +68,7 @@ export const resolveWebsocketUrl = (): string => {
 
     const serverExplicit = process.env.WEBINY_ADMIN_WS_API_URL;
     if (serverExplicit && serverExplicit !== "undefined") {
-        return `${toWebsocketUrl(serverExplicit)}${STANDALONE_WEBSOCKETS_PATH}`;
+        return toWebsocketUrl(serverExplicit);
     }
 
     const apiUrl = process.env.WEBINY_ADMIN_API_URL;
@@ -78,11 +84,12 @@ export const resolveWebsocketUrl = (): string => {
  *
  * Resolved against the page origin before the scheme is swapped, because a relative value like
  * `/api` has no scheme to swap: the prefix replacement alone would hand back `/api` unchanged, which
- * connects to nothing. A value that already names a ws(s) origin passes straight through.
+ * connects to nothing. A value that already names a ws(s) URL keeps its scheme. Either way a
+ * trailing slash goes, so the `/ws` appended to a derived URL doesn't become `//ws`.
  */
 const toWebsocketUrl = (url: string): string => {
     if (/^wss?:\/\//.test(url)) {
-        return url;
+        return url.replace(/\/+$/, "");
     }
 
     return toAbsoluteUrl(url).replace(/^http/, "ws");

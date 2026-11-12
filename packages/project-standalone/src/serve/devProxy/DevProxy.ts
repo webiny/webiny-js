@@ -226,7 +226,7 @@ export class DevProxy {
         proxyReq.on("upgrade", (proxyRes, proxySocket, proxyHead) => {
             this.track(proxySocket);
 
-            clientSocket.write(handshake(proxyRes));
+            clientSocket.write(responseHead(proxyRes));
 
             if (proxyHead?.length) {
                 proxySocket.unshift(proxyHead);
@@ -241,6 +241,16 @@ export class DevProxy {
             clientSocket.on("error", () => proxySocket.destroy());
 
             proxySocket.pipe(clientSocket).pipe(proxySocket);
+        });
+
+        /*
+         * The api refused the upgrade (a 401 for a missing or bad token, a 404 for another path).
+         * Passed on as is: without it the browser gets no answer at all, and its socket sits in
+         * CONNECTING instead of failing and reconnecting with a fresh token.
+         */
+        proxyReq.on("response", proxyRes => {
+            clientSocket.write(responseHead(proxyRes));
+            proxyRes.pipe(clientSocket);
         });
 
         // Both sides reconnect on their own, so a failed upgrade is better dropped than answered.
@@ -321,8 +331,11 @@ function stripHopByHop(headers: http.IncomingHttpHeaders) {
     return result;
 }
 
-/** The 101 response, rebuilt verbatim — an upgrade is answered on the raw socket, not through `res`. */
-function handshake(res: IncomingMessage): string {
+/**
+ * The status line and headers of the api's answer to an upgrade, the 101 or a refusal, rebuilt
+ * verbatim — an upgrade is answered on the raw socket, not through `res`.
+ */
+function responseHead(res: IncomingMessage): string {
     const lines = [`HTTP/1.1 ${res.statusCode} ${res.statusMessage}`];
 
     for (const [name, value] of Object.entries(res.headers)) {
