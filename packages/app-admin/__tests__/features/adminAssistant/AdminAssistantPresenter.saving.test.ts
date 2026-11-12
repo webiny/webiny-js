@@ -5,10 +5,10 @@ import { Container } from "@webiny/di";
 import { AdminAssistantGateway } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter as PresenterAbstraction } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractions";
+import type { AdminAssistantRequest } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
-import { AiChatSaveError } from "~/features/aiChats/AiChatSaveError.js";
 import { createFakeChats } from "./createFakeChats.js";
 
 const answer = (text: string): AdminAssistantMessage => ({
@@ -16,120 +16,141 @@ const answer = (text: string): AdminAssistantMessage => ({
     content: [{ type: "text", text }]
 });
 
-/** Each run takes the next list of events. */
+const saved = (id: string): AiChatsRepository.Summary => ({
+    id,
+    title: "Chat",
+    createdOn: "2026-10-19T10:00:00.000Z",
+    savedOn: "2026-10-19T10:00:00.000Z"
+});
+
+/** Each run takes the next list of events. Every request is recorded. */
 const setup = (runs: AdminAssistantStreamEvent[][]) => {
     const container = new Container();
     const chats = createFakeChats();
+    const requests: AdminAssistantRequest[] = [];
 
     container.registerInstance(AdminAssistantGateway, {
-        stream: async function* () {
+        stream: async function* (request: AdminAssistantRequest) {
+            requests.push(request);
             yield* runs.shift() ?? [];
         }
     });
     container.registerInstance(AiChatsRepository, chats.repository);
     container.register(AdminAssistantPresenter);
 
-    return { presenter: container.resolve(PresenterAbstraction), chats };
+    return { presenter: container.resolve(PresenterAbstraction), chats, requests };
 };
 
-/** Lets the stream drain and the queued saves finish. */
+/** Lets the stream drain. */
 const settle = async (presenter: PresenterAbstraction.Interface) => {
     for (let i = 0; i < 20 && (presenter.vm.busy || presenter.vm.opening); i++) {
         await new Promise(resolve => setTimeout(resolve, 0));
     }
-    for (let i = 0; i < 5; i++) {
-        await new Promise(resolve => setTimeout(resolve, 0));
-    }
 };
 
-const run = (text: string): AdminAssistantStreamEvent[] => [
+/** A run the server answered and saved as `chatId`. */
+const run = (text: string, chatId = "chat-1"): AdminAssistantStreamEvent[] => [
     { type: "text", text },
-    { type: "done", messages: [answer(text)], steps: 1 }
+    { type: "saved", chat: saved(chatId) },
+    { type: "done", steps: 1 }
+];
+
+const notSaved = (text: string, retryable: boolean): AdminAssistantStreamEvent[] => [
+    { type: "text", text },
+    { type: "not-saved", message: "The chat could not be saved.", retryable },
+    { type: "done", steps: 1 }
+];
+
+const paused = (chatId = "chat-1"): AdminAssistantStreamEvent[] => [
+    { type: "text", text: "I'll add a folder:" },
+    {
+        type: "approval",
+        approvals: [
+            {
+                approvalId: "a1",
+                toolName: "createFolder",
+                input: { title: "Products" },
+                destructive: false
+            }
+        ]
+    },
+    { type: "saved", chat: saved(chatId) },
+    { type: "done", steps: 1 }
 ];
 
 describe("AdminAssistantPresenter saving", () => {
-    it("saves a new chat after the first answer, and keeps its id", async () => {
-        const { presenter, chats } = setup([run("3 products.")]);
+    it("sends only the question, and keeps the id the server saved the chat as", async () => {
+        const { presenter, chats, requests } = setup([run("3 products.")]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
 
-        expect(chats.saves).toEqual([
-            {
-                messages: [
-                    { role: "user", content: "Which products are on sale?" },
-                    answer("3 products.")
-                ]
-            }
-        ]);
+        expect(requests).toEqual([{ prompt: "Which products are on sale?" }]);
         expect(presenter.vm.chatId).toBe("chat-1");
+        expect(chats.remembered).toEqual([saved("chat-1")]);
     });
 
-    it("saves every later turn into the same chat, with the whole conversation", async () => {
-        const { presenter, chats } = setup([run("3 products."), run("The mug.")]);
+    it("asks a later question in the same chat, without the conversation", async () => {
+        const { presenter, requests } = setup([run("3 products."), run("The mug.")]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
         presenter.ask("Which is cheapest?");
         await settle(presenter);
 
-        expect(chats.saves).toHaveLength(2);
-        expect(chats.saves[1]).toEqual({
-            id: "chat-1",
-            messages: [
-                { role: "user", content: "Which products are on sale?" },
-                answer("3 products."),
-                { role: "user", content: "Which is cheapest?" },
-                answer("The mug.")
-            ]
-        });
+        expect(requests[1]).toEqual({ chatId: "chat-1", prompt: "Which is cheapest?" });
     });
 
-    it("does not save a turn that failed", async () => {
-        const { presenter, chats } = setup([[{ type: "error", message: "No model." }]]);
+    it("sends a decision with the chat it resumes", async () => {
+        const { presenter, requests } = setup([paused(), run("No folder was created.")]);
 
-        presenter.ask("Which products are on sale?");
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+        presenter.decide(0, false);
         await settle(presenter);
 
-        expect(chats.saves).toEqual([]);
-        expect(presenter.vm.chatId).toBeNull();
+        expect(requests[1]).toEqual({
+            chatId: "chat-1",
+            approvals: [{ approvalId: "a1", approved: false }]
+        });
+        expect(presenter.vm.turns[0].pendingApprovals).toEqual([]);
     });
 
-    /*
-     * The paused request is answered by a decision the server never stored. Saving before it would
-     * leave a chat that cannot resume, so the save waits for the decision.
-     */
-    it("waits for an approval decision before saving", async () => {
-        const { presenter, chats } = setup([
+    // The server rejects a change still waiting when something else is asked, so the card goes too.
+    it("drops a change still waiting when another question is asked", async () => {
+        const { presenter } = setup([paused(), run("6 models.")]);
+
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+        presenter.ask("What content models are there?");
+        await settle(presenter);
+
+        expect(presenter.vm.turns[0].pendingApprovals).toEqual([]);
+        expect(presenter.vm.turns).toHaveLength(2);
+    });
+
+    // The paused run is resumed from the saved chat, which does not have it.
+    it("refuses a decision on a run that was not saved", async () => {
+        const { presenter, requests } = setup([
             [
-                { type: "text", text: "I'll add a folder:" },
-                {
-                    type: "approval",
-                    approvals: [
-                        {
-                            approvalId: "a1",
-                            toolName: "createFolder",
-                            input: { title: "Products" },
-                            destructive: false
-                        }
-                    ]
-                },
-                { type: "done", messages: [answer("I'll add a folder:")], steps: 1 }
-            ],
-            run("No folder was created.")
+                ...paused().filter(event => event.type !== "saved" && event.type !== "done"),
+                { type: "not-saved", message: "Too large.", retryable: false },
+                { type: "done", steps: 1 }
+            ]
         ]);
 
         presenter.ask("Create a folder for products");
         await settle(presenter);
-        expect(chats.saves).toEqual([]);
-
-        presenter.decide(0, false);
+        presenter.decide(0, true);
         await settle(presenter);
-        expect(chats.saves).toHaveLength(1);
+
+        expect(requests).toHaveLength(1);
+        expect(presenter.vm.turns[0].pendingApprovals).toEqual([]);
+        expect(presenter.vm.turns[0].error).toMatch(/wasn't saved/);
     });
 
     it("starts a new chat after a reset", async () => {
-        const { presenter, chats } = setup([run("3 products."), run("6 models.")]);
+        const { presenter, requests } = setup([run("3 products."), run("6 models.", "chat-2")]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
@@ -139,109 +160,75 @@ describe("AdminAssistantPresenter saving", () => {
         presenter.ask("What content models are there?");
         await settle(presenter);
 
-        expect(chats.saves[1].id).toBeUndefined();
+        expect(requests[1]).toEqual({ prompt: "What content models are there?" });
         expect(presenter.vm.chatId).toBe("chat-2");
     });
 
-    it("says why a save failed, and keeps the conversation", async () => {
-        const { presenter, chats } = setup([run("3 products.")]);
-        chats.repository.save = async () => {
-            throw new Error("The chat is too long to save.");
-        };
+    it("says why a run was not saved, and keeps the conversation", async () => {
+        const { presenter } = setup([notSaved("3 products.", false)]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
 
-        expect(presenter.vm.storageError).toBe("The chat is too long to save.");
-        expect(presenter.vm.turns).toHaveLength(1);
+        expect(presenter.vm.storageError).toBe("The chat could not be saved.");
+        expect(presenter.vm.saveFailure).toBe("final");
+        expect(presenter.vm.turns[0].text).toBe("3 products.");
+        expect(presenter.vm.turns[0].settled).toBe(true);
     });
 
-    // The reason picks the fix the view offers: a new chat for "too large", a retry otherwise.
-    it("tells a chat that is too large from a server that could not be reached", async () => {
-        const { presenter, chats } = setup([run("3 products."), run("6 models.")]);
-        chats.repository.save = async () => {
-            throw new AiChatSaveError("The chat is too large.", "too-large");
-        };
+    // The saved chat does not have the answer, so asking again answers it afresh and saves it.
+    it("asks again in place of a run that was not saved", async () => {
+        const { presenter, requests } = setup([
+            run("3 products."),
+            notSaved("The mug.", true),
+            run("The mug, again.")
+        ]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
-        expect(presenter.vm.saveFailure).toBe("too-large");
-
-        chats.repository.save = async () => {
-            throw new TypeError("Failed to fetch");
-        };
-        presenter.ask("What content models are there?");
+        presenter.ask("Which is cheapest?");
         await settle(presenter);
-        expect(presenter.vm.saveFailure).toBe("unreachable");
-    });
-
-    it("saves again on retry, and clears the failure once it succeeds", async () => {
-        const { presenter, chats } = setup([run("3 products.")]);
-        const save = chats.repository.save;
-        chats.repository.save = async () => {
-            throw new TypeError("Failed to fetch");
-        };
-
-        presenter.ask("Which products are on sale?");
-        await settle(presenter);
-        expect(presenter.vm.saveFailure).toBe("unreachable");
-
-        chats.repository.save = save;
-        presenter.retrySave();
+        presenter.retry();
         await settle(presenter);
 
-        expect(chats.saves).toHaveLength(1);
-        expect(presenter.vm.chatId).toBe("chat-1");
+        expect(requests[2]).toEqual({ chatId: "chat-1", prompt: "Which is cheapest?" });
+        expect(presenter.vm.turns).toHaveLength(2);
+        expect(presenter.vm.turns[1].text).toBe("The mug, again.");
         expect(presenter.vm.storageError).toBeNull();
         expect(presenter.vm.saveFailure).toBeNull();
     });
 
     /*
-     * A turn waiting on an approval holds every save back. Retrying then saves nothing, so the
-     * warning has to stay until the save after the decision clears it.
+     * The decision may have carried out the change. Asking again would start from before it, so the
+     * model would propose it again, and approving it a second time would make it twice.
      */
-    it("keeps the warning when a retry cannot save yet", async () => {
-        const { presenter, chats } = setup([
-            run("3 products."),
-            [
-                { type: "text", text: "I'll add a folder:" },
-                {
-                    type: "approval",
-                    approvals: [
-                        {
-                            approvalId: "a1",
-                            toolName: "createFolder",
-                            input: { title: "Products" },
-                            destructive: false
-                        }
-                    ]
-                },
-                { type: "done", messages: [answer("I'll add a folder:")], steps: 1 }
-            ],
-            run("No folder was created.")
+    it("offers only a new chat when a resumed run was not saved", async () => {
+        const { presenter, requests } = setup([
+            paused(),
+            notSaved("Created the folder.", true),
+            run("Not used.")
         ]);
-        const save = chats.repository.save;
-        chats.repository.save = async () => {
-            throw new TypeError("Failed to fetch");
-        };
+
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+        presenter.decide(0, true);
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("final");
+
+        presenter.retry();
+        await settle(presenter);
+        expect(requests).toHaveLength(2);
+    });
+
+    it("does nothing on retry when the newest turn is fine", async () => {
+        const { presenter, requests } = setup([run("3 products.")]);
 
         presenter.ask("Which products are on sale?");
         await settle(presenter);
-        chats.repository.save = save;
-        presenter.ask("Create a folder for products");
+        presenter.retry();
         await settle(presenter);
 
-        expect(presenter.vm.savePaused).toBe(true);
-        presenter.retrySave();
-        await settle(presenter);
-        expect(chats.saves).toHaveLength(0);
-        expect(presenter.vm.saveFailure).toBe("unreachable");
-
-        presenter.decide(1, false);
-        await settle(presenter);
-        expect(presenter.vm.savePaused).toBe(false);
-        expect(chats.saves).toHaveLength(1);
-        expect(presenter.vm.saveFailure).toBeNull();
+        expect(requests).toHaveLength(1);
     });
 });
 
@@ -274,7 +261,7 @@ describe("AdminAssistantPresenter retrying a failed turn", () => {
     });
 
     it("asks the same question again in place of the failed turn", async () => {
-        const { presenter, chats } = setup([
+        const { presenter, requests } = setup([
             [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }],
             run("3 products.")
         ]);
@@ -289,22 +276,19 @@ describe("AdminAssistantPresenter retrying a failed turn", () => {
         expect(presenter.vm.turns[0].needsSetup).toBe(false);
         expect(presenter.vm.setupRequired).toBe(false);
         expect(presenter.vm.turns[0].text).toBe("3 products.");
-        expect(chats.saves[0].messages[0]).toEqual({
-            role: "user",
-            content: "Which products are on sale?"
-        });
+        expect(requests[1]).toEqual({ prompt: "Which products are on sale?" });
     });
 });
 
 describe("AdminAssistantPresenter opening a chat", () => {
+    const stored = {
+        ...saved("chat-1"),
+        messages: [{ role: "user", content: "Which products are on sale?" }, answer("3 products.")]
+    };
+
     it("rebuilds the turns, and continues the chat on the next question", async () => {
-        const { presenter, chats } = setup([run("The mug.")]);
-        await chats.repository.save({
-            messages: [
-                { role: "user", content: "Which products are on sale?" },
-                answer("3 products.")
-            ]
-        });
+        const { presenter, chats, requests } = setup([run("The mug.")]);
+        chats.put(stored);
 
         await presenter.open("chat-1");
 
@@ -316,9 +300,7 @@ describe("AdminAssistantPresenter opening a chat", () => {
         presenter.ask("Which is cheapest?");
         await settle(presenter);
 
-        const last = chats.saves[chats.saves.length - 1];
-        expect(last.id).toBe("chat-1");
-        expect(last.messages).toHaveLength(4);
+        expect(requests).toEqual([{ chatId: "chat-1", prompt: "Which is cheapest?" }]);
     });
 
     it("says why a chat could not be opened", async () => {
@@ -332,14 +314,8 @@ describe("AdminAssistantPresenter opening a chat", () => {
     });
 
     it("refuses a question while a saved chat is loading", async () => {
-        const { presenter, chats } = setup([run("Ignored.")]);
-        await chats.repository.save({
-            messages: [
-                { role: "user", content: "Which products are on sale?" },
-                answer("3 products.")
-            ]
-        });
-        const savesBefore = chats.saves.length;
+        const { presenter, chats, requests } = setup([run("Ignored.")]);
+        chats.put(stored);
 
         const opening = presenter.open("chat-1");
         presenter.ask("Which is cheapest?");
@@ -349,6 +325,6 @@ describe("AdminAssistantPresenter opening a chat", () => {
         expect(presenter.vm.turns.map(turn => turn.question)).toEqual([
             "Which products are on sale?"
         ]);
-        expect(chats.saves).toHaveLength(savesBefore);
+        expect(requests).toEqual([]);
     });
 });
