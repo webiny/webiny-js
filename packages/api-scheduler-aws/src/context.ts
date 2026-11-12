@@ -17,7 +17,6 @@ export interface IRegisterSchedulerAwsExtensionParams {
 
 export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExtensionParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        context.plugins.register(createScheduledActionEventHandler());
         const tenantContext = context.container.resolve(TenantContext);
 
         if (!tenantContext.getTenant()) {
@@ -41,5 +40,10 @@ export const registerSchedulerAwsExtension = (params: IRegisterSchedulerAwsExten
 
     plugin.name = "scheduler.aws.extension";
 
-    return plugin;
+    /**
+     * The event handler must be a top-level plugin. The raw Lambda handler picks its event handlers
+     * before any ContextPlugin runs, so registering it from inside `plugin` means the EventBridge
+     * invocation never finds it and scheduled actions never execute.
+     */
+    return [createScheduledActionEventHandler(), plugin];
 };
