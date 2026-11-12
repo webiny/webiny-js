@@ -105,7 +105,10 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 
             const realError = (error.cause as Error) || error;
 
-            if (realError instanceof ManuallyReportedError) {
+            if (
+                error instanceof ManuallyReportedError ||
+                realError instanceof ManuallyReportedError
+            ) {
                 // Do nothing as the error reporting has already been
                 // handled within the invoked CLI command.
             } else {
