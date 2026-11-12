@@ -79,13 +79,14 @@ class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
         });
         if (triggered.isFail()) {
             // Nothing will send this delivery, so it must not stay pending.
-            await this.updateDeliveryRepository.execute(newDeliveryResult.value.id, {
+            const marked = await this.updateDeliveryRepository.execute(newDeliveryResult.value.id, {
                 status: "failed"
             });
             return Result.fail(
                 new WebhookDeliveryNotQueuedError({
                     message: triggered.error.message,
-                    deliveryId: newDeliveryResult.value.id
+                    deliveryId: newDeliveryResult.value.id,
+                    markedFailed: marked.isOk()
                 })
             );
         }

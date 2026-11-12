@@ -75,11 +75,14 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
         });
         if (triggered.isFail()) {
             // Nothing will send this delivery, so it must not stay pending.
-            await this.updateDeliveryRepository.execute(delivery.id, { status: "failed" });
+            const marked = await this.updateDeliveryRepository.execute(delivery.id, {
+                status: "failed"
+            });
             return Result.fail(
                 new WebhookDeliveryNotQueuedError({
                     message: triggered.error.message,
-                    deliveryId: delivery.id
+                    deliveryId: delivery.id,
+                    markedFailed: marked.isOk()
                 })
             );
         }

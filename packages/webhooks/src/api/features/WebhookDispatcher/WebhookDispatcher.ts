@@ -86,9 +86,16 @@ class WebhookDispatcherImpl implements WebhookDispatcherAbstraction.Interface {
                     },
                     "Could not queue the webhook delivery."
                 );
-                await this.updateDeliveryRepository.execute(deliveryResult.value.id, {
-                    status: "failed"
-                });
+                const marked = await this.updateDeliveryRepository.execute(
+                    deliveryResult.value.id,
+                    { status: "failed" }
+                );
+                if (marked.isFail()) {
+                    this.logger.error(
+                        { error: marked.error, deliveryId: deliveryResult.value.id },
+                        "Could not mark the unqueued webhook delivery as failed."
+                    );
+                }
             }
         }
     }

@@ -150,6 +150,30 @@ describe("WebhookDispatcher", () => {
         expect(updateDeliveryMock).toHaveBeenCalledWith("del-1", { status: "failed" });
     });
 
+    it("logs an unqueued delivery that couldn't be marked failed", async () => {
+        listRepoMock.mockResolvedValue(
+            Result.ok({
+                items: [makeWebhook("wh-1", "shop-sync", ["product.entry.published"])],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
+            })
+        );
+        triggerMock.mockResolvedValueOnce(
+            Result.fail(new Error("Task definition not found.") as any)
+        );
+        const updateError = new Error("Write throttled.");
+        updateDeliveryMock.mockResolvedValueOnce(Result.fail(updateError as any));
+
+        const dispatcher = container.resolve(WebhookDispatcher);
+
+        await dispatcher.dispatch("product.entry.published", { entryId: "abc" });
+
+        expect(loggerErrorMock).toHaveBeenCalledTimes(2);
+        expect(loggerErrorMock).toHaveBeenLastCalledWith(
+            { error: updateError, deliveryId: "del-1" },
+            "Could not mark the unqueued webhook delivery as failed."
+        );
+    });
+
     it("dispatches no tasks when no matching webhooks", async () => {
         listRepoMock.mockResolvedValue(
             Result.ok({

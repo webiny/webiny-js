@@ -17,6 +17,7 @@ import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
 import { BackgroundTaskPersistenceError } from "~/api/domain/errors.js";
 
 describe("tasks - trigger crud", () => {
@@ -280,5 +281,28 @@ describe("tasks - trigger crud", () => {
             definitionId: "myCustomTaskNumber1",
             eventResponse: { mockedSend: true }
         });
+    });
+
+    it("returns a failure when creating the task throws", async () => {
+        const throwingCreate = (container: Container) => {
+            container.registerInstance(CreateTaskUseCase, {
+                execute: async () => {
+                    throw new Error("After-create handler failed.");
+                }
+            });
+        };
+        const definitions = createMockTaskDefinitions();
+        const handler = useRawHandler({
+            plugins: [definitions, throwingCreate]
+        });
+        const context = await handler.handle();
+
+        const result = await context.container
+            .resolve(TaskService)
+            .trigger({ definition: "myCustomTaskNumber1" });
+
+        expect(result.isFail()).toBeTrue();
+        expect(result.error.code).toEqual("BackgroundTasks/Task/TriggerError");
+        expect(result.error.message).toEqual("After-create handler failed.");
     });
 });

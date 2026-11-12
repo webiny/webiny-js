@@ -92,6 +92,7 @@ describe("TriggerWebhookUseCase", () => {
         );
 
         const notQueued = result.error as WebhookDeliveryNotQueuedError;
+        expect(notQueued.data.markedFailed).toBe(true);
         const stored = await context.container
             .resolve(GetWebhookDeliveryUseCase)
             .execute(notQueued.data.deliveryId);

@@ -97,7 +97,10 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
             );
         }
 
-        const created = await this.createTask.execute<I>(input);
+        // A task event handler can throw. That would reject the trigger, so it becomes a failure.
+        const created = await this.createTask
+            .execute<I>(input)
+            .catch((ex: unknown) => Result.fail(TaskTriggerError.from(ex, id)));
         if (created.isFail()) {
             this.logger.error({ error: created.error }, "Could not create the task.");
             return Result.fail(created.error);
@@ -211,7 +214,11 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
         ]);
         const logUpdate = await this.updateTaskLog.execute(taskLog.value.id, { items });
         if (logUpdate.isFail()) {
-            return Result.fail(logUpdate.error);
+            // The task is aborted by now, so a missing log entry must not skip the onAbort hook.
+            this.logger.error(
+                { error: logUpdate.error, id: task.id },
+                "Could not write the abort to the task log."
+            );
         }
         // TODO: determine when to kick off the onAbort hook
         if (definition.onAbort) {
