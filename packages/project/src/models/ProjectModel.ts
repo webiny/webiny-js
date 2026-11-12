@@ -28,7 +28,6 @@ export class ProjectModel implements IProjectModel {
                 rootFolder: this.paths.rootFolder.toDto(),
                 dotWebinyFolder: this.paths.dotWebinyFolder.toDto(),
                 workspaceFolder: this.paths.workspaceFolder.toDto(),
-                localPulumiStateFilesFolder: this.paths.localPulumiStateFilesFolder.toDto(),
                 tsConfigFile: this.paths.tsConfigFile.toDto()
             }
         };
@@ -44,7 +43,6 @@ export class ProjectModel implements IProjectModel {
                 rootFolder: PathModel.from(dto.paths.rootFolder),
                 dotWebinyFolder: PathModel.from(dto.paths.dotWebinyFolder),
                 workspaceFolder: PathModel.from(dto.paths.workspaceFolder),
-                localPulumiStateFilesFolder: PathModel.from(dto.paths.localPulumiStateFilesFolder),
                 tsConfigFile: PathModel.from(dto.paths.tsConfigFile)
             }
         });

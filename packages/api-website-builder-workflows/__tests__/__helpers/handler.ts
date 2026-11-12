@@ -9,7 +9,6 @@ import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderL
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { WebsiteBuilderWorkflowsFeature } from "~/index.js";
-import { NoopInvalidateAssetCacheTaskDefinition } from "./NoopInvalidateAssetCacheTask.js";
 import { registerNoAcoFolders } from "./NoAcoFolders.js";
 import { createArticleModelPlugins } from "./cmsModel.js";
 import { MailerService } from "@webiny/api-mailer";
@@ -35,7 +34,6 @@ export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
         legacyPlugins: [
             ...createArticleModelPlugins(),
             (container: Container) => {
-                container.register(NoopInvalidateAssetCacheTaskDefinition);
                 container.register(NoopFolderLevelPermissions);
                 registerNoAcoFolders(container);
             },

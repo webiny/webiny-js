@@ -4,8 +4,11 @@
  * projects on 6.4.x wrote whichever their target needed, and a mismatch is invisible: the route
  * deploys, API Gateway forwards the request, and the router 404s it.
  */
-import { describe, expect, it } from "vitest";
-import { toApiGatewayPath, toRouterPath } from "~/extensions/routePath.js";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { toRouterPath } from "@webiny/project/extensions/api/index.js";
+import { toApiGatewayPath } from "~/extensions/toApiGatewayPath.js";
 
 describe("toApiGatewayPath", () => {
     it.each([

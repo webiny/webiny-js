@@ -1,6 +1,7 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
+import { STANDALONE_API_URL } from "./constants.js";
 import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
 /**
@@ -68,6 +69,7 @@ const createRunSteps = ({
     const env: Record<string, string> = {
         ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
         E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
+        E2E_API_URL: STANDALONE_API_URL,
         E2E_TELEMETRY_DISABLED: "1"
     };
     /*

@@ -98,6 +98,7 @@ jobs:
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
       standalone: ${{ steps.features.outputs.standalone }}
       bug-reporter: ${{ steps.features.outputs.bug-reporter }}
+      api-route: ${{ steps.features.outputs.api-route }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -148,6 +149,13 @@ jobs:
           echo "bug-reporter: $found"
 
           echo "bug-reporter=$found" >> $GITHUB_OUTPUT
+
+          found=$(has_path
+          .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js)
+
+          echo "api-route: $found"
+
+          echo "api-route=$found" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -351,6 +359,7 @@ jobs:
       pull-requests: write
     outputs:
       admin-url: ${{ steps.admin-url.outputs.admin-url }}
+      api-url: ${{ steps.api-url.outputs.api-url }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -427,6 +436,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -467,6 +482,12 @@ jobs:
         run: >-
           echo "admin-url=$(yarn webiny output admin --env dev --json
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
+      - name: Extract API URL
+        id: api-url
+        working-directory: new-webiny-project
+        run: >-
+          echo "api-url=$(yarn webiny output api --env dev --json 2>/dev/null |
+          jq -r '.apiUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
         if: success()
         env:
@@ -615,6 +636,7 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
+          E2E_API_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.api-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -744,6 +766,7 @@ jobs:
       pull-requests: write
     outputs:
       admin-url: ${{ steps.admin-url.outputs.admin-url }}
+      api-url: ${{ steps.api-url.outputs.api-url }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -834,6 +857,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -881,6 +910,12 @@ jobs:
         run: >-
           echo "admin-url=$(yarn webiny output admin --env dev --json
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
+      - name: Extract API URL
+        id: api-url
+        working-directory: new-webiny-project
+        run: >-
+          echo "api-url=$(yarn webiny output api --env dev --json 2>/dev/null |
+          jq -r '.apiUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
         if: success()
         env:
@@ -1029,6 +1064,7 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
+          E2E_API_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.api-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -1212,6 +1248,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1407,6 +1449,7 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -1640,6 +1683,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1849,6 +1898,7 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -2082,6 +2132,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -2359,6 +2415,7 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -2585,6 +2642,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -2787,6 +2850,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -3026,6 +3090,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -3245,6 +3315,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
@@ -3484,6 +3555,12 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
           '${{ github.workspace }}/new-webiny-project-standalone'
         if: needs.baseBranch.outputs.bug-reporter == 'true'
+      - name: Add the E2E API route to webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node .github/workflows/wac/utils/runNodeScripts/configureApiRoute.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+        if: needs.baseBranch.outputs.api-route == 'true'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -3770,6 +3847,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
+          E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md

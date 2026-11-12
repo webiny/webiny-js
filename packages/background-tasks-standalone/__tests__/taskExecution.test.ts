@@ -8,7 +8,7 @@ import type { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
-import { IterationSlots } from "~/loop/IterationSlots.js";
+import { ConcurrencySlots } from "@webiny/utils/ConcurrencySlots.js";
 import { TaskExecution } from "~/loop/TaskExecution.js";
 import { createMockLogger } from "./helpers/createMockLogger.js";
 
@@ -31,7 +31,7 @@ const event: IBackgroundTaskEvent = {
 const createExecution = (answers: Answer[], slotCount = 1) => {
     const sent: IBackgroundTaskEvent[] = [];
     const slotsInUse: number[] = [];
-    const slots = new IterationSlots(slotCount);
+    const slots = new ConcurrencySlots(slotCount);
     const container = new Container();
     container.register(ProcessShutdownSignal).inSingletonScope();
     const shutdown = container.resolve(ShutdownSignal);
@@ -116,7 +116,7 @@ describe("TaskExecution", () => {
                     finish = answer => resolve(answer as TResult);
                 })
         };
-        const slots = new IterationSlots(1);
+        const slots = new ConcurrencySlots(1);
         const shutdown = container.resolve(ShutdownSignal);
         const logger = createMockLogger();
         const execution = new TaskExecution({ event, dispatcher, slots, shutdown, logger });

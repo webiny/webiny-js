@@ -5,8 +5,15 @@ import { createFeature } from "@webiny/feature/api";
 
 class NoopTaskServiceImpl implements ITaskService {
     public readonly triggered: Array<{ definition: string; input: unknown }> = [];
+    // When set, the next trigger returns it as a failure and clears it.
+    public nextFailure: Error | null = null;
 
     async trigger(params: any): Promise<Result<any, any>> {
+        if (this.nextFailure) {
+            const failure = this.nextFailure;
+            this.nextFailure = null;
+            return Result.fail(failure);
+        }
         this.triggered.push({ definition: params.definition, input: params.input });
         return Result.ok({
             id: `task-${this.triggered.length}`,

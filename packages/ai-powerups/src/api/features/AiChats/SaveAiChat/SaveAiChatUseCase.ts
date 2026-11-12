@@ -33,8 +33,8 @@ class SaveAiChatUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new AiChatValidationError(`${path}: ${issue.message}`));
         }
 
-        const { id, title } = validation.data;
-        // The schema checks only the shape the store relies on; the rest is the client's verbatim.
+        const { id } = validation.data;
+        // The schema checks only the shape the store relies on; the rest is the model's verbatim.
         const messages = validation.data.messages as ModelMessage[];
         const now = new Date().toISOString();
 
@@ -42,7 +42,8 @@ class SaveAiChatUseCaseImpl implements UseCaseAbstraction.Interface {
             const chat: AiChat = {
                 // Starts with the creation time, which is what orders the list newest first.
                 id: mdbid(),
-                title: title ?? deriveChatTitle(messages),
+                // A chat is titled after its first question, and keeps that title.
+                title: deriveChatTitle(messages),
                 createdOn: now,
                 savedOn: now,
                 messages
@@ -64,7 +65,7 @@ class SaveAiChatUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const chat: AiChat = {
             id,
-            title: title ?? existing.value.title,
+            title: existing.value.title,
             createdOn: existing.value.createdOn,
             savedOn: now,
             messages

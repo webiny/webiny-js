@@ -6,6 +6,9 @@ import {
     TaskNotFoundError,
     TaskServiceInfoError
 } from "~/api/domain/errors.js";
+import { TaskTriggerError } from "~/api/domain/errors.js";
+import { TaskInputValidationError } from "~/api/domain/errors.js";
+import { BackgroundTaskPersistenceError } from "~/api/domain/errors.js";
 
 export interface ITriggerTaskUseCase {
     execute<
@@ -28,6 +31,9 @@ export interface ITriggerTaskUseCaseErrors {
     definitionNotFound: TaskDefinitionNotFoundError;
     taskNotFound: TaskNotFoundError;
     serviceError: TaskServiceInfoError;
+    triggerError: TaskTriggerError;
+    validation: TaskInputValidationError;
+    persistence: BackgroundTaskPersistenceError;
 }
 
 type UseCaseError = ITriggerTaskUseCaseErrors[keyof ITriggerTaskUseCaseErrors];

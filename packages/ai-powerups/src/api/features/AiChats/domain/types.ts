@@ -9,8 +9,8 @@ export interface AiChatSummary {
 }
 
 /**
- * A saved conversation. `messages` is what the assistant replays, stored as the client sent it, so
- * opening a chat can continue it, including a turn paused on an approval.
+ * A saved conversation. `messages` is the model history the assistant reads back to continue it,
+ * including a run paused on an approval, which a decision then resumes.
  */
 export interface AiChat extends AiChatSummary {
     messages: ModelMessage[];

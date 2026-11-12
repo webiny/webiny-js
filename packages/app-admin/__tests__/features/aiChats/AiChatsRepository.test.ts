@@ -7,8 +7,6 @@ import { AiChatsRepository as RepositoryAbstraction } from "~/features/aiChats/a
 import type { AiChatSummary } from "~/features/aiChats/abstractions";
 import type { AiChatsPage } from "~/features/aiChats/abstractions";
 import { AiChatsRepository } from "~/features/aiChats/AiChatsRepository.js";
-import { AiChatsRequestError } from "~/features/aiChats/AiChatsRequestError.js";
-import { AiChatSaveError } from "~/features/aiChats/AiChatSaveError.js";
 
 const summary = (id: string): AiChatSummary => ({
     id,
@@ -32,9 +30,6 @@ const setup = (pages: Record<string, AiChatsPage>) => {
         },
         async get() {
             throw new Error("Not used.");
-        },
-        async save(input) {
-            return summary(input.id ?? "new");
         },
         async delete(id) {
             deleted.push(id);
@@ -81,9 +76,10 @@ describe("AiChatsRepository", () => {
         });
         await repository.load();
 
-        await repository.save({ id: "2", messages: [{ role: "user", content: "Hi" }] });
+        repository.remember({ ...summary("2"), title: "Renamed" });
 
         expect(repository.chats.map(chat => chat.id)).toEqual(["1", "2"]);
+        expect(repository.chats[1].title).toBe("Renamed");
     });
 
     it("puts a new chat first", async () => {
@@ -92,7 +88,7 @@ describe("AiChatsRepository", () => {
         });
         await repository.load();
 
-        await repository.save({ messages: [{ role: "user", content: "Hi" }] });
+        repository.remember(summary("new"));
 
         expect(repository.chats.map(chat => chat.id)).toEqual(["new", "1"]);
     });
@@ -135,9 +131,6 @@ describe("AiChatsRepository", () => {
             async get() {
                 throw new Error("Not used.");
             },
-            async save(input) {
-                return summary(input.id ?? "new");
-            },
             async delete() {}
         };
         container.registerInstance(AiChatsGateway, gateway);
@@ -152,40 +145,5 @@ describe("AiChatsRepository", () => {
         expect(repository.chats.map(chat => chat.id)).toEqual(["1"]);
         expect(repository.error).toBeNull();
         expect(repository.loading).toBe(false);
-    });
-    // The reason picks the fix the assistant offers, so it is worked out here, once.
-    it("says why a save failed", async () => {
-        const failureFor = async (thrown: Error) => {
-            const container = new Container();
-            const gateway: AiChatsGateway.Interface = {
-                async list() {
-                    return { chats: [], cursor: null };
-                },
-                async get() {
-                    throw new Error("Not used.");
-                },
-                async save() {
-                    throw thrown;
-                },
-                async delete() {}
-            };
-            container.registerInstance(AiChatsGateway, gateway);
-            container.register(AiChatsRepository);
-            const repository = container.resolve(RepositoryAbstraction);
-
-            const error: AiChatSaveError = await repository
-                .save({ messages: [] })
-                .catch(caught => caught);
-            expect(error).toBeInstanceOf(AiChatSaveError);
-            return error.failure;
-        };
-
-        expect(await failureFor(new AiChatsRequestError("Too long.", "AiChat/TooLarge"))).toBe(
-            "too-large"
-        );
-        expect(await failureFor(new AiChatsRequestError("Invalid.", "AiChat/Validation"))).toBe(
-            "rejected"
-        );
-        expect(await failureFor(new TypeError("Failed to fetch"))).toBe("unreachable");
     });
 });

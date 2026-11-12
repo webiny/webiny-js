@@ -4,7 +4,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { EnrichmentCapabilityDisabledError } from "./errors.js";

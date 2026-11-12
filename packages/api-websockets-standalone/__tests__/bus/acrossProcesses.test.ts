@@ -5,7 +5,8 @@ import { vi } from "vitest";
 import { beforeEach } from "vitest";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
-import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
+import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
+import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { ServerWebsocketsTransportImpl } from "~/transport/ServerWebsocketsTransport.js";
 import { InProcessMessageBusImpl } from "~/bus/InProcessMessageBus.js";
 import { createBusMessageHandler } from "~/bus/createBusMessageHandler.js";
@@ -79,10 +80,13 @@ const createProcess = async (
     bus: InProcessMessageBusImpl
 ) => {
     const owner = { id: ownerId };
-    const connectionManager = new ServerConnectionManagerImpl(registry, owner);
+    const sockets = new InMemoryLiveSockets();
+    const connectionManager = createConnectionManager(registry, owner, sockets);
     const adapter = createAdapter();
+    // A request's transport: the process's live sockets, the request's registry.
     const transport = new ServerWebsocketsTransportImpl(
-        connectionManager,
+        sockets,
+        registry,
         adapter,
         bus,
         owner,

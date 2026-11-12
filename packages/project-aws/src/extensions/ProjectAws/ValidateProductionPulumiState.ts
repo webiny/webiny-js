@@ -1,9 +1,7 @@
-import {
-    CoreBeforeDeploy,
-    GetProductionEnvironments,
-    IsRemotePulumiBackendService,
-    ProjectSdkParamsService
-} from "@webiny/project/abstractions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { GetProductionEnvironments } from "@webiny/project/abstractions/index.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { IsRemotePulumiBackendService } from "~/abstractions/services/IsRemotePulumiBackendService.js";
 import { GracefulError } from "@webiny/project";
 
 class ValidateProductionPulumiStateImpl implements CoreBeforeDeploy.Interface {

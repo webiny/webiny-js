@@ -2,15 +2,14 @@
  * DI-native Webiny API handler for the AWS Lambda transport — storage-agnostic BASE.
  *
  * The ROOT container wires the AWS transport (API Gateway HTTP + auth/tenant loaders, background-task
- * and WebSocket Lambda invocations, DynamoDB, Cognito, storage). Everything that is not
- * transport-specific — database, identity providers, storage, and the transport-AGNOSTIC per-request
+ * and WebSocket Lambda invocations, storage). Everything that is not
+ * transport-specific — identity providers, storage, and the transport-AGNOSTIC per-request
  * feature stack — lives in `composition/`, shared with the response-streaming handler
- * (`createWebinyStreamApiHandler`) so the two roots cannot drift. The storage variant is injected via
- * `registerRootStorage` by a thin variant package
+ * (`createWebinyStreamApiHandler`) so the two roots cannot drift. The storage variant, database
+ * included, is injected via `registerRootStorage` by a thin variant package
  * (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring in real packages (not an app
  * template) is what makes it unit/integration testable.
  */
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
@@ -21,8 +20,6 @@ import {
     registerWebinyApiRoot
 } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
-
-export type { RegisterRootStorageContext } from "~/composition/index.js";
 
 export type CreateWebinyApiHandlerConfig = WebinyApiCompositionConfig;
 
@@ -58,14 +55,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // inbound transport can't be half-wired.
             registerInboundEventTypes(container);
 
-            // Resolved here rather than at factory time: one bundle exports BOTH this handler and the
-            // streaming one, so building the client eagerly would open a second DynamoDB client on
-            // every cold start. `root` runs once, lazily.
-            await registerWebinyApiRoot(
-                container,
-                config,
-                config.documentClient ?? getDocumentClient()
-            );
+            await registerWebinyApiRoot(container, config);
         },
 
         child: async container => {

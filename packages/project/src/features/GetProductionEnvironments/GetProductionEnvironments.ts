@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { GetProductionEnvironments, GetProjectConfigService } from "~/abstractions/index.js";
-import { ProductionEnvironments as ProductionEnvironmentsExtension } from "~/extensions/pulumi/index.js";
+import { ProductionEnvironments as ProductionEnvironmentsExtension } from "~/extensions/ProductionEnvironments.js";
 
 export class DefaultGetProductionEnvironments implements GetProductionEnvironments.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}

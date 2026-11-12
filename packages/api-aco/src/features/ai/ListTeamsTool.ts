@@ -11,6 +11,8 @@ interface TeamSummary {
     name: string;
     slug: string;
     description?: string;
+    /** Role ids, so `updateTeam` can be given the full list with one role added or removed. */
+    roles: string[];
 }
 
 class ListTeamsToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
@@ -27,7 +29,8 @@ class ListTeamsToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
             const summary: TeamSummary = {
                 id: team.id,
                 name: team.name,
-                slug: team.slug
+                slug: team.slug,
+                roles: team.roles
             };
 
             if (team.description) {
@@ -54,7 +57,7 @@ class ListTeamsToolImpl implements AiSdkToolDefinition.Interface<Input> {
     readonly name = "listTeams";
     readonly title = "List teams";
     readonly description =
-        "Lists the teams in this project with their ids, names and slugs. Folder permission targets use the SLUG (`team:<slug>`), not the id.";
+        "Lists the teams in this project with their ids, names, slugs and role ids. Folder permission targets use the SLUG (`team:<slug>`), not the id; updateTeam and deleteTeam take the id.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: true, idempotentHint: true };
     readonly handler = ListTeamsToolHandler;

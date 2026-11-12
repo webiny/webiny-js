@@ -2,6 +2,8 @@ import React from "react";
 import { Admin } from "webiny/extensions";
 import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
+import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
+import { AcoPg } from "@webiny/api-aco-pg/project";
 
 /**
  * Standalone-only extensions, rendered by webiny.config.tsx when WEBINY_HOSTING_TYPE === "standalone".
@@ -39,6 +41,15 @@ export const StandaloneExtensions = () => {
                     filename={process.env.WEBINY_SQL_FILENAME || "./.webiny/server.sqlite"}
                 />
             )}
+
+            {/* On Postgres (and PGlite), content needs the Postgres CMS storage and the folder
+                catalog; SQLite has its own CMS built in. */}
+            {process.env.WEBINY_DB === "pglite" || process.env.WEBINY_DB === "postgres" ? (
+                <>
+                    <HeadlessCmsPg />
+                    <AcoPg />
+                </>
+            ) : null}
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves like
                 the SQLite file — against the project root — so uploads persist across rebuilds. */}

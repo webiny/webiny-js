@@ -7,13 +7,15 @@ import type {
     WebhookNotAuthorizedError,
     WebhookValidationError
 } from "~/api/domain/errors.js";
+import type { WebhookDeliveryNotQueuedError } from "~/api/domain/errors.js";
 
 type IError =
     | WebhookNotFoundError
     | WebhookPersistenceError
     | WebhookModelNotFoundError
     | WebhookNotAuthorizedError
-    | WebhookValidationError;
+    | WebhookValidationError
+    | WebhookDeliveryNotQueuedError;
 
 export interface ITriggerWebhookUseCase {
     execute(

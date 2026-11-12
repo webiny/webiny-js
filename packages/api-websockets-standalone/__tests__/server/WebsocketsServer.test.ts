@@ -3,8 +3,9 @@ import { createServer } from "node:http";
 import type { Server as HttpServer } from "node:http";
 import { WebSocket } from "ws";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
-import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
+import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
 import { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
+import { LAST_SEEN_WRITE_INTERVAL } from "~/connectionManager/ServerConnectionManager.js";
 import type { IWebsocketsServer } from "~/server/types.js";
 
 const createNoopRegistry = (): IWebsocketsConnectionRegistry => ({
@@ -68,7 +69,7 @@ describe("WebsocketsServer", () => {
 
         beforeEach(async () => {
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
 
             server = createWebsocketsServer({
                 port: 0,
@@ -110,7 +111,7 @@ describe("WebsocketsServer", () => {
 
         it("should clean up on disconnect", async () => {
             const registry = createNoopRegistry();
-            const trackedManager = new ServerConnectionManagerImpl(registry, owner);
+            const trackedManager = createConnectionManager(registry, owner);
             const addSpy = vi.spyOn(trackedManager, "add");
             const removeSpy = vi.spyOn(trackedManager, "remove");
 
@@ -145,7 +146,7 @@ describe("WebsocketsServer", () => {
     describe("stopping", () => {
         it("closes sockets with 1012 and takes their connections out of the registry", async () => {
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
             const server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
@@ -173,7 +174,7 @@ describe("WebsocketsServer", () => {
             const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
             const registry = createNoopRegistry();
             registry.unregister = vi.fn().mockRejectedValue(new Error("connection lost"));
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
             const server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
@@ -203,7 +204,7 @@ describe("WebsocketsServer", () => {
             const registry = createNoopRegistry();
             registry.updateLastSeen = vi.fn().mockRejectedValue(new Error("SQLITE_BUSY"));
             registry.unregister = vi.fn().mockRejectedValue(new Error("connection lost"));
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
 
             const server = createWebsocketsServer({
                 port: 0,
@@ -216,8 +217,13 @@ describe("WebsocketsServer", () => {
             const port = server.port();
             const client = await connectClient(port);
             await wait(50);
+            // Past the throttle that skips `lastSeen` writes right after registering.
+            const clock = vi
+                .spyOn(Date, "now")
+                .mockReturnValue(Date.now() + LAST_SEEN_WRITE_INTERVAL);
             client.send(JSON.stringify({ action: "ping" }));
             await wait(50);
+            clock.mockRestore();
             await closeClient(client);
             await wait(50);
 
@@ -231,7 +237,7 @@ describe("WebsocketsServer", () => {
 
         it("removes a connection that closed while it was still authenticating", async () => {
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
 
             let finishAuthentication: () => void = () => {};
             const authenticate = vi.fn(
@@ -268,7 +274,7 @@ describe("WebsocketsServer", () => {
 
         it("closes a connection that has gone stale so the client can reconnect", async () => {
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
 
             const server = createWebsocketsServer({
                 port: 0,
@@ -306,7 +312,7 @@ describe("WebsocketsServer", () => {
             port = await listenOnRandomPort(httpServer);
 
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const manager = createConnectionManager(registry, owner);
 
             server = attachWebsocketsServer({
                 server: httpServer,

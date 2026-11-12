@@ -54,7 +54,7 @@ class ListRolesToolImpl implements AiSdkToolDefinition.Interface<Record<string, 
     readonly name = "listRoles";
     readonly title = "List roles";
     readonly description =
-        "Lists the security roles in this project. Call this before createTeam and pass the `id` of each role you want. A slug also works, but a value that is neither is rejected.";
+        "Lists the security roles in this project with their ids, names and slugs. createTeam and updateTeam take role ids (a slug also works; anything else is rejected). updateRole and deleteRole take the id, and deleteRole also the exact name.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: true, idempotentHint: true };
     readonly handler = ListRolesToolHandler;

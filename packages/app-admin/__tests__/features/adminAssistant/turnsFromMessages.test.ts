@@ -2,7 +2,6 @@ import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
 import { turnsFromMessages } from "~/features/adminAssistant/turnsFromMessages.js";
-import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractions";
 
 describe("turnsFromMessages", () => {
     it("starts a turn at every user message", () => {
@@ -61,23 +60,6 @@ describe("turnsFromMessages", () => {
         expect(turn.failed).toEqual(["listFolders"]);
         expect(turn.text).toBe("I'll check the models.\n\n6 content models.");
         expect(turn.text.slice(turn.answerStart).trim()).toBe("6 content models.");
-    });
-
-    it("keeps each turn's messages verbatim, so the chat replays as it was saved", () => {
-        const messages: AdminAssistantMessage[] = [
-            { role: "user", content: "Hi" },
-            {
-                role: "assistant",
-                content: [
-                    { type: "reasoning", text: "…" },
-                    { type: "text", text: "Hello." }
-                ]
-            }
-        ];
-
-        const [turn] = turnsFromMessages(messages);
-
-        expect(turn.messages).toEqual([messages[1]]);
     });
 
     /*

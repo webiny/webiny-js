@@ -37,6 +37,24 @@ export class TaskAbortError extends BaseError<{ id: string; status: string }> {
     }
 }
 
+export class TaskTriggerError extends BaseError<{ definitionId: string }> {
+    override readonly code = "BackgroundTasks/Task/TriggerError" as const;
+
+    constructor(params: { message: string; definitionId: string }) {
+        super({
+            message: params.message,
+            data: {
+                definitionId: params.definitionId
+            }
+        });
+    }
+
+    static from(error: unknown, definitionId: string): TaskTriggerError {
+        const message = error instanceof Error ? error.message : String(error);
+        return new TaskTriggerError({ message, definitionId });
+    }
+}
+
 export class TaskLogNotFoundError extends BaseError {
     override readonly code = "BackgroundTasks/Log/NotFoundError" as const;
 

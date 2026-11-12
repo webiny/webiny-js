@@ -21,9 +21,9 @@ function canRecover(tenant: Tenant): boolean {
 }
 
 /**
- * Re-arms every tenant's pending scheduled actions in the Bree singleton. Bree keeps its timers in
+ * Re-arms every tenant's pending scheduled actions in the scheduler singleton. It keeps its timers in
  * memory, so a restart loses them all. Overdue actions run at once (see
- * `BreeSchedulerService.recover`).
+ * `TimerSchedulerService.recover`).
  *
  * Each tenant is recovered on its own: one that fails is logged and reported in the result, and the
  * rest are still recovered. A fresh install has no tenants yet and recovers nothing.

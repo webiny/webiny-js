@@ -14,8 +14,14 @@ import { TenantContext } from "~/features/tenancy/abstractions.js";
 const STREAM_PATH = "/stream/ai/admin-assistant";
 
 const toBody = (request: AdminAssistantRequest): Record<string, unknown> => {
-    const body: Record<string, unknown> = { messages: request.messages };
+    const body: Record<string, unknown> = {};
 
+    if (request.chatId) {
+        body["chatId"] = request.chatId;
+    }
+    if (request.prompt) {
+        body["prompt"] = request.prompt;
+    }
     if (request.approvals?.length) {
         body["approvals"] = request.approvals;
     }

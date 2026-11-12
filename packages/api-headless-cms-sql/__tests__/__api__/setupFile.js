@@ -4,14 +4,8 @@ import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
 import { registerSQLCore } from "@webiny/api-core-sql";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
-const sqlClient = process.env.WEBINY_SQL_CLIENT;
-
-const clientImports = {
-    pg: () => import("./createPgClient.js"),
-    pglite: () => import("./createPgliteClient.js")
-};
-
-const client = await (clientImports[sqlClient] || (() => import("./createSqliteClient.js")))();
+// The generic SQL CMS is tested on SQLite only; Postgres runs the pg CMS (`WEBINY_STORAGE=pg,sql`).
+const client = await import("./createSqliteClient.js");
 
 const knex = global.__testKnex || (await client.createKnex());
 
@@ -26,7 +20,7 @@ setStorageOps("cms", () => {
             knex
         }),
         createRegisterExtensionPlugin(context =>
-            HeadlessCmsSqlFeature.register(context.container, { knex, tableNamePrefix })
+            HeadlessCmsSqlFeature.register(context.container, { tableNamePrefix })
         ),
         createRegisterExtensionPlugin(({ container }) => {
             const sortingRegistry = container.resolve(FieldSortingRegistry);

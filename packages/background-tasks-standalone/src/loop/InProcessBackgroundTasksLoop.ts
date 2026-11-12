@@ -3,7 +3,7 @@ import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
-import { IterationSlots } from "./IterationSlots.js";
+import { ConcurrencySlots } from "@webiny/utils/ConcurrencySlots.js";
 import { TaskExecution } from "./TaskExecution.js";
 
 /*
@@ -18,7 +18,7 @@ const MAX_RUNNING_ITERATIONS = 5;
  * `TaskExecution`'s.
  */
 class InProcessBackgroundTasksLoopImpl implements BackgroundTasksLoop.Interface {
-    private readonly slots = new IterationSlots(MAX_RUNNING_ITERATIONS);
+    private readonly slots = new ConcurrencySlots(MAX_RUNNING_ITERATIONS);
     // One per task, from `start` until its execution ends, waits included.
     private readonly executions = new Map<string, TaskExecution>();
 
