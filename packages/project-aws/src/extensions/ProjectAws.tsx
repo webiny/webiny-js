@@ -1,19 +1,19 @@
 import React from "react";
 import {
-    AdminAfterDeploy,
     AdminBeforeBuild,
     AdminBeforeWatch,
-    AfterDeploy,
-    ApiAfterDeploy,
-    ApiBeforeDeploy,
     ApiBeforeWatch,
-    BeforeDeploy,
-    CoreBeforeDeploy,
     DatabaseSetup,
     ExtensionDefinitions,
     Project,
     ProjectImplementation
 } from "@webiny/project/extensions/index.js";
+import { AdminAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { BeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CorePulumi } from "~/pulumi/extensions/CorePulumi.js";

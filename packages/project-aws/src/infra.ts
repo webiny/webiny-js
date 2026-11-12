@@ -1,22 +1,22 @@
 import {
     AdminAfterBuild,
-    AdminAfterDeploy,
     AdminBeforeBuild,
-    AdminBeforeDeploy,
     AdminBeforeWatch,
     ApiAfterBuild,
-    ApiAfterDeploy,
     ApiBeforeBuild,
-    ApiBeforeDeploy,
     ApiBeforeWatch,
     CoreAfterBuild,
-    CoreAfterDeploy,
     CoreBeforeBuild,
-    CoreBeforeDeploy,
     CoreBeforeWatch,
-    ProductionEnvironments,
-    PulumiResourceNamePrefix
+    ProductionEnvironments
 } from "@webiny/project/extensions/index.js";
+import { AdminAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AdminBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { PulumiResourceNamePrefix } from "@webiny/project-extensions-aws/extensions/index.js";
 
 import { CorePulumi, ApiPulumi, AdminPulumi } from "./pulumi/extensions/index.js";
 
