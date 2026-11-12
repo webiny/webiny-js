@@ -1,4 +1,4 @@
-import type { ModelMessage } from "ai";
+import type { AiChatSummary } from "~/api/features/AiChats/domain/types.js";
 import type { PendingApproval } from "./approvals.js";
 
 /**
@@ -33,12 +33,18 @@ export type AdminAssistantEvent =
     | { type: "follow-ups"; questions: string[] }
     /** The loop paused: these calls change something and need a human decision. */
     | { type: "approval"; approvals: PendingApproval[] }
-    /** Terminal success. Carries what the client must replay to resume after an approval. */
-    | {
-          type: "done";
-          messages: ModelMessage[];
-          steps: number;
-      }
+    /**
+     * The run was stored in the chat, a new one on the first question. Its id is what the next
+     * question, or the decision on an approval, continues from.
+     */
+    | { type: "saved"; chat: AiChatSummary }
+    /**
+     * The run finished but could not be stored, so the next question will not see it. `retryable`
+     * says whether asking again could save it; otherwise only a new chat saves again.
+     */
+    | { type: "not-saved"; message: string; retryable: boolean }
+    /** Terminal success, after `saved` or `not-saved`. */
+    | { type: "done"; steps: number }
     /**
      * Terminal failure. The run produced no usable answer. `code` is set only for a failure the
      * client handles on its own: a project with no model set up, which it shows as a setup screen.

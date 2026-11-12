@@ -4,7 +4,7 @@ import { zodSrcPath } from "../defineExtension/zodTypes/zodSrcPath.js";
 
 export const ProjectImplementation = defineExtension({
     type: "Project/Implementation",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     multiple: true,
     description: "Define a custom implementation or replace an existing one.",
     paramsSchema: ({ project }) => {

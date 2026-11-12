@@ -186,6 +186,8 @@ const models: CmsModel[] = [
                 type: "text",
                 storageId: "text@titleStorageId",
                 fieldId: "title",
+                // pg: `contains` matches inside words only on fields opted in to it.
+                settings: { search: { substrings: true } },
                 validation: [
                     {
                         name: "required",
@@ -1126,6 +1128,8 @@ const models: CmsModel[] = [
                 type: "text",
                 storageId: "text@nameStorageId",
                 fieldId: "name",
+                // pg: `contains` matches inside words only on fields opted in to it.
+                settings: { search: { substrings: true } },
                 validation: [
                     {
                         name: "required",

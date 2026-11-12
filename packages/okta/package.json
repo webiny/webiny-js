@@ -22,7 +22,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/project-aws": "0.0.0",
+    "@webiny/project-extensions": "0.0.0",
     "jsonwebtoken": "^9.0.3",
     "mobx": "^7.1.4",
     "mobx-react-lite": "^5.1.2",

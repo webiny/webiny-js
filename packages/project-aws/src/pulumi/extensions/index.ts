@@ -1,14 +1,20 @@
-import { AwsTags } from "./AwsTags.js";
-import { OpenSearch } from "./OpenSearch.js";
-import { Vpc } from "./Vpc.js";
-import { AdminCustomDomains } from "./AdminCustomDomains.js";
-import { ApiCustomDomains } from "./ApiCustomDomains.js";
-import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.js";
+import { AwsTags } from "@webiny/project-extensions-aws/extensions/index.js";
+import { PulumiOpenSearch as OpenSearch } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Vpc } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AdminCustomDomains } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiCustomDomains } from "@webiny/project-extensions-aws/extensions/index.js";
+import { BlueGreenDeployments } from "@webiny/project-extensions-aws/extensions/index.js";
+import { DynamoDbPitr } from "@webiny/project-extensions-aws/extensions/index.js";
+import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";
-import { DynamoDbPitr } from "./DynamoDbPitr.js";
-import { S3BucketVersioning } from "./S3BucketVersioning.js";
+import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
 
 export { AwsTags };
 export { Vpc };
@@ -33,5 +39,11 @@ export const definitions = [
     ApiPulumi.def,
     AdminPulumi.def,
     DynamoDbPitr.def,
-    S3BucketVersioning.def
+    S3BucketVersioning.def,
+    AdminStackOutputValue.def,
+    ApiStackOutputValue.def,
+    CoreStackOutputValue.def,
+    ApiMaxBundleSize.def,
+    Encryption.def,
+    Hashing.def
 ];

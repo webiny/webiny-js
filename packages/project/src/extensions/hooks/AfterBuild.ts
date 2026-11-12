@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const AfterBuild = defineExtension({
     type: "Project/AfterBuild",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Add custom logic to be executed after the PROJECT build process.",
     multiple: true,
     paramsSchema: ({ project }) => {

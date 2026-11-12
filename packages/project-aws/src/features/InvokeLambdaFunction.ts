@@ -1,5 +1,5 @@
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
-import { InvokeLambdaFunction as InvokeLambdaFunctionAbstraction } from "~/abstractions/InvokeLambdaFunction.js";
+import { InvokeLambdaFunction as InvokeLambdaFunctionAbstraction } from "@webiny/project-extensions-aws/abstractions/InvokeLambdaFunction.js";
 import { IDefaultStackOutput } from "~/pulumi/types.js";
 
 export class InvokeLambdaFunctionImpl implements InvokeLambdaFunctionAbstraction.Interface {

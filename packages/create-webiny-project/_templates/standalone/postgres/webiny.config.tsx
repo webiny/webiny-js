@@ -1,8 +1,6 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the standalone hosting-type package. `webiny/extensions` exposes the
-// AWS namespaces, which don't include server-only extensions like `Infra.Postgres`.
-import { Infra } from "@webiny/project-standalone";
+import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**
@@ -13,7 +11,9 @@ export const Extensions = () => {
     return (
         <>
             {/* SQL database — connect to a Postgres server. Connection params come from the WEBINY_PG_*
-                env vars (see `.env`); set `ssl` when connecting to a managed Postgres that requires it. */}
+                env vars (see `.env`); set `ssl` when connecting to a managed Postgres that requires it.
+                Content uses the Postgres-native storage; `storage="sql"` selects the generic SQL
+                storage instead (chosen once per project: switching does not move existing data). */}
             <Infra.Postgres
                 host={process.env.WEBINY_PG_HOST || "localhost"}
                 port={Number(process.env.WEBINY_PG_PORT) || 5432}

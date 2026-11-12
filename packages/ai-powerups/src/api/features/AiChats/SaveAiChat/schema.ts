@@ -1,8 +1,8 @@
 import zod from "zod";
 
 /*
- * Only the shape the store relies on is checked. The messages are the assistant's own, replayed
- * verbatim, and the assistant validates them when a chat is continued.
+ * Only the shape the store relies on is checked. The assistant is the only caller, and it saves the
+ * messages the model produced as they are.
  */
 const message = zod
     .object({
@@ -13,6 +13,5 @@ const message = zod
 
 export const saveAiChatValidation = zod.object({
     id: zod.string().optional(),
-    title: zod.string().trim().min(1).max(200).optional(),
-    messages: zod.array(message).min(1).max(1000)
+    messages: zod.array(message).min(1).max(1000, "A chat holds at most 1000 messages.")
 });

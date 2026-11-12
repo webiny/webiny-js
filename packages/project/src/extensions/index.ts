@@ -13,9 +13,9 @@ import { AdminApiUrl } from "./AdminApiUrl.js";
 import { AdminWebsocketsUrl } from "./AdminWebsocketsUrl.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
-import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
-import { Encryption } from "./infra/Encryption.js";
-import { Hashing } from "./infra/Hashing.js";
+import { BackgroundTasks } from "./api/index.js";
+import { ModelFieldCompression } from "./api/index.js";
+import { Smtp } from "./api/index.js";
 
 // Hooks.
 import {
@@ -42,13 +42,7 @@ import {
 } from "./hooks/index.js";
 
 // Pulumi (non-app-specific).
-import {
-    ProductionEnvironments,
-    PulumiResourceNamePrefix,
-    CoreStackOutputValue,
-    ApiStackOutputValue,
-    AdminStackOutputValue
-} from "./pulumi/index.js";
+import { ProductionEnvironments, PulumiResourceNamePrefix } from "./pulumi/index.js";
 
 // Exports.
 export { Telemetry };
@@ -66,9 +60,6 @@ export { AdminApiUrl };
 export { AdminWebsocketsUrl };
 export { AdminExtension };
 export { ApiExtension };
-export { ApiMaxBundleSize };
-export { Encryption };
-export { Hashing };
 
 // Hooks.
 export { BeforeBuild };
@@ -95,9 +86,6 @@ export { CoreAfterDeploy };
 // Pulumi (non-app-specific).
 export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
-export { CoreStackOutputValue };
-export { ApiStackOutputValue };
-export { AdminStackOutputValue };
 
 // Definitions (used internally). 👇
 export const definitions = [
@@ -135,9 +123,6 @@ export const definitions = [
     // Pulumi (non-app-specific).
     PulumiResourceNamePrefix.def,
     ProductionEnvironments.def,
-    CoreStackOutputValue.def,
-    ApiStackOutputValue.def,
-    AdminStackOutputValue.def,
     DatabaseSetup.def,
     BuildParam.def,
     AdminBuildParam.def,
@@ -145,9 +130,11 @@ export const definitions = [
     AdminWebsocketsUrl.def,
     AdminExtension.def,
     ApiExtension.def,
-    ApiMaxBundleSize.def,
-    Encryption.def,
-    Hashing.def
+
+    // Api settings that apply to every hosting type.
+    BackgroundTasks.def,
+    ModelFieldCompression.def,
+    Smtp.def
 ];
 
 export { Project } from "./Project.js";

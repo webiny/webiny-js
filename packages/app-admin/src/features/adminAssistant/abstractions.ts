@@ -1,10 +1,10 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
+import type { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 
 /**
- * Messages are opaque here on purpose. Beyond plain user/assistant turns the server also returns
- * assistant and tool messages carrying approval requests, which must be replayed VERBATIM for the
- * agent loop to resume — the request exists nowhere else, since the server keeps no session.
+ * A message of a saved chat. Opaque on purpose: the admin only reads them to show an opened chat,
+ * and the server is the one that sends them to the model.
  */
 export type AdminAssistantMessage = { role: string; content: unknown };
 
@@ -30,9 +30,14 @@ export interface AdminAssistantDecision {
     reason?: string;
 }
 
+/**
+ * A question, or the decisions on the calls a run paused on. The server reads the rest of the
+ * conversation from the saved chat, so only its id is sent; without one, a question starts a chat.
+ */
 export interface AdminAssistantRequest {
-    messages: AdminAssistantMessage[];
-    /** Approve or reject calls the server paused on. */
+    chatId?: string;
+    prompt?: string;
+    /** Approve or reject calls the server paused on. Needs the `chatId` of the paused run. */
     approvals?: AdminAssistantDecision[];
 }
 
@@ -50,7 +55,12 @@ export type AdminAssistantStreamEvent =
     | { type: "tool-error"; name: string; message: string }
     | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
-    | { type: "done"; messages: AdminAssistantMessage[]; steps: number }
+    // The run was saved, as a new chat or onto the one asked about.
+    | { type: "saved"; chat: AiChatsRepository.Summary }
+    // The run finished but the server could not save it. `retryable` says whether asking again could.
+    | { type: "not-saved"; message: string; retryable: boolean }
+    // Comes after `saved` or `not-saved`.
+    | { type: "done"; steps: number }
     | { type: "error"; message: string; code?: "AI_CAPABILITY_NOT_CONFIGURED" };
 
 export interface IAdminAssistantGateway {
@@ -78,12 +88,7 @@ export namespace AdminAssistantGateway {
     export type StreamEvent = AdminAssistantStreamEvent;
 }
 
-/**
- * One question and the answer to it, as the view needs it.
- *
- * The server messages that make a follow-up or a resumed approval work are deliberately absent: they
- * are conversation state, not something rendered, so they stay inside the presenter.
- */
+/** One question and the answer to it, as the view needs it. */
 export interface AiTurnViewModel {
     question: string;
     /** Answer text so far. Grows as the stream arrives. */
@@ -130,17 +135,15 @@ export interface IAdminAssistantViewModel {
     /** A saved chat is being read. */
     opening: boolean;
     /**
-     * Why the last save or open failed. The conversation on screen carries on either way; this is
-     * only so the view can say it is not saved.
+     * Why the last run was not saved, or the last open failed. The conversation on screen carries
+     * on either way; this is only so the view can say it is not saved.
      */
     storageError: string | null;
-    /** Set when it was a save that failed, so the view can offer what fixes it. Null for an open. */
-    saveFailure: AiChatSaveFailure | null;
     /**
-     * A turn waits on an approval, so no save runs until it is decided. Retrying a failed save
-     * would do nothing, so the view can say the save follows the decision instead.
+     * Set when it was a run that was not saved, so the view can offer what fixes it. Null for an
+     * open.
      */
-    savePaused: boolean;
+    saveFailure: AiChatSaveFailure | null;
     /**
      * The newest turn needs a model set up first. No question is taken until "Try again" (`retry`)
      * succeeds, so the view can stop taking input.
@@ -150,7 +153,10 @@ export interface IAdminAssistantViewModel {
 
 export interface IAdminAssistantPresenter {
     readonly vm: IAdminAssistantViewModel;
-    /** Ask a question, carrying the settled turns before it as context. Refused while `setupRequired`. */
+    /**
+     * Ask a question in the chat on screen. A change still waiting on a decision is rejected.
+     * Refused while `setupRequired`.
+     */
     ask(question: string): void;
     /** Approve or reject the calls a turn paused on, then resume it. */
     decide(turnIndex: number, approved: boolean): void;
@@ -158,10 +164,8 @@ export interface IAdminAssistantPresenter {
     reset(): void;
     /** Replace the conversation with a saved chat, so asking again continues it. */
     open(chatId: string): Promise<void>;
-    /** Ask the newest question again, when its run failed. */
+    /** Ask the newest question again, when its run failed or was not saved. */
     retry(): void;
-    /** Try the failed save again. */
-    retrySave(): void;
 }
 
 export const AdminAssistantPresenter =

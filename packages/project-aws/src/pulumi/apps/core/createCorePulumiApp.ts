@@ -15,14 +15,14 @@ import {
 import * as random from "@pulumi/random";
 
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
-import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
+import { CorePulumi } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
-import { DynamoDbPitr } from "~/pulumi/extensions/DynamoDbPitr.js";
-import { S3BucketVersioning } from "~/pulumi/extensions/S3BucketVersioning.js";
+import { DynamoDbPitr } from "@webiny/project-extensions-aws/extensions/DynamoDbPitr.js";
+import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/S3BucketVersioning.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";

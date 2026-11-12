@@ -3,7 +3,7 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const PulumiResourceNamePrefix = defineExtension({
     type: "Infra/PulumiResourceNamePrefix",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: 'Adjust the prefix for Pulumi resource names (default: "wby-").',
     paramsSchema: z.object({
         prefix: z.string()

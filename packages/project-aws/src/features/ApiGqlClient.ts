@@ -1,6 +1,6 @@
-import { ApiGqlClient as ApiGqlClientAbstraction } from "~/abstractions/ApiGqlClient.js";
-import { ApiStackOutputService } from "~/abstractions/index.js";
-import { InvokeLambdaFunction } from "~/abstractions/InvokeLambdaFunction.js";
+import { ApiGqlClient as ApiGqlClientAbstraction } from "@webiny/project-extensions-aws/abstractions/ApiGqlClient.js";
+import { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { InvokeLambdaFunction } from "@webiny/project-extensions-aws/abstractions/InvokeLambdaFunction.js";
 
 class ApiGqlClientImpl implements ApiGqlClientAbstraction.Interface {
     constructor(
