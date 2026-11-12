@@ -59,7 +59,7 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/project": "0.0.0",
     "chalk": "^6.0.1",
-    "oxfmt": "^0.77.0",
+    "oxfmt": "^0.78.0",
     "rimraf": "^6.1.4",
     "sass": "^1.108.1",
     "storybook": "^10.6.6",
