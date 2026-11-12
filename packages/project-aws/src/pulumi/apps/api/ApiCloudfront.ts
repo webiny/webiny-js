@@ -404,10 +404,16 @@ export const ApiCloudfront = createAppModule({
  * `addWebRouteBehavior`.
  */
 function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
-    // For `/graphql`, `/cms*` and `<Api.Route>` paths. CloudFront only passes `Authorization` on a GET
-    // when it is part of the cache key, and the managed CachingDisabled policy can't have one: a
-    // policy whose TTLs are all 0 takes no cache key. So this one has a 1 second max TTL and a default
-    // of 0, and nothing is cached unless the API sends `Cache-Control`.
+    // For `/graphql`, `/cms*` and `<Api.Route>` paths. These routes are not meant to be cached: this
+    // policy exists only so that `Authorization` reaches the web function on GET and HEAD requests
+    // (a GET `<Api.Route>`, for example). CloudFront strips `Authorization` from GET and HEAD
+    // unless it is part of the cache key, and an origin request policy is not allowed to forward it,
+    // so the cache key is the only place it can go. POST and the other methods keep `Authorization`
+    // with or without this policy.
+    //
+    // The managed CachingDisabled policy can't have a cache key: a policy whose TTLs are all 0 takes
+    // none. So this one has a 1 second max TTL, the smallest that allows a key, and a default of 0, and
+    // nothing is cached unless the API sends `Cache-Control`.
     //
     // Every header the API reads is in the key, so even that one second is only ever shared by
     // identical requests: same tenant, same token in either header, same cookie, same query string.
