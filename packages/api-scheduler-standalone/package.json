@@ -20,7 +20,8 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
-    "@webiny/error": "0.0.0"
+    "@webiny/error": "0.0.0",
+    "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

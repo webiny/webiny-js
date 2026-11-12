@@ -1,16 +1,21 @@
 type Grant = (granted: boolean) => void;
 
 /**
- * Limits how many task iterations run at once. An iteration takes a slot before it runs and gives it
- * back after; one that finds them all taken waits in line, first come first served.
+ * Limits how many pieces of work run at once. Work takes a slot before it runs and gives it back
+ * after; work that finds them all taken waits in line, first come first served.
  */
-export class IterationSlots {
+export class ConcurrencySlots {
     private readonly size: number;
     private used = 0;
     private readonly waiting: Grant[] = [];
     private closed = false;
 
     public constructor(size: number) {
+        if (!Number.isInteger(size) || size < 1) {
+            throw new Error(
+                `ConcurrencySlots needs a positive whole number of slots, got ${size}.`
+            );
+        }
         this.size = size;
     }
 
@@ -48,6 +53,14 @@ export class IterationSlots {
         for (const grant of waiting) {
             grant(false);
         }
+    }
+
+    /**
+     * Takes callers again after `close`. Slots still held from before stay counted, so the limit
+     * holds across a close and reopen.
+     */
+    public open(): void {
+        this.closed = false;
     }
 
     public getRunning(): number {

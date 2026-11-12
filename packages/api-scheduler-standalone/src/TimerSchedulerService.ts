@@ -5,6 +5,7 @@ import {
     SchedulerService
 } from "@webiny/api-scheduler/shared/abstractions.js";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
+import { ConcurrencySlots } from "@webiny/utils/ConcurrencySlots.js";
 
 /*
  * The longest delay `setTimeout` takes (2^31 - 1 ms, about 24.8 days). A longer one fires at once, so
@@ -56,9 +57,8 @@ export class TimerSchedulerService implements SchedulerService.Interface {
     private readonly maxConcurrentActions;
     // Triggers started and not finished yet, so a shutdown can wait for them.
     private readonly running = new Set<Promise<void>>();
-    // Triggers waiting for one of the `maxConcurrentActions` slots.
-    private readonly waiting: Array<() => void> = [];
-    private active = 0;
+    // Triggers take one of these before they run; the rest wait in line. Closed by `stop`.
+    private readonly slots: ConcurrencySlots;
     /*
      * Set by `stop`. A recovery that started before the stop runs overdue actions one by one and can
      * still be going after it; this keeps it from starting more actions or arming timers. Actions it
@@ -70,10 +70,13 @@ export class TimerSchedulerService implements SchedulerService.Interface {
         this.logger = params.logger;
         this.runAction = params.runAction;
         this.maxConcurrentActions = params.maxConcurrentActions ?? DEFAULT_MAX_CONCURRENT_ACTIONS;
+        this.slots = new ConcurrencySlots(this.maxConcurrentActions);
     }
 
     public async start(): Promise<void> {
         this.stopped = false;
+        // Actions still running from before a `stop` keep their slots, so they count against the limit.
+        this.slots.open();
     }
 
     /**
@@ -86,9 +89,7 @@ export class TimerSchedulerService implements SchedulerService.Interface {
             clearTimeout(job.timer);
         }
         this.jobs.clear();
-        for (const release of this.waiting.splice(0)) {
-            release();
-        }
+        this.slots.close();
     }
 
     /**
@@ -223,9 +224,13 @@ export class TimerSchedulerService implements SchedulerService.Interface {
     }
 
     private async trigger(id: string, namespace: string, tenant: string): Promise<void> {
-        await this.acquire();
+        const granted = await this.slots.acquire();
+        if (!granted) {
+            return;
+        }
+        // Granted just before a `stop`, which only turns away those still waiting.
         if (this.stopped) {
-            this.release();
+            this.slots.release();
             return;
         }
         const triggered = this.runAction(id, namespace, tenant);
@@ -236,28 +241,7 @@ export class TimerSchedulerService implements SchedulerService.Interface {
             this.logger.error({ error, id, tenant }, "[scheduler] scheduled action failed");
         } finally {
             this.running.delete(triggered);
-            this.release();
-        }
-    }
-
-    private acquire(): Promise<void> {
-        if (this.active < this.maxConcurrentActions) {
-            this.active++;
-            return Promise.resolve();
-        }
-        return new Promise(resolve => {
-            this.waiting.push(() => {
-                this.active++;
-                resolve();
-            });
-        });
-    }
-
-    private release(): void {
-        this.active--;
-        const next = this.waiting.shift();
-        if (next) {
-            next();
+            this.slots.release();
         }
     }
 }
