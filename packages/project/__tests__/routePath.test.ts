@@ -5,7 +5,7 @@
  * deploys, API Gateway forwards the request, and the router 404s it.
  */
 import { describe, expect, it } from "vitest";
-import { toApiGatewayPath, toRouterPath } from "~/extensions/routePath.js";
+import { toApiGatewayPath, toRouterPath } from "~/extensions/api/Route/routePath.js";
 
 describe("toApiGatewayPath", () => {
     it.each([
