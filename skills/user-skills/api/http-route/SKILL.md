@@ -58,8 +58,11 @@ Register it:
 | `src`       | `string` | Yes      | Path to the handler file (must include `.ts`)                                                                                         |
 | `routeName` | `string` | No       | Route name (kebab-case). Derived from path + method if omitted. Doubles as the Pulumi resource name and the id a decorator matches on |
 
-Methods: `DELETE`, `GET`, `HEAD`, `PATCH`, `POST`, `PUT`, `OPTIONS`, `ANY`. Use `ANY` to match every
-method on a path.
+Methods: `DELETE`, `GET`, `HEAD`, `PATCH`, `POST`, `PUT`, `OPTIONS`. To serve several methods on one
+path, add one `<Api.Route>` per method; they can share a handler file.
+
+A derived name leaves out path parameters, so `GET /orders` and `GET /orders/{id}` both come out as
+`orders-get`. The build stops when two routes share a name; set `routeName` on one of them.
 
 ## Path parameters
 

@@ -3,7 +3,9 @@ import { afterEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import { definitions as projectDefinitions } from "@webiny/project/extensions/index.js";
 import { ApiRoute as SharedApiRoute } from "@webiny/project/extensions/api/index.js";
+import awsDefinitions from "~/extensions/definitions.js";
 import { ApiRoute } from "~/extensions/ApiRoute.js";
 import "~/extensions/registerExtensionImplementations.js";
 
@@ -32,12 +34,18 @@ describe("Api.Route on AWS", () => {
     it("renders the AWS implementation, which adds the API Gateway route", () => {
         process.env.WEBINY_HOSTING_TYPE = "aws";
 
-        expect(callComponent(SharedApiRoute, props).type).toBe(ApiRoute);
+        const element = callComponent(SharedApiRoute, props);
+        expect(element.type).toBe(ApiRoute);
     });
 
-    it("writes extensions.ts with the same build as every other hosting type", () => {
-        expect(ApiRoute.def.type).toBe(SharedApiRoute.def.type);
-        expect(ApiRoute.def.build).toBe(SharedApiRoute.def.build);
-        expect(ApiRoute.def.paramsSchema).toBe(SharedApiRoute.def.paramsSchema);
+    /*
+     * The project config resolves an extension type to the first registered definition with that
+     * type. With one `Api/Route` definition, AWS validates and builds routes exactly like standalone.
+     */
+    it("resolves Api/Route to the shared definition, the only one registered", () => {
+        const allDefinitions = [...projectDefinitions, ...awsDefinitions];
+        const routeDefinitions = allDefinitions.filter(def => def.type === "Api/Route");
+
+        expect(routeDefinitions).toEqual([SharedApiRoute.def]);
     });
 });

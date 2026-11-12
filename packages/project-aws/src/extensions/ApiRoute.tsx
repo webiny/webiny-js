@@ -7,17 +7,15 @@ import { createPathResolver } from "@webiny/project";
 const p = createPathResolver(import.meta.dirname);
 
 /**
- * The AWS implementation of `Api.Route`. The shared definition in `@webiny/project` registers the
- * route with the API's DI router; on AWS, the request has to reach the GraphQL Lambda first, so
- * this also adds the route to API Gateway (`RegisterRoutesPulumi`).
+ * What `Api.Route` renders in an AWS project, registered in `registerExtensionImplementations.ts`.
+ * It only adds the API Gateway route (`RegisterRoutesPulumi`). Validating the props and writing the
+ * route into `extensions.ts` stay with the shared definition in `@webiny/project`, which is the one
+ * the project config resolves `Api/Route` to, so there is no schema or build step here.
  */
 export const ApiRoute = defineExtension({
     type: SharedApiRoute.def.type,
-    tags: { runtimeContext: "app-build", appName: "api", hosting: "aws" },
-    description: "Register a custom HTTP route on the API Gateway + GraphQL Lambda.",
+    tags: { runtimeContext: "app-build", hosting: "aws" },
     multiple: true,
-    paramsSchema: SharedApiRoute.def.paramsSchema,
-    build: SharedApiRoute.def.build,
     render() {
         return <ApiPulumi src={p("RegisterRoutesPulumi.js")} />;
     }
