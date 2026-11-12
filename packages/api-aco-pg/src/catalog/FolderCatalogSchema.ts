@@ -141,10 +141,21 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
             // Set up before the API took traffic: no DDL (and no advisory lock) on a cold start.
             return Promise.resolve();
         }
+        const knex = this.knex.client;
+        if (knex.isTransaction) {
+            // The connection is a transaction (schema setup): `once()` would mark the tables
+            // ready before it commits.
+            return this.ensureIn(knex as Knex.Transaction);
+        }
         return this.memory.once(() => this.create());
     }
 
     public setup(): Promise<void> {
+        const knex = this.knex.client;
+        if (knex.isTransaction) {
+            // Schema setup runs in one transaction, and a later step can still roll it back.
+            return this.createInAndRememberOnCommit(knex as Knex.Transaction);
+        }
         return this.create();
     }
 
@@ -152,9 +163,21 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
         if (this.memory.isReady() || this.schemaConfig?.isManaged()) {
             return;
         }
+        await this.createInAndRememberOnCommit(trx);
+    }
+
+    private async create(): Promise<void> {
+        const generation = this.memory.generation;
+        await this.knex.client.transaction(trx => this.createIn(trx));
+        if (this.memory.generation === generation) {
+            this.memory.markReady();
+        }
+    }
+
+    private async createInAndRememberOnCommit(trx: Knex.Transaction): Promise<void> {
         const generation = this.memory.generation;
         await this.createIn(trx);
-        // Known to exist only once the caller's transaction commits (and not after a reset).
+        // Known to exist only once the transaction commits (and not after a reset).
         trx.executionPromise
             .then(() => {
                 if (this.memory.generation === generation) {
@@ -162,11 +185,6 @@ class FolderCatalogSchemaImpl implements FolderCatalogSchema.Interface {
                 }
             })
             .catch(() => undefined);
-    }
-
-    private async create(): Promise<void> {
-        await this.knex.client.transaction(trx => this.createIn(trx));
-        this.memory.markReady();
     }
 
     private async createIn(trx: Knex.Transaction): Promise<void> {

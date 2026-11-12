@@ -70,6 +70,17 @@ describe("readPgConnectionEnv", () => {
         ).toThrow(/TLS is set twice.*WEBINY_PG_SSL_REJECT_UNAUTHORIZED/);
     });
 
+    it("counts sslnegotiation=direct as TLS in the connection string", () => {
+        // node-postgres turns TLS on for it, and that replaces the CA from WEBINY_PG_SSL_CA.
+        expect(() =>
+            readPgConnectionEnv({
+                WEBINY_PG_CONNECTION_STRING:
+                    "postgres://u:p@db.local:5432/webiny?sslnegotiation=direct",
+                WEBINY_PG_SSL: "true"
+            })
+        ).toThrow(/TLS is set twice/);
+    });
+
     it("takes TLS from either place alone", () => {
         const fromString = readPgConnectionEnv({
             WEBINY_PG_CONNECTION_STRING: "postgres://u:p@db.local:5432/webiny?sslmode=require"

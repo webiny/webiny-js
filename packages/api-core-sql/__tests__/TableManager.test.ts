@@ -105,6 +105,32 @@ describe("TableManager", () => {
         expect(await knex.schema.hasTable("managed_items")).toBe(false);
     });
 
+    /*
+     * Test setups drop every table and reset the memory between tests. A setup whose check was
+     * already running must not record its table in the memory that came after the reset.
+     */
+    it("doesn't record a table in setup when the memory was reset during its check", async () => {
+        knex = createKnex();
+        const checks = countTableChecks(knex);
+        const tableManager = new TableManager(knex, "reset");
+        tableManager.define("items", createItemsTable);
+
+        let resetOnce = true;
+        knex.on("query", (query: { sql: string }) => {
+            if (resetOnce && /sqlite_master/i.test(query.sql)) {
+                resetOnce = false;
+                tableManager.reset();
+            }
+        });
+        await tableManager.setup();
+        const afterSetup = checks();
+
+        await tableManager.ensure("items", createItemsTable);
+
+        // The memory after the reset doesn't know the table, so ensure() checks it again.
+        expect(checks()).toBeGreaterThan(afterSetup);
+    });
+
     it("reads a schema-managed function on every ensure, so a later switch takes effect", async () => {
         knex = createKnex();
         const checks = countTableChecks(knex);

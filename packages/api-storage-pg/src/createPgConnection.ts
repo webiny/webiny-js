@@ -1,6 +1,7 @@
 import knex, { type Knex } from "knex";
 import { withPgConnectionRetry } from "@webiny/api-core-sql";
 import { DEFAULT_PG_RETRY_MS, readPgConnectionEnv } from "./readPgConnectionEnv.js";
+import { applyToPgConnectionString } from "./applyToPgConnectionString.js";
 
 const definedOnly = <T extends Record<string, unknown>>(values: T): Partial<T> => {
     return Object.fromEntries(Object.entries(values).filter(([, value]) => !!value)) as Partial<T>;
@@ -40,9 +41,9 @@ export interface CreatePgConnectionOptions {
  */
 export function createPgConnection(options: CreatePgConnectionOptions = {}): Knex {
     const env = readPgConnectionEnv();
-    // Env first, then the explicit options, then `options.connection`: validated as Knex gets it.
-    const connectionConfig: Knex.PgConnectionConfig = {
-        ...env.connection,
+    const explicitConnection = options.connection || {};
+    // The connection parts the caller set: the options, then `options.connection`.
+    const explicit = {
         ...definedOnly({
             host: options.host,
             port: options.port,
@@ -50,8 +51,32 @@ export function createPgConnection(options: CreatePgConnectionOptions = {}): Kne
             password: options.password,
             database: options.database
         }),
-        ...options.connection
+        ...definedOnly({
+            host: explicitConnection.host,
+            port: explicitConnection.port,
+            user: explicitConnection.user,
+            // A password function can't go into a connection string.
+            password:
+                typeof explicitConnection.password === "string"
+                    ? explicitConnection.password
+                    : undefined,
+            database: explicitConnection.database
+        })
     };
+    // Env first, then the explicit options, then `options.connection`: validated as Knex gets it.
+    const connectionConfig: Knex.PgConnectionConfig = {
+        ...env.connection,
+        ...explicit,
+        ...explicitConnection
+    };
+    // node-postgres reads a connection string over the separate parts, so the parts the caller set
+    // go into the string too (the env's own parts don't: the string is the env's whole connection).
+    if (connectionConfig.connectionString && Object.keys(explicit).length > 0) {
+        connectionConfig.connectionString = applyToPgConnectionString(
+            connectionConfig.connectionString,
+            explicit
+        );
+    }
 
     // A connection string holds the whole connection; otherwise each part must be set.
     if (!connectionConfig.connectionString) {

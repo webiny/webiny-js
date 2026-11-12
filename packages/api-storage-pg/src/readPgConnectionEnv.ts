@@ -5,8 +5,11 @@ import { toBoolean } from "@webiny/stdlib";
 
 type Env = Record<string, string | undefined>;
 
-/* The connection string's own TLS parameters (node-postgres reads these from it). */
-const CONNECTION_STRING_TLS = /[?&](ssl|sslmode|sslrootcert|sslcert|sslkey)=/i;
+/*
+ * The connection string's own TLS parameters (node-postgres reads these from it).
+ * `sslnegotiation=direct` turns TLS on by itself.
+ */
+const CONNECTION_STRING_TLS = /[?&](ssl|sslmode|sslrootcert|sslcert|sslkey|sslnegotiation)=/i;
 
 const TLS_VARS = [
     "WEBINY_PG_SSL",

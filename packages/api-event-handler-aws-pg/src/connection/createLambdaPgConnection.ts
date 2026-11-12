@@ -1,6 +1,11 @@
 import knexFactory, { type Knex } from "knex";
 import { withPgConnectionRetry } from "@webiny/api-core-sql";
-import { DEFAULT_PG_RETRY_MS, readPgConnectionEnv } from "@webiny/api-storage-pg";
+import {
+    applyToPgConnectionString,
+    DEFAULT_PG_RETRY_MS,
+    pgConnectionStringPassword,
+    readPgConnectionEnv
+} from "@webiny/api-storage-pg";
 import { forgetPgPassword, isPgPasswordStale, readPgPassword } from "./readPgPassword.js";
 
 export interface CreateLambdaPgConnectionOptions {
@@ -13,32 +18,6 @@ const DEFAULT_CONNECTION_TIMEOUT_MS = 5_000;
 
 /* Postgres refused the login: invalid_password, invalid_authorization_specification. */
 const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
-
-/*
- * node-postgres reads a connection string over the separate settings, so a host or password that
- * must win over it goes into the string itself.
- */
-const applyToConnectionString = (
-    connectionString: string,
-    values: { host?: string; password?: string }
-): string => {
-    const url = new URL(connectionString);
-    if (values.host) {
-        url.hostname = values.host;
-    }
-    if (values.password !== undefined) {
-        url.password = encodeURIComponent(values.password);
-    }
-    return url.toString();
-};
-
-const passwordOf = (connectionString: string): string => {
-    try {
-        return new URL(connectionString).password;
-    } catch {
-        return "";
-    }
-};
 
 /**
  * A Knex client for Postgres in a Lambda execution environment. Settings come from the
@@ -75,9 +54,10 @@ export function createLambdaPgConnection(options: CreateLambdaPgConnectionOption
         throw new Error("The Postgres database is not set: set WEBINY_PG_DATABASE.");
     }
 
-    // A connection string with a password needs no other password source.
+    // A connection string with a password (in the URI or its query) needs no other password source.
     const connectionString = connection.connectionString;
-    const passwordInString = !!connectionString && passwordOf(connectionString) !== "";
+    const passwordInString =
+        !!connectionString && pgConnectionStringPassword(connectionString) !== "";
 
     const knex = knexFactory({
         client: "pg",
@@ -94,7 +74,8 @@ export function createLambdaPgConnection(options: CreateLambdaPgConnectionOption
                 ...connection
             };
             if (connectionString) {
-                config.connectionString = applyToConnectionString(connectionString, {
+                // node-postgres reads the string over `host` and `password`, so they go into it.
+                config.connectionString = applyToPgConnectionString(connectionString, {
                     host: options.host,
                     password
                 });

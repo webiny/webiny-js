@@ -58,8 +58,12 @@ export class TableManager {
     public async setup(): Promise<void> {
         for (const [tableName, creator] of this.defined) {
             const resolved = this.resolve(tableName);
+            // Nothing checked before a reset is recorded after it (as in `ensureTable`).
+            const generation = this.memory.generation;
             await createTableIfMissing(this.knex, resolved, creator);
-            recordTable(this.knex, this.memory, resolved);
+            if (this.memory.generation === generation) {
+                recordTable(this.knex, this.memory, resolved);
+            }
         }
     }
 

@@ -125,6 +125,41 @@ describe("the Postgres password on Lambda", () => {
             }
         });
 
+        it("takes the password from the connection string's query", async () => {
+            const { WEBINY_PG_HOST, WEBINY_PG_PORT } = pglite.env;
+            vi.stubEnv(
+                "WEBINY_PG_CONNECTION_STRING",
+                `postgres://postgres@${WEBINY_PG_HOST}:${WEBINY_PG_PORT}/postgres?password=postgres` // gitleaks:allow
+            );
+
+            const knex = createLambdaPgConnection();
+            try {
+                const result = await knex.raw("select 1 as one");
+                expect(result.rows).toEqual([{ one: 1 }]);
+                expect(secrets.send).not.toHaveBeenCalled();
+            } finally {
+                await knex.destroy();
+            }
+        });
+
+        it("replaces a host in the connection string's query with the host option", async () => {
+            const { WEBINY_PG_HOST, WEBINY_PG_PORT } = pglite.env;
+            // node-postgres reads `?host=` over the URI's host, so the writer must replace that too.
+            vi.stubEnv(
+                "WEBINY_PG_CONNECTION_STRING",
+                `postgres://postgres@unreachable.invalid:${WEBINY_PG_PORT}/postgres?host=unreachable.invalid`
+            );
+            vi.stubEnv("WEBINY_PG_PASSWORD", "postgres");
+
+            const knex = createLambdaPgConnection({ host: WEBINY_PG_HOST });
+            try {
+                const result = await knex.raw("select 1 as one");
+                expect(result.rows).toEqual([{ one: 1 }]);
+            } finally {
+                await knex.destroy();
+            }
+        });
+
         it("puts the host option and the secret's password into the connection string", async () => {
             const { WEBINY_PG_HOST, WEBINY_PG_PORT } = pglite.env;
             // The string names an address where nothing answers; the host option (the writer) wins.
