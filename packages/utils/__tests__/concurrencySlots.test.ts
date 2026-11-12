@@ -50,4 +50,25 @@ describe("ConcurrencySlots", () => {
         expect(await waiting).toBe(false);
         expect(await slots.acquire()).toBe(false);
     });
+
+    it("keeps counting slots held from before a close once opened again", async () => {
+        const slots = new ConcurrencySlots(1);
+        await slots.acquire();
+        slots.close();
+
+        slots.open();
+        const waiting = slots.acquire();
+
+        expect(slots.getRunning()).toBe(1);
+        expect(slots.getWaiting()).toBe(1);
+        slots.release();
+        expect(await waiting).toBe(true);
+    });
+
+    it("refuses a size that is not a positive whole number", () => {
+        expect(() => new ConcurrencySlots(0)).toThrow();
+        expect(() => new ConcurrencySlots(-1)).toThrow();
+        expect(() => new ConcurrencySlots(1.5)).toThrow();
+        expect(() => new ConcurrencySlots(Number.NaN)).toThrow();
+    });
 });

@@ -110,4 +110,38 @@ describe("TimerSchedulerService — actions due together", () => {
 
         expect(runAction).toHaveBeenCalledWith("after-restart", namespace, tenant);
     });
+
+    it("counts actions still running from before a stop against the limit after a new start", async () => {
+        let finishFirst: () => void = () => {};
+        const firstRunning = new Promise<void>(resolve => {
+            finishFirst = resolve;
+        });
+        const runAction = vi.fn(async (id: string) => {
+            if (id === "before-stop") {
+                await firstRunning;
+            }
+        });
+        service = new TimerSchedulerService({
+            logger: createMockLogger(),
+            runAction,
+            maxConcurrentActions: 1
+        });
+        await service.start();
+        const beforeStop = service.recover([
+            { id: "before-stop", namespace, tenant, scheduledFor: pastDate(1_000) }
+        ]);
+        await vi.waitFor(() => expect(runAction).toHaveBeenCalledTimes(1));
+
+        await service.stop();
+        await service.start();
+        const afterStart = service.recover([
+            { id: "after-start", namespace, tenant, scheduledFor: pastDate(1_000) }
+        ]);
+        await new Promise(resolve => setTimeout(resolve, 20));
+        expect(runAction).toHaveBeenCalledTimes(1);
+
+        finishFirst();
+        await Promise.all([beforeStop, afterStart]);
+        expect(runAction).toHaveBeenCalledWith("after-start", namespace, tenant);
+    });
 });

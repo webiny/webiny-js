@@ -58,7 +58,7 @@ export class TimerSchedulerService implements SchedulerService.Interface {
     // Triggers started and not finished yet, so a shutdown can wait for them.
     private readonly running = new Set<Promise<void>>();
     // Triggers take one of these before they run; the rest wait in line. Closed by `stop`.
-    private slots: ConcurrencySlots;
+    private readonly slots: ConcurrencySlots;
     /*
      * Set by `stop`. A recovery that started before the stop runs overdue actions one by one and can
      * still be going after it; this keeps it from starting more actions or arming timers. Actions it
@@ -74,11 +74,9 @@ export class TimerSchedulerService implements SchedulerService.Interface {
     }
 
     public async start(): Promise<void> {
-        if (this.stopped) {
-            // `stop` closed the slots for good; a restart needs open ones.
-            this.slots = new ConcurrencySlots(this.maxConcurrentActions);
-        }
         this.stopped = false;
+        // Actions still running from before a `stop` keep their slots, so they count against the limit.
+        this.slots.open();
     }
 
     /**
@@ -226,15 +224,13 @@ export class TimerSchedulerService implements SchedulerService.Interface {
     }
 
     private async trigger(id: string, namespace: string, tenant: string): Promise<void> {
-        // Kept so the slot goes back to the slots it came from, even if a restart replaced them.
-        const slots = this.slots;
-        const granted = await slots.acquire();
+        const granted = await this.slots.acquire();
         if (!granted) {
             return;
         }
         // Granted just before a `stop`, which only turns away those still waiting.
         if (this.stopped) {
-            slots.release();
+            this.slots.release();
             return;
         }
         const triggered = this.runAction(id, namespace, tenant);
@@ -245,7 +241,7 @@ export class TimerSchedulerService implements SchedulerService.Interface {
             this.logger.error({ error, id, tenant }, "[scheduler] scheduled action failed");
         } finally {
             this.running.delete(triggered);
-            slots.release();
+            this.slots.release();
         }
     }
 }

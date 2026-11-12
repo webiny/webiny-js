@@ -11,6 +11,11 @@ export class ConcurrencySlots {
     private closed = false;
 
     public constructor(size: number) {
+        if (!Number.isInteger(size) || size < 1) {
+            throw new Error(
+                `ConcurrencySlots needs a positive whole number of slots, got ${size}.`
+            );
+        }
         this.size = size;
     }
 
@@ -48,6 +53,14 @@ export class ConcurrencySlots {
         for (const grant of waiting) {
             grant(false);
         }
+    }
+
+    /**
+     * Takes callers again after `close`. Slots still held from before stay counted, so the limit
+     * holds across a close and reopen.
+     */
+    public open(): void {
+        this.closed = false;
     }
 
     public getRunning(): number {
