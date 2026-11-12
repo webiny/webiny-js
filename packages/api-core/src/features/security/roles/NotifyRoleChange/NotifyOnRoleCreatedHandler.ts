@@ -1,4 +1,4 @@
-import { RoleAfterCreateEventHandler } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
+import { RoleAfterCreateEventHandler } from "~/features/security/roles/CreateRole/index.js";
 import { NotifyRoleChangeUseCase } from "./abstractions.js";
 
 class NotifyOnRoleCreatedHandlerImpl implements RoleAfterCreateEventHandler.Interface {

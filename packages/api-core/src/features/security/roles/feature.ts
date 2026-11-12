@@ -7,6 +7,7 @@ import { ListRolesFeature } from "./ListRoles/feature.js";
 import { CreateRoleFeature } from "./CreateRole/feature.js";
 import { UpdateRoleFeature } from "./UpdateRole/feature.js";
 import { DeleteRoleFeature } from "./DeleteRole/feature.js";
+import { NotifyRoleChangeFeature } from "./NotifyRoleChange/index.js";
 import { RoleInstaller } from "~/features/security/roles/Installer/RolesInstaller.js";
 
 export const RolesFeature = createFeature({
@@ -25,6 +26,7 @@ export const RolesFeature = createFeature({
         CreateRoleFeature.register(container);
         UpdateRoleFeature.register(container);
         DeleteRoleFeature.register(container);
+        NotifyRoleChangeFeature.register(container);
 
         container.register(RoleInstaller);
     }

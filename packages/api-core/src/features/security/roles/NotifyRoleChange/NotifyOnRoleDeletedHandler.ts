@@ -1,4 +1,4 @@
-import { RoleAfterDeleteEventHandler } from "@webiny/api-core/features/security/roles/DeleteRole/index.js";
+import { RoleAfterDeleteEventHandler } from "~/features/security/roles/DeleteRole/index.js";
 import { NotifyRoleChangeUseCase } from "./abstractions.js";
 
 class NotifyOnRoleDeletedHandlerImpl implements RoleAfterDeleteEventHandler.Interface {

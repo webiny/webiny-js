@@ -1,4 +1,4 @@
-import { RoleAfterUpdateEventHandler } from "@webiny/api-core/features/security/roles/UpdateRole/index.js";
+import { RoleAfterUpdateEventHandler } from "~/features/security/roles/UpdateRole/index.js";
 import { NotifyRoleChangeUseCase } from "./abstractions.js";
 
 class NotifyOnRoleUpdatedHandlerImpl implements RoleAfterUpdateEventHandler.Interface {

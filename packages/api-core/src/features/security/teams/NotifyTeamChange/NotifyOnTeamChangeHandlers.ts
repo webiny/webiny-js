@@ -1,6 +1,6 @@
-import { TeamAfterCreateEventHandler } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
-import { TeamAfterUpdateEventHandler } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
-import { TeamAfterDeleteEventHandler } from "@webiny/api-core/features/security/teams/DeleteTeam/index.js";
+import { TeamAfterCreateEventHandler } from "~/features/security/teams/CreateTeam/index.js";
+import { TeamAfterUpdateEventHandler } from "~/features/security/teams/UpdateTeam/index.js";
+import { TeamAfterDeleteEventHandler } from "~/features/security/teams/DeleteTeam/index.js";
 import { NotifyTeamChangeUseCase } from "./abstractions.js";
 
 class NotifyOnTeamCreatedHandlerImpl implements TeamAfterCreateEventHandler.Interface {
