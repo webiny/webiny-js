@@ -70,10 +70,9 @@ export function applyToPgConnectionString(
         // the path `/` as no database, as it reads an empty one.
         url.pathname = "/";
     }
-    return url.toString().replace(
-        new RegExp(`^([a-z][a-z0-9+.-]*://(?:[^/@]*@)?)${DUMMY_HOST}`, "i"),
-        "$1"
-    );
+    return url
+        .toString()
+        .replace(new RegExp(`^([a-z][a-z0-9+.-]*://(?:[^/@]*@)?)${DUMMY_HOST}`, "i"), "$1");
 }
 
 /**
