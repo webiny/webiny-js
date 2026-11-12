@@ -205,6 +205,7 @@ const taggableResourceTypes = new Set([
     "aws:rds/instance:Instance",
     "aws:rds/optionGroup:OptionGroup",
     "aws:rds/parameterGroup:ParameterGroup",
+    "aws:rds/proxy:Proxy",
     "aws:rds/securityGroup:SecurityGroup",
     "aws:rds/snapshot:Snapshot",
     "aws:rds/subnetGroup:SubnetGroup",

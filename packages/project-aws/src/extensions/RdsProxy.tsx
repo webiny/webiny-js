@@ -22,7 +22,8 @@ const HEADLESS_CMS_PG_DEFAULTS_BEHIND_PROXY = { bitmapHints: false };
 
 /**
  * `<Infra.RdsProxy enabled />` in an AWS project: the core app puts an RDS Proxy in front of the
- * Postgres database. Its params are read through `getRdsProxyConfigFromExtension`.
+ * Postgres database. Its params are read by the core Pulumi app through
+ * `getRdsProxyConfigFromExtension`.
  */
 export const RdsProxy = defineExtension({
     type: "Infra/RdsProxy",

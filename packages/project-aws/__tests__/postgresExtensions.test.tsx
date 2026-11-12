@@ -29,6 +29,9 @@ const asArray = (value: unknown) => (Array.isArray(value) ? value : value ? [val
 const coreBeforeDeployHooks = (config: Record<string, any>) =>
     asArray(config["Core/BeforeDeploy"]).map((hook: { src: string }) => hook.src.split("/").pop());
 
+const corePulumiHooks = (config: Record<string, any>) =>
+    asArray(config["Core/Pulumi"]).map((hook: { src: string }) => hook.src.split("/").pop());
+
 const buildParams = (config: Record<string, any>) => asArray(config["Api/BuildParam"]);
 
 describe("Infra.Postgres and Infra.RdsProxy in an AWS project", () => {
@@ -46,12 +49,13 @@ describe("Infra.Postgres and Infra.RdsProxy in an AWS project", () => {
         }
     });
 
-    it("sets the database setup to pg, and adds the core deploy checks", async () => {
+    it("sets the database setup to pg, and adds the core deploy checks and the database", async () => {
         const config = await renderConfig(<Postgres minCapacity={1} readers={2} />);
 
         expect(config["Project/DatabaseSetup"]).toEqual({ setupName: "pg" });
         expect(config["Infra/Postgres"]).toEqual({ minCapacity: 1, readers: 2 });
         expect(coreBeforeDeployHooks(config)).toEqual(["ValidatePostgresBeforeCoreDeploy.js"]);
+        expect(corePulumiHooks(config)).toEqual(["AddCorePostgres.js"]);
     });
 
     it("leaves the database setup alone without <Postgres />", async () => {

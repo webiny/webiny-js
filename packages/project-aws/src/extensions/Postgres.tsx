@@ -4,12 +4,14 @@ import { postgresParamsSchema } from "@webiny/project-extensions-aws/extensions/
 import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { DatabaseSetup } from "@webiny/project/extensions/index.js";
+import { CorePulumi } from "~/pulumi/extensions/CorePulumi.js";
 
 const p = createPathResolver(import.meta.dirname, "Postgres");
 
 /**
  * `<Infra.Postgres />` in an AWS project: the API runs on an Aurora PostgreSQL Serverless v2
- * database. Its params are read through `getPostgresConfigFromExtension`.
+ * database the core app creates (`AddCorePostgres`), which reads these params through
+ * `getPostgresConfigFromExtension`.
  */
 export const Postgres = defineExtension({
     type: "Infra/Postgres",
@@ -21,6 +23,7 @@ export const Postgres = defineExtension({
             <>
                 <DatabaseSetup setupName="pg" />
                 <CoreBeforeDeploy src={p("ValidatePostgresBeforeCoreDeploy.js")} />
+                <CorePulumi src={p("AddCorePostgres.js")} />
             </>
         );
     }
