@@ -34,12 +34,15 @@ class SyncFlpTaskHandlerImpl implements TaskHandler.Interface<ISyncFlpTaskInput>
                 }
                 const folder = result.value;
 
-                await controller.task.trigger<IUpdateFlpTaskInput>({
+                const triggered = await controller.task.trigger<IUpdateFlpTaskInput>({
                     definition: UPDATE_FLP_TASK_ID,
                     input: {
                         folder
                     }
                 });
+                if (triggered.isFail()) {
+                    return controller.response.error(triggered.error);
+                }
 
                 return controller.response.done(
                     `Task completed successfully: all FLP records for folderId "${input.folderId}" and its children have been queued to be synchronized.`
@@ -87,12 +90,15 @@ class SyncFlpTaskHandlerImpl implements TaskHandler.Interface<ISyncFlpTaskInput>
                     const { folders } = result.value;
 
                     for (const folder of folders) {
-                        await controller.task.trigger<IUpdateFlpTaskInput>({
+                        const triggered = await controller.task.trigger<IUpdateFlpTaskInput>({
                             definition: UPDATE_FLP_TASK_ID,
                             input: {
                                 folder
                             }
                         });
+                        if (triggered.isFail()) {
+                            return controller.response.error(triggered.error);
+                        }
                     }
 
                     await controller.logger.info({
@@ -128,12 +134,15 @@ class SyncFlpTaskHandlerImpl implements TaskHandler.Interface<ISyncFlpTaskInput>
                 const { folders } = result.value;
 
                 for (const folder of folders) {
-                    await controller.task.trigger<IUpdateFlpTaskInput>({
+                    const triggered = await controller.task.trigger<IUpdateFlpTaskInput>({
                         definition: UPDATE_FLP_TASK_ID,
                         input: {
                             folder
                         }
                     });
+                    if (triggered.isFail()) {
+                        return controller.response.error(triggered.error);
+                    }
                 }
 
                 return controller.response.done(

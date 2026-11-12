@@ -82,7 +82,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
         const seconds = calculateSeconds(amountOfRecords);
 
         for (let current = 0; current < amountOfTasks; current++) {
-            await controller.task.trigger<IMockDataCreatorInput>({
+            const triggered = await controller.task.trigger<IMockDataCreatorInput>({
                 definition: MOCK_DATA_CREATOR_TASK_ID,
                 input: {
                     totalAmount: amountOfRecords,
@@ -90,6 +90,9 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
                 },
                 name: `Mock Data Creator Task #${current + 1} of ${amountOfTasks}`
             });
+            if (triggered.isFail()) {
+                return controller.response.error(triggered.error);
+            }
         }
 
         return controller.response.continue(
