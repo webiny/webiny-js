@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import type { UpdateFolderParams } from "~/folder/folder.types.js";
-import { loadFolderPermissions } from "./loadFolderPermissions.js";
 
 const inputSchema = z.object({
     folderId: z.string().describe("Folder id as returned by listFolders."),
@@ -43,9 +43,12 @@ interface UpdatedFolder {
  * The current title is part of the input for the same reason as in deleteFolder: the approval then
  * names the folder that changes, and the handler checks that name against the stored folder.
  *
- * The folder's own permission rules go back with every update, as the admin's edit dialog does. The
- * update checks that the user keeps access against the submitted rules, so leaving them out would
- * judge a rename as if the folder had none.
+ * Only the fields the model passed are sent. Access rules are left out, so the update keeps the
+ * stored ones, and `UpdateFolderUseCase` refuses a move into the folder itself or its subtree.
+ *
+ * A move under a folder of another type is refused here only. The folder feature accepts a parent
+ * of another type on create and on update, but the admin lists each type's folders separately, so a
+ * File Manager folder moved under a content model's folder disappears from both trees.
  */
 class UpdateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
@@ -60,8 +63,15 @@ class UpdateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
             );
         }
 
-        const loaded = await loadFolderPermissions(this.getFolder, input.folderId);
-        const folder = loaded.folder;
+        const found = await this.getFolder.execute(input.folderId);
+
+        if (found.isFail()) {
+            throw new Error(
+                `Folder "${input.folderId}" not found: ${found.error.message}. Call listFolders for valid ids.`
+            );
+        }
+
+        const folder = found.value;
 
         if (folder.title !== input.currentTitle) {
             throw new Error(
@@ -70,10 +80,10 @@ class UpdateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         }
 
         if (input.parentId) {
-            await this.assertCanMoveInto(folder, input.parentId);
+            await this.ensureSameType(folder, input.parentId);
         }
 
-        const params: UpdateFolderParams = { permissions: loaded.direct };
+        const params: UpdateFolderParams = {};
 
         if (input.title !== undefined) {
             params.title = input.title;
@@ -105,19 +115,7 @@ class UpdateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         };
     }
 
-    /*
-     * The folder feature checks only that the user may write to the new parent. The admin's tree
-     * cannot drop a folder into its own subtree or into another app's folders, but an id from the
-     * model can name either, and saving it would cut the subtree off from the root.
-     */
-    private async assertCanMoveInto(
-        folder: { id: string; path: string; type: string },
-        parentId: string
-    ): Promise<void> {
-        if (parentId === folder.id) {
-            throw new Error("A folder cannot be moved into itself.");
-        }
-
+    private async ensureSameType(folder: { type: string }, parentId: string): Promise<void> {
         const parentResult = await this.getFolder.execute(parentId);
 
         if (parentResult.isFail()) {
@@ -131,12 +129,6 @@ class UpdateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         if (parent.type !== folder.type) {
             throw new Error(
                 `Folder "${parent.title}" is of type "${parent.type}", and this folder is "${folder.type}". A folder can only move within its own type.`
-            );
-        }
-
-        if (parent.path.startsWith(`${folder.path}/`)) {
-            throw new Error(
-                `Folder "${parent.title}" is inside the folder being moved, so it cannot be its new parent.`
             );
         }
     }

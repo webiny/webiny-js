@@ -270,7 +270,7 @@ describe("Folder access AI tools", () => {
                 path: folder.path
             });
 
-            expect(await readFlpPermissions(context.container, folder.id)).toEqual([
+            await expect(readFlpPermissions(context.container, folder.id)).resolves.toEqual([
                 { target: "admin:1234", level: "viewer" }
             ]);
             expect(websocketMessages).toEqual([
@@ -574,6 +574,20 @@ describe("Folder access AI tools", () => {
             await expect(readFlpPermissions(context.container, folder.id)).resolves.toEqual([
                 { target: "admin:2", level: "editor" }
             ]);
+        });
+
+        it("should revoke access on a folder that has a code-defined access rule", async () => {
+            const context = await handler();
+            const folder = await createFolderWithCodeRule(context.container, "revoke-code-rule");
+            const grant = getTool(context.container, "grantFolderAccess");
+            await grant.execute({ folderId: folder.id, target: "admin:1234", level: "viewer" });
+
+            await getTool(context.container, "revokeFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234"
+            });
+
+            await expect(readFlpPermissions(context.container, folder.id)).resolves.toEqual([]);
         });
 
         it("should revoke the last rule, leaving no direct permissions", async () => {
