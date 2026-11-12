@@ -1,0 +1,53 @@
+import { createImplementation } from "@webiny/di";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import {
+    TEAM_CREATED_WEBSOCKET_ACTION,
+    TEAM_DELETED_WEBSOCKET_ACTION,
+    TEAM_UPDATED_WEBSOCKET_ACTION,
+    NotifyTeamChangeUseCase as UseCaseAbstraction
+} from "./abstractions.js";
+
+const ACTIONS: Record<UseCaseAbstraction.Params["change"], string> = {
+    created: TEAM_CREATED_WEBSOCKET_ACTION,
+    updated: TEAM_UPDATED_WEBSOCKET_ACTION,
+    deleted: TEAM_DELETED_WEBSOCKET_ACTION
+};
+
+/*
+ * Lives here rather than in api-core because api-core cannot depend on api-websockets, and api-aco is
+ * where the team tools are. Changes the admin makes itself are announced too: the admin applies them
+ * by id, so the tab that made the change ends up where it already was and the user's other tabs
+ * catch up.
+ *
+ * The change is saved whether or not the message goes out, so a failed send is swallowed rather than
+ * failing the write. The admin then shows the change after its next reload.
+ */
+class NotifyTeamChangeUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private identityContext: IdentityContext.Interface,
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
+    ) {}
+
+    async execute({ id, change }: UseCaseAbstraction.Params): Promise<void> {
+        const recipient = this.identityContext.getIdentity()?.id;
+        if (!recipient) {
+            return;
+        }
+
+        try {
+            await this.sendToIdentity.execute(
+                { id: recipient },
+                { action: ACTIONS[change], data: { id } }
+            );
+        } catch {
+            // See above.
+        }
+    }
+}
+
+export const NotifyTeamChangeUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: NotifyTeamChangeUseCaseImpl,
+    dependencies: [IdentityContext, WebsocketsSendToIdentityUseCase]
+});
