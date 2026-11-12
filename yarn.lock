@@ -13443,6 +13443,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/dependency-versions@workspace:packages/dependency-versions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/dependency-versions@workspace:packages/dependency-versions"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/di@npm:^2.0.0":
   version: 2.0.0
   resolution: "@webiny/di@npm:2.0.0"
