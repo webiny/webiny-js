@@ -2,6 +2,7 @@ export { createWebsocketsServer, attachWebsocketsServer } from "~/server/Websock
 export type { IWebsocketsServer, WebsocketsConnectionAuthenticator } from "~/server/types.js";
 export * from "~/adapter/abstractions.js";
 export * from "~/upgradeHandler/abstractions.js";
+export { WEBSOCKETS_PATH } from "~/upgradeHandler/constants.js";
 export * from "~/connectionManager/abstractions.js";
 export { WebsocketsLiveSockets } from "~/liveSockets/abstractions.js";
 export { WebsocketsMessageBus } from "~/bus/abstractions.js";

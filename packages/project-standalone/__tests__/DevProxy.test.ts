@@ -306,11 +306,11 @@ describe("DevProxy", () => {
     });
 
     /*
-     * The admin's own socket, exactly as app-websockets opens it: the bare prefix with the token and
-     * tenant straight after. Routed to admin, this upgrade was never answered, so the socket sat in
-     * CONNECTING with no error and every task notification in local development went missing.
+     * The admin's own socket, exactly as app-websockets opens it: `/ws` under the prefix, with the
+     * token and tenant in the query. Routed to admin, this upgrade was never answered, so the socket
+     * sat in CONNECTING with no error and every task notification in local development went missing.
      */
-    it("sends the admin's websocket, /api?token=..., to the api rather than admin", async () => {
+    it("sends the admin's websocket, /api/ws?token=..., to the api rather than admin", async () => {
         const seen: Record<"api" | "admin", string[]> = { api: [], admin: [] };
 
         const upstreams = (["api", "admin"] as const).map(name => {
@@ -337,7 +337,7 @@ describe("DevProxy", () => {
         const status = await new Promise<number | undefined>((resolve, reject) => {
             const request = http.request({
                 port: new URL(wsProxy.url).port,
-                path: "/api?token=abc&tenant=root",
+                path: "/api/ws?token=abc&tenant=root",
                 headers: { Connection: "Upgrade", Upgrade: "websocket" }
             });
             request.on("upgrade", (res, socket) => {
@@ -349,7 +349,7 @@ describe("DevProxy", () => {
         });
 
         expect(status).toBe(101);
-        expect(seen.api).toEqual(["/?token=abc&tenant=root"]);
+        expect(seen.api).toEqual(["/ws?token=abc&tenant=root"]);
         expect(seen.admin).toEqual([]);
     });
 });

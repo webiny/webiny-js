@@ -259,11 +259,13 @@ export class DevProxy {
  *
  *   /api                -> /
  *   /api/graphql        -> /graphql
+ *   /api/ws?token=abc   -> /ws?token=abc
  *   /api?token=abc      -> /?token=abc
  *   /api-playground     -> null
  *
- * The `?` case is the admin's own websocket, which connects to `/api?token=...&tenant=...`. Without
- * it that upgrade went to admin, which never answers it, so the socket hung without an error.
+ * The `?` case keeps a query straight after `/api` on the api. Without it the URL fell through to
+ * admin like `/api-playground` does, which is where the admin's websocket went when it dialled
+ * `/api?token=...`: admin never answered the upgrade, and the socket hung without an error.
  */
 function toApiPath(url: string): string | null {
     if (!url.startsWith(API_PREFIX)) {

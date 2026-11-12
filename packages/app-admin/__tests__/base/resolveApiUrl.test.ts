@@ -57,19 +57,20 @@ describe("resolveApiUrl", () => {
 
             // A plain `replace(/^http/, "ws")` would leave "/api" as-is, which is not a URL anything
             // can connect to.
-            expect(resolveWebsocketUrl()).toBe("ws://localhost:3000/api");
+            expect(resolveWebsocketUrl()).toBe("ws://localhost:3000/api/ws");
         });
 
         it("derives ws from an absolute API URL", () => {
             process.env.WEBINY_ADMIN_API_URL = "https://api.example.com";
-            expect(resolveWebsocketUrl()).toBe("wss://api.example.com");
+            expect(resolveWebsocketUrl()).toBe("wss://api.example.com/ws");
         });
 
         it("prefers an explicitly configured websocket URL", () => {
             process.env.WEBINY_ADMIN_API_URL = "/api";
             process.env.WEBINY_ADMIN_WS_API_URL = "wss://ws.example.com";
-            expect(resolveWebsocketUrl()).toBe("wss://ws.example.com");
+            expect(resolveWebsocketUrl()).toBe("wss://ws.example.com/ws");
 
+            // The API Gateway URL is the socket itself; no path is appended to it.
             process.env.REACT_APP_WEBSOCKET_URL = "wss://aws.example.com";
             expect(resolveWebsocketUrl()).toBe("wss://aws.example.com");
         });
@@ -79,7 +80,7 @@ describe("resolveApiUrl", () => {
             // sets the same relative value, which is no use unless this branch resolves it as well.
             process.env.WEBINY_ADMIN_WS_API_URL = "/api";
 
-            expect(resolveWebsocketUrl()).toBe("ws://localhost:3000/api");
+            expect(resolveWebsocketUrl()).toBe("ws://localhost:3000/api/ws");
         });
 
         it("is empty when there is nothing to derive from", () => {
