@@ -2,7 +2,9 @@ import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/in
 import { CreateFolderUseCase } from "../abstractions.js";
 import type { CreateFolderParams } from "~/folder/folder.types.js";
 import { createDecorator, Result } from "@webiny/feature/api";
-import { FolderNotAuthorizedError } from "~/domain/folder/errors.js";
+import { FolderNotAuthorizedError, FolderValidationError } from "~/domain/folder/errors.js";
+import type { FolderPermission } from "~/flp/flp.types.js";
+import { validatePermissionsInput } from "~/features/folder/shared/validatePermissionsInput.js";
 
 class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -16,7 +18,24 @@ class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.
         this.decoretee = decoretee;
     }
 
-    async execute(params: CreateFolderParams): CreateFolderUseCase.Return {
+    async execute(input: CreateFolderParams): CreateFolderUseCase.Return {
+        // GraphQL input accepts `permissions` (and `null`); it is not part of the typed params.
+        const params: CreateFolderParams & { permissions?: FolderPermission[] | null } = {
+            ...input
+        };
+        if (params.permissions === null) {
+            delete params.permissions;
+        }
+        const ownPermissions = params.permissions ?? [];
+
+        // Security: validate permissions like on update.
+        if (ownPermissions.length > 0) {
+            const validationError = validatePermissionsInput(ownPermissions);
+            if (validationError) {
+                return Result.fail(validationError);
+            }
+        }
+
         let canCreateFolder: boolean;
         if (params.parentId) {
             const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(
@@ -26,6 +45,28 @@ class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.
                 permissions,
                 rwd: "w"
             });
+
+            /* Security: own permissions on a subfolder override the inherited ones (e.g. lock out
+               the parent's owners), so setting them requires the "owner" level on the parent,
+               the same as changing permissions of an existing folder. Root folders inherit
+               nothing, so the creator may set any permissions on a folder they just created. */
+            if (
+                canCreateFolder &&
+                ownPermissions.length > 0 &&
+                this.folderLevelPermissions.canUseFolderLevelPermissions() &&
+                !(await this.folderLevelPermissions.canManageFolderPermissions({
+                    id: params.parentId,
+                    parentId: "",
+                    slug: "",
+                    path: "",
+                    type: params.type,
+                    permissions
+                }))
+            ) {
+                return Result.fail(
+                    new FolderValidationError(`Not allowed to set the folder permissions.`)
+                );
+            }
         } else {
             canCreateFolder = this.folderLevelPermissions.canCreateFolderInRoot();
         }

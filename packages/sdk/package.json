@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "p-map": "^7.1.1",
-    "p-retry": "^8.0.1",
+    "p-retry": "^9.0.0",
     "standardwebhooks": "^1.1.1",
     "zod": "4.6.7"
   },
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "7.0.2",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "publishConfig": {
     "access": "public"

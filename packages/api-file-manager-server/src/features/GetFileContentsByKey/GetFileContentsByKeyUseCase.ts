@@ -7,6 +7,7 @@ import {
     FileNotFoundError,
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
+import { getFileStorageKey, getStoragePath, resolveTenantFilePath } from "~/utils/storagePaths.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
     jpg: "image/jpeg",
@@ -50,9 +51,17 @@ class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCase.Int
 
     async execute(key: string): Promise<Result<FileContents, GetFileContentsByKeyUseCase.Error>> {
         const tenant = this.tenantContext.getTenant();
-        const bucketKey = `tenants/${tenant.id}/files/${key}`;
-        const storagePath = String(process.env.WEBINY_LOCAL_STORAGE_PATH);
-        const filePath = `${storagePath}/${bucketKey}`;
+        let filePath: string;
+        try {
+            // Security: never read outside the tenant's files.
+            filePath = resolveTenantFilePath(
+                getStoragePath(),
+                tenant.id,
+                getFileStorageKey(tenant.id, key)
+            );
+        } catch {
+            return Result.fail(new FileNotFoundError(key));
+        }
 
         try {
             const buffer = await fs.readFile(filePath);

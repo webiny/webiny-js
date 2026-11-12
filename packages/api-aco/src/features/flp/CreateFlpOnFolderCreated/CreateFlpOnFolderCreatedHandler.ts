@@ -14,14 +14,22 @@ class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateEventHandl
     async handle(event: FolderAfterCreateEvent): Promise<void> {
         const { folder } = event.payload;
 
+        /* Create the FLP record right away. Until it exists, the folder's permissions load as
+           empty, which means "public": anyone with access to the app could read the folder
+           or change its permissions. It's a single write, so there's no need for a task. */
+        try {
+            await this.createFlpUseCase.execute(folder);
+            return;
+        } catch {
+            // Fall back to the background task, which retries outside of this request.
+        }
+
         try {
             if (this.tasks) {
                 await this.tasks.trigger<ICreateFlpTaskInput>({
                     definition: CREATE_FLP_TASK_ID,
                     input: { folder }
                 });
-            } else {
-                await this.createFlpUseCase.execute(folder);
             }
         } catch {
             // Ignore errors

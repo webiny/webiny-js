@@ -33,9 +33,9 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "graphql": "^16.14.2",
+    "graphql": "^16.15.0",
     "typescript": "7.0.2",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "publishConfig": {
     "access": "public"

@@ -5,6 +5,10 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateRoleUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { RolesRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import {
+    canGrantPermissions,
+    CANNOT_GRANT_PERMISSIONS_MESSAGE
+} from "../../utils/canGrantPermissions.js";
 import { createRoleValidation } from "./schema.js";
 import { RoleBeforeCreateEvent, RoleAfterCreateEvent } from "./events.js";
 import type { Role, CreateRoleInput } from "../shared/types.js";
@@ -31,6 +35,13 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
+
+        // Security: a role may only carry permissions the caller holds.
+        if (!(await canGrantPermissions(this.identityContext, [data.permissions]))) {
+            return Result.fail(
+                new NotAuthorizedError({ message: CANNOT_GRANT_PERMISSIONS_MESSAGE })
+            );
+        }
 
         // Check if role with same slug already exists
         const existingRoleResult = await this.repository.get({ slug: data.slug });

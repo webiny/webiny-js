@@ -461,6 +461,15 @@ export class AccessControl {
         return !canAccessNonOwned;
     }
 
+    /**
+     * Security: whether the identity can write entries it does not own. Used to decide whether
+     * ownership-related meta fields (createdBy, ...) may be set from input.
+     */
+    async canWriteNonOwnedEntries(params: GetEntriesAccessControlListParams) {
+        const acl = await this.getEntriesAccessControlList(params);
+        return acl.some(ace => ace.canAccessNonOwned && ace.rwd?.includes("w"));
+    }
+
     private async getEntriesAccessControlList(
         params: GetEntriesAccessControlListParams
     ): Promise<EntriesAccessControlList> {

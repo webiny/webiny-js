@@ -5,6 +5,10 @@ import type { CreateMultiPartUploadResult } from "~/features/upload/types.js";
 export interface ICreateMultiPartUploadParams {
     file: FileData;
     numberOfParts: number;
+    /**
+     * The file id, when it was provided by the client (not generated on the server).
+     */
+    clientId?: string;
 }
 
 export interface ICreateMultiPartUploadUseCase {

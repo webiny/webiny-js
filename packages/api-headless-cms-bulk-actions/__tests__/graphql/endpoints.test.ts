@@ -3,6 +3,9 @@ import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterE
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { useGraphQlHandler } from "../context/useGraphQLHandler";
 import { createMockModels } from "../mocks";
+import { identity } from "../context/helpers";
+import { ContextPlugin } from "@webiny/api";
+import type { HcmsBulkActionsContext } from "~/types";
 
 const BULK_ACTION_MUTATION = /* GraphQL */ `
     mutation {
@@ -44,7 +47,7 @@ describe("Bulk action endpoints", () => {
     });
 });
 
-const cmsPermissions = (entries: { rwd: string; pw?: string }) => {
+const cmsPermissions = (entries: { rwd: string; pw?: string; own?: boolean }) => {
     // CMS permissions are joined by `_src`, so they must share one.
     return [
         { _src: "role", name: "cms.endpoint.manage" },
@@ -115,6 +118,10 @@ const createFolderLevelPermissions = () => {
         context.container.registerInstance(FolderLevelPermissions, {
             canUseFolderLevelPermissions: () => true,
             getFolderLevelPermissions: async (folderId: string) => [{ folderId }],
+            listFolderLevelPermissions: async () => [
+                { id: "allowed", permissions: [{ folderId: "allowed" }] },
+                { id: "denied", permissions: [{ folderId: "denied" }] }
+            ],
             canAccessFolderContent: async ({ permissions }: { permissions: any[] }) => {
                 return permissions[0]?.folderId === "allowed";
             }
@@ -150,5 +157,97 @@ describe("Bulk move to folder", () => {
 
         // The task is started; it fails only because tests have no Step Function.
         expect(body.errors?.[0]?.message).toBe("Could not trigger the step function!");
+    });
+});
+
+/**
+ * Replaces the task trigger, so the tests can see the input the task would run with.
+ */
+const createTriggerCapture = () => {
+    const inputs: Record<string, any>[] = [];
+    const plugin = new ContextPlugin<HcmsBulkActionsContext>(async context => {
+        context.tasks.trigger = (async (params: { input: Record<string, any> }) => {
+            inputs.push(params.input);
+            return { value: { id: "task-id" } };
+        }) as any;
+    });
+    return { inputs, plugin };
+};
+
+const runCapturedBulkAction = async (params: {
+    action: string;
+    permissions: any[];
+    where: Record<string, unknown>;
+    plugins?: any[];
+}) => {
+    const { inputs, plugin } = createTriggerCapture();
+    const { invoke } = useGraphQlHandler({
+        plugins: [createMockModels(), ...(params.plugins ?? []), plugin],
+        permissions: params.permissions
+    });
+    const [body] = await invoke({
+        type: "manage",
+        body: {
+            query: `mutation BulkAction($where: CarListWhereInput) { bulkActionCar(action: ${params.action}, where: $where) { data { id } error { code message } } }`,
+            variables: { where: params.where }
+        }
+    } as any);
+    expect(body.data.bulkActionCar).toEqual({ data: { id: "task-id" }, error: null });
+    expect(inputs).toHaveLength(1);
+    return inputs[0];
+};
+
+describe("Bulk action entry scope", () => {
+    it("should limit an own-only caller to own entries", async () => {
+        const input = await runCapturedBulkAction({
+            action: "MoveToTrash",
+            permissions: cmsPermissions({ rwd: "rwd", own: true }),
+            // The client must not be able to widen the scope.
+            where: { createdBy: "someone-else" }
+        });
+
+        expect(input.where).toEqual({ createdBy: identity.id });
+    });
+
+    it("should limit a caller who can read all entries but delete only own entries", async () => {
+        const readAll = cmsPermissions({ rwd: "r" }).map(p => ({ ...p, _src: "readAll" }));
+        const deleteOwn = cmsPermissions({ rwd: "rwd", own: true }).map(p => ({
+            ...p,
+            _src: "deleteOwn"
+        }));
+
+        const input = await runCapturedBulkAction({
+            action: "Delete",
+            permissions: [...readAll, ...deleteOwn],
+            where: {}
+        });
+
+        expect(input.where).toEqual({ createdBy: identity.id });
+    });
+
+    it("should not limit a caller who can change all entries", async () => {
+        const input = await runCapturedBulkAction({
+            action: "MoveToTrash",
+            permissions: cmsPermissions({ rwd: "rwd" }),
+            where: { createdBy: "someone-else" }
+        });
+
+        expect(input.where).toEqual({ createdBy: "someone-else" });
+    });
+
+    it("should leave out entries in folders the caller can't change", async () => {
+        const input = await runCapturedBulkAction({
+            action: "MoveToTrash",
+            permissions: cmsPermissions({ rwd: "rwd" }),
+            where: { wbyAco_location: { folderId_in: ["allowed", "denied"] } },
+            plugins: [createFolderLevelPermissions()]
+        });
+
+        expect(input.where).toEqual({
+            wbyAco_location: {
+                folderId_in: ["allowed", "denied"],
+                folderId_not_in: ["denied"]
+            }
+        });
     });
 });

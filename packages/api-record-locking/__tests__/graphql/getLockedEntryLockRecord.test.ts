@@ -37,7 +37,7 @@ describe("get locked entry lock record", () => {
     it("should return a record for a locked entry", async () => {
         const [lockResult] = await lockEntryMutation({
             id: "aTestId#0001",
-            type: "aTestType"
+            type: "cms#author"
         });
 
         expect(lockResult).toMatchObject({

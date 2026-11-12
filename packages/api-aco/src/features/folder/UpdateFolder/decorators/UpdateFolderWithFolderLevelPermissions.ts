@@ -1,9 +1,30 @@
 import { createDecorator, Result } from "@webiny/feature/api";
 import type { UpdateFolderParams } from "~/folder/folder.types.js";
+import type { FolderPermission } from "~/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderUseCase } from "../abstractions.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
+import { validatePermissionsInput } from "~/features/folder/shared/validatePermissionsInput.js";
+
+/**
+ * Compares the folder's own (non-inherited) permissions. The admin app sends the current
+ * permissions with every update, e.g. a rename.
+ */
+const permissionsChanged = (
+    original: FolderPermission[],
+    updated: Pick<FolderPermission, "target" | "level">[]
+) => {
+    const normalize = (permissions: Pick<FolderPermission, "target" | "level">[]) => {
+        return permissions
+            .map(permission => `${permission.target}=${permission.level}`)
+            .sort()
+            .join(",");
+    };
+    return (
+        normalize(original.filter(permission => !permission.inheritedFrom)) !== normalize(updated)
+    );
+};
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -18,7 +39,13 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
         this.decoretee = decoretee;
     }
 
-    async execute(id: string, params: UpdateFolderParams): UpdateFolderUseCase.Return {
+    async execute(id: string, input: UpdateFolderParams): UpdateFolderUseCase.Return {
+        /* GraphQL accepts `permissions: null`. Treat it as "no own permissions" so it goes
+           through the same owner check as an empty list, instead of skipping the check and
+           wiping the folder's permissions. */
+        const params: UpdateFolderParams =
+            input.permissions === null ? { ...input, permissions: [] } : input;
+
         const originalResult = await this.getFolder.execute(id);
 
         if (originalResult.isFail()) {
@@ -34,6 +61,24 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             permissions: originalPermissions,
             rwd: "w"
         });
+
+        // Changing who has access to the folder requires the "owner" level.
+        if (
+            Array.isArray(params.permissions) &&
+            permissionsChanged(originalPermissions, params.permissions) &&
+            !(await this.folderLevelPermissions.canManageFolderPermissions({
+                id: original.id,
+                parentId: original.parentId ?? "",
+                slug: original.slug,
+                path: original.path,
+                type: original.type,
+                permissions: originalPermissions
+            }))
+        ) {
+            return Result.fail(
+                new FolderValidationError(`Not allowed to change the folder permissions.`)
+            );
+        }
 
         const permissions = await this.folderLevelPermissions.getDefaultPermissions(
             params.permissions ?? []
@@ -55,24 +100,9 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
 
         // Validate data.
         if (Array.isArray(params.permissions)) {
-            for (const permission of params.permissions) {
-                const targetIsValid =
-                    permission.target.startsWith("admin:") || permission.target.startsWith("team:");
-                if (!targetIsValid) {
-                    return Result.fail(
-                        new FolderValidationError(
-                            `Permission target "${permission.target}" is not valid.`
-                        )
-                    );
-                }
-
-                if (permission.inheritedFrom) {
-                    return Result.fail(
-                        new FolderValidationError(
-                            `Permission "inheritedFrom" cannot be set manually.`
-                        )
-                    );
-                }
+            const validationError = validatePermissionsInput(params.permissions);
+            if (validationError) {
+                return Result.fail(validationError);
             }
         }
 

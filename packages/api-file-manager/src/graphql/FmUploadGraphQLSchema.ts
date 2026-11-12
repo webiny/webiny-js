@@ -135,7 +135,9 @@ class FmUploadGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
                         const normalizer = createFileNormalizerFromContext(context);
                         const file = await normalizer.normalizeFile(data);
 
-                        const result = await getUploadPayload.execute(file, settings);
+                        const result = await getUploadPayload.execute(file, settings, {
+                            clientId: data.id
+                        });
                         return new Response(result);
                     } catch (e: any) {
                         return new ErrorResponse({
@@ -171,7 +173,7 @@ class FmUploadGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
                         const results = await pMap(files, async data => {
                             const file = await normalizer.normalizeFile(data);
-                            return getUploadPayload.execute(file, settings);
+                            return getUploadPayload.execute(file, settings, { clientId: data.id });
                         });
 
                         return new Response(results);
@@ -204,7 +206,8 @@ class FmUploadGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
                         const result = await createMultiPartUpload.execute({
                             file,
-                            numberOfParts: args.numberOfParts
+                            numberOfParts: args.numberOfParts,
+                            clientId: args.data?.id
                         });
 
                         return new Response(result);

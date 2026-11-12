@@ -219,6 +219,11 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
         async getEntry(model: CmsModel, variables: Record<string, any>) {
             return invokeCms({ body: { query: GET_ENTRY(model), variables } });
+        },
+
+        // Any query or mutation on the CMS manage endpoint.
+        async query(query: string, variables: Record<string, any> = {}) {
+            return invokeCms({ body: { query, variables } });
         }
     };
 

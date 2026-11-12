@@ -141,14 +141,18 @@ describe("Create index task", () => {
             task: createIndexesTask
         });
 
-        await createIndexesTask.onBeforeTrigger!({
-            data: {
-                input: {
-                    matching: "-car"
-                },
-                name: createIndexesTask.title,
-                definitionId: createIndexesTask.id
-            }
+        // System tasks may only be triggered by full access in the root tenant; this test runs as
+        // trusted code, so trigger outside of authorization.
+        await context.security.withoutAuthorization(() => {
+            return createIndexesTask.onBeforeTrigger!({
+                data: {
+                    input: {
+                        matching: "-car"
+                    },
+                    name: createIndexesTask.title,
+                    definitionId: createIndexesTask.id
+                }
+            });
         });
 
         const result = await runner({

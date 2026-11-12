@@ -103,11 +103,8 @@ describe("Website Builder scheduling permissions", () => {
     it("should refuse to schedule a redirect with read-only access, and allow with edit access", async () => {
         const redirect = await createRedirect(await createContext(identityA));
 
-        // Page publish access gets past the scheduler's read check; redirect access is read-only.
-        const readOnly = await createContext(identityB, [
-            { name: "wb.redirect", rwd: "r" },
-            { name: "wb.page", rwd: "r", pw: "p" }
-        ]);
+        // Redirect access is read-only: the scheduler read check passes, scheduling is refused.
+        const readOnly = await createContext(identityB, [{ name: "wb.redirect", rwd: "r" }]);
         const refused = await schedule(
             readOnly,
             SCHEDULED_ACTION_TYPE_REDIRECT,
@@ -117,11 +114,8 @@ describe("Website Builder scheduling permissions", () => {
         expect(refused.isFail()).toBe(true);
         expect(refused.error.code).toBe("Scheduler/NotAuthorized");
 
-        // Website Builder scheduler read access requires page publishing (WbSchedulerPermissions).
-        const editor = await createContext(identityB, [
-            { name: "wb.redirect", rwd: "rw" },
-            { name: "wb.page", rwd: "r", pw: "p" }
-        ]);
+        // Scheduled redirect actions are checked with redirect permissions.
+        const editor = await createContext(identityB, [{ name: "wb.redirect", rwd: "rw" }]);
         const allowed = await schedule(
             editor,
             SCHEDULED_ACTION_TYPE_REDIRECT,

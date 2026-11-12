@@ -5,7 +5,8 @@ import type { WbPage } from "~/domain/page/abstractions.js";
 import {
     PageNotFoundError,
     PagePersistenceError,
-    PageNotAuthorizedError
+    PageNotAuthorizedError,
+    PageValidationError
 } from "~/domain/page/errors.js";
 
 // ============================================================================
@@ -26,8 +27,10 @@ export interface IMovePageRepository {
 }
 
 export interface IMovePageRepositoryErrors {
+    notAuthorized: PageNotAuthorizedError;
     notFound: PageNotFoundError;
     persistence: PagePersistenceError;
+    validation: PageValidationError;
 }
 
 type RepositoryError = IMovePageRepositoryErrors[keyof IMovePageRepositoryErrors];
@@ -53,6 +56,7 @@ export interface IMovePageUseCaseErrors {
     notAuthorized: PageNotAuthorizedError;
     notFound: PageNotFoundError;
     persistence: PagePersistenceError;
+    validation: PageValidationError;
 }
 
 type UseCaseError = IMovePageUseCaseErrors[keyof IMovePageUseCaseErrors];

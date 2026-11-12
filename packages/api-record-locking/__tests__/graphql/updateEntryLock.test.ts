@@ -8,7 +8,7 @@ describe("update entry lock", () => {
     it("should update the lock record", async () => {
         const [lockResult] = await lockEntryMutation({
             id: "aTestId#0001",
-            type: "aTestType"
+            type: "cms#author"
         });
         expect(lockResult).toMatchObject({
             data: {
@@ -32,7 +32,7 @@ describe("update entry lock", () => {
 
         const [result] = await updateEntryLockMutation({
             id: "aTestId#0001",
-            type: "aTestType"
+            type: "cms#author"
         });
         expect(result).toMatchObject({
             data: {
@@ -55,7 +55,7 @@ describe("update entry lock", () => {
     it("should return an error if lock record is not of the same user trying to update it", async () => {
         await lockEntryMutation({
             id: "aTestId#0001",
-            type: "aTestType"
+            type: "cms#author"
         });
 
         const anotherUserMethods = useGraphQLHandler({
@@ -68,7 +68,7 @@ describe("update entry lock", () => {
 
         const [result] = await anotherUserMethods.updateEntryLockMutation({
             id: "aTestId#0001",
-            type: "aTestType"
+            type: "cms#author"
         });
         expect(result).toEqual({
             data: {
@@ -92,7 +92,7 @@ describe("update entry lock", () => {
     it("should return a new lock if no existing lock record", async () => {
         const [result] = await updateEntryLockMutation({
             id: "aTestId#0001",
-            type: "aTestType"
+            type: "cms#author"
         });
 
         expect(result).toMatchObject({

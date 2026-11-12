@@ -48,6 +48,19 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(new EntryLockedError());
             }
 
+            // Security: write access must be checked against the entry as it is now, not only
+            // against the updated entry (whose meta fields, e.g. createdBy, can come from input).
+            if (!isSingletonModel(model)) {
+                const canWriteOriginal = await this.accessControl.canAccessEntry({
+                    model,
+                    entry: originalEntry,
+                    rwd: "w"
+                });
+                if (!canWriteOriginal) {
+                    return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                }
+            }
+
             const dataResult = await this.updateEntryDataFactory.create<T>(
                 model,
                 rawInput,

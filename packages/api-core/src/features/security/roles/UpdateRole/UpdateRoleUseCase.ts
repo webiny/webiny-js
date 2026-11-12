@@ -2,6 +2,10 @@ import { Result } from "@webiny/feature/api";
 import { UpdateRoleUseCase as UseCase } from "./abstractions.js";
 import { RolesRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import {
+    canGrantPermissions,
+    CANNOT_GRANT_PERMISSIONS_MESSAGE
+} from "../../utils/canGrantPermissions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateRoleValidation } from "./schema.js";
 import { RoleBeforeUpdateEvent, RoleAfterUpdateEvent } from "./events.js";
@@ -9,6 +13,7 @@ import type { Role, UpdateRoleInput } from "../shared/types.js";
 import {
     NotAuthorizedError,
     CannotUpdatePluginRolesError,
+    CannotUpdateSystemRolesError,
     RoleValidationError
 } from "../shared/errors.js";
 
@@ -48,6 +53,24 @@ class UpdateRoleUseCaseImpl implements UseCase.Interface {
         // Check if role is created via plugin
         if (existingRole.plugin) {
             return Result.fail(new CannotUpdatePluginRolesError());
+        }
+
+        // Security: system roles (e.g. "Full Access") are managed by the system only.
+        if (existingRole.system && this.identityContext.isAuthorizationEnabled()) {
+            return Result.fail(new CannotUpdateSystemRolesError());
+        }
+
+        // Security: a role may only carry permissions the caller holds. The role's current
+        // permissions are checked too, so a role the caller can't grant can't be renamed or
+        // trimmed into something else either.
+        const permissionsToCheck = [existingRole.permissions];
+        if (validation.data.permissions) {
+            permissionsToCheck.push(validation.data.permissions);
+        }
+        if (!(await canGrantPermissions(this.identityContext, permissionsToCheck))) {
+            return Result.fail(
+                new NotAuthorizedError({ message: CANNOT_GRANT_PERMISSIONS_MESSAGE })
+            );
         }
 
         const updatedRole: Role = {

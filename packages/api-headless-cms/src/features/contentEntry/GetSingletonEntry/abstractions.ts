@@ -1,7 +1,8 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
-    type EntryNotAuthorizedError,
+    type EntryAlreadyExistsError,
+    EntryNotAuthorizedError,
     type EntryNotFoundError,
     type EntryPersistenceError,
     type EntryValidationError
@@ -21,6 +22,7 @@ export interface IGetSingletonEntryUseCase {
 export interface IGetSingletonEntryUseCaseErrors {
     notFound: EntryNotFoundError;
     notAuthorized: EntryNotAuthorizedError;
+    alreadyExists: EntryAlreadyExistsError;
     validation: EntryValidationError;
     persistence: EntryPersistenceError;
 }

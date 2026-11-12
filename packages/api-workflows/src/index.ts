@@ -23,6 +23,7 @@ import { CreateWorkflowFeature } from "~/features/workflow/CreateWorkflow/featur
 import { DeleteWorkflowFeature } from "~/features/workflow/DeleteWorkflow/feature.js";
 import { UpdateWorkflowFeature } from "~/features/workflow/UpdateWorkflow/feature.js";
 import { StoreWorkflowFeature } from "~/features/workflow/StoreWorkflow/feature.js";
+import { WorkflowAppAccessFeature } from "~/features/workflow/WorkflowAppAccess/feature.js";
 import { GetWorkflowStateFeature } from "~/features/workflowState/GetWorkflowState/feature.js";
 import { GetTargetWorkflowStateFeature } from "~/features/workflowState/GetTargetWorkflowState/feature.js";
 import { ListOwnWorkflowStatesFeature } from "~/features/workflowState/ListOwnWorkflowStates/feature.js";
@@ -89,6 +90,7 @@ export const createWorkflows = () => {
         NotificationTransportFeature.register(context.container);
 
         // Register workflow features
+        WorkflowAppAccessFeature.register(context.container);
         GetWorkflowFeature.register(context.container);
         ListWorkflowsFeature.register(context.container);
         CreateWorkflowFeature.register(context.container);

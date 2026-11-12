@@ -12,6 +12,8 @@ import { GetPreviousRevisionByEntryIdUseCase } from "~/features/contentEntry/Get
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntry/GetRevisionsByEntryId/index.js";
+import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
+import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 
 const GET_TEST_ENTRY_REVISIONS = /* GraphQL */ `
     query GetTestEntryRevisions($id: ID!) {
@@ -237,6 +239,92 @@ describe("Own Entries Permissions Checks", () => {
         expect(internalRevisionA.value.id).toBe(entryARev2.id);
     });
 
+    it("should not allow force deleting entries of other users", async () => {
+        const { manageApiA, manageApiB, entryA, entryB } = await setup();
+        const { context, model } = await getContextAndModel(manageApiB);
+        const deleteEntry = context.container.resolve(DeleteEntryUseCase);
+
+        // Moving to the bin with force must not turn "not authorized" into a raw delete.
+        const toBin = await deleteEntry.execute(model, entryA.entryId, {
+            force: true,
+            permanently: false
+        });
+        expect(toBin.isFail()).toBe(true);
+        expect(toBin.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        const permanent = await deleteEntry.execute(model, entryA.entryId, {
+            force: true,
+            permanently: true
+        });
+        expect(permanent.isFail()).toBe(true);
+        expect(permanent.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        // An own-only user can't prove ownership of leftover records, so no blind cleanup.
+        const orphan = await deleteEntry.execute(model, "nonExistingEntryId", {
+            force: true,
+            permanently: true
+        });
+        expect(orphan.isFail()).toBe(true);
+        expect(orphan.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        const stillThere = await manageApiA.getTestEntry({
+            variables: { revision: entryA.id }
+        });
+        expect(stillThere.data?.id).toBe(entryA.id);
+
+        // Own entries can still be force deleted.
+        const own = await deleteEntry.execute(model, entryB.entryId, {
+            force: true,
+            permanently: false
+        });
+        expect(own.isOk()).toBe(true);
+    });
+
+    it("should not allow creating an entry with the id of an existing entry", async () => {
+        const { manageApiA, manageApiB, entryA, entryB } = await setup();
+
+        // Another user's entry.
+        const takeover = await manageApiB.createTestEntry({
+            variables: { data: { id: entryA.entryId, values: { title: "taken", slug: "taken" } } }
+        });
+        expect(takeover.data).toBeNull();
+        expect(takeover.error).toMatchObject({
+            code: "Cms/Entry/AlreadyExists"
+        });
+
+        // Full access doesn't allow it either.
+        const overwrite = await manageApiA.createTestEntry({
+            variables: { data: { id: entryB.entryId, values: { title: "taken", slug: "taken" } } }
+        });
+        expect(overwrite.error).toMatchObject({
+            code: "Cms/Entry/AlreadyExists"
+        });
+
+        // Entries in the bin count too.
+        const { context, model } = await getContextAndModel(manageApiA);
+        const deleted = await context.container
+            .resolve(DeleteEntryUseCase)
+            .execute(model, entryA.entryId, { permanently: false });
+        expect(deleted.isOk()).toBe(true);
+        const binned = await context.container
+            .resolve(CreateEntryUseCase)
+            .execute(model, { id: entryA.entryId, values: { title: "taken", slug: "taken" } });
+        expect(binned.error).toMatchObject({ code: "Cms/Entry/AlreadyExists" });
+
+        // Untouched.
+        const original = await manageApiA.getTestEntry({ variables: { revision: entryB.id } });
+        expect(original.data?.values?.title).toBe(entryB.values.title);
+
+        // A new id of the caller's choosing still works.
+        const fresh = await manageApiB.createTestEntry({
+            variables: {
+                data: { id: "my-own-entry-id", values: { title: "fresh", slug: "fresh" } }
+            }
+        });
+        expect(fresh.error).toBeNull();
+        expect(fresh.data.entryId).toBe("my-own-entry-id");
+    });
+
     it("should only resolve referenced entries the user can access", async () => {
         /**
          * Reference fields are resolved via GetLatestEntriesByIds (manage) and
@@ -255,6 +343,80 @@ describe("Own Entries Permissions Checks", () => {
         const published = await getPublishedByIds.execute(model, [entryA.entryId, entryB.entryId]);
         expect(published.isOk()).toBe(true);
         expect(published.value.map(item => item.id)).toEqual([entryB.id]);
+    });
+});
+
+const DELETE_MULTIPLE_TEST_ENTRIES = /* GraphQL */ `
+    mutation DeleteMultipleTestEntries($entries: [ID!]!) {
+        deleteMultipleTestEntries(entries: $entries) {
+            data {
+                id
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+describe("Own Entries Permissions Checks - read all, delete own", () => {
+    // Two roles: one can read all entries, the other can do everything with own entries only.
+    const createReadAllDeleteOwnPermissions = () => {
+        return [
+            ...new CmsTestPermissions({
+                groups: { rwd: "r" },
+                models: { rwd: "r" },
+                entries: { rwd: "r" }
+            }).getPermissions(),
+            ...new CmsTestPermissions({
+                groups: { rwd: "r" },
+                models: { rwd: "r" },
+                entries: { rwd: "rwd", own: true, pw: "pu" }
+            }).getPermissions()
+        ];
+    };
+
+    it("should delete only own entries via deleteMultiple", async () => {
+        const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
+        await manageApiA.setup();
+
+        const { manage: manageApiB } = useTestModelHandler({
+            identity: identityB,
+            permissions: createReadAllDeleteOwnPermissions()
+        });
+
+        const entryA = await manageApiA.createTestEntry();
+        expect(entryA.error).toBeNull();
+        const entryB = await manageApiB.createTestEntry();
+        expect(entryB.error).toBeNull();
+        // Published, so the entry has both the latest and the published record in every storage.
+        const publishedB = await manageApiB.publishTestEntry({
+            variables: { revision: entryB.data.id }
+        });
+        expect(publishedB.error).toBeNull();
+
+        // B can read A's entry, so it is found, but B must not be able to delete it.
+        const [response] = await manageApiB.invoke({
+            body: {
+                query: DELETE_MULTIPLE_TEST_ENTRIES,
+                variables: { entries: [entryA.data.entryId, entryB.data.entryId] }
+            }
+        });
+        expect(response.data.deleteMultipleTestEntries).toEqual({
+            data: [{ id: entryB.data.id }],
+            error: null
+        });
+
+        const stillThere = await manageApiA.getTestEntry({
+            variables: { revision: entryA.data.id }
+        });
+        expect(stillThere.data?.id).toBe(entryA.data.id);
+
+        const deleted = await manageApiA.getTestEntry({
+            variables: { revision: entryB.data.id }
+        });
+        expect(deleted.data).toBeNull();
     });
 });
 

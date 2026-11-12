@@ -5,6 +5,9 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { RolesRepository } from "../../roles/shared/abstractions.js";
+import { canAssignRolesAndTeams } from "../../utils/canAssignRolesAndTeams.js";
+import { CANNOT_GRANT_PERMISSIONS_MESSAGE } from "../../utils/canGrantPermissions.js";
 import { createTeamValidation } from "./schema.js";
 import { TeamBeforeCreateEvent, TeamAfterCreateEvent } from "./events.js";
 import type { Team, CreateTeamInput } from "../shared/types.js";
@@ -14,7 +17,8 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private repository: TeamsRepository.Interface
+        private repository: TeamsRepository.Interface,
+        private rolesRepository: RolesRepository.Interface
     ) {}
 
     async execute(input: CreateTeamInput): Promise<Result<Team, CreateTeam.Error>> {
@@ -31,6 +35,20 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
 
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
+
+        // Security: a team may only carry roles whose permissions the caller holds.
+        const canAssign = await canAssignRolesAndTeams({
+            identityContext: this.identityContext,
+            rolesRepository: this.rolesRepository,
+            teamsRepository: this.repository,
+            roles: data.roles,
+            teams: []
+        });
+        if (!canAssign) {
+            return Result.fail(
+                new NotAuthorizedError({ message: CANNOT_GRANT_PERMISSIONS_MESSAGE })
+            );
+        }
 
         // Check if team with same slug already exists
         const existingTeamResult = await this.repository.get({ slug: data.slug });
@@ -75,5 +93,5 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
 export const CreateTeamUseCaseImpl = createImplementation({
     abstraction: CreateTeam,
     implementation: CreateTeamUseCase,
-    dependencies: [IdentityContext, EventPublisher, TeamsRepository]
+    dependencies: [IdentityContext, EventPublisher, TeamsRepository, RolesRepository]
 });

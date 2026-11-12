@@ -5,6 +5,7 @@ import {
     type FilePersistenceError,
     type InvalidFileSizeError,
     type FileAlreadyExistsError,
+    type InvalidFileKeyError,
     FileNotAuthorizedError
 } from "~/domain/file/errors.js";
 
@@ -38,6 +39,7 @@ export interface ICreateFileRepository {
 export interface ICreateFileRepositoryErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
+    alreadyExists: FileAlreadyExistsError;
 }
 
 type RepositoryError = ICreateFileRepositoryErrors[keyof ICreateFileRepositoryErrors];
@@ -65,6 +67,7 @@ export interface ICreateFileUseCaseErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
     invalidSize: InvalidFileSizeError;
+    invalidKey: InvalidFileKeyError;
     alreadyExists: FileAlreadyExistsError;
 }
 

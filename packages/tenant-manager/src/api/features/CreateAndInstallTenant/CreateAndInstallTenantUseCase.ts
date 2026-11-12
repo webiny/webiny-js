@@ -4,18 +4,25 @@ import { Tenant } from "~/shared/Tenant.js";
 import {
     TenantCreationError,
     TenantInstallationError,
-    TenantUpdateError
+    TenantUpdateError,
+    TenantNotFoundError
 } from "../../domain/errors.js";
 import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
 import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 
 class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
-        private identityContext: IdentityContext.Interface,
+        private tenantAccess: TenantAccess.Interface,
+        private tenantContext: Tenancy.TenantContext.Interface,
+        private getModel: GetModelUseCase.Interface,
+        private getEntryById: GetEntryByIdUseCase.Interface,
         // Tenant manager deps
         private getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
         private updateTenantUseCase: UpdateTenantUseCase.Interface,
@@ -24,18 +31,15 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         private coreCreateTenant: Tenancy.CreateTenantUseCase.Interface,
         private coreUpdateTenant: Tenancy.UpdateTenantUseCase.Interface,
         private coreDeleteTenant: Tenancy.DeleteTenantUseCase.Interface,
-        private coreInstallTenant: Tenancy.InstallTenantUseCase.Interface
+        private coreInstallTenant: Tenancy.InstallTenantUseCase.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(tenantId: string): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
         // Authorization checks
-        const permission = await this.identityContext.getPermission("tm.tenant");
-        if (!permission) {
-            return Result.fail(
-                new NotAuthorizedError({
-                    message: "Not authorized to create tenants!"
-                })
-            );
+        const access = await this.tenantAccess.canCreate();
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         const entryId = EntryId.from(tenantId);
@@ -51,6 +55,12 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 
         // If core tenant already exists with this same ID, we mark the Tenant Manager tenant installed.
         if (existingTenantResult.isOk()) {
+            // Only a child of the current tenant may be taken over.
+            const canManage = await this.tenantAccess.canManage(tenant.id);
+            if (canManage.isFail()) {
+                return Result.fail(canManage.error);
+            }
+
             // Update the core tenant, and set it to `active`
             await this.coreUpdateTenant.execute(tenant.id, {
                 name: tenant.values.name,
@@ -62,11 +72,19 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             return this.markTenantInstalled(tenant);
         }
 
+        // A new tenant can only be installed from the tenant that holds its entry, so a sub-tenant
+        // can't install (and take over) an entry created by another tenant.
+        const ownEntry = await this.hasEntryInCurrentTenant(entryId.toString());
+        if (!ownEntry) {
+            return Result.fail(new TenantNotFoundError(entryId.id));
+        }
+
         // Create tenant
         const createTenantResult = await this.coreCreateTenant.execute({
             id: entryId.id,
             name: tenant.values.name,
-            parent: "root",
+            // New tenants are children of the tenant they are created from.
+            parent: this.tenantContext.getTenant().id,
             description: tenant.values.name,
             tags: []
         });
@@ -77,9 +95,16 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         const createdTenant = createTenantResult.value;
 
         // Install tenant
-        const installResult = await this.coreInstallTenant.execute({
-            tenant: createdTenant,
-            installationInput: []
+        /**
+         * The caller was authorized above. Installers set up system data (e.g. the "Full Access"
+         * role), which the caller's own permissions may not cover (they may only grant what they
+         * hold), so they run without authorization, like the system installation does.
+         */
+        const installResult = await this.identityContext.withoutAuthorization(() => {
+            return this.coreInstallTenant.execute({
+                tenant: createdTenant,
+                installationInput: []
+            });
         });
 
         if (installResult.isFail()) {
@@ -90,6 +115,15 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         }
 
         return this.markTenantInstalled(tenant);
+    }
+
+    private async hasEntryInCurrentTenant(id: string): Promise<boolean> {
+        const modelResult = await this.getModel.execute(TENANT_MODEL_ID);
+        if (modelResult.isFail()) {
+            return false;
+        }
+        const entryResult = await this.getEntryById.execute(modelResult.value, id);
+        return entryResult.isOk();
     }
 
     private async markTenantInstalled(tenant: Tenant) {
@@ -111,13 +145,17 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 export default UseCaseAbstraction.createImplementation({
     implementation: CreateAndInstallTenantUseCase,
     dependencies: [
-        IdentityContext,
+        TenantAccess,
+        Tenancy.TenantContext,
+        GetModelUseCase,
+        GetEntryByIdUseCase,
         GetTenantByIdUseCase,
         UpdateTenantUseCase,
         Tenancy.GetTenantByIdUseCase,
         Tenancy.CreateTenantUseCase,
         Tenancy.UpdateTenantUseCase,
         Tenancy.DeleteTenantUseCase,
-        Tenancy.InstallTenantUseCase
+        Tenancy.InstallTenantUseCase,
+        IdentityContext
     ]
 });

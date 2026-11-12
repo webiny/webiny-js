@@ -110,11 +110,12 @@ describe("Mailer Settings GraphQL", () => {
         });
         /**
          * And in third save, we do not send the password into the api.
+         * Host and user stay the same, so the stored password is kept.
          */
         const [thirdSaveResponse] = await handler.saveSettings({
             data: {
-                host: "dummy-host3.webiny",
-                user: "user3",
+                host: "dummy-host2.webiny",
+                user: "user2",
                 from: "from3@dummy-host.webiny",
                 replyTo: "replyTo3@dummy-host.webiny"
             }
@@ -124,10 +125,10 @@ describe("Mailer Settings GraphQL", () => {
                 mailer: {
                     saveSettings: {
                         data: {
-                            host: "dummy-host3.webiny",
+                            host: "dummy-host2.webiny",
                             port: 587,
                             secure: false,
-                            user: "user3",
+                            user: "user2",
                             from: "from3@dummy-host.webiny",
                             replyTo: "replyTo3@dummy-host.webiny",
                             source: "storage"

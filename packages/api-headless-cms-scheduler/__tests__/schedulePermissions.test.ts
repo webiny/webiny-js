@@ -6,11 +6,13 @@ import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
 import {
     CancelScheduledActionUseCase,
+    GetScheduledActionUseCase,
     ListScheduledActionsUseCase,
     ScheduleActionUseCase,
     ScheduledActionTypePublish,
     ScheduledActionTypeUnpublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { GetTargetScheduledActionUseCase } from "@webiny/api-scheduler/features/GetTargetScheduledAction/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { PermissionsArg } from "./__mocks/context/helpers.js";
@@ -20,9 +22,10 @@ import {
     createMockTargetModelPlugins,
     MOCK_TARGET_MODEL_ID
 } from "./__mocks/targetModel.js";
-import { createNamespace } from "~/utils/namespace.js";
+import { CMS_NAMESPACE, createNamespace } from "~/utils/namespace.js";
 
 const PRIVATE_MODEL_ID = "privateTargetModel";
+const OTHER_MODEL_ID = "otherTargetModel";
 
 const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
 const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
@@ -50,6 +53,17 @@ const cmsPermissions = (entries: { rwd: string; pw?: string; own?: boolean }) =>
     ] as unknown as PermissionsArg[];
 };
 
+const createOtherModelPlugin = () => {
+    const model = createMockTargetModel();
+    return createModelPlugin({
+        ...model,
+        modelId: OTHER_MODEL_ID,
+        name: "Other Target Model",
+        singularApiName: "otherTargetModel",
+        pluralApiName: "otherTargetModels"
+    } as any);
+};
+
 const createContext = async (
     identity: IdentityData,
     permissions?: PermissionsArg[]
@@ -58,7 +72,8 @@ const createContext = async (
         plugins: [
             createHeadlessCmsScheduler(),
             createMockTargetModelPlugins(),
-            createPrivateModelPlugin()
+            createPrivateModelPlugin(),
+            createOtherModelPlugin()
         ],
         identity,
         permissions
@@ -197,5 +212,104 @@ describe("Cancelling permissions", () => {
             where: { namespace: createNamespace(model) }
         });
         expect(list.value.items).toHaveLength(0);
+    });
+});
+
+describe("Reading permissions", () => {
+    /**
+     * Read access to entries of the mock target model only.
+     */
+    const targetModelOnly = [
+        { _src: "role", name: "cms.endpoint.manage" },
+        { _src: "role", name: "cms.contentModelGroup", rwd: "r" },
+        { _src: "role", name: "cms.contentModel", rwd: "r", models: [MOCK_TARGET_MODEL_ID] },
+        { _src: "role", name: "cms.contentEntry", rwd: "r" }
+    ] as unknown as PermissionsArg[];
+
+    const scheduleInBothModels = async () => {
+        const contextA = await createContext(identityA);
+        const target = await createEntry(contextA, MOCK_TARGET_MODEL_ID);
+        const other = await createEntry(contextA, OTHER_MODEL_ID);
+        const targetScheduled = await schedule(contextA, target.model, target.entry.id);
+        const otherScheduled = await schedule(contextA, other.model, other.entry.id);
+        expect(targetScheduled.isOk()).toBe(true);
+        expect(otherScheduled.isOk()).toBe(true);
+        return { target, other, otherAction: otherScheduled.value };
+    };
+
+    it("should list schedules only of models whose entries the user can read", async () => {
+        const { target, other } = await scheduleInBothModels();
+        const contextB = await createContext(identityB, targetModelOnly);
+        const useCase = contextB.container.resolve(ListScheduledActionsUseCase);
+
+        const allowed = await useCase.execute({
+            where: { namespace: createNamespace(target.model) }
+        });
+        expect(allowed.isOk()).toBe(true);
+        expect(allowed.value.items).toHaveLength(1);
+
+        const refused = await useCase.execute({
+            where: { namespace: createNamespace(other.model) }
+        });
+        expect(refused.isFail()).toBe(true);
+        expect(refused.error.code).toBe("Scheduler/NotAuthorized");
+
+        const missingModel = await useCase.execute({
+            where: { namespace: createNamespace({ modelId: "nonExistingModel" }) }
+        });
+        expect(missingModel.isFail()).toBe(true);
+        expect(missingModel.error.code).toBe("Scheduler/NotAuthorized");
+    });
+
+    it("should refuse to list by a namespace prefix covering models the user can't read", async () => {
+        await scheduleInBothModels();
+
+        const restricted = await createContext(identityB, targetModelOnly);
+        const refused = await restricted.container.resolve(ListScheduledActionsUseCase).execute({
+            where: { namespace_startsWith: CMS_NAMESPACE }
+        });
+        expect(refused.isFail()).toBe(true);
+        expect(refused.error.code).toBe("Scheduler/NotAuthorized");
+
+        const prefixOfReadable = await restricted.container
+            .resolve(ListScheduledActionsUseCase)
+            .execute({
+                where: { namespace_startsWith: createNamespace({ modelId: MOCK_TARGET_MODEL_ID }) }
+            });
+        expect(prefixOfReadable.isOk()).toBe(true);
+        expect(prefixOfReadable.value.items).toHaveLength(1);
+
+        const reader = await createContext(identityB, cmsPermissions({ rwd: "r" }));
+        const allowed = await reader.container.resolve(ListScheduledActionsUseCase).execute({
+            where: { namespace_startsWith: CMS_NAMESPACE }
+        });
+        expect(allowed.isOk()).toBe(true);
+        expect(allowed.value.items).toHaveLength(2);
+    });
+
+    it("should refuse to get a schedule of a model whose entries the user can't read", async () => {
+        const { other, otherAction } = await scheduleInBothModels();
+        const contextB = await createContext(identityB, targetModelOnly);
+
+        const byId = await contextB.container.resolve(GetScheduledActionUseCase).execute({
+            namespace: otherAction.namespace,
+            id: otherAction.id
+        });
+        expect(byId.isFail()).toBe(true);
+        expect(byId.error.code).toBe("Scheduler/NotAuthorized");
+
+        const byTarget = await contextB.container.resolve(GetTargetScheduledActionUseCase).execute({
+            namespace: createNamespace(other.model),
+            id: other.entry.id
+        });
+        expect(byTarget.isFail()).toBe(true);
+        expect(byTarget.error.code).toBe("Scheduler/NotAuthorized");
+
+        const reader = await createContext(identityB, cmsPermissions({ rwd: "r" }));
+        const allowed = await reader.container.resolve(GetScheduledActionUseCase).execute({
+            namespace: otherAction.namespace,
+            id: otherAction.id
+        });
+        expect(allowed.isOk()).toBe(true);
     });
 });

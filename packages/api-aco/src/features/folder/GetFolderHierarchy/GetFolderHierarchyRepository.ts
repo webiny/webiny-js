@@ -14,7 +14,7 @@ import type {
     GetFolderHierarchyResponse
 } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
-import { FolderPersistenceError } from "~/domain/folder/errors.js";
+import { FolderNotFoundError, FolderPersistenceError } from "~/domain/folder/errors.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
@@ -72,6 +72,13 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         }
 
         const folder = EntryToFolderMapper.toFolder(folderResult.value);
+
+        // Security: app permissions are checked against `params.type`, so a folder of another
+        // type must not be returned (it would expose another app's folder tree).
+        if (folder.type !== params.type) {
+            return Result.fail(new FolderNotFoundError(params.id));
+        }
+
         parents.push(folder);
 
         // Recursively get all parent folders
@@ -115,8 +122,11 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         parents: Folder[]
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
         let currentFolder = folder;
+        // Security: guard against parent cycles in stored data (would otherwise loop forever).
+        const visited = new Set<string>([folder.id]);
 
-        while (currentFolder.parentId) {
+        while (currentFolder.parentId && !visited.has(currentFolder.parentId)) {
+            visited.add(currentFolder.parentId);
             const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
                 this.folderModel,
                 EntryId.from(currentFolder.parentId).toString()
@@ -127,6 +137,10 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
             }
 
             const parentFolder = EntryToFolderMapper.toFolder(parentResult.value);
+            // Never walk into another app's folders.
+            if (parentFolder.type !== folder.type) {
+                break;
+            }
             parents.push(parentFolder);
             currentFolder = parentFolder;
         }

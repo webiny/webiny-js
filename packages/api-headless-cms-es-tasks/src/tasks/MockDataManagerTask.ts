@@ -19,6 +19,10 @@ class MockDataManagerTask implements TaskDefinition.Interface<
 > {
     id = MOCK_DATA_MANAGER_TASK_ID;
     title = "Mock Data Manager";
+    /**
+     * Security: development tool that bypasses CMS permissions. Never triggered through the API.
+     */
+    isPrivate = true;
     maxIterations = 500;
 
     selfCleanup = "always" as const;

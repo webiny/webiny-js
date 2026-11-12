@@ -1,6 +1,7 @@
 import { CollabThreadCreatedHandler } from "@webiny/collaboration/api/domain/thread/events.js";
 import { CreateNotificationUseCase } from "@webiny/notifications/api/features/CreateNotification/index.js";
 import { NotificationType } from "@webiny/notifications/api/domain/notification/abstractions.js";
+import { MAX_MENTIONS } from "@webiny/collaboration/shared/constants.js";
 import { APP_HEADLESS_CMS } from "~/shared/constants.js";
 
 class ThreadCreatedNotificationHandlerImpl implements CollabThreadCreatedHandler.Interface {
@@ -18,7 +19,11 @@ class ThreadCreatedNotificationHandlerImpl implements CollabThreadCreatedHandler
             threadId: thread.id
         };
 
-        const recipients = new Set((message.mentions || []).filter(id => id && id !== actor.id));
+        // Security: mentions are capped (also validated upstream). Recipients' own access to the
+        // content cannot be evaluated here (permissions resolve only for the current identity).
+        const recipients = new Set(
+            (message.mentions || []).filter(id => id && id !== actor.id).slice(0, MAX_MENTIONS)
+        );
 
         for (const recipientId of recipients) {
             await this.createNotification.execute({

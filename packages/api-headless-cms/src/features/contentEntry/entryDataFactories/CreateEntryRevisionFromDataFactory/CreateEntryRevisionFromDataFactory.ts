@@ -23,6 +23,7 @@ import WebinyError from "@webiny/error";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../statuses.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
+import { canOverrideMetaFields } from "../canOverrideMetaFields.js";
 import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/abstractions.js";
 import { ensureItemIds } from "../../ensureItemIds.js";
 import { hasEntryContentChanged } from "../hasEntryContentChanged.js";
@@ -102,6 +103,16 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
         const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
         const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
 
+        // Security: meta field overrides (createdBy, ...) are ignored for identities limited to
+        // their own entries, otherwise they could take over (or hand over) an entry.
+        const metaInput: Partial<CreateCmsEntryInput<TValues>> = (await canOverrideMetaFields({
+            identityContext: this.identityContext,
+            accessControl: this.accessControl,
+            model
+        }))
+            ? rawInput
+            : {};
+
         const currentIdentity = this.identityContext.getIdentity();
         const currentDateTime = new Date();
 
@@ -133,10 +144,10 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             | "revisionFirstPublishedBy"
             | "revisionLastPublishedBy"
         > = {
-            revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
-            revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
-            revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
-            revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null)
+            revisionFirstPublishedOn: getDate(metaInput.revisionFirstPublishedOn, null),
+            revisionLastPublishedOn: getDate(metaInput.revisionLastPublishedOn, null),
+            revisionFirstPublishedBy: getIdentity(metaInput.revisionFirstPublishedBy, null),
+            revisionLastPublishedBy: getIdentity(metaInput.revisionLastPublishedBy, null)
         };
 
         let entryLevelPublishingMetaFields: Pick<
@@ -144,16 +155,16 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             "firstPublishedOn" | "lastPublishedOn" | "firstPublishedBy" | "lastPublishedBy"
         > = {
             firstPublishedOn: getDate(
-                rawInput.firstPublishedOn,
+                metaInput.firstPublishedOn,
                 latestStorageEntry.firstPublishedOn
             ),
-            lastPublishedOn: getDate(rawInput.lastPublishedOn, latestStorageEntry.lastPublishedOn),
+            lastPublishedOn: getDate(metaInput.lastPublishedOn, latestStorageEntry.lastPublishedOn),
             firstPublishedBy: getIdentity(
-                rawInput.firstPublishedBy,
+                metaInput.firstPublishedBy,
                 latestStorageEntry.firstPublishedBy
             ),
             lastPublishedBy: getIdentity(
-                rawInput.lastPublishedBy,
+                metaInput.lastPublishedBy,
                 latestStorageEntry.lastPublishedBy
             )
         };
@@ -161,31 +172,34 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
         if (status === STATUS_PUBLISHED) {
             revisionLevelPublishingMetaFields = {
                 revisionFirstPublishedOn: getDate(
-                    rawInput.revisionFirstPublishedOn,
+                    metaInput.revisionFirstPublishedOn,
                     currentDateTime
                 ),
-                revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, currentDateTime),
+                revisionLastPublishedOn: getDate(
+                    metaInput.revisionLastPublishedOn,
+                    currentDateTime
+                ),
                 revisionFirstPublishedBy: getIdentity(
-                    rawInput.revisionFirstPublishedBy,
+                    metaInput.revisionFirstPublishedBy,
                     currentIdentity
                 ),
                 revisionLastPublishedBy: getIdentity(
-                    rawInput.revisionLastPublishedBy,
+                    metaInput.revisionLastPublishedBy,
                     currentIdentity
                 )
             };
 
             entryLevelPublishingMetaFields = {
                 firstPublishedOn: getDate(
-                    rawInput.firstPublishedOn,
+                    metaInput.firstPublishedOn,
                     latestStorageEntry.firstPublishedOn
                 ),
-                lastPublishedOn: getDate(rawInput.lastPublishedOn, currentDateTime),
+                lastPublishedOn: getDate(metaInput.lastPublishedOn, currentDateTime),
                 firstPublishedBy: getIdentity(
-                    rawInput.firstPublishedBy,
+                    metaInput.firstPublishedBy,
                     latestStorageEntry.firstPublishedBy
                 ),
-                lastPublishedBy: getIdentity(rawInput.lastPublishedBy, currentIdentity)
+                lastPublishedBy: getIdentity(metaInput.lastPublishedBy, currentIdentity)
             };
         }
 
@@ -220,19 +234,19 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             ...originalEntry,
             id,
             version: nextVersion,
-            createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
-            savedOn: getDate(rawInput.savedOn, entryLevelSaved.savedOn),
-            modifiedOn: getDate(rawInput.modifiedOn, entryLevelSaved.modifiedOn),
-            createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy)!,
-            savedBy: getIdentity(rawInput.savedBy, entryLevelSaved.savedBy)!,
-            modifiedBy: getIdentity(rawInput.modifiedBy, entryLevelSaved.modifiedBy),
+            createdOn: getDate(metaInput.createdOn, latestStorageEntry.createdOn),
+            savedOn: getDate(metaInput.savedOn, entryLevelSaved.savedOn),
+            modifiedOn: getDate(metaInput.modifiedOn, entryLevelSaved.modifiedOn),
+            createdBy: getIdentity(metaInput.createdBy, latestStorageEntry.createdBy)!,
+            savedBy: getIdentity(metaInput.savedBy, entryLevelSaved.savedBy)!,
+            modifiedBy: getIdentity(metaInput.modifiedBy, entryLevelSaved.modifiedBy),
             ...entryLevelPublishingMetaFields,
-            revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-            revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity)!,
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
-            revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+            revisionCreatedOn: getDate(metaInput.revisionCreatedOn, currentDateTime),
+            revisionSavedOn: getDate(metaInput.revisionSavedOn, currentDateTime),
+            revisionModifiedOn: getDate(metaInput.revisionModifiedOn, null),
+            revisionCreatedBy: getIdentity(metaInput.revisionCreatedBy, currentIdentity)!,
+            revisionSavedBy: getIdentity(metaInput.revisionSavedBy, currentIdentity)!,
+            revisionModifiedBy: getIdentity(metaInput.revisionModifiedBy, null),
             revisionDescription: undefined,
             ...revisionLevelPublishingMetaFields,
             locked,

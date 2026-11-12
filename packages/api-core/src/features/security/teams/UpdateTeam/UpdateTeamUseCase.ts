@@ -3,6 +3,9 @@ import { Result } from "@webiny/feature/api";
 import { UpdateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { RolesRepository } from "../../roles/shared/abstractions.js";
+import { canAssignRolesAndTeams } from "../../utils/canAssignRolesAndTeams.js";
+import { CANNOT_GRANT_PERMISSIONS_MESSAGE } from "../../utils/canGrantPermissions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateTeamValidation } from "./schema.js";
 import { TeamBeforeUpdateEvent, TeamAfterUpdateEvent } from "./events.js";
@@ -18,15 +21,18 @@ export class UpdateTeamUseCase {
     private repository: TeamsRepository.Interface;
     private identityContext: IdentityContext.Interface;
     private eventPublisher: EventPublisher.Interface;
+    private rolesRepository: RolesRepository.Interface;
 
     constructor(
         repository: TeamsRepository.Interface,
         identityContext: IdentityContext.Interface,
-        eventPublisher: EventPublisher.Interface
+        eventPublisher: EventPublisher.Interface,
+        rolesRepository: RolesRepository.Interface
     ) {
         this.repository = repository;
         this.identityContext = identityContext;
         this.eventPublisher = eventPublisher;
+        this.rolesRepository = rolesRepository;
     }
 
     async execute(id: string, input: UpdateTeamInput): Promise<Result<Team, UpdateTeam.Error>> {
@@ -55,6 +61,21 @@ export class UpdateTeamUseCase {
         // Check if team is created via plugin
         if (existingTeam.plugin) {
             return Result.fail(new CannotUpdatePluginTeamsError());
+        }
+
+        // Security: a team may only carry roles whose permissions the caller holds. The team's
+        // current roles are checked too, so the caller can't change a team that has more access.
+        const canAssign = await canAssignRolesAndTeams({
+            identityContext: this.identityContext,
+            rolesRepository: this.rolesRepository,
+            teamsRepository: this.repository,
+            roles: [...(existingTeam.roles ?? []), ...(validation.data.roles ?? [])],
+            teams: []
+        });
+        if (!canAssign) {
+            return Result.fail(
+                new NotAuthorizedError({ message: CANNOT_GRANT_PERMISSIONS_MESSAGE })
+            );
         }
 
         const updatedTeam: Team = {
@@ -91,5 +112,5 @@ export class UpdateTeamUseCase {
 export const UpdateTeamUseCaseImpl = createImplementation({
     abstraction: UpdateTeam,
     implementation: UpdateTeamUseCase,
-    dependencies: [TeamsRepository, IdentityContext, EventPublisher]
+    dependencies: [TeamsRepository, IdentityContext, EventPublisher, RolesRepository]
 });

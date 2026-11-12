@@ -323,9 +323,17 @@ class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
     private addSettingsResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         builder.addResolver({
             path: "FmQuery.getSettings",
-            dependencies: [GetSettingsUseCase],
-            resolver: (getSettings: GetSettingsUseCase.Interface) => {
+            dependencies: [IdentityContext, GetSettingsUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                getSettings: GetSettingsUseCase.Interface
+            ) => {
                 return async () => {
+                    // Security: settings are not public.
+                    if (identityContext.getIdentity().isAnonymous()) {
+                        return new NotAuthorizedResponse();
+                    }
+
                     const result = await getSettings.execute();
 
                     if (result.isFail()) {

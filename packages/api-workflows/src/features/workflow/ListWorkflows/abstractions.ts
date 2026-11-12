@@ -1,7 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
-import type { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import type {
+    WorkflowNotAuthorizedError,
+    WorkflowPersistenceError
+} from "~/domain/workflow/errors.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IListWorkflowsWhere {
@@ -37,6 +40,7 @@ export interface IListWorkflowsUseCase {
 }
 
 export interface IListWorkflowsUseCaseErrors {
+    notAuthorized: WorkflowNotAuthorizedError;
     persistence: WorkflowPersistenceError;
 }
 

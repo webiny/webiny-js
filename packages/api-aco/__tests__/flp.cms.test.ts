@@ -151,7 +151,8 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Getting content in the folder should be forbidden for identity C.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectCmsNotAuthorized(
+            // Entries in a folder without access read as missing, so their existence isn't revealed.
+            await expect(
                 gqlIdentityC.cms
                     .getEntry(model, {
                         revision: createdEntry.id
@@ -159,7 +160,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
                     })
-            );
+            ).resolves.toMatchObject({ data: null, error: { code: "Cms/Entry/NotFound" } });
         }
 
         // Listing content in the folder should be forbidden for identity C.
@@ -408,7 +409,8 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Getting content in the folder should be forbidden for identity B.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectCmsNotAuthorized(
+            // Entries in a folder without access read as missing, so their existence isn't revealed.
+            await expect(
                 gqlIdentityB.cms
                     .getEntry(model, {
                         revision: createdEntry.id
@@ -416,7 +418,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                     .then(([response]) => {
                         return response.data.getBasicTestModel;
                     })
-            );
+            ).resolves.toMatchObject({ data: null, error: { code: "Cms/Entry/NotFound" } });
         }
 
         // Listing content in the folder should be forbidden for identity B.

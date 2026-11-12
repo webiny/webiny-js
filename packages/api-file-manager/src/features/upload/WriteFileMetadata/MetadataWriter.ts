@@ -1,6 +1,7 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { MetadataWriter as MetadataWriterAbstraction } from "./abstractions.js";
+import { FileNotAuthorizedError } from "~/domain/file/errors.js";
 
 class MetadataWriterImpl implements MetadataWriterAbstraction.Interface {
     private readonly tenantContext: TenantContext.Interface;
@@ -16,8 +17,21 @@ class MetadataWriterImpl implements MetadataWriterAbstraction.Interface {
 
     public async write(files: MetadataWriterAbstraction.File[]) {
         const writers = files.map(async file => {
+            const key = `FileManager/File/${file.id}/Metadata`;
             const metadata = this.getMetadata(file);
-            await this.keyValueStore.set(`FileManager/File/${file.id}/Metadata`, metadata);
+
+            // Security: metadata is global and keyed only by file id. Never overwrite
+            // metadata that belongs to a file in another tenant.
+            const existing = await this.keyValueStore.get<{ tenant?: string }>(key);
+            if (
+                existing.isOk() &&
+                existing.value?.tenant &&
+                existing.value.tenant !== metadata.tenant
+            ) {
+                throw new FileNotAuthorizedError();
+            }
+
+            await this.keyValueStore.set(key, metadata);
         });
 
         await Promise.all(writers);

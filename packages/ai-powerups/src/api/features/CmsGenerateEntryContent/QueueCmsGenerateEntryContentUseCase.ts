@@ -3,6 +3,8 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { checkAdditionalFilesAccess } from "~/api/features/AiPromptContext/checkAdditionalFilesAccess.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { ModelNotFoundError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
@@ -21,7 +23,8 @@ class QueueCmsGenerateEntryContentUseCaseImpl
         private wcp: WcpContext.Interface,
         private getModel: GetModelUseCase.Interface,
         private accessControl: AccessControl.Interface,
-        private taskService: TaskService.Interface
+        private taskService: TaskService.Interface,
+        private getFile: GetFileUseCase.Interface
     ) {}
 
     async execute(
@@ -56,6 +59,14 @@ class QueueCmsGenerateEntryContentUseCaseImpl
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
+        const filesResult = await checkAdditionalFilesAccess(
+            this.getFile,
+            params.additionalFileIds
+        );
+        if (filesResult.isFail()) {
+            return Result.fail(filesResult.error);
+        }
+
         const result = await this.taskService.trigger<ICmsGenerateEntryContentTaskInput>({
             definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
             input: {
@@ -79,5 +90,12 @@ class QueueCmsGenerateEntryContentUseCaseImpl
 
 export default QueueCmsGenerateEntryContentUseCase.createImplementation({
     implementation: QueueCmsGenerateEntryContentUseCaseImpl,
-    dependencies: [IdentityContext, WcpContext, GetModelUseCase, AccessControl, TaskService]
+    dependencies: [
+        IdentityContext,
+        WcpContext,
+        GetModelUseCase,
+        AccessControl,
+        TaskService,
+        GetFileUseCase
+    ]
 });

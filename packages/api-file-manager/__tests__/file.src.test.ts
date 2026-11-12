@@ -57,7 +57,7 @@ describe("FmFile.src resolver", { timeout: 100_000, retry: 3 }, () => {
         });
         expect(settingsResponse.data.fileManager.getSettings.data.srcPrefix).toBe(srcPrefix);
 
-        const fileKey = "abc123/image.jpg";
+        const fileKey = "file-src-test/image.jpg";
         const [createResponse] = await createFile(
             {
                 data: {

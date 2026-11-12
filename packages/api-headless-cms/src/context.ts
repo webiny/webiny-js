@@ -1,4 +1,5 @@
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
@@ -60,23 +61,14 @@ export const createContextPlugin = () => {
             return context.tenancy.getCurrentTenant();
         };
 
-        const setSchemaType = (type: ApiEndpoint | null) => {
-            if (!type) {
-                return;
-            }
-
+        // Security: all three flags are derived from the requested type. Previously only the
+        // matching flag was set to true, so a schema generated for one endpoint could contain
+        // parts of another (e.g. manage) endpoint, and that schema was then cached per type.
+        const setSchemaType = (type: ApiEndpoint) => {
             context.cms.type = type;
-
-            switch (type) {
-                case "read":
-                    context.cms.READ = true;
-                    break;
-                case "preview":
-                    context.cms.PREVIEW = true;
-                    break;
-                default:
-                    context.cms.MANAGE = true;
-            }
+            context.cms.READ = type === "read";
+            context.cms.PREVIEW = type === "preview";
+            context.cms.MANAGE = type === "manage";
         };
 
         // TODO figure out a better way. maybe this stuff should be on before handler?
@@ -86,18 +78,36 @@ export const createContextPlugin = () => {
         StorageFeature.register(context.container);
 
         async function getExecutableSchema(type: ApiEndpoint) {
-            const originalType = context.cms.type;
-            setSchemaType(type);
+            // The proxy (Query.cms / Mutation.cms) must respect the same endpoint permission as
+            // the /cms/{type} routes.
+            const endpointPermission = await context.security.getPermission(`cms.endpoint.${type}`);
+            if (!endpointPermission) {
+                throw new NotAuthorizedError(`Not allowed to access "${type}" endpoint.`);
+            }
 
-            const schema = await context.security.withoutAuthorization(() => {
-                return getSchema({
-                    context,
-                    getTenant,
-                    type
+            const original = {
+                type: context.cms.type,
+                READ: context.cms.READ,
+                PREVIEW: context.cms.PREVIEW,
+                MANAGE: context.cms.MANAGE
+            };
+
+            let schema: Awaited<ReturnType<typeof getSchema>>;
+            try {
+                setSchemaType(type);
+                schema = await context.security.withoutAuthorization(() => {
+                    return getSchema({
+                        context,
+                        getTenant,
+                        type
+                    });
                 });
-            });
-
-            setSchemaType(originalType);
+            } finally {
+                context.cms.type = original.type;
+                context.cms.READ = original.READ;
+                context.cms.PREVIEW = original.PREVIEW;
+                context.cms.MANAGE = original.MANAGE;
+            }
 
             return async <TData, TExtensions>(input: GraphQLRequestBody | GraphQLRequestBody[]) => {
                 return processRequestBody<TData, TExtensions>(input, schema, context);

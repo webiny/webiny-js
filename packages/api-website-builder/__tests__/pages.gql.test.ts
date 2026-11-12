@@ -378,6 +378,37 @@ describe("Pages CRUD", () => {
         });
     });
 
+    it("should not allow a read-only wb wildcard to read or update integrations", async () => {
+        const [seed] = await handler.wb.updateIntegrations({
+            data: { shop: { apiKey: "secret-key" } }
+        });
+        expect(seed.data.websiteBuilder.updateIntegrations.error).toBeNull();
+
+        const readOnlyHandler = useGraphQlHandler({
+            permissions: [{ name: "wb.*", rwd: "r" }]
+        });
+
+        const [getResponse] = await readOnlyHandler.wb.getIntegrations({});
+        expect(getResponse.data.websiteBuilder.getIntegrations.data).toBeNull();
+        expect(getResponse.data.websiteBuilder.getIntegrations.error.code).toBe("NOT_AUTHORIZED");
+
+        const [updateResponse] = await readOnlyHandler.wb.updateIntegrations({
+            data: { shop: { apiKey: "replaced" } }
+        });
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.error.code).toBe(
+            "NOT_AUTHORIZED"
+        );
+
+        // An explicit integrations permission still works.
+        const integrationsHandler = useGraphQlHandler({
+            permissions: [{ name: "wb.integrations" }]
+        });
+        const [allowed] = await integrationsHandler.wb.getIntegrations({});
+        expect(allowed.data.websiteBuilder.getIntegrations.data).toMatchObject({
+            shop: { apiKey: "secret-key" }
+        });
+    });
+
     it("should require wb.integrations permission for updateIntegrations", async () => {
         const limitedHandler = useGraphQlHandler({
             permissions: [{ name: "wb.page", rwd: "rwd" }]

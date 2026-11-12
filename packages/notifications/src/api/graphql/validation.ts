@@ -7,7 +7,7 @@ export const listNotificationsValidation = zod.object({
             read: zod.boolean().optional()
         })
         .optional(),
-    limit: zod.number().optional(),
+    limit: zod.number().int().min(1).max(100).optional(),
     after: zod.string().nullish()
 });
 

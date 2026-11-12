@@ -9,6 +9,21 @@ import { GetWebhookUseCase } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.js";
 import { UpdateWebhookUseCase } from "~/api/features/UpdateWebhook/abstractions.js";
 import { DeleteWebhookUseCase } from "~/api/features/DeleteWebhook/abstractions.js";
+import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
+import type { Webhook } from "~/api/domain/Webhook.js";
+
+/**
+ * Security: the signing secret is returned only to identities that can edit webhooks.
+ */
+const createSecretFilter = async (permissions: WebhookPermissions.Interface) => {
+    const canSeeSecret = await permissions.canEdit("webhook");
+    return (webhook: Webhook) => {
+        if (canSeeSecret) {
+            return webhook;
+        }
+        return { ...webhook, signingSecret: null };
+    };
+};
 
 interface IIdArgs {
     id: string;
@@ -135,28 +150,39 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<IListWebhooksInput>({
             path: "WebhookQuery.listWebhooks",
-            dependencies: [ListWebhooksUseCase],
-            resolver: (listWebhooks: ListWebhooksUseCase.Interface) => {
+            dependencies: [ListWebhooksUseCase, WebhookPermissions],
+            resolver: (
+                listWebhooks: ListWebhooksUseCase.Interface,
+                permissions: WebhookPermissions.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await listWebhooks.execute(args);
                     if (result.isFail()) {
                         return new ListErrorResponse(result.error);
                     }
-                    return new ListResponse(result.value.items, result.value.meta);
+                    const filterSecret = await createSecretFilter(permissions);
+                    return new ListResponse(
+                        result.value.items.map(filterSecret),
+                        result.value.meta
+                    );
                 };
             }
         });
 
         builder.addResolver<IIdArgs>({
             path: "WebhookQuery.getWebhook",
-            dependencies: [GetWebhookUseCase],
-            resolver: (getWebhook: GetWebhookUseCase.Interface) => {
+            dependencies: [GetWebhookUseCase, WebhookPermissions],
+            resolver: (
+                getWebhook: GetWebhookUseCase.Interface,
+                permissions: WebhookPermissions.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getWebhook.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
-                    return new Response(result.value);
+                    const filterSecret = await createSecretFilter(permissions);
+                    return new Response(filterSecret(result.value));
                 };
             }
         });

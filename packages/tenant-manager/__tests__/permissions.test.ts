@@ -7,6 +7,8 @@ import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
 import { UpdateTenantUseCase as ApiCoreUpdateTenant } from "@webiny/api-core/features/tenancy/UpdateTenant";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js";
 import { CreateTenantUseCase } from "~/api/features/CreateTenant/abstractions.js";
 import { CreateTenantRepository } from "~/api/features/CreateTenant/abstractions.js";
 import CreateTenantUseCaseImpl from "~/api/features/CreateTenant/CreateTenantUseCase.js";
@@ -18,6 +20,7 @@ import { CreateAndInstallTenantUseCase } from "~/api/features/CreateAndInstallTe
 import CreateAndInstallTenantUseCaseImpl from "~/api/features/CreateAndInstallTenant/CreateAndInstallTenantUseCase.js";
 import { GetTenantByIdUseCase } from "~/api/features/GetTenantById/abstractions.js";
 import { UpdateTenantUseCase } from "~/api/features/UpdateTenant/abstractions.js";
+import TenantAccessImpl from "~/api/features/TenantAccess/TenantAccess.js";
 import InstallTenantSchema from "~/api/graphql/InstallTenantSchema.js";
 
 // An identity that is logged in, but has no tenant manager permission.
@@ -26,6 +29,7 @@ const identityWithoutPermission = {
 };
 
 // Everything besides IdentityContext only runs after the permission check, so empty stubs are enough.
+// The permission check itself lives in TenantAccess, which is registered for real.
 const STUBBED_DEPENDENCIES: Abstraction<any>[] = [
     CreateTenantRepository,
     EventPublisher,
@@ -36,7 +40,10 @@ const STUBBED_DEPENDENCIES: Abstraction<any>[] = [
     Tenancy.CreateTenantUseCase,
     Tenancy.UpdateTenantUseCase,
     Tenancy.DeleteTenantUseCase,
-    Tenancy.InstallTenantUseCase
+    Tenancy.InstallTenantUseCase,
+    Tenancy.TenantContext,
+    GetModelUseCase,
+    GetEntryByIdUseCase
 ];
 
 const createContainer = () => {
@@ -45,6 +52,7 @@ const createContainer = () => {
     for (const dependency of STUBBED_DEPENDENCIES) {
         container.registerInstance(dependency, {} as any);
     }
+    container.register(TenantAccessImpl);
     container.register(CreateTenantUseCaseImpl);
     container.register(EnableTenantUseCaseImpl);
     container.register(DisableTenantUseCaseImpl);
@@ -83,16 +91,13 @@ describe("Tenant manager permissions", () => {
         };
         await new (InstallTenantSchema as any)().execute(builder);
 
-        const installTenant = { execute: async () => ({ isFail: () => false }) };
-        const resolver = resolvers["TenantManagerMutation.installTenant"](
-            identityWithoutPermission,
-            installTenant
-        );
+        const installTenant = createContainer().resolve(CreateAndInstallTenantUseCase);
+        const resolver = resolvers["TenantManagerMutation.installTenant"](installTenant);
         const response = await resolver({ args: { tenantId: "tenant-a" } });
 
         expect(response).toMatchObject({
             data: null,
-            error: { code: "SECURITY_NOT_AUTHORIZED" }
+            error: { code: "NOT_AUTHORIZED" }
         });
     });
 });

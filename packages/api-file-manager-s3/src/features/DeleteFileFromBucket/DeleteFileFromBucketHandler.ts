@@ -26,7 +26,13 @@ class DeleteFileFromBucketHandlerImpl implements FileAfterDeleteEventHandler.Int
         });
 
         // Delete file metadata
-        await this.keyValueStore.delete(`FileManager/File/${file.id}/Metadata`);
+        // Security: metadata is global and keyed only by file id; never delete another tenant's.
+        const metadataKey = `FileManager/File/${file.id}/Metadata`;
+        const existing = await this.keyValueStore.get<{ tenant?: string }>(metadataKey);
+        if (existing.isOk() && existing.value?.tenant && existing.value.tenant !== tenant.id) {
+            return;
+        }
+        await this.keyValueStore.delete(metadataKey);
     }
 }
 

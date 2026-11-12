@@ -5,7 +5,10 @@ import {
     type IWorkflowStateRecord,
     WorkflowStateRecordState
 } from "~/domain/workflowState/abstractions.js";
-import type { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
+import type {
+    WorkflowStateNotAuthorizedError,
+    WorkflowStatePersistenceError
+} from "~/domain/workflowState/errors.js";
 import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import type { IMeta } from "~/types.js";
 
@@ -52,6 +55,7 @@ export interface IListWorkflowStatesUseCase {
 }
 
 export interface IListWorkflowStatesUseCaseErrors {
+    notAuthorized: WorkflowStateNotAuthorizedError;
     persistence: WorkflowStatePersistenceError;
 }
 

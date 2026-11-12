@@ -748,6 +748,11 @@ export interface CreateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryVa
 
 export interface CreateCmsEntryOptionsInput {
     skipValidation?: boolean;
+    /**
+     * Refuse to create the entry when an entry with the given `id` already exists, even on a
+     * private model. Applied only while authorization is enabled. Public models always refuse.
+     */
+    failIfExists?: boolean;
 }
 
 /**
