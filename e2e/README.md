@@ -2,7 +2,7 @@
 
 End-to-end tests for Webiny, written with [TesterArmy's e2e framework](https://e2e.tester.army/docs). Tests drive a real browser against a running Admin app with plain locators (`screen`, `expect`).
 
-There are two tests. `tests/installation.e2e.ts` clicks through the installation wizard on a freshly deployed project, then signs in and checks that the admin lands on the dashboard. `tests/login.e2e.ts` signs in as that admin on an installed project.
+There are three tests. `tests/installation.e2e.ts` clicks through the installation wizard on a freshly deployed project, then signs in and checks that the admin lands on the dashboard. `tests/login.e2e.ts` signs in as that admin on an installed project. `tests/scheduler/schedulePublish.e2e.ts` creates a content model and an entry through the API, schedules the entry for publishing, and waits up to four minutes for the scheduler to publish it. It needs a deployed API: the standalone scheduler takes a different path.
 
 ## Running
 
