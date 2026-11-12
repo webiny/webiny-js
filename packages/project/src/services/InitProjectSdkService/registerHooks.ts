@@ -29,7 +29,6 @@ export const registerHooks = async (
         ...projectExtensions.extensionsByType(AfterBuildExt),
         ...projectExtensions.extensionsByType(AdminBeforeBuildExt),
         ...projectExtensions.extensionsByType(AdminBeforeWatchExt),
-        ...projectExtensions.extensionsByType(AdminAfterBuildExt),
         ...projectExtensions.extensionsByType(ApiBeforeBuildExt),
         ...projectExtensions.extensionsByType(ApiBeforeWatchExt),
         ...projectExtensions.extensionsByType(ApiAfterBuildExt),
