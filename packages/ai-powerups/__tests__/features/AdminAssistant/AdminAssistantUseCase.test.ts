@@ -168,6 +168,43 @@ describe("AdminAssistantUseCase", () => {
         expect(requests[0].system).not.toBe(SYSTEM_PROMPT);
     });
 
+    it("tells the model what the user has on screen, without saving it into the chat", async () => {
+        const { useCase, requests, saves } = setup();
+
+        await run(useCase, {
+            ...QUESTION,
+            pageContext: {
+                view: "Entries of the Product content model",
+                details: { modelId: "product", visibleFolders: [{ id: "f1", title: "Archive" }] }
+            }
+        });
+
+        expect(requests[0].system).toContain(SYSTEM_PROMPT);
+        expect(requests[0].system).toContain(
+            "The user is looking at: Entries of the Product content model."
+        );
+        expect(requests[0].system).toContain('"title":"Archive"');
+        expect(JSON.stringify(saves)).not.toContain("Archive");
+    });
+
+    it("keeps the project's instructions after the screen, since they take precedence", async () => {
+        const { useCase, requests } = setup();
+
+        await run(useCase, { ...QUESTION, pageContext: { view: "Entries", details: {} } });
+
+        const system = requests[0].system as string;
+        expect(system.indexOf("Where the user is")).toBeGreaterThan(-1);
+        expect(system.indexOf("Where the user is")).toBeLessThan(system.indexOf(ADDITIONAL));
+    });
+
+    it("adds nothing about the screen when the view sent no context", async () => {
+        const { useCase, requests } = setup();
+
+        await run(useCase);
+
+        expect(requests[0].system).not.toContain("Where the user is");
+    });
+
     it("finishes the run rather than falling over at the end", async () => {
         const { useCase } = setup();
 

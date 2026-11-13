@@ -2,6 +2,20 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { ApprovalDecision } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
 
+/**
+ * What the user has on screen when they ask, sent by the admin with each question. `view` says what
+ * the screen is ("Entries of the Product content model"); `details` holds the ids and titles on it
+ * that a question might refer to ("this folder", "Archive", "these entries").
+ *
+ * It is the user's own admin describing itself to the user's own assistant, so it grants nothing:
+ * every tool still runs under the user's permissions, and a change still waits for approval with
+ * its real arguments on screen.
+ */
+export interface AdminAssistantPageContext {
+    view: string;
+    details: Record<string, unknown>;
+}
+
 export interface IAdminAssistantConfig {
     /**
      * Upper bound on agent loop steps. Each tool call plus the final answer is a step, so a
@@ -29,6 +43,8 @@ export interface AdminAssistantParams {
     prompt?: string;
     /** Approve or reject tool calls the chat's last run paused on. */
     decisions: ApprovalDecision[];
+    /** What the user had on screen when they asked. Absent when the view says nothing. */
+    pageContext?: AdminAssistantPageContext;
 }
 
 export interface IAdminAssistantUseCase {
@@ -50,4 +66,5 @@ export const AdminAssistantUseCase =
 export namespace AdminAssistantUseCase {
     export type Interface = IAdminAssistantUseCase;
     export type Params = AdminAssistantParams;
+    export type PageContext = AdminAssistantPageContext;
 }

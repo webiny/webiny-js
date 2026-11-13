@@ -32,6 +32,7 @@ import { ListCustomIconsFeature } from "~/features/iconPicker/listCustomIcons/fe
 import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIcons/feature.js";
 import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
 import { AdminAssistantFeature } from "~/features/adminAssistant/index.js";
+import { AssistantPageContextFeature } from "~/features/assistantPageContext/index.js";
 import { AiChatsFeature } from "~/features/aiChats/index.js";
 import { AiChatsPanelFeature } from "~/presentation/aiChats/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
@@ -77,6 +78,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     ListCustomIconsFeature.register(container);
     CustomIconsPresenterFeature.register(container);
     AiChatsFeature.register(container);
+    AssistantPageContextFeature.register(container);
     AdminAssistantFeature.register(container);
     AiChatsPanelFeature.register(container);
     CommandPaletteFeature.register(container);

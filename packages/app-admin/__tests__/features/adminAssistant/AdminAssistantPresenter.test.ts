@@ -6,6 +6,7 @@ import { AdminAssistantGateway } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter as PresenterAbstraction } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
+import { AssistantPageContext } from "~/features/assistantPageContext/AssistantPageContext.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
 import { createFakeChats } from "./createFakeChats.js";
 
@@ -19,6 +20,7 @@ const setup = (events: AdminAssistantStreamEvent[]) => {
         }
     });
     container.registerInstance(AiChatsRepository, createFakeChats().repository);
+    container.register(AssistantPageContext).inSingletonScope();
     container.register(AdminAssistantPresenter);
 
     return container.resolve(PresenterAbstraction);
@@ -111,6 +113,7 @@ describe("AdminAssistantPresenter", () => {
             }
         });
         container.registerInstance(AiChatsRepository, createFakeChats().repository);
+        container.register(AssistantPageContext).inSingletonScope();
         container.register(AdminAssistantPresenter);
         const presenter = container.resolve(PresenterAbstraction);
 

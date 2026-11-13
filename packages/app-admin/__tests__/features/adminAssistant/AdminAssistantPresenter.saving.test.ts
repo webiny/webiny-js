@@ -8,7 +8,9 @@ import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractio
 import type { AdminAssistantRequest } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
+import { AssistantPageContext } from "~/features/assistantPageContext/AssistantPageContext.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
+import { AssistantPageContext as PageContextAbstraction } from "~/features/assistantPageContext/abstractions.js";
 import { createFakeChats } from "./createFakeChats.js";
 
 const answer = (text: string): AdminAssistantMessage => ({
@@ -36,9 +38,15 @@ const setup = (runs: AdminAssistantStreamEvent[][]) => {
         }
     });
     container.registerInstance(AiChatsRepository, chats.repository);
+    container.register(AssistantPageContext).inSingletonScope();
     container.register(AdminAssistantPresenter);
 
-    return { presenter: container.resolve(PresenterAbstraction), chats, requests };
+    return {
+        presenter: container.resolve(PresenterAbstraction),
+        pageContext: container.resolve(PageContextAbstraction),
+        chats,
+        requests
+    };
 };
 
 /** Lets the stream drain. */
@@ -114,6 +122,43 @@ describe("AdminAssistantPresenter saving", () => {
             approvals: [{ approvalId: "a1", approved: false }]
         });
         expect(presenter.vm.turns[0].pendingApprovals).toEqual([]);
+    });
+
+    it("sends what the screen says about itself with a question, but not with a decision", async () => {
+        const { presenter, pageContext, requests } = setup([paused(), run("No folder.")]);
+        const products = { view: "Entries of the Product content model", details: {} };
+        pageContext.set(products);
+
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+        presenter.decide(0, false);
+        await settle(presenter);
+
+        expect(requests[0]).toEqual({
+            prompt: "Create a folder for products",
+            pageContext: products
+        });
+        expect(requests[1]).not.toHaveProperty("pageContext");
+    });
+
+    it("asks again with the screen the user is on now", async () => {
+        const { presenter, pageContext, requests } = setup([
+            [{ type: "error", message: "Provider timed out." }],
+            run("3 products.")
+        ]);
+        const products = { view: "Entries of the Product content model", details: {} };
+        const articles = { view: "Entries of the Article content model", details: {} };
+        const owner = pageContext.set(products);
+
+        presenter.ask("List the entries");
+        await settle(presenter);
+        pageContext.clear(owner);
+        pageContext.set(articles);
+        presenter.retry();
+        await settle(presenter);
+
+        expect(requests[0].pageContext).toEqual(products);
+        expect(requests[1].pageContext).toEqual(articles);
     });
 
     // The server rejects a change still waiting when something else is asked, so the card goes too.
