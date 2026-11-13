@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import orderBy from "lodash/orderBy.js";
+import { reaction } from "mobx";
 import { useFeature } from "@webiny/app";
 import { Avatar, Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -12,6 +13,7 @@ import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { SearchUI } from "~/components/SearchUI.js";
 import { ListUsersFeature } from "~/features/adminUsers/users/listUsers/index.js";
 import { DeleteUserFeature } from "~/features/adminUsers/users/deleteUser/index.js";
+import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
 import { deserializeSorters } from "../utils.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 import type { UserItem } from "~/presentation/adminUsers/UserItem.js";
@@ -58,18 +60,61 @@ const UsersDataList = () => {
 
     const { useCase: listUsers } = useFeature(ListUsersFeature);
     const { useCase: deleteUser } = useFeature(DeleteUserFeature);
+    const { revision } = useFeature(UserEventsFeature);
+
+    // Reads can overlap when changes arrive close together. Only the newest one sets the list, so an
+    // older read that finishes last cannot put back what a newer one replaced.
+    const lastRead = useRef(0);
 
     const fetchUsers = useCallback(() => {
+        const read = ++lastRead.current;
         setUsersLoading(true);
-        listUsers.execute().then(data => {
-            setUsers((data || []) as UserItem[]);
-            setUsersLoading(false);
-        });
+        listUsers
+            .execute()
+            .then(data => {
+                if (read !== lastRead.current) {
+                    return;
+                }
+                setUsers((data || []) as UserItem[]);
+                setUsersLoading(false);
+            })
+            .catch(() => {
+                if (read === lastRead.current) {
+                    setUsersLoading(false);
+                }
+            });
     }, [listUsers]);
 
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    // A user changed on the server, by the assistant or in another tab. Read the list again in place,
+    // without the loading state, so the rows do not flash.
+    useEffect(() => {
+        return reaction(
+            () => revision.list,
+            () => {
+                const read = ++lastRead.current;
+                listUsers
+                    .execute()
+                    .then(data => {
+                        if (read !== lastRead.current) {
+                            return;
+                        }
+                        setUsers((data || []) as UserItem[]);
+                        setUsersLoading(false);
+                    })
+                    // A refresh can replace a first read still running; then this is the read
+                    // that has to end the loading state.
+                    .catch(() => {
+                        if (read === lastRead.current) {
+                            setUsersLoading(false);
+                        }
+                    });
+            }
+        );
+    }, [revision, listUsers]);
 
     const filterUsers = useCallback<FilterUsersCallable>(
         ({ email, firstName, lastName }) => {

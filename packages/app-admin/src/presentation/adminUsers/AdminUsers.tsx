@@ -14,6 +14,7 @@ import { GetUserFeature } from "~/features/adminUsers/users/getUser/index.js";
 import { CreateUserFeature } from "~/features/adminUsers/users/createUser/index.js";
 import { UpdateUserFeature } from "~/features/adminUsers/users/updateUser/index.js";
 import { DeleteUserFeature } from "~/features/adminUsers/users/deleteUser/index.js";
+import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
 import { UsersView } from "./views/Users/UsersView.js";
 import { UserAccountForm } from "./views/Account/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
@@ -41,6 +42,7 @@ const AdminUsersComponent = () => {
             <RegisterFeature feature={CreateUserFeature} />
             <RegisterFeature feature={UpdateUserFeature} />
             <RegisterFeature feature={DeleteUserFeature} />
+            <RegisterFeature feature={UserEventsFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <HasPermission name={"adminUsers.user"}>
