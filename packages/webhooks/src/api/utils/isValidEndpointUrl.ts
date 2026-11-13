@@ -9,7 +9,7 @@
  * TODO: private ranges (10/8, 172.16/12, 192.168/16, 100.64/10, fc00::/7) are still allowed,
  *  because projects deployed in a VPC may call internal receivers. Refuse them by default with
  *  an allowlist setting for VPC receivers. Also resolve DNS at delivery time (a public hostname
- *  can point to a private address) and don't follow redirects to private addresses.
+ *  can point to a private address). Redirects are never followed (see WebhookDeliver).
  */
 const isLocalDevelopment = () => process.env.WEBINY_WATCH_LOCAL_INVOCATION === "1";
 
@@ -18,7 +18,11 @@ const isLocalhostName = (hostname: string) => {
 };
 
 const isLoopbackOrLinkLocal = (hostname: string): boolean => {
-    const host = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+    // A trailing dot ("localhost.", "127.0.0.1.") names the same host.
+    const host = hostname
+        .replace(/^\[|\]$/g, "")
+        .replace(/\.+$/, "")
+        .toLowerCase();
 
     if (isLocalhostName(host)) {
         return true;
@@ -32,13 +36,13 @@ const isLoopbackOrLinkLocal = (hostname: string): boolean => {
         if (/^fe[89ab][0-9a-f]:/.test(host)) {
             return true;
         }
-        // IPv4-mapped / IPv4-translated addresses. `new URL()` normalizes them to hex
-        // (e.g. "::ffff:127.0.0.1" becomes "::ffff:7f00:1"), so handle both forms.
-        const dotted = host.match(/^::ffff:(?:0:)?(\d+\.\d+\.\d+\.\d+)$/);
+        // IPv4-mapped / IPv4-translated / IPv4-compatible addresses. `new URL()` normalizes them
+        // to hex (e.g. "::ffff:127.0.0.1" becomes "::ffff:7f00:1"), so handle both forms.
+        const dotted = host.match(/^::(?:ffff:(?:0:)?)?(\d+\.\d+\.\d+\.\d+)$/);
         if (dotted) {
             return isLoopbackOrLinkLocal(dotted[1]);
         }
-        const hex = host.match(/^::ffff:(?:0:)?([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+        const hex = host.match(/^::(?:ffff:(?:0:)?)?([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
         if (hex) {
             const high = parseInt(hex[1], 16);
             const low = parseInt(hex[2], 16);

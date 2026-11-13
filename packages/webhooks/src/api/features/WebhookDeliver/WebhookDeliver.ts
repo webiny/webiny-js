@@ -44,6 +44,11 @@ class WebhookDeliverImpl implements Abstraction.Interface {
                 method: "POST",
                 headers: input.headers,
                 body: input.body,
+                /* Never follow redirects: the endpoint URL is validated when it's stored, a
+                   redirect could point anywhere (e.g. the Lambda Runtime API or other internal
+                   addresses), and the response body ends up in the delivery log. A 3xx is
+                   recorded as the delivery result. */
+                redirect: "manual",
                 signal: AbortSignal.timeout(input.timeout)
             });
 
