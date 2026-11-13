@@ -1,7 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import UpdateTenantUseCase from "./UpdateTenantUseCase.js";
 import UpdateTenantRepository from "./UpdateTenantRepository.js";
-import CheckTenantAccessOnEntryBeforeUpdateHandler from "./CheckTenantAccessOnEntryBeforeUpdateHandler.js";
 
 export const UpdateTenantFeature = createFeature({
     name: "UpdateTenant",
@@ -11,8 +10,5 @@ export const UpdateTenantFeature = createFeature({
 
         // Register repository (singleton scope)
         container.register(UpdateTenantRepository).inSingletonScope();
-
-        // Updating a tenant entry requires the Tenant Manager permission
-        container.register(CheckTenantAccessOnEntryBeforeUpdateHandler);
     }
 });
