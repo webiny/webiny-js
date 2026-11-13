@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { UpdateRoleUseCase } from "@webiny/api-core/features/security/roles/UpdateRole/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
+import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
 
 const inputSchema = z.object({
     roleId: z.string().describe("Role id as returned by listRoles."),

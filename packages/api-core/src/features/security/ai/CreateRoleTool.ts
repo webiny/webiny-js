@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { CreateRoleUseCase } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
-import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
-import { descriptionOnCreate } from "@webiny/api-core/features/security/shared/index.js";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
+import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
+import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
+import { descriptionOnCreate } from "~/features/security/shared/index.js";
+import type { SecurityPermission } from "~/types/security.js";
 
 const inputSchema = z.object({
     name: z.string().min(3).describe("Human-readable role name, e.g. 'Blog editor'."),

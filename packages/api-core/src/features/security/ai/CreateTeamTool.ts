@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { CreateTeam } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
-import { descriptionOnCreate } from "@webiny/api-core/features/security/shared/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
+import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
+import { descriptionOnCreate } from "~/features/security/shared/index.js";
 
 const inputSchema = z.object({
     name: z.string().describe("Human-readable team name, e.g. 'Marketing'."),

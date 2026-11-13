@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
-import { DeleteTeam } from "@webiny/api-core/features/security/teams/DeleteTeam/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
+import { GetTeamUseCase } from "~/features/security/teams/GetTeam/index.js";
+import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
 
 const inputSchema = z.object({
     teamId: z.string().describe("Team id as returned by listTeams."),

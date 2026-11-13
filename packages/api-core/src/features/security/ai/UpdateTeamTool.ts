@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { UpdateTeam } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { AiSdkToolHandler } from "~/features/ai/index.js";
+import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 
 const inputSchema = z.object({
     teamId: z.string().describe("Team id as returned by listTeams."),

@@ -3,17 +3,17 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { definedOnly } from "@webiny/api-core/features/security/shared/index.js";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
-import { CreateRoleUseCase } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
-import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
-import { UpdateRoleUseCase } from "@webiny/api-core/features/security/roles/UpdateRole/index.js";
-import { DeleteRoleUseCase } from "@webiny/api-core/features/security/roles/DeleteRole/index.js";
-import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
-import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
-import { CreateRoleTool } from "~/features/ai/CreateRoleTool.js";
-import { UpdateRoleTool } from "~/features/ai/UpdateRoleTool.js";
-import { DeleteRoleTool } from "~/features/ai/DeleteRoleTool.js";
+import { definedOnly } from "~/features/security/shared/index.js";
+import { AiSdkToolDefinition } from "~/features/ai/index.js";
+import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
+import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
+import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
+import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
+import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
+import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
+import { CreateRoleTool } from "~/features/security/ai/CreateRoleTool.js";
+import { UpdateRoleTool } from "~/features/security/ai/UpdateRoleTool.js";
+import { DeleteRoleTool } from "~/features/security/ai/DeleteRoleTool.js";
 
 const editor = {
     id: "role-1",
