@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-11-13T02:13:39.326Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap node \"fm-grid-file-card\"",
+        "target": {
+          "testId": "fm-grid-file-card"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap button \"fm-file-wrapper-file-info-icon\"",
+        "target": {
+          "role": "button",
+          "testId": "fm-file-wrapper-file-info-icon"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/tenancy/tenantFileDelivery.e2e.ts::a%20file%20uploaded%20in%20a%20new%20tenant%20is%20delivered::the%20uploaded%20image%20downloads%20byte%20for%20byte",
+      "targetId": "admin",
+      "instructionDigest": "aeafa15944bbf850186441d54b0349406e7a14467add4125ccf8465ab47d9a4d",
+      "paramsDigest": "5c2f9bf8bb09908af7b446c5c5eb0d0cc75b15cd7318a18ad55635a4e7aaeeda",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "recordedBy": {
+      "provider": "anthropic.messages",
+      "model": "claude-sonnet-5-5"
+    },
+    "summary": "Opened the details drawer for e2e-tenant-delivery-1794536004669.jpeg by selecting the file card and tapping its info icon. The drawer shows type image/jpeg, size 9.76 KB, and a Download link.",
+    "startPath": "/file-manager",
+    "endPath": "/file-manager",
+    "endAnchors": [
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      },
+      {
+        "text": "Description"
+      },
+      {
+        "role": "textbox",
+        "name": "Description",
+        "placeholder": "Enter description"
+      },
+      {
+        "text": "Tags"
+      },
+      {
+        "role": "textbox",
+        "name": "Add tags",
+        "placeholder": "Add tags"
+      },
+      {
+        "text": "Access Control"
+      },
+      {
+        "text": "More information"
+      }
+    ],
+    "goneAnchors": [
+      {
+        "text": "Webiny"
+      },
+      {
+        "text": "Home"
+      },
+      {
+        "text": "Headless CMS"
+      },
+      {
+        "text": "Content"
+      },
+      {
+        "text": "File Manager"
+      },
+      {
+        "text": "Website Builder"
+      },
+      {
+        "text": "Audit Logs"
+      },
+      {
+        "text": "Dev Tools"
+      }
+    ],
+    "endWaitMs": 12124,
+    "keyedBy": {
+      "cacheSchema": "trace-1",
+      "policyVersion": "conservative/6",
+      "project": "fe035581e05b63c38473b45be168dffda912f477dbcad428507f3b56d598259e",
+      "platform": "web",
+      "engineName": "web",
+      "engineSpiVersion": 1,
+      "appIdentity": "3e56bdc9c7e75f4557e0f577e0c6e60d402da9b737017b98536889e1d5bc81c0",
+      "agentContextDigest": "9186e8911e5c628ffe31065a97c7644051dffefa0d155f804e6daf967b27e145"
+    }
+  }
+}
