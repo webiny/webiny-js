@@ -14,6 +14,7 @@ import {
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
 describe("CancelScheduledActionUseCase", () => {
@@ -29,6 +30,7 @@ describe("CancelScheduledActionUseCase", () => {
         });
         context = await contextHandler.handler();
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(
             SchedulerService,
