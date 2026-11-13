@@ -5,8 +5,15 @@ import {
     type IdentityData
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
-export const createTenancyAndSecurity = () => {
+export interface CreateTenancyAndSecurityParams {
+    permissions?: SecurityPermission[];
+}
+
+export const createTenancyAndSecurity = (params: CreateTenancyAndSecurityParams = {}) => {
+    const permissions = params.permissions ?? [{ name: "*" }];
+
     return [
         new ContextPlugin<ApiCoreContext>(context => {
             context.tenancy.setCurrentTenant({
@@ -33,7 +40,7 @@ export const createTenancyAndSecurity = () => {
             });
 
             context.security.addAuthorizer(async () => {
-                return [{ name: "*" }];
+                return permissions;
             });
         }),
         new BeforeHandlerPlugin<ApiCoreContext>(context => {

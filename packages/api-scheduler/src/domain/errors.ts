@@ -42,16 +42,17 @@ export class ScheduledActionPersistenceError extends BaseError<{ originalError: 
 }
 
 /**
- * Invalid schedule date error (e.g., scheduling in the past)
+ * Invalid schedule date error (e.g., scheduling in the past, or no date at all)
  */
-export class InvalidScheduleDateError extends BaseError<{ scheduleFor: string }> {
+export class InvalidScheduleDateError extends BaseError<{ scheduleFor: string | null }> {
     override readonly code = "Scheduler/ScheduledAction/InvalidDate" as const;
 
-    constructor(scheduleFor: Date) {
+    constructor(scheduleFor: Date | null | undefined) {
+        const isDate = scheduleFor instanceof Date && !isNaN(scheduleFor.getTime());
         super({
-            message: "Cannot schedule in the past",
+            message: isDate ? "Cannot schedule in the past" : "A valid schedule date is required",
             data: {
-                scheduleFor: scheduleFor.toISOString()
+                scheduleFor: isDate ? scheduleFor.toISOString() : null
             }
         });
     }

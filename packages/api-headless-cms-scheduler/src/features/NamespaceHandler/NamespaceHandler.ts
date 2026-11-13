@@ -8,13 +8,15 @@ import { Result } from "@webiny/feature/exports/api.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { ScheduleEntryGuard } from "~/features/ScheduleEntryGuard/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
     public constructor(
         private getModelUseCase: GetModelUseCase.Interface,
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
-        private accessControl: AccessControl.Interface
+        private accessControl: AccessControl.Interface,
+        private scheduleEntryGuards: ScheduleEntryGuard.Interface[]
     ) {}
 
     public canHandle(namespace: string): boolean {
@@ -58,6 +60,16 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
         if (!canSchedule) {
             return Result.fail(new SchedulerNotAuthorizedError());
         }
+        for (const guard of this.scheduleEntryGuards) {
+            const allowed = await guard.canSchedule({
+                model,
+                entry,
+                actionType: params.actionType
+            });
+            if (!allowed) {
+                return Result.fail(new SchedulerNotAuthorizedError());
+            }
+        }
         const title = entry.values[model.titleFieldId] || "Unknown entry title";
 
         return Result.ok({
@@ -74,5 +86,10 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
 
 export const NamespaceHandler = NamespaceHandlerAbstraction.createImplementation({
     implementation: NamespaceHandlerImpl,
-    dependencies: [GetModelUseCase, GetEntryByIdUseCase, AccessControl]
+    dependencies: [
+        GetModelUseCase,
+        GetEntryByIdUseCase,
+        AccessControl,
+        [ScheduleEntryGuard, { multiple: true }]
+    ]
 });

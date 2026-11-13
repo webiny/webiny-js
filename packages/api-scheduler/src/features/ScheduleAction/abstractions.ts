@@ -32,7 +32,10 @@ export interface IScheduleActionParams {
     namespace: string;
     targetId: string;
     actionType: ScheduledActionType;
-    scheduleFor: Date;
+    /**
+     * Required unless `immediately` is set.
+     */
+    scheduleFor?: Date;
     immediately?: boolean;
 }
 
