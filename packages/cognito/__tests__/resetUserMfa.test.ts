@@ -13,6 +13,7 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CreateUserUseCase as CoreCreateUserUseCase } from "@webiny/api-core/features/users/CreateUser/index.js";
+import { CreateRoleUseCase } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
@@ -29,6 +30,7 @@ const acme = { id: "acme", name: "Acme", isInstalled: true } as Tenant;
 describe("Admin Users (Cognito): resetting a user's MFA", () => {
     let container: Container;
     let mockCognitoService: MockCognitoService;
+    let mockAuthorizer: MockAuthorizer;
 
     const inTenant = (tenant: Tenant) => {
         container.resolve(TenantContext).setTenant(tenant);
@@ -56,7 +58,8 @@ describe("Admin Users (Cognito): resetting a user's MFA", () => {
 
         ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
         WcpContextFeature.register(container, testLicense);
-        container.registerInstance(Authorizer, new MockAuthorizer());
+        mockAuthorizer = new MockAuthorizer();
+        container.registerInstance(Authorizer, mockAuthorizer);
 
         inTenant(RootTenantValue.create());
 
@@ -106,6 +109,44 @@ describe("Admin Users (Cognito): resetting a user's MFA", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error?.code).toBe("AdminUser/NotAuthorized");
         expect(resetMfaSpy).not.toHaveBeenCalled();
+    });
+
+    it("refuses an administrator with less access than the user", async () => {
+        const role = await container.resolve(CreateRoleUseCase).execute({
+            name: "Full Access",
+            slug: "full-access",
+            description: "",
+            permissions: [{ name: "*" }]
+        });
+        expect(role.isOk()).toBe(true);
+        const created = await container
+            .resolve(CreateUserUseCase)
+            .execute({ ...adminUsers.userA, roles: [role.value!.id] });
+        expect(created.isOk()).toBe(true);
+        const resetMfaSpy = vi.spyOn(mockCognitoService, "resetMfa");
+
+        vi.spyOn(mockAuthorizer, "authorize").mockResolvedValue([{ name: "adminUsers.user" }]);
+        // Setting the identity also clears the permissions cache.
+        signInAs("limited-admin");
+
+        const result = await resetMfa(created.value!.id);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error?.code).toBe("AdminUser/NotAuthorized");
+        expect(resetMfaSpy).not.toHaveBeenCalled();
+    });
+
+    it("lets a limited administrator reset the MFA of a user without more access", async () => {
+        const user = await createUser();
+        const resetMfaSpy = vi.spyOn(mockCognitoService, "resetMfa");
+
+        vi.spyOn(mockAuthorizer, "authorize").mockResolvedValue([{ name: "adminUsers.user" }]);
+        signInAs("limited-admin");
+
+        const result = await resetMfa(user.id);
+
+        expect(result.isOk()).toBe(true);
+        expect(resetMfaSpy).toHaveBeenCalledTimes(1);
     });
 
     it("refuses a user this tenant doesn't have", async () => {
