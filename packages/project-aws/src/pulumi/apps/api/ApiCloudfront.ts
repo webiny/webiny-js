@@ -159,9 +159,11 @@ export const ApiCloudfront = createAppModule({
         let filesOriginId: pulumi.Input<string>;
         let filesForwardHeaders = forwardHeaders;
         const apiBehaviors: aws.types.input.cloudfront.DistributionOrderedCacheBehavior[] = [];
+        let routeCachePolicyId: pulumi.Input<string> | undefined;
 
         if (graphqlWeb) {
             const web = createWebRouting(app, graphqlWeb);
+            routeCachePolicyId = web.routeCachePolicyId;
             origins.push(web.origin);
             apiBehaviors.push(...web.behaviors);
 
@@ -386,11 +388,12 @@ export const ApiCloudfront = createAppModule({
             });
         }
 
-        if (graphqlWeb) {
+        if (graphqlWeb && routeCachePolicyId) {
+            const policyId = routeCachePolicyId;
             // `<Api.Route>` routes. Their `ApiPulumi` handler runs before any resource is created,
             // so the distribution's config can still change when a route arrives.
             graphqlWeb.onRoute(routePath => {
-                addWebRouteBehavior(distribution, routePath);
+                addWebRouteBehavior(distribution, routePath, policyId);
             });
         }
 
@@ -401,14 +404,13 @@ export const ApiCloudfront = createAppModule({
 /**
  * The web function's origin and behaviors: `/graphql` and `/cms*` without caching, and `/wb/*` with
  * caching keyed on the auth headers. `<Api.Route>` paths are added to these later, by
- * `addWebRouteBehavior`.
+ * `addWebRouteBehavior`, with `routeCachePolicyId`.
  */
 function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
-    // For `/graphql`, `/cms*` and `<Api.Route>` paths. These routes are not meant to be cached: this
-    // policy exists only so that `Authorization` reaches the web function on GET and HEAD requests
-    // (a GET `<Api.Route>`, for example). CloudFront strips `Authorization` from GET and HEAD
-    // unless it is part of the cache key, and an origin request policy is not allowed to forward it,
-    // so the cache key is the only place it can go. POST and the other methods keep `Authorization`
+    // For `/graphql` and `/cms*`. These routes are not meant to be cached: this policy exists only so
+    // that `Authorization` reaches the web function on GET and HEAD requests. CloudFront strips
+    // `Authorization` from GET and HEAD unless it is part of the cache key, and an origin request
+    // policy is not allowed to forward it, so the cache key is the only place it can go. POST and the other methods keep `Authorization`
     // with or without this policy.
     //
     // The managed CachingDisabled policy can't have a cache key: a policy whose TTLs are all 0 takes
@@ -420,6 +422,27 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
     // Keys are also what gets forwarded, so there is no separate origin request policy to keep in
     // step. That is ten headers, the most a cache policy takes. `Host` is not among them: the endpoint
     // answers 404 to any Host but its own.
+    const credentialsCacheKey: aws.types.input.cloudfront.CachePolicyParametersInCacheKeyAndForwardedToOrigin =
+        {
+            enableAcceptEncodingGzip: true,
+            enableAcceptEncodingBrotli: true,
+            headersConfig: {
+                headerBehavior: "whitelist",
+                headers: {
+                    items: [
+                        ...API_VIEWER_HEADERS,
+                        ...CORS_PREFLIGHT_HEADERS,
+                        "Authorization",
+                        "X-Webiny-Authorization"
+                    ]
+                }
+            },
+            cookiesConfig: {
+                cookieBehavior: "whitelist",
+                cookies: { items: ["wby-id-token"] }
+            },
+            queryStringsConfig: { queryStringBehavior: "all" }
+        };
     const uncachedPolicy = app.addResource(aws.cloudfront.CachePolicy, {
         name: "api-web-uncached-policy",
         config: {
@@ -427,26 +450,24 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
             minTtl: 0,
             defaultTtl: 0,
             maxTtl: 1,
-            parametersInCacheKeyAndForwardedToOrigin: {
-                enableAcceptEncodingGzip: true,
-                enableAcceptEncodingBrotli: true,
-                headersConfig: {
-                    headerBehavior: "whitelist",
-                    headers: {
-                        items: [
-                            ...API_VIEWER_HEADERS,
-                            ...CORS_PREFLIGHT_HEADERS,
-                            "Authorization",
-                            "X-Webiny-Authorization"
-                        ]
-                    }
-                },
-                cookiesConfig: {
-                    cookieBehavior: "whitelist",
-                    cookies: { items: ["wby-id-token"] }
-                },
-                queryStringsConfig: { queryStringBehavior: "all" }
-            }
+            parametersInCacheKeyAndForwardedToOrigin: credentialsCacheKey
+        }
+    });
+
+    // For `<Api.Route>` paths. Same cache key as above, so `Authorization` still reaches the web
+    // function on GET, and the same default of 0, so a route is cached only when its handler sends
+    // `Cache-Control`. The max is a year, so a route that serves public data can be cached at the
+    // edge as long as it says; `/graphql` and `/cms*` stay capped at one second whatever a response
+    // says. Nothing invalidates route paths on its own: a route cached for long needs an invalidation
+    // (`CdnCache` in `@webiny/api-core`) when what it serves changes.
+    const routeCachePolicy = app.addResource(aws.cloudfront.CachePolicy, {
+        name: "api-web-route-cache-policy",
+        config: {
+            comment: "Api.Route paths on the API web function: cached only when the route says so",
+            minTtl: 0,
+            defaultTtl: 0,
+            maxTtl: 31536000,
+            parametersInCacheKeyAndForwardedToOrigin: credentialsCacheKey
         }
     });
 
@@ -529,7 +550,7 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
         }
     };
 
-    return { origin, behaviors };
+    return { origin, behaviors, routeCachePolicyId: routeCachePolicy.output.id };
 }
 
 /**
@@ -607,11 +628,12 @@ type OrderedCacheBehavior = aws.types.input.cloudfront.DistributionOrderedCacheB
 
 /**
  * Routes one more path to the web function. The new behavior is a copy of the `/graphql` one with a
- * different path pattern, so it gets the same policies, and it goes right before it.
+ * different path pattern and the route cache policy, and it goes right before it.
  */
 function addWebRouteBehavior(
     distribution: PulumiAppResource<typeof aws.cloudfront.Distribution>,
-    routePath: string
+    routePath: string,
+    routeCachePolicyId: pulumi.Input<string>
 ): void {
     const pathPattern = toCloudFrontPathPattern(routePath);
 
@@ -636,7 +658,11 @@ function addWebRouteBehavior(
             throw new Error("The API distribution has no `/graphql` behavior on the web function.");
         }
 
-        const routeBehavior = { ...behaviors[graphqlIndex], pathPattern };
+        const routeBehavior = {
+            ...behaviors[graphqlIndex],
+            pathPattern,
+            cachePolicyId: routeCachePolicyId
+        };
         const result = [...behaviors];
         result.splice(graphqlIndex, 0, routeBehavior);
         return result;
