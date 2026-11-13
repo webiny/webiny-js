@@ -40,7 +40,6 @@
     "@webiny/api-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
-    "@webiny/event-handler-standalone": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "pino": "^10.4.0"

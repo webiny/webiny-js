@@ -1,8 +1,8 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
-import { HttpFeature } from "@webiny/event-handler-core";
-import { NodeHttpEventType } from "~/eventTypes/NodeHttpEventType.js";
-import { NodeHttpRouterHandler } from "~/handlers/NodeHttpRouterHandler.js";
+import { HttpFeature } from "~/index.js";
+import { NodeHttpEventType } from "~/nodeHttp/eventTypes/NodeHttpEventType.js";
+import { NodeHttpRouterHandler } from "~/nodeHttp/handlers/NodeHttpRouterHandler.js";
 
 /**
  * Registers the transport-only Node HTTP server infrastructure:

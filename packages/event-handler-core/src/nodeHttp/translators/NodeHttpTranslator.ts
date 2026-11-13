@@ -1,7 +1,7 @@
 // Translator: converts a Node `IncomingMessage` into Webiny's transport-agnostic IHttpRequest.
 // Not an Adapter (which implies interface compatibility).
 import type { IncomingMessage } from "node:http";
-import type { IHttpRequest } from "@webiny/event-handler-core";
+import type { IHttpRequest } from "~/index.js";
 import { RequestBodyTooLargeError } from "./RequestBodyTooLargeError.js";
 
 /*

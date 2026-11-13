@@ -5,7 +5,7 @@ import { Container } from "@webiny/di";
 import { RawAuthToken as RawAuthTokenImpl } from "@webiny/api-core/features/requestContext/RawAuthToken.js";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
-import { NodeHttpEventHandler } from "@webiny/event-handler-standalone";
+import { NodeHttpEventHandler } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/nodeHttp/NodeHttpIdentityLoaderDecorator.js";
 
 function setup() {

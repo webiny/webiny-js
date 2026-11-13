@@ -1,5 +1,5 @@
 import type { IncomingMessage } from "node:http";
-import { NodeHttpEventHandler } from "@webiny/event-handler-standalone";
+import { NodeHttpEventHandler } from "@webiny/event-handler-core/nodeHttp/index.js";
 import {
     RawAuthToken,
     RequestIdentityLoader

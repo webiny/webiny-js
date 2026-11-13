@@ -1,5 +1,5 @@
-import type { HandlerApp } from "@webiny/event-handler-core";
-import type { EventDispatcher } from "@webiny/event-handler-core";
+import type { HandlerApp } from "~/index.js";
+import type { EventDispatcher } from "~/index.js";
 
 type RunInContext = <TResult>(fn: () => TResult) => TResult;
 

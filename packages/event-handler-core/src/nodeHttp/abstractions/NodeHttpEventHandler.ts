@@ -1,6 +1,6 @@
 import type { IncomingMessage } from "node:http";
 import { Abstraction } from "@webiny/di";
-import type { IEventHandler, IHttpResponse } from "@webiny/event-handler-core";
+import type { IEventHandler, IHttpResponse } from "~/index.js";
 
 /**
  * Handler abstraction for Node HTTP server events (an `IncomingMessage`). Mirrors AWS's

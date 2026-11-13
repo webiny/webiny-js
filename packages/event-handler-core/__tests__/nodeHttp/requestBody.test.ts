@@ -4,12 +4,12 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
-import { HttpRouteHandler } from "@webiny/event-handler-core";
-import type { IHttpRequest } from "@webiny/event-handler-core";
-import type { IHttpResponse } from "@webiny/event-handler-core";
-import { createServerHandler } from "~/createServerHandler.js";
-import { NodeHttpFeature } from "~/features/NodeHttpFeature.js";
+import { HttpRouteDefinition } from "~/index.js";
+import { HttpRouteHandler } from "~/index.js";
+import type { IHttpRequest } from "~/index.js";
+import type { IHttpResponse } from "~/index.js";
+import { createServerHandler } from "~/nodeHttp/createServerHandler.js";
+import { NodeHttpFeature } from "~/nodeHttp/features/NodeHttpFeature.js";
 
 const MAX_BYTES = 1024;
 

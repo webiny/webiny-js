@@ -1,9 +1,9 @@
 import http from "node:http";
 import { describe, it, expect } from "vitest";
-import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse, HttpStreamSource } from "@webiny/event-handler-core";
-import { createServerHandler } from "~/createServerHandler.js";
-import { NodeHttpFeature } from "~/features/NodeHttpFeature.js";
+import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "~/index.js";
+import type { IHttpRequest, IHttpResponse, HttpStreamSource } from "~/index.js";
+import { createServerHandler } from "~/nodeHttp/createServerHandler.js";
+import { NodeHttpFeature } from "~/nodeHttp/features/NodeHttpFeature.js";
 
 const decoder = new TextDecoder();
 

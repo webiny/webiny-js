@@ -1,8 +1,8 @@
-import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
-import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
-import { NodeHttpEventHandler } from "~/abstractions/NodeHttpEventHandler.js";
-import { nodeHttpRequestFromIncomingMessage } from "~/translators/NodeHttpTranslator.js";
-import { RequestBodyTooLargeError } from "~/translators/RequestBodyTooLargeError.js";
+import { HttpRouter, RouteNotFoundError } from "~/index.js";
+import type { EventContext, IHttpResponse, NextFunction } from "~/index.js";
+import { NodeHttpEventHandler } from "~/nodeHttp/abstractions/NodeHttpEventHandler.js";
+import { nodeHttpRequestFromIncomingMessage } from "~/nodeHttp/translators/NodeHttpTranslator.js";
+import { RequestBodyTooLargeError } from "~/nodeHttp/translators/RequestBodyTooLargeError.js";
 
 /**
  * Terminal handler for the Node HTTP server transport. Translates the raw `IncomingMessage` into an

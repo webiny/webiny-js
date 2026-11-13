@@ -1,6 +1,6 @@
 import type { ServerResponse } from "node:http";
-import { HttpStreamBody } from "@webiny/event-handler-core";
-import type { IHttpResponse } from "@webiny/event-handler-core";
+import { HttpStreamBody } from "~/index.js";
+import type { IHttpResponse } from "~/index.js";
 import { writeStreamBody } from "./writeStreamBody.js";
 import { writeBufferedBody } from "./writeBufferedBody.js";
 

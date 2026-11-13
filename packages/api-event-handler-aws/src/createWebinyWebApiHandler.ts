@@ -3,7 +3,7 @@
  *
  * A web function runs a plain Node HTTP server instead of an event handler: Lambda passes the listen
  * address in `AWS_LAMBDA_HTTP_ENDPOINT` and forwards each HTTP request to it. So the transport here is
- * the standalone Node HTTP one (`NodeHttpFeature` + the `NodeHttp*` decorators), while everything
+ * the Node HTTP one standalone also uses (`NodeHttpFeature` + the `NodeHttp*` decorators), while everything
  * behind it is the AWS composition the other two AWS handlers use: the storage variant (database
  * included) and the per-request stack with the AWS transports (S3, EventBridge Scheduler, API Gateway
  * WebSockets).
@@ -12,8 +12,8 @@
  * actions, WebSocket `$connect`) still targets the regular `graphql` Lambda, so none of those event
  * types are registered here.
  */
-import { createServerHandler } from "@webiny/event-handler-standalone";
-import { NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { createServerHandler } from "@webiny/event-handler-core/nodeHttp/index.js";
+import { NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
 import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";

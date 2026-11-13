@@ -1,12 +1,12 @@
 import type http from "node:http";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { Container } from "@webiny/di";
-import { HandlerApp } from "@webiny/event-handler-core";
-import { EventDispatcher } from "@webiny/event-handler-core";
-import type { HandlerSetup } from "@webiny/event-handler-core";
-import { createNodeHttpServer } from "~/server/createNodeHttpServer.js";
-import { HandlerAppEventDispatcher } from "~/server/HandlerAppEventDispatcher.js";
-import { handleShutdownSignals } from "~/server/handleShutdownSignals.js";
+import { HandlerApp } from "~/index.js";
+import { EventDispatcher } from "~/index.js";
+import type { HandlerSetup } from "~/index.js";
+import { createNodeHttpServer } from "~/nodeHttp/server/createNodeHttpServer.js";
+import { HandlerAppEventDispatcher } from "~/nodeHttp/server/HandlerAppEventDispatcher.js";
+import { handleShutdownSignals } from "~/nodeHttp/server/handleShutdownSignals.js";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;

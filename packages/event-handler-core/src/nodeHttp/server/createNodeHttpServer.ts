@@ -1,6 +1,6 @@
 import http from "node:http";
-import type { HandlerApp } from "@webiny/event-handler-core";
-import type { IHttpResponse } from "@webiny/event-handler-core";
+import type { HandlerApp } from "~/index.js";
+import type { IHttpResponse } from "~/index.js";
 import { writeHttpResponse } from "./writeHttpResponse.js";
 import { writeErrorResponse } from "./writeErrorResponse.js";
 

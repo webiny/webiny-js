@@ -1,5 +1,5 @@
 import type { ServerResponse } from "node:http";
-import type { HttpStreamBody } from "@webiny/event-handler-core";
+import type { HttpStreamBody } from "~/index.js";
 
 /*
  * Resolves once the socket buffer drains or the response closes. Waiting on `drain` alone hangs

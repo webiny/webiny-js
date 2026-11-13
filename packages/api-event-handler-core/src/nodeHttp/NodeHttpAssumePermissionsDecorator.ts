@@ -1,5 +1,5 @@
 import type { IncomingMessage } from "node:http";
-import { NodeHttpEventHandler } from "@webiny/event-handler-standalone";
+import { NodeHttpEventHandler } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { RawAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 import { extractAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 import type { EventContext } from "@webiny/event-handler-core";

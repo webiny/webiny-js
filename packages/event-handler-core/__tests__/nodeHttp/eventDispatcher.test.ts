@@ -4,11 +4,11 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { Abstraction } from "@webiny/di";
 import type { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/event-handler-core";
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventHandler } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
-import { createServerHandler } from "~/createServerHandler.js";
+import { EventDispatcher } from "~/index.js";
+import { EventType } from "~/index.js";
+import type { IEventHandler } from "~/index.js";
+import type { IEventType } from "~/index.js";
+import { createServerHandler } from "~/nodeHttp/createServerHandler.js";
 
 interface IPingEvent {
     ping: string;

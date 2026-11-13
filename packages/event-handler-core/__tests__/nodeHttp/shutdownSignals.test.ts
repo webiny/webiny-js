@@ -5,7 +5,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
-import { handleShutdownSignals } from "~/server/handleShutdownSignals.js";
+import { handleShutdownSignals } from "~/nodeHttp/server/handleShutdownSignals.js";
 
 /*
  * `process.emit` only calls the listeners; no signal reaches the test process. The listeners that

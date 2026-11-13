@@ -1,7 +1,7 @@
 import { IncomingMessage } from "node:http";
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
-import { NodeHttpEventHandler } from "~/abstractions/NodeHttpEventHandler.js";
+import { EventType } from "~/index.js";
+import type { IEventType } from "~/index.js";
+import { NodeHttpEventHandler } from "~/nodeHttp/abstractions/NodeHttpEventHandler.js";
 
 class NodeHttpEventTypeImpl implements IEventType<IncomingMessage> {
     canHandle(event: any): event is IncomingMessage {
