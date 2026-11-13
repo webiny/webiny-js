@@ -5,6 +5,9 @@ import { UpdateEntryWithFlpDecorator } from "./decorators/UpdateEntryWithFlpDeco
 import { DeleteEntryWithFlpDecorator } from "./decorators/DeleteEntryWithFlpDecorator.js";
 import { DeleteEntryRevisionWithFlpDecorator } from "./decorators/DeleteEntryRevisionWithFlpDecorator.js";
 import { MoveEntryWithFlpDecorator } from "./decorators/MoveEntryWithFlpDecorator.js";
+import { PublishEntryWithFlpDecorator } from "./decorators/PublishEntryWithFlpDecorator.js";
+import { RepublishEntryWithFlpDecorator } from "./decorators/RepublishEntryWithFlpDecorator.js";
+import { UnpublishEntryWithFlpDecorator } from "./decorators/UnpublishEntryWithFlpDecorator.js";
 import { GetEntryWithFlpDecorator } from "./decorators/GetEntryWithFlpDecorator.js";
 import { GetEntryByIdWithFlpDecorator } from "./decorators/GetEntryByIdWithFlpDecorator.js";
 import { GetLatestEntriesByIdsWithFlpDecorator } from "./decorators/GetLatestEntriesByIdsWithFlpDecorator.js";
@@ -24,6 +27,9 @@ export const CmsFlpFeature = createFeature({
         container.registerDecorator(DeleteEntryWithFlpDecorator);
         container.registerDecorator(DeleteEntryRevisionWithFlpDecorator);
         container.registerDecorator(MoveEntryWithFlpDecorator);
+        container.registerDecorator(PublishEntryWithFlpDecorator);
+        container.registerDecorator(RepublishEntryWithFlpDecorator);
+        container.registerDecorator(UnpublishEntryWithFlpDecorator);
 
         // Query decorators - single entry
         container.registerDecorator(GetEntryWithFlpDecorator);
