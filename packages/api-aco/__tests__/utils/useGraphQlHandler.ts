@@ -23,7 +23,10 @@ import {
     DELETE_ENTRY,
     GET_ENTRY,
     LIST_ENTRIES,
-    UPDATE_ENTRY
+    UPDATE_ENTRY,
+    PUBLISH_ENTRY,
+    UNPUBLISH_ENTRY,
+    REPUBLISH_ENTRY
 } from "~tests/graphql/cms";
 
 import { createAco } from "~/index";
@@ -211,6 +214,18 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
         async deleteEntry(model: CmsModel, variables: Record<string, any>) {
             return invokeCms({ body: { query: DELETE_ENTRY(model), variables } });
+        },
+
+        async publishEntry(model: CmsModel, variables: Record<string, any>) {
+            return invokeCms({ body: { query: PUBLISH_ENTRY(model), variables } });
+        },
+
+        async unpublishEntry(model: CmsModel, variables: Record<string, any>) {
+            return invokeCms({ body: { query: UNPUBLISH_ENTRY(model), variables } });
+        },
+
+        async republishEntry(model: CmsModel, variables: Record<string, any>) {
+            return invokeCms({ body: { query: REPUBLISH_ENTRY(model), variables } });
         },
 
         async listEntries(model: CmsModel, variables: Record<string, any> = {}) {
