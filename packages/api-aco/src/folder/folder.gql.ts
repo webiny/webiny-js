@@ -5,6 +5,8 @@ import type { CreateFolderTypeDefsParams } from "./createFolderTypeDefs.js";
 import { createFolderTypeDefs } from "./createFolderTypeDefs.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
+import { createZodError } from "@webiny/utils";
+import { createFolderValidation } from "./validation.js";
 import type { AcoContext, Folder } from "~/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/abstractions.js";
@@ -107,6 +109,10 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 createFolder: async (_, { data }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
+                        const validation = createFolderValidation.safeParse(data);
+                        if (!validation.success) {
+                            throw createZodError(validation.error);
+                        }
                         const createFolderUseCase = context.container.resolve(CreateFolderUseCase);
                         const result = await createFolderUseCase.execute(data);
                         if (result.isFail()) {

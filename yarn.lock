@@ -10979,6 +10979,7 @@ __metadata:
     rimraf: "npm:^6.1.4"
     typescript: "npm:6.0.3"
     vitest: "npm:^5.1.0"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
