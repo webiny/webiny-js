@@ -1,52 +1,31 @@
-import {
-    UserCreatedEventHandler,
-    UserDeletedEventHandler,
-    UserUpdatedEventHandler,
-    UsersRevision
-} from "./abstractions.js";
+import { RecordChangedEventHandler } from "@webiny/app/features/recordChanges/index.js";
+import { UsersRevision } from "./abstractions.js";
 
-/** A new user belongs in the list. */
-class MarkListOnUserCreatedImpl implements UserCreatedEventHandler.Interface {
-    constructor(private revision: UsersRevision.Interface) {}
-
-    async handle(): Promise<void> {
-        this.revision.listChanged();
-    }
-}
-
-export const MarkListOnUserCreated = UserCreatedEventHandler.createImplementation({
-    implementation: MarkListOnUserCreatedImpl,
-    dependencies: [UsersRevision]
-});
-
-/** An updated user changes its row in the list, and the form if that user is open. */
-class MarkUserOnUserUpdatedImpl implements UserUpdatedEventHandler.Interface {
-    constructor(private revision: UsersRevision.Interface) {}
-
-    async handle(event: UserUpdatedEventHandler.Event): Promise<void> {
-        this.revision.listChanged();
-        this.revision.userChanged(event.payload.id);
-    }
-}
-
-export const MarkUserOnUserUpdated = UserUpdatedEventHandler.createImplementation({
-    implementation: MarkUserOnUserUpdatedImpl,
-    dependencies: [UsersRevision]
-});
+// Sent by the api for admin users; see `USER_RECORD_TYPE` in @webiny/api-core.
+const USER_RECORD_TYPE = "adminUsers.user";
 
 /**
- * A deleted user leaves the list. An open form for it is left alone: reading it back would fail, and
- * the form already handles a failed read by going back to the list with an error.
+ * Every change moves the list. An update also moves the user, so an open form for it reads it again.
+ * A deleted user's open form is left alone: reading it back would fail, and the form already handles
+ * a failed read by going back to the list with an error.
  */
-class MarkListOnUserDeletedImpl implements UserDeletedEventHandler.Interface {
+class MarkUsersChangedImpl implements RecordChangedEventHandler.Interface {
     constructor(private revision: UsersRevision.Interface) {}
 
-    async handle(): Promise<void> {
+    async handle(event: RecordChangedEventHandler.Event): Promise<void> {
+        const { type, id, change } = event.payload;
+        if (type !== USER_RECORD_TYPE) {
+            return;
+        }
+
         this.revision.listChanged();
+        if (change === "updated") {
+            this.revision.userChanged(id);
+        }
     }
 }
 
-export const MarkListOnUserDeleted = UserDeletedEventHandler.createImplementation({
-    implementation: MarkListOnUserDeletedImpl,
+export const MarkUsersChanged = RecordChangedEventHandler.createImplementation({
+    implementation: MarkUsersChangedImpl,
     dependencies: [UsersRevision]
 });
