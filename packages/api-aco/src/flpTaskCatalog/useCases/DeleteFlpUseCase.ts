@@ -1,9 +1,9 @@
 import { WebinyError } from "@webiny/error";
-import type { DeleteFlpUseCase as UseCaseAbstraction } from "~/features/flp/DeleteFlp/abstractions.js";
+import { DeleteFlpUseCase as UseCaseAbstraction } from "~/features/flp/DeleteFlp/abstractions.js";
 import type { Folder } from "~/folder/folder.types.js";
-import type { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
+import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 
-export class DeleteFlpUseCase implements UseCaseAbstraction.Interface {
+class DeleteFlpUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private flpCrud: AcoFlpCrud.Interface) {}
 
     async execute(folder: Folder): Promise<void> {
@@ -24,3 +24,8 @@ export class DeleteFlpUseCase implements UseCaseAbstraction.Interface {
         }
     }
 }
+
+export const DeleteFlpUseCase = UseCaseAbstraction.createImplementation({
+    implementation: DeleteFlpUseCaseImpl,
+    dependencies: [AcoFlpCrud]
+});

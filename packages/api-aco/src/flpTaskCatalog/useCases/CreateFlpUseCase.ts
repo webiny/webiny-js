@@ -1,12 +1,12 @@
 import { WebinyError } from "@webiny/error";
 import { Path } from "~/utils/Path.js";
 import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
-import type { CreateFlpUseCase as UseCaseAbstraction } from "~/features/flp/CreateFlp/abstractions.js";
+import { CreateFlpUseCase as UseCaseAbstraction } from "~/features/flp/CreateFlp/abstractions.js";
 import type { FolderLevelPermission as IFolderLevelPermission } from "~/flp/flp.types.js";
 import type { Folder } from "~/folder/folder.types.js";
-import type { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
+import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 
-export class CreateFlpUseCase implements UseCaseAbstraction.Interface {
+class CreateFlpUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private flpCrud: AcoFlpCrud.Interface) {}
 
     async execute(folder: Folder): Promise<void> {
@@ -41,3 +41,8 @@ export class CreateFlpUseCase implements UseCaseAbstraction.Interface {
         }
     }
 }
+
+export const CreateFlpUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CreateFlpUseCaseImpl,
+    dependencies: [AcoFlpCrud]
+});
