@@ -127,6 +127,15 @@ export type {
     IAdminAssistantPresenter,
     IAdminAssistantViewModel
 } from "./features/adminAssistant/index.js";
+export {
+    AssistantPageContext,
+    AssistantPageContextFeature,
+    useAssistantPageContext
+} from "./features/assistantPageContext/index.js";
+export type {
+    AssistantPageContextData,
+    IAssistantPageContext
+} from "./features/assistantPageContext/index.js";
 
 /*
  * AI chats: the saved assistant conversations and the side panel that lists them. Stored through the

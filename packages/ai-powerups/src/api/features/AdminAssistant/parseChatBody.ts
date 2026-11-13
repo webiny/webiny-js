@@ -1,4 +1,5 @@
 import { parseDecisions } from "./approvals.js";
+import { parsePageContext } from "./pageContext.js";
 import type { AdminAssistantParams } from "./abstractions.js";
 
 const safeParse = (value: string): unknown => {
@@ -10,7 +11,8 @@ const safeParse = (value: string): unknown => {
 };
 
 /**
- * Accepts a question, `{ chatId?, prompt }`, or a decision on a paused run, `{ chatId, approvals }`.
+ * Accepts a question, `{ chatId?, prompt, pageContext? }`, or a decision on a paused run,
+ * `{ chatId, approvals }`.
  * The history is never in the body: the use case reads it from the saved chat.
  *
  * Returns null for anything unusable, so the caller decides the status code.
@@ -34,6 +36,10 @@ export const parseChatBody = (body: unknown): AdminAssistantParams | null => {
 
     if (typeof prompt === "string" && prompt.trim()) {
         params.prompt = prompt;
+        const pageContext = parsePageContext(payload["pageContext"]);
+        if (pageContext) {
+            params.pageContext = pageContext;
+        }
         return params;
     }
 

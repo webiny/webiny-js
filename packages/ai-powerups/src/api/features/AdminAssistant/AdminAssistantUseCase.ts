@@ -28,6 +28,7 @@ import { followUpsTool } from "./followUps.js";
 import { readFollowUps } from "./followUps.js";
 import { unansweredApprovals } from "./unansweredApprovals.js";
 import { decidesExactly } from "./decidesExactly.js";
+import { describePageContext } from "./pageContext.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -359,10 +360,16 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
         const capability = resolution.value;
 
+        let system = withAdditionalInstructions(capability);
+        if (params.pageContext) {
+            const where = describePageContext(params.pageContext);
+            system = `${system}\n\n${where}`;
+        }
+
         const request: Ai.GenerateTextParams = {
             model: capability.model,
             connection: capability.connection,
-            system: withAdditionalInstructions(capability),
+            system,
             messages: history,
             tools,
             activeTools,

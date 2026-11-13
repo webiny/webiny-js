@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ApprovalDecision } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
+import type { AdminAssistantPageContext } from "./pageContext.js";
 
 export interface IAdminAssistantConfig {
     /**
@@ -29,6 +30,8 @@ export interface AdminAssistantParams {
     prompt?: string;
     /** Approve or reject tool calls the chat's last run paused on. */
     decisions: ApprovalDecision[];
+    /** What the user had on screen when they asked. Absent when the view says nothing. */
+    pageContext?: AdminAssistantPageContext;
 }
 
 export interface IAdminAssistantUseCase {
@@ -50,4 +53,5 @@ export const AdminAssistantUseCase =
 export namespace AdminAssistantUseCase {
     export type Interface = IAdminAssistantUseCase;
     export type Params = AdminAssistantParams;
+    export type PageContext = AdminAssistantPageContext;
 }
