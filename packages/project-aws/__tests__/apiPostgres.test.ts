@@ -291,7 +291,8 @@ describe("the schema setup on deploy", () => {
         expect(schemaSetup.config.code).toBe(graphql.config.code);
         expect(schemaSetup.config.role).toBe(graphql.config.role);
         expect(schemaSetup.config.environment).toBe(graphql.config.environment);
-        expect(schemaSetup.config.timeout).toBe(300);
+        // Lambda's maximum: the setup can wait up to 10 minutes for a new RDS Proxy.
+        expect(schemaSetup.config.timeout).toBe(900);
 
         const env = (await resolve(graphql.config.environment.variables)) as Record<string, string>;
         expect(env).toMatchObject(getPostgresLambdaEnv(WRITER_ONLY));

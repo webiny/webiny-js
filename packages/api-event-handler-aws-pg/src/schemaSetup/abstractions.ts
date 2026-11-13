@@ -44,11 +44,19 @@ export namespace SqlSchemaSetupEventHandler {
 export interface ISqlSchemaSetupConnection {
     /** Opens the connection the setup runs on. The handler closes it when it's done. */
     open(): Knex;
+    /**
+     * Opens a connection the way the API's requests do. Set only when they connect somewhere else
+     * than `open` does (through RDS Proxy). After the setup, the service opens one per attempt until
+     * the database accepts it, so the deploy doesn't finish before the API can connect. The service
+     * closes each one.
+     */
+    openApi?(): Knex;
 }
 
 /**
- * The connection the schema setup runs on. On Lambda, schema changes go to the cluster's writer
- * (`WEBINY_PG_WRITER_HOST`, else `WEBINY_PG_HOST`), not through the RDS Proxy the API uses.
+ * The connections the schema setup uses. On Lambda, schema changes go to the cluster's writer
+ * (`WEBINY_PG_WRITER_HOST`, else `WEBINY_PG_HOST`), not through the RDS Proxy the API uses; the
+ * setup then waits until the proxy accepts the API's connections (`openApi`).
  */
 export const SqlSchemaSetupConnection = createAbstraction<ISqlSchemaSetupConnection>(
     "Db/Sql/SchemaSetupConnection"
@@ -61,14 +69,20 @@ export namespace SqlSchemaSetupConnection {
 export interface SqlSchemaSetupServiceParams {
     /** Service manifests to store for service discovery; none leaves the stored ones as they are. */
     serviceManifests: IServiceManifest[];
+    /**
+     * When the function running the setup is stopped (ms since the epoch), if it has a time limit.
+     * The wait for the API's connection ends early enough before it to report why it failed.
+     */
+    deadline?: number;
 }
 
 export interface ISqlSchemaSetupService {
     /**
      * Sets the API up on Postgres, on the setup's own connection (`SqlSchemaSetupConnection`):
      * creates its tables, sets the database user's `idle_session_timeout` and stores the service
-     * manifests. Every step is idempotent. Returns what it did, one line per step; throws when a
-     * step fails.
+     * manifests. Then, when the API connects elsewhere (`SqlSchemaSetupConnection.openApi`), waits
+     * until that connection is accepted. Every step is idempotent. Returns what it did, one line per
+     * step; throws when a step fails.
      */
     setup(params: SqlSchemaSetupServiceParams): Promise<string[]>;
 }

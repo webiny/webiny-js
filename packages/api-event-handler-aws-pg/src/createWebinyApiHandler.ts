@@ -45,12 +45,29 @@ export interface CreateAwsPgApiHandlerConfig extends Pick<BaseConfig, "extension
      * Postgres.
      */
     createSetupKnex?: () => Knex;
+    /**
+     * Opens a connection the way the API's requests do, which the schema setup waits on until the
+     * database accepts it. Defaults to a connection to `WEBINY_PG_HOST` when that isn't
+     * `WEBINY_PG_WRITER_HOST` (the API goes through RDS Proxy); otherwise the setup doesn't wait.
+     * Injectable so tests can point it at a local Postgres.
+     */
+    createApiKnex?: () => Knex;
 }
 
 const openWriterConnection = (): Knex => {
     return createLambdaPgConnection({
         host: process.env.WEBINY_PG_WRITER_HOST || process.env.WEBINY_PG_HOST
     });
+};
+
+/* The API's own connection settings, for the setup to wait on, when they point elsewhere. */
+const apiConnectionToWaitFor = (): (() => Knex) | undefined => {
+    const apiHost = process.env.WEBINY_PG_HOST;
+    const writerHost = process.env.WEBINY_PG_WRITER_HOST;
+    if (!apiHost || !writerHost || apiHost === writerHost) {
+        return undefined;
+    }
+    return () => createLambdaPgConnection();
 };
 
 /**
@@ -76,7 +93,8 @@ function storageConfig(
             // The deploy-time schema setup: an event the deployment invokes this function with.
             SqlSchemaSetupFeature.register(container);
             container.registerInstance(SqlSchemaSetupConnection, {
-                open: config.createSetupKnex ?? openWriterConnection
+                open: config.createSetupKnex ?? openWriterConnection,
+                openApi: config.createApiKnex ?? apiConnectionToWaitFor()
             });
         }
     };

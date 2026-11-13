@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import type { Knex } from "knex";
+import knexLib, { type Knex } from "knex";
+import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -199,8 +200,10 @@ describe("api-event-handler-aws-pg — schema-setup event", () => {
             vi.stubEnv(name, value);
         }
         vi.stubEnv("WEBINY_PG_WRITER_HOST", pglite.env.WEBINY_PG_HOST);
-        // The API's host: the setup must not use it (nothing answers there).
+        // The API's host: the setup must not run on it (nothing answers there).
         vi.stubEnv("WEBINY_PG_HOST", "unreachable.invalid");
+        // Nor wait for it, except in the tests of that wait.
+        vi.stubEnv("WEBINY_PG_API_WAIT_MS", "0");
         vi.stubEnv("WEBINY_PG_PASSWORD", "postgres");
         vi.stubEnv("WEBINY_PG_RETRY_MS", "0");
     });
@@ -353,6 +356,164 @@ describe("api-event-handler-aws-pg — schema-setup event", () => {
         } finally {
             vi.stubEnv("WEBINY_PG_IDLE_SESSION_TIMEOUT_MS", "");
         }
+    });
+
+    it("refuses a bad WEBINY_PG_API_WAIT_MS before it changes anything", async () => {
+        vi.stubEnv("WEBINY_PG_API_WAIT_MS", "-1");
+        try {
+            await expect(runSetup()).rejects.toThrow(
+                'WEBINY_PG_API_WAIT_MS must be a whole number of milliseconds (0 turns it off), not "-1".'
+            );
+        } finally {
+            vi.stubEnv("WEBINY_PG_API_WAIT_MS", "0");
+        }
+    });
+
+    /**
+     * With RDS Proxy the API's `WEBINY_PG_HOST` is the proxy, not the writer. A new proxy refuses
+     * connections for a few minutes, so the setup waits until it accepts the API's, or fails the
+     * deploy. Here `localhost` stands for the proxy: another host name for the same database.
+     */
+    describe("waiting for the API's connection", () => {
+        const withEnv = async (env: Record<string, string>, run: () => Promise<void>) => {
+            for (const [name, value] of Object.entries(env)) {
+                vi.stubEnv(name, value);
+            }
+            try {
+                await run();
+            } finally {
+                vi.stubEnv("WEBINY_PG_HOST", "unreachable.invalid");
+                vi.stubEnv("WEBINY_PG_API_WAIT_MS", "0");
+            }
+        };
+
+        it("waits, by default, until the API's connection through the proxy is accepted", async () => {
+            await withEnv({ WEBINY_PG_HOST: "localhost", WEBINY_PG_API_WAIT_MS: "" }, async () => {
+                const result = await runSetup();
+
+                expect(result.done.at(-1)).toMatch(
+                    /^api connection accepted \(attempt 1, after \d+ s\)$/
+                );
+            });
+        });
+
+        it("doesn't wait when the API connects to the writer", async () => {
+            await withEnv(
+                { WEBINY_PG_HOST: pglite.env.WEBINY_PG_HOST, WEBINY_PG_API_WAIT_MS: "" },
+                async () => {
+                    const result = await runSetup();
+
+                    expect(result.done.at(-1)).toBe("idle_session_timeout 600000 ms");
+                }
+            );
+        });
+
+        it("tries again until the API's connection is accepted", async () => {
+            await withEnv({ WEBINY_PG_API_WAIT_MS: "1000" }, async () => {
+                await closeInspector();
+                const opened: string[] = [];
+                const handler = createAwsPgApiHandler({
+                    extensions: () => postgresModules,
+                    createApiKnex: () => {
+                        // The first refuses, as a proxy whose target isn't available yet.
+                        if (!opened.length) {
+                            opened.push("refused");
+                            return knexLib({
+                                client: "pg",
+                                connection: { host: "unreachable.invalid", user: "postgres" }
+                            });
+                        }
+                        opened.push("accepted");
+                        return pglite.createKnex();
+                    }
+                });
+
+                const result = await handler({ [SQL_SCHEMA_SETUP_EVENT_IDENTIFIER]: {} });
+
+                expect(opened).toEqual(["refused", "accepted"]);
+                expect(result.done.at(-1)).toMatch(
+                    /^api connection accepted \(attempt 2, after \d+ s\)$/
+                );
+            });
+        });
+
+        it("fails the deploy when the API's connection is refused for the whole wait", async () => {
+            await withEnv(
+                { WEBINY_PG_HOST: "unreachable.invalid", WEBINY_PG_API_WAIT_MS: "1500" },
+                async () => {
+                    const error = await runSetup().then(
+                        () => undefined,
+                        (error: Error) => error
+                    );
+
+                    expect(error?.message).toMatch(
+                        /^The API can't connect to the database: its connection \(WEBINY_PG_HOST\) was refused for 2 s, [2-9] attempts\. Last error: .*unreachable\.invalid.*\. A new RDS Proxy can take a few minutes/
+                    );
+                    // The setup itself ran: the schema is in place.
+                    expect(await readCatalog(inspect())).toEqual(catalogAfterFirstRun);
+                }
+            );
+        });
+
+        it("gives up on an attempt that doesn't answer, when the wait ends", async () => {
+            await withEnv({ WEBINY_PG_API_WAIT_MS: "1500" }, async () => {
+                await closeInspector();
+                const handler = createAwsPgApiHandler({
+                    extensions: () => postgresModules,
+                    // A proxy that takes the connection and never answers.
+                    createApiKnex: () =>
+                        ({
+                            raw: () => new Promise(() => undefined),
+                            destroy: async () => undefined
+                        }) as unknown as Knex
+                });
+
+                const started = Date.now();
+                const error = await handler({ [SQL_SCHEMA_SETUP_EVENT_IDENTIFIER]: {} }).then(
+                    () => undefined,
+                    (error: Error) => error
+                );
+
+                expect(error?.message).toMatch(
+                    /^The API can't connect to the database: .* 1 attempts\. Last error: no answer within 2 s\./
+                );
+                expect(Date.now() - started).toBeLessThan(10_000);
+            });
+        });
+
+        it("ends the wait before the function would be stopped", async () => {
+            // The default wait (10 minutes), on a function with 31.5 s left: 30 s are kept for the
+            // setup to return its error, so it waits 1.5 s.
+            await withEnv({ WEBINY_PG_API_WAIT_MS: "" }, async () => {
+                await closeInspector();
+                const handler = createAwsPgApiHandler({
+                    extensions: () => postgresModules,
+                    createApiKnex: () =>
+                        knexLib({
+                            client: "pg",
+                            connection: { host: "unreachable.invalid", user: "postgres" }
+                        })
+                });
+                const stoppedAt = Date.now() + 31_500;
+                const context = {
+                    awsRequestId: "schema-setup",
+                    getRemainingTimeInMillis: () => stoppedAt - Date.now()
+                } as unknown as Context;
+
+                const error = await handler(
+                    { [SQL_SCHEMA_SETUP_EVENT_IDENTIFIER]: {} },
+                    context
+                ).then(
+                    () => undefined,
+                    (error: Error) => error
+                );
+
+                expect(error?.message).toMatch(
+                    /^The API can't connect to the database: its connection \(WEBINY_PG_HOST\) was refused for [0-2] s, /
+                );
+                expect(stoppedAt - Date.now()).toBeGreaterThan(25_000);
+            });
+        });
     });
 
     /**

@@ -124,7 +124,9 @@ export type ApiSchemaSetup = PulumiAppModule<typeof ApiSchemaSetup>;
  * - adds the `schema-setup` function: the GraphQL function's bundle, role, env and VPC, with time
  *   for the setup and no route to it;
  * - invokes it on every deploy with the `WebinySqlSchemaSetup` event. A failed setup fails the
- *   deploy, so the schema is in place before the after-deploy hooks (AutoInstall) run.
+ *   deploy, so the schema is in place before the after-deploy hooks (AutoInstall) run. With RDS
+ *   Proxy the setup also waits until the proxy accepts the API's connections, and fails the deploy
+ *   when it doesn't within 10 minutes.
  *
  * The GraphQL function gets the `WEBINY_PG_*` env from `createApiPulumiApp`, before this module
  * copies its config.
@@ -152,8 +154,10 @@ export const ApiSchemaSetup = createAppModule({
             config: {
                 ...baseConfig,
                 description: "Sets the Webiny API up on Postgres. Invoked by every deploy.",
-                // Creating the tables of a new database takes longer than a request may.
-                timeout: 300,
+                // Lambda's maximum. Creating the tables of a new database takes longer than a request
+                // may, and with RDS Proxy the setup then waits (up to 10 minutes) until the proxy
+                // accepts the API's connections: a new proxy refuses them for a few minutes.
+                timeout: 900,
                 loggingConfig: {
                     logFormat: "JSON"
                 }
