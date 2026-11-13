@@ -49,6 +49,16 @@ export function useUserForm() {
     // when a newer read of the same user starts, would otherwise show data that is no longer current.
     const lastRead = useRef(0);
 
+    const showLoadError = (error: Error) => {
+        goToRoute(Routes.Users.List);
+        toast.showWarningToast({
+            title: "Error loading user profile",
+            description: error.message,
+            duration: Infinity
+        });
+        setUserLoading(false);
+    };
+
     useEffect(() => {
         const read = ++lastRead.current;
         // Drop the previous user, so "New" and a newly selected user don't show its data.
@@ -71,18 +81,14 @@ export function useUserForm() {
                 if (read !== lastRead.current) {
                     return;
                 }
-                goToRoute(Routes.Users.List);
-                toast.showWarningToast({
-                    title: "Error loading user profile",
-                    description: error.message,
-                    duration: Infinity
-                });
-                setUserLoading(false);
+                showLoadError(error);
             });
     }, [id]);
 
     // The open user changed on the server, by the assistant or in another tab. Show what is stored
-    // now. A failed read is ignored: the user was most likely deleted, and the list drops it.
+    // now. A failed read of a user already on screen is ignored: the user was most likely deleted,
+    // and the list drops it. If the first read was still running, this read replaced it, so its
+    // failure is handled like a failed first read.
     useEffect(() => {
         if (!id) {
             return;
@@ -100,14 +106,15 @@ export function useUserForm() {
                         setUser(data);
                         setUserLoading(false);
                     })
-                    .catch(() => {
-                        if (read === lastRead.current) {
-                            setUserLoading(false);
+                    .catch(error => {
+                        if (read !== lastRead.current || !userLoading) {
+                            return;
                         }
+                        showLoadError(error);
                     });
             }
         );
-    }, [id, revision]);
+    }, [id, revision, userLoading]);
 
     const loading = userLoading || mutationLoading;
 

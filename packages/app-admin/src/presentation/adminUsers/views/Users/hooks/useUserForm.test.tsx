@@ -16,17 +16,20 @@ interface StoredUser {
 interface PendingRead {
     id: string;
     resolve: (user: StoredUser) => void;
+    reject: (error: Error) => void;
 }
 
 const mocks = vi.hoisted(() => {
     const pending: PendingRead[] = [];
     return {
         pending,
+        goToRoute: vi.fn(),
+        showWarningToast: vi.fn(),
         params: {} as { id?: string },
         getUser: {
             execute: ({ id }: { id: string }) =>
-                new Promise(resolve => {
-                    pending.push({ id, resolve });
+                new Promise((resolve, reject) => {
+                    pending.push({ id, resolve, reject });
                 })
         },
         // Set in the test body: makeAutoObservable is not available inside vi.hoisted.
@@ -49,11 +52,11 @@ vi.mock("@webiny/app", async importOriginal => ({
         return { useCase: { execute: vi.fn() } };
     },
     useRoute: () => ({ route: { params: mocks.params } }),
-    useRouter: () => ({ goToRoute: vi.fn() })
+    useRouter: () => ({ goToRoute: mocks.goToRoute })
 }));
 
 vi.mock("@webiny/admin-ui", () => ({
-    useToast: () => ({ showSuccessToast: vi.fn(), showWarningToast: vi.fn() })
+    useToast: () => ({ showSuccessToast: vi.fn(), showWarningToast: mocks.showWarningToast })
 }));
 
 import { useUserForm } from "./useUserForm.js";
@@ -88,6 +91,7 @@ describe("useUserForm", () => {
     afterEach(() => {
         cleanup();
         mocks.pending.length = 0;
+        vi.clearAllMocks();
     });
 
     it("keeps the newly opened user when a refresh of the previous one finishes late", async () => {
@@ -118,5 +122,26 @@ describe("useUserForm", () => {
         await finishRead("a", { id: "a", firstName: "First" });
 
         expect(result.current.user).toEqual({ id: "a", firstName: "Second" });
+    });
+
+    it("goes back to the list when a refresh that replaced the first read fails", async () => {
+        mocks.revision = new Revision();
+        mocks.params.id = "a";
+        const { result } = renderHook(() => useUserForm());
+
+        // The first read is still running when a change arrives; the refresh replaces it and fails.
+        act(() => mocks.revision.userChanged("a"));
+        await finishRead("a", { id: "a", firstName: "Ann" });
+        const refresh = mocks.pending.find(read => read.id === "a")!;
+        mocks.pending.splice(mocks.pending.indexOf(refresh), 1);
+        await act(async () => {
+            refresh.reject(new Error("User not found."));
+        });
+
+        expect(result.current.loading).toBe(false);
+        expect(mocks.goToRoute).toHaveBeenCalledTimes(1);
+        expect(mocks.showWarningToast).toHaveBeenCalledWith(
+            expect.objectContaining({ description: "User not found." })
+        );
     });
 });

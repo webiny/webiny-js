@@ -69,13 +69,20 @@ const UsersDataList = () => {
     const fetchUsers = useCallback(() => {
         const read = ++lastRead.current;
         setUsersLoading(true);
-        listUsers.execute().then(data => {
-            if (read !== lastRead.current) {
-                return;
-            }
-            setUsers((data || []) as UserItem[]);
-            setUsersLoading(false);
-        });
+        listUsers
+            .execute()
+            .then(data => {
+                if (read !== lastRead.current) {
+                    return;
+                }
+                setUsers((data || []) as UserItem[]);
+                setUsersLoading(false);
+            })
+            .catch(() => {
+                if (read === lastRead.current) {
+                    setUsersLoading(false);
+                }
+            });
     }, [listUsers]);
 
     useEffect(() => {
@@ -89,13 +96,22 @@ const UsersDataList = () => {
             () => revision.list,
             () => {
                 const read = ++lastRead.current;
-                listUsers.execute().then(data => {
-                    if (read !== lastRead.current) {
-                        return;
-                    }
-                    setUsers((data || []) as UserItem[]);
-                    setUsersLoading(false);
-                });
+                listUsers
+                    .execute()
+                    .then(data => {
+                        if (read !== lastRead.current) {
+                            return;
+                        }
+                        setUsers((data || []) as UserItem[]);
+                        setUsersLoading(false);
+                    })
+                    // A refresh can replace a first read still running; then this is the read
+                    // that has to end the loading state.
+                    .catch(() => {
+                        if (read === lastRead.current) {
+                            setUsersLoading(false);
+                        }
+                    });
             }
         );
     }, [revision, listUsers]);
