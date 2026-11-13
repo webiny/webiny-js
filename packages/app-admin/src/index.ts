@@ -129,12 +129,7 @@ export type {
 } from "./features/adminAssistant/index.js";
 export {
     AssistantPageContext,
-    AssistantPageContextFeature,
-    useAssistantPageContext
-} from "./features/assistantPageContext/index.js";
-export type {
-    AssistantPageContextData,
-    IAssistantPageContext
+    AssistantPageContextFeature
 } from "./features/assistantPageContext/index.js";
 
 /*

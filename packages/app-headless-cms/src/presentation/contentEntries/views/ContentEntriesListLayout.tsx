@@ -13,14 +13,12 @@ import { ContentEntryFormView } from "./ContentEntryFormView.js";
 import { Table } from "./Table/Table.js";
 import { CmsAdvancedSearch } from "./CmsAdvancedSearch.js";
 import { SidebarFooter } from "./SidebarFooter.js";
-import { AssistantPageContextSync } from "./AssistantPageContextSync.js";
 
 export const ContentEntriesListLayout = observer(() => {
     const presenter = useContentEntriesPresenter();
 
     return (
         <>
-            <AssistantPageContextSync />
             <ContentEntriesBreadcrumbs />
             {presenter.vm.showingEntry ? <ContentEntryFormView /> : <DocumentList />}
         </>

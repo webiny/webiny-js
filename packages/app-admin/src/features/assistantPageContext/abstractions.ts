@@ -12,18 +12,22 @@ export interface AssistantPageContextData {
     details: Record<string, unknown>;
 }
 
-/** Identifies one `set`, so a view that unmounts late cannot clear the context a newer view set. */
+/** Identifies one `set`, so each view clears only the context it set. */
 export type AssistantPageContextOwner = symbol;
 
 export interface IAssistantPageContext {
-    /** Replace the current context. Returns the owner to pass to `clear`. */
+    /** Put a context in front of any earlier one. Returns the owner to pass to `clear`. */
     set(context: AssistantPageContextData): AssistantPageContextOwner;
-    /** Clear the context, if it is still the one this owner set. */
+    /** Remove the context this owner set. The one before it, if any, is current again. */
     clear(owner: AssistantPageContextOwner): void;
+    /** The newest context still set. */
     get(): AssistantPageContextData | null;
 }
 
-/** The screen the user is on, as the assistant should know it. Views set it with `useAssistantPageContext`. */
+/**
+ * The screen the user is on, as the assistant should know it. A view's presenter sets it when the
+ * view starts and clears it when the view is disposed.
+ */
 export const AssistantPageContext =
     createAbstraction<IAssistantPageContext>("AssistantPageContext");
 

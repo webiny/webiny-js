@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { AssistantPageContext } from "~/features/assistantPageContext/AssistantPageContext.js";
 import { AssistantPageContext as Abstraction } from "~/features/assistantPageContext/abstractions.js";
@@ -23,8 +25,8 @@ describe("AssistantPageContext", () => {
         expect(pageContext.get()).toBeNull();
     });
 
-    // React runs the new view's effect before or after the old view's cleanup, depending on the tree.
-    it("ignores a clear from a view that was already replaced", () => {
+    // A view disposed after the next one started must not take the newer context with it.
+    it("keeps the newer context when an older owner clears late", () => {
         const pageContext = setup();
 
         const leaving = pageContext.set(products);
@@ -32,5 +34,15 @@ describe("AssistantPageContext", () => {
         pageContext.clear(leaving);
 
         expect(pageContext.get()).toEqual(articles);
+    });
+
+    it("hands the page's context back when a view over it clears", () => {
+        const pageContext = setup();
+
+        pageContext.set(products);
+        const drawer = pageContext.set(articles);
+        pageContext.clear(drawer);
+
+        expect(pageContext.get()).toEqual(products);
     });
 });

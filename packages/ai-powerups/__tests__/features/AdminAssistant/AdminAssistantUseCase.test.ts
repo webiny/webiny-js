@@ -183,8 +183,18 @@ describe("AdminAssistantUseCase", () => {
         expect(requests[0].system).toContain(
             "The user is looking at: Entries of the Product content model."
         );
-        expect(requests[0].system).toContain('"title": "Archive"');
+        expect(requests[0].system).toContain('"title":"Archive"');
         expect(JSON.stringify(saves)).not.toContain("Archive");
+    });
+
+    it("keeps the project's instructions after the screen, since they take precedence", async () => {
+        const { useCase, requests } = setup();
+
+        await run(useCase, { ...QUESTION, pageContext: { view: "Entries", details: {} } });
+
+        const system = requests[0].system as string;
+        expect(system.indexOf("Where the user is")).toBeGreaterThan(-1);
+        expect(system.indexOf("Where the user is")).toBeLessThan(system.indexOf(ADDITIONAL));
     });
 
     it("adds nothing about the screen when the view sent no context", async () => {

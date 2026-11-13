@@ -1,7 +1,20 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ApprovalDecision } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
-import type { AdminAssistantPageContext } from "./pageContext.js";
+
+/**
+ * What the user has on screen when they ask, sent by the admin with each question. `view` says what
+ * the screen is ("Entries of the Product content model"); `details` holds the ids and titles on it
+ * that a question might refer to ("this folder", "Archive", "these entries").
+ *
+ * It is the user's own admin describing itself to the user's own assistant, so it grants nothing:
+ * every tool still runs under the user's permissions, and a change still waits for approval with
+ * its real arguments on screen.
+ */
+export interface AdminAssistantPageContext {
+    view: string;
+    details: Record<string, unknown>;
+}
 
 export interface IAdminAssistantConfig {
     /**

@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { parseChatBody } from "~/api/features/AdminAssistant/parseChatBody.js";
 
 const view = "Entries of the Product content model";

@@ -1,5 +1,5 @@
 import { parseDecisions } from "./approvals.js";
-import { parsePageContext } from "./pageContext.js";
+import { parsePageContext } from "./parsePageContext.js";
 import type { AdminAssistantParams } from "./abstractions.js";
 
 const safeParse = (value: string): unknown => {
