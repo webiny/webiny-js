@@ -27,14 +27,20 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const namespace = params.where?.namespace || params.where?.namespace_startsWith;
+        const exactNamespace = params.where?.namespace;
+        const namespace = exactNamespace || params.where?.namespace_startsWith;
         const permissions = this.permissionsResolver.forNamespace(namespace);
+        // Security: a prefix covers many namespaces, so the app must check all of them.
+        const permissionsParams = {
+            namespace: namespace || "",
+            startsWith: !exactNamespace
+        };
 
-        if (!(await permissions.canRead())) {
+        if (!(await permissions.canRead(permissionsParams))) {
             return Result.fail(new NotAuthorizedError());
         }
 
-        const ownRecordsOnly = await permissions.onlyOwnRecords();
+        const ownRecordsOnly = await permissions.onlyOwnRecords(permissionsParams);
 
         const { where: initialWhere, sort: sortInput, limit, after } = params;
 

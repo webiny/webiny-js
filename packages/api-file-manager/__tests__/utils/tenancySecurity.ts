@@ -6,6 +6,9 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 interface Config {
     permissions?: SecurityPermission[];
+    /**
+     * `undefined` uses `defaultIdentity`, `null` makes the caller anonymous.
+     */
     identity?: IdentityData | null;
 }
 
@@ -25,7 +28,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                     domains: []
                 },
                 isInstalled: true,
-                status: "unknown",
+                status: "enabled",
                 description: "",
                 parent: null,
                 tags: [],
@@ -34,6 +37,9 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
 
             context.security.addAuthenticator(async () => {
+                if (identity === null) {
+                    return null;
+                }
                 return identity || defaultIdentity;
             });
 

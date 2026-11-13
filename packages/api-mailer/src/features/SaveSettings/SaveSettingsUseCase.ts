@@ -55,6 +55,9 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
         const result = await this.repository.execute(input);
 
         if (result.isFail()) {
+            if (result.error instanceof SettingsValidationError) {
+                return Result.fail(result.error);
+            }
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 

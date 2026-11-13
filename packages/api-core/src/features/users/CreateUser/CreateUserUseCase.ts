@@ -6,6 +6,10 @@ import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
+import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
+import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
+import { canAssignRolesAndTeams } from "~/features/security/utils/canAssignRolesAndTeams.js";
+import { CANNOT_GRANT_PERMISSIONS_MESSAGE } from "~/features/security/utils/canGrantPermissions.js";
 import { createUserValidation } from "./schema.js";
 import {
     NotAuthorizedError,
@@ -22,7 +26,9 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private repository: AdminUsersRepository.Interface
+        private repository: AdminUsersRepository.Interface,
+        private rolesRepository: RolesRepository.Interface,
+        private teamsRepository: TeamsRepository.Interface
     ) {}
 
     async execute(input: CreateUserInput): Promise<Result<AdminUser, UseCaseAbstraction.Error>> {
@@ -39,6 +45,18 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const data = validation.data;
+
+        // Security: the caller may only assign roles and teams whose permissions they hold.
+        const canAssign = await canAssignRolesAndTeams({
+            identityContext: this.identityContext,
+            rolesRepository: this.rolesRepository,
+            teamsRepository: this.teamsRepository,
+            roles: data.roles,
+            teams: data.teams
+        });
+        if (!canAssign) {
+            return Result.fail(new NotAuthorizedError(CANNOT_GRANT_PERMISSIONS_MESSAGE));
+        }
 
         // 3. Check email uniqueness
         const existingUserResult = await this.repository.get({ email: data.email });
@@ -61,14 +79,11 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const tenant = this.tenantContext.getTenant().id;
         const identity = this.identityContext.getIdentity();
 
-        let createdBy: CreatedBy | null = null;
-        if (identity) {
-            createdBy = {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            };
-        }
+        const createdBy: CreatedBy = {
+            id: identity.id,
+            displayName: identity.displayName,
+            type: identity.type
+        };
 
         // 7. Create user entity
         const user: AdminUser = {
@@ -120,5 +135,12 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateUserUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateUserUseCaseImpl,
-    dependencies: [TenantContext, IdentityContext, EventPublisher, AdminUsersRepository]
+    dependencies: [
+        TenantContext,
+        IdentityContext,
+        EventPublisher,
+        AdminUsersRepository,
+        RolesRepository,
+        TeamsRepository
+    ]
 });

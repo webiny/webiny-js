@@ -13,6 +13,7 @@ import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
+import { createTestModelPlugins } from "./models";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -65,6 +66,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             apiKeyAuthorization({ identityType: "api-key" }),
             graphQLHandlerPlugins(),
             createCmsExtension(),
+            createTestModelPlugins(),
             createWebsockets(),
             createRegisterExtensionPlugin(context => {
                 const noop: ConnectionRegistry.Interface = {

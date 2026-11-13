@@ -425,6 +425,35 @@ describe("`filter` CRUD", () => {
         );
     });
 
+    it("should not allow creating a `filter` with the id of another user's filter", async () => {
+        const { aco: otherAco } = useGraphQlHandler({
+            identity: {
+                id: "abcdefgh",
+                type: "admin",
+                displayName: "Smith Smith"
+            }
+        });
+        const { aco } = useGraphQlHandler();
+
+        const [created] = await aco.createFilter({ data: filterMocks.filterA });
+        const original = created.data.aco.createFilter.data;
+        expect(original.id).toBeTruthy();
+
+        const [takeover] = await otherAco.createFilter({
+            data: { ...filterMocks.filterB, id: original.id.split("#")[0] }
+        });
+        expect(takeover.data.aco.createFilter.data).toBeNull();
+        expect(takeover.data.aco.createFilter.error).toMatchObject({
+            code: "Cms/Entry/AlreadyExists"
+        });
+
+        const [afterwards] = await aco.getFilter({ id: original.id });
+        expect(afterwards.data.aco.getFilter.data).toMatchObject({
+            id: original.id,
+            name: original.name
+        });
+    });
+
     it("should enforce security rules", async () => {
         const { aco: anonymousAco } = useGraphQlHandler({ identity: null });
         const { aco } = useGraphQlHandler();

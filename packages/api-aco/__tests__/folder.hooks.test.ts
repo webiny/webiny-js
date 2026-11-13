@@ -24,7 +24,8 @@ describe("Folder Lifecycle Events", () => {
                 data: {
                     title: "Folder 1",
                     slug: "folder-1",
-                    type: "cms:acoSearchRecord-webiny"
+                    // Child folders must have the same type as their parent.
+                    type
                 }
             })
             .then(([response]) => {
@@ -36,7 +37,8 @@ describe("Folder Lifecycle Events", () => {
                 data: {
                     title: "Folder 2",
                     slug: "folder-2",
-                    type: "cms:acoSearchRecord-webiny"
+                    // Child folders must have the same type as their parent.
+                    type
                 }
             })
             .then(([response]) => {

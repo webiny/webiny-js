@@ -1,4 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import WebinyError from "@webiny/error";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { ContextPlugin } from "@webiny/handler";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/api/types.js";
@@ -311,6 +312,19 @@ const createGraphQL = () => {
                             rwd: "w"
                         });
                         return resolve<ITask>(async () => {
+                            /**
+                             * Private tasks are started only by code, never through the API.
+                             * They are reported as unknown, the same way `listDefinitions` hides them.
+                             */
+                            const definition = context.tasks.getDefinition(args.definition);
+                            if (!definition || definition.isPrivate) {
+                                throw new WebinyError(
+                                    `Task definition was not found!`,
+                                    "TASK_DEFINITION_ERROR",
+                                    { id: args.definition }
+                                );
+                            }
+
                             const result = await context.tasks.trigger(args);
                             if (result.isOk()) {
                                 return result.value;

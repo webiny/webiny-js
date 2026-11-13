@@ -126,6 +126,8 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
     }
 
     public async listAuditLogs(params: IListAuditLogsParams): Promise<IListAuditLogsResult> {
+        await this.checkListPermissions();
+
         const result = await this.storage.list({
             ...params,
             tenant: this.getTenantId()
@@ -140,6 +142,22 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
             };
         }
         throw result.error;
+    }
+
+    /**
+     * Listing returns logs of every action, so it needs full audit logs access.
+     */
+    private async checkListPermissions(): Promise<void> {
+        const permissions = await this.getContext().security.getPermissions("al.*");
+        const hasAccess = permissions.some(permission => {
+            return permission.name === "*" || permission.name === "al.*";
+        });
+        if (hasAccess) {
+            return;
+        }
+        throw new NotAuthorizedError({
+            message: "You cannot access audit logs."
+        });
     }
 
     private async checkPermissions(auditLog: Pick<IAuditLog, "action">): Promise<void> {

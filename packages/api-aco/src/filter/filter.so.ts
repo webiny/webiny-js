@@ -16,6 +16,7 @@ import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues.js";
 import type { AcoFilterStorageOperations, Filter } from "./filter.types.js";
 import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export const createFilterOperations = (
     params: CreateFilterOperationsParams
@@ -30,16 +31,24 @@ export const createFilterOperations = (
     const cmsWhereMapper = container.resolve(CmsWhereMapper);
     const cmsSortMapper = container.resolve(CmsSortMapper);
 
+    /**
+     * Saved filters are personal. The filter model is private, so CMS authorization doesn't
+     * apply: only the identity that created a filter may read, update or delete it.
+     */
+    const getOwnFilterEntry = async (model: CmsModel, id: string) => {
+        const entry = await cms.getEntryById(model, id);
+        if (!entry || entry.createdBy?.id !== security.getIdentity()?.id) {
+            throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
+                id
+            });
+        }
+        return entry;
+    };
+
     return {
         getFilter({ id }) {
             return withModel(async model => {
-                const entry = await cms.getEntryById(model, id);
-
-                if (!entry) {
-                    throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
-                        id
-                    });
-                }
+                const entry = await getOwnFilterEntry(model, id);
 
                 return pickEntryFieldValues(entry);
             });
@@ -69,16 +78,21 @@ export const createFilterOperations = (
         },
         createFilter({ data }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, {
-                    id: data.id,
-                    values: data
-                });
+                // A client may choose the filter id; it must not replace someone else's filter.
+                const entry = await cms.createEntry(
+                    model,
+                    {
+                        id: data.id,
+                        values: data
+                    },
+                    { failIfExists: true }
+                );
                 return pickEntryFieldValues(entry);
             });
         },
         updateFilter({ id, data }) {
             return withModel(async model => {
-                const original = await cms.getEntryById(model, id);
+                const original = await getOwnFilterEntry(model, id);
 
                 const input = {
                     /**
@@ -98,6 +112,7 @@ export const createFilterOperations = (
         },
         deleteFilter({ id }) {
             return withModel(async model => {
+                await getOwnFilterEntry(model, id);
                 await cms.deleteEntry(model, id);
                 return true;
             });

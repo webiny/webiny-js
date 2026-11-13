@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
-import { SettingsPersistenceError } from "~/domain/errors.js";
+import { SettingsPersistenceError, SettingsValidationError } from "~/domain/errors.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { MAILER_TRANSPORT_SETTINGS } from "~/constants.js";
 
@@ -21,23 +21,51 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         const existingSettings = existingResult.isOk() ? existingResult.value : null;
         const transportSettings: Partial<TransportSettings> = existingSettings ?? {};
 
+        // Prepare data
+        const port = input.port ?? transportSettings.port ?? DEFAULT_PORT;
+        const host = input.host ?? transportSettings.host;
+        const secure = input.secure ?? transportSettings.secure ?? port === 465;
+        const user = input.user ?? transportSettings.user;
+
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
         if (!input.password && existingSettings) {
+            /**
+             * Security: re-using the stored password is only safe while it is sent to the same
+             * server and account. Otherwise a settings editor could point the transport at a host
+             * they control and receive the stored SMTP password, so it must be re-entered.
+             */
+            const storedPort = transportSettings.port ?? DEFAULT_PORT;
+            const storedSecure = transportSettings.secure ?? storedPort === 465;
+            const connectionChanged =
+                host !== transportSettings.host ||
+                port !== storedPort ||
+                secure !== storedSecure ||
+                user !== transportSettings.user;
+            if (transportSettings.password && connectionChanged) {
+                return Result.fail(
+                    new SettingsValidationError([
+                        {
+                            code: "custom",
+                            path: ["password"],
+                            input: undefined,
+                            message:
+                                "Password is required when changing the host, port, secure or user settings."
+                        }
+                    ])
+                );
+            }
             passwordToStore = await this.encryption.decrypt(transportSettings.password || "");
         }
 
         // Encrypt password
         const encryptedPassword = await this.encryption.encrypt(passwordToStore);
 
-        // Prepare data
-        const port = input.port ?? transportSettings.port ?? DEFAULT_PORT;
-
         const data = {
-            host: input.host ?? transportSettings.host,
+            host,
             port,
-            secure: input.secure ?? transportSettings.secure ?? port === 465,
-            user: input.user ?? transportSettings.user,
+            secure,
+            user,
             password: encryptedPassword,
             from: input.from ?? transportSettings.from,
             replyTo: input.replyTo ?? transportSettings.replyTo

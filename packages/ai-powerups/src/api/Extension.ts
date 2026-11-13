@@ -3,7 +3,10 @@ import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { BaseGraphQLSchema } from "./graphql/BaseGraphQLSchema.js";
 import AiPowerUpsSettingsGraphQLMapperImpl from "./graphql/AiPowerUpsSettingsGraphQLMapper.js";
 import { AiPowerUpsSettingsCache } from "./features/shared/SettingsCache.js";
+import { AiPowerUpsPermissionsFeature } from "./features/permissions/index.js";
 import { GetSettingsFeature } from "./features/GetSettings/feature.js";
+import { GetDecryptedSettingsFeature } from "./features/GetDecryptedSettings/feature.js";
+import { ListModelsFeature } from "./features/ListModels/feature.js";
 import { UpdateSettingsFeature } from "./features/UpdateSettings/feature.js";
 import { WbGeneratePageContentFeature } from "./features/WbGeneratePageContent/feature.js";
 import { ProvidersFeature } from "./features/Providers/feature.js";
@@ -27,7 +30,10 @@ export const Extension = createFeature({
     register(container) {
         container.register(AiPowerUpsSettingsCache).inSingletonScope();
 
+        AiPowerUpsPermissionsFeature.register(container);
         GetSettingsFeature.register(container);
+        GetDecryptedSettingsFeature.register(container);
+        ListModelsFeature.register(container);
         UpdateSettingsFeature.register(container);
         /*
          * `ProvidersFeature` is still registered so the legacy `providers` section keeps round-

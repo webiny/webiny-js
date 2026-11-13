@@ -1,4 +1,5 @@
 import { createImplementation } from "@webiny/feature/api";
+import { parseJson as parseSecureJson } from "@webiny/utils/parseJson.js";
 import { Result } from "@webiny/feature/api";
 import { HttpClient as HttpClientAbstraction } from "./abstractions.js";
 import { HttpRequestError } from "./HttpRequestError.js";
@@ -35,7 +36,7 @@ function parseJson(text: string): Result<unknown, unknown> {
         return Result.ok(undefined);
     }
     try {
-        const value: unknown = JSON.parse(text);
+        const value: unknown = parseSecureJson(text);
         return Result.ok(value);
     } catch (error) {
         return Result.fail(error);

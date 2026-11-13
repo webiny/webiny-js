@@ -7,7 +7,11 @@ import { ModelAfterUpdateEvent } from "./events.js";
 import { ModelUpdateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { ModelNotAuthorizedError, ModelValidationError } from "~/domain/contentModel/errors.js";
+import {
+    ModelNotAuthorizedError,
+    ModelPersistenceError,
+    ModelValidationError
+} from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelUpdateValidation } from "~/domain/contentModel/schemas.js";
@@ -15,6 +19,8 @@ import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelUpdateInput } from "~/types/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/abstractions.js";
+import { GroupNotAuthorizedError, GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * UpdateModelUseCase - Core model update orchestration.
@@ -38,7 +44,8 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         private eventPublisher: EventPublisher.Interface,
         private repository: UpdateModelRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private tenantContext: TenantContext.Interface
+        private tenantContext: TenantContext.Interface,
+        private getGroupUseCase: GetGroupUseCase.Interface
     ) {}
 
     async execute(
@@ -59,6 +66,16 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const original = structuredClone(getResult.value);
 
+        // Security: write access must be checked on the model as it is now. Checking only the
+        // updated model would let a user move a model out of a group they can only read.
+        const canWriteOriginal = await this.accessControl.canAccessModel({
+            model: original,
+            rwd: "w"
+        });
+        if (!canWriteOriginal) {
+            return Result.fail(ModelNotAuthorizedError.fromModel(original));
+        }
+
         // Validate input
         const validationResult = await createModelUpdateValidation().safeParseAsync(input);
         if (!validationResult.success) {
@@ -76,6 +93,22 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         // If no changes, return original
         if (Object.keys(data).length === 0) {
             return Result.ok(original);
+        }
+
+        // Security: when moving the model to another group, that group must exist and be
+        // accessible to the current identity.
+        if (data.group && data.group !== original.group) {
+            const groupResult = await this.getGroupUseCase.execute(data.group);
+            if (groupResult.isFail()) {
+                const error = groupResult.error;
+                if (
+                    error instanceof GroupNotFoundError ||
+                    error instanceof GroupNotAuthorizedError
+                ) {
+                    return Result.fail(error);
+                }
+                return Result.fail(new ModelPersistenceError(error));
+            }
         }
 
         // Create updated model
@@ -149,6 +182,7 @@ export const UpdateModelUseCase = UseCaseAbstraction.createImplementation({
         EventPublisher,
         UpdateModelRepository,
         AccessControl,
-        TenantContext
+        TenantContext,
+        GetGroupUseCase
     ]
 });

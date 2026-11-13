@@ -6,8 +6,9 @@ import {
     Response
 } from "@webiny/handler-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
+import { GetIntegrationsUseCase } from "~/features/settings/GetIntegrations/index.js";
+import { UpdateIntegrationsUseCase } from "~/features/settings/UpdateIntegrations/index.js";
 import { resolve } from "~/utils/resolve.js";
-import { WEBSITE_BUILDER_INTEGRATIONS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { PageModel, type WbPageRevision } from "~/domain/page/abstractions.js";
@@ -25,7 +26,6 @@ import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
-import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
@@ -60,9 +60,12 @@ export const createPagesSchema = () => {
                         return {
                             id: page.id,
                             entryId: page.entryId,
+                            version: page.version,
                             properties: page.properties,
+                            metadata: page.metadata,
                             bindings: page.bindings,
-                            elements: page.elements
+                            elements: page.elements,
+                            extensions: page.extensions
                         };
                     });
                 },
@@ -155,14 +158,13 @@ export const createPagesSchema = () => {
                     });
                 },
                 getIntegrations: async (_, __, context) => {
-                    await ensureAuthentication(context);
-                    const keyValueStore = context.container.resolve(KeyValueStore);
-                    const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
-                    if (settings.isFail()) {
-                        return new Response({});
+                    const result = await context.container
+                        .resolve(GetIntegrationsUseCase)
+                        .execute();
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
                     }
-
-                    return new Response(settings.value);
+                    return new Response(result.value);
                 }
             },
             WbMutation: {
@@ -329,7 +331,7 @@ export const createPagesSchema = () => {
                 },
                 deletePageRevision: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const deletePageRevision =
                             context.container.resolve(DeletePageRevisionUseCase);
                         const result = await deletePageRevision.execute({
@@ -359,13 +361,13 @@ export const createPagesSchema = () => {
                     });
                 },
                 updateIntegrations: async (_, args, context) => {
-                    return resolve(async () => {
-                        await ensureAuthentication(context, { permission: "wb.integrations" });
-                        const keyValueStore = context.container.resolve(KeyValueStore);
-                        await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
-
-                        return true;
-                    });
+                    const result = await context.container
+                        .resolve(UpdateIntegrationsUseCase)
+                        .execute(args.data);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(true);
                 }
             },
             WbPage: {

@@ -1,4 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
+import { FolderTypePermissionsFeature } from "~/features/folder/FolderTypePermissions/index.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createFilterOperations } from "~/filter/filter.so.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
@@ -83,6 +84,9 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
     GetFolderHierarchyFeature.register(container);
     GetAncestorsFeature.register(container);
     EnsureFolderIsEmptyFeature.register(container);
+
+    // App permissions per folder type (each app registers FolderTypePermissions).
+    FolderTypePermissionsFeature.register(container);
 
     CreateFlpFeature.register(container, { context });
     UpdateFlpFeature.register(container, { context });

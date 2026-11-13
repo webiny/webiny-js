@@ -1,20 +1,14 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
-import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
-import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
+import { ListModelsUseCase } from "~/api/features/ListModels/index.js";
 import { ListAiCapabilitiesUseCase } from "~/api/features/Capabilities/index.js";
+import { QueueWbGeneratePageContentUseCase } from "~/api/features/WbGeneratePageContent/index.js";
+import { QueueCmsGenerateEntryContentUseCase } from "~/api/features/CmsGenerateEntryContent/index.js";
+import type { IWbGeneratePageContentTaskInput } from "~/api/features/WbGeneratePageContent/WbGeneratePageContentTask.js";
+import type { ICmsGenerateEntryContentTaskInput } from "~/api/features/CmsGenerateEntryContent/CmsGenerateEntryContentTask.js";
 import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
-import {
-    WB_GENERATE_PAGE_CONTENT_TASK_ID,
-    type IWbGeneratePageContentTaskInput
-} from "~/api/features/WbGeneratePageContent/WbGeneratePageContentTask.js";
-import {
-    CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
-    type ICmsGenerateEntryContentTaskInput
-} from "~/api/features/CmsGenerateEntryContent/CmsGenerateEntryContentTask.js";
 
 class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -99,9 +93,15 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "AiPowerUpsQuery.listModels",
-            dependencies: [AiModelRegistry],
-            resolver: (registry: AiModelRegistry.Interface) => {
-                return async () => registry.listModels();
+            dependencies: [ListModelsUseCase],
+            resolver: (useCase: ListModelsUseCase.Interface) => {
+                return async () => {
+                    const result = await useCase.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                };
             }
         });
 
@@ -113,7 +113,13 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             path: "AiPowerUpsQuery.listCapabilities",
             dependencies: [ListAiCapabilitiesUseCase],
             resolver: (useCase: ListAiCapabilitiesUseCase.Interface) => {
-                return async () => useCase.execute();
+                return async () => {
+                    const result = await useCase.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                };
             }
         });
 
@@ -137,64 +143,30 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IWbGeneratePageContentTaskInput>({
             path: "AiPowerUpsMutation.generatePageContent",
-            dependencies: [TaskService],
-            resolver: (taskService: TaskService.Interface) => {
+            dependencies: [QueueWbGeneratePageContentUseCase],
+            resolver: (useCase: QueueWbGeneratePageContentUseCase.Interface) => {
                 return async ({ args }) => {
-                    const result = await taskService.trigger<IWbGeneratePageContentTaskInput>({
-                        definition: WB_GENERATE_PAGE_CONTENT_TASK_ID,
-                        input: {
-                            prompt: args.prompt,
-                            components: args.components,
-                            tools: args.tools,
-                            projectId: args.projectId ?? null,
-                            excludedFileIds: args.excludedFileIds ?? null,
-                            readerPersonaId: args.readerPersonaId ?? null,
-                            writerPersonaId: args.writerPersonaId ?? null,
-                            additionalFileIds: args.additionalFileIds ?? null
-                        }
-                    });
-
+                    const result = await useCase.execute(args);
                     if (result.isFail()) {
                         throw result.error;
                     }
 
-                    return { id: result.value.id };
+                    return result.value;
                 };
             }
         });
 
         builder.addResolver<ICmsGenerateEntryContentTaskInput>({
             path: "AiPowerUpsMutation.generateEntryContent",
-            dependencies: [TaskService, WcpContext],
-            resolver: (taskService: TaskService.Interface, wcp: WcpContext.Interface) => {
+            dependencies: [QueueCmsGenerateEntryContentUseCase],
+            resolver: (useCase: QueueCmsGenerateEntryContentUseCase.Interface) => {
                 return async ({ args }) => {
-                    // Gated at resolver-time, NOT at feature-registration time: the WCP license is
-                    // loaded per request, so a register-time check reads the placeholder
-                    // NullLicense (canUse* → false).
-                    if (!wcp.canUseAiEntryGeneration()) {
-                        throw new Error(
-                            "AI entry generation cannot be used because your project license does not permit it."
-                        );
-                    }
-
-                    const result = await taskService.trigger<ICmsGenerateEntryContentTaskInput>({
-                        definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
-                        input: {
-                            prompt: args.prompt,
-                            modelId: args.modelId,
-                            projectId: args.projectId ?? null,
-                            excludedFileIds: args.excludedFileIds ?? null,
-                            readerPersonaId: args.readerPersonaId ?? null,
-                            writerPersonaId: args.writerPersonaId ?? null,
-                            additionalFileIds: args.additionalFileIds ?? null
-                        }
-                    });
-
+                    const result = await useCase.execute(args);
                     if (result.isFail()) {
                         throw result.error;
                     }
 
-                    return { id: result.value.id };
+                    return result.value;
                 };
             }
         });

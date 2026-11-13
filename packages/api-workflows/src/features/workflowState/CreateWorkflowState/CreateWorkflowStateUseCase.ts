@@ -17,9 +17,11 @@ import {
     WorkflowStateValidationError,
     ActiveStateExistsError,
     MultipleWorkflowsFoundError,
-    WorkflowStatePersistenceError
+    WorkflowStatePersistenceError,
+    WorkflowStateNotAuthorizedError
 } from "~/domain/workflowState/errors.js";
 import { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -33,12 +35,37 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
+        // Starting a review can't be done anonymously. Background work runs without authorization.
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const { id: targetId, version } = parseIdentifier(input.targetRevisionId);
         if (!version) {
             return Result.fail(
                 new WorkflowStateValidationError(
                     "Cannot create a workflow state without version of a target record."
                 )
+            );
+        }
+
+        // The caller must be able to write the target; the provider throws when they can't, or
+        // when the target can't be read.
+        let targetContext: GenericRecord;
+        try {
+            targetContext = await this.targetContextProvider.provide({
+                app: input.app,
+                targetRevisionId: input.targetRevisionId
+            });
+        } catch (ex) {
+            if (ex instanceof WorkflowStateNotAuthorizedError) {
+                return Result.fail(ex);
+            }
+            return Result.fail(
+                new WorkflowStateNotAuthorizedError("Cannot access the workflow state target.")
             );
         }
 
@@ -81,6 +108,15 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
             targetRevisionId: input.targetRevisionId
         });
 
+        // Only "not found" means there is no active state; any other failure must not be
+        // treated as one (e.g. not authorized).
+        if (
+            existingStateResult.isFail() &&
+            existingStateResult.error.code !== "Workflows/State/NotFound"
+        ) {
+            return Result.fail(existingStateResult.error);
+        }
+
         if (existingStateResult.isOk()) {
             return Result.fail(
                 new ActiveStateExistsError({
@@ -99,11 +135,6 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
         }
 
         const identity = this.identityContext.getIdentity();
-
-        const targetContext = await this.targetContextProvider.provide({
-            app: input.app,
-            targetRevisionId: input.targetRevisionId
-        });
 
         const record: CreateWorkflowStateRepository.Input = {
             workflowId: workflow.id,

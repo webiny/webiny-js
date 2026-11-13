@@ -1,4 +1,7 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { ensureCanTriggerSystemTask } from "~/tasks/ensureCanTriggerSystemTask.js";
 import type {
     IDataSynchronizationInput,
     IDataSynchronizationOutput
@@ -21,7 +24,9 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
 
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
-        private readonly sync: ElasticsearchToDynamoDbSynchronization.Interface
+        private readonly sync: ElasticsearchToDynamoDbSynchronization.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly tenantContext: TenantContext.Interface
     ) {}
 
     async run({
@@ -62,9 +67,21 @@ class DataSynchronizationTaskImpl implements TaskDefinition.Interface<
                 })
         };
     }
+
+    async onBeforeTrigger() {
+        await ensureCanTriggerSystemTask({
+            identityContext: this.identityContext,
+            tenantContext: this.tenantContext
+        });
+    }
 }
 
 export const DataSynchronizationTask = TaskDefinition.createImplementation({
     implementation: DataSynchronizationTaskImpl,
-    dependencies: [IndexManagerFactory, ElasticsearchToDynamoDbSynchronization]
+    dependencies: [
+        IndexManagerFactory,
+        ElasticsearchToDynamoDbSynchronization,
+        IdentityContext,
+        TenantContext
+    ]
 });

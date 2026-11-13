@@ -89,4 +89,19 @@ export class MockCognitoService implements CognitoService.Interface {
         }
         this.users.delete(username);
     }
+
+    async resetMfa(username: string): Promise<void> {
+        if (this.shouldThrowError && this.errorToThrow) {
+            throw this.errorToThrow;
+        }
+        const user = this.users.get(username);
+        if (user) {
+            user.mfaResets = (user.mfaResets ?? 0) + 1;
+        }
+    }
+
+    /** How many times the account's MFA was reset. */
+    getMfaResets(username: string): number {
+        return this.users.get(username)?.mfaResets ?? 0;
+    }
 }

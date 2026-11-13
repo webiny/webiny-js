@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
 import type { IResolvedAiCapability } from "./abstractions.js";
@@ -31,8 +31,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
     constructor(
         capabilities: AiCapability.Interface[],
-        private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface
+        private getSettings: GetDecryptedSettingsUseCase.Interface
     ) {
         this.capabilityLookup = new Map(capabilities.map(c => [c.id, c]));
     }
@@ -51,6 +50,9 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
+            if (settingsResult.error instanceof NotAuthorizedError) {
+                return Result.fail(settingsResult.error);
+            }
             return Result.fail(new Error("Failed to load AI Power-Ups settings."));
         }
 
@@ -87,7 +89,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
             );
         }
 
-        if (!connection.apiKeyEncrypted) {
+        if (!connection.apiKey) {
             return Result.fail(
                 new Error(
                     `The connection "${connection.name}" has no API key. Add one under ${SETTINGS_PATH} → Connections.`
@@ -114,7 +116,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
             model,
             connection: {
                 sdkName: modelSdkName || connection.sdkName,
-                apiKey: await this.encryption.decrypt(connection.apiKeyEncrypted)
+                apiKey: connection.apiKey
             },
             roleId,
             fellBackToStandard,
@@ -203,8 +205,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
     }
 }
 
-export const ResolveAiCapabilityUseCaseImplementation =
-    ResolveAiCapabilityUseCase.createImplementation({
-        implementation: ResolveAiCapabilityUseCaseImpl,
-        dependencies: [[AiCapability, { multiple: true }], GetSettingsUseCase, Encryption]
-    });
+export default ResolveAiCapabilityUseCase.createImplementation({
+    implementation: ResolveAiCapabilityUseCaseImpl,
+    dependencies: [[AiCapability, { multiple: true }], GetDecryptedSettingsUseCase]
+});

@@ -45,6 +45,11 @@ class MoveEntryToBinUseCaseImpl implements UseCaseAbstraction.Interface {
         const getResult = await this.getLatestRevision.execute(model, { id });
 
         if (getResult.isFail()) {
+            /* Keep "not authorized" as is. Turning it into "not found" would let a force delete
+               treat someone else's entry as an orphan and wipe it. */
+            if (getResult.error.code === "Cms/Entry/NotAuthorized") {
+                return Result.fail(getResult.error);
+            }
             return Result.fail(new EntryNotFoundError(id));
         }
 

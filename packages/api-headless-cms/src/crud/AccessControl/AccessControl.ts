@@ -8,6 +8,10 @@ import type {
 } from "~/types/index.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
+import type {
+    IModelAccessGuard,
+    IModelAccessGuardParams
+} from "~/features/contentModel/ModelAccessGuard/abstractions.js";
 
 export interface AccessControlParams {
     getIdentity: () => Promise<SecurityIdentity>;
@@ -15,6 +19,10 @@ export interface AccessControlParams {
     getModelsPermissions: () => Promise<CmsModelPermission[]>;
     getEntriesPermissions: () => Promise<CmsEntryPermission[]>;
     listAllGroups: () => Promise<CmsGroup[]>;
+    /**
+     * Additional access rules for specific models. See `ModelAccessGuard`.
+     */
+    getModelAccessGuards?: () => IModelAccessGuard[];
 }
 
 interface GetGroupsAccessControlListParams {
@@ -67,6 +75,7 @@ export class AccessControl {
     private getModelsPermissions: AccessControlParams["getModelsPermissions"];
     private getEntriesPermissions: AccessControlParams["getEntriesPermissions"];
     private listAllGroupsCallback: AccessControlParams["listAllGroups"];
+    private getModelAccessGuards: NonNullable<AccessControlParams["getModelAccessGuards"]>;
 
     private fullAccessPermissions: string[];
     private allGroups: null | Promise<CmsGroup[]>;
@@ -76,7 +85,8 @@ export class AccessControl {
         getGroupsPermissions,
         getModelsPermissions,
         getEntriesPermissions,
-        listAllGroups
+        listAllGroups,
+        getModelAccessGuards
     }: AccessControlParams) {
         this.getIdentity = getIdentity;
         this.getGroupsPermissions = getGroupsPermissions;
@@ -84,6 +94,7 @@ export class AccessControl {
         this.getEntriesPermissions = getEntriesPermissions;
         this.fullAccessPermissions = ["*", "cms.*"];
         this.listAllGroupsCallback = listAllGroups;
+        this.getModelAccessGuards = getModelAccessGuards ?? (() => []);
         this.allGroups = null;
     }
 
@@ -202,6 +213,13 @@ export class AccessControl {
      */
 
     async canAccessModel(params: CanAccessModelParams) {
+        if (params.model) {
+            const passes = await this.passesModelAccessGuards(params.model, { rwd: params.rwd });
+            if (!passes) {
+                return false;
+            }
+        }
+
         const acl = await this.getModelsAccessControlList(params);
 
         const canRead = acl.find(ace => ace.rwd.includes("r"));
@@ -217,6 +235,22 @@ export class AccessControl {
             }
         }
 
+        return true;
+    }
+
+    /**
+     * Every guard that handles the model must allow access.
+     */
+    private async passesModelAccessGuards(
+        model: Pick<CmsModel, "modelId">,
+        params: IModelAccessGuardParams
+    ): Promise<boolean> {
+        const guards = this.getModelAccessGuards().filter(guard => guard.canHandle(model));
+        for (const guard of guards) {
+            if (!(await guard.canAccess(params))) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -410,6 +444,14 @@ export class AccessControl {
      */
 
     async canAccessEntry(params: CanAccessEntryParams) {
+        const passes = await this.passesModelAccessGuards(params.model, {
+            rwd: params.rwd,
+            pw: params.pw
+        });
+        if (!passes) {
+            return false;
+        }
+
         const acl = await this.getEntriesAccessControlList(params);
 
         const canRead = acl.find(ace => ace.rwd.includes("r"));
@@ -459,6 +501,15 @@ export class AccessControl {
     async canAccessOnlyOwnedEntries(params: GetEntriesAccessControlListParams) {
         const canAccessNonOwned = await this.canAccessNonOwnedEntries(params);
         return !canAccessNonOwned;
+    }
+
+    /**
+     * Security: whether the identity can write entries it does not own. Used to decide whether
+     * ownership-related meta fields (createdBy, ...) may be set from input.
+     */
+    async canWriteNonOwnedEntries(params: GetEntriesAccessControlListParams) {
+        const acl = await this.getEntriesAccessControlList(params);
+        return acl.some(ace => ace.canAccessNonOwned && ace.rwd?.includes("w"));
     }
 
     private async getEntriesAccessControlList(

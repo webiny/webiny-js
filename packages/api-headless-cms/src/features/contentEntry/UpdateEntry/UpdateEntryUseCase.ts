@@ -12,6 +12,7 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { EntryLockedError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/features/contentEntry/shared/entryOwnerAccess.js";
 import { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/index.js";
 
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -47,6 +48,19 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(new EntryLockedError());
             }
 
+            // Security: write access must be checked against the entry as it is now, not only
+            // against the updated entry (whose meta fields, e.g. createdBy, can come from input).
+            if (!isSingletonModel(model)) {
+                const canWriteOriginal = await this.accessControl.canAccessEntry({
+                    model,
+                    entry: originalEntry,
+                    rwd: "w"
+                });
+                if (!canWriteOriginal) {
+                    return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                }
+            }
+
             const dataResult = await this.updateEntryDataFactory.create<T>(
                 model,
                 rawInput,
@@ -58,14 +72,18 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             }
             const { entry, input } = dataResult.value;
 
-            const canAccessEntry = await this.accessControl.canAccessEntry({
-                model,
-                entry,
-                rwd: "w"
-            });
+            // Singleton entries are shared by everyone who can access the model, so the
+            // entry-level (owner) check is skipped for them.
+            if (!isSingletonModel(model)) {
+                const canAccessEntry = await this.accessControl.canAccessEntry({
+                    model,
+                    entry,
+                    rwd: "w"
+                });
 
-            if (!canAccessEntry) {
-                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                if (!canAccessEntry) {
+                    return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                }
             }
 
             await this.eventPublisher.publish(

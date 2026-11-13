@@ -13,6 +13,16 @@ import { ListLatestEntriesWithFlpDecorator } from "./decorators/ListLatestEntrie
 import { ListPublishedEntriesWithFlpDecorator } from "./decorators/ListPublishedEntriesWithFlpDecorator.js";
 import { ListDeletedEntriesWithFlpDecorator } from "./decorators/ListDeletedEntriesWithFlpDecorator.js";
 import { ListEntriesWithFlpDecorator } from "./decorators/ListEntriesWithFlpDecorator.js";
+import { GetRevisionByIdWithFlpDecorator } from "./decorators/GetRevisionByIdWithFlpDecorator.js";
+import { GetLatestRevisionByEntryIdWithFlpDecorator } from "./decorators/GetLatestRevisionByEntryIdWithFlpDecorator.js";
+import { GetEntriesByIdsWithFlpDecorator } from "./decorators/GetEntriesByIdsWithFlpDecorator.js";
+import { GetRevisionsByEntryIdWithFlpDecorator } from "./decorators/GetRevisionsByEntryIdWithFlpDecorator.js";
+import { GetUniqueFieldValuesWithFlpDecorator } from "./decorators/GetUniqueFieldValuesWithFlpDecorator.js";
+import { PublishEntryWithFlpDecorator } from "./decorators/PublishEntryWithFlpDecorator.js";
+import { UnpublishEntryWithFlpDecorator } from "./decorators/UnpublishEntryWithFlpDecorator.js";
+import { RepublishEntryWithFlpDecorator } from "./decorators/RepublishEntryWithFlpDecorator.js";
+import { RestoreEntryFromBinWithFlpDecorator } from "./decorators/RestoreEntryFromBinWithFlpDecorator.js";
+import { UpdateRevisionDescriptionWithFlpDecorator } from "./decorators/UpdateRevisionDescriptionWithFlpDecorator.js";
 
 export const CmsFlpFeature = createFeature({
     name: "Aco/CmsFlp",
@@ -24,14 +34,25 @@ export const CmsFlpFeature = createFeature({
         container.registerDecorator(DeleteEntryWithFlpDecorator);
         container.registerDecorator(DeleteEntryRevisionWithFlpDecorator);
         container.registerDecorator(MoveEntryWithFlpDecorator);
+        container.registerDecorator(PublishEntryWithFlpDecorator);
+        container.registerDecorator(UnpublishEntryWithFlpDecorator);
+        container.registerDecorator(RepublishEntryWithFlpDecorator);
+        container.registerDecorator(RestoreEntryFromBinWithFlpDecorator);
+        container.registerDecorator(UpdateRevisionDescriptionWithFlpDecorator);
 
         // Query decorators - single entry
         container.registerDecorator(GetEntryWithFlpDecorator);
         container.registerDecorator(GetEntryByIdWithFlpDecorator);
+        // Also covers use cases that load the entry through it (e.g. ValidateEntry, DuplicateEntry).
+        container.registerDecorator(GetRevisionByIdWithFlpDecorator);
+        container.registerDecorator(GetLatestRevisionByEntryIdWithFlpDecorator);
 
         // Query decorators - multiple entries
         container.registerDecorator(GetLatestEntriesByIdsWithFlpDecorator);
         container.registerDecorator(GetPublishedEntriesByIdsWithFlpDecorator);
+        container.registerDecorator(GetEntriesByIdsWithFlpDecorator);
+        container.registerDecorator(GetRevisionsByEntryIdWithFlpDecorator);
+        container.registerDecorator(GetUniqueFieldValuesWithFlpDecorator);
 
         // Query decorators - list entries
         container.registerDecorator(ListEntriesWithFlpDecorator);

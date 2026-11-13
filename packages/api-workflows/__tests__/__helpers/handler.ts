@@ -97,7 +97,7 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
     plugins.register(createWorkflows());
     const handler = useContextHandler({
         ...params,
-        permissions: [
+        permissions: params.permissions || [
             {
                 name: "*"
             }

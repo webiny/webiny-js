@@ -43,7 +43,7 @@ class DeleteGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         const group = getResult.value;
 
         // Access control check on group
-        const canAccessGroup = await this.accessControl.canAccessGroup({ group });
+        const canAccessGroup = await this.accessControl.canAccessGroup({ group, rwd: "d" });
         if (!canAccessGroup) {
             return Result.fail(new GroupNotAuthorizedError());
         }

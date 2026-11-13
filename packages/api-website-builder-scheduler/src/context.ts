@@ -1,6 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
 import { CancelScheduledActionOnChangeFeature } from "~/features/CancelScheduledActionOnChange/feature.js";
-import { WbSchedulerPermissions } from "~/features/permissions/WbSchedulerPermissions.js";
 import { PageNamespaceHandler } from "~/features/NamespaceHandler/PageNamespaceHandler.js";
 import { RedirectNamespaceHandler } from "~/features/NamespaceHandler/RedirectNamespaceHandler.js";
 import { PublishPageActionHandler } from "~/features/PublishActionHandler/PublishPageActionHandler.js";
@@ -11,9 +10,15 @@ import { SchedulePublishPageUseCase } from "~/features/SchedulePublishPageUseCas
 import { ScheduleUnpublishPageUseCase } from "~/features/ScheduleUnpublishPageUseCase/ScheduleUnpublishPageUseCase.js";
 import { SchedulePublishRedirectUseCase } from "~/features/SchedulePublishRedirectUseCase/SchedulePublishRedirectUseCase.js";
 import { ScheduleUnpublishRedirectUseCase } from "~/features/ScheduleUnpublishRedirectUseCase/ScheduleUnpublishRedirectUseCase.js";
+import {
+    WbPageSchedulerPermissions,
+    WbRedirectSchedulerPermissions
+} from "~/features/permissions/WbSchedulerPermissions.js";
 
 export const createWebsiteBuilderScheduleContext = () => {
     return new ContextPlugin(async context => {
+        context.container.register(WbPageSchedulerPermissions);
+        context.container.register(WbRedirectSchedulerPermissions);
         context.container.register(PageNamespaceHandler);
         context.container.register(RedirectNamespaceHandler);
         context.container.register(PublishPageActionHandler);
@@ -26,6 +31,5 @@ export const createWebsiteBuilderScheduleContext = () => {
         context.container.register(ScheduleUnpublishRedirectUseCase);
 
         CancelScheduledActionOnChangeFeature.register(context.container);
-        context.container.register(WbSchedulerPermissions);
     });
 };

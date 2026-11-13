@@ -28,6 +28,7 @@ import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelive
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import { resolveTenantFilePath } from "~/utils/storagePaths.js";
 
 type TransformOptions = Omit<ImageRequestOptions, "original" | "crop" | "focal" | "aspectRatio">;
 
@@ -98,7 +99,12 @@ export class LocalSharpTransform implements IAssetTypeHandler {
     private async transformAsset(asset: Asset, options: TransformOptions, framing: Framing) {
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const transformedAssetKey = assetKey.getTransformedImageKey(options);
-        const transformedFilePath = path.join(this.storagePath, transformedAssetKey);
+        // Security: derivatives are read and written only inside the tenant's files.
+        const transformedFilePath = resolveTenantFilePath(
+            this.storagePath,
+            asset.getTenant(),
+            transformedAssetKey
+        );
 
         const contentType = options.format
             ? contentTypeForFormat(options.format)
@@ -160,7 +166,12 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
-        const optimizedFilePath = path.join(this.storagePath, optimizedAssetKey);
+        // Security: derivatives are read and written only inside the tenant's files.
+        const optimizedFilePath = resolveTenantFilePath(
+            this.storagePath,
+            asset.getTenant(),
+            optimizedAssetKey
+        );
 
         try {
             const buffer = await fs.readFile(optimizedFilePath);

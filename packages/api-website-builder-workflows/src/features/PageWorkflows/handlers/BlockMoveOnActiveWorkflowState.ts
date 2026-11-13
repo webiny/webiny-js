@@ -15,6 +15,10 @@ class BlockMoveOnActiveWorkflowStateImpl implements PageBeforeMoveEventHandler.I
         });
 
         if (stateResult.isFail()) {
+            // A refused read must not let the target move away from its review.
+            if (stateResult.error.code === "Workflows/State/NotAuthorized") {
+                throw stateResult.error;
+            }
             return;
         }
 

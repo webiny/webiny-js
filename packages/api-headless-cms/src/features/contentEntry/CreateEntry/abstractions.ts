@@ -7,6 +7,7 @@ import type {
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
 import type {
+    EntryAlreadyExistsError,
     EntryNotAuthorizedError,
     EntryPersistenceError,
     EntryValidationError
@@ -25,6 +26,7 @@ export interface ICreateEntryUseCase {
 
 export interface ICreateEntryUseCaseErrors {
     notAuthorized: EntryNotAuthorizedError;
+    alreadyExists: EntryAlreadyExistsError;
     validation: EntryValidationError;
     repository: RepositoryError;
 }

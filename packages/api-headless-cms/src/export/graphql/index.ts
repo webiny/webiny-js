@@ -4,6 +4,8 @@ import { ContextPlugin } from "@webiny/handler";
 import type { CmsContext } from "~/types/index.js";
 
 const plugin = createCmsGraphQLSchemaPlugin({
+    // Security: manage-only; a read/preview schema can be generated within a manage request.
+    isApplicable: context => context.cms.MANAGE,
     typeDefs: /* GraphQL */ `
         type CmsExportStructureResponse {
             data: String

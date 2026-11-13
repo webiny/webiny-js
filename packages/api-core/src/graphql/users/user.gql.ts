@@ -9,7 +9,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import type { ApiCoreContext } from "~/types/core.js";
 import { AdminUser } from "~/types/users.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
-import NotAuthorizedResponse from "~/graphql/security/NotAuthorizedResponse.js";
+import { GetCurrentUserUseCase } from "~/features/users/GetCurrentUser/index.js";
 import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
 
 const emptyResolver = () => ({});
@@ -107,7 +107,9 @@ export const createUsersGraphQL = () => {
                     }
                 },
                 AdminUsersQuery: {
-                    getUser: async (_, { where }: any, context) => {
+                    getUser: async (_, args: any, context) => {
+                        // `where` is optional in the schema.
+                        const where = args.where ?? {};
                         const getUser = context.container.resolve(GetUserUseCase);
 
                         const userResult = await getUser.execute({
@@ -133,30 +135,14 @@ export const createUsersGraphQL = () => {
                         return new Response(userResult.value);
                     },
                     getCurrentUser: async (_, __, context) => {
-                        const identity = context.security.getIdentity();
+                        const getCurrentUser = context.container.resolve(GetCurrentUserUseCase);
 
-                        if (!identity.isAdmin()) {
-                            throw new NotAuthorizedResponse();
-                        }
+                        const userResult = await getCurrentUser.execute();
 
-                        // Current user might not have permissions to execute `getUser` (this method can load any user in the system),
-                        // but loading your own user record should be allowed. For that reason, let's temporarily disable authorization.
-
-                        const getUser = context.container.resolve(GetUserUseCase);
-
-                        const userResponse = await context.security.withoutAuthorization(
-                            async () => {
-                                // Get user record using the identity ID.
-                                return await getUser.execute({ id: identity.id });
-                            }
-                        );
-
-                        if (userResponse.isFail()) {
-                            const error = userResponse.error;
+                        if (userResult.isFail()) {
+                            const error = userResult.error;
                             if (error.code === "AdminUser/NotFound") {
-                                return new NotFoundResponse(
-                                    `User with ID ${identity.id} was not found!`
-                                );
+                                return new NotFoundResponse("Current user was not found!");
                             }
 
                             return new ErrorResponse({
@@ -166,7 +152,7 @@ export const createUsersGraphQL = () => {
                             });
                         }
 
-                        return new Response(userResponse.value);
+                        return new Response(userResult.value);
                     },
                     listUsers: async (_, __, context) => {
                         const listUsers = context.container.resolve(ListUsersUseCase);

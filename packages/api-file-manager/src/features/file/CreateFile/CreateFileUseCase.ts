@@ -7,11 +7,16 @@ import {
 import { GetSettingsUseCase } from "../../settings/GetSettings/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { File, FileInput } from "~/domain/file/types.js";
-import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
+import {
+    FileNotAuthorizedError,
+    InvalidFileKeyError,
+    InvalidFileSizeError
+} from "~/domain/file/errors.js";
 import { FileBeforeCreateEvent, FileAfterCreateEvent } from "./events.js";
 import { FmPermissions } from "~/features/shared/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Identity } from "~/domain/identity/Identity.js";
+import { isValidFileKey } from "~/features/file/shared/isValidFileKey.js";
 
 class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -37,11 +42,27 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const [id] = input.key.split("/");
+        const fileId = input.id || id;
+
+        // Security: the key must point at this file's own upload. Imports and migrations
+        // (running without authorization) may register any key.
+        if (this.identityContext.isAuthorizationEnabled() && !isValidFileKey(fileId, input.key)) {
+            return Result.fail(new InvalidFileKeyError({ id: fileId, key: input.key }));
+        }
+
         const currentIdentity = this.identityContext.getIdentity();
+
+        // Attribution and dates come from the server. Only full access, or code running without
+        // authorization (imports, migrations), may set them.
+        const systemInput: Partial<CreateFileInput> =
+            !this.identityContext.isAuthorizationEnabled() ||
+            (await this.identityContext.hasFullAccess())
+                ? input
+                : {};
 
         // Prepare file input
         const fileInput: FileInput = {
-            id: input.id || id,
+            id: fileId,
             key: input.key,
             name: input.name,
             size: input.size,
@@ -52,14 +73,16 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             description: input.description ?? "",
             extensions: meta || {},
             // system attributes
-            createdOn: input.createdOn,
-            modifiedOn: input.modifiedOn,
-            savedOn: input.savedOn,
-            createdBy: input.createdBy
-                ? Identity.from(input.createdBy)
+            createdOn: systemInput.createdOn,
+            modifiedOn: systemInput.modifiedOn,
+            savedOn: systemInput.savedOn,
+            createdBy: systemInput.createdBy
+                ? Identity.from(systemInput.createdBy)
                 : Identity.from(currentIdentity),
-            modifiedBy: input.modifiedBy ? Identity.from(input.modifiedBy) : undefined,
-            savedBy: input.savedBy ? Identity.from(input.savedBy) : Identity.from(currentIdentity)
+            modifiedBy: systemInput.modifiedBy ? Identity.from(systemInput.modifiedBy) : undefined,
+            savedBy: systemInput.savedBy
+                ? Identity.from(systemInput.savedBy)
+                : Identity.from(currentIdentity)
         };
 
         await this.eventPublisher.publish(new FileBeforeCreateEvent({ file: fileInput, meta }));

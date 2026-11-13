@@ -7,16 +7,31 @@ import {
     GetTargetWorkflowStateUseCase as UseCase
 } from "./abstractions.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
-import { WorkflowStateValidationError } from "~/domain/workflowState/errors.js";
+import { WorkflowStateFilter } from "../ListWorkflowStates/WorkflowStateFilter.js";
+import { filterReadableStates } from "../shared/filterReadableStates.js";
+import {
+    WorkflowStateNotAuthorizedError,
+    WorkflowStateValidationError
+} from "~/domain/workflowState/errors.js";
 
 class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private getUserTeams: GetUserTeamsUseCase.Interface,
-        private repository: GetTargetWorkflowStateRepository.Interface
+        private repository: GetTargetWorkflowStateRepository.Interface,
+        private stateFilter: WorkflowStateFilter.Interface
     ) {}
 
     async execute(input: UseCase.Params): UseCase.Return {
+        /* Workflow states can't be read anonymously. Background work (tasks, scheduler) runs
+           without authorization and keeps access. */
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const { version } = parseIdentifier(input.targetRevisionId);
         if (!version) {
             return Result.fail(
@@ -44,11 +59,26 @@ class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
 
         const workflowState = new WorkflowState(record, teams, identity);
 
+        // Only reviewers and those who can read the target may read the state.
+        const readable = await filterReadableStates({
+            identityContext: this.identityContext,
+            stateFilter: this.stateFilter,
+            items: [workflowState]
+        });
+        if (readable.length === 0) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         return Result.ok(workflowState);
     }
 }
 
 export const GetTargetWorkflowStateUseCase = UseCase.createImplementation({
     implementation: GetTargetWorkflowStateUseCaseImpl,
-    dependencies: [IdentityContext, GetUserTeamsUseCase, GetTargetWorkflowStateRepository]
+    dependencies: [
+        IdentityContext,
+        GetUserTeamsUseCase,
+        GetTargetWorkflowStateRepository,
+        WorkflowStateFilter
+    ]
 });

@@ -4,6 +4,7 @@ import type { File, FileInput } from "~/domain/file/types.js";
 import {
     type FilePersistenceError,
     type InvalidFileSizeError,
+    type InvalidFileKeyError,
     FileNotAuthorizedError
 } from "~/domain/file/errors.js";
 
@@ -47,6 +48,7 @@ export interface ICreateFilesInBatchUseCaseErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
     invalidSize: InvalidFileSizeError;
+    invalidKey: InvalidFileKeyError;
 }
 
 type UseCaseError = ICreateFilesInBatchUseCaseErrors[keyof ICreateFilesInBatchUseCaseErrors];

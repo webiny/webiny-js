@@ -9,6 +9,11 @@ import { createGraphQLSchema, getSchemaPlugins } from "./createGraphQLSchema.js"
 import debugPlugins from "./debugPlugins.js";
 import { processRequestBody } from "./processRequestBody.js";
 import { createRequestBody } from "~/createRequestBody.js";
+import {
+    isJsonContentType,
+    replyInvalidRequestBody,
+    replyUnsupportedMediaType
+} from "~/jsonContentType.js";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
@@ -26,14 +31,18 @@ const createCacheKey = (context: Context) => {
         .join("#");
 };
 
-const formatErrorPayload = (error: Error): string => {
+/**
+ * `includeDetails` controls `stack` and `data`. Logs always get them; a response only gets them
+ * when DEBUG is on, so internals (file paths, schema details) are not exposed to callers.
+ */
+const formatErrorPayload = (error: Error, includeDetails = true): string => {
     if (error instanceof WebinyError) {
         return JSON.stringify({
             type: "CoreGraphQLWebinyError",
             message: error.message,
             code: error.code,
-            data: error.data,
-            stack: error.stack
+            data: includeDetails ? error.data : null,
+            stack: includeDetails ? error.stack : null
         });
     }
 
@@ -41,7 +50,7 @@ const formatErrorPayload = (error: Error): string => {
         type: "Error",
         name: error.name,
         message: error.message,
-        stack: error.stack
+        stack: includeDetails ? error.stack : null
     });
 };
 
@@ -64,13 +73,20 @@ export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
                 .hijack();
         });
         onPost(path, async (request, reply) => {
+            if (!isJsonContentType(request)) {
+                return replyUnsupportedMediaType(reply);
+            }
             const contextCacheKey = createCacheKey(context as Context);
             if (!schema || cacheKey !== contextCacheKey) {
                 try {
                     schema = await createGraphQLSchema(context);
                     cacheKey = contextCacheKey;
                 } catch (ex) {
-                    return reply.code(500).send(formatErrorPayload(ex));
+                    console.error(`Error while building the GraphQL schema.`);
+                    console.error(formatErrorPayload(ex));
+                    return reply
+                        .code(500)
+                        .send(formatErrorPayload(ex, process.env.DEBUG === "true"));
                 }
             }
             let body: GraphQLRequestBody | GraphQLRequestBody[];
@@ -79,6 +95,10 @@ export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
             } catch (ex) {
                 console.error(`Error while creating the body request.`);
                 console.error(formatErrorPayload(ex));
+                const invalidRequestReply = replyInvalidRequestBody(reply, ex);
+                if (invalidRequestReply) {
+                    return invalidRequestReply;
+                }
                 throw ex;
             }
             try {

@@ -2,6 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateApiKeyUseCase as UpdateApiKeyUseCaseAbstraction } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { hasFullAccessOrNoAuthorization } from "../../utils/canGrantPermissions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
@@ -29,6 +30,11 @@ class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interfac
     ): Promise<Result<ApiKey, UpdateApiKeyUseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
+            return Result.fail(new ApiKeyNotAuthorizedError());
+        }
+
+        // Security: an API key can carry any permission, so only full access may write one.
+        if (!(await hasFullAccessOrNoAuthorization(this.identityContext))) {
             return Result.fail(new ApiKeyNotAuthorizedError());
         }
 

@@ -3,6 +3,7 @@ import { ErrorResponse } from "@webiny/handler-graphql";
 import { ListResponse } from "@webiny/handler-graphql";
 import { NotFoundResponse } from "@webiny/handler-graphql";
 import { Response } from "@webiny/handler-graphql";
+import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
@@ -322,9 +323,17 @@ class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
     private addSettingsResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         builder.addResolver({
             path: "FmQuery.getSettings",
-            dependencies: [GetSettingsUseCase],
-            resolver: (getSettings: GetSettingsUseCase.Interface) => {
+            dependencies: [IdentityContext, GetSettingsUseCase],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                getSettings: GetSettingsUseCase.Interface
+            ) => {
                 return async () => {
+                    // Security: settings are not public.
+                    if (identityContext.getIdentity().isAnonymous()) {
+                        return new NotAuthorizedResponse();
+                    }
+
                     const result = await getSettings.execute();
 
                     if (result.isFail()) {
@@ -366,9 +375,16 @@ class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "FmQuery.getFileModel",
-            dependencies: [FileModel],
-            resolver: (fileModel: FileModel.Interface) => {
+            dependencies: [IdentityContext, FileModel],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                fileModel: FileModel.Interface
+            ) => {
                 return () => {
+                    if (identityContext.getIdentity().isAnonymous()) {
+                        return new NotAuthorizedResponse();
+                    }
+
                     return new Response(fileModel);
                 };
             }

@@ -7,6 +7,8 @@ import {
 } from "./abstractions.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import { WorkflowStateFilter } from "./WorkflowStateFilter.js";
+import { WorkflowStateNotAuthorizedError } from "~/domain/workflowState/errors.js";
+import { filterReadableStates } from "../shared/filterReadableStates.js";
 
 class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -17,6 +19,15 @@ class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(params: UseCase.Params = {}): UseCase.Return {
+        /* Workflow states can't be read anonymously. Background work (tasks, scheduler) runs
+           without authorization and keeps access. */
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const identity = this.identityContext.getIdentity();
 
         const teamsResult = await this.getUserTeams.execute(identity.id);
@@ -47,7 +58,11 @@ class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
             totalCount = meta.totalCount;
 
             const items = records.map(record => new WorkflowState(record, teams, identity));
-            const filtered = await this.stateFilter.filter(items);
+            const filtered = await filterReadableStates({
+                identityContext: this.identityContext,
+                stateFilter: this.stateFilter,
+                items
+            });
 
             totalRemoved += items.length - filtered.length;
             accumulated.push(...filtered);

@@ -11,12 +11,17 @@ export interface ICmsFieldRendererFormBuilder {
     layout(fn: (layout: FormModelFactory.LayoutBuilder) => FormModel.LayoutNodeBuilder[]): void;
 }
 
+export interface ICmsFieldRendererCanUseParams {
+    field: CmsModelField;
+    model: CmsModel;
+}
+
 export interface ICmsFieldRenderer {
     readonly rendererName: string;
     readonly formRenderer: string;
     readonly name: string;
     readonly description: string;
-    canUse(context: { field: CmsModelField; model: CmsModel }): boolean;
+    canUse(context: ICmsFieldRendererCanUseParams): boolean;
     buildSettingsForm?(form: ICmsFieldRendererFormBuilder): void;
 }
 
@@ -25,4 +30,5 @@ export const CmsFieldRenderer = createAbstraction<ICmsFieldRenderer>("CmsFieldRe
 export namespace CmsFieldRenderer {
     export type Interface = ICmsFieldRenderer;
     export type FormBuilder = ICmsFieldRendererFormBuilder;
+    export type CanUseParams = ICmsFieldRendererCanUseParams;
 }

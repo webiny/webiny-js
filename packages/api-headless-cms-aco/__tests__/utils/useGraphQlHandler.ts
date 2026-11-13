@@ -21,7 +21,7 @@ import {
     RESTORE_ENTRY
 } from "~tests/graphql/cms.gql";
 
-import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
+import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER, UPDATE_FOLDER } from "~tests/graphql/folder.gql";
 import { SecurityPermission } from "@webiny/api-core/types/security";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
@@ -133,6 +133,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const aco = {
         async createFolder(variables = {}, fields: string[] = []) {
             return invoke({ body: { query: CREATE_FOLDER(fields), variables } });
+        },
+        async updateFolder(variables = {}, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_FOLDER(fields), variables } });
         },
         async deleteFolder(variables = {}) {
             return invoke({ body: { query: DELETE_FOLDER, variables } });

@@ -20,6 +20,9 @@ export const fullyDeleteModel = async (
     const { context, modelId } = params;
 
     const model = await context.cms.getModel(modelId);
+    if (!model) {
+        throw new Error(`Model "${modelId}" not found.`);
+    }
 
     if (model.isPrivate) {
         throw new Error(`Cannot delete private model.`);
@@ -30,13 +33,16 @@ export const fullyDeleteModel = async (
         throw new NotAuthorizedError(`Not allowed to access content model "${model.name}".`);
     }
 
-    const canAccessEntry = await context.cms.accessControl.canAccessEntry({ model, rwd: "w" });
-    if (!canAccessEntry) {
-        throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
-    }
-
-    if (!model) {
-        throw new Error(`Model "${modelId}" not found.`);
+    /**
+     * Security: the task deletes every entry of the model, so the caller must be able to
+     * delete entries and must not be limited to its own entries.
+     */
+    const canAccessEntry = await context.cms.accessControl.canAccessEntry({ model, rwd: "d" });
+    const onlyOwnedEntries = await context.cms.accessControl.canAccessOnlyOwnedEntries({
+        model
+    });
+    if (!canAccessEntry || onlyOwnedEntries) {
+        throw new NotAuthorizedError(`Not allowed to delete "${model.modelId}" entries.`);
     }
     const storeKey = createStoreKey(model);
     const result = await context.db.store.getValue<IStoreValue>(storeKey);

@@ -6,7 +6,8 @@ import type { CmsModel } from "~/types/index.js";
  */
 export const getModel = async (context: CmsContext, modelId: string): Promise<CmsModel> => {
     const model = await context.cms.getModel(modelId);
-    if (!model) {
+    // Private models are internal, so they are treated as unknown.
+    if (!model || model.isPrivate) {
         throw new Error(`Model "${modelId}" not found`);
     }
     return model;

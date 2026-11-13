@@ -22,6 +22,7 @@ import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@web
 import { config as appConfig } from "@webiny/app/config.js";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { LinkAccountAlert } from "./components/LinkAccountAlert.js";
+import { ResetMfa } from "./components/ResetMfa.js";
 import { useUserForm } from "~/admin/ui/views/Users/hooks/useUserForm.js";
 import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
 import { Routes } from "~/admin/routes.js";
@@ -195,6 +196,9 @@ export const UserForm = createReactiveComponent(({ teams }: UserFormProps) => {
                                             </Bind>
                                         </Grid.Column>
                                     )}
+                                    {!isNewUser && userForm.user ? (
+                                        <ResetMfa key={userForm.user.id} user={userForm.user} />
+                                    ) : null}
                                 </Grid>
                             </Accordion.Item>
                             <Accordion.Item

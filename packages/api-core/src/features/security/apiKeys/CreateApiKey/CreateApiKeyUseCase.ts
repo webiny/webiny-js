@@ -4,6 +4,7 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateApiKeyUseCase as CreateApiKeyUseCaseAbstraction } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { hasFullAccessOrNoAuthorization } from "../../utils/canGrantPermissions.js";
 import { createApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeCreateEvent, ApiKeyAfterCreateEvent } from "./events.js";
 import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
@@ -25,6 +26,11 @@ class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interfac
             await this.identityContext.getPermission<ApiKeyPermission>("security.apiKey");
 
         if (!hasPermission) {
+            return Result.fail(new ApiKeyNotAuthorizedError());
+        }
+
+        // Security: an API key can carry any permission, so only full access may write one.
+        if (!(await hasFullAccessOrNoAuthorization(this.identityContext))) {
             return Result.fail(new ApiKeyNotAuthorizedError());
         }
 
