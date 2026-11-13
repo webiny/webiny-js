@@ -40,6 +40,7 @@ import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
+import { ModelAccessGuard } from "~/features/contentModel/ModelAccessGuard/index.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -125,7 +126,9 @@ export const createContextPlugin = () => {
                 return context.security.withoutAuthorization(() => {
                     return context.cms.listGroups();
                 });
-            }
+            },
+            // Resolved on each check: guards may be registered after this context is created.
+            getModelAccessGuards: () => context.container.resolveAll(ModelAccessGuard)
         });
 
         const storageOperationsFactory = context.container.resolve(StorageOperationsFactory);
