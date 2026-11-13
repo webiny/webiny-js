@@ -9,11 +9,6 @@ import {
     GetLatestRevisionByEntryIdUseCase
 } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
-import {
-    ENTRY_CREATED_WEBSOCKET_ACTION,
-    ENTRY_DELETED_WEBSOCKET_ACTION,
-    ENTRY_UPDATED_WEBSOCKET_ACTION
-} from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "../lifecycleHooks/mocks/article.model";
 import { createModelPlugin } from "~/plugins/index.js";
@@ -116,8 +111,8 @@ describe("entry write tools", () => {
         expect(created).toMatchObject({ status: "draft", values: { title: "Coffee guide" } });
         expect(sent).toEqual([
             {
-                action: ENTRY_CREATED_WEBSOCKET_ACTION,
-                data: { modelId: "guide", entryId: created.entryId }
+                action: "record.changed",
+                data: { type: "cms.entry", id: created.entryId, scope: "guide", change: "created" }
             }
         ]);
     });
@@ -140,8 +135,8 @@ describe("entry write tools", () => {
         });
         expect(sent).toEqual([
             {
-                action: ENTRY_UPDATED_WEBSOCKET_ACTION,
-                data: { modelId: "guide", entryId: created.entryId }
+                action: "record.changed",
+                data: { type: "cms.entry", id: created.entryId, scope: "guide", change: "updated" }
             }
         ]);
     });
@@ -227,10 +222,33 @@ describe("entry write tools", () => {
         expect(inBin.isOk()).toBe(true);
         expect(sent).toEqual([
             {
-                action: ENTRY_DELETED_WEBSOCKET_ACTION,
-                data: { modelId: "guide", entryId: created.entryId }
+                action: "record.changed",
+                data: { type: "cms.entry", id: created.entryId, scope: "guide", change: "deleted" }
             }
         ]);
+    });
+
+    it("refuses values for fields the model does not have, and saves nothing", async () => {
+        await expect(
+            getTool(container, "createEntry").execute({
+                modelId: "guide",
+                values: { title: "Coffee guide", colour: "brown", body: "Grind." }
+            })
+        ).rejects.toThrow('Unknown fields "colour", "body" in "guide"');
+        expect(sent).toEqual([]);
+
+        const created = await create("Coffee guide");
+        sent.length = 0;
+
+        await expect(
+            getTool(container, "updateEntry").execute({
+                modelId: "guide",
+                entryId: created.entryId,
+                values: { headline: "Coffee guide, second edition" }
+            })
+        ).rejects.toThrow('Unknown field "headline" in "guide"');
+        expect((await latest(created.entryId))?.values.title).toBe("Coffee guide");
+        expect(sent).toEqual([]);
     });
 
     it("refuses a private model", async () => {

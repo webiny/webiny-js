@@ -17,6 +17,11 @@ export interface RecordChangedMessageData {
     /** Names the kind of record, such as `security.team`. The admin handlers filter on it. */
     type: string;
     id: string;
+    /**
+     * For a record whose id only means something inside a parent: the parent's id. A CMS entry
+     * carries its model id here, which the admin needs to read the entry back.
+     */
+    scope?: string;
     change: RecordChange;
 }
 

@@ -3,7 +3,8 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
-import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
+import { ENTRY_RECORD_TYPE } from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { getLatestEntryRevision } from "./models.js";
 import { getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
@@ -21,7 +22,7 @@ class PublishEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         private getModel: GetModelUseCase.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private publishEntry: PublishEntryUseCase.Interface,
-        private notifyEntryChange: NotifyEntryChangeUseCase.Interface
+        private notifyRecordChange: NotifyRecordChangeUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<EntrySummary> {
@@ -39,9 +40,10 @@ class PublishEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         }
 
         const entry = result.value;
-        await this.notifyEntryChange.execute({
-            modelId: model.modelId,
-            entryId: entry.entryId,
+        await this.notifyRecordChange.execute({
+            type: ENTRY_RECORD_TYPE,
+            id: entry.entryId,
+            scope: model.modelId,
             change: "updated"
         });
 
@@ -55,7 +57,7 @@ const PublishEntryToolHandler = AiSdkToolHandler.createImplementation({
         GetModelUseCase,
         GetLatestRevisionByEntryIdUseCase,
         PublishEntryUseCase,
-        NotifyEntryChangeUseCase
+        NotifyRecordChangeUseCase
     ]
 });
 
