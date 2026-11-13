@@ -28,6 +28,7 @@ import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/features/users/UpdateUser/index.js";
+import { DeleteUserUseCase } from "~/features/users/DeleteUser/index.js";
 import type { Role } from "~/features/security/roles/shared/types.js";
 
 class TestAuthorizer implements Authorizer.Interface {
@@ -424,6 +425,33 @@ describe("Granting permissions: only what the caller holds", () => {
 
             expect(result.isFail()).toBe(true);
             expect(result.error?.code).toBe("AdminUser/NotAuthorized");
+        });
+
+        it("refuses to delete a user who has more than the caller holds", async () => {
+            const fullAccess = await createRole("full-access", [{ name: "*" }], true);
+            const admin = await container
+                .resolve(CreateUserUseCase)
+                .execute(userInput("admin@example.com", [fullAccess.id]));
+            expect(admin.isOk()).toBe(true);
+            signInWith(LIMITED_PERMISSIONS);
+
+            const result = await container.resolve(DeleteUserUseCase).execute(admin.value!.id);
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("AdminUser/NotAuthorized");
+        });
+
+        it("lets the caller delete a user whose roles they could assign", async () => {
+            const files = await createRole("files", [{ name: "fm.file", rwd: "r" }]);
+            const user = await container
+                .resolve(CreateUserUseCase)
+                .execute(userInput("user@example.com", [files.id]));
+            expect(user.isOk()).toBe(true);
+            signInWith(LIMITED_PERMISSIONS);
+
+            const result = await container.resolve(DeleteUserUseCase).execute(user.value!.id);
+
+            expect(result.isOk()).toBe(true);
         });
 
         it("full access may assign any role", async () => {
