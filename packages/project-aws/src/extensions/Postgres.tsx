@@ -3,7 +3,11 @@ import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { postgresParamsSchema } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
-import { DatabaseSetup } from "@webiny/project/extensions/index.js";
+import {
+    ApiAfterBuild,
+    DatabaseSetup,
+    ProjectDecorator
+} from "@webiny/project/extensions/index.js";
 import { CorePulumi } from "~/pulumi/extensions/CorePulumi.js";
 
 const p = createPathResolver(import.meta.dirname, "Postgres");
@@ -24,6 +28,9 @@ export const Postgres = defineExtension({
                 <DatabaseSetup setupName="pg" />
                 <CoreBeforeDeploy src={p("ValidatePostgresBeforeCoreDeploy.js")} />
                 <CorePulumi src={p("AddCorePostgres.js")} />
+                {/* Every API function runs the one api bundle: its Postgres entry, with knex + pg. */}
+                <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
+                <ApiAfterBuild src={p("CopyPgModulesAfterApiBuild.js")} />
             </>
         );
     }

@@ -34,7 +34,21 @@ export class SetupAwsWebinyProject {
             "@webiny/project-aws": "latest"
         });
 
-        // Update .env file.
+        /*
+         * On Postgres, the CMS storage and the folder catalog are modules `webiny.config.tsx` adds
+         * (`<HeadlessCmsPg />`, `<AcoPg />`), and the API functions run the handlers of
+         * `@webiny/api-event-handler-aws-pg`, which brings knex and pg. Only Postgres projects
+         * install them.
+         */
+        if (awsArgs.storageOps === "pg") {
+            addProjectDependencies(projectRootFolderPath, {
+                "@webiny/api-aco-pg": "latest",
+                "@webiny/api-event-handler-aws-pg": "latest",
+                "@webiny/api-headless-cms-pg": "latest"
+            });
+        }
+
+        // Write the chosen region into `webiny.config.tsx`.
         const webinyConfigTsxEnvFilePath = path.join(projectRootFolderPath, "webiny.config.tsx");
         let content = fs.readFileSync(webinyConfigTsxEnvFilePath).toString();
         content = content.replace("{REGION}", awsArgs.region);
