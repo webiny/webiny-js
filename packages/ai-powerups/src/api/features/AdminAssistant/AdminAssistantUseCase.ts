@@ -18,7 +18,7 @@ import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
 import type { AdminAssistantParams } from "./abstractions.js";
-import { isReadOnly } from "./approvals.js";
+import { isReadOnly } from "~/api/features/shared/readOnlyTools.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
