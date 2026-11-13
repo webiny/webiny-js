@@ -2,6 +2,8 @@ import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webin
 import type { AuditLogsContext } from "~/types.js";
 import { getValidationSchema, listValidationSchema } from "./validation.js";
 import { createZodError } from "@webiny/utils";
+import { GetAuditLogUseCase } from "~/features/GetAuditLog/index.js";
+import { ListAuditLogsUseCase } from "~/features/ListAuditLogs/index.js";
 
 interface IListAuditLogsWhere {
     app?: string;
@@ -110,13 +112,17 @@ export const createGraphQLSchema = () => {
                             throw createZodError(validation.error);
                         }
 
-                        const result = await context.auditLogs.getAuditLog(validation.data.id);
-                        if (!result) {
+                        const getAuditLog = context.container.resolve(GetAuditLogUseCase);
+                        const result = await getAuditLog.execute(validation.data.id);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        if (!result.value) {
                             throw new NotFoundError(
                                 `Audit log with id "${validation.data.id}" not found.`
                             );
                         }
-                        return result;
+                        return result.value;
                     });
                 },
                 async listAuditLogs(_, args: IListAuditLogsArgs, context) {
@@ -125,17 +131,18 @@ export const createGraphQLSchema = () => {
                         if (!validation.success) {
                             throw createZodError(validation.error);
                         }
-                        const result = await context.auditLogs.listAuditLogs({
+                        const listAuditLogs = context.container.resolve(ListAuditLogsUseCase);
+                        const result = await listAuditLogs.execute({
                             ...validation.data,
                             ...validation.data.where
                         });
-                        if (result.error) {
+                        if (result.isFail()) {
                             throw result.error;
                         }
                         return {
-                            items: result.items,
+                            items: result.value.items,
                             meta: {
-                                ...result.meta,
+                                ...result.value.meta,
                                 totalCount: 0
                             }
                         };
