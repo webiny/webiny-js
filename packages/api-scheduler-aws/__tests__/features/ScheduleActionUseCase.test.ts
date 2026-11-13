@@ -69,4 +69,25 @@ describe("ScheduleActionUseCase", () => {
 
         expect(result.isOk()).toBe(true);
     });
+
+    it("should reschedule an existing action immediately without a schedule date", async () => {
+        const useCase = context.container.resolve(ScheduleActionUseCase);
+
+        const scheduled = await useCase.execute({
+            ...params,
+            scheduleFor: new Date(Date.now() + 60 * 60 * 1000)
+        });
+        expect(scheduled.isOk()).toBe(true);
+
+        const rescheduled = await useCase.execute({
+            ...params,
+            immediately: true
+        });
+
+        expect(rescheduled.isOk()).toBe(true);
+        expect(rescheduled.value.id).toBe(scheduled.value.id);
+        expect(rescheduled.value.scheduledFor.getTime()).toBeLessThan(
+            scheduled.value.scheduledFor.getTime()
+        );
+    });
 });
