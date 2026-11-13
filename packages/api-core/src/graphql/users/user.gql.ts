@@ -107,7 +107,9 @@ export const createUsersGraphQL = () => {
                     }
                 },
                 AdminUsersQuery: {
-                    getUser: async (_, { where }: any, context) => {
+                    getUser: async (_, args: any, context) => {
+                        // `where` is optional in the schema.
+                        const where = args.where ?? {};
                         const getUser = context.container.resolve(GetUserUseCase);
 
                         const userResult = await getUser.execute({
