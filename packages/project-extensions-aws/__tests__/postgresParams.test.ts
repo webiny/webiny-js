@@ -30,6 +30,15 @@ describe("<Infra.Postgres> params", () => {
         expect(postgresParamsSchema.safeParse({ readers: 1.5 }).success).toBe(false);
         expect(postgresParamsSchema.safeParse({ maxCapacity: 3.3 }).success).toBe(false);
     });
+
+    it("rejects a maxCapacity below 1 ACU, but lets minCapacity go down to 0", () => {
+        expect(postgresParamsSchema.safeParse({ maxCapacity: 0 }).success).toBe(false);
+        expect(postgresParamsSchema.safeParse({ maxCapacity: 0.5 }).success).toBe(false);
+        expect(postgresParamsSchema.safeParse({ maxCapacity: 1 }).success).toBe(true);
+        expect(postgresParamsSchema.safeParse({ minCapacity: 0, maxCapacity: 1 }).success).toBe(
+            true
+        );
+    });
 });
 
 describe("<Infra.Vpc useExistingVpc> params", () => {
@@ -43,14 +52,30 @@ describe("<Infra.Vpc useExistingVpc> params", () => {
             enabled: true,
             useExistingVpc: {
                 lambdaFunctionsVpcConfig: { securityGroupIds: ["sg-1"], subnetIds: ["subnet-1"] },
-                postgresVpcConfig: { securityGroupIds: ["sg-db"], subnetIds: ["subnet-a"] }
+                postgresVpcConfig: {
+                    securityGroupIds: ["sg-db"],
+                    subnetIds: ["subnet-a", "subnet-b"]
+                }
             }
         });
 
         expect(result.success).toBe(true);
         expect(result.data?.useExistingVpc?.postgresVpcConfig).toEqual({
             securityGroupIds: ["sg-db"],
-            subnetIds: ["subnet-a"]
+            subnetIds: ["subnet-a", "subnet-b"]
         });
+    });
+
+    it("rejects a postgresVpcConfig with fewer than two subnets", () => {
+        const result = schema.safeParse({
+            enabled: true,
+            useExistingVpc: {
+                lambdaFunctionsVpcConfig: { securityGroupIds: ["sg-1"], subnetIds: ["subnet-1"] },
+                postgresVpcConfig: { securityGroupIds: ["sg-db"], subnetIds: ["subnet-a"] }
+            }
+        });
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0]?.message).toContain("at least two subnets");
     });
 });

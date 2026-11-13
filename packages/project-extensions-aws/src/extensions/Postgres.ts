@@ -2,31 +2,36 @@ import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 
 /*
- * Aurora Serverless v2 capacity is set in Aurora capacity units (ACUs), in steps of 0.5, from 0
- * to 256.
+ * Aurora Serverless v2 capacity is set in Aurora capacity units (ACUs), in steps of 0.5, up to
+ * 256. The minimum can go down to 0; the maximum must be at least 1.
  */
 export const POSTGRES_DEFAULT_MIN_CAPACITY = 0.5;
 export const POSTGRES_DEFAULT_MAX_CAPACITY = 16;
 export const POSTGRES_DEFAULT_READERS = 0;
 const POSTGRES_MAX_CAPACITY_LIMIT = 256;
+const POSTGRES_MAX_CAPACITY_FLOOR = 1;
 const POSTGRES_MAX_READERS = 15;
 
-const capacitySchema = z
-    .number()
-    .min(0)
-    .max(POSTGRES_MAX_CAPACITY_LIMIT)
-    .refine(value => Number.isInteger(value * 2), {
-        message: "Aurora capacity must be a multiple of 0.5."
-    });
+const capacitySchema = (min: number, minMessage?: string) =>
+    z
+        .number()
+        .min(min, minMessage)
+        .max(POSTGRES_MAX_CAPACITY_LIMIT)
+        .refine(value => Number.isInteger(value * 2), {
+            message: "Aurora capacity must be a multiple of 0.5."
+        });
 
 export const postgresParamsSchema = z
     .object({
-        minCapacity: capacitySchema
+        minCapacity: capacitySchema(0)
             .optional()
             .describe(
                 `The lowest Aurora Serverless v2 capacity, in ACUs. Default: ${POSTGRES_DEFAULT_MIN_CAPACITY}.`
             ),
-        maxCapacity: capacitySchema
+        maxCapacity: capacitySchema(
+            POSTGRES_MAX_CAPACITY_FLOOR,
+            `Aurora Serverless v2 needs a \`maxCapacity\` of at least ${POSTGRES_MAX_CAPACITY_FLOOR} ACU.`
+        )
             .optional()
             .describe(
                 `The highest Aurora Serverless v2 capacity, in ACUs. Default: ${POSTGRES_DEFAULT_MAX_CAPACITY}.`

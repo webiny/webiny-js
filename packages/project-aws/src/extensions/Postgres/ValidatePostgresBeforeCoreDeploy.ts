@@ -87,7 +87,8 @@ export class ValidatePostgresBeforeCoreDeployImpl implements CoreBeforeDeploy.In
             );
         }
 
-        if (getBgDeploymentsConfigFromExtension(projectConfig)) {
+        const bgDeploymentsConfig = getBgDeploymentsConfigFromExtension(projectConfig);
+        if (bgDeploymentsConfig && bgDeploymentsConfig.enabled) {
             throw GracefulError.from(
                 new Error("Cannot deploy Postgres with blue-green deployments."),
                 [
@@ -95,7 +96,7 @@ export class ValidatePostgresBeforeCoreDeployImpl implements CoreBeforeDeploy.In
                     "",
                     "Remove %s, or remove %s, from your %s config file."
                 ].join("\n"),
-                "<Infra.BlueGreenDeployments />",
+                "<Infra.BlueGreenDeployments enabled />",
                 "<Infra.Postgres />",
                 CONFIG_FILE
             );

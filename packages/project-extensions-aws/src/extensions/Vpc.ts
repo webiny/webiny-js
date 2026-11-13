@@ -33,8 +33,12 @@ export const Vpc = defineExtension({
                             ),
                         subnetIds: z
                             .array(z.string())
+                            .min(
+                                2,
+                                "A Postgres DB subnet group needs at least two subnets, in different availability zones."
+                            )
                             .describe(
-                                "The subnet IDs for the Postgres database and its RDS Proxy (at least two availability zones)."
+                                "The subnet IDs for the Postgres database and its RDS Proxy (at least two, in different availability zones)."
                             )
                     })
                     .optional()

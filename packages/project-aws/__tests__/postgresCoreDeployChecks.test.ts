@@ -133,7 +133,13 @@ describe("deploy core with <Infra.Postgres />", () => {
 
         expect(result.reason).toBe("Cannot deploy Postgres with blue-green deployments.");
         expect(result.message).toContain("Sync System");
-        expect(result.message).toContain("<Infra.BlueGreenDeployments />");
+        expect(result.message).toContain("<Infra.BlueGreenDeployments enabled />");
+    });
+
+    it("passes with blue-green deployments explicitly disabled", async () => {
+        await expect(
+            validatePostgres([POSTGRES, VPC_ENABLED, [BlueGreenDeployments, { enabled: false }]])
+        ).resolves.toBeUndefined();
     });
 });
 
