@@ -20,6 +20,7 @@ export const SettingsView = observer(function SettingsView() {
 
     useEffect(() => {
         void presenter.load();
+        return () => presenter.dispose();
     }, [presenter]);
 
     const handleSave = async () => {
@@ -32,6 +33,11 @@ export const SettingsView = observer(function SettingsView() {
             toast.showWarningToast({ title: e.message });
         }
     };
+
+    let saveButton: React.ReactNode = null;
+    if (vm.editable) {
+        saveButton = <Button text={"Save"} onClick={handleSave} disabled={vm.testMail.sending} />;
+    }
 
     return (
         <CenteredView>
@@ -46,11 +52,9 @@ export const SettingsView = observer(function SettingsView() {
                         </Alert>
                     ) : null}
                     <FormView name={"Mailer Settings"} form={vm.form} />
-                    <TestMailSection presenter={presenter} />
+                    <TestMailSection />
                 </SimpleFormContent>
-                <SimpleFormFooter>
-                    {vm.editable ? <Button text={"Save"} onClick={handleSave} /> : null}
-                </SimpleFormFooter>
+                <SimpleFormFooter>{saveButton}</SimpleFormFooter>
             </SimpleForm>
         </CenteredView>
     );

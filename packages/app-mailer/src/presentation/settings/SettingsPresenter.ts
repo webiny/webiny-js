@@ -8,9 +8,9 @@ import { IdentityContext } from "@webiny/app-admin/features/security/IdentityCon
 import {
     SettingsPresenter as Abstraction,
     type ISettingsPresenter,
-    type ISettingsViewModel,
-    type ITestMailResult
+    type ISettingsViewModel
 } from "./abstractions.js";
+import type { ITestMailResult } from "./abstractions.js";
 import type { MailerSettingsSource, TransportSettings } from "~/types.js";
 
 class SettingsPresenterImpl implements ISettingsPresenter {
@@ -44,7 +44,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
                 recipient: this.testMailRecipient,
                 sending: this.sendingTestMail,
                 disabledReason: this.getTestMailDisabledReason(),
-                result: this.testMailResult
+                result: this.getVisibleTestMailResult()
             }
         };
     }
@@ -56,28 +56,45 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     async sendTestMail(): Promise<void> {
         const to = this.testMailRecipient.trim();
 
-        runInAction(() => {
-            this.sendingTestMail = true;
-            this.testMailResult = null;
-        });
+        this.setSendingTestMail(true);
+        this.setTestMailResult(null);
 
         try {
             await this.sendTestMailUseCase.execute(to);
-            runInAction(() => {
-                this.testMailResult = {
-                    type: "success",
-                    message: `The SMTP server accepted the message for ${to}. Check that inbox to confirm it arrived.`
-                };
+            this.setTestMailResult({
+                type: "success",
+                message: `The mail server accepted the message for ${to}. Check that inbox to confirm it arrived.`
             });
         } catch (e) {
-            runInAction(() => {
-                this.testMailResult = { type: "danger", message: e.message };
-            });
+            this.setTestMailResult({ type: "danger", message: e.message });
         } finally {
-            runInAction(() => {
-                this.sendingTestMail = false;
-            });
+            this.setSendingTestMail(false);
         }
+    }
+
+    dispose(): void {
+        this.testMailResult = null;
+        this.sendingTestMail = false;
+        this.testMailRecipient = "";
+    }
+
+    private setSendingTestMail(sending: boolean): void {
+        this.sendingTestMail = sending;
+    }
+
+    private setTestMailResult(result: ITestMailResult | null): void {
+        this.testMailResult = result;
+    }
+
+    /*
+     * A result describes the saved settings. Once the form is edited it no longer describes what
+     * is on screen, so it is hidden until the form matches the saved settings again.
+     */
+    private getVisibleTestMailResult(): ITestMailResult | null {
+        if (this.form.vm.isDirty) {
+            return null;
+        }
+        return this.testMailResult;
     }
 
     /*
@@ -85,8 +102,8 @@ class SettingsPresenterImpl implements ISettingsPresenter {
      * waits for unsaved edits rather than reporting on settings the user is no longer looking at.
      */
     private getTestMailDisabledReason(): string | null {
-        if (this.source === null) {
-            return "Save the SMTP settings first.";
+        if (this.saving) {
+            return "Saving the settings.";
         }
         if (this.form.vm.isDirty) {
             return "Save your changes first. The test uses the saved settings.";
@@ -100,6 +117,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     async load(): Promise<void> {
         runInAction(() => {
             this.loading = true;
+            this.testMailResult = null;
         });
 
         try {
@@ -127,6 +145,12 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     }
 
     async save(): Promise<boolean> {
+        // A test in flight reports on the settings it started with; saving under it would pin
+        // that result on the new ones.
+        if (this.sendingTestMail) {
+            return false;
+        }
+
         const data = await this.form.submit();
         if (!data) {
             return false;
@@ -134,6 +158,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
 
         runInAction(() => {
             this.saving = true;
+            this.testMailResult = null;
         });
 
         try {

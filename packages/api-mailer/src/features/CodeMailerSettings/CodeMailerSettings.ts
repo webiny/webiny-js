@@ -1,8 +1,8 @@
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { CodeMailerSettings as Abstraction } from "~/domain/CodeMailerSettings/abstractions.js";
 import type { TransportSettings } from "~/types.js";
+import { SMTP_TRANSPORT_NAME } from "~/constants.js";
 
-const SMTP_TRANSPORT_NAME = "Mailer/SmtpTransport";
 const SMTP_BUILD_PARAM_KEY = "Mailer.SmtpSettings";
 
 class CodeMailerSettingsImpl implements Abstraction.Interface {

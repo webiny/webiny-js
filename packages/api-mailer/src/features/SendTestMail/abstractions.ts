@@ -1,7 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { SendMailUseCase } from "~/features/SendMail/abstractions.js";
-import { TestMailNotAuthorized, TestMailNotConfigured } from "~/domain/errors.js";
+import { TestMailNotAuthorized } from "~/domain/errors.js";
+import { TestMailNotConfigured } from "~/domain/errors.js";
 
 export interface SendTestMailInput {
     to: string;
@@ -20,8 +21,9 @@ export interface ISendTestMailUseCase {
 }
 
 /**
- * Sends one message through the saved SMTP settings so an operator can tell settings that deliver
- * from settings that only look configured. The SMTP server's own error comes back to the caller.
+ * Sends one message through the transport that delivers this project's mail, so an operator can
+ * tell settings that deliver from settings that only look configured. The mail server's own error
+ * comes back to the caller.
  */
 export const SendTestMailUseCase = createAbstraction<ISendTestMailUseCase>("SendTestMailUseCase");
 

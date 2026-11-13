@@ -1,16 +1,36 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { Alert, Button, Heading, Input, Separator, Text } from "@webiny/admin-ui";
-import type { ISettingsPresenter } from "../abstractions.js";
+import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
+import { Input } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { useFeature } from "@webiny/app";
+import { SettingsPresenterFeature } from "../feature.js";
 
-interface TestMailSectionProps {
-    presenter: ISettingsPresenter;
-}
-
-export const TestMailSection = observer(function TestMailSection({
-    presenter
-}: TestMailSectionProps) {
+export const TestMailSection = createReactiveComponent(function TestMailSection() {
+    const { presenter } = useFeature(SettingsPresenterFeature);
     const { testMail } = presenter.vm;
+
+    let disabledNote: React.ReactNode = null;
+    if (testMail.disabledReason && !testMail.sending) {
+        disabledNote = (
+            <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
+                {testMail.disabledReason}
+            </Text>
+        );
+    }
+
+    let resultAlert: React.ReactNode = null;
+    if (testMail.result) {
+        const title = testMail.result.type === "success" ? "Test email sent" : "Test email failed";
+        resultAlert = (
+            <Alert type={testMail.result.type} title={title}>
+                {testMail.result.message}
+            </Alert>
+        );
+    }
 
     return (
         <div className={"flex flex-col gap-md"}>
@@ -36,21 +56,8 @@ export const TestMailSection = observer(function TestMailSection({
                     disabled={testMail.sending || testMail.disabledReason !== null}
                 />
             </div>
-            {testMail.disabledReason && !testMail.sending ? (
-                <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
-                    {testMail.disabledReason}
-                </Text>
-            ) : null}
-            {testMail.result ? (
-                <Alert
-                    type={testMail.result.type}
-                    title={
-                        testMail.result.type === "success" ? "Test email sent" : "Test email failed"
-                    }
-                >
-                    {testMail.result.message}
-                </Alert>
-            ) : null}
+            {disabledNote}
+            {resultAlert}
         </div>
     );
 });

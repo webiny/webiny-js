@@ -30,6 +30,8 @@ export interface ISettingsPresenter {
     save(): Promise<boolean>;
     setTestMailRecipient(recipient: string): void;
     sendTestMail(): Promise<void>;
+    /** Resets the test-mail state, which would otherwise outlive the screen on this singleton. */
+    dispose(): void;
 }
 
 export const SettingsPresenter = createAbstraction<ISettingsPresenter>("Mailer/SettingsPresenter");

@@ -61,7 +61,7 @@ export class TestMailNotConfigured extends BaseError {
 
     constructor() {
         super({
-            message: "SMTP settings are not configured, so there is nothing to test."
+            message: "No mail transport is configured, so there is nothing to test."
         });
     }
 }

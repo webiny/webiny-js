@@ -8,8 +8,7 @@ import { SendTestMailUseCase } from "~/features/SendTestMail/abstractions.js";
 import type { MailerSettingsSource } from "~/features/GetSettings/abstractions.js";
 import type { SaveSettingsInput } from "~/features/SaveSettings/abstractions.js";
 import type { TransportSettings } from "~/types.js";
-
-const SMTP_TRANSPORT_NAME = "Mailer/SmtpTransport";
+import { SMTP_TRANSPORT_NAME } from "~/constants.js";
 
 // Strip `password` before the settings leave the server and tack on `source`
 // so the admin UI can branch on code-vs-storage. Accepts both the full

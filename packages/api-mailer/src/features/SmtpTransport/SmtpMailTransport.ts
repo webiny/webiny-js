@@ -2,9 +2,10 @@ import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import { MailTransport } from "~/domain/MailTransport/abstractions.js";
+import { SMTP_TRANSPORT_NAME } from "~/constants.js";
 
 export class SmtpMailTransport implements MailTransport.Interface {
-    public readonly name = "Mailer/SmtpTransport";
+    public readonly name = SMTP_TRANSPORT_NAME;
     private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
     constructor(

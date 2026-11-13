@@ -1,6 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
+import { beforeEach } from "vitest";
+import type { Container } from "@webiny/di";
 import { createGraphQLHandler } from "./graphQLHandler";
 import { registerCodeSmtpSettings } from "./helpers/registerCodeSmtpSettings";
+import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
+import type { TransportSendData } from "~/types.js";
 
 const { sendMail, createTransport } = vi.hoisted(() => {
     const sendMail = vi.fn();
@@ -38,32 +45,29 @@ describe("Mailer sendTestMail GraphQL", () => {
         expect(response).toEqual({
             data: { mailer: { sendTestMail: { data: true, error: null } } }
         });
-        expect(createTransport).toHaveBeenCalledWith(
-            expect.objectContaining({
-                host: "dummy-host.webiny",
-                auth: { user: "user", pass: "password" }
-            })
-        );
+        const expectedConfig = expect.objectContaining({
+            host: "dummy-host.webiny",
+            auth: { user: "user", pass: "password" }
+        });
+        expect(createTransport).toHaveBeenCalledWith(expectedConfig);
         expect(sendMail).toHaveBeenCalledTimes(1);
-        expect(sendMail).toHaveBeenCalledWith(
-            expect.objectContaining({
-                to: ["admin@dummy-host.webiny"],
-                from: "from@dummy-host.webiny",
-                replyTo: "replyTo@dummy-host.webiny",
-                subject: "Webiny test email"
-            })
-        );
+        const expectedMessage = expect.objectContaining({
+            to: ["admin@dummy-host.webiny"],
+            from: "from@dummy-host.webiny",
+            replyTo: "replyTo@dummy-host.webiny",
+            subject: "Webiny test email"
+        });
+        expect(sendMail).toHaveBeenCalledWith(expectedMessage);
     });
 
     it("returns the SMTP server's error when delivery fails", async () => {
-        sendMail.mockRejectedValue(
-            Object.assign(new Error("Invalid login: 535 Authentication failed"), {
-                code: "EAUTH",
-                command: "AUTH PLAIN",
-                responseCode: 535,
-                response: "535 Authentication failed"
-            })
-        );
+        const smtpError = Object.assign(new Error("Invalid login: 535 Authentication failed"), {
+            code: "EAUTH",
+            command: "AUTH PLAIN",
+            responseCode: 535,
+            response: "535 Authentication failed"
+        });
+        sendMail.mockRejectedValue(smtpError);
         const handler = createGraphQLHandler();
         await handler.saveSettings({ data: storedSettings });
 
@@ -81,10 +85,11 @@ describe("Mailer sendTestMail GraphQL", () => {
                 }
             }
         });
-        expect(JSON.stringify(result.error)).not.toContain("password");
+        const serializedError = JSON.stringify(result.error);
+        expect(serializedError).not.toContain("password");
     });
 
-    it("refuses when no SMTP settings exist, instead of reporting the dummy transport's success", async () => {
+    it("refuses when only the dummy transport is available, instead of reporting its success", async () => {
         const handler = createGraphQLHandler();
 
         const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
@@ -97,7 +102,7 @@ describe("Mailer sendTestMail GraphQL", () => {
                         error: {
                             code: "Mailer/SendTestMail/NotConfigured",
                             message:
-                                "SMTP settings are not configured, so there is nothing to test.",
+                                "No mail transport is configured, so there is nothing to test.",
                             data: null
                         }
                     }
@@ -108,10 +113,12 @@ describe("Mailer sendTestMail GraphQL", () => {
     });
 
     it("refuses without the mailer.settings permission", async () => {
-        const handler = createGraphQLHandler({
-            permissions: [],
-            plugins: [registerCodeSmtpSettings({ ...storedSettings, port: 587, secure: false })]
+        const codeSmtpSettings = registerCodeSmtpSettings({
+            ...storedSettings,
+            port: 587,
+            secure: false
         });
+        const handler = createGraphQLHandler({ permissions: [], plugins: [codeSmtpSettings] });
 
         const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
 
@@ -127,25 +134,57 @@ describe("Mailer sendTestMail GraphQL", () => {
     });
 
     it("tests settings that are managed by code", async () => {
-        const handler = createGraphQLHandler({
-            plugins: [
-                registerCodeSmtpSettings({
-                    host: "code-host.webiny",
-                    port: 587,
-                    secure: false,
-                    user: "code-user",
-                    password: "code-password",
-                    from: "code-from@example.com"
-                })
-            ]
+        const codeSmtpSettings = registerCodeSmtpSettings({
+            host: "code-host.webiny",
+            port: 587,
+            secure: false,
+            user: "code-user",
+            password: "code-password",
+            from: "code-from@example.com"
         });
+        const handler = createGraphQLHandler({ plugins: [codeSmtpSettings] });
 
         const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
 
         expect(response.data.mailer.sendTestMail).toEqual({ data: true, error: null });
-        expect(sendMail).toHaveBeenCalledWith(
-            expect.objectContaining({ from: "code-from@example.com", replyTo: undefined })
-        );
+        const expectedMessage = expect.objectContaining({
+            from: "code-from@example.com",
+            replyTo: undefined
+        });
+        expect(sendMail).toHaveBeenCalledWith(expectedMessage);
+    });
+
+    it("goes through a transport the project registers, not SMTP", async () => {
+        const projectTransportSend = vi.fn(async (_params: TransportSendData) => {
+            return { result: "queued", error: null };
+        });
+
+        class ProjectTransportFactory implements MailTransportFactory.Interface {
+            public readonly name = "Project/Transport";
+
+            canUse(): boolean {
+                return true;
+            }
+
+            async createTransport() {
+                return { name: this.name, send: projectTransportSend };
+            }
+        }
+
+        const registerProjectTransport = (container: Container) => {
+            const implementation = MailTransportFactory.createImplementation({
+                implementation: ProjectTransportFactory,
+                dependencies: []
+            });
+            container.register(implementation);
+        };
+        const handler = createGraphQLHandler({ plugins: [registerProjectTransport] });
+
+        const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
+
+        expect(response.data.mailer.sendTestMail).toEqual({ data: true, error: null });
+        expect(projectTransportSend).toHaveBeenCalledTimes(1);
+        expect(createTransport).not.toHaveBeenCalled();
     });
 
     it("rejects an invalid recipient before connecting", async () => {

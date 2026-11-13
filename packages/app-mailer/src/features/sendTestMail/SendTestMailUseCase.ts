@@ -1,4 +1,5 @@
-import { SendTestMailUseCase as UseCaseAbstraction, SendTestMailGateway } from "./abstractions.js";
+import { SendTestMailUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { SendTestMailGateway } from "./abstractions.js";
 
 class SendTestMailUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private gateway: SendTestMailGateway.Interface) {}
