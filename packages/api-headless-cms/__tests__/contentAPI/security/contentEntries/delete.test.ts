@@ -89,6 +89,14 @@ describe("Delete Permissions Checks", () => {
         const entryOfB = await manageApiB.createTestEntry();
         expect(entryOfB.error).toBeNull();
 
+        // Bulk delete removes the published record of each entry as well, so publish both.
+        for (const entry of [entryOfA, entryOfB]) {
+            const published = await manageApiA.publishTestEntry({
+                variables: { revision: entry.data.id }
+            });
+            expect(published.error).toBeNull();
+        }
+
         const [response] = await manageApiB.invoke({
             body: {
                 query: /* GraphQL */ `
