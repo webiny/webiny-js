@@ -11,6 +11,10 @@ const STORAGE_OPTIONS: Record<StorageOps, { value: StorageOps; name: string }> =
     "ddb-os": {
         value: "ddb-os",
         name: "Amazon DynamoDB + Amazon OpenSearch (for larger projects)"
+    },
+    pg: {
+        value: "pg",
+        name: "Amazon Aurora PostgreSQL (needs a VPC, whose NAT gateways cost extra)"
     }
 };
 

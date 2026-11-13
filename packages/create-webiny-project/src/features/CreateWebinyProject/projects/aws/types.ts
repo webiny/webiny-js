@@ -1,4 +1,4 @@
-export type StorageOps = "ddb" | "ddb-os";
+export type StorageOps = "ddb" | "ddb-os" | "pg";
 export type AiAgent = string | "other";
 
 export interface AwsProjectParams {
