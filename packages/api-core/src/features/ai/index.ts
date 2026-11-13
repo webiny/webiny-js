@@ -11,6 +11,7 @@ export {
     AiSdkTools
 } from "./abstractions.js";
 export type { IAiConnection, IAiConnectionInline, AiModel, IAiSdkModel } from "./abstractions.js";
+export { isReadOnlyTool } from "./isReadOnlyTool.js";
 /*
  * Abstractions are exported by their own name only. Their interfaces are reached through the
  * namespace, as `AiOutputTool.Interface` or `TextExtractor.Result`, not re-exported as `I`-prefixed
