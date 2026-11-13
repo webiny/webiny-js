@@ -36,16 +36,16 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const namespace = params.where?.namespace || params.where?.namespace_startsWith;
+        /**
+         * Permissions belong to a namespace. A call without one is internal and is not checked.
+         */
+        const namespace = params.where?.namespace;
         const permissions = namespace
             ? this.permissionsResolver.forNamespace(namespace)
             : undefined;
 
-        if (permissions) {
-            const hasPermission = await permissions.canRead();
-            if (!hasPermission) {
-                return Result.fail(new NotAuthorizedError());
-            }
+        if (permissions && !(await permissions.canRead())) {
+            return Result.fail(new NotAuthorizedError());
         }
 
         const ownRecordsOnly = permissions ? await permissions.onlyOwnRecords() : false;

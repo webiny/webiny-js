@@ -6,6 +6,7 @@ import { SchedulerService } from "~/shared/abstractions.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { PublishTestEntryActionHandler } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 
 describe("GetScheduledActionUseCase", () => {
@@ -21,6 +22,7 @@ describe("GetScheduledActionUseCase", () => {
         });
         context = await contextHandler.handler();
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });

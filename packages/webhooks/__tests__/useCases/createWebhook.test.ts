@@ -137,7 +137,12 @@ describe("CreateWebhookUseCase", () => {
         "https://[::ffff:169.254.169.254]/hook",
         "https://[::ffff:0:7f00:1]/hook",
         "https://2130706433/hook",
-        "https://0x7f.1/hook"
+        "https://0x7f.1/hook",
+        "https://localhost./hook",
+        "https://127.0.0.1./hook",
+        "https://[::127.0.0.1]/hook",
+        "https://[::7f00:1]/hook",
+        "https://[::a9fe:a9fe]/hook"
     ])("should reject a local or link-local endpoint %s", async endpointUrl => {
         const context = await handler.handle();
         const useCase = context.container.resolve(CreateWebhookUseCase);

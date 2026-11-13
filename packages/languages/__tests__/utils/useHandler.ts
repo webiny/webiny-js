@@ -10,8 +10,9 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import { createContextPlugin } from "@webiny/api";
 import { Extension } from "~/api/Extension.js";
 import { createTenancyAndSecurity } from "./tenancySecurity.js";
+import type { CreateTenancyAndSecurityParams } from "./tenancySecurity.js";
 
-export const useHandler = () => {
+export const useHandler = (params: CreateTenancyAndSecurityParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -25,7 +26,7 @@ export const useHandler = () => {
             }),
             ...cmsStorage.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity(),
+            ...createTenancyAndSecurity(params),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createContextPlugin(async context => {

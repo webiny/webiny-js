@@ -11,7 +11,6 @@ import {
     ExecuteScheduledActionUseCase,
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
-import { CMS_NAMESPACE } from "~/utils/namespace.js";
 import {
     SchedulePublishEntryUseCase,
     ScheduleUnpublishEntryUseCase
@@ -61,7 +60,7 @@ describe("Action Handlers", () => {
         // Assert scheduled actions
         const actionsResponse = await listScheduledActions.execute({
             where: {
-                namespace_startsWith: CMS_NAMESPACE
+                namespace: publishActionResult.value.scheduledAction.namespace
             }
         });
 

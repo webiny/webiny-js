@@ -20,6 +20,7 @@ import {
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 
@@ -39,6 +40,7 @@ describe("Scheduler Event Handler", () => {
         context = await contextHandler.handler();
         context.container.register(PublishTestEntryActionHandler);
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 

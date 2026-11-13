@@ -17,6 +17,7 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { mockClient } from "aws-sdk-client-mock";
 import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -40,6 +41,7 @@ describe("Scheduler", () => {
         context = await contextHandler.handler();
         // context.container.register(PublishTestEntryActionHandler);
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
