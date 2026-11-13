@@ -1,15 +1,20 @@
 import { RoleAfterDeleteEventHandler } from "~/features/security/roles/DeleteRole/index.js";
-import { NotifyRoleChangeUseCase } from "./abstractions.js";
+import { NotifyRecordChangeUseCase } from "~/features/websockets/index.js";
+import { ROLE_RECORD_TYPE } from "./recordType.js";
 
 class NotifyOnRoleDeletedHandlerImpl implements RoleAfterDeleteEventHandler.Interface {
-    constructor(private notifyRoleChange: NotifyRoleChangeUseCase.Interface) {}
+    constructor(private notifyRecordChange: NotifyRecordChangeUseCase.Interface) {}
 
     async handle(event: RoleAfterDeleteEventHandler.Event): Promise<void> {
-        await this.notifyRoleChange.execute({ id: event.payload.role.id, change: "deleted" });
+        await this.notifyRecordChange.execute({
+            type: ROLE_RECORD_TYPE,
+            id: event.payload.role.id,
+            change: "deleted"
+        });
     }
 }
 
 export const NotifyOnRoleDeletedHandler = RoleAfterDeleteEventHandler.createImplementation({
     implementation: NotifyOnRoleDeletedHandlerImpl,
-    dependencies: [NotifyRoleChangeUseCase]
+    dependencies: [NotifyRecordChangeUseCase]
 });

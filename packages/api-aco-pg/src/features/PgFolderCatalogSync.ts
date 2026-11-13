@@ -1,5 +1,6 @@
 import { FolderCatalogSync } from "@webiny/api-aco/features/flp/FolderCatalogSync/abstractions.js";
-import { NotifyFolderChangeUseCase } from "@webiny/api-aco/features/folder/NotifyFolderChange/abstractions.js";
+import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
+import { FOLDER_RECORD_TYPE } from "@webiny/api-aco/features/folder/NotifyFolderChange/recordType.js";
 import type { Folder } from "@webiny/api-aco/folder/folder.types.js";
 
 /**
@@ -8,14 +9,22 @@ import type { Folder } from "@webiny/api-aco/folder/folder.types.js";
  * once they have written the catalog. Deletes are announced by ACO itself.
  */
 class PgFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
-    public constructor(private readonly notifyFolderChange: NotifyFolderChangeUseCase.Interface) {}
+    public constructor(private readonly notifyRecordChange: NotifyRecordChangeUseCase.Interface) {}
 
     public async folderCreated(folder: Folder): Promise<void> {
-        await this.notifyFolderChange.execute({ id: folder.id, change: "created" });
+        await this.notifyRecordChange.execute({
+            type: FOLDER_RECORD_TYPE,
+            id: folder.id,
+            change: "created"
+        });
     }
 
     public async folderUpdated({ folder }: FolderCatalogSync.UpdatedParams): Promise<void> {
-        await this.notifyFolderChange.execute({ id: folder.id, change: "updated" });
+        await this.notifyRecordChange.execute({
+            type: FOLDER_RECORD_TYPE,
+            id: folder.id,
+            change: "updated"
+        });
     }
 
     public async folderDeleted(): Promise<void> {
@@ -25,5 +34,5 @@ class PgFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
 
 export const PgFolderCatalogSync = FolderCatalogSync.createImplementation({
     implementation: PgFolderCatalogSyncImpl,
-    dependencies: [NotifyFolderChangeUseCase]
+    dependencies: [NotifyRecordChangeUseCase]
 });

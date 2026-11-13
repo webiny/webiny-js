@@ -11,6 +11,7 @@ import { ApiRequestHeadersFeature } from "@webiny/app/features/apiRequestHeaders
 import { ApiStreamClientFeature } from "@webiny/app/features/apiStreamClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
 import { BannersFeature } from "~/features/banners/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
@@ -54,6 +55,7 @@ export function createRootContainer() {
     RouterFeature.register(container);
 
     EventPublisherFeature.register(container);
+    RecordChangesFeature.register(container);
 
     NotificationsFeature.register(container);
 

@@ -5,11 +5,7 @@ import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { DeleteUserUseCase } from "~/features/users/DeleteUser/index.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
-import {
-    USER_CREATED_WEBSOCKET_ACTION,
-    USER_DELETED_WEBSOCKET_ACTION,
-    USER_UPDATED_WEBSOCKET_ACTION
-} from "~/features/users/NotifyUserChange/index.js";
+import { RECORD_CHANGED_WEBSOCKET_ACTION } from "~/features/websockets/index.js";
 import { getTool, useToolHandler } from "../../security/ai/useToolHandler";
 
 // The identity TestAuthenticator signs every request in as.
@@ -53,13 +49,13 @@ describe("user tools and change notifications", () => {
         expect(websocketMessages).toEqual([
             {
                 identityId: SIGNED_IN_ID,
-                action: USER_CREATED_WEBSOCKET_ACTION,
-                data: { id: user.id }
+                action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                data: { type: "adminUsers.user", id: user.id, change: "created" }
             },
             {
                 identityId: SIGNED_IN_ID,
-                action: USER_DELETED_WEBSOCKET_ACTION,
-                data: { id: user.id }
+                action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                data: { type: "adminUsers.user", id: user.id, change: "deleted" }
             }
         ]);
     });
@@ -102,8 +98,8 @@ describe("user tools and change notifications", () => {
         expect(websocketMessages).toEqual([
             {
                 identityId: SIGNED_IN_ID,
-                action: USER_UPDATED_WEBSOCKET_ACTION,
-                data: { id: user.id }
+                action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                data: { type: "adminUsers.user", id: user.id, change: "updated" }
             }
         ]);
     });
