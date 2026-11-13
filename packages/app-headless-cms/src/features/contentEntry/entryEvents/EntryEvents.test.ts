@@ -6,6 +6,7 @@ import {
 } from "@webiny/app/features/eventPublisher/index.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { WebsocketEvent } from "@webiny/app/features/websocketEvents/index.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/index.js";
 import { GetModelUseCase } from "~/features/model/getModel/abstractions.js";
 import { GetEntryGateway } from "~/features/contentEntry/getEntry/abstractions.js";
 import { GetEntryUseCase } from "~/features/contentEntry/getEntry/GetEntryUseCase.js";
@@ -19,7 +20,7 @@ const entry = (entryId: string, title: string) =>
     ({ id: `${entryId}#0001`, entryId, values: { title } }) as unknown as CmsContentEntry;
 
 /*
- * Real publisher, handlers, use case, repository and cache; fake server. The websocket bridge
+ * Real publisher, record-change messages, handlers, use case, repository and cache; fake server. The websocket bridge
  * publishes `WebsocketEvent`s through the same publisher, so publishing one here is what an incoming
  * message does at runtime.
  */
@@ -44,6 +45,7 @@ const setup = (stored: CmsContentEntry) => {
     });
     container.register(GetEntryUseCase);
     container.register(GetEntryRepository).inSingletonScope();
+    RecordChangesFeature.register(container);
     EntryEventsFeature.register(container);
 
     const receive = (payload: { action: string; data: unknown }) =>
@@ -57,7 +59,10 @@ describe("entry events", () => {
     it("reads a created entry back into its model's cache", async () => {
         const { receive, cache, fetched } = setup(entry("e1", "Coffee guide"));
 
-        await receive({ action: "cms.entry.created", data: { modelId: "guide", entryId: "e1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "cms.entry.guide", id: "e1", change: "created" }
+        });
 
         expect(fetched).toEqual(["e1"]);
         expect(cache("guide").getItems()).toEqual([entry("e1", "Coffee guide")]);
@@ -68,7 +73,10 @@ describe("entry events", () => {
         const { receive, cache } = setup(entry("e1", "Coffee guide, second edition"));
         cache("guide").setItems([entry("e1", "Coffee guide"), entry("e2", "Tea guide")]);
 
-        await receive({ action: "cms.entry.updated", data: { modelId: "guide", entryId: "e1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "cms.entry.guide", id: "e1", change: "updated" }
+        });
 
         expect(cache("guide").getItem(item => item.entryId === "e1")?.values.title).toBe(
             "Coffee guide, second edition"
@@ -80,7 +88,10 @@ describe("entry events", () => {
         const { receive, cache, fetched } = setup(entry("e1", "Coffee guide"));
         cache("guide").setItems([entry("e1", "Coffee guide"), entry("e2", "Tea guide")]);
 
-        await receive({ action: "cms.entry.deleted", data: { modelId: "guide", entryId: "e1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "cms.entry.guide", id: "e1", change: "deleted" }
+        });
 
         expect(fetched).toEqual([]);
         expect(
@@ -90,10 +101,13 @@ describe("entry events", () => {
         ).toEqual(["e2"]);
     });
 
-    it("ignores messages that are not about entries", async () => {
+    it("ignores record changes that are not about entries", async () => {
         const { receive, fetched } = setup(entry("e1", "Coffee guide"));
 
-        await receive({ action: "security.team.updated", data: { id: "team-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.team", id: "team-1", change: "updated" }
+        });
 
         expect(fetched).toEqual([]);
     });

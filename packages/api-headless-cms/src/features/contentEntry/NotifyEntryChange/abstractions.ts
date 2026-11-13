@@ -1,15 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 
 /**
- * Sent to the user's open admin tabs when the assistant changes an entry. The admin keeps its own
- * entry lists, and a change made on the server never passes through them, so without these the list
- * shows the old data until a reload. Each carries the model and entry ids only; the admin reads the
- * entry back, or drops it for `deleted`.
+ * Tells the user's open admin tabs that the assistant changed an entry. The admin keeps its own entry
+ * lists, and a change made on the server never passes through them, so without this the list shows
+ * the old data until a reload. Goes out as a record-changed message; see `getEntryRecordType`.
  */
-export const ENTRY_CREATED_WEBSOCKET_ACTION = "cms.entry.created";
-export const ENTRY_UPDATED_WEBSOCKET_ACTION = "cms.entry.updated";
-export const ENTRY_DELETED_WEBSOCKET_ACTION = "cms.entry.deleted";
-
 export interface NotifyEntryChangeParams {
     modelId: string;
     entryId: string;
