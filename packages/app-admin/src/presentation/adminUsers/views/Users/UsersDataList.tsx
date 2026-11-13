@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import orderBy from "lodash/orderBy.js";
 import { reaction } from "mobx";
 import { useFeature } from "@webiny/app";
@@ -62,9 +62,17 @@ const UsersDataList = () => {
     const { useCase: deleteUser } = useFeature(DeleteUserFeature);
     const { revision } = useFeature(UserEventsFeature);
 
+    // Reads can overlap when changes arrive close together. Only the newest one sets the list, so an
+    // older read that finishes last cannot put back what a newer one replaced.
+    const lastRead = useRef(0);
+
     const fetchUsers = useCallback(() => {
+        const read = ++lastRead.current;
         setUsersLoading(true);
         listUsers.execute().then(data => {
+            if (read !== lastRead.current) {
+                return;
+            }
             setUsers((data || []) as UserItem[]);
             setUsersLoading(false);
         });
@@ -80,7 +88,14 @@ const UsersDataList = () => {
         return reaction(
             () => revision.list,
             () => {
-                listUsers.execute().then(data => setUsers((data || []) as UserItem[]));
+                const read = ++lastRead.current;
+                listUsers.execute().then(data => {
+                    if (read !== lastRead.current) {
+                        return;
+                    }
+                    setUsers((data || []) as UserItem[]);
+                    setUsersLoading(false);
+                });
             }
         );
     }, [revision, listUsers]);

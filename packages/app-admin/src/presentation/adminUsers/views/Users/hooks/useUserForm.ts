@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import isEmpty from "lodash/isEmpty.js";
 import { reaction } from "mobx";
 import omit from "lodash/omit.js";
@@ -45,20 +45,32 @@ export function useUserForm() {
     const [userLoading, setUserLoading] = useState(false);
     const [mutationLoading, setMutationLoading] = useState(false);
 
+    // Only the newest read may set the user. A read still running when another user is opened, or
+    // when a newer read of the same user starts, would otherwise show data that is no longer current.
+    const lastRead = useRef(0);
+
     useEffect(() => {
+        const read = ++lastRead.current;
         // Drop the previous user, so "New" and a newly selected user don't show its data.
         setUser(undefined);
         if (!id) {
+            setUserLoading(false);
             return;
         }
         setUserLoading(true);
         getUser
             .execute({ id })
             .then(data => {
+                if (read !== lastRead.current) {
+                    return;
+                }
                 setUser(data);
                 setUserLoading(false);
             })
             .catch(error => {
+                if (read !== lastRead.current) {
+                    return;
+                }
                 goToRoute(Routes.Users.List);
                 toast.showWarningToast({
                     title: "Error loading user profile",
@@ -78,10 +90,21 @@ export function useUserForm() {
         return reaction(
             () => revision.user(id),
             () => {
+                const read = ++lastRead.current;
                 getUser
                     .execute({ id })
-                    .then(setUser)
-                    .catch(() => undefined);
+                    .then(data => {
+                        if (read !== lastRead.current) {
+                            return;
+                        }
+                        setUser(data);
+                        setUserLoading(false);
+                    })
+                    .catch(() => {
+                        if (read === lastRead.current) {
+                            setUserLoading(false);
+                        }
+                    });
             }
         );
     }, [id, revision]);

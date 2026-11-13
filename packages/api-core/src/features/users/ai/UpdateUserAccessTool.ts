@@ -126,7 +126,11 @@ class UpdateUserAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Inpu
 
         const changes: { roles?: string[]; teams?: string[] } = {};
 
-        if (input.roles !== undefined) {
+        // An empty list has nothing to look up. Reading the roles or teams anyway would make clearing
+        // them need security.role or security.team on top of adminUsers.user.
+        if (input.roles?.length === 0) {
+            changes.roles = [];
+        } else if (input.roles !== undefined) {
             const roles = await this.listRoles.execute();
             if (roles.isFail()) {
                 throw new Error(`Could not check the roles: ${roles.error.message}`);
@@ -134,7 +138,9 @@ class UpdateUserAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Inpu
             changes.roles = toIds("role", input.roles, roles.value);
         }
 
-        if (input.teams !== undefined) {
+        if (input.teams?.length === 0) {
+            changes.teams = [];
+        } else if (input.teams !== undefined) {
             const teams = await this.listTeams.execute();
             if (teams.isFail()) {
                 throw new Error(`Could not check the teams: ${teams.error.message}`);

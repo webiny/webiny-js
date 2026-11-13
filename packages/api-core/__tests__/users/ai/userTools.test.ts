@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Container } from "@webiny/di";
+import { Result } from "@webiny/feature/api";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { DeleteUserUseCase } from "~/features/users/DeleteUser/index.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
@@ -105,6 +106,26 @@ describe("user tools and change notifications", () => {
                 data: { id: user.id }
             }
         ]);
+    });
+
+    it("should clear roles without reading them, so security.role is not needed", async () => {
+        const { container } = await handler();
+        const role = await fullAccessRole(container);
+        const user = await createUser(container, { email: "clear@webiny.com", roles: [role.id] });
+        // What a caller with adminUsers.user but no security.role gets back.
+        container.registerInstance(ListRolesUseCase, {
+            async execute() {
+                return Result.fail(new Error("Not authorized!"));
+            }
+        } as unknown as ListRolesUseCase.Interface);
+
+        await getTool(container, "updateUserAccess").execute({
+            userId: user.id,
+            email: "clear@webiny.com",
+            roles: []
+        });
+
+        expect(await storedRoles(container, user.id)).toEqual([]);
     });
 
     it("should refuse an unknown role and store nothing", async () => {
