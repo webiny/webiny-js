@@ -9,6 +9,8 @@ import { DeleteUserFeature } from "./DeleteUser/feature.js";
 import { ListUserTeamsFeature } from "./ListUserTeams/feature.js";
 import { AdminUsersStorageOperations } from "./shared/storageAbstractions.js";
 import { ExternalIdpUserSyncFeature } from "./ExternalIdpUserSync/index.js";
+import { NotifyUserChangeFeature } from "./NotifyUserChange/index.js";
+import { UsersAiToolsFeature } from "./ai/feature.js";
 
 export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Interface>({
     name: "AdminUsers",
@@ -25,6 +27,8 @@ export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Inter
         UpdateUserFeature.register(container);
         DeleteUserFeature.register(container);
         ExternalIdpUserSyncFeature.register(container);
+        NotifyUserChangeFeature.register(container);
+        UsersAiToolsFeature.register(container);
 
         // Legacy storage ops
         container.registerInstance(AdminUsersStorageOperations, storageOperations);

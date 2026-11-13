@@ -20,7 +20,9 @@ export interface IPasswordResetCodeRow {
 export const toRow = (code: StoredPasswordResetCode): IPasswordResetCodeRow => ({
     id: code.id,
     email: code.email,
-    code_hash: code.codeHash,
+    // A code with no hash yet is stored as an empty string. `code_hash` is NOT NULL, and making it
+    // nullable would need a migration for every table that already exists.
+    code_hash: code.codeHash ?? "",
     created_on: code.createdOn,
     expires_on: code.expiresOn,
     used_on: code.usedOn,
@@ -35,7 +37,7 @@ export const toRow = (code: StoredPasswordResetCode): IPasswordResetCodeRow => (
 export const toCode = (row: IPasswordResetCodeRow): StoredPasswordResetCode => ({
     id: row.id,
     email: row.email,
-    codeHash: row.code_hash,
+    codeHash: row.code_hash || null,
     createdOn: row.created_on,
     expiresOn: row.expires_on,
     usedOn: row.used_on,
@@ -50,7 +52,7 @@ export interface IPasswordResetCodesTable {
 
 /**
  * The table the reset code operations share: the schema, the prefixing and the lazy create, in one
- * place rather than in each of the six.
+ * place rather than in each of the seven.
  *
  * Built per request, on the container's connection and table settings (`SqlPasswordResetCodesTable`).
  */

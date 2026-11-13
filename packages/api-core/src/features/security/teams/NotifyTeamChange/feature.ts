@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import { NotifyTeamChangeUseCase } from "./NotifyTeamChangeUseCase.js";
 import {
     NotifyOnTeamCreatedHandler,
     NotifyOnTeamDeletedHandler,
@@ -10,7 +9,6 @@ import {
 export const NotifyTeamChangeFeature = createFeature({
     name: "NotifyTeamChange",
     register(container) {
-        container.register(NotifyTeamChangeUseCase);
         container.register(NotifyOnTeamCreatedHandler);
         container.register(NotifyOnTeamUpdatedHandler);
         container.register(NotifyOnTeamDeletedHandler);

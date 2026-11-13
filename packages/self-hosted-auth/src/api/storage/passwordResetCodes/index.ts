@@ -7,6 +7,7 @@ export * from "./types.js";
 export * from "./SavePasswordResetCodeStorageOperation.js";
 export * from "./ListLivePasswordResetCodesStorageOperation.js";
 export * from "./CountPasswordResetCodesStorageOperation.js";
+export * from "./SetPasswordResetCodeHashStorageOperation.js";
 export * from "./IncrementPasswordResetCodeAttemptsStorageOperation.js";
 export * from "./MarkPasswordResetCodesUsedStorageOperation.js";
 export * from "./DeleteExpiredPasswordResetCodesStorageOperation.js";

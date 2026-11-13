@@ -236,8 +236,16 @@ export namespace AiSdkToolHandlerResolver {
 
 // AiSdkTools
 
+export interface IAiSdkToolSetOptions {
+    /**
+     * Leave out every tool not declared read-only (see `isReadOnlyTool`). For a run nobody watches,
+     * such as content generation: it has no one to approve a change, so it must not be offered one.
+     */
+    readOnly?: boolean;
+}
+
 export interface IAiSdkTools {
-    getToolSet(): ToolSet;
+    getToolSet(options?: IAiSdkToolSetOptions): ToolSet;
 }
 
 /** Collection of AI SDK tools. Returns a ready-to-use ToolSet for generateText/streamText. */
@@ -245,4 +253,5 @@ export const AiSdkTools = createAbstraction<IAiSdkTools>("AiSdkTools");
 
 export namespace AiSdkTools {
     export type Interface = IAiSdkTools;
+    export type Options = IAiSdkToolSetOptions;
 }

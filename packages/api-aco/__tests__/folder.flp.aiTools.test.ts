@@ -5,11 +5,7 @@ import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
-import {
-    FOLDER_CREATED_WEBSOCKET_ACTION,
-    FOLDER_DELETED_WEBSOCKET_ACTION,
-    FOLDER_UPDATED_WEBSOCKET_ACTION
-} from "~/features/folder/NotifyFolderChange/index.js";
+import { RECORD_CHANGED_WEBSOCKET_ACTION } from "@webiny/api-core/features/websockets/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FlpFactory } from "~/features/flp/shared/abstractions.js";
 
@@ -111,8 +107,8 @@ describe("Folder access AI tools", () => {
 
             expect(websocketMessages).toEqual([
                 expect.objectContaining({
-                    action: FOLDER_CREATED_WEBSOCKET_ACTION,
-                    data: { id: created.id }
+                    action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                    data: { type: "aco.folder", id: created.id, change: "created" }
                 })
             ]);
         });
@@ -130,8 +126,8 @@ describe("Folder access AI tools", () => {
 
             expect(websocketMessages).toEqual([
                 expect.objectContaining({
-                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
-                    data: { id: folder.id }
+                    action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                    data: { type: "aco.folder", id: folder.id, change: "updated" }
                 })
             ]);
         });
@@ -150,8 +146,8 @@ describe("Folder access AI tools", () => {
 
             expect(websocketMessages).toEqual([
                 expect.objectContaining({
-                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
-                    data: { id: folder.id }
+                    action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                    data: { type: "aco.folder", id: folder.id, change: "updated" }
                 })
             ]);
         });
@@ -189,8 +185,8 @@ describe("Folder access AI tools", () => {
             expect(found.isFail()).toBe(true);
             expect(websocketMessages).toEqual([
                 expect.objectContaining({
-                    action: FOLDER_DELETED_WEBSOCKET_ACTION,
-                    data: { id: folder.id }
+                    action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                    data: { type: "aco.folder", id: folder.id, change: "deleted" }
                 })
             ]);
         });
@@ -275,8 +271,8 @@ describe("Folder access AI tools", () => {
             ]);
             expect(websocketMessages).toEqual([
                 expect.objectContaining({
-                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
-                    data: { id: folder.id }
+                    action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                    data: { type: "aco.folder", id: folder.id, change: "updated" }
                 })
             ]);
         });
