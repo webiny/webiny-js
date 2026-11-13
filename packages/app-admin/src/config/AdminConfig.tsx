@@ -7,6 +7,7 @@ import type { SupportMenuConfig } from "./AdminConfig/Menu/SupportMenu.js";
 import type { UserMenuConfig } from "./AdminConfig/Menu/UserMenu.js";
 import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
+import type { Theme as ThemeDefinition, ThemeColorConfig } from "./AdminConfig/Theme/types.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
 import { Breadcrumb, type BreadcrumbConfig } from "./AdminConfig/Breadcrumbs.js";
@@ -48,6 +49,8 @@ interface AdminConfig {
     drawers: DrawerConfig[];
     fieldRenderers: FieldRendererConfig[];
     layoutRenderers: LayoutRendererConfig[];
+    themes: ThemeDefinition[];
+    brandColors: ThemeColorConfig[];
 }
 
 /* Once the app fully renders (after the LoginScreen), apply protected configs. */
@@ -93,7 +96,9 @@ export const useAdminConfig = () => {
         dialogs: baseConfig.dialogs ?? [],
         drawers: baseConfig.drawers ?? [],
         fieldRenderers: baseConfig.fieldRenderers ?? [],
-        layoutRenderers: baseConfig.layoutRenderers ?? []
+        layoutRenderers: baseConfig.layoutRenderers ?? [],
+        themes: baseConfig.themes ?? [],
+        brandColors: baseConfig.brandColors ?? []
     };
 };
 
