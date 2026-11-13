@@ -105,6 +105,7 @@ export const Infra = {
 
     // AWS.
     Vpc,
+    // Alias of Infra.Core.RdsProxy (prefer Infra.Core.RdsProxy going forward).
     RdsProxy,
     BlueGreenDeployments,
     // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
@@ -169,6 +170,7 @@ export const Infra = {
         StackOutputValue: CoreStackOutputValue,
         DynamoDb,
         OpenSearch,
+        RdsProxy,
         S3Bucket
     }
 };

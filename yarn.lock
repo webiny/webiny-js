@@ -13931,6 +13931,7 @@ __metadata:
     "@pulumi/random": "npm:^4.21.4"
     "@types/lodash": "npm:^4.17.27"
     "@types/ncp": "npm:^2.0.8"
+    "@vercel/nft": "npm:^1.11.0"
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"

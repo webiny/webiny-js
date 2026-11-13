@@ -32,6 +32,12 @@ const coreBeforeDeployHooks = (config: Record<string, any>) =>
 const corePulumiHooks = (config: Record<string, any>) =>
     asArray(config["Core/Pulumi"]).map((hook: { src: string }) => hook.src.split("/").pop());
 
+const projectDecorators = (config: Record<string, any>) =>
+    asArray(config["Project/Decorator"]).map((hook: { src: string }) => hook.src.split("/").pop());
+
+const apiAfterBuildHooks = (config: Record<string, any>) =>
+    asArray(config["Api/AfterBuild"]).map((hook: { src: string }) => hook.src.split("/").pop());
+
 const buildParams = (config: Record<string, any>) => asArray(config["Api/BuildParam"]);
 
 describe("Infra.Postgres and Infra.RdsProxy in an AWS project", () => {
@@ -58,10 +64,21 @@ describe("Infra.Postgres and Infra.RdsProxy in an AWS project", () => {
         expect(corePulumiHooks(config)).toEqual(["AddCorePostgres.js"]);
     });
 
-    it("leaves the database setup alone without <Postgres />", async () => {
+    it("builds the api with the Postgres handlers, and knex + pg in the bundle", async () => {
+        const config = await renderConfig(<Postgres />);
+
+        expect(projectDecorators(config)).toEqual(["ReplaceApiLambdaFnHandlers.js"]);
+        expect(apiAfterBuildHooks(config)).toEqual(["CopyPgModulesAfterApiBuild.js"]);
+        // The Postgres versions, not the OpenSearch ones of the same name.
+        expect(asArray(config["Project/Decorator"])[0].src).toContain("/Postgres/");
+    });
+
+    it("leaves the database setup and the api build alone without <Postgres />", async () => {
         const config = await renderConfig(null);
 
         expect(config["Project/DatabaseSetup"]).toEqual({ setupName: "ddb" });
+        expect(projectDecorators(config)).toEqual([]);
+        expect(apiAfterBuildHooks(config)).toEqual([]);
     });
 
     it("adds the proxy's deploy check only when the proxy is enabled", async () => {
