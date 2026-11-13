@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import CreateTenantUseCase from "./CreateTenantUseCase.js";
 import CreateTenantRepository from "./CreateTenantRepository.js";
 import CheckTenantIdOnEntryBeforeCreateHandler from "./CheckTenantIdOnEntryBeforeCreateHandler.js";
+import CheckTenantAccessOnEntryBeforeCreateHandler from "./CheckTenantAccessOnEntryBeforeCreateHandler.js";
 
 export const CreateTenantFeature = createFeature({
     name: "CreateTenant",
@@ -14,5 +15,8 @@ export const CreateTenantFeature = createFeature({
 
         // Refuse tenant entries for tenants that already exist
         container.register(CheckTenantIdOnEntryBeforeCreateHandler);
+
+        // Creating a tenant entry requires the Tenant Manager permission
+        container.register(CheckTenantAccessOnEntryBeforeCreateHandler);
     }
 });
