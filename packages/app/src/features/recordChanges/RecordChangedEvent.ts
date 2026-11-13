@@ -7,6 +7,8 @@ export interface RecordChangedPayload {
     /** Names the kind of record, such as `security.team`. */
     type: string;
     id: string;
+    /** For a record whose id only means something inside a parent, such as a CMS entry's model: the parent's id. */
+    scope?: string;
     change: RecordChange;
 }
 

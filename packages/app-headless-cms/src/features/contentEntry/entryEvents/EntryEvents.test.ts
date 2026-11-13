@@ -61,7 +61,7 @@ describe("entry events", () => {
 
         await receive({
             action: "record.changed",
-            data: { type: "cms.entry.guide", id: "e1", change: "created" }
+            data: { type: "cms.entry", id: "e1", scope: "guide", change: "created" }
         });
 
         expect(fetched).toEqual(["e1"]);
@@ -75,7 +75,7 @@ describe("entry events", () => {
 
         await receive({
             action: "record.changed",
-            data: { type: "cms.entry.guide", id: "e1", change: "updated" }
+            data: { type: "cms.entry", id: "e1", scope: "guide", change: "updated" }
         });
 
         expect(cache("guide").getItem(item => item.entryId === "e1")?.values.title).toBe(
@@ -90,7 +90,7 @@ describe("entry events", () => {
 
         await receive({
             action: "record.changed",
-            data: { type: "cms.entry.guide", id: "e1", change: "deleted" }
+            data: { type: "cms.entry", id: "e1", scope: "guide", change: "deleted" }
         });
 
         expect(fetched).toEqual([]);

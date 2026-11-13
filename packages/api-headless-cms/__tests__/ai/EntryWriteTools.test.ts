@@ -112,7 +112,7 @@ describe("entry write tools", () => {
         expect(sent).toEqual([
             {
                 action: "record.changed",
-                data: { type: "cms.entry.guide", id: created.entryId, change: "created" }
+                data: { type: "cms.entry", id: created.entryId, scope: "guide", change: "created" }
             }
         ]);
     });
@@ -136,7 +136,7 @@ describe("entry write tools", () => {
         expect(sent).toEqual([
             {
                 action: "record.changed",
-                data: { type: "cms.entry.guide", id: created.entryId, change: "updated" }
+                data: { type: "cms.entry", id: created.entryId, scope: "guide", change: "updated" }
             }
         ]);
     });
@@ -223,7 +223,7 @@ describe("entry write tools", () => {
         expect(sent).toEqual([
             {
                 action: "record.changed",
-                data: { type: "cms.entry.guide", id: created.entryId, change: "deleted" }
+                data: { type: "cms.entry", id: created.entryId, scope: "guide", change: "deleted" }
             }
         ]);
     });

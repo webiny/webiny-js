@@ -3,7 +3,8 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/index.js";
-import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
+import { ENTRY_RECORD_TYPE } from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 
@@ -20,7 +21,7 @@ class UnpublishEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input>
         private getModel: GetModelUseCase.Interface,
         private getPublishedRevision: GetPublishedRevisionByEntryIdUseCase.Interface,
         private unpublishEntry: UnpublishEntryUseCase.Interface,
-        private notifyEntryChange: NotifyEntryChangeUseCase.Interface
+        private notifyRecordChange: NotifyRecordChangeUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<EntrySummary> {
@@ -44,9 +45,10 @@ class UnpublishEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input>
         }
 
         const entry = result.value;
-        await this.notifyEntryChange.execute({
-            modelId: model.modelId,
-            entryId: entry.entryId,
+        await this.notifyRecordChange.execute({
+            type: ENTRY_RECORD_TYPE,
+            id: entry.entryId,
+            scope: model.modelId,
             change: "updated"
         });
 
@@ -60,7 +62,7 @@ const UnpublishEntryToolHandler = AiSdkToolHandler.createImplementation({
         GetModelUseCase,
         GetPublishedRevisionByEntryIdUseCase,
         UnpublishEntryUseCase,
-        NotifyEntryChangeUseCase
+        NotifyRecordChangeUseCase
     ]
 });
 

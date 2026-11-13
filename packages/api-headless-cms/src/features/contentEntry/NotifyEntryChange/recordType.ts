@@ -1,11 +1,11 @@
 /**
- * The `type` of the record-changed message sent when an entry changes. Carries the model, because the
- * admin needs it to read the entry back and to find the list it belongs in; the message id is the
- * `entryId`. Same naming as the CMS webhooks (`cms.entry.<modelId>.created`). The admin's
- * `EntryRecordChanges` parses the same prefix.
+ * The `type` of the record-changed message sent when an entry changes. The message's `id` is the
+ * `entryId` and its `scope` the model id. The admin's `ApplyEntryChangeToCache` filters on the same
+ * string.
+ *
+ * Sent explicitly (today by the assistant's entry tools), not from the entry lifecycle events the
+ * way team, role and user changes are announced. Entries are written in bulk (imports, bulk
+ * actions, scheduled publishing), and a message per write would mean a websocket send per entry and
+ * an admin read-back per message.
  */
-const ENTRY_RECORD_TYPE_PREFIX = "cms.entry.";
-
-export const getEntryRecordType = (modelId: string): string => {
-    return `${ENTRY_RECORD_TYPE_PREFIX}${modelId}`;
-};
+export const ENTRY_RECORD_TYPE = "cms.entry";
