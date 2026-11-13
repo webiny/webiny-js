@@ -4,6 +4,8 @@ import { createAuditLogsContext } from "~/context/index.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { AuditLogsContext } from "./abstractions.js";
+import { GetAuditLogFeature } from "~/features/GetAuditLog/index.js";
+import { ListAuditLogsFeature } from "~/features/ListAuditLogs/index.js";
 
 export interface ICreateAuditLogsParams {
     deleteLogsAfterDays: number | undefined;
@@ -18,6 +20,9 @@ export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
         }
 
         context.container.registerInstance(AuditLogsContext, context);
+
+        GetAuditLogFeature.register(context.container);
+        ListAuditLogsFeature.register(context.container);
 
         createSubscriptionHooks(context);
     });
