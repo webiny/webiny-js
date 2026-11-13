@@ -57,7 +57,7 @@ const POSTGRES_OUTPUTS = [
     "pgSecretArn"
 ] as const;
 
-type PostgresOutputs = Pick<ICoreOutput, (typeof POSTGRES_OUTPUTS)[number]>;
+export type PostgresOutputs = Pick<ICoreOutput, (typeof POSTGRES_OUTPUTS)[number]>;
 
 /* The Postgres connection outputs of the core stack, for the API app. No password among them. */
 export const pickPostgresOutputs = (output: Record<string, unknown>): PostgresOutputs => {
