@@ -32,6 +32,7 @@ import { UpdateEntrySystemFeature } from "./UpdateEntrySystem/feature.js";
 import { EntryDataFactoriesFeature } from "./entryDataFactories/EntryDataFactoriesFeature.js";
 import { RuntimeTenantImplementation } from "~/features/runtimeTenant/index.js";
 import { EntryEventPublisherFeature } from "./EntryEventPublisher/feature.js";
+import { NotifyEntryChangeFeature } from "./NotifyEntryChange/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
@@ -39,6 +40,7 @@ export const ContentEntriesFeature = createFeature({
         container.register(RuntimeTenantImplementation);
         EntryDataFactoriesFeature.register(container);
         EntryEventPublisherFeature.register(container);
+        NotifyEntryChangeFeature.register(container);
         // Query features
         GetRevisionByIdFeature.register(container);
         GetEntriesByIdsFeature.register(container);
