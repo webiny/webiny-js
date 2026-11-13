@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import type { ComponentProps } from "react";
 import type { IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 import type { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import type { GetProductionEnvironments } from "@webiny/project/abstractions/index.js";
@@ -137,8 +138,23 @@ describe("deploy core with <Infra.Postgres />", () => {
     });
 
     it("passes with blue-green deployments explicitly disabled", async () => {
+        /* Typed from the component, so this is a config a project can actually write:
+           <Infra.BlueGreenDeployments> needs `domains` and `deployments` even when disabled. */
+        const blueGreenDisabled: ComponentProps<typeof BlueGreenDeployments> = {
+            enabled: false,
+            domains: {
+                acmCertificateArn: "arn:aws:acm:us-east-1:000000000000:certificate/example",
+                sslSupportMethod: "sni-only",
+                domains: { api: ["api.example.com"], admin: ["admin.example.com"] }
+            },
+            deployments: [
+                { name: "green", env: "dev", variant: "green" },
+                { name: "blue", env: "dev", variant: "blue" }
+            ]
+        };
+
         await expect(
-            validatePostgres([POSTGRES, VPC_ENABLED, [BlueGreenDeployments, { enabled: false }]])
+            validatePostgres([POSTGRES, VPC_ENABLED, [BlueGreenDeployments, blueGreenDisabled]])
         ).resolves.toBeUndefined();
     });
 });
