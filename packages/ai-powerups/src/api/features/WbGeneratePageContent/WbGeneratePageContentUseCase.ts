@@ -2,7 +2,6 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import {
     ResolveAiCapabilityUseCase,
@@ -14,7 +13,6 @@ import {
     formatAdditionalFilesContext
 } from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
-import { readOnlyToolSet } from "~/api/features/shared/readOnlyTools.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
 import type {
     WbGeneratePageContentParams,
@@ -31,7 +29,6 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private toolDefinitions: AiSdkToolDefinition.Interface[],
         private listTags: ListTagsUseCase.Interface
     ) {}
 
@@ -46,7 +43,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         const capability = resolved.value;
 
         // Generation runs with nobody to approve a change, so it gets only the tools that read.
-        const sdkTools = readOnlyToolSet(this.aiSdkTools.getToolSet(), this.toolDefinitions);
+        const sdkTools = this.aiSdkTools.getToolSet({ readOnly: true });
 
         const context = await this.promptContextBuilder.execute({
             projectId: params.projectId,
@@ -150,7 +147,6 @@ export const WbGeneratePageContentUseCaseImplementation =
             ResolveAiCapabilityUseCase,
             Ai,
             AiSdkTools,
-            [AiSdkToolDefinition, { multiple: true }],
             ListTagsUseCase
         ]
     });

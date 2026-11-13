@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { Ai, AiSdkToolDefinition, AiSdkTools } from "@webiny/api-core/features/ai/index.js";
+import { Ai, AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/index.js";
 import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
@@ -9,48 +9,19 @@ import { WbGeneratePageContentUseCase } from "~/api/features/WbGeneratePageConte
 import { WbGeneratePageContentUseCaseImplementation } from "~/api/features/WbGeneratePageContent/WbGeneratePageContentUseCase.js";
 import { WB_GENERATE_PAGE_CAPABILITY } from "~/api/features/WbGeneratePageContent/capability.js";
 
-class NoopHandler {
-    async execute() {
-        return {};
-    }
-}
-
-const definition = (
-    name: string,
-    annotations?: AiSdkToolDefinition.Annotations
-): AiSdkToolDefinition.Interface => ({
-    name,
-    description: name,
-    inputSchema: {} as AiSdkToolDefinition.Interface["inputSchema"],
-    annotations,
-    handler: NoopHandler
-});
-
 const setup = () => {
-    const requests: Ai.GenerateTextParams[] = [];
+    const toolSetRequests: (AiSdkTools.Options | undefined)[] = [];
     const container = new Container();
-    const definitions = [
-        definition("listPages", { readOnlyHint: true }),
-        definition("deleteFolder", { readOnlyHint: false, destructiveHint: true }),
-        definition("createEntry")
-    ];
-
-    for (const tool of definitions) {
-        container.registerInstance(AiSdkToolDefinition, tool);
-    }
 
     container.registerInstance(AiSdkTools, {
-        getToolSet: () =>
-            Object.fromEntries(
-                definitions.map(tool => [tool.name, { description: tool.description }])
-            )
-    } as unknown as AiSdkTools.Interface);
+        getToolSet: (options?: AiSdkTools.Options) => {
+            toolSetRequests.push(options);
+            return {};
+        }
+    });
 
     container.registerInstance(Ai, {
-        generateText: async (request: Ai.GenerateTextParams) => {
-            requests.push(request);
-            return { text: "[]", steps: [] };
-        }
+        generateText: async () => ({ text: "[]", steps: [] })
     } as unknown as Ai.Interface);
 
     container.registerInstance(ResolveAiCapabilityUseCase, {
@@ -83,12 +54,12 @@ const setup = () => {
 
     container.register(WbGeneratePageContentUseCaseImplementation);
 
-    return { useCase: container.resolve(WbGeneratePageContentUseCase), requests };
+    return { useCase: container.resolve(WbGeneratePageContentUseCase), toolSetRequests };
 };
 
 describe("WbGeneratePageContentUseCase", () => {
-    it("offers the model only the tools that do not change anything", async () => {
-        const { useCase, requests } = setup();
+    it("asks for the read-only tools only, since nobody is there to approve a change", async () => {
+        const { useCase, toolSetRequests } = setup();
 
         const result = await useCase.execute({
             prompt: "a landing page for a bakery",
@@ -97,7 +68,6 @@ describe("WbGeneratePageContentUseCase", () => {
         });
 
         expect(result.isOk()).toBe(true);
-        expect(Object.keys(requests[0].tools ?? {})).toEqual(["listPages"]);
-        expect(result.value.telemetry.toolsAvailable).toEqual(["listPages"]);
+        expect(toolSetRequests).toEqual([{ readOnly: true }]);
     });
 });

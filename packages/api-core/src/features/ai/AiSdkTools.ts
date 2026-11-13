@@ -3,6 +3,7 @@ import {
     AiSdkToolHandlerResolver,
     AiSdkTools as AiSdkToolsAbstraction
 } from "./abstractions.js";
+import { isReadOnlyTool } from "./isReadOnlyTool.js";
 import type { ToolSet } from "ai";
 
 class AiSdkToolsImpl implements AiSdkToolsAbstraction.Interface {
@@ -11,9 +12,12 @@ class AiSdkToolsImpl implements AiSdkToolsAbstraction.Interface {
         private resolver: AiSdkToolHandlerResolver.Interface
     ) {}
 
-    getToolSet(): ToolSet {
+    getToolSet(options: AiSdkToolsAbstraction.Options = {}): ToolSet {
         const map: ToolSet = {};
         for (const definition of this.definitions) {
+            if (options.readOnly && !isReadOnlyTool(definition)) {
+                continue;
+            }
             map[definition.name] = {
                 description: definition.description,
                 inputSchema: definition.inputSchema,

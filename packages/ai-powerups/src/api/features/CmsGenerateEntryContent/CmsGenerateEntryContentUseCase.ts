@@ -2,7 +2,6 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
-import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiToolPipelineRunner } from "@webiny/api-core/features/ai/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -18,7 +17,6 @@ import {
     formatAdditionalFilesContext
 } from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
-import { readOnlyToolSet } from "~/api/features/shared/readOnlyTools.js";
 import { CmsGenerateEntryContentUseCase } from "./abstractions.js";
 import type {
     CmsGenerateEntryContentParams,
@@ -35,7 +33,6 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private toolDefinitions: AiSdkToolDefinition.Interface[],
         private listTags: ListTagsUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
         private modelToAst: ModelToAstConverter.Interface,
@@ -66,7 +63,7 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         });
 
         // Generation runs with nobody to approve a change, so it gets only the tools that read.
-        const sdkTools = readOnlyToolSet(this.aiSdkTools.getToolSet(), this.toolDefinitions);
+        const sdkTools = this.aiSdkTools.getToolSet({ readOnly: true });
 
         const context = await this.promptContextBuilder.execute({
             projectId: params.projectId,
@@ -174,7 +171,6 @@ export const CmsGenerateEntryContentUseCaseImplementation =
             ResolveAiCapabilityUseCase,
             Ai,
             AiSdkTools,
-            [AiSdkToolDefinition, { multiple: true }],
             ListTagsUseCase,
             GetModelUseCase,
             ModelToAstConverter,
