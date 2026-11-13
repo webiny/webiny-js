@@ -2,7 +2,9 @@ import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
-import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
+import { ENTRY_RECORD_TYPE } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { assertKnownFields } from "./assertKnownFields.js";
 import { getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 
@@ -27,11 +29,12 @@ class CreateEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
         private getModel: GetModelUseCase.Interface,
         private createEntry: CreateEntryUseCase.Interface,
-        private notifyEntryChange: NotifyEntryChangeUseCase.Interface
+        private notifyRecordChange: NotifyRecordChangeUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<EntrySummary> {
         const model = await getWritableModel(this.getModel, input.modelId);
+        assertKnownFields(model, input.values);
 
         const result = await this.createEntry.execute(model, {
             values: input.values,
@@ -43,9 +46,10 @@ class CreateEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         }
 
         const entry = result.value;
-        await this.notifyEntryChange.execute({
-            modelId: model.modelId,
-            entryId: entry.entryId,
+        await this.notifyRecordChange.execute({
+            type: ENTRY_RECORD_TYPE,
+            id: entry.entryId,
+            scope: model.modelId,
             change: "created"
         });
 
@@ -55,7 +59,7 @@ class CreateEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
 const CreateEntryToolHandler = AiSdkToolHandler.createImplementation({
     implementation: CreateEntryToolHandlerImpl,
-    dependencies: [GetModelUseCase, CreateEntryUseCase, NotifyEntryChangeUseCase]
+    dependencies: [GetModelUseCase, CreateEntryUseCase, NotifyRecordChangeUseCase]
 });
 
 /**

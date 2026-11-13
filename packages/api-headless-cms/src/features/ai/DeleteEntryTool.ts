@@ -3,7 +3,8 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { MoveEntryToBinUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
-import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
+import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
+import { ENTRY_RECORD_TYPE } from "~/features/contentEntry/NotifyEntryChange/index.js";
 import { getLatestEntryRevision } from "./models.js";
 import { getWritableModel } from "./models.js";
 
@@ -34,7 +35,7 @@ class DeleteEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         private getModel: GetModelUseCase.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private moveEntryToBin: MoveEntryToBinUseCase.Interface,
-        private notifyEntryChange: NotifyEntryChangeUseCase.Interface
+        private notifyRecordChange: NotifyRecordChangeUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<DeletedEntry> {
@@ -55,9 +56,10 @@ class DeleteEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
             throw new Error(`Could not delete the entry: ${result.error.message}`);
         }
 
-        await this.notifyEntryChange.execute({
-            modelId: model.modelId,
-            entryId: entry.entryId,
+        await this.notifyRecordChange.execute({
+            type: ENTRY_RECORD_TYPE,
+            id: entry.entryId,
+            scope: model.modelId,
             change: "deleted"
         });
 
@@ -71,7 +73,7 @@ const DeleteEntryToolHandler = AiSdkToolHandler.createImplementation({
         GetModelUseCase,
         GetLatestRevisionByEntryIdUseCase,
         MoveEntryToBinUseCase,
-        NotifyEntryChangeUseCase
+        NotifyRecordChangeUseCase
     ]
 });
 

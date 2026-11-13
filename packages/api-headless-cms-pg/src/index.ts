@@ -1,5 +1,9 @@
 export { ScopeIndexMode } from "~/features/indexMode/abstractions.js";
-export { PgStorageConfig, PG_CMS_BUILD_PARAM } from "~/features/config/abstractions.js";
+export {
+    PgStorageConfig,
+    PG_CMS_BUILD_PARAM,
+    PG_CMS_DEFAULTS_BUILD_PARAM
+} from "~/features/config/abstractions.js";
 export type { IPgStorageSettings } from "~/features/config/abstractions.js";
 export type { IndexMode } from "~/features/indexMode/indexMode.js";
 export { SearchIndexer } from "~/features/search/abstractions.js";
