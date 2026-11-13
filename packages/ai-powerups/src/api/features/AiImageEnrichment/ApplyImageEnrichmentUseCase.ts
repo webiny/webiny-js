@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import {
     ApplyImageEnrichmentUseCase as UseCaseAbstraction,

@@ -3,7 +3,7 @@ import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
-import type { IterationSlots } from "./IterationSlots.js";
+import type { ConcurrencySlots } from "@webiny/utils/ConcurrencySlots.js";
 import { nextStep } from "./nextStep.js";
 import type { IIterationResult } from "./nextStep.js";
 
@@ -13,7 +13,7 @@ const MAX_TASK_DURATION_MS = 86_400_000;
 interface ITaskExecutionParams {
     event: IBackgroundTaskEvent;
     dispatcher: EventDispatcher.Interface;
-    slots: IterationSlots;
+    slots: ConcurrencySlots;
     shutdown: ShutdownSignal.Interface;
     logger: Logger.Interface;
 }

@@ -20,7 +20,7 @@ export interface INotifyRoleChangeUseCase {
 }
 
 export const NotifyRoleChangeUseCase = createAbstraction<INotifyRoleChangeUseCase>(
-    "Aco/NotifyRoleChangeUseCase"
+    "Security/NotifyRoleChangeUseCase"
 );
 
 export namespace NotifyRoleChangeUseCase {

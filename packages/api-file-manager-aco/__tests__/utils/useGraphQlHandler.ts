@@ -20,7 +20,7 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 import { Logger } from "@webiny/api-core/features/logger/index.js";

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 import type { IWebsocketsConnectionRegistry } from "~/registry";
 import type { IWebsocketsConnectionRegistryData } from "~/registry";
-import type { IWebsocketsIdentity } from "~/types.js";
+import type { IWebsocketsIdentity } from "@webiny/api-core/features/websockets/index.js";
 import { useHandler } from "~tests/helpers/useHandler";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 

@@ -14,3 +14,4 @@ export { Hasher } from "~/features/hashing/index.js";
 export { BuildParam, BuildParams } from "~/features/buildParams/index.js";
 export { DomainEvent, EventPublisher } from "~/features/eventPublisher/index.js";
 export { GlobalKeyValueStore, KeyValueStore } from "~/features/keyValueStore/index.js";
+export { WebsocketsSendToIdentityUseCase } from "~/features/websockets/index.js";

@@ -1,35 +1,21 @@
 /**
- * The `path` prop on `<Api.Route>` feeds consumers that spell path parameters differently: API
- * Gateway wants `{orderId}`, the DI `HttpRouter` wants `:orderId`, and a CloudFront behavior can only
- * match a parameter with a `*`. Rather than pick a winner and
- * break whichever projects already used the other, accept both and convert per consumer.
+ * The `path` prop on `<Api.Route>` feeds two consumers that spell path parameters differently:
+ * API Gateway wants `{orderId}`, the DI `HttpRouter` wants `:orderId`. Rather than pick a winner and
+ * break whichever projects already used the other, accept both and convert per consumer. The API
+ * Gateway conversion lives in `@webiny/project-aws` (`toApiGatewayPath.ts`), the only package that
+ * creates API Gateway routes, next to the CloudFront one (`toCloudFrontPathPattern.ts`) that routes a
+ * path to the web function.
  *
  * Wildcards are left alone. `HttpRouter` matches a trailing `/*`, API Gateway spells the same thing
  * `{proxy+}`, and translating between them changes what the route captures — so a wildcard route
  * has to be written for the target it's aimed at.
  */
 
-/** `/orders/:orderId` → `/orders/{orderId}`. Already-braced segments pass through. */
-export function toApiGatewayPath(path: string): string {
-    return path.replace(/(^|\/):([^/]+)/g, (_match, prefix: string, name: string) => {
-        return `${prefix}{${name}}`;
-    });
-}
-
 /** `/orders/{orderId}` → `/orders/:orderId`. Already-colon segments pass through. */
 export function toRouterPath(path: string): string {
     return path.replace(/\{([^}]+)\}/g, (_match, name: string) => {
         return `:${name}`;
     });
-}
-
-/**
- * `/orders/{orderId}` → `/orders/*`, the path pattern of the CloudFront behavior that routes the
- * path to the web function. Handles either parameter syntax; `{proxy+}` becomes `*` too.
- */
-export function toCloudFrontPathPattern(path: string): string {
-    const gatewayPath = toApiGatewayPath(path);
-    return gatewayPath.replace(/\{[^}]+\}/g, "*");
 }
 
 /**

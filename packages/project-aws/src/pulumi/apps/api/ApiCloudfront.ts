@@ -9,7 +9,7 @@ import { ApiFileManager } from "./ApiFileManager.js";
 import { ApiGateway } from "./ApiGateway.js";
 import { ApiGraphqlStream } from "./ApiGraphqlStream.js";
 import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
-import { toCloudFrontPathPattern } from "~/extensions/routePath.js";
+import { toCloudFrontPathPattern } from "~/extensions/toCloudFrontPathPattern.js";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 

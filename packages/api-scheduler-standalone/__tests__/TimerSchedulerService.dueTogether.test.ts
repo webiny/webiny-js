@@ -96,4 +96,52 @@ describe("TimerSchedulerService — actions due together", () => {
         expect(runAction).toHaveBeenCalledWith("runs", namespace, tenant);
         expect(logger.error).toHaveBeenCalledTimes(1);
     });
+
+    it("runs actions again after a stop and a new start", async () => {
+        const runAction = vi.fn().mockResolvedValue(undefined);
+        service = new TimerSchedulerService({ logger: createMockLogger(), runAction });
+        await service.start();
+        await service.stop();
+        await service.start();
+
+        await service.recover([
+            { id: "after-restart", namespace, tenant, scheduledFor: pastDate(1_000) }
+        ]);
+
+        expect(runAction).toHaveBeenCalledWith("after-restart", namespace, tenant);
+    });
+
+    it("counts actions still running from before a stop against the limit after a new start", async () => {
+        let finishFirst: () => void = () => {};
+        const firstRunning = new Promise<void>(resolve => {
+            finishFirst = resolve;
+        });
+        const runAction = vi.fn(async (id: string) => {
+            if (id === "before-stop") {
+                await firstRunning;
+            }
+        });
+        service = new TimerSchedulerService({
+            logger: createMockLogger(),
+            runAction,
+            maxConcurrentActions: 1
+        });
+        await service.start();
+        const beforeStop = service.recover([
+            { id: "before-stop", namespace, tenant, scheduledFor: pastDate(1_000) }
+        ]);
+        await vi.waitFor(() => expect(runAction).toHaveBeenCalledTimes(1));
+
+        await service.stop();
+        await service.start();
+        const afterStart = service.recover([
+            { id: "after-start", namespace, tenant, scheduledFor: pastDate(1_000) }
+        ]);
+        await new Promise(resolve => setTimeout(resolve, 20));
+        expect(runAction).toHaveBeenCalledTimes(1);
+
+        finishFirst();
+        await Promise.all([beforeStop, afterStart]);
+        expect(runAction).toHaveBeenCalledWith("after-start", namespace, tenant);
+    });
 });

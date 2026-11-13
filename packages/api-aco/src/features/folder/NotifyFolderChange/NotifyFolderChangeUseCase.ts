@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import {
     FOLDER_CREATED_WEBSOCKET_ACTION,
     FOLDER_DELETED_WEBSOCKET_ACTION,
