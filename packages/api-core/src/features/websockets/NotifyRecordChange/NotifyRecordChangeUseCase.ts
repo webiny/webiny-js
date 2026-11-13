@@ -1,10 +1,8 @@
 import { createImplementation } from "@webiny/di";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "~/features/websockets/SendToIdentity/abstractions.js";
-import {
-    RECORD_CHANGED_WEBSOCKET_ACTION,
-    NotifyRecordChangeUseCase as UseCaseAbstraction
-} from "./abstractions.js";
+import { RECORD_CHANGED_WEBSOCKET_ACTION } from "./abstractions.js";
+import { NotifyRecordChangeUseCase as UseCaseAbstraction } from "./abstractions.js";
 
 /*
  * Changes the admin makes itself are announced too: the admin applies them by id, so the tab that

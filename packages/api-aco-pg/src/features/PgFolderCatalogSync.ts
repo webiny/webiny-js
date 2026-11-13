@@ -1,6 +1,6 @@
 import { FolderCatalogSync } from "@webiny/api-aco/features/flp/FolderCatalogSync/abstractions.js";
 import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
-import { FOLDER_RECORD_TYPE } from "@webiny/api-aco/features/folder/NotifyFolderChange/recordType.js";
+import { FOLDER_RECORD_TYPE } from "@webiny/api-aco/features/folder/NotifyFolderChange/index.js";
 import type { Folder } from "@webiny/api-aco/folder/folder.types.js";
 
 /**

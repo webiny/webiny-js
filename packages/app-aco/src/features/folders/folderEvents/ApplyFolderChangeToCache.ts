@@ -40,7 +40,8 @@ class ApplyFolderChangeToCacheImpl implements RecordChangedEventHandler.Interfac
             return;
         }
 
-        const folder = Folder.create(await this.getFolder.execute(id));
+        const dto = await this.getFolder.execute(id);
+        const folder = Folder.create(dto);
         const cache = folderCacheFactory.getCache(folder.type);
 
         cache.addItems([folder]);
