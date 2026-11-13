@@ -48,6 +48,24 @@ export class SettingsPersistenceError extends BaseError<{ error: Error }> {
     }
 }
 
+export class TestMailNotAuthorized extends BaseError {
+    override readonly code = "Mailer/SendTestMail/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not allowed to send a test email." });
+    }
+}
+
+export class TestMailNotConfigured extends BaseError {
+    override readonly code = "Mailer/SendTestMail/NotConfigured" as const;
+
+    constructor() {
+        super({
+            message: "SMTP settings are not configured, so there is nothing to test."
+        });
+    }
+}
+
 export class SettingsLockedByCode extends BaseError {
     override readonly code = "Mailer/Settings/LockedByCode" as const;
 

@@ -4,6 +4,7 @@ import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQL
 import { ErrorResponse } from "@webiny/api-graphql/responses.js";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
+import { SendTestMailUseCase } from "~/features/SendTestMail/abstractions.js";
 import type { MailerSettingsSource } from "~/features/GetSettings/abstractions.js";
 import type { SaveSettingsInput } from "~/features/SaveSettings/abstractions.js";
 import type { TransportSettings } from "~/types.js";
@@ -67,8 +68,14 @@ class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 replyTo: String
             }
 
+            type MailerSendTestMailResponse {
+                data: Boolean
+                error: MailerTransportSettingsError
+            }
+
             type MailerMutation {
                 saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
+                sendTestMail(to: String!): MailerSendTestMailResponse!
             }
 
             extend type Query {
@@ -129,6 +136,26 @@ class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                             data: toPublicSettings(result.value, "storage"),
                             error: null
                         };
+                    } catch (ex) {
+                        return new ErrorResponse(ex);
+                    }
+                }
+        });
+
+        builder.addResolver<{ to: string }>({
+            path: "MailerMutation.sendTestMail",
+            dependencies: [SendTestMailUseCase],
+            resolver:
+                (sendTestMail: SendTestMailUseCase.Interface) =>
+                async ({ args }) => {
+                    try {
+                        const result = await sendTestMail.execute({ to: args.to });
+
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
+
+                        return { data: true, error: null };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }

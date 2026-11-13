@@ -11,6 +11,7 @@ import {
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { useFeature } from "@webiny/app";
 import { SettingsPresenterFeature } from "../feature.js";
+import { TestMailSection } from "./TestMailSection.js";
 
 export const SettingsView = observer(function SettingsView() {
     const toast = useToast();
@@ -45,6 +46,7 @@ export const SettingsView = observer(function SettingsView() {
                         </Alert>
                     ) : null}
                     <FormView name={"Mailer Settings"} form={vm.form} />
+                    <TestMailSection presenter={presenter} />
                 </SimpleFormContent>
                 <SimpleFormFooter>
                     {vm.editable ? <Button text={"Save"} onClick={handleSave} /> : null}

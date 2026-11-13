@@ -17,7 +17,11 @@ import type { CreateHandlerParams } from "./contextHandler";
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
+import {
+    GET_SETTINGS_QUERY,
+    SAVE_SETTINGS_MUTATION,
+    SEND_TEST_MAIL_MUTATION
+} from "./graphql/settings";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
@@ -133,6 +137,9 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
         },
         async saveSettings(variables: Record<string, any>) {
             return invoke({ body: { query: SAVE_SETTINGS_MUTATION, variables } });
+        },
+        async sendTestMail(variables: { to: string }) {
+            return invoke({ body: { query: SEND_TEST_MAIL_MUTATION, variables } });
         }
     };
 };

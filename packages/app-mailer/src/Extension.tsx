@@ -3,6 +3,7 @@ import { AdminConfig, AdminLayout, RegisterFeature, useRouter } from "@webiny/ap
 import { HasPermission } from "@webiny/app-admin";
 import { GetSettingsFeature } from "~/features/getSettings/feature.js";
 import { SaveSettingsFeature } from "~/features/saveSettings/feature.js";
+import { SendTestMailFeature } from "~/features/sendTestMail/feature.js";
 import { SettingsPresenterFeature } from "~/presentation/settings/feature.js";
 import { SettingsView } from "~/presentation/settings/components/SettingsView.js";
 import { Routes } from "~/routes.js";
@@ -16,6 +17,7 @@ export const Extension = () => {
         <>
             <RegisterFeature feature={GetSettingsFeature} />
             <RegisterFeature feature={SaveSettingsFeature} />
+            <RegisterFeature feature={SendTestMailFeature} />
             <RegisterFeature feature={SettingsPresenterFeature} />
             <AdminConfig>
                 <HasPermission name={"mailer.settings"}>
