@@ -5,8 +5,7 @@ import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLa
 import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
-import { getLatestEntryRevision } from "./models.js";
-import { getWritableModel } from "./models.js";
+import { assertKnownFields, getLatestEntryRevision, getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 
 const inputSchema = z.object({
@@ -37,6 +36,7 @@ class UpdateEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
     async execute(input: Input): Promise<EntrySummary & { newRevision: boolean }> {
         const model = await getWritableModel(this.getModel, input.modelId);
+        assertKnownFields(model, input.values);
 
         const revision = await getLatestEntryRevision(this.getLatestRevision, model, input.entryId);
 

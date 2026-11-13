@@ -3,7 +3,7 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { NotifyEntryChangeUseCase } from "~/features/contentEntry/NotifyEntryChange/index.js";
-import { getWritableModel } from "./models.js";
+import { assertKnownFields, getWritableModel } from "./models.js";
 import { toEntrySummary, type EntrySummary } from "./entrySummary.js";
 
 const inputSchema = z.object({
@@ -32,6 +32,7 @@ class CreateEntryToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
     async execute(input: Input): Promise<EntrySummary> {
         const model = await getWritableModel(this.getModel, input.modelId);
+        assertKnownFields(model, input.values);
 
         const result = await this.createEntry.execute(model, {
             values: input.values,
