@@ -37,9 +37,9 @@ export class RefreshCommand implements CliCommandFactory.Interface<IRefreshComma
 
                 try {
                     const { pulumiProcess } = await projectSdk.refreshApp(params);
-                    pulumiProcess.stdin?.pipe(this.stdioService.getStdin());
                     pulumiProcess.stdout?.pipe(this.stdioService.getStdout());
                     pulumiProcess.stderr?.pipe(this.stdioService.getStderr());
+                    await pulumiProcess;
                 } catch (error) {
                     throw ManuallyReportedError.from(error);
                 }
