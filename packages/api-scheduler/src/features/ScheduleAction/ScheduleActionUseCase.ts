@@ -124,7 +124,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Reschedule existing action
         const scheduledAction = existingResult.value;
 
-        return this.reschedule<T>(scheduledAction, params.scheduleFor, identity, payload);
+        return this.reschedule<T>(scheduledAction, scheduleFor, identity, payload);
     }
 
     /**
