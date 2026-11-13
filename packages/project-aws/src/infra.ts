@@ -31,6 +31,8 @@ import {
 } from "./pulumi/extensions/index.js";
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
+import { Postgres } from "./extensions/Postgres.js";
+import { RdsProxy } from "./extensions/RdsProxy.js";
 import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
@@ -70,6 +72,8 @@ export const Infra = {
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     Vpc,
+    Postgres,
+    RdsProxy,
     BlueGreenDeployments,
     // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
     OpenSearch,

@@ -34,7 +34,37 @@ export interface ICoreOutput {
     opensearchDynamodbTableRangeKey: string;
     opensearchDynamodbTableArn: string | undefined;
     opensearchDynamodbTableName: string | undefined;
+    /*
+     * Set with `<Infra.Postgres />`. The password is in the `pgSecretArn` secret, never here.
+     * `pgProxyHost` is set with `<Infra.RdsProxy enabled />` too.
+     */
+    pgWriterHost: string | undefined;
+    pgReaderHost: string | undefined;
+    pgProxyHost: string | undefined;
+    pgPort: number | undefined;
+    pgDatabase: string | undefined;
+    pgUser: string | undefined;
+    pgSecretArn: string | undefined;
 }
+
+const POSTGRES_OUTPUTS = [
+    "pgWriterHost",
+    "pgReaderHost",
+    "pgProxyHost",
+    "pgPort",
+    "pgDatabase",
+    "pgUser",
+    "pgSecretArn"
+] as const;
+
+type PostgresOutputs = Pick<ICoreOutput, (typeof POSTGRES_OUTPUTS)[number]>;
+
+/* The Postgres connection outputs of the core stack, for the API app. No password among them. */
+export const pickPostgresOutputs = (output: Record<string, unknown>): PostgresOutputs => {
+    return Object.fromEntries(
+        POSTGRES_OUTPUTS.map(name => [name, output[name]])
+    ) as unknown as PostgresOutputs;
+};
 
 export const CoreOutput = createAppModule({
     name: "CoreOutput",
@@ -71,7 +101,9 @@ export const CoreOutput = createAppModule({
                 opensearchDomainArn: output["opensearchDomainArn"],
                 opensearchDomainEndpoint: output["opensearchDomainEndpoint"],
                 opensearchDynamodbTableArn: output["opensearchDynamodbTableArn"],
-                opensearchDynamodbTableName: output["opensearchDynamodbTableName"]
+                opensearchDynamodbTableName: output["opensearchDynamodbTableName"],
+                // These outputs are optional, since Postgres is not always enabled.
+                ...pickPostgresOutputs(output)
             } as ICoreOutput;
         });
     }
