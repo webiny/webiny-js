@@ -7,8 +7,7 @@ import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 /**
  * Resolves a connection's identity from the `?token` JWT sent on the WebSocket upgrade — the SAME
  * token→identity step the HTTP request stack runs (RequestIdentityLoader). Returns `null` for an
- * absent/invalid/anonymous token, in which case the connection registers anonymously and won't
- * receive targeted (`SendToIdentity`) messages.
+ * invalid or anonymous token, in which case the server refuses the upgrade with a 401.
  *
  * It's a plain callback rather than a resolved dependency for two reasons: this WebSocket server is a
  * DI-agnostic class (the handler resolves what it needs and passes plain values in), and the auth it
@@ -31,7 +30,7 @@ interface BaseServerParams {
     staleAfter?: number;
     debug?: boolean;
     connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
-    authenticate?: WebsocketsConnectionAuthenticator;
+    authenticate: WebsocketsConnectionAuthenticator;
 }
 
 export interface CreateWebsocketsServerParams extends BaseServerParams {

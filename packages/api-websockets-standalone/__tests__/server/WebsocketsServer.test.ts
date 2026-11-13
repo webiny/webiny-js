@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import type { Mock } from "vitest";
 import { createServer } from "node:http";
 import type { Server as HttpServer } from "node:http";
 import { WebSocket } from "ws";
@@ -7,6 +8,7 @@ import { createConnectionManager } from "~tests/helpers/createConnectionManager.
 import { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
 import { LAST_SEEN_WRITE_INTERVAL } from "~/connectionManager/ServerConnectionManager.js";
 import type { IWebsocketsServer } from "~/server/types.js";
+import type { WebsocketsConnectionAuthenticator } from "~/server/types.js";
 
 const createNoopRegistry = (): IWebsocketsConnectionRegistry => ({
     register: vi.fn().mockResolvedValue({} as any),
@@ -21,12 +23,46 @@ const createNoopRegistry = (): IWebsocketsConnectionRegistry => ({
 
 const owner = { id: "host-a:1:aaaa" };
 
+const VALID_TOKEN = "valid-token";
+const user = { id: "user-1", displayName: "User One", type: "admin" };
+
+// Resolves `VALID_TOKEN` to `user` and every other token to nothing.
+const authenticate = async (token: string) => {
+    if (token === VALID_TOKEN) {
+        return user;
+    }
+    return null;
+};
+
 /* Helper: create a WS client and wait for it to be open. */
 function connectClient(port: number): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-        const client = new WebSocket(`ws://127.0.0.1:${port}`);
+        const client = new WebSocket(`ws://127.0.0.1:${port}/ws?token=${VALID_TOKEN}&tenant=root`);
         client.once("open", () => resolve(client));
         client.once("error", reject);
+    });
+}
+
+/*
+ * Helper: attempt an upgrade and report how it ended. "open" when the socket opened, otherwise the
+ * HTTP status the server refused it with.
+ */
+function attemptUpgrade(port: number, pathAndQuery: string): Promise<number | "open"> {
+    return new Promise((resolve, reject) => {
+        const client = new WebSocket(`ws://127.0.0.1:${port}${pathAndQuery}`);
+        client.once("open", () => {
+            client.close();
+            resolve("open");
+        });
+        client.once("unexpected-response", (_request, response) => {
+            resolve(response.statusCode ?? 0);
+        });
+        client.once("error", error => {
+            // The refused handshake also errors; `unexpected-response` has already answered.
+            if (!/Unexpected server response/.test(error.message)) {
+                reject(error);
+            }
+        });
     });
 }
 
@@ -75,7 +111,8 @@ describe("WebsocketsServer", () => {
                 port: 0,
                 host: "127.0.0.1",
                 heartbeatInterval: 60_000,
-                connectionManager: manager
+                connectionManager: manager,
+                authenticate
             });
             await server.start();
         });
@@ -119,7 +156,8 @@ describe("WebsocketsServer", () => {
                 port: 0,
                 host: "127.0.0.1",
                 heartbeatInterval: 60_000,
-                connectionManager: trackedManager
+                connectionManager: trackedManager,
+                authenticate
             });
             await trackedServer.start();
 
@@ -150,7 +188,8 @@ describe("WebsocketsServer", () => {
             const server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
-                connectionManager: manager
+                connectionManager: manager,
+                authenticate
             });
             await server.start();
 
@@ -178,7 +217,8 @@ describe("WebsocketsServer", () => {
             const server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
-                connectionManager: manager
+                connectionManager: manager,
+                authenticate
             });
             await server.start();
 
@@ -209,7 +249,8 @@ describe("WebsocketsServer", () => {
             const server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
-                connectionManager: manager
+                connectionManager: manager,
+                authenticate
             });
             await server.start();
 
@@ -235,17 +276,16 @@ describe("WebsocketsServer", () => {
             consoleError.mockRestore();
         });
 
-        it("removes a connection that closed while it was still authenticating", async () => {
+        it("removes a connection that closed while it was still being registered", async () => {
             const registry = createNoopRegistry();
-            const manager = createConnectionManager(registry, owner);
-
-            let finishAuthentication: () => void = () => {};
-            const authenticate = vi.fn(
+            let finishRegistration: () => void = () => {};
+            registry.register = vi.fn(
                 () =>
-                    new Promise<null>(resolve => {
-                        finishAuthentication = () => resolve(null);
+                    new Promise<any>(resolve => {
+                        finishRegistration = () => resolve({});
                     })
             );
+            const manager = createConnectionManager(registry, owner);
 
             const server = createWebsocketsServer({
                 port: 0,
@@ -256,12 +296,11 @@ describe("WebsocketsServer", () => {
             await server.start();
 
             const port = server.port();
-            const client = new WebSocket(`ws://127.0.0.1:${port}/?token=t`);
-            await new Promise(resolve => client.once("open", resolve));
+            const client = await connectClient(port);
             await closeClient(client);
             await wait(50);
 
-            finishAuthentication();
+            finishRegistration();
             await wait(50);
 
             expect(registry.register).toHaveBeenCalledTimes(1);
@@ -281,7 +320,8 @@ describe("WebsocketsServer", () => {
                 host: "127.0.0.1",
                 heartbeatInterval: 50,
                 staleAfter: 1_000,
-                connectionManager: manager
+                connectionManager: manager,
+                authenticate
             });
             await server.start();
 
@@ -302,6 +342,80 @@ describe("WebsocketsServer", () => {
         });
     });
 
+    describe("handshake", () => {
+        let registry: IWebsocketsConnectionRegistry;
+        let server: IWebsocketsServer;
+        let authenticateSpy: Mock<WebsocketsConnectionAuthenticator>;
+
+        beforeEach(async () => {
+            registry = createNoopRegistry();
+            const manager = createConnectionManager(registry, owner);
+            authenticateSpy = vi.fn<WebsocketsConnectionAuthenticator>(authenticate);
+
+            server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager,
+                authenticate: authenticateSpy
+            });
+            await server.start();
+        });
+
+        afterEach(async () => {
+            await server.stop();
+        });
+
+        it("refuses an upgrade on any path but /ws with a 404", async () => {
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, `/graphql?token=${VALID_TOKEN}`);
+
+            expect(outcome).toBe(404);
+            expect(authenticateSpy).not.toHaveBeenCalled();
+            expect(registry.register).not.toHaveBeenCalled();
+        });
+
+        it("refuses an upgrade without a token with a 401", async () => {
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, "/ws?tenant=root");
+
+            expect(outcome).toBe(401);
+            expect(authenticateSpy).not.toHaveBeenCalled();
+            expect(registry.register).not.toHaveBeenCalled();
+        });
+
+        it("refuses an upgrade whose token resolves to no identity with a 401", async () => {
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, "/ws?token=expired&tenant=root");
+
+            expect(outcome).toBe(401);
+            expect(authenticateSpy).toHaveBeenCalledWith("expired");
+            expect(registry.register).not.toHaveBeenCalled();
+        });
+
+        it("answers 500 when authentication fails for another reason", async () => {
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+            authenticateSpy.mockRejectedValueOnce(new Error("database unreachable"));
+
+            const port = server.port();
+            const outcome = await attemptUpgrade(port, `/ws?token=${VALID_TOKEN}`);
+
+            expect(outcome).toBe(500);
+            expect(registry.register).not.toHaveBeenCalled();
+            consoleError.mockRestore();
+        });
+
+        it("registers an accepted connection under the identity and tenant", async () => {
+            const port = server.port();
+            const client = await connectClient(port);
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            const registered = expect.objectContaining({ identity: user, tenant: "root" });
+            expect(registry.register).toHaveBeenCalledTimes(1);
+            expect(registry.register).toHaveBeenCalledWith(registered);
+            await closeClient(client);
+        });
+    });
+
     describe("attach mode (attachWebsocketsServer)", () => {
         let httpServer: HttpServer;
         let server: IWebsocketsServer;
@@ -316,7 +430,8 @@ describe("WebsocketsServer", () => {
 
             server = attachWebsocketsServer({
                 server: httpServer,
-                connectionManager: manager
+                connectionManager: manager,
+                authenticate
             });
             await server.start();
         });
@@ -344,7 +459,8 @@ describe("WebsocketsServer", () => {
             server = createWebsocketsServer({
                 port: 0,
                 host: "127.0.0.1",
-                heartbeatInterval: 60_000
+                heartbeatInterval: 60_000,
+                authenticate
             });
             /* Deliberately NOT setting a connection manager. */
             await server.start();
