@@ -8,7 +8,10 @@ import type {
 } from "~/types/index.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
-import type { IModelAccessGuard } from "~/features/contentModel/ModelAccessGuard/abstractions.js";
+import type {
+    IModelAccessGuard,
+    IModelAccessGuardParams
+} from "~/features/contentModel/ModelAccessGuard/abstractions.js";
 
 export interface AccessControlParams {
     getIdentity: () => Promise<SecurityIdentity>;
@@ -210,8 +213,11 @@ export class AccessControl {
      */
 
     async canAccessModel(params: CanAccessModelParams) {
-        if (params.model && !(await this.passesModelAccessGuards(params.model))) {
-            return false;
+        if (params.model) {
+            const passes = await this.passesModelAccessGuards(params.model, { rwd: params.rwd });
+            if (!passes) {
+                return false;
+            }
         }
 
         const acl = await this.getModelsAccessControlList(params);
@@ -235,10 +241,13 @@ export class AccessControl {
     /**
      * Every guard that handles the model must allow access.
      */
-    private async passesModelAccessGuards(model: Pick<CmsModel, "modelId">): Promise<boolean> {
+    private async passesModelAccessGuards(
+        model: Pick<CmsModel, "modelId">,
+        params: IModelAccessGuardParams
+    ): Promise<boolean> {
         const guards = this.getModelAccessGuards().filter(guard => guard.canHandle(model));
         for (const guard of guards) {
-            if (!(await guard.canAccess())) {
+            if (!(await guard.canAccess(params))) {
                 return false;
             }
         }
@@ -435,7 +444,11 @@ export class AccessControl {
      */
 
     async canAccessEntry(params: CanAccessEntryParams) {
-        if (!(await this.passesModelAccessGuards(params.model))) {
+        const passes = await this.passesModelAccessGuards(params.model, {
+            rwd: params.rwd,
+            pw: params.pw
+        });
+        if (!passes) {
             return false;
         }
 

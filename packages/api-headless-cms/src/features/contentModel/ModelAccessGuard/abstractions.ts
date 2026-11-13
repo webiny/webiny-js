@@ -8,15 +8,28 @@ import type { CmsModel } from "~/types/index.js";
  *
  * Use it for a model that belongs to another application with its own permission.
  */
+export interface IModelAccessGuardParams {
+    /**
+     * The access being checked: "r" (read), "w" (write) or "d" (delete).
+     * Not set means read.
+     */
+    rwd?: string;
+    /**
+     * The publishing action being checked, for example "p" (publish) or "u" (unpublish).
+     */
+    pw?: string;
+}
+
 export interface IModelAccessGuard {
     /** Does this guard apply to the given model? */
     canHandle(model: Pick<CmsModel, "modelId">): boolean;
-    /** May the current identity access the model and its entries? */
-    canAccess(): Promise<boolean>;
+    /** May the current identity access the model and its entries in the given way? */
+    canAccess(params: IModelAccessGuardParams): Promise<boolean>;
 }
 
 export const ModelAccessGuard = createAbstraction<IModelAccessGuard>("Cms/ModelAccessGuard");
 
 export namespace ModelAccessGuard {
     export type Interface = IModelAccessGuard;
+    export type Params = IModelAccessGuardParams;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ContextPlugin } from "@webiny/api";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import { identityA, identityB } from "./utils";
+import { expectNotAuthorized, identityA, identityB } from "./utils";
 import { ModelAccessGuard } from "~/features/contentModel/ModelAccessGuard/index.js";
 import type { CmsContext } from "~/types/index.js";
 
@@ -9,14 +9,17 @@ import type { CmsContext } from "~/types/index.js";
  * Registers a guard for the given model. The identity has full access in all tests:
  * the guard alone decides.
  */
-const createGuardPlugin = (modelId: string, canAccess: boolean) => {
+const createGuardPlugin = (
+    modelId: string,
+    canAccess: boolean | ((params: ModelAccessGuard.Params) => boolean)
+) => {
     class TestModelAccessGuard implements ModelAccessGuard.Interface {
         canHandle(model: { modelId: string }): boolean {
             return model.modelId === modelId;
         }
 
-        async canAccess(): Promise<boolean> {
-            return canAccess;
+        async canAccess(params: ModelAccessGuard.Params): Promise<boolean> {
+            return typeof canAccess === "function" ? canAccess(params) : canAccess;
         }
     }
 
@@ -113,6 +116,52 @@ describe("Model access guard", () => {
 
         const created = await manage.createTestEntry();
         expect(created.error).toBeNull();
+    });
+
+    it("should let the guard deny only some kinds of access", async () => {
+        const entry = await setup();
+
+        // Reading is allowed, everything else is denied.
+        const { manage } = useTestModelHandler({
+            identity: identityB,
+            plugins: [
+                createGuardPlugin("testModel", params => {
+                    return !params.pw && (!params.rwd || params.rwd === "r");
+                })
+            ]
+        });
+
+        const list = await manage.listTestEntries();
+        expect(list.error).toBeNull();
+        expect(list.data.map(item => item.id)).toEqual([entry.id]);
+
+        const created = await manage.createTestEntry();
+        expectNotAuthorized(created, {
+            code: "Cms/Entry/NotAuthorized",
+            message: 'Not allowed to access "testModel" entries.'
+        });
+
+        const updated = await manage.updateTestEntry({
+            variables: { revision: entry.id, data: {} }
+        });
+        expect(updated.data).toBeNull();
+        expect(updated.error).not.toBeNull();
+
+        const deleted = await manage.deleteTestEntry({
+            variables: { revision: entry.entryId }
+        });
+        expect(deleted.error).not.toBeNull();
+
+        const published = await manage.publishTestEntry({
+            variables: { revision: entry.id }
+        });
+        expect(published.data).toBeNull();
+        expect(published.error).not.toBeNull();
+
+        // Nothing was changed or removed.
+        const { manage: manageA } = useTestModelHandler({ identity: identityA });
+        const after = await manageA.listTestEntries();
+        expect(after.data.map(item => item.id)).toEqual([entry.id]);
     });
 
     it("should not affect other models", async () => {
