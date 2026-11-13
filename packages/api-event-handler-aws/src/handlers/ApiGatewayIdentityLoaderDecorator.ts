@@ -6,7 +6,7 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import { extractAuthToken } from "./extractRequestAuth.js";
+import { extractAuthToken } from "@webiny/api-event-handler-core";
 
 /**
  * EXTRACT (transport-specific): reads the auth token from an API Gateway event — see

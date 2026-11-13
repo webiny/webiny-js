@@ -9,6 +9,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { toRouterPath } from "@webiny/project/extensions/api/index.js";
 import { toApiGatewayPath } from "~/extensions/toApiGatewayPath.js";
+import { toCloudFrontPathPattern } from "~/extensions/toCloudFrontPathPattern.js";
 
 describe("toApiGatewayPath", () => {
     it.each([
@@ -33,6 +34,18 @@ describe("toRouterPath", () => {
         ["/files/*", "/files/*"]
     ])("converts %s to %s", (input, expected) => {
         expect(toRouterPath(input)).toBe(expected);
+    });
+});
+
+describe("toCloudFrontPathPattern", () => {
+    it.each([
+        ["/orders/{orderId}", "/orders/*"],
+        ["/orders/:orderId", "/orders/*"],
+        ["/tenants/:tenantId/orders/{orderId}", "/tenants/*/orders/*"],
+        ["/files/{proxy+}", "/files/*"],
+        ["/my-route", "/my-route"]
+    ])("converts %s to %s", (input, expected) => {
+        expect(toCloudFrontPathPattern(input)).toBe(expected);
     });
 });
 

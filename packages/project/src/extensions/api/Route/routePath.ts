@@ -3,7 +3,8 @@
  * API Gateway wants `{orderId}`, the DI `HttpRouter` wants `:orderId`. Rather than pick a winner and
  * break whichever projects already used the other, accept both and convert per consumer. The API
  * Gateway conversion lives in `@webiny/project-aws` (`toApiGatewayPath.ts`), the only package that
- * creates API Gateway routes.
+ * creates API Gateway routes, next to the CloudFront one (`toCloudFrontPathPattern.ts`) that routes a
+ * path to the web function.
  *
  * Wildcards are left alone. `HttpRouter` matches a trailing `/*`, API Gateway spells the same thing
  * `{proxy+}`, and translating between them changes what the route captures — so a wildcard route

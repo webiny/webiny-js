@@ -23,6 +23,9 @@ import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-stan
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
 import {
     WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
@@ -41,9 +44,6 @@ import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
-import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
-import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
-import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import { mkdirSync } from "node:fs";

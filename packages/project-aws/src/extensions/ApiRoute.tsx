@@ -8,7 +8,8 @@ const p = createPathResolver(import.meta.dirname);
 
 /**
  * What `Api.Route` renders in an AWS project, registered in `registerExtensionImplementations.ts`.
- * It only adds the API Gateway route (`RegisterRoutesPulumi`). Validating the props and writing the
+ * It only adds the route to the infrastructure (`RegisterRoutesPulumi`): a CloudFront behavior to
+ * the web function, or an API Gateway route when the web function is off. Validating the props and writing the
  * route into `extensions.ts` stay with the shared definition in `@webiny/project`, which is the one
  * the project config resolves `Api/Route` to, so there is no schema or build step here.
  */

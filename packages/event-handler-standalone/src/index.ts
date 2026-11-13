@@ -1,9 +1,7 @@
-export { createServerHandler } from "./createServerHandler.js";
-export type { CreateServerHandlerOptions } from "./createServerHandler.js";
-export * from "./abstractions/NodeHttpEventHandler.js";
-export * from "./eventTypes/NodeHttpEventType.js";
-export * from "./handlers/NodeHttpRouterHandler.js";
-export * from "./features/NodeHttpFeature.js";
-export { nodeHttpRequestFromIncomingMessage } from "./translators/NodeHttpTranslator.js";
+/*
+ * The Node HTTP transport lives in `@webiny/event-handler-core/nodeHttp`, so AWS's Lambda web function
+ * can use it without depending on this package. It is re-exported here for standalone projects.
+ */
+export * from "@webiny/event-handler-core/nodeHttp/index.js";
 export { ProcessOwner } from "./process/ProcessOwner.js";
 export { RandomProcessOwner } from "./process/RandomProcessOwner.js";

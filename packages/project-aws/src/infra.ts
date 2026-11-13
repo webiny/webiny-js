@@ -40,6 +40,7 @@ import { EnvVar } from "@webiny/project/extensions/index.js";
 import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
 import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,
@@ -114,7 +115,8 @@ export const Infra = {
         CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
         LambdaFunction: ApiLambdaFunction,
-        MaxBundleSize: ApiMaxBundleSize
+        MaxBundleSize: ApiMaxBundleSize,
+        WebFunction: ApiWebFunction
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,

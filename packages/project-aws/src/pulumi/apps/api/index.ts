@@ -4,6 +4,7 @@ export * from "./ApiFileManager.js";
 export * from "./ApiGateway.js";
 export * from "./ApiGraphql.js";
 export * from "./ApiGraphqlStream.js";
+export * from "./ApiGraphqlWeb.js";
 export * from "./createApiPulumiApp.js";
 export * from "./ApiOutput.js";
 export * from "./ApiWebsocket.js";

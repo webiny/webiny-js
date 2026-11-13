@@ -6,6 +6,7 @@ export * from "./ApiLambdaFunction.js";
 export * from "./ApiMaxBundleSize.js";
 export * from "./ApiPulumi.js";
 export * from "./ApiStackOutputValue.js";
+export * from "./ApiWebFunction.js";
 export * from "./AutoInstall.js";
 export * from "./AwsDefaultRegion.js";
 export * from "./AwsTags.js";
