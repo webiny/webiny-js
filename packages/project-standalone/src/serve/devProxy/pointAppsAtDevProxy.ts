@@ -26,8 +26,9 @@ export function pointAppsAtDevProxy(urls: IDevProxyUrls): void {
     // The websocket URL too. The admin would otherwise derive it from the API URL and land in the
     // right place anyway, but only when nothing else sets it: `<Admin.WebsocketsUrl>` takes priority
     // when present, and a project that pins it to a port (the obvious thing to write) would point the
-    // socket somewhere the proxy isn't.
-    process.env.WEBINY_ADMIN_WS_API_URL = API_PREFIX;
+    // socket somewhere the proxy isn't. It is the full socket URL, so it carries the `/ws` path the
+    // api takes upgrades on (`WEBSOCKETS_PATH` in @webiny/api-websockets-standalone).
+    process.env.WEBINY_ADMIN_WS_API_URL = `${API_PREFIX}/ws`;
 
     // The api can't be relative: it hands out absolute URLs (file srcPrefix, the upload endpoint) to
     // clients that have no page origin to resolve against. Overwritten for the same reason as the two
