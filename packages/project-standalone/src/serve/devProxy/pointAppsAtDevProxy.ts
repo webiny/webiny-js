@@ -1,18 +1,16 @@
 import { API_PREFIX } from "./constants.js";
-import { type IDevProxyUrls } from "./types.js";
 
 /**
- * Tells the apps to talk to each other through the proxy rather than directly.
+ * Tells the admin to talk to the api through the proxy rather than directly.
  *
  * Only `watch` calls this. `serve` runs what `webiny build` already produced, so the admin bundle's
  * API URL was fixed back then and nothing set now can move it.
  *
  * Call before `projectSdk.watch()`. webiny.config has already been evaluated by the time a command
  * handler runs, but it is rendered once per distinct render args, and the app-scoped renders
- * (`{ app: "api" }`, `{ app: "admin" }`) happen inside that call — after this. The API server is
- * spawned with this process's env, so it starts with the URLs set here.
+ * (`{ app: "api" }`, `{ app: "admin" }`) happen inside that call — after this.
  */
-export function pointAppsAtDevProxy(urls: IDevProxyUrls): void {
+export function pointAppsAtDevProxy(): void {
     // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so the
     // same build works on localhost, on a portless domain like https://wby6.localhost, and behind a
     // real reverse proxy — without knowing any of them at build time.
@@ -29,12 +27,6 @@ export function pointAppsAtDevProxy(urls: IDevProxyUrls): void {
     // socket somewhere the proxy isn't.
     process.env.WEBINY_ADMIN_WS_API_URL = API_PREFIX;
 
-    // The api can't be relative: it hands out absolute URLs (file srcPrefix, the upload endpoint) to
-    // clients that have no page origin to resolve against. Overwritten for the same reason as the two
-    // above: `<Infra.ApiUrl>` set it during the bootstrap config render.
-    process.env.WEBINY_API_URL = urls.apiUrl;
-
-    // Same reason: the api hands the Admin origin to clients (e.g. the starter-kit configs). The
-    // admin app is served from the proxy's root.
-    process.env.WEBINY_ADMIN_URL = urls.url;
+    // The api's own URLs (`WEBINY_API_URL`, `WEBINY_ADMIN_URL`) are not set here: `spawnApiServer`
+    // points the api at the proxy itself, for `watch` and `serve` alike.
 }

@@ -16,7 +16,9 @@ export const AdminApiUrl = defineExtension({
     paramsSchema: z.object({
         url: z
             .string()
-            .describe("The API origin, e.g. https://api.example.com or http://localhost:3000")
+            .describe(
+                "The API origin, e.g. https://api.example.com, or a path resolved against the page origin, e.g. /api"
+            )
     }),
     render: props => {
         return <EnvVar varName="WEBINY_ADMIN_API_URL" value={props.url} />;

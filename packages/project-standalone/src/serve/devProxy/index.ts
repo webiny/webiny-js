@@ -1,5 +1,6 @@
 export { API_PREFIX } from "./constants.js";
 export { DevProxy } from "./DevProxy.js";
+export { getDevProxyUrls } from "./getDevProxyUrls.js";
 export { type IDevProxyConfig } from "./DevProxy.js";
 export { isDevProxyEnabled } from "./isDevProxyEnabled.js";
 export { pointAppsAtDevProxy } from "./pointAppsAtDevProxy.js";

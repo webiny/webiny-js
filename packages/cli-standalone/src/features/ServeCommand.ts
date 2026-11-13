@@ -8,6 +8,7 @@ import {
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
 import { reserveDevProxyPorts } from "@webiny/project-standalone/serve/devProxy/index.js";
+import { warnIfAdminApiUrlNeedsProxy } from "./warnIfAdminApiUrlNeedsProxy.js";
 
 interface IServeCommandParams {
     _: string[];
@@ -52,11 +53,16 @@ export class StandaloneServeCommand implements CliCommandFactory.Interface<IServ
 
                 // Ports only, no `pointAppsAtDevProxy`: serve runs what `webiny build` already
                 // produced, so the admin bundle's API URL was fixed back then and has to have been
-                // built with one that works behind the proxy.
+                // built with one that works behind the proxy (the default, `/api`, does). The api is
+                // pointed at the proxy when `spawnApiServer` starts it.
                 const devProxyUrls = await reserveDevProxyPorts({
                     apps: params.app ? [params.app] : ["api", "admin"],
                     enabled: params.proxy
                 });
+                const servesAdmin = !params.app || params.app === "admin";
+                if (!devProxyUrls && servesAdmin) {
+                    warnIfAdminApiUrlNeedsProxy(this.uiService);
+                }
 
                 const projectSdk = await this.getProjectSdkService.execute();
 
