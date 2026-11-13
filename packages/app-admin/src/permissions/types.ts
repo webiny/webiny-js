@@ -152,11 +152,13 @@ type EntitiesOf<S extends PermissionSchemaConfig> = S extends {
  * Extract entity IDs whose actions array contains an action with the given name.
  */
 type EntityIdWithAction<S extends PermissionSchemaConfig, A extends string> = {
-    [K in EntitiesOf<S> as K extends { actions: ReadonlyArray<infer Act> }
-        ? Act extends { name: A }
-            ? K["id"]
+    [
+        K in EntitiesOf<S> as K extends { actions: ReadonlyArray<infer Act> }
+            ? Act extends { name: A }
+                ? K["id"]
+                : never
             : never
-        : never]: never;
+    ]: never;
 } extends infer M
     ? keyof M & string
     : never;

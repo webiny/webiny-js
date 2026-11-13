@@ -88,7 +88,6 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
         let nextCursor: PrimitiveValue[] | undefined;
         if (hasMoreItems) {
             hits.pop();
-            // @ts-expect-error
             nextCursor = hits.at(-1)?.sort;
         }
         const items = hits.reduce<IElasticsearchFetcherFetchResponseItem[]>((collection, hit) => {

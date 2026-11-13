@@ -13,6 +13,7 @@ import {
     PublishTestEntryActionHandlerImpl
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
 describe("Combined Use Cases", () => {
@@ -28,6 +29,7 @@ describe("Combined Use Cases", () => {
         });
         context = await contextHandler.handler();
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });

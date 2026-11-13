@@ -22,4 +22,5 @@ export * from "./ResponseHeaders.js";
 
 export { Request } from "./abstractions/Request.js";
 export { Reply } from "./abstractions/Reply.js";
+export { RequestId } from "./abstractions/RequestId.js";
 export { Route, toRouteRequest, toRouteReply } from "./abstractions/Route.js";

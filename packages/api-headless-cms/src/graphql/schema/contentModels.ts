@@ -18,7 +18,8 @@ export const createModelsSchema = ({
                 try {
                     const model = await context.cms.getModel(args.modelId);
 
-                    if (!model) {
+                    // Private models are internal and not exposed through the GraphQL API.
+                    if (!model || model.isPrivate) {
                         throw new NotFoundError(`Content model "${args.modelId}" was not found!`);
                     }
 

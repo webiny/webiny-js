@@ -10,6 +10,27 @@ import { ContextPlugin } from "@webiny/api";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
+
+/**
+ * Test setup runs for every request: create the tenant only when it doesn't exist yet
+ * (creating an existing tenant fails).
+ */
+const createTenantIfMissing = async (
+    tenancy: {
+        getTenantById(id: string): Promise<unknown>;
+        createTenant(data: CreateTenantInput): Promise<unknown>;
+    },
+    data: CreateTenantInput
+) => {
+    try {
+        await tenancy.getTenantById(data.id!);
+        return;
+    } catch {
+        // Tenant doesn't exist yet.
+    }
+    await tenancy.createTenant(data);
+};
 
 const TEST_MODEL_ID = "tenantIsolationTest";
 
@@ -44,7 +65,7 @@ describe("CMS Entry Tenant Isolation", () => {
                     ctx.container.register(TestModel);
                 }),
                 new ContextPlugin<ApiCoreContext>(async ctx => {
-                    await ctx.tenancy.createTenant({
+                    await createTenantIfMissing(ctx.tenancy, {
                         id: "sub-tenant",
                         name: "Sub Tenant",
                         parent: "root",

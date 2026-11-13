@@ -61,17 +61,16 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
 
-        let scheduleFor = params.scheduleFor;
-        /**
-         * Immediately - publish in past
-         */
-        if (!params.immediately && !isValidDate(scheduleFor)) {
-            return Result.fail(new InvalidScheduleDateError(scheduleFor));
-        } else if (params.immediately) {
+        let scheduleFor: Date;
+        if (params.immediately) {
             // If the action should be executed immediately, we set the scheduleFor to the current date.
             // Calculate the soonest possible execution time.
             // Add at least 90 seconds of buffer to ensure EventBridge can process the schedule.
             scheduleFor = new Date(Date.now() + 90000);
+        } else if (isValidDate(params.scheduleFor)) {
+            scheduleFor = params.scheduleFor;
+        } else {
+            return Result.fail(new InvalidScheduleDateError(params.scheduleFor));
         }
 
         // Generate unique schedule ID
@@ -118,15 +117,14 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 });
             }
 
-            if (error.code === "Scheduler/ScheduledAction/PersistenceError") {
-                return Result.fail(error);
-            }
+            // Any other error (e.g. not authorized to read schedules) is returned as is.
+            return Result.fail(error as UseCaseAbstraction.Error);
         }
 
         // Reschedule existing action
         const scheduledAction = existingResult.value;
 
-        return this.reschedule<T>(scheduledAction, params.scheduleFor, identity, payload);
+        return this.reschedule<T>(scheduledAction, scheduleFor, identity, payload);
     }
 
     /**

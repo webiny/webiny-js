@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
+    type WorkflowStateNotAuthorizedError,
     type WorkflowStateNotFoundError,
     type WorkflowStatePersistenceError,
     type MultipleWorkflowsFoundError,
@@ -22,6 +23,7 @@ export interface IGetTargetWorkflowStateUseCase {
 }
 
 export interface IGetTargetWorkflowStateUseCaseErrors {
+    notAuthorized: WorkflowStateNotAuthorizedError;
     notFound: WorkflowStateNotFoundError;
     persistence: WorkflowStatePersistenceError;
     multipleFound: MultipleWorkflowsFoundError;

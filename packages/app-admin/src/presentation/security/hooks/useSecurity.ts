@@ -17,14 +17,14 @@ export function useSecurity(): IUseSecurityReturn {
     return {
         identity,
         getPermission<T extends Identity.Permission>(name: string, exact?: boolean): T | null {
-            if (!identity) {
+            if (!identity?.getPermission) {
                 return null;
             }
 
             return identity.getPermission<T>(name, exact);
         },
         getPermissions<T extends Identity.Permission = Identity.Permission>(name: string): T[] {
-            if (!identity) {
+            if (!identity?.getPermission) {
                 return [];
             }
 

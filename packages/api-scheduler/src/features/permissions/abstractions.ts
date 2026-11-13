@@ -14,7 +14,11 @@ export namespace SchedulerPermissions {
 }
 
 export interface ISchedulerPermissionsResolver {
-    forNamespace(namespace: string): ISchedulerPermissions | undefined;
+    /**
+     * Returns the permissions for the given namespace. A namespace without a registered
+     * `SchedulerPermissions` implementation gets permissions that deny everything.
+     */
+    forNamespace(namespace: string): ISchedulerPermissions;
 }
 
 export const SchedulerPermissionsResolver = createAbstraction<ISchedulerPermissionsResolver>(

@@ -1,4 +1,5 @@
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
@@ -39,6 +40,7 @@ import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
+import { ModelAccessGuard } from "~/features/contentModel/ModelAccessGuard/index.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -86,6 +88,13 @@ export const createContextPlugin = () => {
         StorageFeature.register(context.container);
 
         async function getExecutableSchema(type: ApiEndpoint) {
+            // The proxy (Query.cms / Mutation.cms) must respect the same endpoint permission as
+            // the /cms/{type} routes.
+            const endpointPermission = await context.security.getPermission(`cms.endpoint.${type}`);
+            if (!endpointPermission) {
+                throw new NotAuthorizedError(`Not allowed to access "${type}" endpoint.`);
+            }
+
             const originalType = context.cms.type;
             setSchemaType(type);
 
@@ -117,7 +126,9 @@ export const createContextPlugin = () => {
                 return context.security.withoutAuthorization(() => {
                     return context.cms.listGroups();
                 });
-            }
+            },
+            // Resolved on each check: guards may be registered after this context is created.
+            getModelAccessGuards: () => context.container.resolveAll(ModelAccessGuard)
         });
 
         const storageOperationsFactory = context.container.resolve(StorageOperationsFactory);

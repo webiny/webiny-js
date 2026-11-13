@@ -6,8 +6,11 @@ import {
     Response
 } from "@webiny/handler-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
+import { GetSettingsUseCase } from "~/features/settings/GetSettings/index.js";
+import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/index.js";
+import { GetIntegrationsUseCase } from "~/features/settings/GetIntegrations/index.js";
+import { UpdateIntegrationsUseCase } from "~/features/settings/UpdateIntegrations/index.js";
 import { resolve } from "~/utils/resolve.js";
-import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { PageModel, type WbPageRevision } from "~/domain/page/abstractions.js";
@@ -18,13 +21,13 @@ import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { DeletePageRevisionUseCase } from "~/features/pages/DeletePageRevision/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
-import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
@@ -136,36 +139,20 @@ export const createPagesSchema = () => {
                     }
                 },
                 getSettings: async (_, __, context) => {
-                    ensureAuthentication(context);
-
-                    const keyValueStore = context.container.resolve(KeyValueStore);
-                    const result = await keyValueStore.get<{ previewDomain: string | undefined }>(
-                        WEBSITE_BUILDER_SETTINGS
-                    );
-
+                    const result = await context.container.resolve(GetSettingsUseCase).execute();
                     if (result.isFail()) {
-                        return new Response({
-                            // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                            previewDomain: "http://localhost:3000"
-                        });
+                        return new ErrorResponse(result.error);
                     }
-
-                    const settings = result.value;
-
-                    return new Response({
-                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                        previewDomain: settings.previewDomain ?? "http://localhost:3000"
-                    });
+                    return new Response(result.value);
                 },
                 getIntegrations: async (_, __, context) => {
-                    ensureAuthentication(context);
-                    const keyValueStore = context.container.resolve(KeyValueStore);
-                    const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
-                    if (settings.isFail()) {
-                        return new Response({});
+                    const result = await context.container
+                        .resolve(GetIntegrationsUseCase)
+                        .execute();
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
                     }
-
-                    return new Response(settings.value);
+                    return new Response(result.value);
                 }
             },
             WbMutation: {
@@ -318,6 +305,22 @@ export const createPagesSchema = () => {
                         return true;
                     });
                 },
+                deletePageRevision: async (_, { id }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const deletePageRevision =
+                            context.container.resolve(DeletePageRevisionUseCase);
+                        const result = await deletePageRevision.execute({
+                            id
+                        });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return true;
+                    });
+                },
                 restorePage: async (_, { id }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
@@ -333,24 +336,23 @@ export const createPagesSchema = () => {
                         return result.value;
                     });
                 },
-                // TODO: move these settings updates into dedicated use cases
                 updateSettings: async (_, args, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context, { permission: "wb.settings" });
-                        const keyValueStore = context.container.resolve(KeyValueStore);
-                        await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
-
-                        return true;
-                    });
+                    const result = await context.container
+                        .resolve(UpdateSettingsUseCase)
+                        .execute(args.data);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(true);
                 },
                 updateIntegrations: async (_, args, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context, { permission: "wb.settings" });
-                        const keyValueStore = context.container.resolve(KeyValueStore);
-                        await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
-
-                        return true;
-                    });
+                    const result = await context.container
+                        .resolve(UpdateIntegrationsUseCase)
+                        .execute(args.data);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(true);
                 }
             },
             WbPage: {

@@ -4,9 +4,12 @@ import { Changelog } from "./Changelog";
 import { GithubRelease } from "./GithubRelease";
 import { versionPackages } from "./versionPackages";
 import { publishPackages } from "./publishPackages";
-import { fetchNpmDistTags } from "./fetchNpmVersion";
+import { fetchNpmDistTags, fetchNpmVersions } from "./fetchNpmVersion";
 
 export class Release {
+    // Whether `--version` may contain a prerelease suffix (e.g. `6.4.0-beta.1`).
+    static allowPrereleaseVersion = false;
+
     distTag: string | undefined = undefined;
     version: string | undefined = undefined;
     preid: string | undefined = undefined;
@@ -55,9 +58,11 @@ export class Release {
     }
 
     async execute() {
+        // Version first: a release type may derive its dist-tag from the version it computes.
+        const version = await this.computeVersion();
+
         this.validateConfig();
 
-        const version = await this.computeVersion();
         this.logger.info("Computed version: %s", version);
         this.logger.info("Dist-tag: %s", this.distTag);
 
@@ -70,12 +75,19 @@ export class Release {
         const versionedPackages = versionPackages(version);
         this.logger.info("Versioned %s packages", versionedPackages.length);
 
+        // Find the previous release BEFORE publishing, so the changelog
+        // can diff against it (not the one we're about to push).
+        let previousLatest: string | undefined;
+        try {
+            previousLatest = await this.findPreviousRelease();
+        } catch (err: any) {
+            this.logger.warning("Could not fetch dist-tags: %s", err.message);
+        }
+
         if (this.dryRun) {
             this.logger.info("Dry run — skipping publish, GitHub release, and git reset.");
 
             try {
-                const distTags = await this.fetchDistTags();
-                const previousLatest = distTags["latest"];
                 const fromRef = previousLatest ? `v${previousLatest}` : "HEAD~10";
                 const changelog = await new Changelog(process.cwd()).generate(fromRef, "HEAD");
                 this.logger.log("Changelog preview:\n\n%s\n", changelog);
@@ -104,7 +116,7 @@ export class Release {
         );
 
         if (this.createGithubRelease.isEnabled()) {
-            await this.createRelease(version);
+            await this.createRelease(version, previousLatest);
         }
 
         if (this.resetAllChanges) {
@@ -130,11 +142,21 @@ export class Release {
         }
     }
 
+    // The release the changelog diffs against: whatever `latest` points at on NPM.
+    protected async findPreviousRelease(): Promise<string | undefined> {
+        const distTags = await this.fetchDistTags();
+        return distTags["latest"];
+    }
+
     protected async fetchDistTags(): Promise<Record<string, string>> {
         return fetchNpmDistTags();
     }
 
-    private async createRelease(version: string) {
+    protected async fetchPublishedVersions(): Promise<string[]> {
+        return fetchNpmVersions();
+    }
+
+    private async createRelease(version: string, previousLatest: string | undefined) {
         const versionTag = `v${version}`;
 
         await execa("git", ["tag", versionTag, "-m", versionTag]);
@@ -142,8 +164,6 @@ export class Release {
         this.logger.info("Created Git tag %s", versionTag);
 
         try {
-            const distTags = await this.fetchDistTags();
-            const previousLatest = distTags["latest"];
             const fromRef = previousLatest ? `v${previousLatest}` : versionTag;
 
             const changelog = await new Changelog(process.cwd()).generate(fromRef, versionTag);

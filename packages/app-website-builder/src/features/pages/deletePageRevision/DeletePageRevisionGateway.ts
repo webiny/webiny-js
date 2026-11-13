@@ -27,12 +27,11 @@ type DeletePageRevisionResponse = {
 class DeletePageRevisionGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(id: string, permanently: boolean) {
+    async execute(id: string) {
         const response = await this.client.execute<DeletePageRevisionResponse>({
             query: DELETE_PAGE_REVISION,
             variables: {
-                id,
-                permanently
+                id
             }
         });
 

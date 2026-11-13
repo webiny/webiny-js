@@ -4,7 +4,7 @@ import { TriggerWebhookUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TriggerWebhookInputSchema } from "./schema.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
-import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions/GetWebhookSettingsRepository.js";
 import { WebhookPermissions } from "~/api/features/WebhookPermissions/abstractions.js";
 import { WebhookNotAuthorizedError, WebhookValidationError } from "~/api/domain/errors.js";
 import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";

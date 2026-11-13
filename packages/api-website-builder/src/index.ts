@@ -1,3 +1,8 @@
+import { GetSettingsFeature } from "~/features/settings/GetSettings/index.js";
+import { WbFolderPermissions } from "~/features/folderPermissions/WbFolderPermissions.js";
+import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/index.js";
+import { GetIntegrationsFeature } from "~/features/settings/GetIntegrations/index.js";
+import { UpdateIntegrationsFeature } from "~/features/settings/UpdateIntegrations/index.js";
 import { createContextPlugin } from "@webiny/api";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -18,6 +23,7 @@ import { ListPagesFeature } from "./features/pages/ListPages/feature.js";
 import { CreatePageFeature } from "./features/pages/CreatePage/feature.js";
 import { CreatePageRevisionFromFeature } from "./features/pages/CreatePageRevisionFrom/feature.js";
 import { DeletePageFeature } from "./features/pages/DeletePage/feature.js";
+import { DeletePageRevisionFeature } from "./features/pages/DeletePageRevision/feature.js";
 import { UpdatePageFeature } from "./features/pages/UpdatePage/feature.js";
 import { PublishPageFeature } from "./features/pages/PublishPage/feature.js";
 import { UnpublishPageFeature } from "./features/pages/UnpublishPage/feature.js";
@@ -69,8 +75,13 @@ const createContext = () => {
 
             // Register permissions
             WbPermissionsFeature.register(container);
+            container.register(WbFolderPermissions);
 
             // Register features
+            GetSettingsFeature.register(container);
+            UpdateSettingsFeature.register(container);
+            GetIntegrationsFeature.register(container);
+            UpdateIntegrationsFeature.register(container);
             GetRedirectByIdFeature.register(container);
             ListRedirectsFeature.register(container);
             GetActiveRedirectsFeature.register(container);
@@ -89,6 +100,7 @@ const createContext = () => {
             CreatePageFeature.register(container);
             CreatePageRevisionFromFeature.register(container);
             DeletePageFeature.register(container);
+            DeletePageRevisionFeature.register(container);
             TrashPageFeature.register(container);
             RestorePageFeature.register(container);
             UpdatePageFeature.register(container);

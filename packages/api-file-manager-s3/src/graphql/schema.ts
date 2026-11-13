@@ -1,9 +1,10 @@
 import pMap from "p-map";
 import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { PresignedPostPayloadData } from "~/types.js";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase.js";
@@ -121,10 +122,19 @@ export const createS3GraphQLSchema = () => {
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
+                        const tenantContext = context.container.resolve(TenantContext);
+                        const file = await normalizer.normalizeFile(data);
+                        await ensureNewFileId({
+                            s3: context.container.resolve(S3Client),
+                            bucket: context.container.resolve(S3Bucket),
+                            file,
+                            tenantId: tenantContext.getTenant().id,
+                            clientId: data.id
+                        });
                         const presignedPayload = await getPresignedPostPayload(
-                            await normalizer.normalizeFile(data),
+                            file,
                             settings,
-                            context.container.resolve(TenantContext)
+                            tenantContext
                         );
 
                         return new Response(presignedPayload);
@@ -152,12 +162,18 @@ export const createS3GraphQLSchema = () => {
 
                         const normalizer = createFileNormalizerFromContext(context);
 
+                        const tenantContext = context.container.resolve(TenantContext);
+
                         const presignedPayloads = await pMap(files, async data => {
-                            return getPresignedPostPayload(
-                                await normalizer.normalizeFile(data),
-                                settings,
-                                context.container.resolve(TenantContext)
-                            );
+                            const file = await normalizer.normalizeFile(data);
+                            await ensureNewFileId({
+                                s3: context.container.resolve(S3Client),
+                                bucket: context.container.resolve(S3Bucket),
+                                file,
+                                tenantId: tenantContext.getTenant().id,
+                                clientId: data.id
+                            });
+                            return getPresignedPostPayload(file, settings, tenantContext);
                         });
 
                         return new Response(presignedPayloads);
@@ -175,21 +191,28 @@ export const createS3GraphQLSchema = () => {
                     const identityContext = context.container.resolve(IdentityContext);
                     await checkPermissions(identityContext, { rwd: "w" });
 
-                    const s3Client = new S3({
-                        region: process.env.AWS_REGION
-                    });
+                    const s3Client = context.container.resolve(S3Client);
+                    const bucket = context.container.resolve(S3Bucket);
 
                     try {
-                        const useCase = new CreateMultiPartUploadUseCase(
-                            String(process.env.S3_BUCKET),
-                            s3Client
-                        );
+                        const useCase = new CreateMultiPartUploadUseCase(bucket, s3Client);
 
                         const normalizer = createFileNormalizerFromContext(context);
 
+                        const tenantId = context.container.resolve(TenantContext).getTenant().id;
+                        const file = await normalizer.normalizeFile(args.data);
+                        await ensureNewFileId({
+                            s3: s3Client,
+                            bucket,
+                            file,
+                            tenantId,
+                            clientId: args.data?.id
+                        });
+
                         const multiPartUpload = await useCase.execute({
-                            file: await normalizer.normalizeFile(args.data),
-                            numberOfParts: args.numberOfParts
+                            file,
+                            numberOfParts: args.numberOfParts,
+                            tenantId
                         });
 
                         return new Response(multiPartUpload);
@@ -205,19 +228,16 @@ export const createS3GraphQLSchema = () => {
                     const identityContext = context.container.resolve(IdentityContext);
                     await checkPermissions(identityContext, { rwd: "w" });
 
-                    const s3Client = new S3({
-                        region: process.env.AWS_REGION
-                    });
+                    const s3Client = context.container.resolve(S3Client);
+                    const bucket = context.container.resolve(S3Bucket);
 
                     try {
-                        const useCase = new CompleteMultiPartUploadUseCase(
-                            String(process.env.S3_BUCKET),
-                            s3Client
-                        );
+                        const useCase = new CompleteMultiPartUploadUseCase(bucket, s3Client);
 
                         await useCase.execute({
                             fileKey: args.fileKey,
-                            uploadId: args.uploadId
+                            uploadId: args.uploadId,
+                            tenantId: context.container.resolve(TenantContext).getTenant().id
                         });
 
                         return new Response(true);

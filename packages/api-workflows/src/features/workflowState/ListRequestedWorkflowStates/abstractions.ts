@@ -4,7 +4,10 @@ import type {
     IListWorkflowStatesParams,
     IListWorkflowStatesResponse
 } from "../ListWorkflowStates/abstractions.js";
-import type { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
+import type {
+    WorkflowStateNotAuthorizedError,
+    WorkflowStatePersistenceError
+} from "~/domain/workflowState/errors.js";
 
 /**
  * ListRequestedWorkflowStates use case interface - filters by team membership
@@ -16,6 +19,7 @@ export interface IListRequestedWorkflowStatesUseCase {
 }
 
 export interface IListRequestedWorkflowStatesUseCaseErrors {
+    notAuthorized: WorkflowStateNotAuthorizedError;
     persistence: WorkflowStatePersistenceError;
 }
 

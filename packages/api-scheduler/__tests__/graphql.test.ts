@@ -8,6 +8,7 @@ import {
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { ContextPlugin } from "@webiny/api";
 import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
@@ -21,6 +22,7 @@ describe("Scheduler GraphQL", () => {
         plugins: [
             new ContextPlugin(async context => {
                 context.container.register(NamespaceHandler);
+                context.container.register(SchedulerPermissions);
                 context.container.register(PublishTestEntryActionHandler);
             })
         ]
@@ -38,6 +40,7 @@ describe("Scheduler GraphQL", () => {
         });
         context = await contextHandler.handler();
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.register(PublishTestEntryActionHandler);
     });
 

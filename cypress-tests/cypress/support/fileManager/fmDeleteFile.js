@@ -3,7 +3,7 @@ import { DELETE_FILE } from "./graphql";
 import { login } from "../login";
 
 export const fmDeleteFile = ({ user, variables = {} }) => {
-    const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+    const client = new GraphQLClient(Cypress.expose("GRAPHQL_API_URL"), {
         headers: {
             authorization: `Bearer ${user.idToken.jwtToken}`
         }

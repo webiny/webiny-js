@@ -4,7 +4,7 @@ import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
-import { checkPermissions } from "./checkPermissions.js";
+import { checkListAllPermissions, checkPermissions } from "./checkPermissions.js";
 import { IsEntryLockedUseCase } from "~/features/IsEntryLocked/abstractions.js";
 import { GetLockRecordUseCase } from "~/features/GetLockRecord/abstractions.js";
 import { GetLockedEntryLockRecordUseCase } from "~/features/GetLockedEntryLockRecord/abstractions.js";
@@ -256,7 +256,7 @@ export const createGraphQLSchema = async (
                 },
                 listAllLockRecords(_, args, context) {
                     return resolveList(async () => {
-                        await checkPermissions(context);
+                        await checkListAllPermissions(context);
                         const useCase = context.container.resolve(ListAllLockRecordsUseCase);
                         const result = await useCase.execute(args);
                         if (result.isFail()) {

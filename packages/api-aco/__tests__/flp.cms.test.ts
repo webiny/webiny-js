@@ -694,6 +694,128 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         ).resolves.toMatchObject({ data: true, error: null });
     });
 
+    test("as a user with 'viewer' access to a folder, I should not be able to publish, unpublish or republish content in it", async () => {
+        const gqlIdentityA = useGraphQlHandler({ identity: identityA });
+        const gqlIdentityC = useGraphQlHandler({
+            identity: identityC,
+            permissions: [{ name: "cms.*" }]
+        });
+
+        const modelGroup = await gqlIdentityA.cms.createTestModelGroup();
+        const model = await gqlIdentityA.cms.createBasicModel({ modelGroup: modelGroup.id });
+
+        const folder = await gqlIdentityA.aco
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: `cms:${model.modelId}`
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const createdEntry = await gqlIdentityA.cms
+            .createEntry(model, {
+                data: {
+                    values: {
+                        title: `Test entry`
+                    },
+                    wbyAco_location: {
+                        folderId: folder.id
+                    }
+                }
+            })
+            .then(([response]) => {
+                return response.data.createBasicTestModel.data;
+            });
+
+        await gqlIdentityA.aco.updateFolder({
+            id: folder.id,
+            data: {
+                permissions: [
+                    {
+                        target: `admin:${identityC.id}`,
+                        level: "viewer"
+                    }
+                ]
+            }
+        });
+
+        // Publishing content in the folder should be forbidden for identity C.
+        await expectCmsNotAuthorized(
+            gqlIdentityC.cms
+                .publishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.publishBasicTestModel;
+                })
+        );
+
+        // The owner publishes the entry.
+        await expect(
+            gqlIdentityA.cms
+                .publishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.publishBasicTestModel;
+                })
+        ).resolves.toMatchObject({ data: { id: createdEntry.id }, error: null });
+
+        // Republishing and unpublishing should be forbidden for identity C.
+        await expectCmsNotAuthorized(
+            gqlIdentityC.cms
+                .republishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.republishBasicTestModel;
+                })
+        );
+
+        await expectCmsNotAuthorized(
+            gqlIdentityC.cms
+                .unpublishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.unpublishBasicTestModel;
+                })
+        );
+
+        // Set identity C as editor of the folder. All three should now be allowed.
+        await gqlIdentityA.aco.updateFolder({
+            id: folder.id,
+            data: {
+                permissions: [
+                    {
+                        target: `admin:${identityC.id}`,
+                        level: "editor"
+                    }
+                ]
+            }
+        });
+
+        await expect(
+            gqlIdentityC.cms
+                .republishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.republishBasicTestModel;
+                })
+        ).resolves.toMatchObject({ data: { id: createdEntry.id }, error: null });
+
+        await expect(
+            gqlIdentityC.cms
+                .unpublishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.unpublishBasicTestModel;
+                })
+        ).resolves.toMatchObject({ data: { id: createdEntry.id }, error: null });
+
+        await expect(
+            gqlIdentityC.cms
+                .publishEntry(model, { revision: createdEntry.id })
+                .then(([response]) => {
+                    return response.data.publishBasicTestModel;
+                })
+        ).resolves.toMatchObject({ data: { id: createdEntry.id }, error: null });
+    });
+
     test("as a user, I should not be able to delete folders that have content they cannot see", async () => {
         const gqlIdentityA = useGraphQlHandler({ identity: identityA });
         const gqlIdentityC = useGraphQlHandler({

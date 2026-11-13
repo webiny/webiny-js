@@ -11,7 +11,6 @@ import {
     ExecuteScheduledActionUseCase,
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
-import { WEBSITE_BUILDER_NAMESPACE } from "~/constants.js";
 import {
     SchedulePublishPageUseCase,
     ScheduleUnpublishPageUseCase
@@ -59,7 +58,7 @@ describe("Page Action Handlers", () => {
         expect(publishActionResult.isFail()).toBe(false);
 
         const actionsResponse = await listScheduledActions.execute({
-            where: { namespace_startsWith: WEBSITE_BUILDER_NAMESPACE }
+            where: { namespace: publishActionResult.value!.scheduledAction.namespace }
         });
 
         expect(actionsResponse.value.items).toHaveLength(1);

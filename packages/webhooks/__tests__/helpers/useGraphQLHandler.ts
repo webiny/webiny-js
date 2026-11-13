@@ -24,6 +24,8 @@ export interface UseGraphQLHandlerParams {
     plugins?: PluginCollection;
     permissions?: PermissionsArg[];
     identity?: IdentityData;
+    /* Run requests as an anonymous caller (no identity, no permissions). */
+    anonymous?: boolean;
 }
 
 interface InvokeParams {
@@ -47,8 +49,8 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
-                permissions: createPermissions(params?.permissions),
-                identity: createIdentity(params?.identity)
+                permissions: params?.anonymous ? [] : createPermissions(params?.permissions),
+                identity: params?.anonymous ? null : createIdentity(params?.identity)
             }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),

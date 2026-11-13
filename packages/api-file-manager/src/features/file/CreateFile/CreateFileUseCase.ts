@@ -39,6 +39,14 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         const [id] = input.key.split("/");
         const currentIdentity = this.identityContext.getIdentity();
 
+        // Attribution and dates come from the server. Only full access, or code running without
+        // authorization (imports, migrations), may set them.
+        const systemInput: Partial<CreateFileInput> =
+            !this.identityContext.isAuthorizationEnabled() ||
+            (await this.identityContext.hasFullAccess())
+                ? input
+                : {};
+
         // Prepare file input
         const fileInput: FileInput = {
             id: input.id || id,
@@ -52,14 +60,16 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             description: input.description ?? "",
             extensions: meta || {},
             // system attributes
-            createdOn: input.createdOn,
-            modifiedOn: input.modifiedOn,
-            savedOn: input.savedOn,
-            createdBy: input.createdBy
-                ? Identity.from(input.createdBy)
+            createdOn: systemInput.createdOn,
+            modifiedOn: systemInput.modifiedOn,
+            savedOn: systemInput.savedOn,
+            createdBy: systemInput.createdBy
+                ? Identity.from(systemInput.createdBy)
                 : Identity.from(currentIdentity),
-            modifiedBy: input.modifiedBy ? Identity.from(input.modifiedBy) : undefined,
-            savedBy: input.savedBy ? Identity.from(input.savedBy) : Identity.from(currentIdentity)
+            modifiedBy: systemInput.modifiedBy ? Identity.from(systemInput.modifiedBy) : undefined,
+            savedBy: systemInput.savedBy
+                ? Identity.from(systemInput.savedBy)
+                : Identity.from(currentIdentity)
         };
 
         await this.eventPublisher.publish(new FileBeforeCreateEvent({ file: fileInput, meta }));

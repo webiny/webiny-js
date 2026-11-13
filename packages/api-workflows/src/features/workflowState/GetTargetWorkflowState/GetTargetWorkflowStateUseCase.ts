@@ -7,7 +7,10 @@ import {
     GetTargetWorkflowStateUseCase as UseCase
 } from "./abstractions.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
-import { WorkflowStateValidationError } from "~/domain/workflowState/errors.js";
+import {
+    WorkflowStateNotAuthorizedError,
+    WorkflowStateValidationError
+} from "~/domain/workflowState/errors.js";
 
 class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -17,6 +20,15 @@ class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(input: UseCase.Params): UseCase.Return {
+        /* Workflow states can't be read anonymously. Background work (tasks, scheduler) runs
+           without authorization and keeps access. */
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const { version } = parseIdentifier(input.targetRevisionId);
         if (!version) {
             return Result.fail(

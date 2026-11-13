@@ -1,4 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
+import { createS3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
+
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { createS3GraphQLSchema } from "./graphql/schema.js";
 import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/feature.js";
@@ -13,6 +16,10 @@ export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
 const contextPlugin = new ContextPlugin(context => {
     const container = context.container;
+
+    // One cached S3 client per Lambda instance (see createS3), shared by everything in this package.
+    container.registerInstance(S3Client, createS3());
+    container.registerInstance(S3Bucket, String(process.env.S3_BUCKET));
 
     FlushCacheFeature.register(container);
     DeleteFileFromBucketFeature.register(container);

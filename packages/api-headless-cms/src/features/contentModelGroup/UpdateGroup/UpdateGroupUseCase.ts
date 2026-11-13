@@ -58,7 +58,10 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         const original = getResult.value;
 
         // Access control check on original group
-        const canAccessGroup = await this.accessControl.canAccessGroup({ group: original });
+        const canAccessGroup = await this.accessControl.canAccessGroup({
+            group: original,
+            rwd: "w"
+        });
         if (!canAccessGroup) {
             return Result.fail(new GroupNotAuthorizedError());
         }

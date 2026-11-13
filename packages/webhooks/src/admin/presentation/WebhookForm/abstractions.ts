@@ -19,6 +19,8 @@ export interface IWebhookFormPresenter {
     init(id: string): void;
     save(): Promise<boolean>;
     deleteWebhook(): Promise<void>;
+    generateSigningSecret(): void;
+    getSigningSecret(): string;
 }
 
 export const WebhookFormPresenter =

@@ -3,6 +3,7 @@ import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SchedulerPermissions } from "~tests/__mocks/SchedulerPermissions.js";
 import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
@@ -37,6 +38,7 @@ describe("ExecuteScheduledActionUseCase - non-root tenant", () => {
         });
         context = await contextHandler.handler();
         context.container.register(NamespaceHandler);
+        context.container.register(SchedulerPermissions);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 

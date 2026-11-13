@@ -22,7 +22,8 @@ export const createWebhookSchema = z.object({
     events: z.array(z.string().min(1)).min(1, "events must contain at least one entry"),
     slug: z.string().optional(),
     description: z.string().optional(),
-    enabled: z.boolean().optional()
+    enabled: z.boolean().optional(),
+    signingSecret: z.string().optional()
 });
 
 export const updateWebhookSchema = z.object({
@@ -31,7 +32,8 @@ export const updateWebhookSchema = z.object({
     endpointUrl: z.string().url("endpointUrl must be a valid URL").optional(),
     description: z.string().optional(),
     enabled: z.boolean().optional(),
-    events: z.array(z.string().min(1)).optional()
+    events: z.array(z.string().min(1)).optional(),
+    signingSecret: z.string().optional()
 });
 
 export const deleteWebhookSchema = z.object({

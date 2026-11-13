@@ -3,6 +3,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
 import { GetWorkflowStateRepository, GetWorkflowStateUseCase as UseCase } from "./abstractions.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
+import { WorkflowStateNotAuthorizedError } from "~/domain/workflowState/errors.js";
 
 class GetWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -12,6 +13,15 @@ class GetWorkflowStateUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(id: string): UseCase.Return {
+        /* Workflow states can't be read anonymously. Background work (tasks, scheduler) runs
+           without authorization and keeps access. */
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const recordResult = await this.repository.execute(id);
 
         if (recordResult.isFail()) {

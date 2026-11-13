@@ -1,9 +1,29 @@
 import { createDecorator, Result } from "@webiny/feature/api";
 import type { UpdateFolderParams } from "~/folder/folder.types.js";
+import type { FolderPermission } from "~/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderUseCase } from "../abstractions.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
+
+/**
+ * Compares the folder's own (non-inherited) permissions. The admin app sends the current
+ * permissions with every update, e.g. a rename.
+ */
+const permissionsChanged = (
+    original: FolderPermission[],
+    updated: Pick<FolderPermission, "target" | "level">[]
+) => {
+    const normalize = (permissions: Pick<FolderPermission, "target" | "level">[]) => {
+        return permissions
+            .map(permission => `${permission.target}=${permission.level}`)
+            .sort()
+            .join(",");
+    };
+    return (
+        normalize(original.filter(permission => !permission.inheritedFrom)) !== normalize(updated)
+    );
+};
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -34,6 +54,24 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             permissions: originalPermissions,
             rwd: "w"
         });
+
+        // Changing who has access to the folder requires the "owner" level.
+        if (
+            Array.isArray(params.permissions) &&
+            permissionsChanged(originalPermissions, params.permissions) &&
+            !(await this.folderLevelPermissions.canManageFolderPermissions({
+                id: original.id,
+                parentId: original.parentId ?? "",
+                slug: original.slug,
+                path: original.path,
+                type: original.type,
+                permissions: originalPermissions
+            }))
+        ) {
+            return Result.fail(
+                new FolderValidationError(`Not allowed to change the folder permissions.`)
+            );
+        }
 
         const permissions = await this.folderLevelPermissions.getDefaultPermissions(
             params.permissions ?? []

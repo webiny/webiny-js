@@ -11,6 +11,8 @@ import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 import { SchedulerPermissionsResolver } from "~/features/permissions/abstractions.js";
+import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 /**
  * Cancels a scheduled action
@@ -27,7 +29,9 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private schedulerService: SchedulerService.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private model: ScheduledActionModel.Interface,
-        private permissionsResolver: SchedulerPermissionsResolver.Interface
+        private permissionsResolver: SchedulerPermissionsResolver.Interface,
+        private namespaceHandlerExecutioner: NamespaceHandlerExecutioner.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(
@@ -35,11 +39,8 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<boolean, UseCaseAbstraction.Error>> {
         const { id, namespace } = params;
         const permissions = this.permissionsResolver.forNamespace(namespace);
-        if (permissions) {
-            const hasPermission = await permissions.canRead();
-            if (!hasPermission) {
-                return Result.fail(new NotAuthorizedError());
-            }
+        if (!(await permissions.canRead())) {
+            return Result.fail(new NotAuthorizedError());
         }
         // Check if scheduled action exists
         const getResult = await this.getScheduledActionUseCase.execute(params);
@@ -52,6 +53,29 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             }
 
             return Result.fail(error);
+        }
+
+        /**
+         * Cancelling requires the same permission as scheduling the action: the namespace handler
+         * loads the target and checks it. If the target can't be loaded, the user either has no
+         * access to it or it no longer exists; both are refused.
+         *
+         * System cleanup (e.g. after the target was deleted) runs under `withoutAuthorization`
+         * and skips this check.
+         */
+        if (this.identityContext.isAuthorizationEnabled()) {
+            const scheduledAction = getResult.value;
+            const handlerResult = await this.namespaceHandlerExecutioner.execute({
+                scheduleId: id,
+                targetId: scheduledAction.targetId,
+                actionType: scheduledAction.actionType,
+                namespace: scheduledAction.namespace,
+                immediately: false,
+                scheduleFor: scheduledAction.scheduledFor
+            });
+            if (handlerResult.isFail()) {
+                return Result.fail(new NotAuthorizedError());
+            }
         }
 
         const scheduleId = ScheduledActionIdWithVersion.from(id);
@@ -102,6 +126,8 @@ export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementat
         SchedulerService,
         DeleteEntryUseCase,
         ScheduledActionModel,
-        SchedulerPermissionsResolver
+        SchedulerPermissionsResolver,
+        NamespaceHandlerExecutioner,
+        IdentityContext
     ]
 });

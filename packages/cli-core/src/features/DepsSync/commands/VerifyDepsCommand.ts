@@ -4,7 +4,34 @@ import { loadJsonFileSync } from "load-json-file";
 import { getDuplicatesFilePath, getReferencesFilePath } from "../paths.js";
 import fs from "fs";
 import { createDependencyTree } from "../createDependencyTree.js";
-import type { IDependencyCollection } from "~/features/DepsSync/types.js";
+import type { IDependencyCollection, IReference } from "~/features/DepsSync/types.js";
+
+/**
+ * Number of offending dependencies to list in an error before summarizing the rest.
+ */
+const MAX_LISTED = 5;
+
+const describeReference = (reference: IReference) => {
+    const versions = reference.versions.map(version => {
+        const files = version.files
+            .map(file => `${file.file} (${file.types.join(", ")})`)
+            .join(", ");
+        return `    ${version.version} in ${files}`;
+    });
+
+    return [`  ${reference.name}`, ...versions].join("\n");
+};
+
+const describeReferences = (references: IReference[]) => {
+    const listed = references.slice(0, MAX_LISTED).map(describeReference);
+    const remaining = references.length - listed.length;
+
+    if (remaining > 0) {
+        listed.push(`  ...and ${remaining} more.`);
+    }
+
+    return listed.join("\n");
+};
 
 export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
     constructor(
@@ -71,14 +98,47 @@ export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
                 ui.info("Checking duplicates file...");
 
                 if (fs.existsSync(duplicatesFile)) {
-                    const json = loadJsonFileSync(duplicatesFile);
+                    const json = loadJsonFileSync<IReference[]>(duplicatesFile)!;
                     if (JSON.stringify(tree.duplicates) !== JSON.stringify(json)) {
+                        const fileNames = new Set(json.map(reference => reference.name));
+                        const treeNames = new Set(tree.duplicates.map(reference => reference.name));
+
+                        const added = tree.duplicates.filter(
+                            reference => !fileNames.has(reference.name)
+                        );
+                        const removed = json.filter(reference => !treeNames.has(reference.name));
+                        const changed = tree.duplicates.filter(reference => {
+                            const fileReference = json.find(item => item.name === reference.name);
+                            return (
+                                fileReference &&
+                                JSON.stringify(reference) !== JSON.stringify(fileReference)
+                            );
+                        });
+
+                        const details = [
+                            added.length
+                                ? `New duplicates (${added.length}):\n${describeReferences(added)}`
+                                : null,
+                            removed.length
+                                ? `Resolved duplicates (${removed.length}):\n${describeReferences(removed)}`
+                                : null,
+                            changed.length
+                                ? `Changed duplicates (${changed.length}):\n${describeReferences(changed)}`
+                                : null
+                        ].filter(Boolean);
+
                         throw new Error(
-                            "Duplicates are not in sync. Please run `yarn webiny sync-dependencies` command."
+                            [
+                                "Duplicates are not in sync. Please run `yarn webiny sync-dependencies` command.",
+                                ...details
+                            ].join("\n\n")
                         );
                     } else if (Array.isArray(json) && json.length > 0) {
                         throw new Error(
-                            "There are still duplicates in the project. Please sort them out and run `yarn webiny sync-dependencies` command to regenerate files."
+                            [
+                                "There are still duplicates in the project. Please sort them out and run `yarn webiny sync-dependencies` command to regenerate files.",
+                                `Duplicate dependencies (${json.length}):\n${describeReferences(json)}`
+                            ].join("\n\n")
                         );
                     }
                 } else {

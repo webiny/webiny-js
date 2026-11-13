@@ -20,7 +20,6 @@ export type DateISOString =
 
 export interface IListScheduledActionsWhere {
     namespace?: string;
-    namespace_startsWith?: string;
     actionType?: ScheduledActionType;
     targetId?: string;
     targetId_startsWith?: string;

@@ -4,6 +4,7 @@ export const getPageGraphQLBaseFields = (): string[] => {
         `entryId`,
         `status`,
         `version`,
+        `locked`,
         `location {
             folderId
         }`,

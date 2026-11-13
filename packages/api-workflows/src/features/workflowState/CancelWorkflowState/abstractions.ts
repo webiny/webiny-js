@@ -1,6 +1,7 @@
 import type { Result } from "@webiny/feature/api";
 import { createAbstraction } from "@webiny/feature/api";
 import {
+    type WorkflowStateNotAuthorizedError,
     type WorkflowStateNotFoundError,
     type WorkflowStatePersistenceError
 } from "~/domain/workflowState/errors.js";
@@ -19,6 +20,7 @@ export interface ICancelWorkflowStateUseCase {
 }
 
 export interface ICancelWorkflowStateUseCaseErrors {
+    notAuthorized: WorkflowStateNotAuthorizedError;
     notFound: WorkflowStateNotFoundError;
     workflowNotFound: WorkflowNotFoundError;
     persistence: WorkflowStatePersistenceError;

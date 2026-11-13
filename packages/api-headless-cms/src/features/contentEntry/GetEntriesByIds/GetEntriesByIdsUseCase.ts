@@ -5,6 +5,7 @@ import { GetEntriesByIdsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { filterAccessibleEntries } from "~/features/contentEntry/shared/entryOwnerAccess.js";
 
 /**
  * GetEntriesByIdsUseCase - Orchestrates fetching entries by IDs with access control.
@@ -36,7 +37,10 @@ class GetEntriesByIdsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(result.error);
         }
 
-        return Result.ok(result.value);
+        // Drop entries the identity is not allowed to access (e.g. "own entries only").
+        const entries = await filterAccessibleEntries(this.accessControl, model, result.value);
+
+        return Result.ok(entries);
     }
 }
 

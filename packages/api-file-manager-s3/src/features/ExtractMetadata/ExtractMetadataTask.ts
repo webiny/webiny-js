@@ -1,5 +1,6 @@
 import type { ExifTags } from "exifreader";
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
@@ -21,7 +22,9 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
 
     constructor(
         private keyValueStore: GlobalKeyValueStore.Interface,
-        private updateFileUseCase: UpdateFileUseCase.Interface
+        private updateFileUseCase: UpdateFileUseCase.Interface,
+        private s3: S3,
+        private bucket: string
     ) {}
 
     public async run({
@@ -50,8 +53,8 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
         }
 
         // Fetch the image from S3
-        const s3 = new S3();
-        const bucket = String(process.env.S3_BUCKET);
+        const s3 = this.s3;
+        const bucket = this.bucket;
 
         try {
             const s3Object = await s3.getObject({
@@ -149,5 +152,5 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
 
 export const ExtractMetadataTaskDefinition = TaskDefinition.createImplementation({
     implementation: ExtractMetadataTask,
-    dependencies: [GlobalKeyValueStore, UpdateFileUseCase]
+    dependencies: [GlobalKeyValueStore, UpdateFileUseCase, S3Client, S3Bucket]
 });

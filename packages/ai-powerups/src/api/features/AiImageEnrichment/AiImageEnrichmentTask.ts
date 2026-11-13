@@ -2,12 +2,11 @@ import { Output } from "ai";
 import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
 
@@ -40,8 +39,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         private fmSettings: FmGetSettingsUseCase.Interface,
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface,
+        private getSettings: GetDecryptedSettingsUseCase.Interface,
         private websocketService?: WebsocketService.Interface
     ) {}
 
@@ -98,7 +96,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
                 output: aiOutputSchema,
                 connection: {
                     sdkName: firstProvider.model.split("/")[0],
-                    apiKey: await this.encryption.decrypt(firstProvider.apiKeyEncrypted)
+                    apiKey: firstProvider.apiKey ?? ""
                 },
                 messages: [
                     {
@@ -165,8 +163,7 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         FmGetSettingsUseCase,
         UpdateFileUseCase,
         Ai,
-        GetSettingsUseCase,
-        Encryption,
+        GetDecryptedSettingsUseCase,
         [WebsocketService, { optional: true }]
     ]
 });

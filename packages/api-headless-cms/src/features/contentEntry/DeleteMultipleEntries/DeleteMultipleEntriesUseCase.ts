@@ -85,9 +85,9 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const { entries } = listResult.value;
 
-        // Filter entries by access control (only delete entries user can access)
+        // Filter entries by access control (only delete entries the user may delete)
         const accessibleEntries = await filterAsync(entries, async entry => {
-            return this.accessControl.canAccessEntry({ model, entry });
+            return this.accessControl.canAccessEntry({ model, entry, rwd: "d" });
         });
 
         const items = accessibleEntries.map(entry => entry.id);

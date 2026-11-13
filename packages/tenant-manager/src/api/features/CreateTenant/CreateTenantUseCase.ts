@@ -4,25 +4,21 @@ import {
     CreateTenantRepository
 } from "./abstractions.js";
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
 import { Tenant } from "~/shared/Tenant.js";
 import { TenantId } from "~/api/domain/TenantId.js";
 
 class CreateTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
-        private identityContext: IdentityContext.Interface,
+        private tenantAccess: TenantAccess.Interface,
         private repository: CreateTenantRepository.Interface
     ) {}
 
     async execute(input: ICreateTenantInput): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
         // Authorization checks
-        if (!this.identityContext.getPermission("tm.tenant")) {
-            return Result.fail(
-                new NotAuthorizedError({
-                    message: "Not authorized to create tenants!"
-                })
-            );
+        const access = await this.tenantAccess.canCreate();
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         const tenant = Tenant.from({
@@ -48,5 +44,5 @@ class CreateTenantUseCase implements UseCaseAbstraction.Interface {
 
 export default UseCaseAbstraction.createImplementation({
     implementation: CreateTenantUseCase,
-    dependencies: [IdentityContext, CreateTenantRepository]
+    dependencies: [TenantAccess, CreateTenantRepository]
 });

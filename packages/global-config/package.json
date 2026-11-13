@@ -8,9 +8,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ci-info": "^4.4.0",
+    "ci-info": "^4.5.0",
     "load-json-file": "^7.0.1",
-    "uuid": "^14.0.1",
+    "uuid": "^14.0.3",
     "write-json-file": "^7.0.0"
   },
   "publishConfig": {

@@ -3,6 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import {
     TenantModelNotFoundError,
+    TenantNotChildError,
     TenantNotFoundError,
     TenantPersistenceError
 } from "../../domain/errors.js";
@@ -14,6 +15,7 @@ export interface IDisableTenantUseCase {
 export interface IDisableTenantUseCaseErrors {
     notAuthorized: NotAuthorizedError;
     notFound: TenantNotFoundError;
+    notChild: TenantNotChildError;
     persistence: TenantPersistenceError;
     modelNotFound: TenantModelNotFoundError;
 }

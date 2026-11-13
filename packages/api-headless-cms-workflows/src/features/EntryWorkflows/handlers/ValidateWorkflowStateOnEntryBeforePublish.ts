@@ -21,6 +21,10 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl
         const stateResult = await this.getTargetState.execute({ app, targetRevisionId: entry.id });
 
         if (stateResult.isFail()) {
+            // A refused read must not let the entry be published past its review.
+            if (stateResult.error.code === "Workflows/State/NotAuthorized") {
+                throw stateResult.error;
+            }
             // If there's no state to deal with, exit early.
             return;
         }

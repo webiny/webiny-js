@@ -4,7 +4,7 @@ import { GetModelRepository } from "@webiny/api-headless-cms/features/contentMod
 import { GetLatestRevisionByEntryIdRepository } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { CreateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { GetWebhookSettingsRepository as RepositoryAbstraction } from "./abstractions.js";
+import { GetWebhookSettingsRepository as RepositoryAbstraction } from "./abstractions/GetWebhookSettingsRepository.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_SETTINGS_MODEL_ID } from "~/api/domain/constants.js";
 import type { IWebhookSettings } from "~/api/domain/WebhookSettings.js";

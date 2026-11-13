@@ -47,3 +47,27 @@ export class TenantUpdateError extends BaseError<{ error: Error }> {
         super({ message: error.message, data: { error } });
     }
 }
+
+export class TenantNotChildError extends BaseError {
+    override readonly code = "Tenant/NotChild" as const;
+
+    constructor(id: string) {
+        super({ message: `Tenant "${id}" is not a sub-tenant of the current tenant!` });
+    }
+}
+
+export class TenantHasChildrenError extends BaseError {
+    override readonly code = "Tenant/HasChildren" as const;
+
+    constructor(id: string) {
+        super({ message: `Tenant "${id}" has sub-tenants. Delete them first!` });
+    }
+}
+
+export class TenantAlreadyExistsError extends BaseError {
+    override readonly code = "Tenant/AlreadyExists" as const;
+
+    constructor(id: string) {
+        super({ message: `Tenant "${id}" already exists!` });
+    }
+}
