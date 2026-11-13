@@ -62,7 +62,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
             description: model.description
         });
 
-        const sdkTools = this.aiSdkTools.getToolSet();
+        // Generation runs with nobody to approve a change, so it gets only the tools that read.
+        const sdkTools = this.aiSdkTools.getToolSet({ readOnly: true });
 
         const context = await this.promptContextBuilder.execute({
             projectId: params.projectId,

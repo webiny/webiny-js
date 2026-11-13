@@ -11,10 +11,8 @@ import { folderCacheFactory } from "~/features/folders/cache/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import type { FolderPermission } from "~/types.js";
 import { Folder } from "~/domain/folder/Folder.js";
-import { AddCreatedFolderToCache } from "./AddCreatedFolderToCache.js";
-import { RefreshUpdatedFolderInCache } from "./RefreshUpdatedFolderInCache.js";
-import { RemoveDeletedFolderFromCache } from "./RemoveDeletedFolderFromCache.js";
-import { FolderWebsocketMessages } from "./FolderWebsocketMessages.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/index.js";
+import { ApplyFolderChangeToCache } from "./ApplyFolderChangeToCache.js";
 
 const folderDto = (overrides: Partial<FolderDto> = {}) =>
     ({
@@ -41,16 +39,14 @@ const setup = (folder: FolderDto) => {
         get: () => undefined
     } as unknown as EnvConfig.Interface);
     EventPublisherFeature.register(container);
+    RecordChangesFeature.register(container);
     container.registerInstance(GetFolderGateway, {
         execute: async (id: string) => {
             fetched.push(id);
             return folder;
         }
     });
-    container.register(AddCreatedFolderToCache);
-    container.register(RefreshUpdatedFolderInCache);
-    container.register(RemoveDeletedFolderFromCache);
-    container.register(FolderWebsocketMessages);
+    container.register(ApplyFolderChangeToCache);
 
     const receive = (payload: { action: string; data: unknown }) =>
         container.resolve(EventPublisher).publish(new WebsocketEvent(payload));
@@ -67,7 +63,10 @@ describe("folder events", () => {
     it("adds a folder created on the server to the cache for its type", async () => {
         const { receive, fetched } = setup(folderDto());
 
-        await receive({ action: "aco.folder.created", data: { id: "folder-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "aco.folder", id: "folder-1", change: "created" }
+        });
 
         expect(fetched).toEqual(["folder-1"]);
         expect(folderCacheFactory.getCache("FmFile").getItem(f => f.id === "folder-1")?.title).toBe(
@@ -78,7 +77,10 @@ describe("folder events", () => {
     it("files the folder under its own type, not the one on screen", async () => {
         const { receive } = setup(folderDto({ type: "cms:article" }));
 
-        await receive({ action: "aco.folder.created", data: { id: "folder-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "aco.folder", id: "folder-1", change: "created" }
+        });
 
         expect(folderCacheFactory.getCache("FmFile").hasItems()).toBe(false);
         expect(folderCacheFactory.getCache("cms:article").count()).toBe(1);
@@ -87,8 +89,14 @@ describe("folder events", () => {
     it("keeps one copy when the same folder arrives twice", async () => {
         const { receive } = setup(folderDto());
 
-        await receive({ action: "aco.folder.created", data: { id: "folder-1" } });
-        await receive({ action: "aco.folder.created", data: { id: "folder-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "aco.folder", id: "folder-1", change: "created" }
+        });
+        await receive({
+            action: "record.changed",
+            data: { type: "aco.folder", id: "folder-1", change: "created" }
+        });
 
         expect(folderCacheFactory.getCache("FmFile").count()).toBe(1);
     });
@@ -131,7 +139,10 @@ describe("folder events", () => {
                 folderDto({ title: "Renamed", permissions: [viewer] })
             );
 
-            await receive({ action: "aco.folder.updated", data: { id: "folder-1" } });
+            await receive({
+                action: "record.changed",
+                data: { type: "aco.folder", id: "folder-1", change: "updated" }
+            });
 
             expect(fetched).toEqual(["folder-1"]);
             const updated = cache().getItem(f => f.id === "folder-1");
@@ -143,7 +154,10 @@ describe("folder events", () => {
             seed([], []);
             const { receive } = setup(folderDto({ permissions: [viewer] }));
 
-            await receive({ action: "aco.folder.updated", data: { id: "folder-1" } });
+            await receive({
+                action: "record.changed",
+                data: { type: "aco.folder", id: "folder-1", change: "updated" }
+            });
 
             expect(child()?.permissions).toEqual([{ ...viewer, inheritedFrom: "parent:folder-1" }]);
         });
@@ -152,7 +166,10 @@ describe("folder events", () => {
             seed([viewer], [{ ...viewer, inheritedFrom: "parent:folder-1" }]);
             const { receive } = setup(folderDto({ permissions: [] }));
 
-            await receive({ action: "aco.folder.updated", data: { id: "folder-1" } });
+            await receive({
+                action: "record.changed",
+                data: { type: "aco.folder", id: "folder-1", change: "updated" }
+            });
 
             expect(child()?.permissions).toEqual([]);
         });
@@ -168,7 +185,10 @@ describe("folder events", () => {
                 ]);
             const { receive, fetched } = setup(folderDto());
 
-            await receive({ action: "aco.folder.deleted", data: { id: "folder-1" } });
+            await receive({
+                action: "record.changed",
+                data: { type: "aco.folder", id: "folder-1", change: "deleted" }
+            });
 
             // A deleted folder cannot be read back, so nothing is fetched.
             expect(fetched).toEqual([]);
@@ -184,7 +204,10 @@ describe("folder events", () => {
             folderCacheFactory.getCache("FmFile").addItems([Folder.create(folderDto())]);
             const { receive } = setup(folderDto());
 
-            await receive({ action: "aco.folder.deleted", data: { id: "unknown" } });
+            await receive({
+                action: "record.changed",
+                data: { type: "aco.folder", id: "unknown", change: "deleted" }
+            });
 
             expect(folderCacheFactory.getCache("FmFile").count()).toBe(1);
         });

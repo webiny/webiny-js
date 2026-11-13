@@ -1,10 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
 import { GetFolderGqlGateway } from "~/features/folders/getFolder/GetFolderGqlGateway.js";
 import { FolderModelProviderFeature } from "~/features/folders/folderModelProvider/feature.js";
-import { AddCreatedFolderToCache } from "./AddCreatedFolderToCache.js";
-import { RefreshUpdatedFolderInCache } from "./RefreshUpdatedFolderInCache.js";
-import { RemoveDeletedFolderFromCache } from "./RemoveDeletedFolderFromCache.js";
-import { FolderWebsocketMessages } from "./FolderWebsocketMessages.js";
+import { ApplyFolderChangeToCache } from "./ApplyFolderChangeToCache.js";
 
 /**
  * Keeps folder caches current when folders change on the server. Registered once, in the container
@@ -19,9 +16,6 @@ export const FolderEventsFeature = createFeature({
     register(container) {
         FolderModelProviderFeature.register(container);
         container.register(GetFolderGqlGateway);
-        container.register(AddCreatedFolderToCache);
-        container.register(RefreshUpdatedFolderInCache);
-        container.register(RemoveDeletedFolderFromCache);
-        container.register(FolderWebsocketMessages);
+        container.register(ApplyFolderChangeToCache);
     }
 });
