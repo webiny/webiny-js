@@ -1,6 +1,7 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
+import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem.js";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -45,6 +46,12 @@ export interface ICoreOutput {
     pgDatabase: string | undefined;
     pgUser: string | undefined;
     pgSecretArn: string | undefined;
+    /*
+     * Set with `<Infra.Postgres />`: the core's service manifests (`core`, and any a `CorePulumi`
+     * extension adds). The core deploys before the api's schema-setup function exists, so the api
+     * deploy stores them in the database.
+     */
+    serviceManifests: ServiceManifest[] | undefined;
 }
 
 const POSTGRES_OUTPUTS = [
@@ -103,7 +110,8 @@ export const CoreOutput = createAppModule({
                 opensearchDynamodbTableArn: output["opensearchDynamodbTableArn"],
                 opensearchDynamodbTableName: output["opensearchDynamodbTableName"],
                 // These outputs are optional, since Postgres is not always enabled.
-                ...pickPostgresOutputs(output)
+                ...pickPostgresOutputs(output),
+                serviceManifests: output["serviceManifests"]
             } as ICoreOutput;
         });
     }

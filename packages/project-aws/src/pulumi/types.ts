@@ -39,4 +39,9 @@ export interface IDefaultStackOutput extends GetAppStackOutput.StackOutput {
     appStorage: string;
     appDomain?: string;
     deliveryDomain?: string;
+    /**
+     * The api app's `schema-setup` function. Set with `<Infra.Postgres />` only: other apps' deploys
+     * invoke it to store their service manifests in the database.
+     */
+    schemaSetupLambdaArn?: string;
 }

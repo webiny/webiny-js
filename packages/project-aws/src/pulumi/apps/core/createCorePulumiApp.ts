@@ -13,6 +13,8 @@ import {
     type TableDefinition
 } from "~/pulumi/utils/addServiceManifestTableItem.js";
 import * as random from "@pulumi/random";
+import { addServiceManifestsOutput, createCoreServiceManifest } from "./coreServiceManifests.js";
+import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgres.js";
 
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { CorePulumi } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
@@ -359,7 +361,13 @@ export function createCorePulumiApp() {
         }
     });
 
-    const app = withServiceManifest(baseApp, manifests => {
+    const app = withServiceManifest(baseApp, async manifests => {
+        // With Postgres, the api deploy stores them in the database (see `addServiceManifestsOutput`).
+        if (await projectUsesPostgres()) {
+            addServiceManifestsOutput(baseApp, manifests);
+            return;
+        }
+
         const dynamoTable = baseApp.resources.dynamoDbTable;
 
         const table: TableDefinition = {
@@ -371,22 +379,15 @@ export function createCorePulumiApp() {
         manifests.forEach(manifest => addServiceManifestTableItem(baseApp, table, manifest));
     });
 
-    app.addHandler(() => {
-        app.addServiceManifest({
-            name: "core",
-            manifest: {
-                eventBus: {
-                    arn: baseApp.resources.eventBus.output.arn,
-                    name: baseApp.resources.eventBus.output.name
-                },
-                dynamodbTable: {
-                    arn: baseApp.resources.dynamoDbTable.output.arn,
-                    name: baseApp.resources.dynamoDbTable.output.name,
-                    hashKey: baseApp.resources.dynamoDbTable.output.hashKey,
-                    rangeKey: baseApp.resources.dynamoDbTable.output.rangeKey
-                }
-            }
-        });
+    app.addHandler(async () => {
+        const usesPostgres = await projectUsesPostgres();
+        app.addServiceManifest(
+            createCoreServiceManifest({
+                eventBus: baseApp.resources.eventBus,
+                // Nothing on Postgres reads the DynamoDB table.
+                dynamoDbTable: usesPostgres ? undefined : baseApp.resources.dynamoDbTable
+            })
+        );
     });
 
     return app;

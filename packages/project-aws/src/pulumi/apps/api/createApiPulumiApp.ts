@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import { createPulumiApp, isResourceOfType, type PulumiApp } from "@webiny/pulumi";
 import {
     ApiBackgroundTask,
@@ -19,14 +20,22 @@ import {
 import { getEnvVariableAwsRegion } from "~/pulumi/env/awsRegion.js";
 // import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { applyAwsResourceTags, getAwsAccountId } from "~/pulumi/apps/awsUtils.js";
-import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
+import {
+    addServiceManifestTableItems,
+    type WithServiceManifest
+} from "~/pulumi/utils/withServiceManifest.js";
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
-import { ApiSchemaSetup, getPostgresLambdaEnvFromCore } from "./ApiSchemaSetup.js";
+import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgres.js";
+import {
+    ApiSchemaSetup,
+    getPostgresLambdaEnvFromCore,
+    getSchemaSetupServiceManifests
+} from "./ApiSchemaSetup.js";
 import { createApiServiceManifests } from "./apiServiceManifests.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import {
@@ -274,13 +283,17 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            // With `<Infra.Postgres />`, every deploy sets the database up, and stores the same
-            // service manifests the DynamoDB table gets: the `api` and `scheduler` ones (see below)
-            // and any an extension adds with `addServiceManifest`.
+            // With `<Infra.Postgres />`, every deploy sets the database up and stores the service
+            // manifests: the core's (from its stack output), then the api's own: `api` and
+            // `scheduler` (see below) and any an extension adds with `addServiceManifest`.
             const schemaSetup = usesPostgres
                 ? app.addModule(ApiSchemaSetup, {
                       postgres: core,
-                      serviceManifests: app.getServiceManifests()
+                      serviceManifests: pulumi
+                          .all([core.serviceManifests, app.getServiceManifests()])
+                          .apply(([coreManifests, apiManifests]) =>
+                              getSchemaSetupServiceManifests(coreManifests, apiManifests)
+                          )
                   })
                 : null;
 
@@ -368,7 +381,13 @@ export const createApiPulumiApp = () => {
         }
     });
 
-    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp), async manifests => {
+        // With Postgres, the schema-setup invocation stores them (see `ApiSchemaSetup` above).
+        if (await projectUsesPostgres()) {
+            return;
+        }
+        addServiceManifestTableItems(baseApp, manifests);
+    });
 
     app.addHandler(() => {
         for (const manifest of createApiServiceManifests(baseApp.resources)) {
