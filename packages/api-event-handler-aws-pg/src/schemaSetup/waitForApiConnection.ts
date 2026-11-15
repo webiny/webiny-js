@@ -10,7 +10,10 @@ const ATTEMPT_INTERVAL_MS = 5_000;
  */
 const ATTEMPT_TIMEOUT_MS = 10_000;
 
-/** The shortest attempt: the first one runs even when the wait has no time left. */
+/**
+ * The shortest attempt: the first one runs even when the wait has no time left, and no later one
+ * starts with less than this left.
+ */
 const MIN_ATTEMPT_TIMEOUT_MS = 1_000;
 
 /** How long closing an attempt's connection may take, at most. */
@@ -86,11 +89,13 @@ export const waitForApiConnection = async ({
             await withTimeout(knex.destroy(), CLOSE_TIMEOUT_MS).catch(() => undefined);
         }
 
+        // Only the first attempt may run past the wait: another one starts only while there is
+        // time left for its shortest run, and ends by the wait's end.
         const remaining = deadline - Date.now();
-        if (remaining <= 0) {
+        if (remaining < MIN_ATTEMPT_TIMEOUT_MS) {
             break;
         }
-        await sleep(Math.min(ATTEMPT_INTERVAL_MS, remaining));
+        await sleep(Math.min(ATTEMPT_INTERVAL_MS, remaining - MIN_ATTEMPT_TIMEOUT_MS));
     }
 
     const seconds = Math.round(waitMs / 1000);

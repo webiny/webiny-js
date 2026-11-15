@@ -409,7 +409,8 @@ describe("api-event-handler-aws-pg — schema-setup event", () => {
         });
 
         it("tries again until the API's connection is accepted", async () => {
-            await withEnv({ WEBINY_PG_API_WAIT_MS: "1000" }, async () => {
+            // Room for a second attempt: one starts only with at least 1 s of the wait left.
+            await withEnv({ WEBINY_PG_API_WAIT_MS: "2000" }, async () => {
                 await closeInspector();
                 const opened: string[] = [];
                 const handler = createAwsPgApiHandler({

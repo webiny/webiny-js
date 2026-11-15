@@ -184,7 +184,8 @@ const addApiModules = (fake: ReturnType<typeof createFakeApi>) => {
     });
     const schemaSetup = app.addModule(ApiSchemaSetup as never, {
         postgres: core,
-        serviceManifests,
+        // An output, as `withServiceManifest` gives it once every manifest is added.
+        serviceManifests: pulumi.output(serviceManifests),
         trigger: "deploy-1"
     }) as ApiSchemaSetup;
     return { graphql, schemaSetup, serviceManifests };

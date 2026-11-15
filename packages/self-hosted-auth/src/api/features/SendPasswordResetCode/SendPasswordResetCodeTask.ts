@@ -1,3 +1,5 @@
+// Gives the task controller its `response` (and the rest of its API).
+import "@webiny/background-tasks/api/features/TaskController/augmentation.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskHandler } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";

@@ -275,16 +275,12 @@ export const createApiPulumiApp = () => {
             const scheduler = app.addModule(ApiScheduler);
 
             // With `<Infra.Postgres />`, every deploy sets the database up, and stores the same
-            // service manifests the DynamoDB table gets (see below).
+            // service manifests the DynamoDB table gets: the `api` and `scheduler` ones (see below)
+            // and any an extension adds with `addServiceManifest`.
             const schemaSetup = usesPostgres
                 ? app.addModule(ApiSchemaSetup, {
                       postgres: core,
-                      serviceManifests: createApiServiceManifests({
-                          cloudfront,
-                          graphql,
-                          backgroundTask,
-                          scheduler
-                      })
+                      serviceManifests: app.getServiceManifests()
                   })
                 : null;
 

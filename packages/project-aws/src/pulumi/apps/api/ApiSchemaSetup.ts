@@ -111,7 +111,7 @@ export interface ApiSchemaSetupParams {
     /* The core stack's Postgres outputs. */
     postgres: pulumi.Output<PostgresOutputs>;
     /* Stored in the database by the setup, for service discovery. */
-    serviceManifests: ServiceManifest[];
+    serviceManifests: pulumi.Input<ServiceManifest[]>;
     /* Changes on every deploy, so every deploy runs the setup. Replaced in tests. */
     trigger?: string;
 }
@@ -168,7 +168,11 @@ export const ApiSchemaSetup = createAppModule({
             name: ApiSchemaSetupLambdaName,
             config: {
                 functionName: schemaSetup.output.name,
-                input: pulumi.jsonStringify(createSchemaSetupEvent(params.serviceManifests)),
+                input: pulumi
+                    .output(params.serviceManifests)
+                    .apply(manifests =>
+                        JSON.stringify(createSchemaSetupEvent(manifests as ServiceManifest[]))
+                    ),
                 triggers: {
                     deploy: params.trigger ?? new Date().toISOString()
                 }
