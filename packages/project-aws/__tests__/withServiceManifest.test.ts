@@ -11,13 +11,15 @@ type ProgramApp = PulumiApp & WithServiceManifest;
 
 /*
  * A stand-in for a Pulumi app with the parts `withServiceManifest` uses. `run` works as the real
- * one does: the decorated program first, then every handler in the order it was added.
+ * one does: the decorated program first, then every handler in the order it was added, also those
+ * added while handlers run.
  */
 const createFakeApp = () => {
     const handlers: Array<() => unknown> = [];
     let decorator: ((program: (app: unknown) => unknown, app: unknown) => unknown) | undefined;
 
     const app = {
+        handlers,
         decorateProgram(cb: typeof decorator) {
             decorator = cb;
         },
@@ -29,7 +31,7 @@ const createFakeApp = () => {
 
     const run = async (program: (app: ProgramApp) => unknown) => {
         await decorator!(program as (app: unknown) => unknown, app);
-        for (const handler of handlers) {
+        for (const handler of app.handlers) {
             await handler();
         }
     };
@@ -68,6 +70,33 @@ describe("withServiceManifest", () => {
         expect(manifests).toEqual([
             { name: "api", manifest: { url: "https://api" } },
             { name: "custom", manifest: { key: "value" } }
+        ]);
+        expect(published).toEqual([manifests]);
+    });
+
+    it("also collects manifests that handlers added by other handlers add", async () => {
+        const fake = createFakeApp();
+        const published: ServiceManifest[][] = [];
+        const app = withServiceManifest(fake.app, manifests => {
+            published.push(manifests);
+        });
+
+        await fake.run(programApp => {
+            // As `ApiPulumi` runs: in a handler, adding its own handlers, one of them two deep.
+            programApp.addHandler(() => {
+                programApp.addHandler(() => {
+                    programApp.addServiceManifest({ name: "first", manifest: { level: 2 } });
+                    programApp.addHandler(() => {
+                        programApp.addServiceManifest({ name: "second", manifest: { level: 3 } });
+                    });
+                });
+            });
+        });
+
+        const manifests = await resolve(app.getServiceManifests());
+        expect(manifests).toEqual([
+            { name: "first", manifest: { level: 2 } },
+            { name: "second", manifest: { level: 3 } }
         ]);
         expect(published).toEqual([manifests]);
     });

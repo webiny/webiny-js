@@ -9,8 +9,8 @@ export interface WithServiceManifest {
     addServiceManifest(manifest: ServiceManifest): void;
     /**
      * Every manifest the app publishes, once all are added: the same set the DynamoDB table gets.
-     * Resolves after the app's handlers have run, so a resource can take it as an input from
-     * anywhere in the program.
+     * Resolves after the app's handlers have run, also those added while handlers run, so a
+     * resource can take it as an input from anywhere in the program.
      */
     getServiceManifests(): pulumi.Output<ServiceManifest[]>;
 }
@@ -63,8 +63,15 @@ export function withServiceManifest<T extends PulumiApp>(
             getServiceManifests
         });
 
-        // Added after the program's own handlers, so it sees the manifests they add too.
-        app.addHandler(() => {
+        // Runs after every other handler, so it sees the manifests they add. A handler can add more
+        // handlers while it runs (an `ApiPulumi` implementation, for one), and the app runs those
+        // after this one: when there are any, it queues itself again behind them.
+        let queuedAt = 0;
+        const collect = () => {
+            if (app.handlers.length > queuedAt) {
+                queuedAt = app.handlers.push(collect);
+                return;
+            }
             const all = Object.values(manifests);
             if (!applyManifests) {
                 defaultApplyManifests(app, all);
@@ -72,7 +79,8 @@ export function withServiceManifest<T extends PulumiApp>(
                 applyManifests(all);
             }
             resolveManifests(all);
-        });
+        };
+        queuedAt = app.handlers.push(collect);
 
         return output;
     });
