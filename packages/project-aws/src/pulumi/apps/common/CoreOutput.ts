@@ -16,6 +16,10 @@ export interface ICoreOutput {
     cognitoUserPoolPasswordPolicy: ApiStackOutputService.PasswordPolicy;
     fileManagerBucketId: string;
     fileManagerBucketArn: string;
+    /*
+     * The core's DynamoDB tables. Absent with `<Infra.Postgres />`: the core creates none. The types
+     * stay non-optional so existing `CorePulumi` / `ApiPulumi` code keeps compiling.
+     */
     primaryDynamodbTableArn: string;
     primaryDynamodbTableName: string;
     primaryDynamodbTableHashKey: string;

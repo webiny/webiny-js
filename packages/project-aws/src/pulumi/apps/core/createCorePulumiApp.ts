@@ -1,7 +1,6 @@
 import * as aws from "@pulumi/aws";
 import { createPulumiApp, isResourceOfType } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito.js";
-import { CoreDynamo } from "./CoreDynamo.js";
 import { OpenSearch } from "./CoreOpenSearch.js";
 import { CoreEventBus } from "./CoreEventBus.js";
 import { CoreFileManger } from "./CoreFileManager.js";
@@ -27,8 +26,9 @@ import { DynamoDbPitr } from "@webiny/project-extensions-aws/extensions/DynamoDb
 import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/S3BucketVersioning.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
-import * as pulumi from "@pulumi/pulumi";
-import { CoreAuditLogsDynamo } from "~/pulumi/index.js";
+import { addCoreDynamoDb } from "./coreDynamoDb.js";
+import { addCoreVpcEndpoints } from "./coreVpcEndpoints.js";
+import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -47,6 +47,7 @@ export function createCorePulumiApp() {
             }>("core");
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const opensearchExtensionConfig = getOsConfigFromExtension(projectConfig);
+            const usesPostgres = Boolean(getPostgresConfigFromExtension(projectConfig));
 
             const deploymentId = new random.RandomId("deploymentId", { byteLength: 8 });
 
@@ -179,47 +180,10 @@ export function createCorePulumiApp() {
                         }
                     });
 
-                    const { vpc, subnets, routeTables } = resources.vpc!;
-                    addResource(aws.ec2.VpcEndpoint, {
-                        name: "vpc-s3-vpc-endpoint",
-                        config: {
-                            vpcId: vpc.output.id,
-                            serviceName: pulumi.interpolate`com.amazonaws.${region}.s3`,
-                            routeTableIds: [routeTables.privateSubnets.output.id]
-                        }
-                    });
-
-                    addResource(aws.ec2.VpcEndpoint, {
-                        name: "vpc-dynamodb-vpc-endpoint",
-                        config: {
-                            vpcId: vpc.output.id,
-                            serviceName: pulumi.interpolate`com.amazonaws.${region}.dynamodb`,
-                            routeTableIds: [routeTables.privateSubnets.output.id]
-                        }
-                    });
-
-                    addResource(aws.ec2.VpcEndpoint, {
-                        name: "vpc-sqs-vpc-endpoint",
-                        config: {
-                            vpcId: vpc.output.id,
-                            serviceName: pulumi.interpolate`com.amazonaws.${region}.sqs`,
-                            vpcEndpointType: "Interface",
-                            privateDnsEnabled: true,
-                            securityGroupIds: [vpc.output.defaultSecurityGroupId],
-                            subnetIds: subnets.private.map(subNet => subNet.output.id)
-                        }
-                    });
-
-                    addResource(aws.ec2.VpcEndpoint, {
-                        name: "vpc-events-vpc-endpoint",
-                        config: {
-                            vpcId: vpc.output.id,
-                            serviceName: pulumi.interpolate`com.amazonaws.${region}.events`,
-                            vpcEndpointType: "Interface",
-                            privateDnsEnabled: true,
-                            securityGroupIds: [vpc.output.defaultSecurityGroupId],
-                            subnetIds: subnets.private.map(subNet => subNet.output.id)
-                        }
+                    addCoreVpcEndpoints(app, {
+                        vpc: resources.vpc!,
+                        region,
+                        usesPostgres
                     });
                 }
             });
@@ -249,9 +213,9 @@ export function createCorePulumiApp() {
                 isProduction
             );
 
-            // Setup DynamoDB table
-            const dynamoDbTable = app.addModule(CoreDynamo, { protect, pointInTimeRecovery });
-            const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, {
+            // DynamoDB tables: none with `<Infra.Postgres />`.
+            const { dynamoDbTable } = addCoreDynamoDb(app, {
+                usesPostgres,
                 protect,
                 pointInTimeRecovery
             });
@@ -331,14 +295,6 @@ export function createCorePulumiApp() {
                 deploymentId: deploymentId.hex,
                 region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
-                primaryDynamodbTableArn: dynamoDbTable.output.arn,
-                primaryDynamodbTableName: dynamoDbTable.output.name,
-                primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,
-                primaryDynamodbTableRangeKey: dynamoDbTable.output.rangeKey,
-                auditLogsDynamodbTableArn: auditLogsDynamoDbTable.output.arn,
-                auditLogsDynamodbTableName: auditLogsDynamoDbTable.output.name,
-                auditLogsDynamodbTableHashKey: auditLogsDynamoDbTable.output.hashKey,
-                auditLogsDynamodbTableRangeKey: auditLogsDynamoDbTable.output.rangeKey,
                 cognitoUserPoolId: cognito.userPool.output.id,
                 cognitoUserPoolArn: cognito.userPool.output.arn,
                 cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
@@ -368,7 +324,8 @@ export function createCorePulumiApp() {
             return;
         }
 
-        const dynamoTable = baseApp.resources.dynamoDbTable;
+        // Without Postgres, the core always has its DynamoDB table.
+        const dynamoTable = baseApp.resources.dynamoDbTable!;
 
         const table: TableDefinition = {
             tableName: dynamoTable.output.name,
@@ -379,13 +336,12 @@ export function createCorePulumiApp() {
         manifests.forEach(manifest => addServiceManifestTableItem(baseApp, table, manifest));
     });
 
-    app.addHandler(async () => {
-        const usesPostgres = await projectUsesPostgres();
+    app.addHandler(() => {
         app.addServiceManifest(
             createCoreServiceManifest({
                 eventBus: baseApp.resources.eventBus,
-                // Nothing on Postgres reads the DynamoDB table.
-                dynamoDbTable: usesPostgres ? undefined : baseApp.resources.dynamoDbTable
+                // None with `<Infra.Postgres />`, so the manifest has only the event bus.
+                dynamoDbTable: baseApp.resources.dynamoDbTable
             })
         );
     });

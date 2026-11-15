@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import pick from "lodash/pick.js";
 import { createPulumiApp, isResourceOfType, type PulumiApp } from "@webiny/pulumi";
 import {
     ApiBackgroundTask,
@@ -37,6 +38,7 @@ import {
     getSchemaSetupServiceManifests
 } from "./ApiSchemaSetup.js";
 import { createApiServiceManifests } from "./apiServiceManifests.js";
+import { addDynamoDbOutputs, getDynamoDbLambdaEnv } from "./apiDynamoDb.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import {
     ApiPulumi,
@@ -190,12 +192,12 @@ export const createApiPulumiApp = () => {
 
             // Shared by the buffered `graphql` function and its response-streaming twin: both run the
             // same code bundle, so they must see the same environment.
+            const dynamoDbEnv = getDynamoDbLambdaEnv(core, usesPostgres);
             const graphqlEnv = {
                 COGNITO_REGION: getEnvVariableAwsRegion(),
                 COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                DB_TABLE: core.primaryDynamodbTableName,
-                DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+                ...dynamoDbEnv,
                 OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
                 // Not required. Useful for testing purposes / ephemeral environments.
@@ -225,10 +227,7 @@ export const createApiPulumiApp = () => {
             const websocket = app.addModule(ApiWebsocket);
 
             const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName
-                }
+                env: pick(dynamoDbEnv, ["DB_TABLE", "DB_TABLE_AUDIT_LOGS"])
             });
 
             const apiGateway = app.addModule(ApiGateway, {
@@ -315,8 +314,6 @@ export const createApiPulumiApp = () => {
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
-                dynamoDbTable: core.primaryDynamodbTableName,
-                auditLogsDynamoDbTable: core.auditLogsDynamodbTableName,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
                 graphqlLambdaRoleName: graphql.role.output.name,
@@ -329,6 +326,9 @@ export const createApiPulumiApp = () => {
                 websocketApiUrl: websocket.websocketApiUrl,
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
+
+            // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+            addDynamoDbOutputs(app, core, usesPostgres);
 
             if (schemaSetup) {
                 app.addOutputs({

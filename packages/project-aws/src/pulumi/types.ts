@@ -5,6 +5,11 @@ import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstr
 export interface IDefaultStackOutput extends GetAppStackOutput.StackOutput {
     deploymentId: string;
     region: string;
+    /*
+     * The core's DynamoDB table, and the `primaryDynamodbTable*` outputs below. Absent with
+     * `<Infra.Postgres />`: the core creates no DynamoDB table. The types stay non-optional so
+     * existing code that reads them keeps compiling.
+     */
     dynamoDbTable: string;
     iotAuthorizerName: string;
     apiDomain: string;
