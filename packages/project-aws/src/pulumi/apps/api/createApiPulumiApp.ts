@@ -16,7 +16,6 @@ import { ApiGraphqlWeb } from "~/pulumi/apps/index.js";
 import type { GraphqlWebVpc } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
-    getDistributionUrl,
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/pulumi/utils/index.js";
@@ -30,6 +29,9 @@ import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfig
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { isWebFunctionEnabled } from "~/pulumi/apps/extensions/isWebFunctionEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
+import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
+import { ApiSchemaSetup, getPostgresLambdaEnvFromCore } from "./ApiSchemaSetup.js";
+import { createApiServiceManifests } from "./apiServiceManifests.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import {
     ApiPulumi,
@@ -53,6 +55,7 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
+            const usesPostgres = Boolean(getPostgresConfigFromExtension(projectConfig));
 
             let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
@@ -201,7 +204,11 @@ export const createApiPulumiApp = () => {
                 S3_BUCKET: core.fileManagerBucketId,
                 EVENT_BUS: core.eventBusArn,
                 // TODO: move to okta plugin
-                OKTA_ISSUER: process.env["OKTA_ISSUER"]
+                OKTA_ISSUER: process.env["OKTA_ISSUER"],
+
+                // With `<Infra.Postgres />`: the database the API runs on. The background-task,
+                // fm-download and schema-setup functions copy this function's env.
+                ...(usesPostgres ? getPostgresLambdaEnvFromCore(core) : {})
             };
 
             const graphql = app.addModule(ApiGraphql, { env: graphqlEnv });
@@ -265,6 +272,16 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
+            // With `<Infra.Postgres />`, every deploy sets the database up, and stores the same
+            // service manifests the DynamoDB table gets: the `api` and `scheduler` ones (see below)
+            // and any an extension adds with `addServiceManifest`.
+            const schemaSetup = usesPostgres
+                ? app.addModule(ApiSchemaSetup, {
+                      postgres: core,
+                      serviceManifests: app.getServiceManifests()
+                  })
+                : null;
+
             const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
             if (apiCustomDomains) {
                 const { domains, sslMethod, certificateArn, minimumProtocolVersion } =
@@ -297,6 +314,12 @@ export const createApiPulumiApp = () => {
                 websocketApiUrl: websocket.websocketApiUrl,
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
+
+            if (schemaSetup) {
+                app.addOutputs({
+                    schemaSetupLambdaArn: schemaSetup.functions.schemaSetup.output.arn
+                });
+            }
 
             // Only add `dynamoDbOpensearchTable` output if using search engine (ES/OS).
             if (searchEngineParams) {
@@ -338,7 +361,8 @@ export const createApiPulumiApp = () => {
                 websocket,
                 cloudfront,
                 backgroundTask,
-                scheduler
+                scheduler,
+                schemaSetup
             };
         }
     });
@@ -346,28 +370,9 @@ export const createApiPulumiApp = () => {
     const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
 
     app.addHandler(() => {
-        app.addServiceManifest({
-            name: "api",
-            manifest: {
-                // Read by the API through `PublicUrls.getApiUrl()`.
-                url: getDistributionUrl(baseApp.resources.cloudfront),
-                bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
-                cloudfront: {
-                    distributionId: baseApp.resources.cloudfront.output.id,
-                    domain: baseApp.resources.cloudfront.output.domainName.apply(
-                        v => `https://${v}`
-                    )
-                }
-            }
-        });
-
-        app.addServiceManifest({
-            name: "scheduler",
-            manifest: {
-                lambdaArn: baseApp.resources.graphql.functions.graphql.output.arn,
-                roleArn: baseApp.resources.scheduler.invokeRole.output.arn
-            }
-        });
+        for (const manifest of createApiServiceManifests(baseApp.resources)) {
+            app.addServiceManifest(manifest);
+        }
     });
 
     return app;

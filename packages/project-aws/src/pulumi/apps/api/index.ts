@@ -7,4 +7,5 @@ export * from "./ApiGraphqlStream.js";
 export * from "./ApiGraphqlWeb.js";
 export * from "./createApiPulumiApp.js";
 export * from "./ApiOutput.js";
+export * from "./ApiSchemaSetup.js";
 export * from "./ApiWebsocket.js";
