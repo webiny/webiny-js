@@ -66,7 +66,10 @@ class SettingsPresenterImpl implements ISettingsPresenter {
                 message: `The mail server accepted the message for ${to}. Check that inbox to confirm it arrived.`
             });
         } catch (e) {
-            this.setTestMailResult({ type: "danger", message: e.message });
+            this.setTestMailResult({
+                type: "danger",
+                message: `The test email was not sent. ${e.message}`
+            });
         } finally {
             this.setSendingTestMail(false);
         }

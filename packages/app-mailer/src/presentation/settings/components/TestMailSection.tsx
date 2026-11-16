@@ -24,12 +24,7 @@ export const TestMailSection = createReactiveComponent(function TestMailSection(
 
     let resultAlert: React.ReactNode = null;
     if (testMail.result) {
-        const title = testMail.result.type === "success" ? "Test email sent" : "Test email failed";
-        resultAlert = (
-            <Alert type={testMail.result.type} title={title}>
-                {testMail.result.message}
-            </Alert>
-        );
+        resultAlert = <Alert type={testMail.result.type}>{testMail.result.message}</Alert>;
     }
 
     return (
