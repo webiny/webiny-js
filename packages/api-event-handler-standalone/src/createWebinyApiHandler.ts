@@ -19,7 +19,7 @@ import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
-import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
