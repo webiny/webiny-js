@@ -33,10 +33,13 @@ describe("NodeWsAdapter", () => {
     let httpServer: HttpServer;
     let adapter: NodeWsAdapterImpl;
     let port: number;
+    // What a test does with each socket the adapter opens.
+    let onOpen: (socket: WebSocket) => void;
 
     beforeEach(async () => {
         httpServer = createServer();
         adapter = new NodeWsAdapterImpl();
+        onOpen = () => {};
         port = await listenOnRandomPort(httpServer);
         adapter.start(httpServer);
 
@@ -44,7 +47,7 @@ describe("NodeWsAdapter", () => {
            Wire the HTTP upgrade event to handleUpgrade so the adapter can
            accept test connections. */
         httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
-            adapter.handleUpgrade(request, socket, head);
+            adapter.handleUpgrade(request, socket, head, opened => onOpen(opened));
         });
     });
 
@@ -55,9 +58,9 @@ describe("NodeWsAdapter", () => {
         });
     });
 
-    it("should fire onConnection when a client connects", async () => {
+    it("calls onOpen when a client connects", async () => {
         const connectionPromise = new Promise<void>(resolve => {
-            adapter.onConnection(() => resolve());
+            onOpen = () => resolve();
         });
 
         const client = await connectClient(port);
@@ -67,9 +70,9 @@ describe("NodeWsAdapter", () => {
 
     it("should fire onMessage when a client sends data", async () => {
         const messagePromise = new Promise<Buffer>(resolve => {
-            adapter.onConnection(socket => {
+            onOpen = socket => {
                 adapter.onMessage(socket, data => resolve(data));
-            });
+            };
         });
 
         const client = await connectClient(port);
@@ -85,13 +88,13 @@ describe("NodeWsAdapter", () => {
            We need the client message listener attached before the send fires,
            so we connect first, set up the listener, then trigger the send
            by signalling the server via a "ready" message. */
-        adapter.onConnection(async socket => {
+        onOpen = async socket => {
             /* Wait for the client to say it is ready before sending. */
             await new Promise<void>(resolve => {
                 adapter.onMessage(socket, () => resolve());
             });
             await adapter.send(socket, "from server");
-        });
+        };
 
         const client = await connectClient(port);
 
@@ -109,9 +112,9 @@ describe("NodeWsAdapter", () => {
 
     it("should disconnect the client via close()", async () => {
         /* Register handler before connecting so the close fires after connect. */
-        adapter.onConnection(socket => {
+        onOpen = socket => {
             adapter.close(socket, 1000, "bye");
-        });
+        };
 
         const client = await connectClient(port);
         const code = await new Promise<number>(resolve => {
@@ -152,14 +155,16 @@ describe("NodeWsAdapter pings", () => {
     let httpServer: HttpServer;
     let adapter: NodeWsAdapterImpl;
     let port: number;
+    let onOpen: (socket: WebSocket) => void;
 
     beforeEach(async () => {
         httpServer = createServer();
         adapter = NodeWsAdapterImpl.withPingInterval(PING_INTERVAL);
+        onOpen = () => {};
         port = await listenOnRandomPort(httpServer);
         adapter.start(httpServer);
         httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
-            adapter.handleUpgrade(request, socket, head);
+            adapter.handleUpgrade(request, socket, head, opened => onOpen(opened));
         });
     });
 
@@ -188,9 +193,9 @@ describe("NodeWsAdapter pings", () => {
     // A paused client reads nothing, so it never answers: like a laptop that went to sleep.
     it("cuts a client that stops answering", async () => {
         const closedOnServer = new Promise<void>(resolve => {
-            adapter.onConnection(socket => {
+            onOpen = socket => {
                 adapter.onClose(socket, () => resolve());
-            });
+            };
         });
         const client = await connectClient(port);
         client.pause();

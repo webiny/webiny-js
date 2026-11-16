@@ -94,9 +94,17 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
         }, this.pingInterval);
     }
 
-    public handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): void {
-        this.getWss().handleUpgrade(request, socket, head, ws => {
-            this.getWss().emit("connection", ws, request);
+    public handleUpgrade(
+        request: IncomingMessage,
+        socket: Duplex,
+        head: Buffer,
+        onOpen: (socket: WebSocket) => void
+    ): void {
+        const wss = this.getWss();
+        wss.handleUpgrade(request, socket, head, ws => {
+            // Runs the `connection` listener from `start()`, which tracks pongs for the socket.
+            wss.emit("connection", ws, request);
+            onOpen(ws);
         });
     }
 
@@ -140,12 +148,6 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
                 socket.ping();
             }
         }
-    }
-
-    public onConnection(
-        cb: (socket: WebSocket, request: import("node:http").IncomingMessage) => void
-    ): void {
-        this.getWss().on("connection", cb);
     }
 
     public onMessage(socket: WebSocket, cb: (data: Buffer) => void): void {
