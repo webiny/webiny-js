@@ -16,6 +16,10 @@ export interface DescribeFoldersForAssistantParams {
 /**
  * The folder part of a list's assistant page context, shared by the lists that show a folder tree.
  * Keys are named after the `listFolders` arguments they feed.
+ *
+ * A function rather than part of `FolderTreePresenter`: that presenter is a singleton with no init
+ * or dispose, and the folder picker in forms uses it too, so a context it set would never be
+ * cleared. The list that shows the folders owns the context and calls this from its `details`.
  */
 export const describeFoldersForAssistant = (
     params: DescribeFoldersForAssistantParams
