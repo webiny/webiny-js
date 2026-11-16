@@ -122,29 +122,41 @@ export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Prom
             // Check if we need to add to an existing import from the same path.
             const existingImportRegex = new RegExp(
                 `import\\s+{([^}]+)}\\s+from\\s+["']${importStatement.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'];?`,
-                "m"
+                "gm"
             );
-            const existingImportMatch = content.match(existingImportRegex);
+            const existingImportMatches = Array.from(content.matchAll(existingImportRegex));
 
-            if (existingImportMatch) {
-                // Import from this path exists, check if specifier is already imported.
-                const existingSpecifiers = existingImportMatch[1].split(",").map(s => s.trim());
+            if (existingImportMatches.length > 0) {
+                // Imports from this path exist. The specifier can be on any of them, not only the
+                // first: adding it to the first when a later one has it declares it twice.
+                const isImported = existingImportMatches.some(match =>
+                    match[1]
+                        .split(",")
+                        .map(s => s.trim())
+                        .includes(importStatement.specifier)
+                );
 
-                if (!existingSpecifiers.includes(importStatement.specifier)) {
-                    // Append the new specifier to the existing import.
+                if (!isImported) {
+                    // Append the new specifier to the first import from this path.
+                    const [firstImport] = existingImportMatches;
+                    const existingSpecifiers = firstImport[1].split(",").map(s => s.trim());
                     const updatedSpecifiers = [
                         ...existingSpecifiers,
                         importStatement.specifier
                     ].join(", ");
                     const updatedImportLine = `import { ${updatedSpecifiers} } from "${importStatement.path}";`;
-                    content = content.replace(existingImportRegex, updatedImportLine);
+                    content =
+                        content.slice(0, firstImport.index) +
+                        updatedImportLine +
+                        content.slice(firstImport.index! + firstImport[0].length);
                 }
             } else {
                 // No existing import from this path, add a new import line.
                 const importLine = `import { ${importStatement.specifier} } from "${importStatement.path}";`;
 
-                // Find the position after the last import or at the beginning.
-                const importRegex = /^import\s+.*?from\s+["'].*?["'];?\s*$/gm;
+                // Find the position after the last import or at the beginning. `[ \t]*`, not
+                // `\s*`: the latter runs into the blank line below and puts the new import after it.
+                const importRegex = /^import\s+.*?from\s+["'].*?["'];?[ \t]*$/gm;
                 const matches = Array.from(content.matchAll(importRegex));
 
                 if (matches.length > 0) {
