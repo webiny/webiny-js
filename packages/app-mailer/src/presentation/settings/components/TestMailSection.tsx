@@ -47,6 +47,7 @@ export const TestMailSection = createReactiveComponent(function TestMailSection(
                 <Button
                     text={testMail.sending ? "Sending..." : "Send test email"}
                     variant={"secondary"}
+                    size={"lg"}
                     onClick={() => presenter.sendTestMail()}
                     disabled={testMail.sending || testMail.disabledReason !== null}
                 />
