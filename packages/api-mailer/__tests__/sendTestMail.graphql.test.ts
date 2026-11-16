@@ -89,6 +89,30 @@ describe("Mailer sendTestMail GraphQL", () => {
         expect(serializedError).not.toContain("password");
     });
 
+    it("explains a refused connection to a host with both IPv4 and IPv6 addresses", async () => {
+        // Node reports one failure per address as an AggregateError, and its message is empty.
+        const socketError = Object.assign(
+            new AggregateError(
+                [
+                    new Error("connect ECONNREFUSED ::1:1025"),
+                    new Error("connect ECONNREFUSED 127.0.0.1:1025")
+                ],
+                ""
+            ),
+            { code: "ESOCKET", originalCode: "ECONNREFUSED", command: "CONN" }
+        );
+        sendMail.mockRejectedValue(socketError);
+        const handler = createGraphQLHandler();
+        await handler.saveSettings({ data: storedSettings });
+
+        const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
+
+        expect(response.data.mailer.sendTestMail.error).toMatchObject({
+            code: "Mailer/MailerService/TransportSendError",
+            message: "connect ECONNREFUSED ::1:1025; connect ECONNREFUSED 127.0.0.1:1025"
+        });
+    });
+
     it("refuses when only the dummy transport is available, instead of reporting its success", async () => {
         const handler = createGraphQLHandler();
 
