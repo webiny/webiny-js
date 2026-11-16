@@ -5,7 +5,8 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import { extractAuthToken, headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
+import { extractAuthToken } from "@webiny/api-event-handler-core";
+import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
 
 /**
  * EXTRACT (transport-specific): the Function URL streaming counterpart of
