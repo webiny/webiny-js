@@ -388,7 +388,7 @@ export const attachWebsocketsServer = (params: AttachWebsocketsServerParams): IW
     const server = new WebsocketsServer({
         httpServer: params.server,
         ownsHttpServer: false,
-        adapter: new NodeWsAdapterImpl(),
+        adapter: params.adapter,
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
         authenticate: params.authenticate,

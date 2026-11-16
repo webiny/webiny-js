@@ -7,6 +7,7 @@ import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
 import { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
 import { LAST_SEEN_WRITE_INTERVAL } from "~/connectionManager/ServerConnectionManager.js";
+import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import type { IWebsocketsServer } from "~/server/types.js";
 import type { WebsocketsConnectionAuthenticator } from "~/server/types.js";
 
@@ -418,6 +419,7 @@ describe("WebsocketsServer", () => {
 
     describe("attach mode (attachWebsocketsServer)", () => {
         let httpServer: HttpServer;
+        let adapter: NodeWsAdapterImpl;
         let server: IWebsocketsServer;
         let port: number;
 
@@ -428,9 +430,11 @@ describe("WebsocketsServer", () => {
             const registry = createNoopRegistry();
             const manager = createConnectionManager(registry, owner);
 
+            adapter = new NodeWsAdapterImpl();
             server = attachWebsocketsServer({
                 server: httpServer,
                 connectionManager: manager,
+                adapter,
                 authenticate
             });
             await server.start();
@@ -444,6 +448,16 @@ describe("WebsocketsServer", () => {
         it("should work with an existing HTTP server", async () => {
             const client = await connectClient(port);
             expect(client.readyState).toBe(WebSocket.OPEN);
+            await closeClient(client);
+        });
+
+        // The container's adapter must be the one holding the sockets, or sends would reach none.
+        it("takes upgrades through the adapter it is given", async () => {
+            const handleUpgrade = vi.spyOn(adapter, "handleUpgrade");
+
+            const client = await connectClient(port);
+
+            expect(handleUpgrade).toHaveBeenCalledTimes(1);
             await closeClient(client);
         });
 
