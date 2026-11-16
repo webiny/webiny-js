@@ -1,5 +1,6 @@
 /**
- * Entry of the Lambda web function, built only when `<Infra.Api.WebFunction enabled />` is set.
+ * Entry of the Lambda web function, built unless the project sets
+ * `<Infra.Api.WebFunction enabled={false} />`.
  *
  * Unlike `index.ts`, importing this module starts an HTTP server, so it is a separate entry and a
  * separate bundle (`build-web/`), never part of `handler.mjs`. The web function serves the HTTP routes;
