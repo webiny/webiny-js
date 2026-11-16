@@ -33,7 +33,7 @@
     "graphql": "^16.15.0",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^7.1.5",
+    "mobx": "^7.1.6",
     "mobx-react-lite": "^5.1.2",
     "qrcode.react": "^4.2.0",
     "react": "18.3.1",
