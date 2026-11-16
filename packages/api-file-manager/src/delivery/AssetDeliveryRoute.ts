@@ -32,10 +32,12 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
         const tenantContext = this.container.resolve(TenantContext);
         const getTenantById = this.container.resolve(GetTenantByIdUseCase);
 
-        // Reconstruct a minimal request object compatible with IAssetRequestResolver
+        // Reconstruct a minimal request object compatible with IAssetRequestResolver. `url` keeps the
+        // query string, so the redirects between `/files/` and `/private/` keep `?width` and `?original`.
+        const search = new URLSearchParams(request.query ?? {}).toString();
         const fakeRequest = {
-            url: request.path,
-            params: { "*": request.path.replace("/files/", "") },
+            url: search ? `${request.path}?${search}` : request.path,
+            params: { "*": request.path.replace(/^\/(files|private)\//, "") },
             query: request.query ?? {},
             headers: request.headers ?? {}
         };
@@ -119,5 +121,22 @@ class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface 
 /** What the router matches on. Zero dependencies, so building it costs nothing. */
 export const AssetDeliveryRouteDefinition = HttpRouteDefinition.createImplementation({
     implementation: AssetDeliveryRouteDefinitionImpl,
+    dependencies: []
+});
+
+/**
+ * Private files are delivered from `/private/*`: a private file requested via `/files/*` is
+ * redirected here, and `PrivateFileAssetRequestResolver` only handles this prefix. Same handler,
+ * the resolvers pick the request apart by its path.
+ */
+class PrivateAssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "private-asset-delivery";
+    readonly method = "GET";
+    readonly path = "/private/*";
+    readonly handler = AssetDeliveryRoute;
+}
+
+export const PrivateAssetDeliveryRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: PrivateAssetDeliveryRouteDefinitionImpl,
     dependencies: []
 });
