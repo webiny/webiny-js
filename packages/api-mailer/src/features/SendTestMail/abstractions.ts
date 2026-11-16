@@ -24,6 +24,9 @@ export interface ISendTestMailUseCase {
  * Sends one message through the transport that delivers this project's mail, so an operator can
  * tell settings that deliver from settings that only look configured. The mail server's own error
  * comes back to the caller.
+ *
+ * The test goes through `SendMailUseCase` like any other mail, so it publishes the same
+ * `MailBeforeSend`, `MailAfterSend` and `MailSendError` events.
  */
 export const SendTestMailUseCase = createAbstraction<ISendTestMailUseCase>("SendTestMailUseCase");
 

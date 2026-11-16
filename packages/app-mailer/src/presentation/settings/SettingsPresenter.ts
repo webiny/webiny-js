@@ -11,7 +11,7 @@ import {
     type ISettingsViewModel
 } from "./abstractions.js";
 import type { ITestMailResult } from "./abstractions.js";
-import type { MailerSettingsSource, TransportSettings } from "~/types.js";
+import type { MailerSettings, MailerSettingsSource, TransportSettings } from "~/types.js";
 
 class SettingsPresenterImpl implements ISettingsPresenter {
     private loading = false;
@@ -133,13 +133,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
             runInAction(() => {
                 this.source = settings.source ?? null;
                 this.form = this.buildForm(this.source);
-                this.form.setData({
-                    host: settings.host,
-                    port: settings.port,
-                    user: settings.user,
-                    from: settings.from,
-                    replyTo: settings.replyTo
-                });
+                this.applySettings(settings);
             });
         } finally {
             runInAction(() => {
@@ -149,8 +143,10 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     }
 
     async save(): Promise<boolean> {
-        // A test in flight reports on the settings it started with; saving under it would pin
-        // that result on the new ones.
+        /*
+         * A test in flight reports on the settings it started with; saving under it would pin
+         * that result on the new ones.
+         */
         if (this.sendingTestMail) {
             return false;
         }
@@ -182,19 +178,11 @@ class SettingsPresenterImpl implements ISettingsPresenter {
 
             /*
              * What was just saved becomes the form's baseline, so the form is no longer dirty and
-             * the test mail can run against it. The password field empties: it is write-only, and
-             * leaving it blank on the next save keeps the stored one.
+             * the test mail can run against it.
              */
             runInAction(() => {
                 this.source = saved.source ?? "storage";
-                this.form.setData({
-                    host: saved.host,
-                    port: saved.port,
-                    user: saved.user,
-                    from: saved.from,
-                    replyTo: saved.replyTo,
-                    password: ""
-                });
+                this.applySettings(saved);
             });
             return true;
         } finally {
@@ -202,6 +190,21 @@ class SettingsPresenterImpl implements ISettingsPresenter {
                 this.saving = false;
             });
         }
+    }
+
+    /*
+     * Sets the form's data and its baseline for `isDirty`. The password field empties: it is
+     * write-only, and leaving it blank on the next save keeps the stored one.
+     */
+    private applySettings(settings: MailerSettings): void {
+        this.form.setData({
+            host: settings.host,
+            port: settings.port,
+            user: settings.user,
+            from: settings.from,
+            replyTo: settings.replyTo,
+            password: ""
+        });
     }
 
     private buildForm(source: MailerSettingsSource): IFormModel {

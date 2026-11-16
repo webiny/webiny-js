@@ -91,16 +91,14 @@ describe("Mailer sendTestMail GraphQL", () => {
 
     it("explains a refused connection to a host with both IPv4 and IPv6 addresses", async () => {
         // Node reports one failure per address as an AggregateError, and its message is empty.
-        const socketError = Object.assign(
-            new AggregateError(
-                [
-                    new Error("connect ECONNREFUSED ::1:1025"),
-                    new Error("connect ECONNREFUSED 127.0.0.1:1025")
-                ],
-                ""
-            ),
-            { code: "ESOCKET", originalCode: "ECONNREFUSED", command: "CONN" }
-        );
+        const ipv6Error = new Error("connect ECONNREFUSED ::1:1025");
+        const ipv4Error = new Error("connect ECONNREFUSED 127.0.0.1:1025");
+        const aggregateError = new AggregateError([ipv6Error, ipv4Error], "");
+        const socketError = Object.assign(aggregateError, {
+            code: "ESOCKET",
+            originalCode: "ECONNREFUSED",
+            command: "CONN"
+        });
         sendMail.mockRejectedValue(socketError);
         const handler = createGraphQLHandler();
         await handler.saveSettings({ data: storedSettings });
