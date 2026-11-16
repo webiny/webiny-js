@@ -10,7 +10,6 @@ import type { Hint } from "../components/index.js";
 import type { PaletteMode } from "./PaletteMode.js";
 import type { PaletteModeAppearance } from "./PaletteMode.js";
 import type { PaletteModeKeyContext } from "./PaletteMode.js";
-import { assistantLabel } from "../components/index.js";
 import { NO_MODEL_PLACEHOLDER } from "../components/index.js";
 
 const ENTRY_HINTS: Hint[] = [
@@ -64,7 +63,7 @@ export const createAiMode = (
 
     return {
         get appearance() {
-            const { turns, model, setupRequired } = presenter.vm;
+            const { turns, setupRequired } = presenter.vm;
             const started = turns.length > 0;
 
             const appearance: PaletteModeAppearance = {
@@ -75,7 +74,6 @@ export const createAiMode = (
                 tagVariant: "accent-light",
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 hints: started ? conversationHints() : ENTRY_HINTS,
-                footerStart: assistantLabel(model, setupRequired),
                 listBody: !started
             };
 
