@@ -1,98 +1,79 @@
 import * as aws from "@pulumi/aws";
-import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
+import type * as pulumi from "@pulumi/pulumi";
+import type { PulumiApp } from "@webiny/pulumi";
+import type { PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 
+import { ApiFileManager } from "./ApiFileManager.js";
 import { ApiGateway } from "./ApiGateway.js";
 import { ApiGraphqlStream } from "./ApiGraphqlStream.js";
+import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
+import type { DistributionOrigin, OrderedCacheBehavior } from "./cloudfront/constants.js";
+import {
+    ALL_METHODS,
+    API_VIEWER_HEADERS,
+    FILES_ORIGIN_ID,
+    FORWARD_HEADERS,
+    ID_TOKEN_COOKIES
+} from "./cloudfront/constants.js";
+import { createStreamRouting } from "./cloudfront/createStreamRouting.js";
+import { createWebRouting } from "./cloudfront/createWebRouting.js";
+import { createFilesRouting } from "./cloudfront/createFilesRouting.js";
+import { createGatewayRouting } from "./cloudfront/createGatewayRouting.js";
+import { allowFunctionUrlInvoke } from "./cloudfront/allowFunctionUrlInvoke.js";
+import { allowWebFunctionInvoke } from "./cloudfront/allowWebFunctionInvoke.js";
+import { addWebRouteBehavior } from "./cloudfront/addWebRouteBehavior.js";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
-const STREAM_ORIGIN_ID = "graphql-stream-function-url";
-
-// AWS's `Managed-CachingDisabled` cache policy. Managed policy IDs are global constants — the same
-// value in every account and region — so this is hardcoded rather than resolved via
-// `aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" })` the way
-// `createCloudFrontDefaultCacheBehaviorPolicies` does. The lookup would need
-// `cloudfront:ListCachePolicies` on the deploy role, and that is not worth adding to every
-// project's default deployment path just to avoid a constant AWS itself documents.
-const MANAGED_CACHING_DISABLED_POLICY_ID = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad";
-
+/**
+ * The API's CloudFront distribution. Each origin's routing is built in `./cloudfront/`: the streaming
+ * function always, then either the web function and `fm-download`, or API Gateway for projects that
+ * turn the web function off.
+ */
 export const ApiCloudfront = createAppModule({
     name: "ApiCloudfront",
     config(app: PulumiApp) {
-        const gateway = app.getModule(ApiGateway);
         const graphqlStream = app.getModule(ApiGraphqlStream);
+        const fileManager = app.getModule(ApiFileManager);
+        // Present unless the project sets `<Infra.Api.WebFunction enabled={false} />`.
+        const graphqlWeb = app.getModule(ApiGraphqlWeb, { optional: true });
+        // Present only without the web function.
+        const gateway = app.getModule(ApiGateway, { optional: true });
 
-        const cookies = {
-            forward: "whitelist",
-            whitelistedNames: ["wby-id-token"]
-        };
+        const stream = createStreamRouting(app, graphqlStream);
 
-        const forwardHeaders = [
-            "Origin",
-            "Authorization",
-            "Accept",
-            "Accept-Language",
-            "X-Tenant",
-            "X-Webiny-Sdk",
-            // Narrows the debugger's capture. Without it here the edge drops the header silently.
-            "X-Webiny-Debug"
-        ];
+        const origins: DistributionOrigin[] = [stream.origin];
+        // The routes that are not GraphQL: file delivery (`/files/*`, `/private/*` and the default
+        // behavior, which serves files by alias) and, without the web function, everything else.
+        let filesOriginId: pulumi.Input<string>;
+        let filesForwardHeaders = FORWARD_HEADERS;
+        const apiBehaviors: OrderedCacheBehavior[] = [];
+        let routeCachePolicyId: pulumi.Input<string> | undefined;
 
-        // Lets CloudFront sign requests to the Lambda Function URL with SigV4, so the URL itself can
-        // stay on AWS_IAM authorization instead of being reachable from the internet.
-        const streamOac = app.addResource(aws.cloudfront.OriginAccessControl, {
-            name: "api-stream-oac",
-            config: {
-                description: "Signs CloudFront requests to the streaming Lambda Function URL",
-                originAccessControlOriginType: "lambda",
-                signingBehavior: "always",
-                signingProtocol: "sigv4"
-            }
-        });
+        if (graphqlWeb) {
+            const web = createWebRouting(app, graphqlWeb);
+            routeCachePolicyId = web.routeCachePolicyId;
+            origins.push(web.origin);
+            apiBehaviors.push(...web.behaviors);
 
-        // The streaming behavior uses a cache policy + origin request policy instead of the legacy
-        // `forwardedValues` the other behaviors use, because legacy forwarded values are deprecated
-        // and this policy also has to forward the two CORS preflight headers (see below).
-        //
-        // It is NOT what fixed the `AccessDeniedException` that made Lambda reject every signed
-        // CloudFront request — that was a missing `lambda:InvokeFunction` permission (see the two
-        // permissions at the bottom of this file). Recorded because the wrong cause was assumed first.
-        //
-        // Do NOT replace this with a managed origin request policy. `Managed-AllViewer` forwards
-        // `Host`, which breaks OAC signing against a Function URL origin.
-        // `Managed-AllViewerExceptHostHeader` (used for the blue/green router in this same package)
-        // fixes `Host` but still forwards `Authorization`, which OAC signing owns here — see below.
-        const streamOriginRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
-            name: "api-stream-origin-request-policy",
-            config: {
-                comment: "Headers/cookies forwarded to the streaming Lambda Function URL origin",
-                headersConfig: {
-                    headerBehavior: "whitelist",
-                    headers: {
-                        items: [
-                            "Origin",
-                            "Accept",
-                            "Accept-Language",
-                            // Required for CORS preflight: without these the origin can't build a
-                            // correct 204, so the browser blocks the real request.
-                            "Access-Control-Request-Method",
-                            "Access-Control-Request-Headers",
-                            "X-Tenant",
-                            "X-Webiny-Sdk",
-                            // `Authorization` is deliberately ABSENT — OAC signing owns that header.
-                            // Clients send their token in `X-Webiny-Authorization` instead.
-                            "X-Webiny-Authorization"
-                        ]
-                    }
-                },
-                cookiesConfig: {
-                    cookieBehavior: "whitelist",
-                    cookies: { items: ["wby-id-token"] }
-                },
-                queryStringsConfig: { queryStringBehavior: "all" }
-            }
-        });
+            const files = createFilesRouting(app, fileManager);
+            origins.push(files.origin);
+            filesOriginId = FILES_ORIGIN_ID;
+            // An OAC signs every request to a Function URL, so `Authorization` belongs to the
+            // signature. File requests authenticate with the `wby-id-token` cookie or with
+            // `X-Webiny-Authorization`, which `fm-download` reads first.
+            filesForwardHeaders = [...API_VIEWER_HEADERS, "X-Webiny-Authorization"];
+        } else if (gateway) {
+            const gatewayRouting = createGatewayRouting(gateway);
+            // First, where it was before the web function existed, so projects that turn the web
+            // function off see no change to the distribution.
+            origins.unshift(gatewayRouting.origin);
+            filesOriginId = gatewayRouting.originId;
+            apiBehaviors.push(...gatewayRouting.behaviors);
+        } else {
+            throw new Error("The API has neither a web function nor an API Gateway to route to.");
+        }
 
         const distribution = app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
@@ -103,94 +84,23 @@ export const ApiCloudfront = createAppModule({
                 enabled: true,
                 defaultCacheBehavior: {
                     compress: true,
-                    allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                    allowedMethods: ALL_METHODS,
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
-                        cookies,
-                        headers: forwardHeaders,
+                        cookies: ID_TOKEN_COOKIES,
+                        headers: filesForwardHeaders,
                         queryString: true
                     },
                     // MinTTL <= DefaultTTL <= MaxTTL
                     minTtl: 0,
                     defaultTtl: 0,
                     maxTtl: 86400,
-                    targetOriginId: gateway.api.output.name,
+                    targetOriginId: filesOriginId,
                     viewerProtocolPolicy: "allow-all"
                 },
                 orderedCacheBehaviors: [
-                    {
-                        // Streaming routes (SSE). Must come before the other behaviors so `/stream/*`
-                        // never falls through to the API Gateway origin, which cannot stream.
-                        //
-                        // `compress: false` is load-bearing: CloudFront compression buffers small
-                        // chunks, which defeats incremental delivery even though the origin streams.
-                        compress: false,
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD"],
-                        // Nothing on a streaming route is cacheable. TTLs must NOT be set
-                        // alongside a cache policy.
-                        cachePolicyId: MANAGED_CACHING_DISABLED_POLICY_ID,
-                        originRequestPolicyId: streamOriginRequestPolicy.output.id,
-                        pathPattern: "/stream/*",
-                        // Stricter than the other behaviors' `allow-all` on purpose: a streaming route
-                        // carries an auth token in a header, so plain HTTP is never acceptable here.
-                        viewerProtocolPolicy: "https-only",
-                        targetOriginId: STREAM_ORIGIN_ID
-                    },
-                    {
-                        compress: true,
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                        forwardedValues: {
-                            cookies: {
-                                forward: "none"
-                            },
-                            headers: forwardHeaders,
-                            queryString: true
-                        },
-                        pathPattern: "/cms*",
-                        viewerProtocolPolicy: "allow-all",
-                        targetOriginId: gateway.api.output.name
-                    },
-                    {
-                        compress: true,
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                        forwardedValues: {
-                            cookies: {
-                                forward: "none"
-                            },
-                            headers: forwardHeaders,
-                            queryString: true
-                        },
-                        pathPattern: "/wb/*",
-                        viewerProtocolPolicy: "allow-all",
-                        targetOriginId: gateway.api.output.name
-                    },
+                    stream.behavior,
+                    ...apiBehaviors,
                     {
                         allowedMethods: ["HEAD", "GET", "OPTIONS"],
                         cachedMethods: ["HEAD", "GET", "OPTIONS"],
@@ -198,7 +108,7 @@ export const ApiCloudfront = createAppModule({
                             cookies: {
                                 forward: "none"
                             },
-                            headers: forwardHeaders,
+                            headers: filesForwardHeaders,
                             queryString: true
                         },
                         // MinTTL <= DefaultTTL <= MaxTTL
@@ -207,14 +117,14 @@ export const ApiCloudfront = createAppModule({
                         maxTtl: 2592000,
                         pathPattern: "/files/*",
                         viewerProtocolPolicy: "allow-all",
-                        targetOriginId: gateway.api.output.name
+                        targetOriginId: filesOriginId
                     },
                     {
                         allowedMethods: ["HEAD", "GET", "OPTIONS"],
                         cachedMethods: ["HEAD", "GET", "OPTIONS"],
                         forwardedValues: {
-                            cookies: cookies,
-                            headers: forwardHeaders,
+                            cookies: ID_TOKEN_COOKIES,
+                            headers: filesForwardHeaders,
                             queryString: true
                         },
                         // MinTTL <= DefaultTTL <= MaxTTL
@@ -223,51 +133,10 @@ export const ApiCloudfront = createAppModule({
                         maxTtl: 2592000,
                         pathPattern: "/private/*",
                         viewerProtocolPolicy: "allow-all",
-                        targetOriginId: gateway.api.output.name
+                        targetOriginId: filesOriginId
                     }
                 ],
-                origins: [
-                    {
-                        domainName: gateway.stage.output.invokeUrl.apply(
-                            (url: string) => new URL(url).hostname
-                        ),
-                        originPath: gateway.stage.output.invokeUrl.apply(
-                            (url: string) => new URL(url).pathname
-                        ),
-                        originId: gateway.api.output.name,
-                        customOriginConfig: {
-                            httpPort: 80,
-                            httpsPort: 443,
-                            originProtocolPolicy: "https-only",
-                            originSslProtocols: ["TLSv1.2"]
-                        }
-                    },
-                    {
-                        // Lambda Function URL origin for streaming routes. A Function URL is a plain
-                        // HTTPS endpoint, hence customOriginConfig; the OAC is what makes CloudFront
-                        // sign the request so the URL can require AWS_IAM.
-                        domainName: graphqlStream.functionUrlDomain,
-                        originId: STREAM_ORIGIN_ID,
-                        originAccessControlId: streamOac.output.id,
-                        customOriginConfig: {
-                            httpPort: 80,
-                            httpsPort: 443,
-                            originProtocolPolicy: "https-only",
-                            originSslProtocols: ["TLSv1.2"],
-                            // NOT a cap on how long a response may stream. It is an IDLE timeout,
-                            // applied twice: to time-to-first-byte, and to the gap between any two
-                            // subsequent packets. A stream that keeps emitting can run as long as the
-                            // Lambda lives (300s here); only silence longer than this kills it.
-                            //
-                            // Raised from the 30s default because that is shorter than a slow model's
-                            // time to first token: CloudFront would abandon the stream while the Lambda
-                            // kept working. 60s is the ceiling without an AWS quota increase — a route
-                            // whose quiet gaps could exceed it must emit SSE heartbeat comments
-                            // (`: ping\n\n`), which clients ignore by spec, resetting the timer.
-                            originReadTimeout: 60
-                        }
-                    }
-                ],
+                origins,
                 restrictions: {
                     geoRestriction: {
                         restrictionType: "none"
@@ -294,34 +163,29 @@ export const ApiCloudfront = createAppModule({
             }
         });
 
-        // Allows THIS distribution — and nothing else — to invoke the streaming Function URL. Created
-        // after the distribution because it needs its ARN; the Function URL is useless until it exists.
-        //
-        // BOTH statements are required. The OAC-for-Lambda docs list `lambda:InvokeFunctionUrl` AND
-        // `lambda:InvokeFunction`; with only the former, Lambda's authorizer rejects every signed
-        // request from CloudFront with `AccessDeniedException` and the function is never invoked.
-        app.addResource(aws.lambda.Permission, {
-            name: "graphql-stream-url-cloudfront-invoke",
-            config: {
-                action: "lambda:InvokeFunctionUrl",
-                function: graphqlStream.functions.graphqlStream.output.name,
-                principal: "cloudfront.amazonaws.com",
-                sourceArn: distribution.output.arn,
-                functionUrlAuthType: "AWS_IAM",
-                statementId: "allow-cloudfront-invoke-function-url"
-            }
+        allowFunctionUrlInvoke(app, {
+            name: "graphql-stream",
+            functionName: graphqlStream.functions.graphqlStream.output.name,
+            distributionArn: distribution.output.arn
         });
 
-        app.addResource(aws.lambda.Permission, {
-            name: "graphql-stream-cloudfront-invoke-function",
-            config: {
-                action: "lambda:InvokeFunction",
-                function: graphqlStream.functions.graphqlStream.output.name,
-                principal: "cloudfront.amazonaws.com",
-                sourceArn: distribution.output.arn,
-                statementId: "allow-cloudfront-invoke-function"
-            }
-        });
+        if (graphqlWeb) {
+            allowFunctionUrlInvoke(app, {
+                name: "fm-download",
+                functionName: fileManager.functions.download.output.name,
+                distributionArn: distribution.output.arn
+            });
+            allowWebFunctionInvoke(app, graphqlWeb, distribution.output.arn);
+        }
+
+        if (graphqlWeb && routeCachePolicyId) {
+            const policyId = routeCachePolicyId;
+            // `<Api.Route>` routes. Their `ApiPulumi` handler runs before any resource is created,
+            // so the distribution's config can still change when a route arrives.
+            graphqlWeb.onRoute(routePath => {
+                addWebRouteBehavior(distribution, routePath, policyId);
+            });
+        }
 
         return distribution;
     }

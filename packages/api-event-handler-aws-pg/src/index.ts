@@ -1,5 +1,6 @@
 export { createAwsPgApiHandler, createAwsPgStreamApiHandler } from "./createWebinyApiHandler.js";
 export type { CreateAwsPgApiHandlerConfig } from "./createWebinyApiHandler.js";
+export { startAwsPgWebApi } from "./startAwsPgWebApi.js";
 export {
     SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
     SqlSchemaSetupConnection,

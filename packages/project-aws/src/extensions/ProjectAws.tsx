@@ -56,6 +56,7 @@ export const ProjectAws = () => {
             <AdminBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeAdminWatch.js")} />
             <ApiBeforeDeploy src={p("ProjectAws/EnsureCoreDeployedBeforeApiDeploy.js")} />
             <CoreBeforeDeploy src={p("ProjectAws/ValidateProductionPulumiState.js")} />
+            <CoreBeforeDeploy src={p("ProjectAws/EnsurePostgresSetupUnchanged.js")} />
 
             {/* Deploy-time hooks — standalone hosting type has no deploy command, so these are AWS-only */}
             <BeforeDeploy src={p("ProjectAws/EnsureTelemetryEnabledForOss.js")} />

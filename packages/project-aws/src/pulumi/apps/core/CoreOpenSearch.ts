@@ -26,6 +26,28 @@ export interface OpenSearchParams {
     pointInTimeRecovery: boolean;
 }
 
+/**
+ * A domain takes one subnet per Availability Zone it spans. The production cluster spans three, so it
+ * gets all three private subnets. The dev cluster is a single node in one zone, and OpenSearch rejects
+ * it with "You must specify exactly one subnet" if it gets more.
+ */
+function getDomainVpcOptions(
+    vpc: CoreVpc | null,
+    isProduction: boolean
+): aws.types.input.opensearch.DomainVpcOptions | undefined {
+    if (!vpc) {
+        return undefined;
+    }
+
+    const privateSubnetIds = vpc.subnets.private.map(s => s.output.id);
+    const subnetIds = isProduction ? privateSubnetIds : privateSubnetIds.slice(0, 1);
+
+    return {
+        subnetIds,
+        securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
+    };
+}
+
 function getDevClusterConfig(): aws.types.input.opensearch.DomainClusterConfig {
     return {
         instanceType: "t3.small.search"
@@ -118,12 +140,7 @@ export const OpenSearch = createAppModule({
                     domainName: domainPhysicalName,
                     engineVersion: OS_ENGINE_VERSION,
                     clusterConfig: isProduction ? getProdClusterConfig() : getDevClusterConfig(),
-                    vpcOptions: vpc
-                        ? {
-                              subnetIds: vpc.subnets.private.map(s => s.output.id),
-                              securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
-                          }
-                        : undefined,
+                    vpcOptions: getDomainVpcOptions(vpc, isProduction),
                     ebsOptions: {
                         ebsEnabled: true,
                         volumeSize: 10,

@@ -8,7 +8,7 @@
     "./*": "./*"
   },
   "types": "index.d.ts",
-  "description": "Transport-agnostic composition of the Webiny API request stack (registerApiRequestStack).",
+  "description": "Composition of the Webiny API request stack shared by every transport, plus what transports share: auth token extraction and the Node HTTP decorators (`/nodeHttp`) used by the standalone server and the AWS Lambda web function.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -39,6 +39,7 @@
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "pino": "^10.4.0"

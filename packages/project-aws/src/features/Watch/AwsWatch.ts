@@ -145,6 +145,7 @@ export class AwsWatch implements Watch.Interface {
                 uiService: ui,
                 loggerService: logger,
                 pulumiExportService: this.pulumiExportService,
+                pulumiGetStackOutputService: this.pulumiGetStackOutputService,
                 watchedLambdaFunctionsService: this.watchedLambdaFunctionsService
             },
             iotEndpoint,
