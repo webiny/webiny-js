@@ -1,8 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-    AnonymousIdentity,
-    AuthenticatedIdentity
-} from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { AnonymousIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { File } from "~/domain/file/types.js";
 import { PrivateAuthenticatedAuthorizer } from "~/features/assetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
@@ -19,22 +17,27 @@ const admin = new AuthenticatedIdentity({ id: "admin", displayName: "Admin", typ
 
 describe("PrivateAuthenticatedAuthorizer", () => {
     it("refuses a private file to a request without a token", async () => {
-        const authorizer = createAuthorizer(new AnonymousIdentity());
+        const anonymous = new AnonymousIdentity();
+        const authorizer = createAuthorizer(anonymous);
+        const authorization = authorizer.authorize(privateFile);
 
-        await expect(authorizer.authorize(privateFile)).rejects.toMatchObject({
+        await expect(authorization).rejects.toMatchObject({
             code: "NOT_AUTHORIZED"
         });
     });
 
     it("allows a private file to a signed-in identity", async () => {
         const authorizer = createAuthorizer(admin);
+        const authorization = authorizer.authorize(privateFile);
 
-        await expect(authorizer.authorize(privateFile)).resolves.toBeUndefined();
+        await expect(authorization).resolves.toBeUndefined();
     });
 
     it("allows a public file to a request without a token", async () => {
-        const authorizer = createAuthorizer(new AnonymousIdentity());
+        const anonymous = new AnonymousIdentity();
+        const authorizer = createAuthorizer(anonymous);
+        const authorization = authorizer.authorize(publicFile);
 
-        await expect(authorizer.authorize(publicFile)).resolves.toBeUndefined();
+        await expect(authorization).resolves.toBeUndefined();
     });
 });

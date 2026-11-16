@@ -1,25 +1,21 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRouter, HttpRouterImpl, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/event-handler-core";
+import { HttpRouterImpl } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import { TenancyFeature } from "@webiny/api-core/features/tenancy/TenancyFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import type {
-    Tenant,
-    TenancyStorageOperations as ITenancyStorageOperations
-} from "@webiny/api-core/types/tenancy.js";
-import {
-    AssetDeliveryRouteDefinition,
-    PrivateAssetDeliveryRouteDefinition
-} from "~/delivery/AssetDeliveryRoute.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { TenancyStorageOperations as ITenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import { AssetDeliveryRouteDefinition } from "~/delivery/AssetDeliveryRoute.js";
+import { PrivateAssetDeliveryRouteDefinition } from "~/features/assetDelivery/privateFiles/PrivateAssetDeliveryRouteDefinition.js";
 import { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
-import {
-    AssetOutputStrategy,
-    AssetProcessor,
-    AssetResolver
-} from "~/features/assetDelivery/abstractions.js";
+import { AssetOutputStrategy } from "~/features/assetDelivery/abstractions.js";
+import { AssetProcessor } from "~/features/assetDelivery/abstractions.js";
+import { AssetResolver } from "~/features/assetDelivery/abstractions.js";
 import { FilesAssetRequestResolverImpl } from "~/features/assetDelivery/FilesAssetRequestResolver.js";
 import { PrivateFileAssetRequestResolverDecorator } from "~/features/assetDelivery/privateFiles/PrivateFileAssetRequestResolver.js";
 
@@ -73,7 +69,8 @@ describe("AssetDeliveryRoute - routing", () => {
     beforeEach(() => {
         const container = new Container();
         container.registerInstance(RequestContainer, container);
-        TenancyFeature.register(container, new MockTenancyStorageOperations());
+        const tenancyStorageOperations = new MockTenancyStorageOperations();
+        TenancyFeature.register(container, tenancyStorageOperations);
         container.resolve(TenantContext).setTenant(root);
 
         container.register(AssetDeliveryRouteDefinition);
@@ -106,19 +103,25 @@ describe("AssetDeliveryRoute - routing", () => {
     });
 
     it("delivers a public file from /files/*", async () => {
-        const response = await router.route(get(`/files/${FILE_KEY}`));
+        const request = get(`/files/${FILE_KEY}`);
+        const response = await router.route(request);
+        const keys = resolvedRequests.map(r => r.getKey());
+        const context = resolvedRequests[0].getContext();
 
         expect(response.statusCode).toBe(200);
-        expect(resolvedRequests.map(r => r.getKey())).toEqual([FILE_KEY]);
-        expect(resolvedRequests[0].getContext().private).toBeUndefined();
+        expect(keys).toEqual([FILE_KEY]);
+        expect(context.private).toBeUndefined();
     });
 
     it("delivers a private file from /private/*", async () => {
-        const response = await router.route(get(`/private/${FILE_KEY}`));
+        const request = get(`/private/${FILE_KEY}`);
+        const response = await router.route(request);
+        const keys = resolvedRequests.map(r => r.getKey());
+        const context = resolvedRequests[0].getContext();
 
         expect(response.statusCode).toBe(200);
-        expect(resolvedRequests.map(r => r.getKey())).toEqual([FILE_KEY]);
-        expect(resolvedRequests[0].getContext()).toEqual({
+        expect(keys).toEqual([FILE_KEY]);
+        expect(context).toEqual({
             url: `/private/${FILE_KEY}`,
             private: true
         });
@@ -126,9 +129,21 @@ describe("AssetDeliveryRoute - routing", () => {
 
     // The redirects between /files/ and /private/ are built from this URL.
     it("keeps the query string in the request URL", async () => {
-        await router.route(get(`/files/${FILE_KEY}`, { width: "640" }));
+        const request = get(`/files/${FILE_KEY}`, { width: "640" });
+        await router.route(request);
+        const context = resolvedRequests[0].getContext();
+        const options = resolvedRequests[0].getOptions();
 
-        expect(resolvedRequests[0].getContext().url).toBe(`/files/${FILE_KEY}?width=640`);
-        expect(resolvedRequests[0].getOptions().width).toBe(640);
+        expect(context.url).toBe(`/files/${FILE_KEY}?width=640`);
+        expect(options.width).toBe(640);
+    });
+
+    // A bare `?original` parses to "", and the redirect from /files/ turns it into `?original=`.
+    it("treats a bare ?original on /private/* as set", async () => {
+        const request = get(`/private/${FILE_KEY}`, { original: "" });
+        await router.route(request);
+        const options = resolvedRequests[0].getOptions();
+
+        expect(options.original).toBe(true);
     });
 });

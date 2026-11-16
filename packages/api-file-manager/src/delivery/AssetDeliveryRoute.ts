@@ -21,23 +21,21 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
     async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
-        // Resolve asset-delivery collaborators lazily (request time), not as constructor deps.
-        // HttpRouter eagerly constructs every route to match paths, and AssetProcessor's
-        // PrivateFilesAssetProcessor decorator pulls in GetFileUseCase -> CMS entry repositories
-        // that depend on EntryFromStorageTransform, which is only registered while a CMS GraphQL
-        // request is in flight. Resolving here keeps route construction cheap so non-asset
-        // requests (e.g. /graphql) don't trigger that chain before it is registered.
+        // Still resolved here rather than declared as dependencies, which
+        // ai-context/code-style/no-container-as-service-locator.md says to fix. The reason this was
+        // written for (every route built on every request) no longer holds.
         const requestResolver = this.container.resolve(AssetRequestResolver);
         const assetResolver = this.container.resolve(AssetResolver);
         const tenantContext = this.container.resolve(TenantContext);
         const getTenantById = this.container.resolve(GetTenantByIdUseCase);
 
-        // Reconstruct a minimal request object compatible with IAssetRequestResolver. `url` keeps the
-        // query string, so the redirects between `/files/` and `/private/` keep `?width` and `?original`.
+        // Reconstruct a minimal request object compatible with IAssetRequestResolver. Each resolver
+        // strips its own prefix from the path. `url` keeps the query string, so the redirects
+        // between `/files/` and `/private/` keep `?width` and `?original`.
         const search = new URLSearchParams(request.query ?? {}).toString();
         const fakeRequest = {
             url: search ? `${request.path}?${search}` : request.path,
-            params: { "*": request.path.replace(/^\/(files|private)\//, "") },
+            params: { "*": request.path },
             query: request.query ?? {},
             headers: request.headers ?? {}
         };
@@ -121,22 +119,5 @@ class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface 
 /** What the router matches on. Zero dependencies, so building it costs nothing. */
 export const AssetDeliveryRouteDefinition = HttpRouteDefinition.createImplementation({
     implementation: AssetDeliveryRouteDefinitionImpl,
-    dependencies: []
-});
-
-/**
- * Private files are delivered from `/private/*`: a private file requested via `/files/*` is
- * redirected here, and `PrivateFileAssetRequestResolver` only handles this prefix. Same handler,
- * the resolvers pick the request apart by its path.
- */
-class PrivateAssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {
-    readonly name = "private-asset-delivery";
-    readonly method = "GET";
-    readonly path = "/private/*";
-    readonly handler = AssetDeliveryRoute;
-}
-
-export const PrivateAssetDeliveryRouteDefinition = HttpRouteDefinition.createImplementation({
-    implementation: PrivateAssetDeliveryRouteDefinitionImpl,
     dependencies: []
 });
