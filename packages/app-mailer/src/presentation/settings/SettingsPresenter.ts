@@ -21,6 +21,11 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     private testMailRecipient = "";
     private sendingTestMail = false;
     private testMailResult: ITestMailResult | null = null;
+    /*
+     * Counts test-mail runs. A test still in flight when `dispose()` runs belongs to a screen that
+     * is gone, so its result must not land on a test started after the screen was opened again.
+     */
+    private testMailRun = 0;
 
     constructor(
         private getSettingsUseCase: GetSettingsUseCase.Interface,
@@ -55,27 +60,34 @@ class SettingsPresenterImpl implements ISettingsPresenter {
 
     async sendTestMail(): Promise<void> {
         const to = this.testMailRecipient.trim();
+        const run = ++this.testMailRun;
 
         this.setSendingTestMail(true);
         this.setTestMailResult(null);
 
+        let result: ITestMailResult;
         try {
             await this.sendTestMailUseCase.execute(to);
-            this.setTestMailResult({
+            result = {
                 type: "success",
                 message: `The mail server accepted the message for ${to}. Check that inbox to confirm it arrived.`
-            });
+            };
         } catch (e) {
-            this.setTestMailResult({
+            result = {
                 type: "danger",
                 message: `The test email was not sent. ${e.message}`
-            });
-        } finally {
-            this.setSendingTestMail(false);
+            };
         }
+
+        if (run !== this.testMailRun) {
+            return;
+        }
+        this.setTestMailResult(result);
+        this.setSendingTestMail(false);
     }
 
     dispose(): void {
+        this.testMailRun++;
         this.testMailResult = null;
         this.sendingTestMail = false;
         this.testMailRecipient = "";
