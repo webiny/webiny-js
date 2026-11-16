@@ -28,6 +28,7 @@ import { followUpsTool } from "./followUps.js";
 import { readFollowUps } from "./followUps.js";
 import { unansweredApprovals } from "./unansweredApprovals.js";
 import { decidesExactly } from "./decidesExactly.js";
+import { describePageContext } from "./describePageContext.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -359,10 +360,21 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
         const capability = resolution.value;
 
+        /*
+         * The screen goes after our guidance and before the project's instructions, which say they
+         * take precedence over everything above them and so have to stay last.
+         */
+        let guidance = capability.guidance;
+        if (params.pageContext) {
+            const where = describePageContext(params.pageContext);
+            guidance = `${guidance}\n\n${where}`;
+        }
+        const system = withAdditionalInstructions(capability, guidance);
+
         const request: Ai.GenerateTextParams = {
             model: capability.model,
             connection: capability.connection,
-            system: withAdditionalInstructions(capability),
+            system,
             messages: history,
             tools,
             activeTools,
