@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { GetProjectService, SetProjectIdService } from "~/abstractions/index.js";
 import { Project as TsMorphProject, SyntaxKind } from "ts-morph";
+import { ensureNamedImport } from "~/utils/ensureNamedImport.js";
 
 class DefaultSetProjectIdService implements SetProjectIdService.Interface {
     constructor(private getProjectService: GetProjectService.Interface) {}
@@ -12,20 +13,7 @@ class DefaultSetProjectIdService implements SetProjectIdService.Interface {
         const tsMorphProject = new TsMorphProject();
         const sourceFile = tsMorphProject.addSourceFileAtPath(webinyConfigFileTsx);
 
-        // Ensure import { Project } from "webiny/extensions".
-        const hasProjectImport = sourceFile
-            .getImportDeclarations()
-            .some(
-                decl =>
-                    decl.getModuleSpecifierValue() === "webiny/extensions" &&
-                    decl.getNamedImports().some(imp => imp.getName() === "Project")
-            );
-        if (!hasProjectImport) {
-            sourceFile.insertImportDeclaration(0, {
-                namedImports: ["Project"],
-                moduleSpecifier: "webiny/extensions"
-            });
-        }
+        ensureNamedImport(sourceFile, "Project", "webiny/extensions");
 
         const jsxElements = sourceFile.getDescendantsOfKind(SyntaxKind.JsxSelfClosingElement);
 
