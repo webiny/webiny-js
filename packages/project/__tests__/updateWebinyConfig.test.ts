@@ -97,7 +97,7 @@ describe("updateWebinyConfig", () => {
         expect(result).toBe(withDefault);
     });
 
-    it("does not count a type-only import", async () => {
+    it("turns a type-only import of the name into a value import", async () => {
         const typeOnly = CONFIG.replace(
             `import { Api } from "webiny/extensions";`,
             `import type { Api } from "webiny/extensions";`
@@ -106,6 +106,31 @@ describe("updateWebinyConfig", () => {
 
         const result = await install("Api");
 
-        expect(result).toContain(`import { Infra, Api } from "webiny/extensions";`);
+        expect(result).toBe(CONFIG);
+    });
+
+    it("turns a type-only specifier into a value specifier", async () => {
+        const typeOnly = CONFIG.replace(
+            `import { Infra } from "webiny/extensions";`,
+            `import { Infra, type Admin } from "webiny/extensions";`
+        );
+        fs.writeFileSync(configPath, typeOnly);
+
+        const result = await install("Admin");
+
+        expect(result).toContain(`import { Infra, Admin } from "webiny/extensions";`);
+    });
+
+    it("moves the name out of a type-only import that has other names", async () => {
+        const typeOnly = CONFIG.replace(
+            `import { Api } from "webiny/extensions";`,
+            `import type { Api, Admin } from "webiny/extensions";`
+        );
+        fs.writeFileSync(configPath, typeOnly);
+
+        const result = await install("Admin");
+
+        expect(result).toContain(`import { Infra, Admin } from "webiny/extensions";`);
+        expect(result).toContain(`import type { Api } from "webiny/extensions";`);
     });
 });
