@@ -63,6 +63,7 @@ export const createAiMode = (
 
     return {
         get appearance() {
+            // The palette does not name the answering model; the AI chats panel's composer does.
             const { turns, setupRequired } = presenter.vm;
             const started = turns.length > 0;
 

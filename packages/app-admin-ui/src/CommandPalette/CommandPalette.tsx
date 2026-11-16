@@ -352,10 +352,7 @@ const CommandPaletteBase = () => {
                             )}
                         </ScrollArea>
 
-                        <PaletteFooter
-                            start={appearance ? appearance.footerStart : undefined}
-                            hints={appearance ? appearance.hints : commandHints}
-                        />
+                        <PaletteFooter hints={appearance ? appearance.hints : commandHints} />
                     </Command>
                 )}
             </div>
