@@ -4,6 +4,7 @@ import type { FetchResult } from "@webiny/app-admin/presentation/listPresenter/F
 import type { CmsModel } from "~/types.js";
 import type { IListModelsUseCase } from "~/features/model/listModels/abstractions.js";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
+import { isListedModel } from "./isListedModel.js";
 
 export class ContentModelsDataSource extends SimpleDataSource<CmsModel> {
     constructor(
@@ -14,14 +15,18 @@ export class ContentModelsDataSource extends SimpleDataSource<CmsModel> {
     }
 
     get rows(): CmsModel[] {
-        return this.cache.getItems();
+        return this.cache.getItems().filter(isListedModel);
     }
 
     async fetch(_params: IDataSourceQuery): Promise<FetchResult<CmsModel>> {
         const result = await this.listModelsUseCase.execute();
         return {
             data: result,
-            meta: { cursor: null, hasMoreItems: false, totalCount: result.length }
+            meta: {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: result.filter(isListedModel).length
+            }
         };
     }
 }

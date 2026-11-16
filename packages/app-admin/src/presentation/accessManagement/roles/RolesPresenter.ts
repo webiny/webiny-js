@@ -26,6 +26,8 @@ class RolesPresenterImpl implements IRolesPresenter {
     private _saving = false;
     private _showForm = false;
     private _form: IFormModel;
+    /** Bumped by every select, createNew and deselect, so a lookup that resolves after any of them stops there. */
+    private _selectRun = 0;
 
     constructor(
         private _listPresenter: ListPresenter.Interface<Role>,
@@ -49,6 +51,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             | "deleteRoleUseCase"
             | "cache"
             | "stringFormatter"
+            | "_selectRun"
         >(this, {
             formModelFactory: false,
             listRolesUseCase: false,
@@ -58,6 +61,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             deleteRoleUseCase: false,
             cache: false,
             stringFormatter: false,
+            _selectRun: false,
             vm: computed
         });
     }
@@ -88,11 +92,34 @@ class RolesPresenterImpl implements IRolesPresenter {
         this._listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "role", plural: "roles" },
+            assistant: {
+                view: () => "Roles in Access Management",
+                rowTitle: role => role.name,
+                details: () => this.describeForAssistant()
+            }
         });
     }
 
+    dispose(): void {
+        this.deselect();
+        this._listPresenter.dispose();
+    }
+
+    /** The open role, by the id the role tools take as `roleId`. */
+    private describeForAssistant(): Record<string, unknown> {
+        if (this._selectedRole) {
+            return { openRoleId: this._selectedRole.id };
+        }
+        if (this._showForm) {
+            return { editing: "a new role, not saved yet" };
+        }
+        return {};
+    }
+
     async selectRole(id: string): Promise<void> {
+        const run = ++this._selectRun;
         runInAction(() => {
             this._loading = true;
             this._showForm = true;
@@ -100,6 +127,9 @@ class RolesPresenterImpl implements IRolesPresenter {
 
         try {
             const role = await this.getRoleUseCase.execute(id);
+            if (run !== this._selectRun) {
+                return;
+            }
             const isSystemRole = role.slug === "full-access" || role.system === true;
             const isPluginRole = role.plugin ?? false;
             const canModify = !isSystemRole && !isPluginRole;
@@ -115,19 +145,25 @@ class RolesPresenterImpl implements IRolesPresenter {
                 });
             });
         } finally {
-            runInAction(() => {
-                this._loading = false;
-            });
+            if (run === this._selectRun) {
+                runInAction(() => {
+                    this._loading = false;
+                });
+            }
         }
     }
 
     createNew(): void {
+        this._selectRun++;
+        this._loading = false;
         this._selectedRole = null;
         this._form = this.buildForm(true, true, "new");
         this._showForm = true;
     }
 
     deselect(): void {
+        this._selectRun++;
+        this._loading = false;
         this._selectedRole = null;
         this._showForm = false;
     }

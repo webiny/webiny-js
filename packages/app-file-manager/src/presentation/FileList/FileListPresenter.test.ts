@@ -14,6 +14,7 @@ import { LocalStorage } from "@webiny/app/features/localStorage";
 import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
 import { FilesListCache } from "../../features/shared/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
 import { FileModelProvider } from "../../features/fileModel/abstractions.js";
 import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
@@ -271,6 +272,7 @@ function createContainer(mocks: Mocks) {
     container.registerInstance(FilesListCache, mocks.cache);
     container.registerInstance(GetDescendantFoldersUseCase, mocks.getDescendantFoldersUseCase);
     container.registerInstance(FileModelProvider, mocks.fileModelProvider);
+    container.registerInstance(FoldersContext, { type: "FmFile" });
 
     // Register the real FileListPresenter implementation.
     container.register(FileManagerPresenter).inSingletonScope();
@@ -303,6 +305,28 @@ describe("FileListPresenter", () => {
         const config = (mocks.listPresenter.init as Mock).mock.calls[0][0];
         expect(config.dataSource).toBeDefined();
         expect(config.initialSort).toEqual({ field: "createdOn", direction: "DESC" });
+    });
+
+    it("tells the assistant the files, folders and open file, until disposed", () => {
+        presenter.init();
+
+        const init = mocks.listPresenter.init as Mock;
+        const config: ListPresenter.Config<FmFile> = init.mock.calls[0][0];
+        const assistant = config.assistant!;
+        expect(assistant.view()).toBe("Files in File Manager");
+        expect(assistant.rowTitle({ name: "hero.png" } as FmFile)).toBe("hero.png");
+        expect(assistant.details?.()).toEqual({
+            folderType: "FmFile",
+            currentFolder: null,
+            visibleFolders: []
+        });
+
+        mocks.fileDetailsPresenter.vm.file = { id: "file-1" } as FmFile;
+        presenter.actions.showFileDetails("file-1");
+        expect(assistant.details?.()).toMatchObject({ openFileId: "file-1" });
+
+        presenter.dispose();
+        expect(mocks.listPresenter.dispose).toHaveBeenCalledTimes(1);
     });
 
     it("should forward ListPresenter.vm data as vm.list", () => {
