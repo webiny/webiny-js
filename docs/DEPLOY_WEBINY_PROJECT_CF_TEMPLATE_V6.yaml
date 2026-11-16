@@ -99,6 +99,17 @@ Resources:
               - cloudfront:UpdateOriginRequestPolicy
               - cloudfront:DeleteOriginRequestPolicy
 
+          # The API distribution's behaviors for the GraphQL web function use cache policies.
+          # Cache policies cannot be tagged either.
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:cache-policy/*
+            Action:
+              - cloudfront:CreateCachePolicy
+              - cloudfront:GetCachePolicy
+              - cloudfront:GetCachePolicyConfig
+              - cloudfront:UpdateCachePolicy
+              - cloudfront:DeleteCachePolicy
+
           # Amazon API Gateway
           - Effect: Allow
             Action:
@@ -394,6 +405,69 @@ Resources:
               - lambda:GetLayerVersion
               - lambda:GetLayerVersionPolicy
             Resource: arn:aws:lambda:*:*:layer:*
+
+          # AWS Lambda web functions
+          # The API's HTTP routes run on a Lambda web function. Its revisions and endpoints are
+          # nested under the function's ARN (web-function/{name}/revision/..., .../endpoint/...).
+          - Effect: Allow
+            Action:
+              - lambda:CreateWebFunction
+              - lambda:GetWebFunction
+              - lambda:DeleteWebFunction
+              - lambda:CreateWebFunctionRevision
+              - lambda:GetWebFunctionRevision
+              - lambda:DeleteWebFunctionRevision
+              - lambda:ListWebFunctionRevisions
+              - lambda:CreateWebFunctionEndpoint
+              - lambda:GetWebFunctionEndpoint
+              - lambda:UpdateWebFunctionEndpoint
+              - lambda:DeleteWebFunctionEndpoint
+              - lambda:ListWebFunctionEndpoints
+              - lambda:PutResourcePolicy
+              - lambda:GetResourcePolicy
+              - lambda:DeleteResourcePolicy
+              - lambda:TagResource
+              - lambda:UntagResource
+              - lambda:ListTags
+            Resource: arn:aws:lambda:*:*:web-function/wby-*
+
+          - Effect: Allow
+            Action:
+              - lambda:ListWebFunctions
+              - lambda:GetWebAccountSettings
+            Resource: "*"
+
+          # AWS Cloud Control API
+          # Pulumi creates Lambda web functions through the Cloud Control API. Cloud Control calls
+          # the Lambda actions above with the caller's own credentials, so it grants nothing else.
+          - Effect: Allow
+            Action:
+              - cloudformation:CreateResource
+              - cloudformation:GetResource
+              - cloudformation:UpdateResource
+              - cloudformation:DeleteResource
+              - cloudformation:ListResources
+              - cloudformation:GetResourceRequestStatus
+              - cloudformation:CancelResourceRequest
+            Resource: "*"
+
+          # Amazon CloudWatch Logs
+          # The web function's log group is created by the deployment, not by Lambda.
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:DeleteLogGroup
+              - logs:PutRetentionPolicy
+              - logs:DeleteRetentionPolicy
+              - logs:TagResource
+              - logs:UntagResource
+              - logs:ListTagsForResource
+            Resource: arn:aws:logs:*:*:log-group:/aws/lambda/web/wby-*
+
+          - Effect: Allow
+            Action:
+              - logs:DescribeLogGroups
+            Resource: "*"
 
           # Amazon S3
           - Effect: Allow
