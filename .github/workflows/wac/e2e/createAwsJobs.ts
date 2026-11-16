@@ -1,6 +1,6 @@
 import type { NormalJob } from "github-actions-wac";
 import { createCheckoutPrSteps } from "../steps/index.js";
-import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { ACTION } from "../utils/index.js";
@@ -29,6 +29,8 @@ interface AwsJobsOptions {
      * the bug reporter. Unset, both always run.
      */
     bugReporter?: PrFeature;
+    // Add the E2E API route only when the PR's code has it. Unset, it always is added.
+    apiRoute?: PrFeature;
 }
 
 // AWS-deployed E2E. One variant per storage setup, three jobs each, the same shape as the
@@ -46,7 +48,7 @@ interface AwsJobsOptions {
 // aws-nuke rather than `webiny destroy`.
 export const createAwsJobs = (
     { dbSetup, shards }: AwsVariant,
-    { bugReporter }: AwsJobsOptions = {}
+    { bugReporter, apiRoute }: AwsJobsOptions = {}
 ) => {
     const jobKeys = {
         deploy: `e2e-aws-${dbSetup}-deploy`,
@@ -56,6 +58,7 @@ export const createAwsJobs = (
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
     const adminUrl = `\${{ needs.${jobKeys.deploy}.outputs.admin-url }}`;
+    const apiUrl = `\${{ needs.${jobKeys.deploy}.outputs.api-url }}`;
 
     const env: Record<string, string> = {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
@@ -96,13 +99,19 @@ export const createAwsJobs = (
     if (bugReporter && !deployNeeds.includes(bugReporter.needs)) {
         deployNeeds.push(bugReporter.needs);
     }
+    if (apiRoute && !deployNeeds.includes(apiRoute.needs)) {
+        deployNeeds.push(apiRoute.needs);
+    }
 
     const deployJob: NormalJob = createJob({
         needs: deployNeeds,
         name: `E2E - ${dbDisplayName} - Deploy`,
         // Writes the admin URL into the status comment.
         permissions: { "pull-requests": "write" },
-        outputs: { "admin-url": "${{ steps.admin-url.outputs.admin-url }}" },
+        outputs: {
+            "admin-url": "${{ steps.admin-url.outputs.admin-url }}",
+            "api-url": "${{ steps.api-url.outputs.api-url }}"
+        },
         environment: "next",
         env,
         awsAuth: true,
@@ -130,10 +139,11 @@ export const createAwsJobs = (
                       }
                   ]
                 : []),
-            ...createConfigureBugReporterSteps({
+            ...createConfigureTestProjectSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 projectPath: PATH_TEST_PROJECT,
-                if: bugReporter?.has
+                bugReporterIf: bugReporter?.has,
+                apiRouteIf: apiRoute?.has
             }),
             {
                 name: "Print CLI version",
@@ -181,6 +191,13 @@ export const createAwsJobs = (
                 "working-directory": DIR_TEST_PROJECT,
                 run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
             },
+            {
+                // The API's CloudFront URL, which e2e/tests/apiRoute.e2e.ts calls.
+                name: "Extract API URL",
+                id: "api-url",
+                "working-directory": DIR_TEST_PROJECT,
+                run: `echo "api-url=$(yarn webiny output api --env dev --json 2>/dev/null | jq -r '.apiUrl // empty')" >> $GITHUB_OUTPUT`
+            },
             createStatusRowStep(
                 {
                     label: dbDisplayName,
@@ -218,6 +235,7 @@ export const createAwsJobs = (
             ...createUnlicensedE2eSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl,
+                apiUrl,
                 artifactName: `e2e-test-results-${dbSetup}-shard-\${{ matrix.shard }}`,
                 shard: `\${{ matrix.shard }}/${shards}`
             })

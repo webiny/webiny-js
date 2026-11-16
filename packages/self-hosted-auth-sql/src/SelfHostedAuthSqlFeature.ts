@@ -5,7 +5,7 @@ import { SelfHostedAuthSchemaSetup } from "./SelfHostedAuthSchemaSetup.js";
 
 /**
  * Registers the SQL implementations of the self-hosted auth storage operations: four for
- * credentials, six for the codes the self-service password reset emails. Register this alongside
+ * credentials, seven for the codes the self-service password reset emails. Register this alongside
  * `SelfHostedAuthApiFeature`, which consumes the abstractions.
  *
  * It runs on the connection (`KnexClient`) and the table settings (`SqlSchemaConfig`: prefix and

@@ -1,6 +1,7 @@
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import {
     PG_CMS_BUILD_PARAM,
+    PG_CMS_DEFAULTS_BUILD_PARAM,
     PgStorageConfig,
     type IPgStorageConfig,
     type IPgStorageSettings
@@ -60,8 +61,23 @@ export const parsePgStorageSettings = (value: unknown): IPgStorageSettings => {
     };
 };
 
+/* The settings, each one taken from `defaults` when `settings` leaves it unset. */
+export const withPgStorageDefaults = (
+    settings: IPgStorageSettings,
+    defaults: IPgStorageSettings
+): IPgStorageSettings => {
+    const merged: Record<string, unknown> = { ...defaults };
+    for (const [key, value] of Object.entries(settings)) {
+        if (value !== undefined) {
+            merged[key] = value;
+        }
+    }
+    return merged as IPgStorageSettings;
+};
+
 /*
- * The config from the `HeadlessCmsPg` build param of the container it's resolved in. The module is
+ * The config from the `HeadlessCmsPg` build param of the container it's resolved in, over the
+ * hosting's defaults in the `HeadlessCmsPgDefaults` build param. The module is
  * registered per request, where the build params are, and schema setup registers the build params
  * before it, so setup and requests read the same settings.
  */
@@ -77,7 +93,10 @@ class BuildParamsPgStorageConfigImpl implements PgStorageConfig.Interface {
 
     public constructor(buildParams: BuildParams.Interface) {
         const config = resolvePgStorageConfig(
-            parsePgStorageSettings(buildParams.get(PG_CMS_BUILD_PARAM))
+            withPgStorageDefaults(
+                parsePgStorageSettings(buildParams.get(PG_CMS_BUILD_PARAM)),
+                parsePgStorageSettings(buildParams.get(PG_CMS_DEFAULTS_BUILD_PARAM))
+            )
         );
         this.defaultIndexMode = config.defaultIndexMode;
         this.indexModeTtlMs = config.indexModeTtlMs;

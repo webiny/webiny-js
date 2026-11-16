@@ -2,14 +2,16 @@ import type { Container } from "@webiny/feature/api";
 import { SavePasswordResetCodeStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { ListLivePasswordResetCodesStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { CountPasswordResetCodesStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
+import { SetPasswordResetCodeHashStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { IncrementPasswordResetCodeAttemptsStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { MarkPasswordResetCodesUsedStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { DeleteExpiredPasswordResetCodesStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
 
-/** Stand-ins for any of the six operations, for cases that need one to misbehave. */
+/** Stand-ins for any of the seven operations, for cases that need one to misbehave. */
 export interface PasswordResetCodeOperationOverrides {
     save?: SavePasswordResetCodeStorageOperation.Interface["execute"];
+    setHash?: SetPasswordResetCodeHashStorageOperation.Interface["execute"];
     listLive?: ListLivePasswordResetCodesStorageOperation.Interface["execute"];
     count?: CountPasswordResetCodesStorageOperation.Interface["execute"];
     incrementAttempts?: IncrementPasswordResetCodeAttemptsStorageOperation.Interface["execute"];
@@ -18,7 +20,7 @@ export interface PasswordResetCodeOperationOverrides {
 }
 
 export interface InMemoryPasswordResetCodes {
-    /** Registers all six operations against one shared array of rows. */
+    /** Registers all seven operations against one shared array of rows. */
     register(container: Container): void;
     rows: StoredPasswordResetCode[];
 }
@@ -39,6 +41,15 @@ export const createInMemoryPasswordResetCodes = (
 
     const save = async (params: { code: StoredPasswordResetCode }) => {
         rows.push({ ...params.code });
+    };
+
+    const setHash = async (params: { id: string; codeHash: string }) => {
+        const row = rows.find(candidate => candidate.id === params.id);
+        if (!row || row.codeHash !== null) {
+            return false;
+        }
+        row.codeHash = params.codeHash;
+        return true;
     };
 
     const listLive = async (params: { email: string; now: string }) => {
@@ -82,6 +93,9 @@ export const createInMemoryPasswordResetCodes = (
         register(container: Container) {
             container.registerInstance(SavePasswordResetCodeStorageOperation, {
                 execute: overrides.save ?? save
+            });
+            container.registerInstance(SetPasswordResetCodeHashStorageOperation, {
+                execute: overrides.setHash ?? setHash
             });
             container.registerInstance(ListLivePasswordResetCodesStorageOperation, {
                 execute: overrides.listLive ?? listLive

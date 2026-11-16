@@ -20,7 +20,6 @@
     { "path": "../api-file-manager-s3" },
     { "path": "../api-headless-cms-testing" },
     { "path": "../api-opensearch" },
-    { "path": "../api-websockets" },
     { "path": "../background-tasks" },
     { "path": "../plugins" },
     { "path": "../wcp" }
@@ -68,8 +67,6 @@
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
-      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
-      "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

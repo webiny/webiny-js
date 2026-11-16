@@ -36,6 +36,12 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
                 continue;
             }
 
+            // A request whose task has not set a code yet, or never will because the address has no
+            // account. Nothing can match it, and a guess against it is not an attempt on any code.
+            if (!candidate.codeHash) {
+                continue;
+            }
+
             const matches = await this.hasher.verify(input.code, candidate.codeHash);
             if (!matches) {
                 // Read-modify-write is avoided here on purpose: two wrong guesses arriving together

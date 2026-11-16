@@ -3,7 +3,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { AiImageEnrichmentTask } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
 import { FILE_ENRICHMENT_FAILED_WEBSOCKET_ACTION } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
 import { ApplyImageEnrichmentUseCase } from "~/api/features/AiImageEnrichment/abstractions.js";

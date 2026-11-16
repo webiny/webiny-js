@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
-import { WebsocketsSendToIdentityUseCase } from "~/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 
 describe("websockets context", () => {
     it("should properly list connections", async () => {

@@ -6,6 +6,8 @@ interface CreateUnlicensedE2eStepsParams {
     workingDirectory: string;
     // Shell expression for the Admin app's URL.
     adminUrl: string;
+    // Shell expression for the API's URL, which e2e/tests/apiRoute.e2e.ts calls.
+    apiUrl: string;
     artifactName: string;
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`. Without it the job runs all
     // of the selected tests.
@@ -21,6 +23,7 @@ interface CreateUnlicensedE2eStepsParams {
 export const createUnlicensedE2eSteps = ({
     workingDirectory,
     adminUrl,
+    apiUrl,
     artifactName,
     shard
 }: CreateUnlicensedE2eStepsParams): NonNullable<NormalJob["steps"]> => [
@@ -30,6 +33,7 @@ export const createUnlicensedE2eSteps = ({
         "working-directory": workingDirectory,
         env: {
             E2E_ADMIN_URL: adminUrl,
+            E2E_API_URL: apiUrl,
             E2E_TELEMETRY_DISABLED: "1"
         },
         run: [

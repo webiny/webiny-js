@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { WebsocketsListConnectionsUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
-import { WebsocketServiceError } from "~/features/shared/errors.js";
+import { WebsocketServiceError } from "@webiny/api-core/features/websockets/index.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
 class ListConnectionsUseCaseImpl implements WebsocketsListConnectionsUseCase.Interface {

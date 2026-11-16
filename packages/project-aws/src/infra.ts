@@ -31,6 +31,8 @@ import {
 } from "./pulumi/extensions/index.js";
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
+import { Postgres } from "./extensions/Postgres.js";
+import { RdsProxy } from "./extensions/RdsProxy.js";
 import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
@@ -40,6 +42,7 @@ import { EnvVar } from "@webiny/project/extensions/index.js";
 import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
 import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,
@@ -70,6 +73,9 @@ export const Infra = {
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     Vpc,
+    Postgres,
+    // Alias of Infra.Core.RdsProxy (prefer Infra.Core.RdsProxy going forward).
+    RdsProxy,
     BlueGreenDeployments,
     // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
     OpenSearch,
@@ -114,7 +120,8 @@ export const Infra = {
         CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
         LambdaFunction: ApiLambdaFunction,
-        MaxBundleSize: ApiMaxBundleSize
+        MaxBundleSize: ApiMaxBundleSize,
+        WebFunction: ApiWebFunction
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,
@@ -126,6 +133,7 @@ export const Infra = {
         StackOutputValue: CoreStackOutputValue,
         DynamoDb,
         OpenSearch,
+        RdsProxy,
         S3Bucket
     }
 };

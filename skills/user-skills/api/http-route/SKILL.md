@@ -12,8 +12,9 @@ description: >
 ## TL;DR
 
 Write a handler that implements `HttpRouteHandler.Interface`, then point `<Api.Route>` at it in
-`webiny.config.tsx`. The `method` and `path` props configure both the API Gateway route and the
-router, so the handler file never restates them. Handlers get full DI.
+`webiny.config.tsx`. The `method` and `path` props configure the router (and, on AWS, the API Gateway
+route), so the handler file never restates them. Handlers get full DI. Works in AWS and standalone
+projects.
 
 **YOU MUST include the full file path with the `.ts` extension in the `src` prop.** Use
 `src={"/extensions/MyRoute.ts"}`, not `src={"/extensions/MyRoute"}`. Omitting it fails the build.
@@ -57,8 +58,11 @@ Register it:
 | `src`       | `string` | Yes      | Path to the handler file (must include `.ts`)                                                                                         |
 | `routeName` | `string` | No       | Route name (kebab-case). Derived from path + method if omitted. Doubles as the Pulumi resource name and the id a decorator matches on |
 
-Methods: `DELETE`, `GET`, `HEAD`, `PATCH`, `POST`, `PUT`, `OPTIONS`, `ANY`. Use `ANY` to match every
-method on a path.
+Methods: `DELETE`, `GET`, `HEAD`, `PATCH`, `POST`, `PUT`, `OPTIONS`. To serve several methods on one
+path, add one `<Api.Route>` per method; they can share a handler file.
+
+A derived name leaves out path parameters, so `GET /orders` and `GET /orders/{id}` both come out as
+`orders-get`. The build stops when two routes share a name; set `routeName` on one of them.
 
 ## Path parameters
 
@@ -148,8 +152,9 @@ milliseconds.
 
 1. **Build time** — writes a registration into `apps/api/graphql/src/extensions.ts` that registers an
    `HttpRouteDefinition` built from your `method` and `path`, pointing at your handler.
-2. **Deploy time** — calls `addRoute({ name, path, method })` on the API Pulumi module to create the
-   API Gateway route, with the path converted to `{param}` syntax.
+2. **Deploy time (AWS only)** — calls `addRoute({ name, path, method })` on the API Pulumi module to
+   create the API Gateway route, with the path converted to `{param}` syntax. A standalone project
+   skips this step: its HTTP server hands every request to the router.
 
 At request time the router matches the definition (cheap — it holds only `method`, `path` and the
 handler class) and builds your handler only then, with its dependencies injected. A route your

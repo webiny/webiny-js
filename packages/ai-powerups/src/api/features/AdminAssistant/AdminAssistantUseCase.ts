@@ -18,7 +18,7 @@ import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
 import type { AdminAssistantParams } from "./abstractions.js";
-import { isReadOnly } from "./approvals.js";
+import { isReadOnlyTool } from "@webiny/api-core/features/ai/index.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
@@ -335,7 +335,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
         const tools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
         const readOnlyNames = new Set([
-            ...this.declarations.filter(isReadOnly).map(declaration => declaration.name),
+            ...this.declarations.filter(isReadOnlyTool).map(declaration => declaration.name),
             FOLLOW_UPS_TOOL
         ]);
 

@@ -29,7 +29,7 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 import { Logger } from "@webiny/api-core/features/logger/index.js";

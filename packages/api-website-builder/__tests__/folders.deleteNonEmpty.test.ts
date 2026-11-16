@@ -3,7 +3,7 @@ import type { Container } from "@webiny/di";
 import { AcoFeature } from "@webiny/api-aco";
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
     CreateFolderUseCase,

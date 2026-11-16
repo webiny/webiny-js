@@ -67,7 +67,33 @@ const SecondTool = AiSdkToolDefinition.createImplementation({
     dependencies: []
 });
 
-const setup = (): ToolSet => {
+class ReadOnlyToolImpl implements AiSdkToolDefinition.Interface {
+    readonly name = "readOnly";
+    readonly description = "A tool that only reads.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true };
+    readonly handler = FirstHandler;
+}
+
+const ReadOnlyTool = AiSdkToolDefinition.createImplementation({
+    implementation: ReadOnlyToolImpl,
+    dependencies: []
+});
+
+class WritingToolImpl implements AiSdkToolDefinition.Interface {
+    readonly name = "writing";
+    readonly description = "A tool that says it writes.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: false, destructiveHint: true };
+    readonly handler = SecondHandler;
+}
+
+const WritingTool = AiSdkToolDefinition.createImplementation({
+    implementation: WritingToolImpl,
+    dependencies: []
+});
+
+const setup = (options?: AiSdkTools.Options): ToolSet => {
     built.length = 0;
 
     const container = new Container();
@@ -75,9 +101,11 @@ const setup = (): ToolSet => {
     container.register(AiSdkToolHandlerResolver);
     container.register(FirstTool);
     container.register(SecondTool);
+    container.register(ReadOnlyTool);
+    container.register(WritingTool);
     container.register(AiSdkToolsImpl);
 
-    return container.resolve(AiSdkTools).getToolSet();
+    return container.resolve(AiSdkTools).getToolSet(options);
 };
 
 const callTool = (toolSet: ToolSet, name: string) => {
@@ -95,7 +123,7 @@ describe("AiSdkTools", () => {
     it("builds the tool set without constructing any handler", () => {
         const toolSet = setup();
 
-        expect(Object.keys(toolSet).sort()).toEqual(["first", "second"]);
+        expect(Object.keys(toolSet).sort()).toEqual(["first", "readOnly", "second", "writing"]);
         expect(built).toEqual([]);
     });
 
@@ -116,5 +144,12 @@ describe("AiSdkTools", () => {
         const second = await callTool(toolSet, "second")({ value: "b" });
 
         expect([first, second]).toEqual(["first:a", "second:b"]);
+    });
+
+    it("offers only the tools declared read-only when asked for those", () => {
+        const toolSet = setup({ readOnly: true });
+
+        // "first" and "second" declare nothing, which counts as writing.
+        expect(Object.keys(toolSet)).toEqual(["readOnly"]);
     });
 });

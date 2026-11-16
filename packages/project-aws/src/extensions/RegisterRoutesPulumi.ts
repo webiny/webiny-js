@@ -1,8 +1,9 @@
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { ApiPulumi } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
-import { ApiRoute } from "./ApiRoute.js";
-import { deriveRouteName, toApiGatewayPath } from "./routePath.js";
+import { deriveRouteName } from "@webiny/project/extensions/api/index.js";
+import { ApiRoute } from "@webiny/project/extensions/api/index.js";
+import { toApiGatewayPath } from "./toApiGatewayPath.js";
 
 class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}

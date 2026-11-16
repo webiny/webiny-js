@@ -6,6 +6,7 @@ import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/index.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { WebsocketEvent } from "@webiny/app/features/websocketEvents/index.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/index.js";
 import { ListCache } from "~/features/listCache/index.js";
 import type { Team } from "~/features/accessManagement/types.js";
 import { GetTeamGateway } from "~/features/accessManagement/teams/getTeam/abstractions.js";
@@ -37,6 +38,7 @@ const setup = (fromServer: Team) => {
         get: () => undefined
     } as unknown as EnvConfig.Interface);
     EventPublisherFeature.register(container);
+    RecordChangesFeature.register(container);
     container.registerInstance(TeamsListCache, cache);
     container.registerInstance(GetTeamGateway, {
         execute: async (id: string) => {
@@ -58,7 +60,10 @@ describe("team events", () => {
     it("adds a team created on the server to the teams list", async () => {
         const { receive, fetched, cache } = setup(team());
 
-        await receive({ action: "security.team.created", data: { id: "team-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.team", id: "team-1", change: "created" }
+        });
 
         expect(fetched).toEqual(["team-1"]);
         expect(cache.getItems()).toEqual([team()]);
@@ -69,7 +74,10 @@ describe("team events", () => {
         const { receive, cache } = setup(fromServer);
         cache.addItems([team()]);
 
-        await receive({ action: "security.team.created", data: { id: "team-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.team", id: "team-1", change: "created" }
+        });
 
         expect(cache.getItems()).toEqual([fromServer]);
     });
@@ -79,7 +87,10 @@ describe("team events", () => {
         const { receive, fetched, cache } = setup(fromServer);
         cache.setItems([team(), team({ id: "team-2", name: "Sales" }), team({ id: "team-3" })]);
 
-        await receive({ action: "security.team.updated", data: { id: "team-2" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.team", id: "team-2", change: "updated" }
+        });
 
         expect(fetched).toEqual(["team-2"]);
         expect(cache.getItems().map(item => [item.id, item.name])).toEqual([
@@ -93,7 +104,10 @@ describe("team events", () => {
         const { receive, fetched, cache } = setup(team());
         cache.setItems([team(), team({ id: "team-2" })]);
 
-        await receive({ action: "security.team.deleted", data: { id: "team-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.team", id: "team-1", change: "deleted" }
+        });
 
         expect(fetched).toEqual([]);
         expect(cache.getItems().map(item => item.id)).toEqual(["team-2"]);
@@ -102,7 +116,10 @@ describe("team events", () => {
     it("ignores messages that are not about teams", async () => {
         const { receive, fetched, cache } = setup(team());
 
-        await receive({ action: "aco.folder.created", data: { id: "folder-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "aco.folder", id: "folder-1", change: "created" }
+        });
 
         expect(fetched).toEqual([]);
         expect(cache.getItems()).toEqual([]);

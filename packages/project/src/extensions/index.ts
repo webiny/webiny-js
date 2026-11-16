@@ -13,6 +13,7 @@ import { AdminApiUrl } from "./AdminApiUrl.js";
 import { AdminWebsocketsUrl } from "./AdminWebsocketsUrl.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
+import { ApiRoute } from "./api/index.js";
 import { BackgroundTasks } from "./api/index.js";
 import { ModelFieldCompression } from "./api/index.js";
 import { Smtp } from "./api/index.js";
@@ -101,6 +102,7 @@ export const definitions = [
     AdminWebsocketsUrl.def,
     AdminExtension.def,
     ApiExtension.def,
+    ApiRoute.def,
 
     // Api settings that apply to every hosting type.
     BackgroundTasks.def,

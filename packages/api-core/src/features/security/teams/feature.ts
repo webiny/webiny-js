@@ -7,6 +7,7 @@ import { ListTeamsFeature } from "./ListTeams/feature.js";
 import { CreateTeamFeature } from "./CreateTeam/feature.js";
 import { UpdateTeamFeature } from "./UpdateTeam/feature.js";
 import { DeleteTeamFeature } from "./DeleteTeam/feature.js";
+import { NotifyTeamChangeFeature } from "./NotifyTeamChange/index.js";
 
 export const TeamsFeature = createFeature({
     name: "Teams",
@@ -24,5 +25,6 @@ export const TeamsFeature = createFeature({
         CreateTeamFeature.register(container);
         UpdateTeamFeature.register(container);
         DeleteTeamFeature.register(container);
+        NotifyTeamChangeFeature.register(container);
     }
 });

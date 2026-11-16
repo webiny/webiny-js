@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import isEmpty from "lodash/isEmpty.js";
+import { reaction } from "mobx";
 import omit from "lodash/omit.js";
 import { useFeature } from "@webiny/app";
 import { useRoute, useRouter } from "@webiny/app";
@@ -7,6 +8,7 @@ import { GetUserFeature } from "~/features/adminUsers/users/getUser/index.js";
 import type { IGetUserGatewayResult } from "~/features/adminUsers/users/getUser/abstractions/GetUserGateway.js";
 import { CreateUserFeature } from "~/features/adminUsers/users/createUser/index.js";
 import { UpdateUserFeature } from "~/features/adminUsers/users/updateUser/index.js";
+import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 import { useToast } from "@webiny/admin-ui";
 
@@ -34,6 +36,7 @@ export function useUserForm() {
     const { useCase: getUser } = useFeature(GetUserFeature);
     const { useCase: createUser } = useFeature(CreateUserFeature);
     const { useCase: updateUser } = useFeature(UpdateUserFeature);
+    const { revision } = useFeature(UserEventsFeature);
 
     const id = route.params.id;
     const newUser = route.params.new === true;
@@ -42,29 +45,76 @@ export function useUserForm() {
     const [userLoading, setUserLoading] = useState(false);
     const [mutationLoading, setMutationLoading] = useState(false);
 
+    // Only the newest read may set the user. A read still running when another user is opened, or
+    // when a newer read of the same user starts, would otherwise show data that is no longer current.
+    const lastRead = useRef(0);
+
+    const showLoadError = (error: Error) => {
+        goToRoute(Routes.Users.List);
+        toast.showWarningToast({
+            title: "Error loading user profile",
+            description: error.message,
+            duration: Infinity
+        });
+        setUserLoading(false);
+    };
+
     useEffect(() => {
+        const read = ++lastRead.current;
         // Drop the previous user, so "New" and a newly selected user don't show its data.
         setUser(undefined);
         if (!id) {
+            setUserLoading(false);
             return;
         }
         setUserLoading(true);
         getUser
             .execute({ id })
             .then(data => {
+                if (read !== lastRead.current) {
+                    return;
+                }
                 setUser(data);
                 setUserLoading(false);
             })
             .catch(error => {
-                goToRoute(Routes.Users.List);
-                toast.showWarningToast({
-                    title: "Error loading user profile",
-                    description: error.message,
-                    duration: Infinity
-                });
-                setUserLoading(false);
+                if (read !== lastRead.current) {
+                    return;
+                }
+                showLoadError(error);
             });
     }, [id]);
+
+    // The open user changed on the server, by the assistant or in another tab. Show what is stored
+    // now. A failed read of a user already on screen is ignored: the user was most likely deleted,
+    // and the list drops it. If the first read was still running, this read replaced it, so its
+    // failure is handled like a failed first read.
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+        return reaction(
+            () => revision.user(id),
+            () => {
+                const read = ++lastRead.current;
+                getUser
+                    .execute({ id })
+                    .then(data => {
+                        if (read !== lastRead.current) {
+                            return;
+                        }
+                        setUser(data);
+                        setUserLoading(false);
+                    })
+                    .catch(error => {
+                        if (read !== lastRead.current || !userLoading) {
+                            return;
+                        }
+                        showLoadError(error);
+                    });
+            }
+        );
+    }, [id, revision, userLoading]);
 
     const loading = userLoading || mutationLoading;
 

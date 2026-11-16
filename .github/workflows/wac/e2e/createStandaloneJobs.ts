@@ -1,5 +1,5 @@
 import type { NormalJob } from "github-actions-wac";
-import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { createJob } from "../jobs/index.js";
 import { ACTION } from "../utils/index.js";
@@ -107,6 +107,8 @@ interface StandaloneProjectParams {
     wcp?: boolean;
     // Configure the bug reporter only when this expression holds. Unset, it always is.
     bugReporterIf?: string;
+    // Add the E2E API route only when this expression holds. Unset, it always is added.
+    apiRouteIf?: string;
 }
 
 /*
@@ -201,7 +203,7 @@ const createNginxConfig = (apiProcesses: number) => {
  */
 const createBuildStandaloneProjectSteps = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, wcp, bugReporterIf }: StandaloneProjectParams
+    { workingDirectory, wcp, bugReporterIf, apiRouteIf }: StandaloneProjectParams
 ): NonNullable<NormalJob["steps"]> => [
     {
         name: "Disable Webiny telemetry",
@@ -211,10 +213,11 @@ const createBuildStandaloneProjectSteps = (
         name: "Create a new standalone Webiny project",
         run: `npx create-webiny-project@local-npm ${DIR_STANDALONE_PROJECT} --tag local-npm --no-interactive --hosting-type standalone --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
     },
-    ...createConfigureBugReporterSteps({
+    ...createConfigureTestProjectSteps({
         workingDirectory,
         projectPath: PATH_STANDALONE_PROJECT,
-        if: bugReporterIf
+        bugReporterIf,
+        apiRouteIf
     }),
     {
         name: "Print CLI version",
@@ -473,6 +476,7 @@ const createProjectTestSteps = (
     return createUnlicensedE2eSteps({
         workingDirectory,
         adminUrl: STANDALONE_ADMIN_URL,
+        apiUrl: STANDALONE_API_URL,
         artifactName: `e2e-test-results-standalone-${storageOps}`
     });
 };
@@ -562,6 +566,11 @@ export interface StandaloneVariantJobsContext {
     feature?: PrFeature;
     // Configure the bug reporter only when the PR's code has it. Unset, it always is configured.
     bugReporter?: PrFeature;
+    /*
+     * Add the E2E API route only when the PR's code builds `<Api.Route>` on standalone. Unset, it
+     * always is added.
+     */
+    apiRoute?: PrFeature;
 }
 
 /**
@@ -587,7 +596,8 @@ export const createStandaloneVariantJobs = (
         report,
         savePlaywrightCache,
         feature,
-        bugReporter
+        bugReporter,
+        apiRoute
     }: StandaloneVariantJobsContext
 ) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
@@ -619,6 +629,9 @@ export const createStandaloneVariantJobs = (
     if (bugReporter && !buildJobNeeds.includes(bugReporter.needs)) {
         buildJobNeeds.push(bugReporter.needs);
     }
+    if (apiRoute && !buildJobNeeds.includes(apiRoute.needs)) {
+        buildJobNeeds.push(apiRoute.needs);
+    }
 
     const buildJob = createJob({
         needs: buildJobNeeds,
@@ -632,7 +645,8 @@ export const createStandaloneVariantJobs = (
             ...createBuildStandaloneProjectSteps(storageOps, {
                 workingDirectory,
                 wcp,
-                bugReporterIf: bugReporter?.has
+                bugReporterIf: bugReporter?.has,
+                apiRouteIf: apiRoute?.has
             }),
             {
                 name: "Compress API and Admin builds",
@@ -695,6 +709,7 @@ export const createStandaloneVariantJobs = (
                 : createUnlicensedE2eSteps({
                       workingDirectory,
                       adminUrl: STANDALONE_ADMIN_URL,
+                      apiUrl: STANDALONE_API_URL,
                       artifactName: `e2e-test-results-standalone-${id}-shard-\${{ matrix.shard }}`,
                       shard
                   })),

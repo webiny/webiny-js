@@ -38,11 +38,17 @@ const PR_FEATURE_PATHS = {
      * (#5746) and is pulled from S3, so nothing in the PR's tree says whether it fits the branch;
      * this script stands in for "the branch has the bug reporter".
      */
-    "bug-reporter": nodeScriptPath("configureBugReporter")
+    "bug-reporter": nodeScriptPath("configureBugReporter"),
+    /*
+     * Gates adding the E2E API route. The script came in with the fix that makes `<Api.Route>` build
+     * on standalone, and so did e2e/tests/apiRoute.e2e.ts, so a branch without it has neither.
+     */
+    "api-route": nodeScriptPath("configureApiRoute")
 };
 
 const STANDALONE = createPrFeature("baseBranch", "standalone");
 const BUG_REPORTER = createPrFeature("baseBranch", "bug-reporter");
+const API_ROUTE = createPrFeature("baseBranch", "api-route");
 
 const PR_FEATURE_OUTPUTS: Record<string, string> = {};
 const PR_FEATURE_CHECKS: string[] = [];
@@ -65,7 +71,8 @@ const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
     report: true,
     feature: STANDALONE,
-    bugReporter: BUG_REPORTER
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE
 };
 
 // Every variant's build (or deploy), test and report jobs.
@@ -73,7 +80,7 @@ const VARIANT_JOBS: Record<string, NormalJob> = {
     ...AWS_VARIANTS.reduce(
         (jobs, variant) => ({
             ...jobs,
-            ...createAwsJobs(variant, { bugReporter: BUG_REPORTER })
+            ...createAwsJobs(variant, { bugReporter: BUG_REPORTER, apiRoute: API_ROUTE })
         }),
         {}
     ),
