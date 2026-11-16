@@ -1,4 +1,3 @@
-import fs from "fs";
 import pRetry from "p-retry";
 import {
     GetFunctionConfigurationCommand,
@@ -10,8 +9,11 @@ import { type ListAppLambdaFunctionsService } from "~/abstractions/services/List
 import { type LoggerService } from "@webiny/project/abstractions/index.js";
 import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
+import { type PulumiGetStackOutputService } from "~/abstractions/services/PulumiGetStackOutputService.js";
 import { type WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
+import { createLambdaForwarderZip } from "./forwarder/createForwarderZip.js";
+import { replaceWebFunction } from "./replaceWebFunction.js";
 
 const WATCH_MODE_NOTE_IN_DESCRIPTION = " (💡 local development mode, redeploy to remove)";
 const DEFAULT_INCREASE_TIMEOUT = 120;
@@ -29,8 +31,16 @@ export interface IReplaceLambdaFunctionsParams {
         uiService: UiService.Interface;
         loggerService: LoggerService.Interface;
         pulumiExportService: PulumiExportService.Interface;
+        pulumiGetStackOutputService: PulumiGetStackOutputService.Interface;
         watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface;
     };
+}
+
+interface ApiStackOutput {
+    graphqlLambdaName?: string;
+    graphqlWebFunctionName?: string;
+    graphqlWebEndpointName?: string;
+    graphqlWebCodeBucket?: string;
 }
 
 export const replaceLambdaFunctions = async ({
@@ -83,6 +93,7 @@ export const replaceLambdaFunctions = async ({
 
     logger.info("replacing %s AWS Lambda function(s).", functionsList.meta.count);
     const lambdaClient = new LambdaClient();
+    const forwarderZip = createLambdaForwarderZip();
 
     const replacementsPromises = functionsList.list.map(async fn => {
         const getFnConfigCmd = new GetFunctionConfigurationCommand({ FunctionName: fn.name });
@@ -90,7 +101,7 @@ export const replaceLambdaFunctions = async ({
 
         const updateFnCodeCmd = new UpdateFunctionCodeCommand({
             FunctionName: fn.name,
-            ZipFile: fs.readFileSync(import.meta.dirname + "/handler/handler.zip")
+            ZipFile: forwarderZip
         });
 
         await lambdaClient.send(updateFnCodeCmd);
@@ -126,8 +137,61 @@ export const replaceLambdaFunctions = async ({
         );
     });
 
-    return Promise.all(replacementsPromises).then(res => {
+    const lambdaReplacements = Promise.all(replacementsPromises).then(res => {
         logger.info("%s AWS Lambda function(s) replaced.", functionsList.meta.count);
         return res;
     });
+
+    // The API's HTTP routes reach a Lambda web function, whose code the loop above doesn't replace.
+    // Its requests are forwarded under the regular `graphql` Lambda's name, so that function must be
+    // one of the forwarded ones. A failure here is reported without ending the session.
+    const webFunctionReplacement = (async () => {
+        if (app.name !== "api") {
+            return;
+        }
+
+        try {
+            const apiStackOutput =
+                await dependencies.pulumiGetStackOutputService.execute<ApiStackOutput>(app);
+            const graphqlFunctionName = apiStackOutput?.graphqlLambdaName;
+            const isForwarded = functionNamesToUpdate.some(name => name === graphqlFunctionName);
+            const webFunctionName = apiStackOutput?.graphqlWebFunctionName;
+            const webEndpointName = apiStackOutput?.graphqlWebEndpointName;
+            const webCodeBucket = apiStackOutput?.graphqlWebCodeBucket;
+            if (!graphqlFunctionName || !isForwarded) {
+                return;
+            }
+            if (!webFunctionName || !webEndpointName || !webCodeBucket) {
+                return;
+            }
+
+            await replaceWebFunction({
+                app,
+                deploymentId,
+                iotEndpoint,
+                iotEndpointTopic,
+                sessionId,
+                graphqlFunctionName,
+                webFunction: {
+                    functionName: webFunctionName,
+                    endpointName: webEndpointName,
+                    codeBucket: webCodeBucket
+                },
+                stackResources: stackExport.deployment?.resources ?? [],
+                localExecutionHandshakeTimeout,
+                dependencies: {
+                    loggerService: logger,
+                    watchedLambdaFunctionsService
+                }
+            });
+        } catch (error) {
+            dependencies.uiService.error(
+                "Could not forward the Lambda web function locally: %s",
+                error.message
+            );
+        }
+    })();
+
+    const [res] = await Promise.all([lambdaReplacements, webFunctionReplacement]);
+    return res;
 };

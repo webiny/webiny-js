@@ -41,7 +41,8 @@
     "packages/**/planning/**/*",
     "packages/admin-ui/.storybook/**/*",
     "packages/admin-ui/storybook-static/**/*",
-    "packages/create-webiny-project/_templates/**/*"
+    "packages/create-webiny-project/_templates/**/*",
+    "packages/project-aws/src/features/Watch/forwarder/mqtt.cjs"
   ],
   "rules": {
     "webiny/no-inline-class-in-create-implementation": "error",

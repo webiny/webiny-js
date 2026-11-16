@@ -3,9 +3,14 @@ import { ApiAfterBuild, GetApp, UiService } from "@webiny/project/abstractions/i
 import { copyPgRuntimeModules } from "./copyPgRuntimeModules.js";
 
 /**
- * After `build api` with `<Infra.Postgres />`: put knex and pg into `graphql/build/node_modules`,
- * so the Lambda functions that run the bundle can load them. The api deploy uploads that folder
- * as it is.
+ * The api bundles that load knex and pg at runtime: `build` for the Lambda functions and `build-web`
+ * for the Lambda web function. `build-web` exists only when the web function is on.
+ */
+const BUILD_FOLDERS = ["build", "build-web"];
+
+/**
+ * After `build api` with `<Infra.Postgres />`: put knex and pg into each bundle's `node_modules`, so
+ * the functions that run it can load them. The api deploy uploads those folders as they are.
  */
 class CopyPgModulesAfterApiBuildImpl implements ApiAfterBuild.Interface {
     constructor(
@@ -15,21 +20,25 @@ class CopyPgModulesAfterApiBuildImpl implements ApiAfterBuild.Interface {
 
     async execute() {
         const graphqlFolder = this.getApp.execute("api").paths.workspaceFolder.join("graphql");
-        const buildDir = graphqlFolder.join("build").toString();
-        if (!fs.existsSync(buildDir)) {
-            return;
+
+        for (const buildFolder of BUILD_FOLDERS) {
+            const buildDir = graphqlFolder.join(buildFolder).toString();
+            if (!fs.existsSync(buildDir)) {
+                continue;
+            }
+
+            const { packages, files } = await copyPgRuntimeModules({
+                resolveFrom: graphqlFolder.toString(),
+                buildDir
+            });
+
+            this.ui.info(
+                "Copied knex and pg into the API's %s (%s package(s), %s file(s)).",
+                buildFolder,
+                packages.length,
+                files
+            );
         }
-
-        const { packages, files } = await copyPgRuntimeModules({
-            resolveFrom: graphqlFolder.toString(),
-            buildDir
-        });
-
-        this.ui.info(
-            "Copied knex and pg into the API build (%s package(s), %s file(s)).",
-            packages.length,
-            files
-        );
     }
 }
 
