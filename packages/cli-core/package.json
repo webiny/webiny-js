@@ -25,7 +25,7 @@
     "find-up": "^8.0.0",
     "get-yarn-workspaces": "1.0.2",
     "humanize-duration": "3.35.1",
-    "inquirer": "^14.2.5",
+    "inquirer": "^14.3.0",
     "load-json-file": "^7.0.1",
     "open": "^11.0.4",
     "ora": "10.0.0",
