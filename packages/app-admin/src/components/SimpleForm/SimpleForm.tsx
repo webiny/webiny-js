@@ -33,7 +33,7 @@ export const SimpleForm = ({ children, className, size, ...props }: SimpleFormPr
 const simpleFormHeaderVariants = cva("p-md pl-lg border-sm border-neutral-dimmed-darker", {
     variants: {
         rounded: {
-            true: "rounded-t-3xl"
+            true: "rounded-t-lg-plus"
         }
     },
     defaultVariants: {
@@ -88,7 +88,7 @@ export const SimpleFormFooter = ({ children, className }: SimpleFormFooterProps)
     return (
         <div
             className={cn(
-                "p-lg pt-none border-sm border-t-none border-neutral-dimmed-darker rounded-b-3xl",
+                "p-lg pt-none border-sm border-t-none border-neutral-dimmed-darker rounded-b-lg-plus",
                 "flex justify-end gap-sm",
                 className
             )}
