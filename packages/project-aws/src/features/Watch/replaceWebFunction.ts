@@ -9,9 +9,8 @@ import { PutObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import type { LoggerService } from "@webiny/project/abstractions/index.js";
 import { createWebForwarderZip } from "./forwarder/createForwarderZip.js";
-import type { PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
 import type { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
-import type { AppModel } from "@webiny/project/models/index.js";
+import type { IAppModel } from "@webiny/project/abstractions/models/index.js";
 
 /**
  * Marks the revisions this creates, so the next session can find and delete the old ones.
@@ -27,14 +26,8 @@ interface StackResource {
     outputs?: Record<string, any>;
 }
 
-interface ExpectedStackExport {
-    deployment?: {
-        resources?: StackResource[];
-    };
-}
-
 export interface IReplaceWebFunctionParams {
-    app: AppModel;
+    app: IAppModel;
     deploymentId: string | undefined;
     iotEndpoint: string;
     iotEndpointTopic: string;
@@ -51,10 +44,13 @@ export interface IReplaceWebFunctionParams {
         endpointName: string;
         codeBucket: string;
     };
+    /**
+     * The API stack's resources, from the stack export `replaceLambdaFunctions` already did.
+     */
+    stackResources: StackResource[];
     localExecutionHandshakeTimeout?: number;
     dependencies: {
         loggerService: LoggerService.Interface;
-        pulumiExportService: PulumiExportService.Interface;
         watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface;
     };
 }
@@ -66,18 +62,11 @@ export interface IReplaceWebFunctionParams {
  * replaces it and the endpoint goes back to the real API.
  */
 export async function replaceWebFunction(params: IReplaceWebFunctionParams): Promise<void> {
-    const {
-        loggerService: logger,
-        pulumiExportService,
-        watchedLambdaFunctionsService
-    } = params.dependencies;
-
-    const stackExport = await pulumiExportService.execute<ExpectedStackExport>(params.app);
-    const resources = stackExport?.deployment?.resources ?? [];
+    const { loggerService: logger, watchedLambdaFunctionsService } = params.dependencies;
 
     // The revision's URN is needed to mark it dirty, and only the stack export has it. The stack has
     // exactly one revision.
-    const revision = resources.find(resource => {
+    const revision = params.stackResources.find(resource => {
         return resource.type === "aws:lambdaweb/functionRevision:FunctionRevision";
     });
     if (!revision) {
