@@ -174,7 +174,7 @@ describe("handleShutdownSignals", () => {
         const { port } = server.address() as AddressInfo;
         handleShutdownSignals({
             server,
-            requestsDrained: () => inFlight.drained(),
+            requestsDrained: () => inFlight.drain(),
             shutdown: async () => {}
         });
 

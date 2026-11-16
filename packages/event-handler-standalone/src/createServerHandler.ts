@@ -68,7 +68,7 @@ export async function createServerHandler(
     if (onShutdown) {
         handleShutdownSignals({
             server,
-            requestsDrained: () => inFlight.drained(),
+            requestsDrained: () => inFlight.drain(),
             shutdown: async requestsDrained => {
                 const rootContainer = await app.getRootContainer();
                 await onShutdown(rootContainer, { requestsDrained });
