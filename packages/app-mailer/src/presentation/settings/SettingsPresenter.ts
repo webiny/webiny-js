@@ -121,6 +121,10 @@ class SettingsPresenterImpl implements ISettingsPresenter {
         runInAction(() => {
             this.loading = true;
             this.testMailResult = null;
+            // Filled in before the settings load, which fails while no settings are saved yet.
+            if (!this.testMailRecipient) {
+                this.testMailRecipient = this.identityContext.getIdentity().profile.email ?? "";
+            }
         });
 
         try {
@@ -136,9 +140,6 @@ class SettingsPresenterImpl implements ISettingsPresenter {
                     from: settings.from,
                     replyTo: settings.replyTo
                 });
-                if (!this.testMailRecipient) {
-                    this.testMailRecipient = this.identityContext.getIdentity().profile.email ?? "";
-                }
             });
         } finally {
             runInAction(() => {
