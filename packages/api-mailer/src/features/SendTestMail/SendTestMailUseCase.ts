@@ -1,11 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { SendTestMailUseCase } from "./abstractions.js";
-import { MailTransportResolver } from "~/domain/MailTransport/abstractions.js";
+import { DeliveringTransport } from "~/domain/MailTransport/abstractions.js";
 import { SendMailUseCase } from "~/features/SendMail/abstractions.js";
 import { TestMailNotAuthorized } from "~/domain/errors.js";
 import { TestMailNotConfigured } from "~/domain/errors.js";
-import { DUMMY_TRANSPORT_NAME } from "~/constants.js";
 import { MAILER_SETTINGS_PERMISSION } from "~/constants.js";
 
 const TEST_MAIL_TEXT = [
@@ -18,7 +17,7 @@ const TEST_MAIL_TEXT = [
 class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private transportResolver: MailTransportResolver.Interface,
+        private deliveringTransport: DeliveringTransport.Interface,
         private sendMailUseCase: SendMailUseCase.Interface
     ) {}
 
@@ -29,19 +28,18 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
         }
 
         /*
-         * The test goes out through whichever transport delivers this project's mail. When that
-         * is the dummy transport, it would report success without sending anything, so a test
-         * that passed would prove nothing.
+         * Through the dummy transport the test would report success without sending anything, so
+         * a test that passed would prove nothing.
          */
-        const resolved = await this.transportResolver.resolve();
-        if (!resolved || resolved.factory.name === DUMMY_TRANSPORT_NAME) {
+        const transport = await this.deliveringTransport.resolve();
+        if (!transport) {
             return Result.fail(new TestMailNotConfigured());
         }
 
         const result = await this.sendMailUseCase.execute({
             to: [input.to],
-            from: resolved.settings?.from || undefined,
-            replyTo: resolved.settings?.replyTo || undefined,
+            from: transport.from,
+            replyTo: transport.replyTo,
             subject: "Webiny test email",
             text: TEST_MAIL_TEXT
         });
@@ -56,5 +54,5 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
 
 export const SendTestMailUseCaseImplementation = SendTestMailUseCase.createImplementation({
     implementation: SendTestMailUseCaseImpl,
-    dependencies: [IdentityContext, MailTransportResolver, SendMailUseCase]
+    dependencies: [IdentityContext, DeliveringTransport, SendMailUseCase]
 });

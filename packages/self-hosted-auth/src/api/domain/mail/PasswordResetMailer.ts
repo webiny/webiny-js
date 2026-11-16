@@ -1,8 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { createFeature } from "@webiny/feature/api";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
-import { MailTransportResolver } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
-import { DUMMY_TRANSPORT_NAME } from "@webiny/api-mailer/constants.js";
+import { DeliveringTransport } from "@webiny/api-mailer/features/MailerService/index.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 
 export interface SendPasswordResetCodeParams {
@@ -38,44 +37,30 @@ export namespace PasswordResetMailer {
 class MailerServicePasswordResetMailer implements IPasswordResetMailer {
     constructor(
         private sendMailUseCase: SendMailUseCase.Interface,
-        private transportResolver: MailTransportResolver.Interface
+        private deliveringTransport: DeliveringTransport.Interface
     ) {}
 
     async isConfigured(): Promise<boolean> {
-        const transport = await this.resolveTransport();
+        const transport = await this.deliveringTransport.resolve();
 
         return transport !== null;
     }
 
     async send(params: SendPasswordResetCodeParams): Promise<boolean> {
-        const transport = await this.resolveTransport();
+        const transport = await this.deliveringTransport.resolve();
         if (!transport) {
             return false;
         }
 
         const result = await this.sendMailUseCase.execute({
             to: [params.email],
-            from: transport.settings?.from || undefined,
-            replyTo: transport.settings?.replyTo || undefined,
+            from: transport.from,
+            replyTo: transport.replyTo,
             subject: "Your password reset code",
             text: buildBody(params.code)
         });
 
         return result.isOk();
-    }
-
-    /**
-     * The transport the mailer would deliver through, or null when that is the dummy one. The dummy
-     * transport is always available and reports success without sending, so a reset sent through it
-     * would tell the user to check an inbox nothing arrives in.
-     */
-    private async resolveTransport(): Promise<MailTransportResolver.Resolved | null> {
-        const resolved = await this.transportResolver.resolve();
-        if (!resolved || resolved.factory.name === DUMMY_TRANSPORT_NAME) {
-            return null;
-        }
-
-        return resolved;
     }
 }
 
@@ -96,7 +81,7 @@ const buildBody = (code: string): string => {
 
 const mailerServicePasswordResetMailer = PasswordResetMailer.createImplementation({
     implementation: MailerServicePasswordResetMailer,
-    dependencies: [SendMailUseCase, MailTransportResolver]
+    dependencies: [SendMailUseCase, DeliveringTransport]
 });
 
 export const PasswordResetMailerFeature = createFeature({
