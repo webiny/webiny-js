@@ -52,10 +52,15 @@ export const SettingsView = observer(function SettingsView() {
                         </Alert>
                     ) : null}
                     <FormView name={"Mailer Settings"} form={vm.form} />
-                    <TestMailSection />
                 </SimpleFormContent>
                 <SimpleFormFooter>{saveButton}</SimpleFormFooter>
             </SimpleForm>
+            {/*
+             * Below the form rather than inside it: the section's note and result appear and
+             * disappear as the form turns dirty, which happens when a field loses focus. Above the
+             * Save button, that moved Save between mouse down and mouse up, and the click was lost.
+             */}
+            <TestMailSection />
         </CenteredView>
     );
 });
