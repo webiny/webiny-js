@@ -106,6 +106,21 @@ const addComponentToExtensions = (
 };
 
 /**
+ * The names an import's specifier list binds in the file: `Api` for `Api`, `WebinyApi` for
+ * `Api as WebinyApi`, `Foo` for `type Foo`.
+ */
+const getLocalNames = (specifierList: string): string[] => {
+    return specifierList
+        .split(",")
+        .map(specifier => specifier.trim().replace(/^type\s+/, ""))
+        .filter(Boolean)
+        .map(specifier => {
+            const parts = specifier.split(/\s+as\s+/);
+            return parts[parts.length - 1];
+        });
+};
+
+/**
  * Update the webiny.config.tsx file to add extension imports and component.
  */
 export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Promise<void> => {
@@ -119,25 +134,30 @@ export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Prom
     // Add imports at the top (after existing imports)
     if (webinyConfigTsx.imports && webinyConfigTsx.imports.length > 0) {
         for (const importStatement of webinyConfigTsx.imports) {
-            // Check if we need to add to an existing import from the same path.
+            // Every `import { ... }` from the same path. A config can import from one path on
+            // several lines, and a name on any of them is already imported.
+            const escapedPath = importStatement.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             const existingImportRegex = new RegExp(
-                `import\\s+{([^}]+)}\\s+from\\s+["']${importStatement.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'];?`,
-                "m"
+                `import\\s+{([^}]+)}\\s+from\\s+["']${escapedPath}["'];?`,
+                "gm"
             );
-            const existingImportMatch = content.match(existingImportRegex);
+            const existingImportMatches = Array.from(content.matchAll(existingImportRegex));
 
-            if (existingImportMatch) {
-                // Import from this path exists, check if specifier is already imported.
-                const existingSpecifiers = existingImportMatch[1].split(",").map(s => s.trim());
+            if (existingImportMatches.length > 0) {
+                const importedNames = existingImportMatches.flatMap(match => {
+                    return getLocalNames(match[1]);
+                });
 
-                if (!existingSpecifiers.includes(importStatement.specifier)) {
-                    // Append the new specifier to the existing import.
+                if (!importedNames.includes(importStatement.specifier)) {
+                    // Append the new specifier to the first import from this path.
+                    const [firstImport] = existingImportMatches;
+                    const existingSpecifiers = firstImport[1].split(",").map(s => s.trim());
                     const updatedSpecifiers = [
                         ...existingSpecifiers,
                         importStatement.specifier
                     ].join(", ");
                     const updatedImportLine = `import { ${updatedSpecifiers} } from "${importStatement.path}";`;
-                    content = content.replace(existingImportRegex, updatedImportLine);
+                    content = content.replace(firstImport[0], updatedImportLine);
                 }
             } else {
                 // No existing import from this path, add a new import line.
