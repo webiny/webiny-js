@@ -6,6 +6,7 @@ import {
 } from "@webiny/app/features/eventPublisher/index.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { WebsocketEvent } from "@webiny/app/features/websocketEvents/index.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/index.js";
 import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
 import { UsersRevision } from "~/features/adminUsers/users/userEvents/abstractions.js";
 
@@ -21,6 +22,7 @@ const setup = () => {
         get: () => undefined
     } as unknown as EnvConfig.Interface);
     EventPublisherFeature.register(container);
+    RecordChangesFeature.register(container);
     UserEventsFeature.register(container);
 
     const receive = (payload: { action: string; data: unknown }) =>
@@ -33,8 +35,14 @@ describe("user events", () => {
     it("marks the list changed when a user is created or deleted, and leaves the user alone", async () => {
         const { receive, revision } = setup();
 
-        await receive({ action: "adminUsers.user.created", data: { id: "user-1" } });
-        await receive({ action: "adminUsers.user.deleted", data: { id: "user-2" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "adminUsers.user", id: "user-1", change: "created" }
+        });
+        await receive({
+            action: "record.changed",
+            data: { type: "adminUsers.user", id: "user-2", change: "deleted" }
+        });
 
         expect(revision.list).toBe(2);
         expect(revision.user("user-1")).toBe(0);
@@ -44,7 +52,10 @@ describe("user events", () => {
     it("marks the list and that one user changed when a user is updated", async () => {
         const { receive, revision } = setup();
 
-        await receive({ action: "adminUsers.user.updated", data: { id: "user-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "adminUsers.user", id: "user-1", change: "updated" }
+        });
 
         expect(revision.list).toBe(1);
         expect(revision.user("user-1")).toBe(1);
@@ -54,7 +65,10 @@ describe("user events", () => {
     it("ignores messages that are not about admin users", async () => {
         const { receive, revision } = setup();
 
-        await receive({ action: "security.team.updated", data: { id: "team-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.team", id: "team-1", change: "updated" }
+        });
 
         expect(revision.list).toBe(0);
     });

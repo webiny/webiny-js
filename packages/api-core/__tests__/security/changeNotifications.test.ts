@@ -48,9 +48,21 @@ describe("team and role change notifications", () => {
         await securityTeam.delete({ id });
 
         expect(sent).toEqual([
-            { identityId: expect.any(String), action: "security.team.created", data: { id } },
-            { identityId: expect.any(String), action: "security.team.updated", data: { id } },
-            { identityId: expect.any(String), action: "security.team.deleted", data: { id } }
+            {
+                identityId: expect.any(String),
+                action: "record.changed",
+                data: { type: "security.team", id, change: "created" }
+            },
+            {
+                identityId: expect.any(String),
+                action: "record.changed",
+                data: { type: "security.team", id, change: "updated" }
+            },
+            {
+                identityId: expect.any(String),
+                action: "record.changed",
+                data: { type: "security.team", id, change: "deleted" }
+            }
         ]);
     });
 
@@ -62,9 +74,21 @@ describe("team and role change notifications", () => {
         await securityRole.delete({ id });
 
         expect(sent).toEqual([
-            { identityId: expect.any(String), action: "security.role.created", data: { id } },
-            { identityId: expect.any(String), action: "security.role.updated", data: { id } },
-            { identityId: expect.any(String), action: "security.role.deleted", data: { id } }
+            {
+                identityId: expect.any(String),
+                action: "record.changed",
+                data: { type: "security.role", id, change: "created" }
+            },
+            {
+                identityId: expect.any(String),
+                action: "record.changed",
+                data: { type: "security.role", id, change: "updated" }
+            },
+            {
+                identityId: expect.any(String),
+                action: "record.changed",
+                data: { type: "security.role", id, change: "deleted" }
+            }
         ]);
     });
 });

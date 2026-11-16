@@ -6,6 +6,7 @@ import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/index.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { WebsocketEvent } from "@webiny/app/features/websocketEvents/index.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/index.js";
 import { ListCache } from "~/features/listCache/index.js";
 import type { Role } from "~/features/accessManagement/types.js";
 import { GetRoleGateway } from "~/features/accessManagement/roles/getRole/abstractions.js";
@@ -37,6 +38,7 @@ const setup = (fromServer: Role) => {
         get: () => undefined
     } as unknown as EnvConfig.Interface);
     EventPublisherFeature.register(container);
+    RecordChangesFeature.register(container);
     container.registerInstance(RolesListCache, cache);
     container.registerInstance(GetRoleGateway, {
         execute: async (id: string) => {
@@ -58,7 +60,10 @@ describe("role events", () => {
     it("adds a role created on the server to the roles list", async () => {
         const { receive, fetched, cache } = setup(role());
 
-        await receive({ action: "security.role.created", data: { id: "role-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.role", id: "role-1", change: "created" }
+        });
 
         expect(fetched).toEqual(["role-1"]);
         expect(cache.getItems()).toEqual([role()]);
@@ -69,7 +74,10 @@ describe("role events", () => {
         const { receive, cache } = setup(fromServer);
         cache.addItems([role()]);
 
-        await receive({ action: "security.role.created", data: { id: "role-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.role", id: "role-1", change: "created" }
+        });
 
         expect(cache.getItems()).toEqual([fromServer]);
     });
@@ -79,7 +87,10 @@ describe("role events", () => {
         const { receive, fetched, cache } = setup(fromServer);
         cache.setItems([role(), role({ id: "role-2", name: "Reviewer" }), role({ id: "role-3" })]);
 
-        await receive({ action: "security.role.updated", data: { id: "role-2" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.role", id: "role-2", change: "updated" }
+        });
 
         expect(fetched).toEqual(["role-2"]);
         expect(cache.getItems().map(item => [item.id, item.name])).toEqual([
@@ -93,7 +104,10 @@ describe("role events", () => {
         const { receive, fetched, cache } = setup(role());
         cache.setItems([role(), role({ id: "role-2" })]);
 
-        await receive({ action: "security.role.deleted", data: { id: "role-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "security.role", id: "role-1", change: "deleted" }
+        });
 
         expect(fetched).toEqual([]);
         expect(cache.getItems().map(item => item.id)).toEqual(["role-2"]);
@@ -102,7 +116,10 @@ describe("role events", () => {
     it("ignores messages that are not about roles", async () => {
         const { receive, fetched, cache } = setup(role());
 
-        await receive({ action: "aco.folder.created", data: { id: "folder-1" } });
+        await receive({
+            action: "record.changed",
+            data: { type: "aco.folder", id: "folder-1", change: "created" }
+        });
 
         expect(fetched).toEqual([]);
         expect(cache.getItems()).toEqual([]);

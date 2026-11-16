@@ -5,7 +5,24 @@ import {
     type RegisterApiRequestStackConfig
 } from "@webiny/api-event-handler-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { WebsocketsConnectionAuthenticator } from "@webiny/api-websockets-standalone";
+
+/*
+ * An `AuthenticationError` refuses the handshake rather than failing it. That includes more than bad
+ * tokens: `AuthenticationError.from` wraps every error an authenticator throws, a failed key lookup
+ * as well, so the reason is logged here, where it would otherwise be lost.
+ */
+const refuseOnAuthenticationError = (logger: Logger.Interface) => {
+    return (error: unknown): null => {
+        if (!(error instanceof AuthenticationError)) {
+            throw error;
+        }
+        logger.warn({ code: error.code, error: error.message }, "[websockets] handshake refused");
+        return null;
+    };
+};
 
 /**
  * Builds the `authenticate` callback the server WebSocket upgrade acceptor uses to turn a
@@ -35,8 +52,11 @@ export function createWebsocketsAuthenticator(
         const child = rootContainer.createChildContainer();
         child.registerInstance(RequestContainer, child);
         await registerApiRequestStack(child, { extensions });
-        const identity = await child.resolve(AuthenticationContext).authenticate(token);
-        if (!identity?.id) {
+        const authentication = child.resolve(AuthenticationContext);
+        const refuse = refuseOnAuthenticationError(child.resolve(Logger));
+        const identity = await authentication.authenticate(token).catch(refuse);
+        // A token no authenticator recognises comes back as the anonymous identity, not as an error.
+        if (!identity || identity.isAnonymous()) {
             return null;
         }
         return {

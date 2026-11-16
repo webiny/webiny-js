@@ -5,11 +5,7 @@ import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/index.js";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
-import {
-    FOLDER_CREATED_WEBSOCKET_ACTION,
-    FOLDER_DELETED_WEBSOCKET_ACTION,
-    FOLDER_UPDATED_WEBSOCKET_ACTION
-} from "~/features/folder/NotifyFolderChange/index.js";
+import { RECORD_CHANGED_WEBSOCKET_ACTION } from "@webiny/api-core/features/websockets/index.js";
 import { CREATE_FLP_TASK_ID, UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 
 const type = "type";
@@ -77,8 +73,8 @@ describe("FLP tasks tell the admin when they finish", () => {
         expect(websocketMessages).toEqual([
             {
                 identityId: "creator",
-                action: FOLDER_CREATED_WEBSOCKET_ACTION,
-                data: { id: folder.id }
+                action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                data: { type: "aco.folder", id: folder.id, change: "created" }
             }
         ]);
     });
@@ -119,8 +115,8 @@ describe("FLP tasks tell the admin when they finish", () => {
         expect(websocketMessages).toEqual([
             {
                 identityId: "changer",
-                action: FOLDER_UPDATED_WEBSOCKET_ACTION,
-                data: { id: a.id }
+                action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                data: { type: "aco.folder", id: a.id, change: "updated" }
             }
         ]);
     });
@@ -165,8 +161,8 @@ describe("Deleting a folder tells the admin", () => {
         expect(deleted.isOk()).toBe(true);
         expect(websocketMessages).toEqual([
             expect.objectContaining({
-                action: FOLDER_DELETED_WEBSOCKET_ACTION,
-                data: { id: folder.id }
+                action: RECORD_CHANGED_WEBSOCKET_ACTION,
+                data: { type: "aco.folder", id: folder.id, change: "deleted" }
             })
         ]);
     });
