@@ -1,12 +1,12 @@
-import { compareStructural, computed, makeAutoObservable, reaction } from "mobx";
+import { computed, makeAutoObservable, reaction } from "mobx";
 import type { IReactionDisposer } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { sortFolders } from "@webiny/app-aco";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
-import { AssistantPageContext } from "@webiny/app-admin/features/assistantPageContext/abstractions.js";
 import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
+import { describeFoldersForAssistant } from "@webiny/app-aco/presentation/folderTree/describeFoldersForAssistant.js";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import type { CmsContentEntry } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
@@ -32,17 +32,9 @@ export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 export const UNPUBLISH_ENTRY_DIALOG = "unpublish-entry";
 export const DUPLICATE_ENTRY_DIALOG = "duplicate-entry";
 
-/** Enough to resolve a folder named in a question; a folder with more children is rarely on screen whole. */
-const MAX_ASSISTANT_FOLDERS = 30;
-
-/** Keeps 30 folders well under the server's 4000-character limit, which drops all the details when hit. */
-const MAX_ASSISTANT_FOLDER_TITLE = 60;
-
 class ContentEntriesPresenterImpl implements Abstraction.Interface {
     private selectedEntryId: string | null = null;
     private disposeReaction: IReactionDisposer | null = null;
-    private disposeAssistantReaction: IReactionDisposer | null = null;
-    private assistantContextOwner: AssistantPageContext.Owner | null = null;
 
     constructor(
         private listPresenter: ListPresenter.Interface<CmsContentEntry>,
@@ -58,8 +50,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
         private cacheProvider: ContentEntriesCacheProvider.Interface,
         private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface,
-        private foldersContext: FoldersContext.Interface,
-        private assistantPageContext: AssistantPageContext.Interface
+        private foldersContext: FoldersContext.Interface
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
@@ -76,9 +67,6 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             | "cacheProvider"
             | "getDescendantFoldersUseCase"
             | "foldersContext"
-            | "assistantPageContext"
-            | "disposeAssistantReaction"
-            | "assistantContextOwner"
         >(this, {
             disposeReaction: false,
             confirmation: false,
@@ -93,9 +81,6 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             cacheProvider: false,
             getDescendantFoldersUseCase: false,
             foldersContext: false,
-            assistantPageContext: false,
-            disposeAssistantReaction: false,
-            assistantContextOwner: false,
             vm: computed
         });
     }
@@ -141,7 +126,14 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             initialFilters: { folderId: initialFolderId },
             initialSearch: config.initialSearch,
             limit: 50,
-            itemLabel: { singular: "entry", plural: "entries" }
+            itemLabel: { singular: "entry", plural: "entries" },
+            assistant: {
+                view: () => `Entries of the "${this.model.name}" content model in Headless CMS`,
+                rowTitle: entry => entry.meta.title,
+                // The list's rows are revisions ("abc#0002"); the entry tools take the entry's own id.
+                rowId: entry => entry.entryId,
+                details: () => this.describeForAssistant()
+            }
         });
 
         if (initialFolderId !== "root") {
@@ -155,65 +147,35 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
                 this.listPresenter.actions.filter.set("folderId", effectiveFolderId);
             }
         );
-
-        this.disposeAssistantReaction = reaction(
-            () => this.describeForAssistant(),
-            context => this.setAssistantContext(context),
-            { fireImmediately: true, equals: compareStructural }
-        );
     }
 
     /**
-     * What the assistant gets told about this view: the model, the open folder, the folders shown
-     * and the open entry, so "list the entries" or "the Archive folder" need no lookup. Keys are
-     * named after the tool arguments they feed: `modelId`, and `folderType` for `listFolders`'
-     * `type`. Ids and titles only; entry contents never leave the view this way.
+     * What only this view knows: the model, the folders and the open entry, so "list the entries"
+     * or "the Archive folder" need no lookup. `modelId` is named after the CMS tools' argument.
      */
-    private describeForAssistant(): AssistantPageContext.Data {
+    private describeForAssistant(): Record<string, unknown> {
         const { model, childFolders, selectedEntryId } = this.vm;
         const { currentFolderId, currentFolderTitle } = this.foldersPresenter.vm;
-
-        const visibleFolders = childFolders.slice(0, MAX_ASSISTANT_FOLDERS).map(folder => ({
-            id: folder.id,
-            title: folder.title.slice(0, MAX_ASSISTANT_FOLDER_TITLE)
-        }));
-
-        const currentFolder = currentFolderId
-            ? { id: currentFolderId, title: currentFolderTitle }
-            : null;
 
         const details: Record<string, unknown> = {
             modelId: model.modelId,
             modelName: model.name,
-            folderType: this.foldersContext.type,
-            currentFolder,
-            visibleFolders
+            ...describeFoldersForAssistant({
+                type: this.foldersContext.type,
+                currentFolderId,
+                currentFolderTitle,
+                childFolders
+            })
         };
 
         if (selectedEntryId === "new") {
             details["editing"] = "a new entry, not saved yet";
         } else if (selectedEntryId) {
-            // The list opens a revision ("abc#0002"); the entry tools take the entry's own id.
             const { id: entryId } = parseIdentifier(selectedEntryId);
             details["openEntryId"] = entryId;
         }
 
-        return {
-            view: `Entries of the "${model.name}" content model in Headless CMS`,
-            details
-        };
-    }
-
-    private setAssistantContext(context: AssistantPageContext.Data): void {
-        this.clearAssistantContext();
-        this.assistantContextOwner = this.assistantPageContext.set(context);
-    }
-
-    private clearAssistantContext(): void {
-        if (this.assistantContextOwner) {
-            this.assistantPageContext.clear(this.assistantContextOwner);
-            this.assistantContextOwner = null;
-        }
+        return details;
     }
 
     get list(): ListPresenter.Interface<CmsContentEntry> {
@@ -308,11 +270,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             this.disposeReaction();
             this.disposeReaction = null;
         }
-        if (this.disposeAssistantReaction) {
-            this.disposeAssistantReaction();
-            this.disposeAssistantReaction = null;
-        }
-        this.clearAssistantContext();
+        this.listPresenter.dispose();
     }
 }
 
@@ -332,7 +290,6 @@ export const ContentEntriesPresenter = Abstraction.createImplementation({
         UpdateRevisionDescriptionUseCase,
         ContentEntriesCacheProvider,
         GetDescendantFoldersUseCase,
-        FoldersContext,
-        AssistantPageContext
+        FoldersContext
     ]
 });

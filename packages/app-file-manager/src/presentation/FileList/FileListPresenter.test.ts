@@ -80,7 +80,8 @@ function createMockListPresenter(): ListPresenter.Interface<FmFile> {
             loadMore: vi.fn().mockResolvedValue(undefined),
             refresh: vi.fn().mockResolvedValue(undefined)
         },
-        init: vi.fn()
+        init: vi.fn(),
+        dispose: vi.fn()
     };
 }
 

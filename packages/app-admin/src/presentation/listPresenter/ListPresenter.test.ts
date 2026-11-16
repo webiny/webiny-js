@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Container } from "@webiny/di";
 import { ListPresenterFeature } from "./feature.js";
+import { AssistantPageContext } from "~/features/assistantPageContext/AssistantPageContext.js";
+import { AssistantPageContext as PageContextAbstraction } from "~/features/assistantPageContext/abstractions.js";
 import {
     ListPresenter as Abstraction,
     type IDataSource,
@@ -1009,6 +1011,85 @@ describe("ListPresenter", () => {
             });
 
             expect(presenter.vm.appliedQuery?.search).toBeUndefined();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Assistant page context
+    // -----------------------------------------------------------------------
+
+    describe("assistant page context", () => {
+        const setup = async (rows: TestRow[]) => {
+            const container = new Container();
+            container.register(AssistantPageContext).inSingletonScope();
+            ListPresenterFeature.register(container);
+            const presenter: IListPresenter<TestRow> = container.resolve(Abstraction);
+            const pageContext = container.resolve(PageContextAbstraction);
+
+            presenter.init({
+                dataSource: createMockDataSource(rows, {
+                    cursor: null,
+                    hasMoreItems: true,
+                    totalCount: 120
+                }),
+                itemLabel: { singular: "file", plural: "files" },
+                assistant: {
+                    view: () => "Files in File Manager",
+                    rowTitle: row => row.name,
+                    details: () => ({ folderType: "FmFile" })
+                }
+            });
+            await vi.waitFor(() => {
+                expect(presenter.vm.pagination.loading).toBe(false);
+            });
+
+            return { presenter, pageContext };
+        };
+
+        it("describes the rows on screen, the total and the view's own details", async () => {
+            const { pageContext } = await setup(createRows(2));
+
+            expect(pageContext.get()).toEqual({
+                view: "Files in File Manager",
+                details: {
+                    items: "files",
+                    totalCount: 120,
+                    visibleRows: [
+                        { id: "file-0", title: "File 0" },
+                        { id: "file-1", title: "File 1" }
+                    ],
+                    folderType: "FmFile"
+                }
+            });
+        });
+
+        it("follows the selection and caps the rows it sends", async () => {
+            const { presenter, pageContext } = await setup(createRows(40));
+
+            presenter.actions.selection.toggle("file-3");
+
+            const details = pageContext.get()?.details;
+            expect(details?.["visibleRows"]).toHaveLength(30);
+            expect(details?.["selectedRows"]).toEqual(["file-3"]);
+        });
+
+        it("stops describing the list on dispose", async () => {
+            const { presenter, pageContext } = await setup(createRows(1));
+
+            presenter.dispose();
+
+            expect(pageContext.get()).toBeNull();
+        });
+
+        it("describes nothing without the assistant option", async () => {
+            const container = new Container();
+            container.register(AssistantPageContext).inSingletonScope();
+            ListPresenterFeature.register(container);
+            const presenter: IListPresenter<TestRow> = container.resolve(Abstraction);
+
+            presenter.init({ dataSource: createMockDataSource(createRows(1)) });
+
+            expect(container.resolve(PageContextAbstraction).get()).toBeNull();
         });
     });
 });

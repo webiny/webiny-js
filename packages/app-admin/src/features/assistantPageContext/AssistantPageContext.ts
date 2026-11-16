@@ -19,6 +19,13 @@ class AssistantPageContextImpl implements Abstraction.Interface {
         return owner;
     }
 
+    update(owner: Abstraction.Owner, context: Abstraction.Data): void {
+        const entry = this.entries.find(entry => entry.owner === owner);
+        if (entry) {
+            entry.context = context;
+        }
+    }
+
     clear(owner: Abstraction.Owner): void {
         this.entries = this.entries.filter(entry => entry.owner !== owner);
     }

@@ -5,6 +5,9 @@ import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/ListPresenter.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
+import { AssistantPageContext } from "@webiny/app-admin/features/assistantPageContext/abstractions.js";
+import { AssistantPageContext as AssistantPageContextImpl } from "@webiny/app-admin/features/assistantPageContext/AssistantPageContext.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import { Page } from "~/domain/Page/Page.js";
 import { pageRevisionsCacheFactory } from "~/domain/PageRevision/index.js";
@@ -137,6 +140,7 @@ function range(from: number, to: number): string[] {
 
 describe("PageListPresenter", () => {
     let presenter: Abstraction.Interface;
+    let pageContext: AssistantPageContext.Interface;
     let cache: ListCache<Page>;
 
     /**
@@ -184,6 +188,8 @@ describe("PageListPresenter", () => {
         container.registerInstance(FolderTreePresenter, createFolderTreePresenter());
         container.registerInstance(Confirmation, { confirm: vi.fn() } as Confirmation.Interface);
         container.registerInstance(GetDescendantFoldersUseCase, { execute: () => [] });
+        container.registerInstance(FoldersContext, { type: "WbPage" });
+        container.register(AssistantPageContextImpl).inSingletonScope();
         container.registerInstance(DeletePageUseCase, noopUseCase as any);
         container.registerInstance(FullPageCache, new ListCache<Page>("id"));
         container.registerInstance(PageRevisionsCache, pageRevisionsCacheFactory.getCache());
@@ -197,6 +203,30 @@ describe("PageListPresenter", () => {
         container.register(PageListPresenter);
 
         presenter = container.resolve(Abstraction);
+        pageContext = container.resolve(AssistantPageContext);
+    });
+
+    describe("assistant page context", () => {
+        it("tells the assistant the pages and folders on screen, until disposed", async () => {
+            await initAndWait();
+
+            const context = pageContext.get();
+            expect(context?.view).toBe("Pages in Website Builder");
+            expect(context?.details).toMatchObject({
+                items: "pages",
+                totalCount: TOTAL_PAGES,
+                folderType: "WbPage",
+                currentFolder: null,
+                visibleFolders: []
+            });
+            expect((context?.details["visibleRows"] as unknown[])[0]).toEqual({
+                id: "page-299#0001",
+                title: "Page 299"
+            });
+
+            presenter.dispose();
+            expect(pageContext.get()).toBeNull();
+        });
     });
 
     describe("pagination", () => {

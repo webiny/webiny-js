@@ -45,4 +45,18 @@ describe("AssistantPageContext", () => {
 
         expect(pageContext.get()).toEqual(products);
     });
+
+    // A list re-describes itself on every change; that must not lift it over a drawer set after it.
+    it("updates a context in place, under one set after it", () => {
+        const pageContext = setup();
+
+        const page = pageContext.set(products);
+        pageContext.set(articles);
+        pageContext.update(page, {
+            ...products,
+            details: { modelId: "product", folder: "Archive" }
+        });
+
+        expect(pageContext.get()).toEqual(articles);
+    });
 });

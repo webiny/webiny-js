@@ -273,6 +273,9 @@ describe("ContentEntriesPresenter", () => {
             expect(current()).toEqual({
                 view: 'Entries of the "Test Model" content model in Headless CMS',
                 details: {
+                    items: "entries",
+                    totalCount: 0,
+                    visibleRows: [],
                     modelId: "testModel",
                     modelName: "Test Model",
                     folderType: "cms:testModel",
@@ -292,6 +295,16 @@ describe("ContentEntriesPresenter", () => {
                 currentFolder: { id: "folder-1", title: "Home" },
                 openEntryId: "entry-1"
             });
+        });
+
+        it("stays under a context set over it while the list changes", async () => {
+            await initPresenter(t, { data: [] });
+            const drawer = { view: "Entry revisions", details: {} };
+            t.container.resolve(AssistantPageContext).set(drawer);
+
+            t.foldersPresenter.selectFolder("folder-1");
+
+            expect(current()).toEqual(drawer);
         });
 
         it("takes its context back on dispose, leaving one set before it", async () => {

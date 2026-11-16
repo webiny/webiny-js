@@ -18,6 +18,8 @@ export type AssistantPageContextOwner = symbol;
 export interface IAssistantPageContext {
     /** Put a context in front of any earlier one. Returns the owner to pass to `clear`. */
     set(context: AssistantPageContextData): AssistantPageContextOwner;
+    /** Replace what this owner set without moving it, so a context set over it stays on top. */
+    update(owner: AssistantPageContextOwner, context: AssistantPageContextData): void;
     /** Remove the context this owner set. The one before it, if any, is current again. */
     clear(owner: AssistantPageContextOwner): void;
     /** The newest context still set. */

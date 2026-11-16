@@ -38,7 +38,7 @@ describe("parseChatBody page context", () => {
     it("keeps the view but drops details too big to be ids and titles", () => {
         const params = parseChatBody({
             prompt: "list the entries",
-            pageContext: { view, details: { body: "x".repeat(5000) } }
+            pageContext: { view, details: { body: "x".repeat(9000) } }
         });
 
         expect(params?.pageContext).toEqual({ view, details: {} });

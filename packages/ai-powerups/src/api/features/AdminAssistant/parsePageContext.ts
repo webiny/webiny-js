@@ -2,8 +2,11 @@ import type { AdminAssistantPageContext } from "./abstractions.js";
 
 const MAX_VIEW_LENGTH = 200;
 
-/** Ids and titles fit easily; anything bigger is a view sending record contents, which it should not. */
-const MAX_DETAILS_LENGTH = 4000;
+/**
+ * A list sends at most 30 rows and 30 folders, ids and titles cut to 60 characters, about 7000
+ * characters in all. Anything bigger is a view sending record contents, which it should not.
+ */
+const MAX_DETAILS_LENGTH = 8000;
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === "object" && value !== null && !Array.isArray(value);
