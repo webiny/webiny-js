@@ -1,4 +1,6 @@
 import fs from "fs";
+import { Project as TsMorphProject } from "ts-morph";
+import { ensureNamedImport } from "~/utils/ensureNamedImport.js";
 import { ExtensionWebinyConfigTsx } from "./types.js";
 
 interface UpdateWebinyConfigParams {
@@ -106,21 +108,6 @@ const addComponentToExtensions = (
 };
 
 /**
- * The names an import's specifier list binds in the file: `Api` for `Api`, `WebinyApi` for
- * `Api as WebinyApi`, `Foo` for `type Foo`.
- */
-const getLocalNames = (specifierList: string): string[] => {
-    return specifierList
-        .split(",")
-        .map(specifier => specifier.trim().replace(/^type\s+/, ""))
-        .filter(Boolean)
-        .map(specifier => {
-            const parts = specifier.split(/\s+as\s+/);
-            return parts[parts.length - 1];
-        });
-};
-
-/**
  * Update the webiny.config.tsx file to add extension imports and component.
  */
 export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Promise<void> => {
@@ -131,57 +118,17 @@ export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Prom
     // Read the current webiny.config.tsx
     let content = fs.readFileSync(webinyConfigPath, "utf-8");
 
-    // Add imports at the top (after existing imports)
+    // Add imports. Parsed rather than matched with a pattern, so every existing import from a
+    // path is seen, whatever its shape.
     if (webinyConfigTsx.imports && webinyConfigTsx.imports.length > 0) {
+        const tsMorphProject = new TsMorphProject({ useInMemoryFileSystem: true });
+        const sourceFile = tsMorphProject.createSourceFile(webinyConfigPath, content);
+
         for (const importStatement of webinyConfigTsx.imports) {
-            // Every `import { ... }` from the same path. A config can import from one path on
-            // several lines, and a name on any of them is already imported.
-            const escapedPath = importStatement.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            const existingImportRegex = new RegExp(
-                `import\\s+{([^}]+)}\\s+from\\s+["']${escapedPath}["'];?`,
-                "gm"
-            );
-            const existingImportMatches = Array.from(content.matchAll(existingImportRegex));
-
-            if (existingImportMatches.length > 0) {
-                const importedNames = existingImportMatches.flatMap(match => {
-                    return getLocalNames(match[1]);
-                });
-
-                if (!importedNames.includes(importStatement.specifier)) {
-                    // Append the new specifier to the first import from this path.
-                    const [firstImport] = existingImportMatches;
-                    const existingSpecifiers = firstImport[1].split(",").map(s => s.trim());
-                    const updatedSpecifiers = [
-                        ...existingSpecifiers,
-                        importStatement.specifier
-                    ].join(", ");
-                    const updatedImportLine = `import { ${updatedSpecifiers} } from "${importStatement.path}";`;
-                    content = content.replace(firstImport[0], updatedImportLine);
-                }
-            } else {
-                // No existing import from this path, add a new import line.
-                const importLine = `import { ${importStatement.specifier} } from "${importStatement.path}";`;
-
-                // Find the position after the last import or at the beginning.
-                const importRegex = /^import\s+.*?from\s+["'].*?["'];?\s*$/gm;
-                const matches = Array.from(content.matchAll(importRegex));
-
-                if (matches.length > 0) {
-                    // Add after the last import.
-                    const lastImport = matches[matches.length - 1];
-                    const lastImportEnd = lastImport.index! + lastImport[0].length;
-                    content =
-                        content.slice(0, lastImportEnd) +
-                        "\n" +
-                        importLine +
-                        content.slice(lastImportEnd);
-                } else {
-                    // No imports found, add at the beginning.
-                    content = importLine + "\n\n" + content;
-                }
-            }
+            ensureNamedImport(sourceFile, importStatement.specifier, importStatement.path);
         }
+
+        content = sourceFile.getFullText();
     }
 
     // Add component to the Extensions function.
