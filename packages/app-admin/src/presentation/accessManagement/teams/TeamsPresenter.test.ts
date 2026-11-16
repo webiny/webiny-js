@@ -3,6 +3,7 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { vi } from "vitest";
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "~/features/listCache/index.js";
 import { ListPresenter } from "~/presentation/listPresenter/ListPresenter.js";
@@ -25,6 +26,7 @@ const TEAMS = [{ id: "team-1", name: "Content", slug: "content", roles: [] }] as
 describe("TeamsPresenter", () => {
     let presenter: Abstraction.Interface;
     let pageContext: AssistantPageContext.Interface;
+    let getTeam: Mock;
 
     beforeEach(() => {
         const container = new Container();
@@ -37,8 +39,9 @@ describe("TeamsPresenter", () => {
                 return { data: TEAMS };
             })
         } as unknown as ListTeamsUseCase.Interface);
+        getTeam = vi.fn(async () => TEAMS[0]);
         container.registerInstance(GetTeamUseCase, {
-            execute: vi.fn(async () => TEAMS[0])
+            execute: getTeam
         } as unknown as GetTeamUseCase.Interface);
         container.registerInstance(FormModelFactory, {
             create: () => ({ vm: {}, setData: vi.fn() })
@@ -78,5 +81,25 @@ describe("TeamsPresenter", () => {
         expect(presenter.vm.selectedTeam).toBeNull();
         expect(presenter.vm.showForm).toBe(false);
         expect(pageContext.get()).toBeNull();
+    });
+
+    it("drops a team lookup that finishes after the page was left", async () => {
+        let resolve: (team: Team) => void = () => {};
+        getTeam.mockImplementationOnce(
+            () =>
+                new Promise<Team>(done => {
+                    resolve = done;
+                })
+        );
+
+        presenter.init();
+        const select = presenter.selectTeam("team-1");
+        presenter.dispose();
+        resolve(TEAMS[0]);
+        await select;
+
+        expect(presenter.vm.selectedTeam).toBeNull();
+        expect(presenter.vm.showForm).toBe(false);
+        expect(presenter.vm.loading).toBe(false);
     });
 });

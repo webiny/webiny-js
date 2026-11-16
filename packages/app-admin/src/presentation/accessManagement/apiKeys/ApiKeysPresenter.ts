@@ -22,6 +22,8 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
     private _saving = false;
     private _showForm = false;
     private _form: IFormModel;
+    /** Bumped by every select, createNew and deselect, so a lookup that resolves after any of them stops there. */
+    private _selectRun = 0;
 
     constructor(
         private _listPresenter: ListPresenter.Interface<ApiKey>,
@@ -45,6 +47,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
             | "deleteApiKeyUseCase"
             | "cache"
             | "stringFormatter"
+            | "_selectRun"
         >(this, {
             formModelFactory: false,
             listApiKeysUseCase: false,
@@ -54,6 +57,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
             deleteApiKeyUseCase: false,
             cache: false,
             stringFormatter: false,
+            _selectRun: false,
             vm: computed
         });
     }
@@ -105,6 +109,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
     }
 
     async selectApiKey(id: string): Promise<void> {
+        const run = ++this._selectRun;
         runInAction(() => {
             this._loading = true;
             this._showForm = true;
@@ -112,6 +117,9 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
 
         try {
             const apiKey = await this.getApiKeyUseCase.execute(id);
+            if (run !== this._selectRun) {
+                return;
+            }
             runInAction(() => {
                 this._selectedApiKey = apiKey;
                 this._form = this.buildForm(false, apiKey.id);
@@ -124,19 +132,25 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                 });
             });
         } finally {
-            runInAction(() => {
-                this._loading = false;
-            });
+            if (run === this._selectRun) {
+                runInAction(() => {
+                    this._loading = false;
+                });
+            }
         }
     }
 
     createNew(): void {
+        this._selectRun++;
+        this._loading = false;
         this._selectedApiKey = null;
         this._form = this.buildForm(true, "new");
         this._showForm = true;
     }
 
     deselect(): void {
+        this._selectRun++;
+        this._loading = false;
         this._selectedApiKey = null;
         this._showForm = false;
     }

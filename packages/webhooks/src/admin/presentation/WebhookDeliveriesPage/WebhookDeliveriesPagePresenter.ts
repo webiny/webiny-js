@@ -81,6 +81,11 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
             return;
         }
         this.applyFilterOptions(options);
+        if ("error" in options) {
+            // The page shows the error in place of the list, so there is no list to describe.
+            this.listPresenter.dispose();
+            return;
+        }
 
         const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase);
         this.listPresenter.init({

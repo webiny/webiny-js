@@ -92,6 +92,15 @@ describe("WebhookDeliveriesPagePresenter", () => {
         expect(pageContext.get()).toBeNull();
     });
 
+    it("tells the assistant nothing while the page shows a load error", async () => {
+        listWebhooks.mockRejectedValueOnce(new Error("Network down"));
+
+        await presenter.init("webhook-1");
+
+        expect(presenter.vm.error).toBe("Network down");
+        expect(pageContext.get()).toBeNull();
+    });
+
     it("keeps the newer load's result when an older one fails after it", async () => {
         let failFirst: () => void = () => {};
         listWebhooks.mockImplementationOnce(

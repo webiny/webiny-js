@@ -3,6 +3,7 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { vi } from "vitest";
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "~/features/listCache/index.js";
 import { ListPresenter } from "~/presentation/listPresenter/ListPresenter.js";
@@ -28,6 +29,19 @@ const ROLES = [role("role-1", "Editors"), role("role-2", "Reviewers")];
 describe("RolesPresenter", () => {
     let presenter: Abstraction.Interface;
     let pageContext: AssistantPageContext.Interface;
+    let getRole: Mock;
+
+    /** Makes the next role lookup wait until the test resolves it. */
+    const deferRole = () => {
+        let resolve: (role: Role) => void = () => {};
+        getRole.mockImplementationOnce(
+            () =>
+                new Promise<Role>(done => {
+                    resolve = done;
+                })
+        );
+        return { resolve: (role: Role) => resolve(role) };
+    };
 
     beforeEach(() => {
         const container = new Container();
@@ -40,8 +54,9 @@ describe("RolesPresenter", () => {
                 return { data: ROLES };
             })
         } as unknown as ListRolesUseCase.Interface);
+        getRole = vi.fn(async (id: string) => ROLES.find(r => r.id === id)!);
         container.registerInstance(GetRoleUseCase, {
-            execute: vi.fn(async (id: string) => ROLES.find(r => r.id === id)!)
+            execute: getRole
         } as unknown as GetRoleUseCase.Interface);
         container.registerInstance(FormModelFactory, {
             create: () => ({ vm: {}, setData: vi.fn() })
@@ -79,5 +94,35 @@ describe("RolesPresenter", () => {
 
         presenter.dispose();
         expect(pageContext.get()).toBeNull();
+    });
+
+    it("drops a role lookup that finishes after the page was left", async () => {
+        const lookup = deferRole();
+
+        presenter.init();
+        const select = presenter.selectRole("role-1");
+        presenter.dispose();
+        lookup.resolve(ROLES[0]);
+        await select;
+
+        expect(presenter.vm.selectedRole).toBeNull();
+        expect(presenter.vm.showForm).toBe(false);
+        expect(presenter.vm.loading).toBe(false);
+    });
+
+    it("keeps the role opened last when an earlier lookup finishes after it", async () => {
+        const first = deferRole();
+        const second = deferRole();
+
+        presenter.init();
+        const selectFirst = presenter.selectRole("role-1");
+        const selectSecond = presenter.selectRole("role-2");
+        second.resolve(ROLES[1]);
+        await selectSecond;
+        first.resolve(ROLES[0]);
+        await selectFirst;
+
+        expect(presenter.vm.selectedRole?.id).toBe("role-2");
+        expect(presenter.vm.loading).toBe(false);
     });
 });
