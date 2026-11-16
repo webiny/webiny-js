@@ -15,6 +15,7 @@ import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions
 import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";
 
 export { AwsTags };
 export { Vpc };
@@ -44,6 +45,7 @@ export const definitions = [
     ApiStackOutputValue.def,
     CoreStackOutputValue.def,
     ApiMaxBundleSize.def,
+    ApiWebFunction.def,
     Encryption.def,
     Hashing.def
 ];
