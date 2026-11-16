@@ -1,4 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
+import { beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "~/features/listCache/index.js";
 import { ListPresenter } from "~/presentation/listPresenter/ListPresenter.js";
@@ -7,10 +11,8 @@ import { AssistantPageContext as AssistantPageContextImpl } from "~/features/ass
 import { FormModelFactory } from "~/features/formModel/abstractions.js";
 import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import type { Role } from "~/features/accessManagement/types.js";
-import {
-    ListRolesUseCase,
-    RolesListCache
-} from "~/features/accessManagement/roles/listRoles/abstractions.js";
+import { ListRolesUseCase } from "~/features/accessManagement/roles/listRoles/abstractions.js";
+import { RolesListCache } from "~/features/accessManagement/roles/listRoles/abstractions.js";
 import { GetRoleUseCase } from "~/features/accessManagement/roles/getRole/abstractions.js";
 import { CreateRoleUseCase } from "~/features/accessManagement/roles/createRole/abstractions.js";
 import { UpdateRoleUseCase } from "~/features/accessManagement/roles/updateRole/abstractions.js";

@@ -89,6 +89,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
     }
 
     dispose(): void {
+        this.deselect();
         this._listPresenter.dispose();
     }
 

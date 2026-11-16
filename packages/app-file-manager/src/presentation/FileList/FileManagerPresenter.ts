@@ -268,11 +268,12 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     /** The folders, and the file whose details are open. */
     private describeForAssistant(): Record<string, unknown> {
         const { currentFolderId, currentFolderTitle } = this.folderTreePresenter.vm;
+        const childFolders = this.getSortedChildFolders();
         const details = describeFoldersForAssistant({
             type: this.foldersContext.type,
             currentFolderId,
             currentFolderTitle,
-            childFolders: this.getSortedChildFolders()
+            childFolders
         });
 
         const openFile = this._fileDetails?.vm.file;

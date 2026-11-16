@@ -99,6 +99,7 @@ class RolesPresenterImpl implements IRolesPresenter {
     }
 
     dispose(): void {
+        this.deselect();
         this._listPresenter.dispose();
     }
 

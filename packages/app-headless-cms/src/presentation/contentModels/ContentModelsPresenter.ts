@@ -7,7 +7,8 @@ import { CancelDeleteModelUseCase } from "~/features/model/cancelDeleteModel/abs
 import { ExportModelsUseCase } from "~/features/model/exportModels/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";
 import { ContentModelsPresenter as Abstraction } from "./abstractions.js";
-import { ContentModelsDataSource, isListedModel } from "./ContentModelsDataSource.js";
+import { ContentModelsDataSource } from "./ContentModelsDataSource.js";
+import { isListedModel } from "./isListedModel.js";
 
 class ContentModelsPresenterImpl implements Abstraction.Interface {
     private loading = true;

@@ -99,6 +99,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
     }
 
     dispose(): void {
+        this.deselect();
         this._listPresenter.dispose();
     }
 
@@ -153,6 +154,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
     deselect(): void {
         this._selectedTeam = null;
         this._showForm = false;
+        this._isNew = false;
     }
 
     async save(): Promise<Team | null> {

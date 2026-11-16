@@ -1,4 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
+import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/ListPresenter.js";
 import { AssistantPageContext } from "@webiny/app-admin/features/assistantPageContext/abstractions.js";
@@ -22,6 +27,7 @@ describe("WebhookDeliveriesPagePresenter", () => {
     let presenter: Abstraction.Interface;
     let pageContext: AssistantPageContext.Interface;
     let releaseWebhooks: () => void;
+    let listWebhooks: Mock;
 
     beforeEach(() => {
         const container = new Container();
@@ -38,11 +44,12 @@ describe("WebhookDeliveriesPagePresenter", () => {
         container.registerInstance(ListAvailableEventsUseCase, {
             execute: vi.fn(async () => [])
         } as unknown as ListAvailableEventsUseCase.Interface);
+        listWebhooks = vi.fn(async () => {
+            await webhooksLoaded;
+            return { items: [{ id: "webhook-1", name: "Search index" }] };
+        });
         container.registerInstance(ListWebhooksUseCase, {
-            execute: vi.fn(async () => {
-                await webhooksLoaded;
-                return { items: [{ id: "webhook-1", name: "Search index" }] };
-            })
+            execute: listWebhooks
         } as unknown as ListWebhooksUseCase.Interface);
         container.registerInstance(
             ResendWebhookDeliveryUseCase,
@@ -83,5 +90,29 @@ describe("WebhookDeliveriesPagePresenter", () => {
         await init;
 
         expect(pageContext.get()).toBeNull();
+    });
+
+    it("keeps the newer load's result when an older one fails after it", async () => {
+        let failFirst: () => void = () => {};
+        listWebhooks.mockImplementationOnce(
+            () =>
+                new Promise((_resolve, reject) => {
+                    failFirst = () => reject(new Error("Network down"));
+                })
+        );
+
+        const first = presenter.init("webhook-1");
+        const second = presenter.init("webhook-1");
+        releaseWebhooks();
+        await second;
+        expect(presenter.vm.loading).toBe(false);
+
+        failFirst();
+        await first;
+
+        expect(presenter.vm.error).toBeNull();
+        expect(presenter.vm.availableWebhooks).toEqual([
+            { value: "webhook-1", label: "Search index" }
+        ]);
     });
 });

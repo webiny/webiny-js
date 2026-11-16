@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import type { CmsModel } from "~/types.js";
 import { ContentModelsDataSource } from "./ContentModelsDataSource.js";

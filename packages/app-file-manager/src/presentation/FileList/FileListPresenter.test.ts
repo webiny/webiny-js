@@ -310,8 +310,9 @@ describe("FileListPresenter", () => {
     it("tells the assistant the files, folders and open file, until disposed", () => {
         presenter.init();
 
-        const config = (mocks.listPresenter.init as Mock).mock.calls[0][0];
-        const assistant = config.assistant as ListPresenter.AssistantConfig<FmFile>;
+        const init = mocks.listPresenter.init as Mock;
+        const config: ListPresenter.Config<FmFile> = init.mock.calls[0][0];
+        const assistant = config.assistant!;
         expect(assistant.view()).toBe("Files in File Manager");
         expect(assistant.rowTitle({ name: "hero.png" } as FmFile)).toBe("hero.png");
         expect(assistant.details?.()).toEqual({
@@ -320,7 +321,7 @@ describe("FileListPresenter", () => {
             visibleFolders: []
         });
 
-        (mocks.fileDetailsPresenter.vm as { file: unknown }).file = { id: "file-1" };
+        mocks.fileDetailsPresenter.vm.file = { id: "file-1" } as FmFile;
         presenter.actions.showFileDetails("file-1");
         expect(assistant.details?.()).toMatchObject({ openFileId: "file-1" });
 

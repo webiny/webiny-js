@@ -17,7 +17,7 @@ export interface IRolesPresenter {
     readonly vm: IRolesPresenterViewModel;
     readonly list: IListPresenter<Role>;
     init(): void;
-    /** Stops telling the assistant about the roles list. */
+    /** Closes the open role and stops telling the assistant about the list. */
     dispose(): void;
     selectRole(id: string): Promise<void>;
     createNew(): void;

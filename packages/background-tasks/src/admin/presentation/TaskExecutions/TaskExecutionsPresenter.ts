@@ -120,6 +120,7 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
     }
 
     dispose(): void {
+        this._selectedTask = null;
         this.listPresenter.dispose();
     }
 }

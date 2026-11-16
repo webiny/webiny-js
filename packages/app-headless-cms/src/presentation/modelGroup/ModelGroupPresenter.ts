@@ -109,6 +109,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
     }
 
     dispose(): void {
+        this.deselect();
         this.listPresenter.dispose();
     }
 

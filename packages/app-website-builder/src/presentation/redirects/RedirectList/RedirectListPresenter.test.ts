@@ -243,7 +243,8 @@ describe("RedirectListPresenter", () => {
                 currentFolder: null,
                 visibleFolders: []
             });
-            expect((context?.details["visibleRows"] as unknown[])[0]).toEqual({
+            const visibleRows = context?.details["visibleRows"] as unknown[];
+            expect(visibleRows[0]).toEqual({
                 id: "redirect-119",
                 title: "/from-119 -> /to-119"
             });

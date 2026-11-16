@@ -77,11 +77,12 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
                 rowTitle: redirect => `${redirect.redirectFrom} -> ${redirect.redirectTo}`,
                 details: () => {
                     const { currentFolderId, currentFolderTitle } = this.folderTreePresenter.vm;
+                    const childFolders = this.getSortedChildFolders();
                     return describeFoldersForAssistant({
                         type: this.foldersContext.type,
                         currentFolderId,
                         currentFolderTitle,
-                        childFolders: this.getSortedChildFolders()
+                        childFolders
                     });
                 }
             }

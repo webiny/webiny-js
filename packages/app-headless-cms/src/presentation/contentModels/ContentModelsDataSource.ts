@@ -4,11 +4,7 @@ import type { FetchResult } from "@webiny/app-admin/presentation/listPresenter/F
 import type { CmsModel } from "~/types.js";
 import type { IListModelsUseCase } from "~/features/model/listModels/abstractions.js";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
-
-/** Models tagged `$hidden:true` are internal and never listed. */
-export const isListedModel = (model: CmsModel): boolean => {
-    return !model.tags?.includes("$hidden:true");
-};
+import { isListedModel } from "./isListedModel.js";
 
 export class ContentModelsDataSource extends SimpleDataSource<CmsModel> {
     constructor(

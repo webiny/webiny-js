@@ -14,6 +14,10 @@ import {
     type IDeliveryPageFilters
 } from "./abstractions.js";
 
+type FilterOptions =
+    | { events: WebhookEvent[]; webhooks: IDeliveryFilterOption[] }
+    | { error: string };
+
 const createEmptyFilters = (): IDeliveryPageFilters => {
     return {
         webhookId: null,
@@ -71,31 +75,12 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
                 this._filters = { ...this._filters, webhookId };
             }
         });
-        try {
-            const [events, webhooksResult] = await Promise.all([
-                this.listAvailableEventsUseCase.execute(),
-                this.listWebhooksUseCase.execute({ limit: 1000 })
-            ]);
-            runInAction(() => {
-                this._availableEvents = events;
-                this._availableWebhooks = webhooksResult.items.map(w => ({
-                    value: w.id,
-                    label: w.name
-                }));
-            });
-        } catch (err) {
-            runInAction(() => {
-                this._error = err instanceof Error ? err.message : "Failed to load data.";
-            });
-        } finally {
-            runInAction(() => {
-                this._loading = false;
-            });
-        }
+        const options = await this.loadFilterOptions();
 
         if (run !== this._initRun) {
             return;
         }
+        this.applyFilterOptions(options);
 
         const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase);
         this.listPresenter.init({
@@ -114,7 +99,33 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
 
     public dispose(): void {
         this._initRun++;
+        this._loading = false;
+        this._error = null;
         this.listPresenter.dispose();
+    }
+
+    /** Reads the filter options without writing state, so a run that was replaced can drop them. */
+    private async loadFilterOptions(): Promise<FilterOptions> {
+        try {
+            const [events, webhooksResult] = await Promise.all([
+                this.listAvailableEventsUseCase.execute(),
+                this.listWebhooksUseCase.execute({ limit: 1000 })
+            ]);
+            const webhooks = webhooksResult.items.map(w => ({ value: w.id, label: w.name }));
+            return { events, webhooks };
+        } catch (err) {
+            return { error: err instanceof Error ? err.message : "Failed to load data." };
+        }
+    }
+
+    private applyFilterOptions(options: FilterOptions): void {
+        this._loading = false;
+        if ("error" in options) {
+            this._error = options.error;
+            return;
+        }
+        this._availableEvents = options.events;
+        this._availableWebhooks = options.webhooks;
     }
 
     /** The webhook the deliveries are filtered to, if any. */
