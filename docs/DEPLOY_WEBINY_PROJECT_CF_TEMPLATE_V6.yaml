@@ -102,9 +102,15 @@ Resources:
           # The API distribution's behaviors for the GraphQL web function use cache policies.
           # Cache policies cannot be tagged either.
           - Effect: Allow
-            Resource: arn:*:cloudfront::*:cache-policy/*
+            # CreateCachePolicy does not support resource-level permissions.
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncloudfront.html
+            Resource: "*"
             Action:
               - cloudfront:CreateCachePolicy
+
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:cache-policy/*
+            Action:
               - cloudfront:GetCachePolicy
               - cloudfront:GetCachePolicyConfig
               - cloudfront:UpdateCachePolicy
@@ -435,6 +441,28 @@ Resources:
             Action:
               - lambda:ListWebFunctions
               - lambda:GetWebAccountSettings
+            Resource: "*"
+
+          # With a VPC, the web function reaches it through a network connector. Its ARN ends in a
+          # generated ID rather than a name, so it can't be scoped to `wby-*`.
+          - Effect: Allow
+            Action:
+              - lambda:CreateNetworkConnector
+              - lambda:GetNetworkConnector
+              - lambda:UpdateNetworkConnector
+              - lambda:DeleteNetworkConnector
+              - lambda:ListNetworkConnectorVersions
+              - lambda:TagResource
+              - lambda:UntagResource
+              - lambda:ListTags
+            Resource: arn:aws:lambda:*:*:network-connector:*
+
+          # Attaching the connector to a web function revision needs PassNetworkConnector, which,
+          # like ListNetworkConnectors, does not support resource-level permissions.
+          - Effect: Allow
+            Action:
+              - lambda:PassNetworkConnector
+              - lambda:ListNetworkConnectors
             Resource: "*"
 
           # AWS Cloud Control API
