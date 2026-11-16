@@ -1,15 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { createFeature } from "@webiny/feature/api";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
-import { GetSettingsUseCase } from "@webiny/api-mailer/features/GetSettings/index.js";
+import { MailTransportResolver } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
+import { DUMMY_TRANSPORT_NAME } from "@webiny/api-mailer/constants.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
-
-/**
- * The transport api-mailer uses for real delivery. Named here because the dummy transport is always
- * available and always claims success, so "can this installation send mail" cannot be answered by
- * attempting a send. It has to be answered by asking whether these settings exist.
- */
-const SMTP_TRANSPORT_NAME = "Mailer/SmtpTransport";
 
 export interface SendPasswordResetCodeParams {
     email: string;
@@ -31,8 +25,8 @@ export interface IPasswordResetMailer {
  * Turns a reset code into a message and hands it to the mailer.
  *
  * A seam rather than a call to `SendMailUseCase` inside the use case, for three reasons: the wording
- * lives in one replaceable place, a project that sends through something other than SMTP can swap
- * it, and the use case tests can assert what would have been sent without a transport in sight.
+ * lives in one replaceable place, a project that wants a different message can swap it, and the
+ * use case tests can assert what would have been sent without a transport in sight.
  */
 export const PasswordResetMailer = createAbstraction<IPasswordResetMailer>("PasswordResetMailer");
 
@@ -44,25 +38,25 @@ export namespace PasswordResetMailer {
 class MailerServicePasswordResetMailer implements IPasswordResetMailer {
     constructor(
         private sendMailUseCase: SendMailUseCase.Interface,
-        private getSettingsUseCase: GetSettingsUseCase.Interface
+        private transportResolver: MailTransportResolver.Interface
     ) {}
 
     async isConfigured(): Promise<boolean> {
-        const settings = await this.readSmtpSettings();
+        const transport = await this.resolveTransport();
 
-        return settings !== null;
+        return transport !== null;
     }
 
     async send(params: SendPasswordResetCodeParams): Promise<boolean> {
-        const settings = await this.readSmtpSettings();
-        if (!settings) {
+        const transport = await this.resolveTransport();
+        if (!transport) {
             return false;
         }
 
         const result = await this.sendMailUseCase.execute({
             to: [params.email],
-            from: settings.from,
-            replyTo: settings.replyTo,
+            from: transport.settings?.from || undefined,
+            replyTo: transport.settings?.replyTo || undefined,
             subject: "Your password reset code",
             text: buildBody(params.code)
         });
@@ -70,13 +64,18 @@ class MailerServicePasswordResetMailer implements IPasswordResetMailer {
         return result.isOk();
     }
 
-    private async readSmtpSettings() {
-        const result = await this.getSettingsUseCase.execute(SMTP_TRANSPORT_NAME);
-        if (result.isFail()) {
+    /**
+     * The transport the mailer would deliver through, or null when that is the dummy one. The dummy
+     * transport is always available and reports success without sending, so a reset sent through it
+     * would tell the user to check an inbox nothing arrives in.
+     */
+    private async resolveTransport(): Promise<MailTransportResolver.Resolved | null> {
+        const resolved = await this.transportResolver.resolve();
+        if (!resolved || resolved.factory.name === DUMMY_TRANSPORT_NAME) {
             return null;
         }
 
-        return result.value.settings;
+        return resolved;
     }
 }
 
@@ -97,7 +96,7 @@ const buildBody = (code: string): string => {
 
 const mailerServicePasswordResetMailer = PasswordResetMailer.createImplementation({
     implementation: MailerServicePasswordResetMailer,
-    dependencies: [SendMailUseCase, GetSettingsUseCase]
+    dependencies: [SendMailUseCase, MailTransportResolver]
 });
 
 export const PasswordResetMailerFeature = createFeature({
