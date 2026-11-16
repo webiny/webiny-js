@@ -39,6 +39,7 @@
     "packages/cli-core/files/**/*.json",
     "packages/dependency-versions/references.json",
     "packages/create-webiny-project/utils/binaries/**",
+    "packages/project-aws/src/features/Watch/forwarder/mqtt.cjs",
     ".github/workflows/**/*.yml",
     "./nextjs/",
     "packages/admin-ui/storybook-static/**",

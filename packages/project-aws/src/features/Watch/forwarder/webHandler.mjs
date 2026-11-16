@@ -3,13 +3,13 @@
  *
  * While a watch session runs, the web function runs this instead of the API. It is an HTTP server that
  * turns each request into an API Gateway (payload format 2.0) event and forwards it over IoT with the
- * same protocol as the regular Lambda forwarder (`../handler/handler.zip`), under the regular `graphql`
+ * same protocol as the regular Lambda forwarder (`lambdaHandler.cjs`), under the regular `graphql`
  * Lambda's name. The watch session on the developer's machine runs that event through the local
  * `graphql` handler, which handles API Gateway events, and the result comes back as the HTTP response.
  * So the local side of `webiny watch` needs no changes.
  *
- * Runs in the web function on its own, so it uses only Node built-ins and `mqtt.js`, which is zipped
- * next to it from `handler.zip`. The protocol constants match those in `handler.zip` and in
+ * Runs in the web function on its own, so it uses only Node built-ins and `mqtt.js` (`mqtt.cjs`, zipped
+ * next to it). The protocol constants match those in `lambdaHandler.cjs` and in
  * `@webiny/project`'s `initInvocationForwarding.ts`.
  */
 import http from "node:http";

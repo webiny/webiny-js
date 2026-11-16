@@ -1,4 +1,3 @@
-import fs from "fs";
 import pRetry from "p-retry";
 import {
     GetFunctionConfigurationCommand,
@@ -12,6 +11,7 @@ import { type UiService } from "@webiny/project/abstractions/index.js";
 import { type PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
 import { type WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
+import { createLambdaForwarderZip } from "./forwarder/createForwarderZip.js";
 
 const WATCH_MODE_NOTE_IN_DESCRIPTION = " (💡 local development mode, redeploy to remove)";
 const DEFAULT_INCREASE_TIMEOUT = 120;
@@ -83,6 +83,7 @@ export const replaceLambdaFunctions = async ({
 
     logger.info("replacing %s AWS Lambda function(s).", functionsList.meta.count);
     const lambdaClient = new LambdaClient();
+    const forwarderZip = createLambdaForwarderZip();
 
     const replacementsPromises = functionsList.list.map(async fn => {
         const getFnConfigCmd = new GetFunctionConfigurationCommand({ FunctionName: fn.name });
@@ -90,7 +91,7 @@ export const replaceLambdaFunctions = async ({
 
         const updateFnCodeCmd = new UpdateFunctionCodeCommand({
             FunctionName: fn.name,
-            ZipFile: fs.readFileSync(import.meta.dirname + "/handler/handler.zip")
+            ZipFile: forwarderZip
         });
 
         await lambdaClient.send(updateFnCodeCmd);

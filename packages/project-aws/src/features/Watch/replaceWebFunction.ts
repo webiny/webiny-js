@@ -1,6 +1,3 @@
-import fs from "fs";
-import path from "path";
-import AdmZip from "adm-zip";
 import { LambdaWebClient } from "@webiny/aws-sdk/client-lambda-web/index.js";
 import { CreateWebFunctionRevisionCommand } from "@webiny/aws-sdk/client-lambda-web/index.js";
 import { DeleteWebFunctionRevisionCommand } from "@webiny/aws-sdk/client-lambda-web/index.js";
@@ -11,6 +8,7 @@ import type { ServiceConfig } from "@webiny/aws-sdk/client-lambda-web/index.js";
 import { PutObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import type { LoggerService } from "@webiny/project/abstractions/index.js";
+import { createWebForwarderZip } from "./forwarder/createForwarderZip.js";
 import type { PulumiExportService } from "~/abstractions/services/PulumiExportService.js";
 import type { WatchedLambdaFunctionsService } from "~/abstractions/services/WatchedLambdaFunctionsService.js";
 import type { AppModel } from "@webiny/project/models/index.js";
@@ -63,7 +61,7 @@ export interface IReplaceWebFunctionParams {
 
 /**
  * The web function's counterpart of `replaceLambdaFunctions`. A web function's code can't be swapped
- * in place, so this publishes a new revision that runs the forwarder (`webHandler/index.mjs`) and moves
+ * in place, so this publishes a new revision that runs the forwarder (`forwarder/webHandler.mjs`) and moves
  * the endpoint's traffic to it. The Pulumi-managed revision is marked dirty, so the next deploy
  * replaces it and the endpoint goes back to the real API.
  */
@@ -96,7 +94,7 @@ export async function replaceWebFunction(params: IReplaceWebFunctionParams): Pro
     });
     const current = await lambdaWeb.send(getCurrent);
 
-    const zip = createForwarderZip();
+    const zip = createWebForwarderZip();
     const s3 = new S3Client();
     const putZip = new PutObjectCommand({ Bucket: codeBucket, Key: WATCH_BUNDLE_KEY, Body: zip });
     const upload = await s3.send(putZip);
@@ -159,27 +157,6 @@ export async function replaceWebFunction(params: IReplaceWebFunctionParams): Pro
     logger.info("Lambda web function %s now forwards requests locally.", functionName);
 
     await deleteOldWatchRevisions(lambdaWeb, functionName, watchRevisionId);
-}
-
-/**
- * `index.mjs` is the forwarder; `mqtt.js` is taken from the regular Lambda forwarder's zip, so the two
- * forwarders use the same MQTT client build.
- */
-function createForwarderZip(): Buffer {
-    const lambdaForwarderZipPath = path.join(import.meta.dirname, "handler", "handler.zip");
-    const lambdaForwarderZip = new AdmZip(lambdaForwarderZipPath);
-    const mqtt = lambdaForwarderZip.readFile("mqtt.js");
-    if (!mqtt) {
-        throw new Error("The Lambda forwarder zip has no mqtt.js.");
-    }
-
-    const forwarderPath = path.join(import.meta.dirname, "webHandler", "index.mjs");
-    const forwarder = fs.readFileSync(forwarderPath);
-
-    const zip = new AdmZip();
-    zip.addFile("index.mjs", forwarder);
-    zip.addFile("mqtt.js", mqtt);
-    return zip.toBuffer();
 }
 
 async function waitUntilActive(client: LambdaWebClient, functionName: string, revisionId: string) {
