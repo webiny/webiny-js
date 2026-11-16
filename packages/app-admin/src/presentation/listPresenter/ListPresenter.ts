@@ -41,8 +41,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _disposeAssistant: IReactionDisposer | null = null;
     private _assistantOwner: AssistantPageContext.Owner | null = null;
 
-    // Optional so the list works in containers without the assistant, such as a test's.
-    constructor(private pageContext?: AssistantPageContext.Interface) {
+    constructor(private pageContext: AssistantPageContext.Interface) {
         this._selection = new SelectionController<TRow>(
             () => this._dataSource?.rows ?? [],
             row => this.getRowId(row)
@@ -208,7 +207,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             this._disposeAssistant();
             this._disposeAssistant = null;
         }
-        if (this._assistantOwner && this.pageContext) {
+        if (this._assistantOwner) {
             this.pageContext.clear(this._assistantOwner);
             this._assistantOwner = null;
         }
@@ -220,8 +219,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
      */
     private describeToAssistant(config: IListAssistantConfig<TRow> | undefined): void {
         this.dispose();
-        const pageContext = this.pageContext;
-        if (!config || !pageContext) {
+        if (!config) {
             return;
         }
 
@@ -229,9 +227,9 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             () => this.assistantContext(config),
             context => {
                 if (this._assistantOwner) {
-                    pageContext.update(this._assistantOwner, context);
+                    this.pageContext.update(this._assistantOwner, context);
                 } else {
-                    this._assistantOwner = pageContext.set(context);
+                    this._assistantOwner = this.pageContext.set(context);
                 }
             },
             { fireImmediately: true, equals: compareStructural }
@@ -349,5 +347,5 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
 
 export const ListPresenter = Abstraction.createImplementation({
     implementation: ListPresenterImpl,
-    dependencies: [[AssistantPageContext, { optional: true }]]
+    dependencies: [AssistantPageContext]
 });

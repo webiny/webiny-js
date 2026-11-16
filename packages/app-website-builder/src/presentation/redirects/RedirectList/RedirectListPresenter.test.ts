@@ -3,6 +3,7 @@ import { observable } from "mobx";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/ListPresenter.js";
+import { AssistantPageContext } from "@webiny/app-admin/features/assistantPageContext/AssistantPageContext.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Redirect } from "~/domain/Redirect/Redirect.js";
@@ -205,6 +206,7 @@ describe("RedirectListPresenter", () => {
         container.register(UpdateRedirectRepository).inSingletonScope();
         container.register(UpdateRedirectUseCase);
 
+        container.register(AssistantPageContext).inSingletonScope();
         container.register(ListPresenter);
         container.registerInstance(FolderTreePresenter, createFolderTreePresenter());
         container.registerInstance(GetDescendantFoldersUseCase, { execute: () => [] });

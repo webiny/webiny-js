@@ -124,6 +124,7 @@ function createMockDataSource(rows?: TestRow[], meta?: IDataSourceMeta): MockDat
 
 function createPresenter(): IListPresenter<TestRow> {
     const container = new Container();
+    container.register(AssistantPageContext).inSingletonScope();
     ListPresenterFeature.register(container);
     return container.resolve(Abstraction);
 }
