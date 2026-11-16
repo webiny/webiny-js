@@ -1,4 +1,6 @@
 import fs from "fs";
+import { Project as TsMorphProject } from "ts-morph";
+import { ensureNamedImport } from "~/utils/ensureNamedImport.js";
 import { ExtensionWebinyConfigTsx } from "./types.js";
 
 interface UpdateWebinyConfigParams {
@@ -116,64 +118,17 @@ export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Prom
     // Read the current webiny.config.tsx
     let content = fs.readFileSync(webinyConfigPath, "utf-8");
 
-    // Add imports at the top (after existing imports)
+    // Add imports, parsed rather than matched, so a commented-out import or an unusual import shape
+    // is not mistaken for the one the extension needs.
     if (webinyConfigTsx.imports && webinyConfigTsx.imports.length > 0) {
+        const tsMorphProject = new TsMorphProject({ useInMemoryFileSystem: true });
+        const sourceFile = tsMorphProject.createSourceFile("webiny.config.tsx", content);
+
         for (const importStatement of webinyConfigTsx.imports) {
-            // Check if we need to add to an existing import from the same path.
-            const existingImportRegex = new RegExp(
-                `import\\s+{([^}]+)}\\s+from\\s+["']${importStatement.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'];?`,
-                "gm"
-            );
-            const existingImportMatches = Array.from(content.matchAll(existingImportRegex));
-
-            if (existingImportMatches.length > 0) {
-                // Imports from this path exist. The specifier can be on any of them, not only the
-                // first: adding it to the first when a later one has it declares it twice.
-                const isImported = existingImportMatches.some(match =>
-                    match[1]
-                        .split(",")
-                        .map(s => s.trim())
-                        .includes(importStatement.specifier)
-                );
-
-                if (!isImported) {
-                    // Append the new specifier to the first import from this path.
-                    const [firstImport] = existingImportMatches;
-                    const existingSpecifiers = firstImport[1].split(",").map(s => s.trim());
-                    const updatedSpecifiers = [
-                        ...existingSpecifiers,
-                        importStatement.specifier
-                    ].join(", ");
-                    const updatedImportLine = `import { ${updatedSpecifiers} } from "${importStatement.path}";`;
-                    content =
-                        content.slice(0, firstImport.index) +
-                        updatedImportLine +
-                        content.slice(firstImport.index! + firstImport[0].length);
-                }
-            } else {
-                // No existing import from this path, add a new import line.
-                const importLine = `import { ${importStatement.specifier} } from "${importStatement.path}";`;
-
-                // Find the position after the last import or at the beginning. `[ \t]*`, not
-                // `\s*`: the latter runs into the blank line below and puts the new import after it.
-                const importRegex = /^import\s+.*?from\s+["'].*?["'];?[ \t]*$/gm;
-                const matches = Array.from(content.matchAll(importRegex));
-
-                if (matches.length > 0) {
-                    // Add after the last import.
-                    const lastImport = matches[matches.length - 1];
-                    const lastImportEnd = lastImport.index! + lastImport[0].length;
-                    content =
-                        content.slice(0, lastImportEnd) +
-                        "\n" +
-                        importLine +
-                        content.slice(lastImportEnd);
-                } else {
-                    // No imports found, add at the beginning.
-                    content = importLine + "\n\n" + content;
-                }
-            }
+            ensureNamedImport(sourceFile, importStatement.specifier, importStatement.path);
         }
+
+        content = sourceFile.getFullText();
     }
 
     // Add component to the Extensions function.
