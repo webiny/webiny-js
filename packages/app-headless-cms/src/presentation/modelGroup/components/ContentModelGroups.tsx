@@ -13,6 +13,7 @@ const ContentModelGroups = observer(() => {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     return (

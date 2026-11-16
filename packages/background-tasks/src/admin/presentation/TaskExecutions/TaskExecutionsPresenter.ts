@@ -95,7 +95,13 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 25
+            limit: 25,
+            itemLabel: { singular: "task", plural: "tasks" },
+            assistant: {
+                view: () => "Background task executions",
+                rowTitle: task => `${task.name || task.definitionId} (${task.taskStatus})`,
+                details: () => (this._selectedTask ? { openTaskId: this._selectedTask.id } : {})
+            }
         });
 
         void this.listDefinitionsUseCase
@@ -111,6 +117,10 @@ class TaskExecutionsPresenterImpl implements ITaskExecutionsPresenter {
             .catch(() => {
                 /* Definitions are used for filter labels only; safe to ignore. */
             });
+    }
+
+    dispose(): void {
+        this.listPresenter.dispose();
     }
 }
 

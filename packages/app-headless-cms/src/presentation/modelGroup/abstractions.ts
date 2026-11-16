@@ -17,6 +17,8 @@ export interface IModelGroupPresenter {
     readonly vm: IModelGroupPresenterViewModel;
     readonly list: IListPresenter<ModelGroupDto>;
     init(): void;
+    /** Stops telling the assistant about the groups list. */
+    dispose(): void;
     selectGroup(id: string): Promise<void>;
     createNew(): void;
     deselect(): void;

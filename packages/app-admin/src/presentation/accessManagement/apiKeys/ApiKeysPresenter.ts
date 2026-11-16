@@ -78,8 +78,29 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
         this._listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "API key", plural: "API keys" },
+            assistant: {
+                view: () => "API keys in Access Management",
+                rowTitle: apiKey => apiKey.name,
+                details: () => this.describeForAssistant()
+            }
         });
+    }
+
+    dispose(): void {
+        this._listPresenter.dispose();
+    }
+
+    /** The open API key by id. Never the token. */
+    private describeForAssistant(): Record<string, unknown> {
+        if (this._selectedApiKey) {
+            return { openApiKeyId: this._selectedApiKey.id };
+        }
+        if (this._showForm) {
+            return { editing: "a new API key, not saved yet" };
+        }
+        return {};
     }
 
     async selectApiKey(id: string): Promise<void> {

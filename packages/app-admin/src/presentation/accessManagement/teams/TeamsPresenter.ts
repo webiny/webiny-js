@@ -88,8 +88,29 @@ class TeamsPresenterImpl implements ITeamsPresenter {
         this._listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "team", plural: "teams" },
+            assistant: {
+                view: () => "Teams in Access Management",
+                rowTitle: team => team.name,
+                details: () => this.describeForAssistant()
+            }
         });
+    }
+
+    dispose(): void {
+        this._listPresenter.dispose();
+    }
+
+    /** The open team, by the id the team tools take as `teamId`. */
+    private describeForAssistant(): Record<string, unknown> {
+        if (this._selectedTeam) {
+            return { openTeamId: this._selectedTeam.id };
+        }
+        if (this._isNew) {
+            return { editing: "a new team, not saved yet" };
+        }
+        return {};
     }
 
     async selectTeam(id: string): Promise<void> {

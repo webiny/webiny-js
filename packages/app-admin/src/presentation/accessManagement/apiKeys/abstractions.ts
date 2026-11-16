@@ -15,6 +15,8 @@ export interface IApiKeysPresenter {
     readonly vm: IApiKeysPresenterViewModel;
     readonly list: IListPresenter<ApiKey>;
     init(): void;
+    /** Stops telling the assistant about the API keys list. */
+    dispose(): void;
     selectApiKey(id: string): Promise<void>;
     createNew(): void;
     deselect(): void;

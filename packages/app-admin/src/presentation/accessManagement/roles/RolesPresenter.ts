@@ -88,8 +88,29 @@ class RolesPresenterImpl implements IRolesPresenter {
         this._listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "role", plural: "roles" },
+            assistant: {
+                view: () => "Roles in Access Management",
+                rowTitle: role => role.name,
+                details: () => this.describeForAssistant()
+            }
         });
+    }
+
+    dispose(): void {
+        this._listPresenter.dispose();
+    }
+
+    /** The open role, by the id the role tools take as `roleId`. */
+    private describeForAssistant(): Record<string, unknown> {
+        if (this._selectedRole) {
+            return { openRoleId: this._selectedRole.id };
+        }
+        if (this._showForm) {
+            return { editing: "a new role, not saved yet" };
+        }
+        return {};
     }
 
     async selectRole(id: string): Promise<void> {

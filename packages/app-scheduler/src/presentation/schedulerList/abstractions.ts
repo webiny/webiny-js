@@ -5,6 +5,8 @@ import type { SchedulerEntry } from "~/types.js";
 export interface ISchedulerListPresenter {
     readonly list: ListPresenter.Interface<SchedulerEntry>;
     init(params: { namespace: string }): void;
+    /** Stops telling the assistant about the scheduled actions. */
+    dispose(): void;
     cancelItem(id: string): Promise<void>;
 }
 

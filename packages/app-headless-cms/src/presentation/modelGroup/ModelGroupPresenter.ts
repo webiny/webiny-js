@@ -98,8 +98,28 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "group", plural: "groups" },
+            assistant: {
+                view: () => "Content model groups in Headless CMS",
+                rowTitle: group => group.name,
+                details: () => this.describeForAssistant()
+            }
         });
+    }
+
+    dispose(): void {
+        this.listPresenter.dispose();
+    }
+
+    private describeForAssistant(): Record<string, unknown> {
+        if (this.selectedGroup) {
+            return { openGroupId: this.selectedGroup.id };
+        }
+        if (this.showForm) {
+            return { editing: "a new group, not saved yet" };
+        }
+        return {};
     }
 
     async selectGroup(id: string): Promise<void> {

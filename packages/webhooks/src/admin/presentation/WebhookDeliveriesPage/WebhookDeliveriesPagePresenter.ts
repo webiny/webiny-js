@@ -31,6 +31,8 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
     private _resendingIds: Set<string> = new Set();
     private _loading = false;
     private _error: string | null = null;
+    /** Bumped by every init and by dispose, so an init that resolves after either stops there. */
+    private _initRun = 0;
 
     constructor(
         private readonly listPresenter: ListPresenter.Interface<WebhookDelivery>,
@@ -39,7 +41,10 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         private readonly resendDeliveryUseCase: ResendWebhookDeliveryUseCase.Interface,
         private readonly listWebhooksUseCase: ListWebhooksUseCase.Interface
     ) {
-        makeAutoObservable(this, { vm: computed });
+        makeAutoObservable<WebhookDeliveriesPagePresenterImpl, "_initRun">(this, {
+            vm: computed,
+            _initRun: false
+        });
     }
 
     get vm(): IWebhookDeliveriesPageViewModel {
@@ -58,6 +63,7 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
     }
 
     public async init(webhookId?: string): Promise<void> {
+        const run = ++this._initRun;
         runInAction(() => {
             this._loading = true;
             this._error = null;
@@ -87,13 +93,38 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
             });
         }
 
+        if (run !== this._initRun) {
+            return;
+        }
+
         const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase);
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
             initialFilters: this._buildWhere(),
-            limit: 20
+            limit: 20,
+            itemLabel: { singular: "delivery", plural: "deliveries" },
+            assistant: {
+                view: () => "Webhook deliveries",
+                rowTitle: delivery => `${delivery.eventType} (${delivery.status})`,
+                details: () => this.describeForAssistant()
+            }
         });
+    }
+
+    public dispose(): void {
+        this._initRun++;
+        this.listPresenter.dispose();
+    }
+
+    /** The webhook the deliveries are filtered to, if any. */
+    private describeForAssistant(): Record<string, unknown> {
+        const { webhookId } = this._filters;
+        if (!webhookId) {
+            return {};
+        }
+        const webhook = this._availableWebhooks.find(option => option.value === webhookId);
+        return { webhookId, webhookName: webhook?.label ?? null };
     }
 
     public clearFilters(): void {

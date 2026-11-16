@@ -31,6 +31,7 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
 
     useEffect(() => {
         void presenter.init(webhookId);
+        return () => presenter.dispose();
     }, [presenter, webhookId]);
 
     const { vm } = presenter;
