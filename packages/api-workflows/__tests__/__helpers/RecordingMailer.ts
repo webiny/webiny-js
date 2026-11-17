@@ -33,4 +33,8 @@ export class RecordingMailer implements MailerService.Interface {
         }
         return Result.ok({ result: null, error: null });
     }
+
+    public async canSend(): Promise<boolean> {
+        return true;
+    }
 }

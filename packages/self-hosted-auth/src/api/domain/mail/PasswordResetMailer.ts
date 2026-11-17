@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { createFeature } from "@webiny/feature/api";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
-import { DeliveringTransport } from "@webiny/api-mailer/features/MailerService/index.js";
+import { MailerService } from "@webiny/api-mailer/domain/MailerService/abstractions.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 
 export interface SendPasswordResetCodeParams {
@@ -37,25 +37,20 @@ export namespace PasswordResetMailer {
 class MailerServicePasswordResetMailer implements IPasswordResetMailer {
     constructor(
         private sendMailUseCase: SendMailUseCase.Interface,
-        private deliveringTransport: DeliveringTransport.Interface
+        private mailerService: MailerService.Interface
     ) {}
 
-    async isConfigured(): Promise<boolean> {
-        const transport = await this.deliveringTransport.resolve();
-
-        return transport !== null;
+    isConfigured(): Promise<boolean> {
+        return this.mailerService.canSend();
     }
 
     async send(params: SendPasswordResetCodeParams): Promise<boolean> {
-        const transport = await this.deliveringTransport.resolve();
-        if (!transport) {
+        if (!(await this.mailerService.canSend())) {
             return false;
         }
 
         const result = await this.sendMailUseCase.execute({
             to: [params.email],
-            from: transport.from,
-            replyTo: transport.replyTo,
             subject: "Your password reset code",
             text: buildBody(params.code)
         });
@@ -81,7 +76,7 @@ const buildBody = (code: string): string => {
 
 const mailerServicePasswordResetMailer = PasswordResetMailer.createImplementation({
     implementation: MailerServicePasswordResetMailer,
-    dependencies: [SendMailUseCase, DeliveringTransport]
+    dependencies: [SendMailUseCase, MailerService]
 });
 
 export const PasswordResetMailerFeature = createFeature({

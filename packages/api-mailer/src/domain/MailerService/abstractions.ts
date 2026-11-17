@@ -15,6 +15,12 @@ export interface IMailerService {
     sendMail<T = any>(
         data: TransportSendData
     ): Promise<Result<TransportSendResponse<T>, MailerServiceError>>;
+
+    /**
+     * Whether mail actually leaves this installation: a transport is configured, and it is not the
+     * dummy transport, which reports success without sending.
+     */
+    canSend(): Promise<boolean>;
 }
 
 export const MailerService = createAbstraction<IMailerService>("MailerService");

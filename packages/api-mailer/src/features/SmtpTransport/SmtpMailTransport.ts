@@ -27,7 +27,8 @@ export class SmtpMailTransport implements MailTransport.Interface {
 
     constructor(
         config: SMTPTransport.Options,
-        private readonly defaultFrom?: string
+        private readonly defaultFrom?: string,
+        private readonly defaultReplyTo?: string
     ) {
         this.transporter = nodemailer.createTransport(config);
     }
@@ -37,7 +38,7 @@ export class SmtpMailTransport implements MailTransport.Interface {
 
         try {
             const result = await this.transporter.sendMail({
-                replyTo,
+                replyTo: replyTo || this.defaultReplyTo || undefined,
                 bcc,
                 cc,
                 // An explicit sender wins; otherwise the configured settings sender (R201).

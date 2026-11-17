@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { SendTestMailUseCase } from "./abstractions.js";
-import { DeliveringTransport } from "~/domain/MailTransport/abstractions.js";
+import { MailerService } from "~/domain/MailerService/abstractions.js";
 import { SendMailUseCase } from "~/features/SendMail/abstractions.js";
 import { TestMailNotAuthorized } from "~/domain/errors.js";
 import { TestMailNotConfigured } from "~/domain/errors.js";
@@ -17,7 +17,7 @@ const TEST_MAIL_TEXT = [
 class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private deliveringTransport: DeliveringTransport.Interface,
+        private mailerService: MailerService.Interface,
         private sendMailUseCase: SendMailUseCase.Interface
     ) {}
 
@@ -31,15 +31,12 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
          * Through the dummy transport the test would report success without sending anything, so
          * a test that passed would prove nothing.
          */
-        const transport = await this.deliveringTransport.resolve();
-        if (!transport) {
+        if (!(await this.mailerService.canSend())) {
             return Result.fail(new TestMailNotConfigured());
         }
 
         const result = await this.sendMailUseCase.execute({
             to: [input.to],
-            from: transport.from,
-            replyTo: transport.replyTo,
             subject: "Webiny test email",
             text: TEST_MAIL_TEXT
         });
@@ -54,5 +51,5 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
 
 export const SendTestMailUseCaseImplementation = SendTestMailUseCase.createImplementation({
     implementation: SendTestMailUseCaseImpl,
-    dependencies: [IdentityContext, DeliveringTransport, SendMailUseCase]
+    dependencies: [IdentityContext, MailerService, SendMailUseCase]
 });

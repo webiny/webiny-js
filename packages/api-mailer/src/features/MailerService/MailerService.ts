@@ -6,11 +6,12 @@ import {
     TransportSendError
 } from "~/domain/MailerService/errors.js";
 import { MailTransport } from "~/domain/MailTransport/abstractions.js";
-import { MailTransportResolver } from "~/domain/MailTransport/abstractions.js";
+import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
+import { DUMMY_TRANSPORT_NAME } from "~/constants.js";
 import type { TransportSendData } from "~/types.js";
 
 class MailerServiceImpl implements Abstraction.Interface {
-    constructor(private transportResolver: MailTransportResolver.Interface) {}
+    constructor(private transportFactories: MailTransportFactory.Interface[]) {}
 
     async sendMail<T = any>(data: TransportSendData): Abstraction.Return<T> {
         const transport = await this.createTransport();
@@ -32,22 +33,38 @@ class MailerServiceImpl implements Abstraction.Interface {
         }
     }
 
+    /*
+     * The dummy transport is always available and reports success without sending, so it does not
+     * count as being able to send.
+     */
+    async canSend(): Promise<boolean> {
+        const transport = await this.createTransport();
+
+        return transport !== null && transport.name !== DUMMY_TRANSPORT_NAME;
+    }
+
+    // The last registered factory that is configured wins, so a project's own transport takes over.
     private async createTransport(): Promise<MailTransport.Interface | null> {
-        const resolved = await this.transportResolver.resolve();
+        const factories = [...this.transportFactories].reverse();
 
-        if (!resolved) {
-            return null;
+        for (const factory of factories) {
+            let transport: MailTransport.Interface | null;
+            try {
+                transport = await factory.createTransport();
+            } catch (error) {
+                throw new TransportCreateError(error);
+            }
+
+            if (transport) {
+                return transport;
+            }
         }
 
-        try {
-            return await resolved.factory.createTransport(resolved.settings!);
-        } catch (error) {
-            throw new TransportCreateError(error);
-        }
+        return null;
     }
 }
 
 export const MailerService = Abstraction.createImplementation({
     implementation: MailerServiceImpl,
-    dependencies: [MailTransportResolver]
+    dependencies: [[MailTransportFactory, { multiple: true }]]
 });
