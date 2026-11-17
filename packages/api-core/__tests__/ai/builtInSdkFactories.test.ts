@@ -34,13 +34,15 @@ const stubProviderEnv = () => {
     vi.stubEnv("OPENAI_BASE_URL", "https://env-gateway.example.com/v1");
 };
 
-/** Records where a request would have gone, then fails it so nothing leaves the process. */
+// Records where a request would have gone, then fails it so nothing leaves the process.
 const captureRequest = () => {
     const requests: { url: string; headers: Record<string, string> }[] = [];
     vi.stubGlobal("fetch", async (url: string | URL, init?: RequestInit) => {
+        const headers = new Headers(init?.headers);
+        const headerEntries = headers.entries();
         requests.push({
             url: String(url),
-            headers: Object.fromEntries(new Headers(init?.headers).entries())
+            headers: Object.fromEntries(headerEntries)
         });
         throw new Error("request captured");
     });
@@ -63,7 +65,7 @@ describe("built-in AI SDK factories", () => {
         const factory = resolveFactory(implementation);
 
         await expect(factory.execute()).rejects.toThrow(
-            `No API key for ${name}. Add a ${name} connection in AI Power-Ups settings.`
+            `No API key for ${name}. Pass one on the connection.`
         );
     });
 
@@ -77,14 +79,15 @@ describe("built-in AI SDK factories", () => {
             const requests = captureRequest();
             const sdk = await resolveFactory(implementation).execute("connection-key");
 
-            await expect(
-                generateText({ model: sdk.languageModel(modelId), prompt: "hi", maxRetries: 0 })
-            ).rejects.toThrow();
+            const model = sdk.languageModel(modelId);
+
+            await expect(generateText({ model, prompt: "hi", maxRetries: 0 })).rejects.toThrow();
 
             expect(requests).toHaveLength(1);
             expect(requests[0].url.startsWith(expectedUrlPrefix)).toBe(true);
-            expect(JSON.stringify(requests[0].headers)).toContain("connection-key");
-            expect(JSON.stringify(requests[0].headers)).not.toContain("env-key");
+            const sentHeaders = JSON.stringify(requests[0].headers);
+            expect(sentHeaders).toContain("connection-key");
+            expect(sentHeaders).not.toContain("env-key");
         }
     );
 });
