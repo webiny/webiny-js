@@ -29,12 +29,18 @@ import { readFollowUps } from "./followUps.js";
 import { unansweredApprovals } from "./unansweredApprovals.js";
 import { decidesExactly } from "./decidesExactly.js";
 import { describePageContext } from "./describePageContext.js";
+import type { ClientToolCall } from "./clientTools.js";
+import { answersExactly } from "./clientTools.js";
+import { toClientToolSet } from "./clientTools.js";
+import { toResultMessage } from "./clientTools.js";
+import { unansweredClientCalls } from "./clientTools.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
     type: string;
     text?: string;
     toolName?: string;
+    toolCallId?: string;
     input?: unknown;
     approvalId?: string;
     toolCall?: {
@@ -53,6 +59,9 @@ type SaveEvent = Extract<AdminAssistantEvent, { type: "saved" | "not-saved" }>;
 
 /** Said to the model for an approval left unanswered when the user asked something else instead. */
 const SUPERSEDED_REASON = "The user asked something else instead of deciding.";
+
+/** Said to the model for a browser call left unanswered when the user asked something else. */
+const SUPERSEDED_CALL = "Not run: the user asked something else before it ran.";
 
 /**
  * The terminal error event. Only a project with no model set up gets a code: it is the one failure
@@ -137,8 +146,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             return;
         }
 
-        const { request, history } = prepared;
+        const { request, history, clientToolNames } = prepared;
         const pending: PendingApproval[] = [];
+        const clientCalls: ClientToolCall[] = [];
         /*
          * Each step's text arrives with no separator, so the line before a tool call and the answer
          * after it ran together ("I'll look that up.3 products are on sale."). Text that resumes after
@@ -186,6 +196,14 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 if (part.type === "tool-call" && part.toolName) {
                     toolsSinceText = true;
                     yield { type: "tool-call", name: part.toolName };
+                    // The SDK does not run these: the browser does, once the run has paused.
+                    if (clientToolNames.has(part.toolName) && part.toolCallId) {
+                        clientCalls.push({
+                            toolCallId: part.toolCallId,
+                            toolName: part.toolName,
+                            input: part.input
+                        });
+                    }
                     continue;
                 }
 
@@ -230,7 +248,11 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
             if (pending.length > 0) {
                 yield { type: "approval", approvals: pending };
-            } else if (followUps.length > 0) {
+            }
+            if (clientCalls.length > 0) {
+                yield { type: "client-tools", calls: clientCalls };
+            }
+            if (pending.length === 0 && clientCalls.length === 0 && followUps.length > 0) {
                 yield { type: "follow-ups", questions: followUps };
             }
 
@@ -280,7 +302,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
     }
 
     /**
-     * The conversation the model sees: the saved chat, then either the decision on its paused run or
+     * The conversation the model sees: the saved chat, then either what its paused run waits for or
      * the new question. A new question on a chat still paused rejects what was waiting first, since a
      * request with no answer is something the provider refuses.
      */
@@ -295,15 +317,27 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         }
 
         const waiting = unansweredApprovals(stored);
+        const waitingCalls = unansweredClientCalls(stored);
 
         if (!params.prompt) {
-            if (waiting.length === 0) {
+            if (waiting.length === 0 && waitingCalls.length === 0) {
                 throw new Error("Nothing in this chat is waiting for a decision.");
             }
+            // Both are checked even when empty: a decision sent to a run waiting on none is stale.
             if (!decidesExactly(params.decisions, waiting)) {
                 throw new Error("This decision is not for the changes waiting in this chat.");
             }
-            return [...stored, toApprovalMessage(params.decisions)];
+            if (!answersExactly(params.toolResults ?? [], waitingCalls)) {
+                throw new Error("These results are not for the calls waiting in this chat.");
+            }
+            const history = [...stored];
+            if (waiting.length > 0) {
+                history.push(toApprovalMessage(params.decisions));
+            }
+            if (waitingCalls.length > 0) {
+                history.push(toResultMessage(params.toolResults ?? []));
+            }
+            return history;
         }
 
         const history = [...stored];
@@ -316,6 +350,10 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             const rejection = toApprovalMessage(superseded);
             history.push(rejection);
         }
+        if (waitingCalls.length > 0) {
+            const superseded = waitingCalls.map(call => ({ ...call, error: SUPERSEDED_CALL }));
+            history.push(toResultMessage(superseded));
+        }
         history.push({ role: "user", content: params.prompt });
         return history;
     }
@@ -327,6 +365,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
     private async prepare(params: AdminAssistantParams): Promise<{
         request: Ai.GenerateTextParams;
         history: ModelMessage[];
+        clientToolNames: Set<string>;
     }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
@@ -334,10 +373,25 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
         const history = await this.history(params);
 
-        const tools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
+        const serverTools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
+        /*
+         * A client tool never shadows a server one: a screen declaring `deleteFolder` must not turn
+         * a gated server call into one the browser answers unapproved.
+         */
+        const clientDeclarations = (params.clientTools ?? []).filter(
+            declaration => !(declaration.name in serverTools)
+        );
+        const clientTools = toClientToolSet(clientDeclarations);
+        const clientToolNames = new Set(Object.keys(clientTools));
+        const tools = { ...serverTools, ...clientTools };
+        /*
+         * Client tools need no approval: they change what is on the user's screen, in front of them,
+         * where undo takes it back, and nothing is stored until the user saves.
+         */
         const readOnlyNames = new Set([
             ...this.declarations.filter(isReadOnlyTool).map(declaration => declaration.name),
-            FOLLOW_UPS_TOOL
+            FOLLOW_UPS_TOOL,
+            ...clientToolNames
         ]);
 
         /*
@@ -389,7 +443,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             stopWhen: [stepCountIs(this.config.maxSteps), hasToolCall(FOLLOW_UPS_TOOL)]
         };
 
-        return { request, history };
+        return { request, history, clientToolNames };
     }
 
     /**

@@ -6,6 +6,8 @@ import { IconButton } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { SidePanel } from "@webiny/admin-ui";
 import { AdminAssistantFeature } from "@webiny/app-admin";
+import { AiChatsPanelRenderer } from "@webiny/app-admin";
+import type { AiChatsPanelProps } from "@webiny/app-admin";
 import { AiChatsPanelFeature } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
@@ -26,7 +28,7 @@ import { ChatHistory } from "./ChatHistory.js";
  * Docked beside the page rather than over it, so the admin stays usable: an answer that names a page
  * can be checked without closing the chat.
  */
-const AiChatsPanelBase = () => {
+const AiChatsPanelBase = ({ className = "h-main-content", width }: AiChatsPanelProps) => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const { identity } = useIdentity();
@@ -78,7 +80,8 @@ const AiChatsPanelBase = () => {
                         />
                     ) : null
                 }
-                className="h-main-content"
+                className={className}
+                width={width}
             >
                 <ChatHistory
                     vm={vm}
@@ -142,7 +145,8 @@ const AiChatsPanelBase = () => {
             }
             onClose={close}
             closeLabel="Close AI chats"
-            className="h-main-content"
+            className={className}
+            width={width}
         >
             <ChatConversation
                 assistant={assistant}
@@ -156,3 +160,10 @@ const AiChatsPanelBase = () => {
 };
 
 export const AiChatsPanel = createReactiveComponent(AiChatsPanelBase);
+
+/** The same panel, for screens outside the admin frame that render `AiChatsPanelRenderer`. */
+export const AiChatsPanelDecorator = AiChatsPanelRenderer.createDecorator(() => {
+    return function AiChatsPanelRendererImpl(props: AiChatsPanelProps) {
+        return <AiChatsPanel {...props} />;
+    };
+});

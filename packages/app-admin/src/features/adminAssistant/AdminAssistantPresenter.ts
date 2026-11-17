@@ -1,10 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import { AdminAssistantGateway } from "./abstractions.js";
 import type { AdminAssistantRequest } from "./abstractions.js";
+import type { AdminAssistantClientToolCall } from "./abstractions.js";
+import type { AdminAssistantClientToolResult } from "./abstractions.js";
 import { AdminAssistantPresenter as Abstraction } from "./abstractions.js";
 import type { AiTurnViewModel } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
+import { AssistantClientTools } from "~/features/assistantClientTools/abstractions.js";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
@@ -17,6 +20,13 @@ interface Turn extends Omit<AiTurnViewModel, "needsSetup"> {
 
 /** The code a run fails with when the project's AI settings give the assistant no model. */
 const NOT_CONFIGURED = "AI_CAPABILITY_NOT_CONFIGURED";
+
+/** Reported for a call whose screen was left between the call and running it. */
+const TOOL_GONE = "The screen that runs this tool is no longer open.";
+
+const messageOfError = (error: unknown): string => {
+    return error instanceof Error ? error.message : String(error);
+};
 
 const emptyTurn = (question: string): Turn => ({
     question,
@@ -53,6 +63,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private saveFailure: AiChatSaveFailure | null = null;
     private controller: AbortController | null = null;
     /*
+     * Results of browser calls made next to an approval. The run waits for both, so they go with the
+     * decision.
+     */
+    private heldResults: AdminAssistantClientToolResult[] = [];
+    /*
      * Bumped whenever the conversation is replaced. An open that finishes after that belongs to a
      * conversation that is gone, and must not write its turns onto the new one.
      */
@@ -61,13 +76,21 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     constructor(
         private gateway: AdminAssistantGateway.Interface,
         private chats: AiChatsRepository.Interface,
-        private pageContext: AssistantPageContext.Interface
+        private pageContext: AssistantPageContext.Interface,
+        private clientTools: AssistantClientTools.Interface
     ) {
         // Machinery, not state anything renders, so keep them out of the map.
         makeAutoObservable<
             AdminAssistantPresenterImpl,
-            "controller" | "generation" | "chats" | "pageContext"
-        >(this, { controller: false, generation: false, chats: false, pageContext: false });
+            "controller" | "generation" | "chats" | "pageContext" | "clientTools" | "heldResults"
+        >(this, {
+            controller: false,
+            generation: false,
+            chats: false,
+            pageContext: false,
+            clientTools: false,
+            heldResults: false
+        });
     }
 
     get vm(): Abstraction.ViewModel {
@@ -121,6 +144,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         // Asking something else rejects a change still waiting; the server does the same.
         this.dropPendingApprovals();
+        this.heldResults = [];
         this.clearStorageError();
 
         const index = this.turns.length;
@@ -159,6 +183,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         });
 
         const request = this.request({ approvals });
+        if (this.heldResults.length > 0) {
+            request.toolResults = this.heldResults;
+            this.heldResults = [];
+        }
         void this.run(turnIndex, request, true);
     }
 
@@ -195,6 +223,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.controller?.abort();
         this.controller = null;
         this.generation++;
+        this.heldResults = [];
         this.clear();
     }
 
@@ -227,7 +256,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
      * of asking, so a retry describes the screen the user is on now.
      */
     private question(prompt: string): AdminAssistantRequest {
-        const request = this.request({ prompt });
+        return this.withPageContext(this.request({ prompt }));
+    }
+
+    private withPageContext(request: AdminAssistantRequest): AdminAssistantRequest {
         const pageContext = this.pageContext.get();
         if (pageContext) {
             request.pageContext = pageContext;
@@ -235,11 +267,22 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         return request;
     }
 
-    /** A request for the chat on screen: the server reads its history from the saved chat. */
+    /**
+     * A request for the chat on screen: the server reads its history from the saved chat. Carries
+     * the tools the screen runs now, since a resumed run may call them again.
+     */
     private request(rest: Omit<AdminAssistantRequest, "chatId">): AdminAssistantRequest {
         const request: AdminAssistantRequest = { ...rest };
         if (this.chatId) {
             request.chatId = this.chatId;
+        }
+        const tools = this.clientTools.list();
+        if (tools.length > 0) {
+            request.clientTools = tools.map(({ name, description, inputSchema }) => ({
+                name,
+                description,
+                inputSchema
+            }));
         }
         return request;
     }
@@ -254,6 +297,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.controller = controller;
 
         this.setBusy(true);
+
+        let clientCalls: AdminAssistantClientToolCall[] = [];
+        let waitsForApproval = false;
+        let finished = false;
 
         try {
             /*
@@ -314,7 +361,13 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 }
 
                 if (event.type === "approval") {
+                    waitsForApproval = true;
                     this.patch(index, { pendingApprovals: event.approvals, running: false });
+                    continue;
+                }
+
+                if (event.type === "client-tools") {
+                    clientCalls = event.calls;
                     continue;
                 }
 
@@ -335,7 +388,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 }
 
                 if (event.type === "done") {
-                    this.patch(index, { settled: true, running: false });
+                    finished = true;
+                    // A run paused on browser calls goes on once they have run.
+                    if (clientCalls.length === 0) {
+                        this.patch(index, { settled: true, running: false });
+                    }
                     continue;
                 }
 
@@ -360,6 +417,76 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             }
         } finally {
             this.setBusy(false);
+        }
+
+        if (finished && clientCalls.length > 0 && !controller.signal.aborted) {
+            await this.runClientCalls(index, clientCalls, waitsForApproval);
+        }
+    }
+
+    /**
+     * Runs the calls a run paused on against the screen, then resumes the run with their results.
+     * Next to an approval, the results wait for the decision instead, since the run waits for both.
+     */
+    private async runClientCalls(
+        index: number,
+        calls: AdminAssistantClientToolCall[],
+        waitsForApproval: boolean
+    ): Promise<void> {
+        const generation = this.generation;
+        this.setBusy(true);
+        this.patch(index, { running: !waitsForApproval });
+
+        const results: AdminAssistantClientToolResult[] = [];
+        for (const call of calls) {
+            const result = await this.runClientCall(call);
+            if (generation !== this.generation) {
+                return;
+            }
+            results.push(result);
+            const turn = this.turns[index];
+            if (turn && result.error !== undefined) {
+                this.patch(index, { failed: [...turn.failed, call.toolName] });
+            } else if (turn) {
+                this.patch(index, { completed: [...turn.completed, call.toolName] });
+            }
+        }
+
+        this.setBusy(false);
+
+        if (waitsForApproval) {
+            this.heldResults = results;
+            return;
+        }
+
+        // The paused run is resumed from the saved chat, so a run that was not saved cannot be.
+        if (!this.chatId || this.saveFailure) {
+            this.patch(index, {
+                error: "The assistant can't carry on because the chat wasn't saved. Ask again to retry.",
+                settled: true,
+                running: false
+            });
+            return;
+        }
+
+        const request = this.withPageContext(this.request({ toolResults: results }));
+        await this.run(index, request, true);
+    }
+
+    private async runClientCall(
+        call: AdminAssistantClientToolCall
+    ): Promise<AdminAssistantClientToolResult> {
+        const { toolCallId, toolName } = call;
+        const tool = this.clientTools.get(toolName);
+        if (!tool) {
+            return { toolCallId, toolName, error: TOOL_GONE };
+        }
+
+        try {
+            const output = await tool.execute(call.input);
+            return { toolCallId, toolName, output: output ?? null };
+        } catch (error) {
+            return { toolCallId, toolName, error: messageOfError(error) };
         }
     }
 
@@ -441,5 +568,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
 export const AdminAssistantPresenter = Abstraction.createImplementation({
     implementation: AdminAssistantPresenterImpl,
-    dependencies: [AdminAssistantGateway, AiChatsRepository, AssistantPageContext]
+    dependencies: [
+        AdminAssistantGateway,
+        AiChatsRepository,
+        AssistantPageContext,
+        AssistantClientTools
+    ]
 });

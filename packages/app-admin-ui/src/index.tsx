@@ -2,6 +2,7 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { RegisterFeature } from "@webiny/app-admin";
 import { Layout } from "./Layout.js";
+import { AiChatsPanelDecorator } from "./AiChats/AiChatsPanel.js";
 import { Navigation } from "./Navigation/Navigation.js";
 import { UserMenu } from "~/UserMenu.js";
 import { Dialog } from "./Dialog.js";
@@ -41,6 +42,7 @@ export const AdminUI = () => {
             <Dashboard />
             <Dialog />
             <Layout />
+            <AiChatsPanelDecorator />
             <Navigation />
             <NotFound />
             <UserMenu />

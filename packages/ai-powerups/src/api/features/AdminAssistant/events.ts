@@ -1,5 +1,6 @@
 import type { AiChatSummary } from "~/api/features/AiChats/domain/types.js";
 import type { PendingApproval } from "./approvals.js";
+import type { ClientToolCall } from "./clientTools.js";
 
 /**
  * What the assistant emits while it works.
@@ -33,6 +34,11 @@ export type AdminAssistantEvent =
     | { type: "follow-ups"; questions: string[] }
     /** The loop paused: these calls change something and need a human decision. */
     | { type: "approval"; approvals: PendingApproval[] }
+    /**
+     * The loop paused: these calls are to tools the browser runs. The browser sends their results
+     * back, with the decisions when an `approval` came too, and the run continues from there.
+     */
+    | { type: "client-tools"; calls: ClientToolCall[] }
     /**
      * The run was stored in the chat, a new one on the first question. Its id is what the next
      * question, or the decision on an approval, continues from.

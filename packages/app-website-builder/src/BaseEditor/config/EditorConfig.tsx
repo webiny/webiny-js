@@ -6,6 +6,7 @@ import { Layout } from "./Layout.js";
 import { Content } from "./Content/Content.js";
 import { Toolbar } from "./Toolbar/Toolbar.js";
 import { Sidebar } from "./Sidebar/Sidebar.js";
+import { Panels } from "./Panels/Panels.js";
 import { Elements } from "./Elements.js";
 import { OnActiveElement } from "./OnActiveElement.js";
 import { NoActiveElement } from "./NoActiveElement.js";
@@ -36,6 +37,10 @@ export const EditorConfigComponents = {
         TopBar,
         Toolbar,
         Sidebar,
+        /**
+         * Panels on the right of the editor, each opened and closed from its tab on the rail.
+         */
+        Panels,
         IsReadOnly,
         IsNotReadOnly,
         OnActiveElement,

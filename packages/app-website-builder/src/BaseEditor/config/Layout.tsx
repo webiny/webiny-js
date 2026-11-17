@@ -38,9 +38,7 @@ export const Layout = makeDecoratable("EditorLayout", () => {
                 <div className={"flex-auto"}>
                     <EditorConfig.Ui.Content />
                 </div>
-                <IsNotReadOnly>
-                    <EditorConfig.Ui.Sidebar />
-                </IsNotReadOnly>
+                <EditorConfig.Ui.Panels />
             </div>
             <EditorConfig.Ui.Elements group={"overlays"} />
         </EditorLayoutContainer>

@@ -27,7 +27,8 @@
     { "path": "../api-mailer" },
     { "path": "../api-websockets" },
     { "path": "../feature-flags" },
-    { "path": "../wcp" }
+    { "path": "../wcp" },
+    { "path": "../website-builder-sdk" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -87,7 +88,9 @@
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/wcp": ["../wcp/src"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }
   }
 }

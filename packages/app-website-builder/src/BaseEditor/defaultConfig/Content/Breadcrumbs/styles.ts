@@ -8,7 +8,6 @@ export const breadcrumbs = css({
     position: "absolute",
     left: "var(--wb-spacing-toolbar)",
     bottom: 0,
-    width: "calc(100% - calc(var(--wb-spacing-sidebar) * 2))",
     height: "31px",
     backgroundColor: "var(--color-neutral-dimmed)",
     borderTop: "1px solid var( --color-neutral-dimmed)",

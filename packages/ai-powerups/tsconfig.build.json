@@ -27,7 +27,8 @@
     { "path": "../api-mailer/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../feature-flags/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" }
+    { "path": "../wcp/tsconfig.build.json" },
+    { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -87,7 +88,9 @@
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/wcp": ["../wcp/src"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }
   }
 }

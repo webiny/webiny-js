@@ -7,6 +7,10 @@ export interface ElementConfig {
     group: string;
     scope: string;
     element: React.JSX.Element;
+    /** Set on editor panels: the label and icon of the panel's tab on the rail. */
+    label?: string;
+    icon?: React.JSX.Element;
+    defaultOpen?: boolean;
 }
 
 export interface ElementProps {

@@ -12,6 +12,7 @@ import { ElementInputRenderers } from "./ElementInputRenderers.js";
 import { ContentPreviewConfig } from "./Content/ContentPreviewConfig.js";
 import { CloneElementAction } from "./Sidebar/ElementActions/CloneElementAction.js";
 import { DeleteElementAction } from "./Sidebar/ElementActions/DeleteElementAction.js";
+import { ReactComponent as PropertiesIcon } from "@webiny/icons/tune.svg";
 
 const { Ui } = EditorConfig;
 
@@ -36,6 +37,17 @@ export const DefaultEditorConfig = React.memo(() => {
                     element={<InsertElementsTab />}
                 />
                 <Ui.Toolbar.Element name={"navigator"} group={"tabs"} element={<NavigatorTab />} />
+                <Ui.Panels.Panel
+                    name={"properties"}
+                    label={"Properties"}
+                    icon={<PropertiesIcon />}
+                    defaultOpen={true}
+                    element={
+                        <Ui.IsNotReadOnly>
+                            <Ui.Sidebar />
+                        </Ui.IsNotReadOnly>
+                    }
+                />
                 {/* Sidebar Groups */}
                 <Ui.Sidebar.Group name={"element"} element={<ElementSettingsGroup />} />
                 <Ui.Sidebar.Group name={"style"} element={<StyleSettingsGroup />} />

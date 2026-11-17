@@ -1,0 +1,48 @@
+import { createAbstraction } from "@webiny/feature/admin";
+
+/**
+ * A tool the assistant can call that runs here, in the browser, against the screen the user is on.
+ * The page editor offers "add these elements to the page": the page lives in the editor until the
+ * user saves it, so no server tool can change it.
+ *
+ * The server offers it to the model with each question. A call to it pauses the run; the assistant
+ * presenter runs `execute` and sends the result back, and the run continues.
+ */
+export interface AssistantClientTool {
+    /** Letters, digits and underscores, starting with a letter. Never a server tool's name. */
+    name: string;
+    /** What the tool does and when to use it, written for the model. */
+    description: string;
+    /** JSON Schema of the input, `type: "object"`. */
+    inputSchema: Record<string, unknown>;
+    /**
+     * Run the call. Return what the model should know about the outcome, small and JSON-safe. Throw
+     * to fail it: the model reads the message and usually corrects its call.
+     */
+    execute(input: unknown): Promise<unknown>;
+}
+
+/** Identifies one `register`, so each screen removes only the tools it added. */
+export type AssistantClientToolsOwner = symbol;
+
+export interface IAssistantClientTools {
+    /** Offer these tools until `unregister` is called with the returned owner. */
+    register(tools: AssistantClientTool[]): AssistantClientToolsOwner;
+    unregister(owner: AssistantClientToolsOwner): void;
+    /** Every tool offered now. A newer registration wins a name both use. */
+    list(): AssistantClientTool[];
+    get(name: string): AssistantClientTool | undefined;
+}
+
+/**
+ * The tools the screen the user is on runs for the assistant. A screen registers them when it
+ * mounts and unregisters them when it goes, so a question asked anywhere else is offered none.
+ */
+export const AssistantClientTools =
+    createAbstraction<IAssistantClientTools>("AssistantClientTools");
+
+export namespace AssistantClientTools {
+    export type Interface = IAssistantClientTools;
+    export type Tool = AssistantClientTool;
+    export type Owner = AssistantClientToolsOwner;
+}
