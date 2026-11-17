@@ -7,6 +7,7 @@ import {
     readPgConnectionEnv
 } from "@webiny/api-storage-pg";
 import { forgetPgPassword, isPgPasswordStale, readPgPassword } from "./readPgPassword.js";
+import { checkIdleConnections } from "./checkIdleConnections.js";
 
 export interface CreateLambdaPgConnectionOptions {
     /** Overrides `WEBINY_PG_HOST` (the schema setup connects to the cluster's writer). */
@@ -15,6 +16,15 @@ export interface CreateLambdaPgConnectionOptions {
 
 /** Fail a connect quickly (e.g. to a server that's failing over), so a retry can try again. */
 const DEFAULT_CONNECTION_TIMEOUT_MS = 5_000;
+
+/** The pool closes a connection idle this long. */
+const POOL_IDLE_TIMEOUT_MS = 60_000;
+
+/** A connection idle this long is checked before it's handed out (see `checkIdleConnections`). */
+const CHECK_AFTER_IDLE_MS = 1_000;
+
+/** How long that check waits for the server's reply. */
+const CHECK_TIMEOUT_MS = 2_000;
 
 /* Postgres refused the login: invalid_password, invalid_authorization_specification. */
 const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
@@ -35,6 +45,8 @@ const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
  * - `WEBINY_PG_POOL_MAX` (default 1): a plain Lambda environment serves one request at a time. The
  *   API's web function serves several at once, so its deploy sets a bigger pool
  *   (`<Infra.Postgres poolSize>`, default 8). Either way no connection stays open unused (`min: 0`).
+ *   A connection that sat idle is checked before it's handed out, since the environment may have
+ *   been frozen while the server ended it (see `checkIdleConnections`).
  * - `WEBINY_PG_RETRY_MS` (default 15,000; 0 = off): reads and transactions that lose their
  *   connection run again on a new one (see `withPgConnectionRetry`).
  * - `WEBINY_PG_APPLICATION_NAME` (default: the function's name), `WEBINY_PG_CONNECTION_TIMEOUT_MILLIS`
@@ -93,12 +105,17 @@ export function createLambdaPgConnection(options: CreateLambdaPgConnectionOption
             min: 0,
             max: env.poolMax || 1,
             acquireTimeoutMillis: 15_000,
-            idleTimeoutMillis: 60_000
+            idleTimeoutMillis: POOL_IDLE_TIMEOUT_MS
         },
         acquireConnectionTimeout: 15_000
     });
 
     forgetPasswordOnRefusedLogin(knex);
+    checkIdleConnections(knex, {
+        checkAfterIdleMs: CHECK_AFTER_IDLE_MS,
+        checkTimeoutMs: CHECK_TIMEOUT_MS,
+        maxIdleMs: POOL_IDLE_TIMEOUT_MS
+    });
 
     const retryMs = env.retryMs ?? DEFAULT_PG_RETRY_MS;
     if (retryMs > 0) {
