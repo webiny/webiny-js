@@ -40,7 +40,7 @@ export const EditorConfigComponents = {
         Toolbar,
         Sidebar,
         /**
-         * Panels on the right of the editor, each opened and closed from its tab on the rail.
+         * Panels on the right of the editor, side by side. Each is open or collapsed to a strip on its own.
          */
         Panels,
         IsReadOnly,

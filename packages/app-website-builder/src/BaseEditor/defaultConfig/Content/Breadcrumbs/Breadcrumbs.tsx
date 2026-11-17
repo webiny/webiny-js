@@ -10,7 +10,7 @@ import { Commands } from "~/BaseEditor/index.js";
 export const Breadcrumbs = () => {
     const [activeElement] = useActiveElement();
     const editor = useDocumentEditor();
-    // The toolbar, the open panels and the rail: the bar spans the canvas between them.
+    // The toolbar and the panels, open or collapsed: the bar spans the canvas between them.
     const reservedWidth = useSelectFromEditor(state => state.uiReservedSpace.width);
 
     const items = useSelectFromDocument(

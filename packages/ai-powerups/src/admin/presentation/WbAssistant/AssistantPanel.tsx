@@ -5,8 +5,8 @@ import { Editor } from "@webiny/app-website-builder";
 export const ASSISTANT_PANEL = "aiAssistant";
 
 /**
- * The AI chats panel as an editor panel. The rail decides when it shows; the panel's own close
- * button closes its tab.
+ * The AI chats panel as an editor panel. The editor decides when it shows; the panel's own close
+ * button collapses it.
  */
 export const AssistantPanel = () => {
     const panel = Editor.usePanel(ASSISTANT_PANEL);

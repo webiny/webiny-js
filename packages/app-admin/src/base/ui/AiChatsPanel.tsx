@@ -6,7 +6,7 @@ export interface AiChatsPanelProps {
     className?: string;
     width?: number;
     /**
-     * Set by a host that decides itself when the panel shows, such as the editor's rail: the panel
+     * Set by a host that decides itself when the panel shows, such as the Website Builder editor: the panel
      * then always renders, and its close button calls this. Without it the panel shows while the AI
      * chats presenter says it is open.
      */

@@ -6,8 +6,9 @@ import { makeDecoratable } from "@webiny/app-admin";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { useEditorConfig } from "../EditorConfig.js";
 import { Panel } from "./Panel.js";
+import { CurrentPanelContext } from "./PanelsContext.js";
 import { PanelsContext } from "./PanelsContext.js";
-import { Rail } from "./Rail.js";
+import { CollapsedPanel } from "./CollapsedPanel.js";
 import type { PanelConfig } from "./types.js";
 
 /** Which panels are open, by name. Kept per browser, so the editor opens the way it was left. */
@@ -74,32 +75,32 @@ const BasePanels = makeDecoratable("EditorPanels", () => {
     }, []);
 
     const context = useMemo(() => ({ isOpen, setOpen }), [isOpen, setOpen]);
-    const openPanels = panels.filter(panel => isOpen(panel.name));
-    const tabs = panels.map(panel => ({
-        name: panel.name,
-        label: panel.label,
-        icon: panel.icon,
-        open: isOpen(panel.name)
-    }));
-    const toggle = (name: string) => {
-        const open = isOpen(name);
-        setOpen(name, !open);
-    };
 
     return (
         <PanelsContext.Provider value={context}>
             {/* Not `h-full`: the row stretches it, which is what lets the panels fill the height. */}
             <div className={"flex flex-none"}>
-                {openPanels.map(panel => (
-                    <wb-editor-ui-element
-                        key={panel.name}
-                        data-name={panel.name}
-                        class={"contents"}
-                    >
-                        {panel.element}
-                    </wb-editor-ui-element>
-                ))}
-                <Rail panels={tabs} onToggle={toggle} />
+                {panels.map(panel => {
+                    if (!isOpen(panel.name)) {
+                        return (
+                            <CollapsedPanel
+                                key={panel.name}
+                                label={panel.label}
+                                onExpand={() => setOpen(panel.name, true)}
+                            />
+                        );
+                    }
+                    return (
+                        <CurrentPanelContext.Provider
+                            key={panel.name}
+                            value={{ name: panel.name, label: panel.label }}
+                        >
+                            <wb-editor-ui-element data-name={panel.name} class={"contents"}>
+                                {panel.element}
+                            </wb-editor-ui-element>
+                        </CurrentPanelContext.Provider>
+                    );
+                })}
             </div>
         </PanelsContext.Provider>
     );

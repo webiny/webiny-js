@@ -2,7 +2,6 @@ import React from "react";
 import { RegisterFeature } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
 import { PageEditorConfig } from "@webiny/app-website-builder";
-import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { AssistantPanel } from "./AssistantPanel.js";
 import { ASSISTANT_PANEL } from "./AssistantPanel.js";
 import { PageEditorAssistant } from "./PageEditorAssistant.js";
@@ -28,7 +27,6 @@ export const WbAssistant = () => {
                 <Ui.Panels.Panel
                     name={ASSISTANT_PANEL}
                     label={"AI assistant"}
-                    icon={<AiIcon />}
                     element={<AssistantPanel />}
                 />
                 <Ui.Element

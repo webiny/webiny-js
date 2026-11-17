@@ -5,14 +5,13 @@ import { useIdGenerator } from "@webiny/react-properties";
 
 export interface PanelProps {
     name: string;
-    /** Written down the rail. Short: one or two words. */
+    /** Written down the panel's strip while it is collapsed. Short: one or two words. */
     label?: string;
-    icon?: React.JSX.Element;
     /** The panel itself. It sizes itself and sets `data-affects-preview="width"`. */
     element?: React.JSX.Element;
     /** Whether the panel is open the first time the editor is used. Default `false`. */
     defaultOpen?: boolean;
-    /** Whether the panel's tab shows in a read-only editor. Default `true`. */
+    /** Whether the panel shows in a read-only editor. Default `true`. */
     showInReadOnly?: boolean;
     remove?: boolean;
     before?: string;
@@ -20,8 +19,8 @@ export interface PanelProps {
 }
 
 /**
- * A panel on the right of the editor, opened and closed from its tab on the rail. Open panels sit
- * side by side, in the order they are registered, the first one nearest the canvas.
+ * A panel on the right of the editor. Panels sit side by side, in the order they are registered, the
+ * first one nearest the canvas, and each is open or collapsed to a narrow strip on its own.
  */
 export const Panel = makeDecoratable("EditorPanel", (props: PanelProps) => {
     const getId = useIdGenerator("panel");
@@ -46,7 +45,6 @@ export const Panel = makeDecoratable("EditorPanel", (props: PanelProps) => {
         >
             <Property id={`${id}:name`} name={"name"} value={props.name} />
             <Property id={`${id}:label`} name={"label"} value={props.label ?? props.name} />
-            <Property id={`${id}:icon`} name={"icon"} value={props.icon} />
             <Property id={`${id}:element`} name={"element"} value={props.element} />
             <Property
                 id={`${id}:defaultOpen`}

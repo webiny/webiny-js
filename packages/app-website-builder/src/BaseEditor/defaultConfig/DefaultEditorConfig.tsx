@@ -12,7 +12,6 @@ import { ElementInputRenderers } from "./ElementInputRenderers.js";
 import { ContentPreviewConfig } from "./Content/ContentPreviewConfig.js";
 import { CloneElementAction } from "./Sidebar/ElementActions/CloneElementAction.js";
 import { DeleteElementAction } from "./Sidebar/ElementActions/DeleteElementAction.js";
-import { ReactComponent as PropertiesIcon } from "@webiny/icons/tune.svg";
 
 const { Ui } = EditorConfig;
 
@@ -40,7 +39,6 @@ export const DefaultEditorConfig = React.memo(() => {
                 <Ui.Panels.Panel
                     name={"properties"}
                     label={"Properties"}
-                    icon={<PropertiesIcon />}
                     defaultOpen={true}
                     showInReadOnly={false}
                     element={
