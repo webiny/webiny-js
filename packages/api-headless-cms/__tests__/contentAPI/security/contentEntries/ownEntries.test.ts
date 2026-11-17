@@ -256,6 +256,89 @@ describe("Own Entries Permissions Checks", () => {
         expect(published.isOk()).toBe(true);
         expect(published.value.map(item => item.id)).toEqual([entryB.id]);
     });
+
+    it("should not allow updating entries of other users by overriding createdBy", async () => {
+        const { manageApiA, manageApiB, entryARev2 } = await setup();
+
+        const update = await manageApiB.updateTestEntry({
+            variables: {
+                revision: entryARev2.id,
+                data: {
+                    createdBy: identityB,
+                    values: { title: "Updated by B", slug: "updated-by-b" }
+                }
+            }
+        });
+        expect(update.data).toBeNull();
+        expect(update.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        // The stored entry is unchanged.
+        const stored = await manageApiA.getTestEntry({
+            variables: { revision: entryARev2.id }
+        });
+        expect(stored.error).toBeNull();
+        expect(stored.data).toMatchObject({
+            createdBy: { id: "a" },
+            values: { title: entryARev2.values.title }
+        });
+    });
+
+    it("should not allow creating revisions from entries of other users by overriding createdBy", async () => {
+        const { manageApiA, manageApiB, entryA, entryARev2 } = await setup();
+
+        const createFrom = await manageApiB.createTestEntryFrom({
+            variables: {
+                revision: entryARev2.id,
+                data: {
+                    createdBy: identityB,
+                    values: { title: "Revision by B", slug: "revision-by-b" }
+                }
+            }
+        });
+        expect(createFrom.data).toBeNull();
+        expect(createFrom.error).toMatchObject({ code: "Cms/Entry/NotAuthorized" });
+
+        // No new revision was created.
+        const latest = await manageApiA.getTestEntry({
+            variables: { entryId: entryA.entryId }
+        });
+        expect(latest.error).toBeNull();
+        expect(latest.data).toMatchObject({ id: entryARev2.id, createdBy: { id: "a" } });
+    });
+
+    it("should ignore createdBy overrides when updating or creating revisions from own entries", async () => {
+        const { manageApiB, entryB, entryBRev2 } = await setup();
+
+        const update = await manageApiB.updateTestEntry({
+            variables: {
+                revision: entryBRev2.id,
+                data: {
+                    createdBy: identityA,
+                    values: { title: "Updated by B", slug: "updated-by-b" }
+                }
+            }
+        });
+        expect(update.error).toBeNull();
+        expect(update.data).toMatchObject({
+            createdBy: { id: "b" },
+            values: { title: "Updated by B" }
+        });
+
+        const createFrom = await manageApiB.createTestEntryFrom({
+            variables: {
+                revision: entryB.id,
+                data: {
+                    createdBy: identityA,
+                    values: { title: "Revision by B", slug: "revision-by-b" }
+                }
+            }
+        });
+        expect(createFrom.error).toBeNull();
+        expect(createFrom.data).toMatchObject({
+            createdBy: { id: "b" },
+            values: { title: "Revision by B" }
+        });
+    });
 });
 
 describe("Own Entries Permissions Checks - singleton model", () => {
