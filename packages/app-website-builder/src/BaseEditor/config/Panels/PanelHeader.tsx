@@ -3,7 +3,7 @@ import { IconButton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as LeftPanelIcon } from "@webiny/icons/left_panel_open.svg";
 import { ReactComponent as RightPanelIcon } from "@webiny/icons/right_panel_open.svg";
-import { useCurrentPanel } from "./usePanel.js";
+import { useCurrentPanel } from "./useCurrentPanel.js";
 
 /**
  * The panel's label and its collapse button, for content that renders inside a panel. Renders

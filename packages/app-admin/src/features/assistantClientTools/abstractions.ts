@@ -46,7 +46,6 @@ export interface IAssistantClientTools {
     unregister(owner: AssistantClientToolsOwner): void;
     /** Every tool offered now. A newer registration wins a name both use. */
     list(): AssistantClientTool[];
-    get(name: string): AssistantClientTool | undefined;
     /**
      * Run one call with the tool of that name among `offered`, the tools the request that led to it
      * offered. Never throws: a tool that throws, or one no longer registered because its screen was

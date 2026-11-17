@@ -1,8 +1,8 @@
 import type { ToolPipelineRunner } from "@webiny/app-admin";
 import type { ToolRegistry } from "@webiny/app-admin";
 import { Editor } from "@webiny/app-website-builder";
-import { $getElementInputValues } from "@webiny/app-website-builder/editorSdk/utils/$getElementInputValues.js";
-import { $updateElementInputs } from "@webiny/app-website-builder/editorSdk/utils/$updateElementInputs.js";
+import { $getElementInputValues } from "@webiny/app-website-builder";
+import { $updateElementInputs } from "@webiny/app-website-builder";
 import { describeValueTools } from "~/admin/presentation/WbAiContext/describeValueTools.js";
 import type { PageEditorAccess } from "./pageEditorTools.js";
 import type { PageEditor } from "./types.js";

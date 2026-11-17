@@ -2,7 +2,7 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { RegisterFeature } from "@webiny/app-admin";
 import { Layout } from "./Layout.js";
-import { AiChatsPanelDecorator } from "./AiChats/AiChatsPanel.js";
+import { AiChatsPanelDecorator } from "./AiChats/AiChatsPanelDecorator.js";
 import { Navigation } from "./Navigation/Navigation.js";
 import { UserMenu } from "~/UserMenu.js";
 import { Dialog } from "./Dialog.js";

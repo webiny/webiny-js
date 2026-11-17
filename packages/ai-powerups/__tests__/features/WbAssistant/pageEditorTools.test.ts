@@ -10,10 +10,12 @@ import { outlineLines } from "~/admin/presentation/WbAssistant/outlineLines.js";
 
 type Elements = Document["elements"];
 
+const TITLE_INPUTS: ComponentManifest["inputs"] = [{ type: "text", name: "title" }];
+
 const manifest = (name: string, extra: Partial<ComponentManifest> = {}): ComponentManifest => ({
     name,
     label: name,
-    inputs: [{ type: "text", name: "title" }] as ComponentManifest["inputs"],
+    inputs: TITLE_INPUTS,
     tags: [],
     ...extra
 });
@@ -34,7 +36,7 @@ const fakeEditor = (refuse: string[] = []) => {
         root: { type: "Webiny/Element", id: "root", component: { name: "Root" } }
     };
     const updates: { id: string; inputs: Record<string, unknown> }[] = [];
-    const created: unknown[] = [];
+    const created: Parameters<PageEditorAccess["createElement"]>[0][] = [];
 
     const access: PageEditorAccess = {
         components: () => COMPONENTS,
@@ -133,8 +135,9 @@ describe("page editor tools", () => {
 
         await run("addPageElements", { elements: [{ component: "Webiny/Grid" }] });
 
-        expect(created[0]).toMatchObject({ bindings: {} });
-        expect((created[0] as { bindings: object }).bindings).not.toHaveProperty("inputs");
+        const [params] = created;
+        expect(params).toMatchObject({ bindings: {} });
+        expect(params.bindings).not.toHaveProperty("inputs");
     });
 
     it("refuses a negative position before changing anything", async () => {

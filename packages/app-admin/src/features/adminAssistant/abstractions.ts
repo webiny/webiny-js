@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import type { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import type { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
+import type { AssistantClientTools } from "~/features/assistantClientTools/abstractions.js";
 
 /**
  * A message of a saved chat. Opaque on purpose: the admin only reads them to show an opened chat,
@@ -38,20 +39,11 @@ export interface AdminAssistantClientToolDeclaration {
     inputSchema: Record<string, unknown>;
 }
 
-/** A call the server paused on, for a tool the browser runs. */
-export interface AdminAssistantClientToolCall {
-    toolCallId: string;
-    toolName: string;
-    input: unknown;
-}
+/** A call the server paused on, for a tool the browser runs: the one `AssistantClientTools` runs. */
+export type AdminAssistantClientToolCall = AssistantClientTools.Call;
 
 /** What the browser reports back for one call: its output, or why it failed. */
-export interface AdminAssistantClientToolResult {
-    toolCallId: string;
-    toolName: string;
-    output?: unknown;
-    error?: string;
-}
+export type AdminAssistantClientToolResult = AssistantClientTools.Result;
 
 /**
  * A question, or what a paused run waits for: decisions on its approvals and results of the calls

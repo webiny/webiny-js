@@ -322,9 +322,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
              * question: those changes were made, so the model is told what they came to. Only the
              * calls that did not run are reported as not run.
              */
-            const ran = new Map(
-                (params.toolResults ?? []).map(result => [result.toolCallId, result])
-            );
+            const results = params.toolResults ?? [];
+            const byCallId = results.map(result => [result.toolCallId, result] as const);
+            const ran = new Map(byCallId);
             const answered = waitingCalls.map(call => {
                 const result = ran.get(call.toolCallId);
                 if (result && result.toolName === call.toolName) {

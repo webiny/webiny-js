@@ -190,7 +190,8 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
             inputSchema: { type: "object", properties: {} },
             async execute() {
                 // Global components have one instance per site, placed by the layout, not the page.
-                const manifests = Object.values(access.components());
+                const components = access.components();
+                const manifests = Object.values(components);
                 const placeable = manifests.filter(component => !component.global);
                 return {
                     components: aiComponentCatalog(placeable),

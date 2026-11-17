@@ -24,7 +24,8 @@ type OpenState = Record<string, boolean>;
 
 const readStored = (side: PanelSide): OpenState => {
     try {
-        const raw = window.localStorage.getItem(storageKey(side));
+        const key = storageKey(side);
+        const raw = window.localStorage.getItem(key);
         const parsed: unknown = raw ? JSON.parse(raw) : {};
         const state: OpenState = {};
         if (typeof parsed === "object" && parsed !== null) {
@@ -44,7 +45,8 @@ const readStored = (side: PanelSide): OpenState => {
 const store = (side: PanelSide, state: OpenState): void => {
     try {
         const serialized = JSON.stringify(state);
-        window.localStorage.setItem(storageKey(side), serialized);
+        const key = storageKey(side);
+        window.localStorage.setItem(key, serialized);
     } catch {
         // Private mode or a full quota: the panels still work, they just won't be remembered.
     }

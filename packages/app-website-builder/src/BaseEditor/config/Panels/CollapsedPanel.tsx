@@ -17,17 +17,23 @@ export interface CollapsedPanelProps {
  * where the open panel's collapse button is (`PanelHeader`), so it does not jump when toggled.
  */
 export const CollapsedPanel = ({ label, side, onExpand }: CollapsedPanelProps) => {
+    // On the canvas side of the strip.
+    let border = "border-l-sm border-l-neutral-dimmed";
+    if (side === "left") {
+        border = "border-r-sm border-r-neutral-dimmed";
+    }
+
     return (
-        // The whole strip opens the panel, label included. The button is there for the keyboard; its
-        // click reaches this handler too.
+        /*
+         * The whole strip opens the panel, label included. The button is there for the keyboard; its
+         * click reaches this handler too.
+         */
         <div
             data-role={"editor-collapsed-panel"}
             onClick={onExpand}
             className={cn(
                 "flex h-full w-[45px] flex-none cursor-pointer flex-col items-center gap-md bg-neutral-base pt-sm select-none hover:bg-neutral-light",
-                side === "left"
-                    ? "border-r-sm border-r-neutral-dimmed"
-                    : "border-l-sm border-l-neutral-dimmed"
+                border
             )}
         >
             <div className={"flex h-[40px] items-center"}>

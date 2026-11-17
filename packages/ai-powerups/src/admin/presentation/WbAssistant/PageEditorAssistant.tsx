@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFeature } from "@webiny/app";
-import { useDocumentEditor } from "@webiny/app-website-builder/DocumentEditor/index.js";
-import { useSelectFromEditor } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromEditor.js";
+import { useDocumentEditor } from "@webiny/app-website-builder";
+import { useSelectFromEditor } from "@webiny/app-website-builder";
 import { PageEditorAssistantFeature } from "./feature.js";
 import type { PageDocument } from "./types.js";
 

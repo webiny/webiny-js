@@ -21,8 +21,10 @@ export const useReservedUISpace = (callback: (dimensions: Dimensions) => void) =
                 return affects.split(",").map(s => s.trim());
             };
 
-            // An element inside another one that is counted for the same dimension is part of it:
-            // an editor panel's content inside the panel, which animates its width.
+            /*
+             * An element inside another one that is counted for the same dimension is part of it:
+             * an editor panel's content inside the panel, which animates its width.
+             */
             const isNested = (el: Element, track: string) => {
                 let parent = el.parentElement?.closest("[data-affects-preview]");
                 while (parent) {

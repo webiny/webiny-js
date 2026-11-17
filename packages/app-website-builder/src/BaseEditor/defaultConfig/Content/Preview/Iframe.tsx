@@ -67,8 +67,10 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
                 style={{
                     position: "relative",
                     width: `${previewWidth}px`,
-                    // The width eases over 300ms; while an editor panel opens beside the canvas,
-                    // this keeps the preview inside the narrowing canvas instead of clipped by it.
+                    /*
+                     * The width eases over 300ms; while an editor panel opens beside the canvas,
+                     * this keeps the preview inside the narrowing canvas instead of clipped by it.
+                     */
                     maxWidth: "100%",
                     minHeight: `${viewport.scrollHeight}px`
                 }}

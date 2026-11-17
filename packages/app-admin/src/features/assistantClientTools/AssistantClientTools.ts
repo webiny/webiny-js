@@ -43,10 +43,6 @@ class AssistantClientToolsImpl implements Abstraction.Interface {
         return this.entries.some(entry => entry.tools.includes(tool));
     }
 
-    get(name: string): Abstraction.Tool | undefined {
-        return this.list().find(tool => tool.name === name);
-    }
-
     async run(call: Abstraction.Call, offered: Abstraction.Tool[]): Promise<Abstraction.Result> {
         const { toolCallId, toolName } = call;
         const tool = offered.find(candidate => candidate.name === toolName);

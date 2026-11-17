@@ -6,7 +6,6 @@ import { IconButton } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { SidePanel } from "@webiny/admin-ui";
 import { AdminAssistantFeature } from "@webiny/app-admin";
-import { AiChatsPanelRenderer } from "@webiny/app-admin";
 import type { AiChatsPanelProps } from "@webiny/app-admin";
 import { AiChatsPanelFeature } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
@@ -170,10 +169,3 @@ const AiChatsPanelBase = ({
 };
 
 export const AiChatsPanel = createReactiveComponent(AiChatsPanelBase);
-
-/** The same panel, for screens outside the admin frame that render `AiChatsPanelRenderer`. */
-export const AiChatsPanelDecorator = AiChatsPanelRenderer.createDecorator(() => {
-    return function AiChatsPanelRendererImpl(props: AiChatsPanelProps) {
-        return <AiChatsPanel {...props} />;
-    };
-});

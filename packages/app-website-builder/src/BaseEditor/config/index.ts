@@ -1,2 +1,3 @@
 export * from "./EditorConfig.js";
-export { usePanel, useCurrentPanel } from "./Panels/usePanel.js";
+export { usePanel } from "./Panels/usePanel.js";
+export { useCurrentPanel } from "./Panels/useCurrentPanel.js";

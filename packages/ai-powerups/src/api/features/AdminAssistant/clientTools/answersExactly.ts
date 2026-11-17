@@ -9,7 +9,8 @@ export const answersExactly = (
     results: ClientToolResult[],
     waiting: { toolCallId: string; toolName: string }[]
 ): boolean => {
-    const names = new Map(results.map(result => [result.toolCallId, result.toolName]));
+    const byCallId = results.map(result => [result.toolCallId, result.toolName] as const);
+    const names = new Map(byCallId);
     if (names.size !== results.length || names.size !== waiting.length) {
         return false;
     }
