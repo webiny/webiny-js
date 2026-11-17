@@ -151,75 +151,9 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                 const policy: aws.iam.PolicyDocument = {
                     Version: "2012-10-17",
                     Statement: [
-                        {
-                            Sid: "PermissionForDynamodb",
-                            Effect: "Allow",
-                            Action: [
-                                "dynamodb:BatchGetItem",
-                                "dynamodb:BatchWriteItem",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:CreateBackup",
-                                "dynamodb:CreateTable",
-                                "dynamodb:CreateTableReplica",
-                                "dynamodb:DeleteBackup",
-                                "dynamodb:DeleteItem",
-                                "dynamodb:DeleteTable",
-                                "dynamodb:DeleteTableReplica",
-                                "dynamodb:DescribeBackup",
-                                "dynamodb:DescribeContinuousBackups",
-                                "dynamodb:DescribeContributorInsights",
-                                "dynamodb:DescribeExport",
-                                "dynamodb:DescribeKinesisStreamingDestination",
-                                "dynamodb:DescribeLimits",
-                                "dynamodb:DescribeReservedCapacity",
-                                "dynamodb:DescribeReservedCapacityOfferings",
-                                "dynamodb:DescribeStream",
-                                "dynamodb:DescribeTable",
-                                "dynamodb:DescribeTableReplicaAutoScaling",
-                                "dynamodb:DescribeTimeToLive",
-                                "dynamodb:DisableKinesisStreamingDestination",
-                                "dynamodb:EnableKinesisStreamingDestination",
-                                "dynamodb:ExportTableToPointInTime",
-                                "dynamodb:GetItem",
-                                "dynamodb:GetRecords",
-                                "dynamodb:GetShardIterator",
-                                "dynamodb:ListBackups",
-                                "dynamodb:ListContributorInsights",
-                                "dynamodb:ListExports",
-                                "dynamodb:ListStreams",
-                                "dynamodb:ListTables",
-                                "dynamodb:ListTagsOfResource",
-                                "dynamodb:PartiQLDelete",
-                                "dynamodb:PartiQLInsert",
-                                "dynamodb:PartiQLSelect",
-                                "dynamodb:PartiQLUpdate",
-                                "dynamodb:PurchaseReservedCapacityOfferings",
-                                "dynamodb:PutItem",
-                                "dynamodb:Query",
-                                "dynamodb:RestoreTableFromBackup",
-                                "dynamodb:RestoreTableToPointInTime",
-                                "dynamodb:Scan",
-                                "dynamodb:UpdateContinuousBackups",
-                                "dynamodb:UpdateContributorInsights",
-                                "dynamodb:UpdateItem",
-                                "dynamodb:UpdateTable",
-                                "dynamodb:UpdateTableReplicaAutoScaling",
-                                "dynamodb:UpdateTimeToLive"
-                            ],
-                            Resource: [
-                                `${core.primaryDynamodbTableArn}`,
-                                `${core.primaryDynamodbTableArn}/*`,
-                                `${core.auditLogsDynamodbTableArn}`,
-                                `${core.auditLogsDynamodbTableArn}/*`,
-                                // Attach permissions for elastic search dynamo as well (if ES is enabled).
-                                ...(core.opensearchDynamodbTableArn
-                                    ? [
-                                          `${core.opensearchDynamodbTableArn}`,
-                                          `${core.opensearchDynamodbTableArn}/*`
-                                      ]
-                                    : [])
-                            ]
-                        },
+                        // The core's DynamoDB tables: only the OpenSearch one, if any, with
+                        // `<Infra.Postgres />`.
+                        ...createDynamoDbStatements(core),
                         {
                             Sid: "PermissionForS3",
                             Effect: "Allow",
@@ -281,4 +215,84 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
             })
         }
     });
+}
+
+/*
+ * Every DynamoDB action on the core's tables that exist: the primary and audit logs ones (none with
+ * `<Infra.Postgres />`) and the OpenSearch one (with OpenSearch). No statement when there are none.
+ */
+function createDynamoDbStatements(core: {
+    primaryDynamodbTableArn: string | undefined;
+    auditLogsDynamodbTableArn: string | undefined;
+    opensearchDynamodbTableArn: string | undefined;
+}): aws.iam.PolicyStatement[] {
+    const tableArns = [
+        core.primaryDynamodbTableArn,
+        core.auditLogsDynamodbTableArn,
+        core.opensearchDynamodbTableArn
+    ].filter((arn): arn is string => Boolean(arn));
+
+    if (!tableArns.length) {
+        return [];
+    }
+
+    return [
+        {
+            Sid: "PermissionForDynamodb",
+            Effect: "Allow",
+            Action: [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:CreateBackup",
+                "dynamodb:CreateTable",
+                "dynamodb:CreateTableReplica",
+                "dynamodb:DeleteBackup",
+                "dynamodb:DeleteItem",
+                "dynamodb:DeleteTable",
+                "dynamodb:DeleteTableReplica",
+                "dynamodb:DescribeBackup",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeContributorInsights",
+                "dynamodb:DescribeExport",
+                "dynamodb:DescribeKinesisStreamingDestination",
+                "dynamodb:DescribeLimits",
+                "dynamodb:DescribeReservedCapacity",
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:DescribeStream",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeTableReplicaAutoScaling",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DisableKinesisStreamingDestination",
+                "dynamodb:EnableKinesisStreamingDestination",
+                "dynamodb:ExportTableToPointInTime",
+                "dynamodb:GetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:ListBackups",
+                "dynamodb:ListContributorInsights",
+                "dynamodb:ListExports",
+                "dynamodb:ListStreams",
+                "dynamodb:ListTables",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:PartiQLDelete",
+                "dynamodb:PartiQLInsert",
+                "dynamodb:PartiQLSelect",
+                "dynamodb:PartiQLUpdate",
+                "dynamodb:PurchaseReservedCapacityOfferings",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:RestoreTableFromBackup",
+                "dynamodb:RestoreTableToPointInTime",
+                "dynamodb:Scan",
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:UpdateContributorInsights",
+                "dynamodb:UpdateItem",
+                "dynamodb:UpdateTable",
+                "dynamodb:UpdateTableReplicaAutoScaling",
+                "dynamodb:UpdateTimeToLive"
+            ],
+            Resource: tableArns.flatMap(arn => [arn, `${arn}/*`])
+        }
+    ];
 }

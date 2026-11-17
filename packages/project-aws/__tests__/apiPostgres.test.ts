@@ -7,7 +7,8 @@ import {
     createPostgresSecretPolicy,
     createSchemaSetupEvent,
     getPostgresLambdaEnv,
-    getPostgresLambdaEnvFromCore
+    getPostgresLambdaEnvFromCore,
+    getSchemaSetupServiceManifests
 } from "~/pulumi/apps/api/ApiSchemaSetup.js";
 import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
 import { ApiGraphqlStream } from "~/pulumi/apps/api/ApiGraphqlStream.js";
@@ -99,7 +100,11 @@ const createFakeApi = (postgres: PostgresOutputs) => {
         ...postgres,
         eventBusName: "event-bus",
         eventBusArn: "event-bus-arn",
-        fileManagerBucketId: "fm-bucket"
+        fileManagerBucketId: "fm-bucket",
+        // As the core deploy puts it in its output with `<Infra.Postgres />`.
+        serviceManifests: [
+            { name: "core", manifest: { eventBus: { arn: "event-bus-arn", name: "event-bus" } } }
+        ]
     });
 
     modules.set(CoreOutput, core);
@@ -184,8 +189,13 @@ const addApiModules = (fake: ReturnType<typeof createFakeApi>) => {
     });
     const schemaSetup = app.addModule(ApiSchemaSetup as never, {
         postgres: core,
-        // An output, as `withServiceManifest` gives it once every manifest is added.
-        serviceManifests: pulumi.output(serviceManifests),
+        // As `createApiPulumiApp` passes them: the core's, from its stack output, then the api's
+        // own, an output as `withServiceManifest` gives it once every manifest is added.
+        serviceManifests: pulumi
+            .all([core.serviceManifests, pulumi.output(serviceManifests)])
+            .apply(([coreManifests, apiManifests]) =>
+                getSchemaSetupServiceManifests(coreManifests, apiManifests)
+            ),
         trigger: "deploy-1"
     }) as ApiSchemaSetup;
     return { graphql, schemaSetup, serviceManifests };
@@ -309,7 +319,7 @@ describe("the schema setup on deploy", () => {
         }
     });
 
-    it("invokes the schema-setup function with the api and scheduler manifests, on every deploy, after the secret permission", async () => {
+    it("invokes the schema-setup function with the core, api and scheduler manifests, on every deploy, after the secret permission", async () => {
         const fake = createFakeApi(WRITER_ONLY);
         const { schemaSetup, serviceManifests } = addApiModules(fake);
 
@@ -322,6 +332,10 @@ describe("the schema setup on deploy", () => {
         expect(input).toEqual({
             WebinySqlSchemaSetup: {
                 serviceManifests: [
+                    {
+                        name: "core",
+                        manifest: { eventBus: { arn: "event-bus-arn", name: "event-bus" } }
+                    },
                     {
                         name: "api",
                         manifest: {
