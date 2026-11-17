@@ -1,8 +1,11 @@
 import type React from "react";
 
-/** A panel on the right of the editor, as the editor config holds it. */
+export type PanelSide = "left" | "right";
+
+/** A panel beside the canvas, as the editor config holds it. */
 export interface PanelConfig {
     name: string;
+    side: PanelSide;
     /** Written down the panel's strip while it is collapsed. */
     label: string;
     /** The panel itself. It sizes itself and sets `data-affects-preview="width"`. */

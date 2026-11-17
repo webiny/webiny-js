@@ -9,16 +9,23 @@ import { Panel } from "./Panel.js";
 import { CurrentPanelContext } from "./PanelsContext.js";
 import { PanelsContext } from "./PanelsContext.js";
 import { CollapsedPanel } from "./CollapsedPanel.js";
+import { PanelHeader } from "./PanelHeader.js";
 import type { PanelConfig } from "./types.js";
+import type { PanelSide } from "./types.js";
 
-/** Which panels are open, by name. Kept per browser, so the editor opens the way it was left. */
-const STORAGE_KEY = "wb-editor/panels";
+/**
+ * Which panels are open, by name. Kept per browser, so the editor opens the way it was left. One key
+ * per side: each side's state is its own, and one side writing the other's would undo its changes.
+ */
+const storageKey = (side: PanelSide) => {
+    return side === "right" ? "wb-editor/panels" : `wb-editor/panels/${side}`;
+};
 
 type OpenState = Record<string, boolean>;
 
-const readStored = (): OpenState => {
+const readStored = (side: PanelSide): OpenState => {
     try {
-        const raw = window.localStorage.getItem(STORAGE_KEY);
+        const raw = window.localStorage.getItem(storageKey(side));
         const parsed: unknown = raw ? JSON.parse(raw) : {};
         const state: OpenState = {};
         if (typeof parsed === "object" && parsed !== null) {
@@ -35,25 +42,37 @@ const readStored = (): OpenState => {
     return {};
 };
 
-const store = (state: OpenState): void => {
+const store = (side: PanelSide, state: OpenState): void => {
     try {
         const serialized = JSON.stringify(state);
-        window.localStorage.setItem(STORAGE_KEY, serialized);
+        window.localStorage.setItem(storageKey(side), serialized);
     } catch {
         // Private mode or a full quota: the panels still work, they just won't be remembered.
     }
 };
 
-const BasePanels = makeDecoratable("EditorPanels", () => {
+export interface PanelsProps {
+    /** Default `"right"`. */
+    side?: PanelSide;
+}
+
+const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsProps) => {
     const config = useEditorConfig();
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
-    const [stored, setStored] = useState<OpenState>(readStored);
+    const [stored, setStored] = useState<OpenState>(() => readStored(side));
+    // Read by `autoFocus`, which only acts when the button mounts, so it is never cleared.
+    const [toggled, setToggled] = useState<string | null>(null);
 
     const panels = useMemo(() => {
         // Absent until a panel is registered.
         const all: PanelConfig[] = config.panels ?? [];
-        return all.filter(panel => panel.showInReadOnly || !isReadOnly);
-    }, [config.panels, isReadOnly]);
+        const shown = all.filter(panel => {
+            const panelSide = panel.side ?? "right";
+            return panelSide === side && (panel.showInReadOnly || !isReadOnly);
+        });
+        // The first one registered sits nearest the canvas.
+        return side === "left" ? shown.reverse() : shown;
+    }, [config.panels, isReadOnly, side]);
 
     const isOpen = useCallback(
         (name: string) => {
@@ -66,15 +85,19 @@ const BasePanels = makeDecoratable("EditorPanels", () => {
         [stored, panels]
     );
 
-    const setOpen = useCallback((name: string, open: boolean) => {
-        setStored(current => {
-            const next = { ...current, [name]: open };
-            store(next);
-            return next;
-        });
-    }, []);
+    const setOpen = useCallback(
+        (name: string, open: boolean) => {
+            setToggled(name);
+            setStored(current => {
+                const next = { ...current, [name]: open };
+                store(side, next);
+                return next;
+            });
+        },
+        [side]
+    );
 
-    const context = useMemo(() => ({ isOpen, setOpen }), [isOpen, setOpen]);
+    const context = useMemo(() => ({ isOpen, setOpen, toggled }), [isOpen, setOpen, toggled]);
 
     return (
         <PanelsContext.Provider value={context}>
@@ -86,6 +109,8 @@ const BasePanels = makeDecoratable("EditorPanels", () => {
                             <CollapsedPanel
                                 key={panel.name}
                                 label={panel.label}
+                                side={side}
+                                autoFocus={toggled === panel.name}
                                 onExpand={() => setOpen(panel.name, true)}
                             />
                         );
@@ -93,7 +118,7 @@ const BasePanels = makeDecoratable("EditorPanels", () => {
                     return (
                         <CurrentPanelContext.Provider
                             key={panel.name}
-                            value={{ name: panel.name, label: panel.label }}
+                            value={{ name: panel.name, label: panel.label, side }}
                         >
                             <wb-editor-ui-element data-name={panel.name} class={"contents"}>
                                 {panel.element}
@@ -106,4 +131,4 @@ const BasePanels = makeDecoratable("EditorPanels", () => {
     );
 });
 
-export const Panels = Object.assign(BasePanels, { Panel });
+export const Panels = Object.assign(BasePanels, { Panel, Header: PanelHeader });

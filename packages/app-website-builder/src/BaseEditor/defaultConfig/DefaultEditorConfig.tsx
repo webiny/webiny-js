@@ -37,6 +37,18 @@ export const DefaultEditorConfig = React.memo(() => {
                 />
                 <Ui.Toolbar.Element name={"navigator"} group={"tabs"} element={<NavigatorTab />} />
                 <Ui.Panels.Panel
+                    name={"elements"}
+                    side={"left"}
+                    label={"Elements"}
+                    defaultOpen={true}
+                    showInReadOnly={false}
+                    element={
+                        <Ui.IsNotReadOnly>
+                            <Ui.Toolbar />
+                        </Ui.IsNotReadOnly>
+                    }
+                />
+                <Ui.Panels.Panel
                     name={"properties"}
                     label={"Properties"}
                     defaultOpen={true}

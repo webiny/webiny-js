@@ -2,9 +2,12 @@ import React from "react";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Property } from "@webiny/react-properties";
 import { useIdGenerator } from "@webiny/react-properties";
+import type { PanelSide } from "./types.js";
 
 export interface PanelProps {
     name: string;
+    /** Which side of the canvas the panel is on. Default `"right"`. */
+    side?: PanelSide;
     /** Written down the panel's strip while it is collapsed. Short: one or two words. */
     label?: string;
     /** The panel itself. It sizes itself and sets `data-affects-preview="width"`. */
@@ -19,8 +22,8 @@ export interface PanelProps {
 }
 
 /**
- * A panel on the right of the editor. Panels sit side by side, in the order they are registered, the
- * first one nearest the canvas, and each is open or collapsed to a narrow strip on its own.
+ * A panel beside the canvas. Panels on a side sit side by side, in the order they are registered,
+ * the first one nearest the canvas, and each is open or collapsed to a narrow strip on its own.
  */
 export const Panel = makeDecoratable("EditorPanel", (props: PanelProps) => {
     const getId = useIdGenerator("panel");
@@ -44,6 +47,7 @@ export const Panel = makeDecoratable("EditorPanel", (props: PanelProps) => {
             after={after}
         >
             <Property id={`${id}:name`} name={"name"} value={props.name} />
+            <Property id={`${id}:side`} name={"side"} value={props.side ?? "right"} />
             <Property id={`${id}:label`} name={"label"} value={props.label ?? props.name} />
             <Property id={`${id}:element`} name={"element"} value={props.element} />
             <Property

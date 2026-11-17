@@ -1,0 +1,34 @@
+import React from "react";
+import { IconButton } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { ReactComponent as LeftPanelIcon } from "@webiny/icons/left_panel_open.svg";
+import { ReactComponent as RightPanelIcon } from "@webiny/icons/right_panel_open.svg";
+import { useCurrentPanel } from "./usePanel.js";
+
+/**
+ * The panel's label and its collapse button, for content that renders inside a panel. Renders
+ * nothing outside one. The button lines up with the open button on the collapsed strip
+ * (`CollapsedPanel`), so it stays put when the panel is toggled.
+ */
+export const PanelHeader = () => {
+    const panel = useCurrentPanel();
+    if (!panel) {
+        return null;
+    }
+
+    return (
+        <div className={"mb-sm flex h-xl flex-none items-center justify-between"}>
+            <Text as="div" size={"sm"} className={"font-semibold text-neutral-primary"}>
+                {panel.label}
+            </Text>
+            <IconButton
+                variant={"ghost"}
+                size={"xs"}
+                icon={panel.side === "left" ? <RightPanelIcon /> : <LeftPanelIcon />}
+                title={`Collapse ${panel.label}`}
+                autoFocus={panel.justOpened}
+                onClick={panel.close}
+            />
+        </div>
+    );
+};

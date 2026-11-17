@@ -4,14 +4,11 @@ import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { $getComponentManifestByElementId } from "~/editorSdk/utils/index.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
-import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { Commands } from "~/BaseEditor/index.js";
 
 export const Breadcrumbs = () => {
     const [activeElement] = useActiveElement();
     const editor = useDocumentEditor();
-    // The toolbar and the panels, open or collapsed: the bar spans the canvas between them.
-    const reservedWidth = useSelectFromEditor(state => state.uiReservedSpace.width);
 
     const items = useSelectFromDocument(
         document => {
@@ -60,7 +57,6 @@ export const Breadcrumbs = () => {
             data-role={"content-breadcrumbs"}
             data-hover-manager={"ignore"}
             data-affects-preview={"height"}
-            style={{ width: `calc(100% - ${reservedWidth}px)` }}
         >
             {items.map(({ id, label }, index) => (
                 <li
