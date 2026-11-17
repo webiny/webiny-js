@@ -16,16 +16,33 @@ export const useReservedUISpace = (callback: (dimensions: Dimensions) => void) =
             let totalWidth = 0;
             let totalHeight = 0;
 
-            elements.forEach(el => {
+            const tracksOf = (el: Element) => {
                 const affects = el.getAttribute("data-affects-preview") ?? "";
-                const tracks = affects.split(",").map(s => s.trim());
+                return affects.split(",").map(s => s.trim());
+            };
+
+            // An element inside another one that is counted for the same dimension is part of it:
+            // an editor panel's content inside the panel, which animates its width.
+            const isNested = (el: Element, track: string) => {
+                let parent = el.parentElement?.closest("[data-affects-preview]");
+                while (parent) {
+                    if (tracksOf(parent).includes(track)) {
+                        return true;
+                    }
+                    parent = parent.parentElement?.closest("[data-affects-preview]");
+                }
+                return false;
+            };
+
+            elements.forEach(el => {
+                const tracks = tracksOf(el);
                 const rect = el.getBoundingClientRect();
 
-                if (tracks.includes("width")) {
+                if (tracks.includes("width") && !isNested(el, "width")) {
                     totalWidth += rect.width;
                 }
 
-                if (tracks.includes("height")) {
+                if (tracks.includes("height") && !isNested(el, "height")) {
                     totalHeight += rect.height;
                 }
             });

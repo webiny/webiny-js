@@ -8,7 +8,8 @@ import { useCurrentPanel } from "./usePanel.js";
 /**
  * The panel's label and its collapse button, for content that renders inside a panel. Renders
  * nothing outside one. The button lines up with the open button on the collapsed strip
- * (`CollapsedPanel`), so it stays put when the panel is toggled.
+ * (`CollapsedPanel`), so it stays put when the panel is toggled. `data-panel-collapse` is how
+ * `PanelSlot` finds it to move focus to it after the panel opens.
  */
 export const PanelHeader = () => {
     const panel = useCurrentPanel();
@@ -26,7 +27,7 @@ export const PanelHeader = () => {
                 size={"xs"}
                 icon={panel.side === "left" ? <RightPanelIcon /> : <LeftPanelIcon />}
                 title={`Collapse ${panel.label}`}
-                autoFocus={panel.justOpened}
+                data-panel-collapse
                 onClick={panel.close}
             />
         </div>

@@ -6,9 +6,8 @@ import { makeDecoratable } from "@webiny/app-admin";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { useEditorConfig } from "../EditorConfig.js";
 import { Panel } from "./Panel.js";
-import { CurrentPanelContext } from "./PanelsContext.js";
 import { PanelsContext } from "./PanelsContext.js";
-import { CollapsedPanel } from "./CollapsedPanel.js";
+import { PanelSlot } from "./PanelSlot.js";
 import { PanelHeader } from "./PanelHeader.js";
 import type { PanelConfig } from "./types.js";
 import type { PanelSide } from "./types.js";
@@ -60,8 +59,8 @@ const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsPr
     const config = useEditorConfig();
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
     const [stored, setStored] = useState<OpenState>(() => readStored(side));
-    // Read by `autoFocus`, which only acts when the button mounts, so it is never cleared.
-    const [toggled, setToggled] = useState<string | null>(null);
+    // Which panel's toggle was pressed, and how many times: each press moves focus once.
+    const [toggled, setToggled] = useState<{ name: string; count: number } | null>(null);
 
     const panels = useMemo(() => {
         // Absent until a panel is registered.
@@ -87,7 +86,7 @@ const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsPr
 
     const setOpen = useCallback(
         (name: string, open: boolean) => {
-            setToggled(name);
+            setToggled(current => ({ name, count: (current?.count ?? 0) + 1 }));
             setStored(current => {
                 const next = { ...current, [name]: open };
                 store(side, next);
@@ -97,35 +96,22 @@ const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsPr
         [side]
     );
 
-    const context = useMemo(() => ({ isOpen, setOpen, toggled }), [isOpen, setOpen, toggled]);
+    const context = useMemo(() => ({ isOpen, setOpen }), [isOpen, setOpen]);
 
     return (
         <PanelsContext.Provider value={context}>
             {/* Not `h-full`: the row stretches it, which is what lets the panels fill the height. */}
             <div className={"flex flex-none"}>
-                {panels.map(panel => {
-                    if (!isOpen(panel.name)) {
-                        return (
-                            <CollapsedPanel
-                                key={panel.name}
-                                label={panel.label}
-                                side={side}
-                                autoFocus={toggled === panel.name}
-                                onExpand={() => setOpen(panel.name, true)}
-                            />
-                        );
-                    }
-                    return (
-                        <CurrentPanelContext.Provider
-                            key={panel.name}
-                            value={{ name: panel.name, label: panel.label, side }}
-                        >
-                            <wb-editor-ui-element data-name={panel.name} class={"contents"}>
-                                {panel.element}
-                            </wb-editor-ui-element>
-                        </CurrentPanelContext.Provider>
-                    );
-                })}
+                {panels.map(panel => (
+                    <PanelSlot
+                        key={panel.name}
+                        panel={panel}
+                        side={side}
+                        open={isOpen(panel.name)}
+                        toggleCount={toggled?.name === panel.name ? toggled.count : 0}
+                        onExpand={() => setOpen(panel.name, true)}
+                    />
+                ))}
             </div>
         </PanelsContext.Provider>
     );

@@ -8,8 +8,6 @@ import type { PanelSide } from "./types.js";
 export interface CollapsedPanelProps {
     label: string;
     side: PanelSide;
-    /** Set when the panel was just collapsed with its own button, which is gone now. */
-    autoFocus: boolean;
     onExpand(): void;
 }
 
@@ -18,13 +16,12 @@ export interface CollapsedPanelProps {
  * the strip. The same strip as the content model editor's collapsed "Fields" sidebar. The button sits
  * where the open panel's collapse button is (`PanelHeader`), so it does not jump when toggled.
  */
-export const CollapsedPanel = ({ label, side, autoFocus, onExpand }: CollapsedPanelProps) => {
+export const CollapsedPanel = ({ label, side, onExpand }: CollapsedPanelProps) => {
     return (
         <div
             data-role={"editor-collapsed-panel"}
-            data-affects-preview={"width"}
             className={cn(
-                "flex w-[45px] flex-none flex-col items-center gap-md bg-neutral-base pt-sm",
+                "flex h-full w-[45px] flex-none flex-col items-center gap-md bg-neutral-base pt-sm",
                 side === "left"
                     ? "border-r-sm border-r-neutral-dimmed"
                     : "border-l-sm border-l-neutral-dimmed"
@@ -36,7 +33,7 @@ export const CollapsedPanel = ({ label, side, autoFocus, onExpand }: CollapsedPa
                     size={"xs"}
                     icon={side === "left" ? <LeftPanelIcon /> : <RightPanelIcon />}
                     title={`Open ${label}`}
-                    autoFocus={autoFocus}
+                    data-panel-expand
                     onClick={onExpand}
                 />
             </div>

@@ -35,8 +35,6 @@ export const useCurrentPanel = () => {
 
     return {
         ...panel,
-        /** Whether this panel was just opened from its strip: its collapse button takes focus. */
-        justOpened: context.toggled === panel.name,
         close: () => context.setOpen(panel.name, false)
     };
 };
