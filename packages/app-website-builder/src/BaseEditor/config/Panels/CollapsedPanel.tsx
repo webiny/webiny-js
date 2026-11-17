@@ -18,10 +18,13 @@ export interface CollapsedPanelProps {
  */
 export const CollapsedPanel = ({ label, side, onExpand }: CollapsedPanelProps) => {
     return (
+        // The whole strip opens the panel, label included. The button is there for the keyboard; its
+        // click reaches this handler too.
         <div
             data-role={"editor-collapsed-panel"}
+            onClick={onExpand}
             className={cn(
-                "flex h-full w-[45px] flex-none flex-col items-center gap-md bg-neutral-base pt-sm",
+                "flex h-full w-[45px] flex-none cursor-pointer flex-col items-center gap-md bg-neutral-base pt-sm select-none hover:bg-neutral-light",
                 side === "left"
                     ? "border-r-sm border-r-neutral-dimmed"
                     : "border-l-sm border-l-neutral-dimmed"
@@ -34,7 +37,6 @@ export const CollapsedPanel = ({ label, side, onExpand }: CollapsedPanelProps) =
                     icon={side === "left" ? <LeftPanelIcon /> : <RightPanelIcon />}
                     title={`Open ${label}`}
                     data-panel-expand
-                    onClick={onExpand}
                 />
             </div>
             <span
