@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
+import { requireApiKey } from "./requireApiKey.js";
 
 /*
  * OpenRouter model ids carry their own vendor prefix, so the composite Webiny id has two slashes:
@@ -40,7 +41,7 @@ class OpenRouterSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
     async execute(apiKey?: string): Promise<IAiSdk> {
         const { createOpenRouter } = await import("@openrouter/ai-sdk-provider");
         const provider = createOpenRouter({
-            apiKey: apiKey ?? process.env.WEBINY_API_OPENROUTER_API_KEY
+            apiKey: requireApiKey(this.name, apiKey)
         });
         return {
             languageModel: modelId => provider.chat(modelId)

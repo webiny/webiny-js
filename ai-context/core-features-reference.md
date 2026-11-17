@@ -52,7 +52,7 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { Ai } from "@webiny/api-core/features/ai/index.js"`
 - **Interface Type:** See `packages/api-core/src/features/ai/abstractions.ts`
-- **Usage:** Generate text and stream text using registered AI providers. Model format: `"provider/modelId"` (e.g. `"anthropic/claude-3-5-sonnet-20241022"`, `"openai/gpt-4o"`). Providers: `anthropic` (env: `WEBINY_API_ANTHROPIC_API_KEY`), `openai` (env: `WEBINY_API_OPENAI_API_KEY`). Must register `AiFeature` from `@webiny/api-core/features/ai/index.js`.
+- **Usage:** Generate text and stream text using registered AI providers. Model format: `"provider/modelId"` (e.g. `"anthropic/claude-3-5-sonnet-20241022"`, `"openai/gpt-4o"`). Providers: `anthropic`, `openai`, `google`, `openrouter`. The API key comes from the connection (AI Powerups settings or an `AiConnectionFactory`); there is no environment variable fallback. Must register `AiFeature` from `@webiny/api-core/features/ai/index.js`.
 
 ### AiGateway
 

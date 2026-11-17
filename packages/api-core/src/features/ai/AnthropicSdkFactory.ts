@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
+import { requireApiKey } from "./requireApiKey.js";
 
 const ANTHROPIC_MODELS: IAiSdkModel[] = [
     { id: "claude-fable-5-1", name: "Claude Fable 5.1" },
@@ -24,7 +25,9 @@ class AnthropicSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
     async execute(apiKey?: string): Promise<IAiSdk> {
         const { createAnthropic } = await import("@ai-sdk/anthropic");
         const provider = createAnthropic({
-            apiKey: apiKey ?? process.env.WEBINY_API_ANTHROPIC_API_KEY
+            apiKey: requireApiKey(this.name, apiKey),
+            // Set explicitly, or the SDK reads ANTHROPIC_BASE_URL and sends the key there.
+            baseURL: "https://api.anthropic.com/v1"
         });
         return {
             languageModel: modelId => provider.chat(modelId)
