@@ -24,6 +24,8 @@ export interface ITaskExecutionsPresenter extends IListActions {
     abortTask(id: string): Promise<void>;
     selectTask(task: Task | null): void;
     init(): void;
+    /** Clears the selected task and stops telling the assistant about the list. */
+    dispose(): void;
 }
 
 export const TaskExecutionsPresenter =

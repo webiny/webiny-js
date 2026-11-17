@@ -11,6 +11,7 @@ import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index
 import { ApiBeforeWatch } from "@webiny/project/extensions/index.js";
 import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreAfterBuild } from "@webiny/project/extensions/index.js";
 import { CoreAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreBeforeBuild } from "@webiny/project/extensions/index.js";
@@ -158,7 +159,8 @@ export const Infra = {
         CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
         LambdaFunction: ApiLambdaFunction,
-        MaxBundleSize: ApiMaxBundleSize
+        MaxBundleSize: ApiMaxBundleSize,
+        WebFunction: ApiWebFunction
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,

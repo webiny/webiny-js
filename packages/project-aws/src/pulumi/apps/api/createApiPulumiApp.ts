@@ -13,6 +13,8 @@ import {
     CoreOutput,
     VpcConfig
 } from "~/pulumi/apps/index.js";
+import { ApiGraphqlWeb } from "~/pulumi/apps/index.js";
+import type { GraphqlWebVpc } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
     withCommonLambdaEnvVariables,
@@ -29,6 +31,7 @@ import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
+import { isWebFunctionEnabled } from "~/pulumi/apps/extensions/isWebFunctionEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
 import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgres.js";
@@ -186,8 +189,9 @@ export const createApiPulumiApp = () => {
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules.
-            app.addModule(VpcConfig, {
-                enabled: isVpcEnabled(vpcExtensionsConfig, isProduction)
+            const vpcEnabled = isVpcEnabled(vpcExtensionsConfig, isProduction);
+            const vpcConfig = app.addModule(VpcConfig, {
+                enabled: vpcEnabled
             });
 
             // Shared by the buffered `graphql` function and its response-streaming twin: both run the
@@ -224,61 +228,54 @@ export const createApiPulumiApp = () => {
             // ApiCloudfront, which resolves this module to wire the `/stream/*` origin and behavior.
             const graphqlStream = app.addModule(ApiGraphqlStream, { env: graphqlEnv });
 
+            // On unless the project sets `<Infra.Api.WebFunction enabled={false} />`. With it, the API's
+            // HTTP routes go to the web function and there is no HTTP API Gateway; without it, the
+            // previous setup. Added before ApiCloudfront, which routes to whichever exists.
+            const webFunctionEnabled = isWebFunctionEnabled(projectConfig);
+            let graphqlWeb: ApiGraphqlWeb | undefined;
+            if (webFunctionEnabled) {
+                let graphqlWebVpc: GraphqlWebVpc | null = null;
+                const useExistingVpc =
+                    typeof vpcExtensionsConfig === "object" && vpcExtensionsConfig.useExistingVpc;
+                if (useExistingVpc) {
+                    // Same subnets and security groups the enterprise handler above gives the
+                    // regular Lambdas.
+                    graphqlWebVpc = useExistingVpc.lambdaFunctionsVpcConfig;
+                } else if (vpcEnabled) {
+                    const functionVpcConfig = vpcConfig.functionVpcConfig;
+                    // `pulumi.output` unwraps the nested inputs into a plain `string[]` output.
+                    const subnetIds = pulumi.output(functionVpcConfig.subnetIds);
+                    const securityGroupIds = pulumi.output(functionVpcConfig.securityGroupIds);
+                    graphqlWebVpc = { subnetIds, securityGroupIds };
+                }
+
+                graphqlWeb = app.addModule(ApiGraphqlWeb, {
+                    namePrefix: pulumiResourceNamePrefix ?? "",
+                    vpc: graphqlWebVpc
+                });
+                app.addOutputs({
+                    graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
+                    graphqlWebEndpointDomain: graphqlWeb.endpoint.output.domainName,
+                    // Read by `webiny watch` to publish its forwarder revision.
+                    graphqlWebEndpointName: graphqlWeb.endpoint.output.endpointName,
+                    graphqlWebCodeBucket: graphqlWeb.codeBucket.output.id
+                });
+            }
+
             const websocket = app.addModule(ApiWebsocket);
 
             const fileManager = app.addModule(ApiFileManager, {
-                env: pick(dynamoDbEnv, ["DB_TABLE", "DB_TABLE_AUDIT_LOGS"])
+                env: pick(dynamoDbEnv, ["DB_TABLE", "DB_TABLE_AUDIT_LOGS"]),
+                functionUrl: webFunctionEnabled
             });
 
-            const apiGateway = app.addModule(ApiGateway, {
-                "graphql-post": {
-                    path: "/graphql",
-                    method: "POST",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "graphql-options": {
-                    path: "/graphql",
-                    method: "OPTIONS",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "files-any": {
-                    path: "/files/{path+}",
-                    method: "ANY",
-                    function: fileManager.functions.download.output.arn
-                },
-                "private-any": {
-                    path: "/private/{path+}",
-                    method: "ANY",
-                    function: fileManager.functions.download.output.arn
-                },
-                "cms-post": {
-                    path: "/cms/{key+}",
-                    method: "POST",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "cms-options": {
-                    path: "/cms/{key+}",
-                    method: "OPTIONS",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "redirects-get": {
-                    path: "/wb/redirects",
-                    method: "GET",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "redirects-options": {
-                    path: "/wb/redirects",
-                    method: "OPTIONS",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "files-catch-all": {
-                    path: "/{path+}",
-                    method: "ANY",
-                    function: fileManager.functions.download.output.arn
-                }
-            });
+            let apiGateway: ApiGateway | undefined;
+            if (!webFunctionEnabled) {
+                apiGateway = createApiGateway(app, graphql, fileManager);
+            }
 
             const cloudfront = app.addModule(ApiCloudfront);
+
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
@@ -371,6 +368,7 @@ export const createApiPulumiApp = () => {
                 fileManager,
                 graphql,
                 graphqlStream,
+                graphqlWeb,
                 apiGateway,
                 websocket,
                 cloudfront,
@@ -397,3 +395,56 @@ export const createApiPulumiApp = () => {
 
     return app;
 };
+
+/**
+ * The HTTP API Gateway, used only with `<Infra.Api.WebFunction enabled={false} />`.
+ */
+function createApiGateway(app: PulumiApp, graphql: ApiGraphql, fileManager: ApiFileManager) {
+    return app.addModule(ApiGateway, {
+        "graphql-post": {
+            path: "/graphql",
+            method: "POST",
+            function: graphql.functions.graphql.output.arn
+        },
+        "graphql-options": {
+            path: "/graphql",
+            method: "OPTIONS",
+            function: graphql.functions.graphql.output.arn
+        },
+        "files-any": {
+            path: "/files/{path+}",
+            method: "ANY",
+            function: fileManager.functions.download.output.arn
+        },
+        "private-any": {
+            path: "/private/{path+}",
+            method: "ANY",
+            function: fileManager.functions.download.output.arn
+        },
+        "cms-post": {
+            path: "/cms/{key+}",
+            method: "POST",
+            function: graphql.functions.graphql.output.arn
+        },
+        "cms-options": {
+            path: "/cms/{key+}",
+            method: "OPTIONS",
+            function: graphql.functions.graphql.output.arn
+        },
+        "redirects-get": {
+            path: "/wb/redirects",
+            method: "GET",
+            function: graphql.functions.graphql.output.arn
+        },
+        "redirects-options": {
+            path: "/wb/redirects",
+            method: "OPTIONS",
+            function: graphql.functions.graphql.output.arn
+        },
+        "files-catch-all": {
+            path: "/{path+}",
+            method: "ANY",
+            function: fileManager.functions.download.output.arn
+        }
+    });
+}

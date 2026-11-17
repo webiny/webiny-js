@@ -17,6 +17,8 @@ export interface IContentModelsPresenter {
     readonly vm: IContentModelsPresenterViewModel;
     readonly list: IListPresenter<CmsModel>;
     init(): void;
+    /** Stops telling the assistant about the models list. */
+    dispose(): void;
     deleteModel(modelId: string, confirmation: string): Promise<DeleteModelResult>;
     cancelDelete(modelId: string): Promise<void>;
     exportModels(modelIds?: string[]): Promise<IContentModelsPresenterExportModelsResponse | null>;

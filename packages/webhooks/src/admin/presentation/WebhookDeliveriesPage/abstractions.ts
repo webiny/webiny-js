@@ -31,6 +31,8 @@ export interface IWebhookDeliveriesPageViewModel {
 export interface IWebhookDeliveriesPagePresenter {
     vm: IWebhookDeliveriesPageViewModel;
     init(webhookId?: string): Promise<void>;
+    /** Stops telling the assistant about the deliveries. */
+    dispose(): void;
     setWebhookFilter(webhookId: string | null): void;
     setAppFilter(app: string | null): void;
     setEntityFilter(entity: string | null): void;

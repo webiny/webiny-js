@@ -8,6 +8,7 @@ import { ExportModelsUseCase } from "~/features/model/exportModels/abstractions.
 import { ModelsCache } from "~/features/model/abstractions.js";
 import { ContentModelsPresenter as Abstraction } from "./abstractions.js";
 import { ContentModelsDataSource } from "./ContentModelsDataSource.js";
+import { isListedModel } from "./isListedModel.js";
 
 class ContentModelsPresenterImpl implements Abstraction.Interface {
     private loading = true;
@@ -38,16 +39,9 @@ class ContentModelsPresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): Abstraction.ViewModel {
-        const models = this.cache.getItems().filter(model => {
-            if (!model.tags || model.tags.length === 0) {
-                return true;
-            }
-            return !model.tags.includes("$hidden:true");
-        });
-
         return {
             loading: this.loading,
-            models
+            models: this.cache.getItems().filter(isListedModel)
         };
     }
 
@@ -61,12 +55,22 @@ class ContentModelsPresenterImpl implements Abstraction.Interface {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "savedOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "model", plural: "models" },
+            assistant: {
+                view: () => "Content models in Headless CMS",
+                rowTitle: model => model.name,
+                rowId: model => model.modelId
+            }
         });
 
         runInAction(() => {
             this.loading = false;
         });
+    }
+
+    dispose(): void {
+        this.listPresenter.dispose();
     }
 
     async deleteModel(modelId: string, confirmation: string) {
