@@ -279,6 +279,7 @@ export const ApiKeysView = observer(() => {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     return (

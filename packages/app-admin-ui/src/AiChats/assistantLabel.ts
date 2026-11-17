@@ -1,10 +1,7 @@
-/** The composer's placeholder, and the palette's, while no model is set. */
-export const NO_MODEL_PLACEHOLDER = "Unavailable until a model is set";
-
 /**
- * "AI assistant", plus the model once a run has named it, or "no model set" while the project has
- * none. Not a product name: the project brings its own key and model, so the model is what says
- * what is answering.
+ * The chat composer's label: "AI assistant", plus the model once a run has named it, or "no model
+ * set" while the project has none. Not a product name: the project brings its own key and model, so
+ * the model is what says what is answering. The command palette leaves it out; see `createAiMode`.
  * The model arrives fully qualified ("anthropic/claude-sonnet-4-5"); the provider is dropped, since
  * the model name already says it.
  */

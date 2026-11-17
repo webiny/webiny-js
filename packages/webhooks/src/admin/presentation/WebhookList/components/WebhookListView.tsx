@@ -16,6 +16,7 @@ const WebhookListViewInner = observer(function WebhookListViewInner() {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     return (
