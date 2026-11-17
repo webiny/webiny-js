@@ -3,6 +3,7 @@ import { AdminAssistantGateway } from "./abstractions.js";
 import type { AdminAssistantRequest } from "./abstractions.js";
 import type { AdminAssistantClientToolCall } from "./abstractions.js";
 import type { AdminAssistantClientToolResult } from "./abstractions.js";
+import type { AdminAssistantDecision } from "./abstractions.js";
 import { AdminAssistantPresenter as Abstraction } from "./abstractions.js";
 import type { AiTurnViewModel } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
@@ -16,6 +17,14 @@ import { turnsFromMessages } from "./turnsFromMessages.js";
 interface Turn extends Omit<AiTurnViewModel, "needsSetup"> {
     /** The server's code for the failure, when it sent one. */
     errorCode?: string;
+}
+
+/** What a request answered a paused run with, or carried with a question, until the chat is saved. */
+interface UnsavedAnswers {
+    approvals: AdminAssistantDecision[];
+    toolResults: AdminAssistantClientToolResult[];
+    /** Sent with a question rather than to resume a run. */
+    withQuestion: boolean;
 }
 
 /** The code a run fails with when the project's AI settings give the assistant no model. */
@@ -61,10 +70,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
      */
     private heldResults: AdminAssistantClientToolResult[] = [];
     /*
-     * Results sent to resume a run, until the server saves the chat with them. If that run fails
-     * first, "Try again" sends them again: asking the question again would make the changes twice.
+     * What the last request answered a paused run with, or brought along with a question, until the
+     * server saves the chat with it. Browser results stand for changes already made on the page, so
+     * if that request fails, "Try again" sends the same again: asking the question afresh would have
+     * the model make the changes a second time.
      */
-    private unsavedResults: AdminAssistantClientToolResult[] = [];
+    private unsaved: UnsavedAnswers | null = null;
     /*
      * The tools the last request offered. A call the run makes is run by the same tool, from the same
      * screen, or not at all: a screen opened since may register a tool of the same name.
@@ -91,7 +102,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             | "pageContext"
             | "clientTools"
             | "heldResults"
-            | "unsavedResults"
+            | "unsaved"
             | "offeredTools"
         >(this, {
             controller: false,
@@ -100,7 +111,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             pageContext: false,
             clientTools: false,
             heldResults: false,
-            unsavedResults: false,
+            unsaved: false,
             offeredTools: false
         });
     }
@@ -160,9 +171,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
          * than reporting them as not run.
          */
         this.dropPendingApprovals();
-        const ran = [...this.heldResults, ...this.unsavedResults];
+        const unsent = this.unsaved?.toolResults ?? [];
+        const ran = [...this.heldResults, ...unsent];
         this.heldResults = [];
-        this.unsavedResults = [];
+        this.unsaved = null;
         this.clearStorageError();
 
         const index = this.turns.length;
@@ -170,6 +182,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         const request = this.question(trimmed);
         if (ran.length > 0 && request.chatId) {
             request.toolResults = ran;
+            this.unsaved = { approvals: [], toolResults: ran, withQuestion: true };
         }
         void this.run(index, request);
     }
@@ -203,10 +216,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             running: true
         });
 
+        const toolResults = this.heldResults;
+        this.heldResults = [];
+        this.unsaved = { approvals, toolResults, withQuestion: false };
         const request = this.request({ approvals });
-        if (this.heldResults.length > 0) {
-            request.toolResults = this.heldResults;
-            this.heldResults = [];
+        if (toolResults.length > 0) {
+            request.toolResults = toolResults;
         }
         void this.run(turnIndex, request, true);
     }
@@ -230,22 +245,35 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         this.clearStorageError();
 
-        // A run resumed with browser results failed: the changes were made, so send what they came to.
-        if (this.unsavedResults.length > 0 && this.chatId) {
+        const unsaved = this.unsaved;
+
+        // A failed resume: send the same decisions and results, since the browser's changes are made.
+        if (unsaved && !unsaved.withQuestion && this.chatId) {
             this.patch(index, {
                 error: undefined,
                 errorCode: undefined,
                 settled: false,
                 running: true
             });
-            const resume = this.request({ toolResults: this.unsavedResults });
-            void this.run(index, this.withPageContext(resume), true);
+            const resume = this.request({});
+            if (unsaved.approvals.length > 0) {
+                resume.approvals = unsaved.approvals;
+            }
+            if (unsaved.toolResults.length > 0) {
+                resume.toolResults = unsaved.toolResults;
+            }
+            const request = this.withPageContext(resume);
+            void this.run(index, request, true);
             return;
         }
 
         const fresh = emptyTurn(turn.question);
         this.replaceTurn(index, { ...fresh, running: true });
         const request = this.question(turn.question);
+        // A question that carried results of calls that ran carries them again.
+        if (unsaved?.withQuestion && request.chatId) {
+            request.toolResults = unsaved.toolResults;
+        }
         void this.run(index, request);
     }
 
@@ -259,7 +287,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.controller = null;
         this.generation++;
         this.heldResults = [];
-        this.unsavedResults = [];
+        this.unsaved = null;
         this.clear();
     }
 
@@ -411,7 +439,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 }
 
                 if (event.type === "saved") {
-                    this.unsavedResults = [];
+                    this.unsaved = null;
                     this.setSaved(event.chat);
                     continue;
                 }
@@ -474,6 +502,21 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         waitsForApproval: boolean,
         offered: AssistantClientTools.Tool[]
     ): Promise<void> {
+        /*
+         * The paused run is resumed from the saved chat, so a run that was not saved cannot be. Its
+         * calls are not run either: the page would change and nothing would record it, so asking
+         * again would have the model make the same changes twice.
+         */
+        if (!this.chatId || this.saveFailure) {
+            this.patch(index, {
+                error: "The assistant can't carry on because the chat wasn't saved. Ask again to retry.",
+                pendingApprovals: [],
+                settled: true,
+                running: false
+            });
+            return;
+        }
+
         const generation = this.generation;
         this.setBusy(true);
         this.patch(index, { running: !waitsForApproval });
@@ -500,17 +543,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        // The paused run is resumed from the saved chat, so a run that was not saved cannot be.
-        if (!this.chatId || this.saveFailure) {
-            this.patch(index, {
-                error: "The assistant can't carry on because the chat wasn't saved. Ask again to retry.",
-                settled: true,
-                running: false
-            });
-            return;
-        }
-
-        this.unsavedResults = results;
+        this.unsaved = { approvals: [], toolResults: results, withQuestion: false };
         const resume = this.request({ toolResults: results });
         const request = this.withPageContext(resume);
         await this.run(index, request, true);

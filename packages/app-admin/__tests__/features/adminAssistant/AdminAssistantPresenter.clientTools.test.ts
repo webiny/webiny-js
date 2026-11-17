@@ -287,4 +287,92 @@ describe("AdminAssistantPresenter client tools", () => {
         expect(presenter.vm.turns[0].error).toBeUndefined();
         expect(presenter.vm.turns[0].settled).toBe(true);
     });
+
+    it("does not run a call of a run that was not saved", async () => {
+        const notSaved: AdminAssistantStreamEvent[] = [
+            { type: "client-tools", calls: [call] },
+            { type: "not-saved", message: "Store down.", retryable: true },
+            { type: "done", steps: 1 }
+        ];
+        const { presenter, clientTools } = setup([notSaved]);
+        let runs = 0;
+        clientTools.register([addElements(async () => runs++)]);
+
+        presenter.ask("Add a hero");
+        await settle(presenter);
+
+        expect(runs).toBe(0);
+    });
+
+    it("retries a failed decision with the same decision and results", async () => {
+        const withApproval: AdminAssistantStreamEvent[] = [
+            {
+                type: "approval",
+                approvals: [
+                    {
+                        approvalId: "a1",
+                        toolName: "createFolder",
+                        input: { title: "Pages" },
+                        destructive: false
+                    }
+                ]
+            },
+            ...pausedOnCall.slice(1)
+        ];
+        const failed: AdminAssistantStreamEvent[] = [{ type: "error", message: "Network down." }];
+        const { presenter, clientTools, requests } = setup([withApproval, failed, answered]);
+        let runs = 0;
+        clientTools.register([
+            addElements(async () => {
+                runs++;
+                return { added: ["el-1"] };
+            })
+        ]);
+
+        presenter.ask("Add a hero and a folder");
+        await settle(presenter);
+        presenter.decide(0, true);
+        await settle(presenter);
+        presenter.retry();
+        await settle(presenter);
+
+        expect(runs).toBe(1);
+        expect(requests[2].prompt).toBeUndefined();
+        expect(requests[2]).toMatchObject({
+            approvals: [{ approvalId: "a1", approved: true }],
+            toolResults: [{ toolCallId: "call-1", output: { added: ["el-1"] } }]
+        });
+    });
+
+    it("retries a failed question with the results it carried", async () => {
+        const withApproval: AdminAssistantStreamEvent[] = [
+            {
+                type: "approval",
+                approvals: [
+                    {
+                        approvalId: "a1",
+                        toolName: "createFolder",
+                        input: { title: "Pages" },
+                        destructive: false
+                    }
+                ]
+            },
+            ...pausedOnCall.slice(1)
+        ];
+        const failed: AdminAssistantStreamEvent[] = [{ type: "error", message: "Network down." }];
+        const { presenter, clientTools, requests } = setup([withApproval, failed, answered]);
+        clientTools.register([addElements(async () => ({ added: ["el-1"] }))]);
+
+        presenter.ask("Add a hero and a folder");
+        await settle(presenter);
+        presenter.ask("Never mind the folder");
+        await settle(presenter);
+        presenter.retry();
+        await settle(presenter);
+
+        expect(requests[2]).toMatchObject({
+            prompt: "Never mind the folder",
+            toolResults: [{ toolCallId: "call-1", output: { added: ["el-1"] } }]
+        });
+    });
 });

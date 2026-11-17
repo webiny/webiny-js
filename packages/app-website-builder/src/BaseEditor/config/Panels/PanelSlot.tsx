@@ -59,7 +59,7 @@ export const PanelSlot = ({ panel, side, open, toggleCount, onExpand }: PanelSlo
         }
         // A panel without `PanelHeader` (the AI assistant has its own header): its first button.
         const collapse = slot?.querySelector<HTMLElement>("[data-panel-collapse]");
-        const first = contentRef.current?.querySelector<HTMLElement>("button");
+        const first = contentRef.current?.querySelector<HTMLElement>("button:not([disabled])");
         (collapse ?? first)?.focus();
     }, [toggleCount]);
 
