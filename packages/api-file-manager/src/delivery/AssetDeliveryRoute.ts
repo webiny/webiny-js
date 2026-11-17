@@ -1,9 +1,4 @@
-import {
-    HttpRouteDefinition,
-    HttpRouteHandler,
-    RequestContainer
-} from "@webiny/event-handler-core";
-import type { Container } from "@webiny/di";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import {
@@ -18,17 +13,16 @@ import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 const NO_CACHE = "no-cache, no-store, must-revalidate";
 
 class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
-    constructor(private container: Container) {}
+    constructor(
+        private requestResolver: AssetRequestResolver.Interface,
+        private assetResolver: AssetResolver.Interface,
+        private assetProcessor: AssetProcessor.Interface,
+        private outputStrategy: AssetOutputStrategy.Interface,
+        private tenantContext: TenantContext.Interface,
+        private getTenantById: GetTenantByIdUseCase.Interface
+    ) {}
 
     async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
-        // Still resolved here rather than declared as dependencies, which
-        // ai-context/code-style/no-container-as-service-locator.md says to fix. The reason this was
-        // written for (every route built on every request) no longer holds.
-        const requestResolver = this.container.resolve(AssetRequestResolver);
-        const assetResolver = this.container.resolve(AssetResolver);
-        const tenantContext = this.container.resolve(TenantContext);
-        const getTenantById = this.container.resolve(GetTenantByIdUseCase);
-
         // Reconstruct a minimal request object compatible with IAssetRequestResolver. Each resolver
         // strips its own prefix from the path. `url` keeps the query string, so the redirects
         // between `/files/` and `/private/` keep `?width` and `?original`.
@@ -40,7 +34,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
             headers: request.headers ?? {}
         };
 
-        const resolvedRequest = await requestResolver.resolve(fakeRequest as any);
+        const resolvedRequest = await this.requestResolver.resolve(fakeRequest as any);
         if (!resolvedRequest) {
             return response
                 .status(404)
@@ -48,7 +42,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
                 .json({ error: "Unable to resolve the request!" });
         }
 
-        const resolvedAsset = await assetResolver.resolve(resolvedRequest);
+        const resolvedAsset = await this.assetResolver.resolve(resolvedRequest);
         if (!resolvedAsset) {
             return response
                 .status(404)
@@ -60,7 +54,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
         // root tenant. Now that we know which tenant owns the asset, switch to it for the rest of
         // the request, so processors, authorizers and output strategies (e.g. the private files
         // check, which loads the tenant-scoped file entry) all run in the asset's tenant.
-        const tenantResult = await getTenantById.execute(resolvedAsset.getTenant());
+        const tenantResult = await this.getTenantById.execute(resolvedAsset.getTenant());
         if (tenantResult.isFail()) {
             return response
                 .status(404)
@@ -68,7 +62,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
                 .json({ error: "Asset not found!" });
         }
 
-        return tenantContext.withTenant(tenantResult.value, () =>
+        return this.tenantContext.withTenant(tenantResult.value, () =>
             this.deliver(resolvedRequest, resolvedAsset, response)
         );
     }
@@ -78,12 +72,9 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
         resolvedAsset: Asset,
         response: HttpRouteHandler.Response
     ) {
-        const assetProcessor = this.container.resolve(AssetProcessor);
-        const outputStrategy = this.container.resolve(AssetOutputStrategy);
+        resolvedAsset.setOutputStrategy(this.outputStrategy);
 
-        resolvedAsset.setOutputStrategy(outputStrategy);
-
-        const processedAsset = await assetProcessor.process(resolvedRequest, resolvedAsset);
+        const processedAsset = await this.assetProcessor.process(resolvedRequest, resolvedAsset);
         const assetReply = await processedAsset.output();
 
         const rawHeaders = assetReply.getHeaders().getHeaders();
@@ -106,7 +97,14 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
 
 export const AssetDeliveryRoute = HttpRouteHandler.createImplementation({
     implementation: AssetDeliveryRouteImpl,
-    dependencies: [RequestContainer]
+    dependencies: [
+        AssetRequestResolver,
+        AssetResolver,
+        AssetProcessor,
+        AssetOutputStrategy,
+        TenantContext,
+        GetTenantByIdUseCase
+    ]
 });
 
 class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {
