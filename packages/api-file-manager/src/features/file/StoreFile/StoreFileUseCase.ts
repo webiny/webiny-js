@@ -45,7 +45,8 @@ class StoreFileUseCaseImpl implements UseCaseAbstraction.Interface {
         const folderId = input.getFolderId();
         const tags = input.getTags();
         const description = input.getDescription();
-        const metadata = input.getMetadata();
+        // `getMetadata()` copies only the top level, so nested values are copied here.
+        const metadata = structuredClone(input.getMetadata());
 
         if (!(await this.permissions.canCreate("file"))) {
             return Result.fail(new FileNotAuthorizedError());

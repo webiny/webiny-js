@@ -104,6 +104,10 @@ const registerTestRoutes = (container: Container) => {
             if (body.mutateAfterStart) {
                 input.getContents().fill("x".charCodeAt(0));
                 input.setName("changed.png").setFolder("other-folder").setTags(["changed"]);
+                const report = input.getMetadata().report;
+                if (report) {
+                    report.title = "changed";
+                }
             }
             const result = await pending;
             if (result.isFail()) {
@@ -391,7 +395,12 @@ describe("StoreFileUseCase", () => {
 
         const result = await storeFile({
             text: "original",
-            options: { name: "report.txt", folderId: "folder-1", tags: ["first"] },
+            options: {
+                name: "report.txt",
+                folderId: "folder-1",
+                tags: ["first"],
+                metadata: { report: { title: "original" } }
+            },
             mutateAfterStart: true
         });
 
@@ -399,7 +408,8 @@ describe("StoreFileUseCase", () => {
             name: "report.txt",
             type: "text/plain",
             location: { folderId: "folder-1" },
-            tags: ["first"]
+            tags: ["first"],
+            metadata: { report: { title: "original" } }
         });
         const contents = await readFile(result.data.file.key);
         expect(contents.data.text).toBe("original");
