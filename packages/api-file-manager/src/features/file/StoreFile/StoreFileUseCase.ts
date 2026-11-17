@@ -20,6 +20,7 @@ import {
     FileUploadModifier
 } from "~/features/upload/utils/FileUploadModifier.js";
 import type { FileData } from "~/features/upload/types.js";
+import type { File } from "~/domain/file/types.js";
 
 class StoreFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -34,26 +35,28 @@ class StoreFileUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(input: UseCaseAbstraction.Input): UseCaseAbstraction.Return {
+        // Read the whole input once, before the first await: changes the caller makes after this
+        // point, to the input or to its bytes, don't apply.
+        const contents = Buffer.from(input.getContents());
+        const size = contents.byteLength;
+        const id = input.getId();
+        const inputName = input.getName();
+        const inputType = input.getType();
+        const folderId = input.getFolderId();
+        const tags = input.getTags();
+        const description = input.getDescription();
+        const metadata = input.getMetadata();
+
         if (!(await this.permissions.canCreate("file"))) {
             return Result.fail(new FileNotAuthorizedError());
         }
-
-        // Read the input once: changes the caller makes after this point don't apply.
-        const contents = input.getContents();
-        const size = contents.byteLength;
-        const id = input.getId();
 
         const sizeResult = await this.validateSize(size);
         if (sizeResult.isFail()) {
             return Result.fail(sizeResult.error);
         }
 
-        const normalized = await this.normalize({
-            id,
-            name: input.getName(),
-            type: input.getType(),
-            size
-        });
+        const normalized = await this.normalize({ id, name: inputName, type: inputType, size });
         if (normalized.isFail()) {
             return Result.fail(normalized.error);
         }
@@ -83,14 +86,14 @@ class StoreFileUseCaseImpl implements UseCaseAbstraction.Interface {
             name,
             size,
             type,
-            tags: input.getTags(),
-            description: input.getDescription(),
-            metadata: input.getMetadata(),
-            location: { folderId: input.getFolderId() }
+            tags,
+            description,
+            metadata,
+            location: { folderId }
         });
 
         if (createResult.isFail()) {
-            await this.deleteStoredContents(key);
+            await this.deleteContentsWithoutRecord(normalized.value.id, key);
             return Result.fail(createResult.error);
         }
 
@@ -141,6 +144,44 @@ class StoreFileUseCaseImpl implements UseCaseAbstraction.Interface {
                 new FilePersistenceError(error instanceof Error ? error : new Error(String(error)))
             );
         }
+    }
+
+    /**
+     * A failed create doesn't always mean nothing was written: when a subscriber to the entry's
+     * after-create event throws, the record is already stored and the create still fails. So the
+     * bytes are deleted only when no record with this ID points at them.
+     */
+    private async deleteContentsWithoutRecord(id: string, key: string): Promise<void> {
+        let existing: Result<File, GetFileRepository.Error>;
+        try {
+            existing = await this.getFileRepository.execute(id);
+        } catch (error) {
+            this.keepContents(key, error);
+            return;
+        }
+
+        if (existing.isOk()) {
+            if (existing.value.key === key) {
+                this.keepContents(key);
+                return;
+            }
+            // Another call stored a record with this ID under a different key: these bytes are
+            // only this call's, so they go.
+        } else if (existing.error.code !== "FileManager/File/NotFoundError") {
+            this.keepContents(key, existing.error);
+            return;
+        }
+
+        await this.deleteStoredContents(key);
+    }
+
+    private keepContents(key: string, lookupError?: unknown): void {
+        this.logger.warn(
+            { key, error: lookupError },
+            lookupError
+                ? "Kept the contents of a file whose record failed to create: could not check whether the record exists."
+                : "Kept the contents of a file whose record failed to create: the record exists."
+        );
     }
 
     private async deleteStoredContents(key: string): Promise<void> {

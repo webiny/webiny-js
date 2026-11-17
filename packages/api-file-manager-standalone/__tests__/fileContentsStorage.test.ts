@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { open, readFile } from "node:fs/promises";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DiskFileContentsStorage } from "~/features/FileContentsStorage/DiskFileContentsStorage.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import {
@@ -13,6 +13,12 @@ import {
     TENANT_ID,
     writeTestFile
 } from "./utils/helpers.js";
+
+// The real `open`, wrapped so a test can make one call fail.
+vi.mock("node:fs/promises", async importOriginal => {
+    const actual = await importOriginal<typeof import("node:fs/promises")>();
+    return { ...actual, open: vi.fn(actual.open) };
+});
 
 beforeEach(async () => {
     await setupStorage();
@@ -87,6 +93,27 @@ describe("put file contents", () => {
         expect(retried.isOk()).toBe(true);
         const stored = await readFile(path.join(filesPath(), "abc", "report.txt"), "utf8");
         expect(stored).toBe("complete");
+    });
+
+    it("should keep bytes another call wrote when this call can't open the file", async () => {
+        // Another put stores the key, then this call's open fails before creating anything.
+        vi.mocked(open).mockImplementationOnce(async filePath => {
+            await writeTestFile(`tenants/${TENANT_ID}/files/abc/report.txt`, Buffer.from("first"));
+            throw Object.assign(new Error(`EMFILE: too many open files, open '${filePath}'`), {
+                code: "EMFILE"
+            });
+        });
+
+        const result = await createStorage().put({
+            key: "abc/report.txt",
+            contents: Buffer.from("second"),
+            contentType: "text/plain"
+        });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("FileManager/File/PersistenceError");
+        const stored = await readFile(path.join(filesPath(), "abc", "report.txt"), "utf8");
+        expect(stored).toBe("first");
     });
 
     it.each(["../../other-tenant/files/x.txt", "../x.txt", "/"])(

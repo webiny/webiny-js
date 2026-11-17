@@ -1,5 +1,6 @@
 import path from "node:path";
-import { mkdir, rm, rmdir, writeFile } from "node:fs/promises";
+import { mkdir, open, rm, rmdir } from "node:fs/promises";
+import type { FileHandle } from "node:fs/promises";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { FileContentsStorage } from "@webiny/api-file-manager/features/file/FileContentsStorage/index.js";
@@ -23,26 +24,38 @@ class DiskFileContentsStorageImpl implements FileContentsStorage.Interface {
     async put(
         input: FileContentsStorage.PutInput
     ): Promise<Result<void, FileContentsStorage.PutError>> {
-        let filePath: string | undefined;
+        let filePath: string;
+        let handle: FileHandle;
         try {
             filePath = this.resolvePaths(input.key).filePath;
 
             await mkdir(path.dirname(filePath), { recursive: true });
             // "wx" fails with EEXIST instead of overwriting a file that's already there.
-            await writeFile(filePath, input.contents, { flag: "wx" });
-            return Result.ok();
+            handle = await open(filePath, "wx");
         } catch (error) {
             if ((error as NodeJS.ErrnoException)?.code === "EEXIST") {
                 return Result.fail(new FileAlreadyExistsError({ key: input.key }));
             }
-            // "wx" creates the file before writing any bytes, so a failed write leaves a
-            // partial file behind, and it would block storing the key again. The file can't
-            // be someone else's: "wx" fails with EEXIST when the file is already there.
-            if (filePath) {
-                await rm(filePath, { force: true }).catch(() => undefined);
-            }
+            // The open failed, so this call created nothing: whatever is at the path isn't ours.
             return Result.fail(toPersistenceError(error));
         }
+
+        // From here on the file is this call's: the exclusive open created it.
+        let writeError: unknown;
+        try {
+            await handle.writeFile(input.contents);
+        } catch (error) {
+            writeError = error;
+        } finally {
+            await handle.close().catch(() => undefined);
+        }
+
+        if (writeError === undefined) {
+            return Result.ok();
+        }
+        // A failed write leaves partial bytes behind, and they would block storing the key again.
+        await rm(filePath, { force: true }).catch(() => undefined);
+        return Result.fail(toPersistenceError(writeError));
     }
 
     async delete(key: string): Promise<Result<void, FileContentsStorage.DeleteError>> {

@@ -86,6 +86,8 @@ const createStorage = () => {
 interface StoreRequest {
     text: string;
     options: StoreFileInputOptions;
+    /** Changes the input and its bytes right after the call starts, before it settles. */
+    mutateAfterStart?: boolean;
 }
 
 /**
@@ -97,9 +99,13 @@ const registerTestRoutes = (container: Container) => {
 
         async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
             const body = request.body as StoreRequest;
-            const result = await this.storeFile.execute(
-                StoreFileInput.fromString(body.text, body.options)
-            );
+            const input = StoreFileInput.fromString(body.text, body.options);
+            const pending = this.storeFile.execute(input);
+            if (body.mutateAfterStart) {
+                input.getContents().fill("x".charCodeAt(0));
+                input.setName("changed.png").setFolder("other-folder").setTags(["changed"]);
+            }
+            const result = await pending;
             if (result.isFail()) {
                 return response.json({ error: { code: result.error.code } });
             }
@@ -343,5 +349,59 @@ describe("StoreFileUseCase", () => {
         expect(objects.size).toBe(0);
         const [listResponse] = await listFiles();
         expect(listResponse.data.fileManager.listFiles.data).toEqual([]);
+    });
+
+    it("should keep the written bytes when the create fails after the record is stored", async () => {
+        // What a throwing after-create subscriber does: the record is stored, the create fails.
+        const failAfterCreate = (container: Container) => {
+            class FailAfterCreateFile implements CreateFileUseCase.Interface {
+                constructor(private decoratee: CreateFileUseCase.Interface) {}
+
+                async execute(...args: Parameters<CreateFileUseCase.Interface["execute"]>) {
+                    const result = await this.decoratee.execute(...args);
+                    if (result.isFail()) {
+                        return result;
+                    }
+                    return Result.fail(new FilePersistenceError(new Error("Subscriber failed.")));
+                }
+            }
+            container.registerDecorator(
+                CreateFileUseCase.createDecorator({
+                    decorator: FailAfterCreateFile,
+                    dependencies: []
+                })
+            );
+        };
+        const { storeFile, getFile, readFile } = setup({ plugins: [failAfterCreate] });
+        const id = mdbid();
+
+        const result = await storeFile({ text: "hello", options: { name: "hello.txt", id } });
+
+        expect(result.error).toEqual({ code: "FileManager/File/PersistenceError" });
+        const [getFileResponse] = await getFile({ id });
+        expect(getFileResponse.data.fileManager.getFile.data).toMatchObject({
+            key: `${id}/hello.txt`
+        });
+        const contents = await readFile(`${id}/hello.txt`);
+        expect(contents.data.text).toBe("hello");
+    });
+
+    it("should store the input as it was when the call started", async () => {
+        const { storeFile, readFile } = setup();
+
+        const result = await storeFile({
+            text: "original",
+            options: { name: "report.txt", folderId: "folder-1", tags: ["first"] },
+            mutateAfterStart: true
+        });
+
+        expect(result.data.file).toMatchObject({
+            name: "report.txt",
+            type: "text/plain",
+            location: { folderId: "folder-1" },
+            tags: ["first"]
+        });
+        const contents = await readFile(result.data.file.key);
+        expect(contents.data.text).toBe("original");
     });
 });
