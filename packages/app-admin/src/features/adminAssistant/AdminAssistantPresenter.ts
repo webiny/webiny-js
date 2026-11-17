@@ -61,6 +61,16 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
      */
     private heldResults: AdminAssistantClientToolResult[] = [];
     /*
+     * Results sent to resume a run, until the server saves the chat with them. If that run fails
+     * first, "Try again" sends them again: asking the question again would make the changes twice.
+     */
+    private unsavedResults: AdminAssistantClientToolResult[] = [];
+    /*
+     * The tools the last request offered. A call the run makes is run by the same tool, from the same
+     * screen, or not at all: a screen opened since may register a tool of the same name.
+     */
+    private offeredTools: AssistantClientTools.Tool[] = [];
+    /*
      * Bumped whenever the conversation is replaced. An open that finishes after that belongs to a
      * conversation that is gone, and must not write its turns onto the new one.
      */
@@ -75,14 +85,23 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         // Machinery, not state anything renders, so keep them out of the map.
         makeAutoObservable<
             AdminAssistantPresenterImpl,
-            "controller" | "generation" | "chats" | "pageContext" | "clientTools" | "heldResults"
+            | "controller"
+            | "generation"
+            | "chats"
+            | "pageContext"
+            | "clientTools"
+            | "heldResults"
+            | "unsavedResults"
+            | "offeredTools"
         >(this, {
             controller: false,
             generation: false,
             chats: false,
             pageContext: false,
             clientTools: false,
-            heldResults: false
+            heldResults: false,
+            unsavedResults: false,
+            offeredTools: false
         });
     }
 
@@ -135,14 +154,23 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        // Asking something else rejects a change still waiting; the server does the same.
+        /*
+         * Asking something else rejects a change still waiting; the server does the same. Browser
+         * calls that already ran go with the question, so the server records what they did rather
+         * than reporting them as not run.
+         */
         this.dropPendingApprovals();
+        const ran = [...this.heldResults, ...this.unsavedResults];
         this.heldResults = [];
+        this.unsavedResults = [];
         this.clearStorageError();
 
         const index = this.turns.length;
         this.addTurn(trimmed);
         const request = this.question(trimmed);
+        if (ran.length > 0 && request.chatId) {
+            request.toolResults = ran;
+        }
         void this.run(index, request);
     }
 
@@ -201,6 +229,20 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         }
 
         this.clearStorageError();
+
+        // A run resumed with browser results failed: the changes were made, so send what they came to.
+        if (this.unsavedResults.length > 0 && this.chatId) {
+            this.patch(index, {
+                error: undefined,
+                errorCode: undefined,
+                settled: false,
+                running: true
+            });
+            const resume = this.request({ toolResults: this.unsavedResults });
+            void this.run(index, this.withPageContext(resume), true);
+            return;
+        }
+
         const fresh = emptyTurn(turn.question);
         this.replaceTurn(index, { ...fresh, running: true });
         const request = this.question(turn.question);
@@ -217,6 +259,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.controller = null;
         this.generation++;
         this.heldResults = [];
+        this.unsavedResults = [];
         this.clear();
     }
 
@@ -271,6 +314,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             request.chatId = this.chatId;
         }
         const tools = this.clientTools.list();
+        this.offeredTools = tools;
         if (tools.length > 0) {
             request.clientTools = tools.map(({ name, description, inputSchema }) => ({
                 name,
@@ -292,6 +336,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         this.setBusy(true);
 
+        const offered = this.offeredTools;
         let clientCalls: AdminAssistantClientToolCall[] = [];
         let waitsForApproval = false;
         let finished = false;
@@ -366,6 +411,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 }
 
                 if (event.type === "saved") {
+                    this.unsavedResults = [];
                     this.setSaved(event.chat);
                     continue;
                 }
@@ -414,7 +460,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         }
 
         if (finished && clientCalls.length > 0 && !controller.signal.aborted) {
-            await this.runClientCalls(index, clientCalls, waitsForApproval);
+            await this.runClientCalls(index, clientCalls, waitsForApproval, offered);
         }
     }
 
@@ -425,7 +471,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private async runClientCalls(
         index: number,
         calls: AdminAssistantClientToolCall[],
-        waitsForApproval: boolean
+        waitsForApproval: boolean,
+        offered: AssistantClientTools.Tool[]
     ): Promise<void> {
         const generation = this.generation;
         this.setBusy(true);
@@ -433,7 +480,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         const results: AdminAssistantClientToolResult[] = [];
         for (const call of calls) {
-            const result = await this.clientTools.run(call);
+            const result = await this.clientTools.run(call, offered);
             if (generation !== this.generation) {
                 return;
             }
@@ -463,6 +510,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        this.unsavedResults = results;
         const resume = this.request({ toolResults: results });
         const request = this.withPageContext(resume);
         await this.run(index, request, true);

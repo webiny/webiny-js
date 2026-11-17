@@ -209,4 +209,82 @@ describe("AdminAssistantPresenter client tools", () => {
         expect(requests).toHaveLength(1);
         expect(presenter.vm.turns[0].error).toContain("wasn't saved");
     });
+
+    it("never runs a same-named tool from a screen opened after the question", async () => {
+        const { presenter, clientTools, requests } = setup([pausedOnCall, answered]);
+        const asked: string[] = [];
+        const first = clientTools.register([addElements(async () => asked.push("first"))]);
+
+        presenter.ask("Add a hero");
+        // The user leaves the page while the run streams; another page registers the same tool.
+        clientTools.unregister(first);
+        clientTools.register([addElements(async () => asked.push("second"))]);
+        await settle(presenter);
+
+        expect(asked).toEqual([]);
+        expect(requests[1].toolResults).toEqual([
+            {
+                toolCallId: "call-1",
+                toolName: "addPageElements",
+                error: "The screen that runs this tool is no longer open."
+            }
+        ]);
+    });
+
+    it("sends results held for a decision with a new question instead of dropping them", async () => {
+        const withApproval: AdminAssistantStreamEvent[] = [
+            {
+                type: "approval",
+                approvals: [
+                    {
+                        approvalId: "a1",
+                        toolName: "createFolder",
+                        input: { title: "Pages" },
+                        destructive: false
+                    }
+                ]
+            },
+            ...pausedOnCall.slice(1)
+        ];
+        const { presenter, clientTools, requests } = setup([withApproval, answered]);
+        clientTools.register([addElements(async () => ({ added: ["el-1"] }))]);
+
+        presenter.ask("Add a hero and a folder");
+        await settle(presenter);
+        presenter.ask("Never mind the folder");
+        await settle(presenter);
+
+        expect(requests[1]).toMatchObject({
+            chatId: "chat-1",
+            prompt: "Never mind the folder",
+            toolResults: [{ toolCallId: "call-1", output: { added: ["el-1"] } }]
+        });
+    });
+
+    it("retries a failed resume with the same results, not by asking again", async () => {
+        const failed: AdminAssistantStreamEvent[] = [{ type: "error", message: "Network down." }];
+        const { presenter, clientTools, requests } = setup([pausedOnCall, failed, answered]);
+        let runs = 0;
+        clientTools.register([
+            addElements(async () => {
+                runs++;
+                return { added: ["el-1"] };
+            })
+        ]);
+
+        presenter.ask("Add a hero");
+        await settle(presenter);
+        expect(presenter.vm.turns[0].error).toBe("Network down.");
+
+        presenter.retry();
+        await settle(presenter);
+
+        expect(runs).toBe(1);
+        expect(requests[2].prompt).toBeUndefined();
+        expect(requests[2].toolResults).toEqual([
+            { toolCallId: "call-1", toolName: "addPageElements", output: { added: ["el-1"] } }
+        ]);
+        expect(presenter.vm.turns[0].error).toBeUndefined();
+        expect(presenter.vm.turns[0].settled).toBe(true);
+    });
 });

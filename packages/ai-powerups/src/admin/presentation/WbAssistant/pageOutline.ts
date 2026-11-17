@@ -1,4 +1,3 @@
-import get from "lodash/get.js";
 import type { Document } from "@webiny/website-builder-sdk";
 
 /** One element of the page, as the assistant is told of it. */
@@ -15,13 +14,31 @@ const MAX_ELEMENTS = 120;
 
 const isGlobal = (id: string) => id.startsWith("$global");
 
+/*
+ * Where an element sits in its parent's slot, read the way the renderer reads it
+ * (`BindingsResolver`): indexed `<slot>/<n>` bindings first, the slot's own array when there are none.
+ */
 const indexInSlot = (
     bindings: Document["bindings"],
     elementId: string,
     parentId: string,
     slot: string
 ): number => {
-    const slotValue = get(bindings[parentId], `inputs.${slot}`);
+    const inputs: Record<string, { static?: unknown; list?: boolean }> =
+        bindings[parentId]?.inputs ?? {};
+
+    const prefix = `${slot}/`;
+    for (const [key, binding] of Object.entries(inputs)) {
+        if (!key.startsWith(prefix) || binding?.static !== elementId) {
+            continue;
+        }
+        const position = Number(key.slice(prefix.length));
+        if (Number.isInteger(position)) {
+            return position;
+        }
+    }
+
+    const slotValue = inputs[slot];
     if (slotValue?.list && Array.isArray(slotValue.static)) {
         return slotValue.static.indexOf(elementId);
     }

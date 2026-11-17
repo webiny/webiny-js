@@ -41,6 +41,8 @@ interface StreamPart {
     toolName?: string;
     toolCallId?: string;
     input?: unknown;
+    /** Set on a call the SDK could not parse. It answers it with an error itself. */
+    invalid?: boolean;
     approvalId?: string;
     toolCall?: {
         toolName: string;
@@ -167,8 +169,11 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 if (part.type === "tool-call" && part.toolName) {
                     toolsSinceText = true;
                     yield { type: "tool-call", name: part.toolName };
-                    // The SDK does not run these: the browser does, once the run has paused.
-                    if (clientToolNames.has(part.toolName) && part.toolCallId) {
+                    /*
+                     * The SDK does not run these: the browser does, once the run has paused. Not an
+                     * invalid one, which the SDK has already answered with its parse error.
+                     */
+                    if (clientToolNames.has(part.toolName) && part.toolCallId && !part.invalid) {
                         clientCalls.push({
                             toolCallId: part.toolCallId,
                             toolName: part.toolName,
@@ -312,8 +317,22 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 approved: false,
                 reason: SUPERSEDED_REASON
             }));
-            const notRun = waitingCalls.map(call => ({ ...call, error: SUPERSEDED_CALL }));
-            const answers = toAnswersMessage(rejected, notRun);
+            /*
+             * Calls the browser ran while the run also waited for an approval come with the new
+             * question: those changes were made, so the model is told what they came to. Only the
+             * calls that did not run are reported as not run.
+             */
+            const ran = new Map(
+                (params.toolResults ?? []).map(result => [result.toolCallId, result])
+            );
+            const answered = waitingCalls.map(call => {
+                const result = ran.get(call.toolCallId);
+                if (result && result.toolName === call.toolName) {
+                    return result;
+                }
+                return { ...call, error: SUPERSEDED_CALL };
+            });
+            const answers = toAnswersMessage(rejected, answered);
             history.push(answers);
         }
         history.push({ role: "user", content: params.prompt });

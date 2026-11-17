@@ -128,6 +128,24 @@ describe("page editor tools", () => {
         });
     });
 
+    it("leaves inputs out when none are sent, so the component's defaults apply", async () => {
+        const { run, created } = fakeEditor();
+
+        await run("addPageElements", { elements: [{ component: "Webiny/Grid" }] });
+
+        expect(created[0]).toMatchObject({ bindings: {} });
+        expect((created[0] as { bindings: object }).bindings).not.toHaveProperty("inputs");
+    });
+
+    it("refuses a negative position before changing anything", async () => {
+        const { run, created } = fakeEditor();
+
+        await expect(
+            run("addPageElements", { index: -1, elements: [{ component: "Webiny/Lexical" }] })
+        ).rejects.toThrow('"index" must be a whole number from 0.');
+        expect(created).toHaveLength(0);
+    });
+
     it("refuses an unknown component before changing anything", async () => {
         const { run, created } = fakeEditor();
 
@@ -166,6 +184,39 @@ describe("page editor tools", () => {
         await expect(
             run("updatePageElement", { elementId: "nope", inputs: { title: "x" } })
         ).rejects.toThrow('There is no element "nope" on the page.');
+    });
+
+    it("refuses to move an element into a parent that is not on the page", async () => {
+        const { run, elements } = fakeEditor();
+        await run("addPageElements", { elements: [{ component: "Webiny/Lexical" }] });
+
+        await expect(
+            run("movePageElement", { elementId: "el1", parentId: "missing", index: 0 })
+        ).rejects.toThrow('There is no element "missing" on the page.');
+        expect(elements["el1"].parent).toEqual({ id: "root", slot: "children" });
+    });
+
+    it("refuses to move an element into an element inside it", async () => {
+        const { run, elements } = fakeEditor();
+        await run("addPageElements", { elements: [{ component: "Webiny/Grid" }] });
+        await run("addPageElements", {
+            parentId: "el1",
+            elements: [{ component: "Webiny/Grid" }]
+        });
+
+        await expect(
+            run("movePageElement", { elementId: "el1", parentId: "el2", index: 0 })
+        ).rejects.toThrow('"el1" can\'t be moved into itself.');
+        expect(elements["el1"].parent).toEqual({ id: "root", slot: "children" });
+    });
+
+    it("refuses a negative position when moving", async () => {
+        const { run } = fakeEditor();
+        await run("addPageElements", { elements: [{ component: "Webiny/Lexical" }] });
+
+        await expect(run("movePageElement", { elementId: "el1", index: -1 })).rejects.toThrow(
+            '"index" must be a whole number from 0.'
+        );
     });
 
     it("checks every id before deleting any", async () => {
@@ -245,5 +296,32 @@ describe("pageOutline", () => {
             "  c Webiny/GridColumn in columns.0.children"
         ]);
         expect(truncated).toBe(false);
+    });
+
+    it("orders a slot by its indexed bindings, as the renderer does", () => {
+        const child = (id: string): Elements[string] => ({
+            type: "Webiny/Element",
+            id,
+            component: { name: "Webiny/Lexical" },
+            parent: { id: "root", slot: "children" }
+        });
+        const elements: Elements = {
+            root: { type: "Webiny/Element", id: "root", component: { name: "Root" } },
+            a: child("a"),
+            b: child("b")
+        };
+        // No aggregate array: only `children/<n>` keys say where each element sits.
+        const bindings = {
+            root: {
+                inputs: {
+                    "children/0": { id: "x", type: "slot", static: "b" },
+                    "children/1": { id: "y", type: "slot", static: "a" }
+                }
+            }
+        } as unknown as Document["bindings"];
+
+        const { elements: tree } = pageOutline({ elements, bindings });
+
+        expect(outlineLines(tree)).toEqual(["b Webiny/Lexical", "a Webiny/Lexical"]);
     });
 });

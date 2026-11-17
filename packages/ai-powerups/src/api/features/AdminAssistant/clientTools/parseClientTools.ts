@@ -35,6 +35,10 @@ export const parseClientTools = (value: unknown): ClientToolDeclaration[] => {
         if (!isRecord(inputSchema) || inputSchema["type"] !== "object") {
             continue;
         }
+        // A provider that validates tool schemas refuses the whole request over one bad `properties`.
+        if ("properties" in inputSchema && !isRecord(inputSchema["properties"])) {
+            continue;
+        }
         names.add(name);
         declarations.push({ name, description, inputSchema });
     }

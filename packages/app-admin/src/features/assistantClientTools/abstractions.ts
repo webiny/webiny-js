@@ -48,10 +48,15 @@ export interface IAssistantClientTools {
     list(): AssistantClientTool[];
     get(name: string): AssistantClientTool | undefined;
     /**
-     * Run one call. Never throws: a tool that throws, or one no longer offered because its screen
-     * was left, comes back as a result with `error`, which the model reads.
+     * Run one call with the tool of that name among `offered`, the tools the request that led to it
+     * offered. Never throws: a tool that throws, or one no longer registered because its screen was
+     * left, comes back as a result with `error`, which the model reads. A tool of the same name from
+     * a screen opened since is never run in its place.
      */
-    run(call: AssistantClientToolCall): Promise<AssistantClientToolResult>;
+    run(
+        call: AssistantClientToolCall,
+        offered: AssistantClientTool[]
+    ): Promise<AssistantClientToolResult>;
 }
 
 /**

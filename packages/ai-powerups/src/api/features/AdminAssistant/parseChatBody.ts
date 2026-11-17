@@ -13,8 +13,9 @@ const safeParse = (value: string): unknown => {
 };
 
 /**
- * Accepts a question, `{ chatId?, prompt, pageContext? }`, or what a paused run waits for,
- * `{ chatId, approvals?, toolResults? }`. Either can carry the screen's `clientTools`.
+ * Accepts a question, `{ chatId?, prompt, pageContext?, toolResults? }`, or what a paused run waits
+ * for, `{ chatId, approvals?, toolResults? }`. Either can carry the screen's `clientTools`. A question
+ * carries results when it replaces a run whose browser calls ran while it waited for an approval.
  * The history is never in the body: the use case reads it from the saved chat.
  *
  * Returns null for anything unusable, so the caller decides the status code.
@@ -40,6 +41,9 @@ export const parseChatBody = (body: unknown): AdminAssistantParams | null => {
 
     if (typeof prompt === "string" && prompt.trim()) {
         params.prompt = prompt;
+        if (params.chatId) {
+            params.toolResults = toolResults;
+        }
         const pageContext = parsePageContext(payload["pageContext"]);
         if (pageContext) {
             params.pageContext = pageContext;

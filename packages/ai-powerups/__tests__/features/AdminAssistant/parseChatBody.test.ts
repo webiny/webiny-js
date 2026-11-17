@@ -86,6 +86,29 @@ describe("parseChatBody client tools", () => {
         expect(params?.clientTools).toEqual([tool]);
     });
 
+    it("drops a tool whose schema has properties that are not an object", () => {
+        const params = parseChatBody({
+            prompt: "add a hero",
+            clientTools: [
+                tool,
+                { ...tool, name: "other", inputSchema: { type: "object", properties: 7 } }
+            ]
+        });
+
+        expect(params?.clientTools).toEqual([tool]);
+    });
+
+    it("keeps results sent with a question that replaces a paused run", () => {
+        const results = [{ toolCallId: "c1", toolName: "addPageElements", output: {} }];
+        const params = parseChatBody({
+            chatId: "chat-1",
+            prompt: "never mind",
+            toolResults: results
+        });
+
+        expect(params?.toolResults).toEqual(results);
+    });
+
     it("drops a set of tools too large to send", () => {
         const params = parseChatBody({
             prompt: "add a hero",

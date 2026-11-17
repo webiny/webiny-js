@@ -18,7 +18,8 @@ export interface PageEditorAccess {
         parentId: string;
         slot: string;
         index?: number;
-        bindings: { inputs: Record<string, unknown>; styles?: Record<string, unknown> };
+        /** Left out, an input or the styles take the component's defaults. */
+        bindings: { inputs?: Record<string, unknown>; styles?: Record<string, unknown> };
     }): Promise<void>;
     updateInputs(elementId: string, inputs: Record<string, unknown>): void;
     moveElement(params: {
@@ -109,6 +110,18 @@ const readStrings = (value: unknown): string[] => {
     return strings;
 };
 
+/** A position in a slot: a whole number from 0. Absent when the model left it out. */
+const readIndex = (input: Record<string, unknown>): number | undefined => {
+    const value = input["index"];
+    if (value === undefined) {
+        return undefined;
+    }
+    if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+        throw new Error('"index" must be a whole number from 0.');
+    }
+    return value;
+};
+
 /** Ids of the elements in a parent's slot. */
 const childrenOf = (access: PageEditorAccess, parentId: string, slot: string): string[] => {
     const { elements } = access.document();
@@ -152,6 +165,20 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
         const { elements } = access.document();
         if (!elements[id]) {
             throw new Error(`There is no element "${id}" on the page.`);
+        }
+    };
+
+    // An element moved into itself, or into anything inside it, would leave the page with both.
+    const assertNotInside = (parentId: string, elementId: string) => {
+        const { elements } = access.document();
+        const visited = new Set<string>();
+        let current: string | undefined = parentId;
+        while (current && !visited.has(current)) {
+            if (current === elementId) {
+                throw new Error(`"${elementId}" can't be moved into itself.`);
+            }
+            visited.add(current);
+            current = elements[current]?.parent?.id;
         }
     };
 
@@ -237,7 +264,7 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
                 const input = isRecord(raw) ? raw : {};
                 const parentId = readString(input, "parentId", "root");
                 const slot = readString(input, "slot", "children");
-                const index = typeof input["index"] === "number" ? input["index"] : undefined;
+                const index = readIndex(input);
                 const elements = readElements(input["elements"]);
 
                 if (parentId !== "root") {
@@ -247,11 +274,14 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
 
                 const added: { id: string; component: string }[] = [];
                 for (const [offset, element] of elements.entries()) {
-                    const inputs = await access.resolveValues(element.inputs ?? {});
+                    // Without inputs the component's default inputs apply, default children included.
                     const bindings: {
-                        inputs: Record<string, unknown>;
+                        inputs?: Record<string, unknown>;
                         styles?: Record<string, unknown>;
-                    } = { inputs };
+                    } = {};
+                    if (element.inputs) {
+                        bindings.inputs = await access.resolveValues(element.inputs);
+                    }
                     if (element.styles) {
                         bindings.styles = element.styles;
                     }
@@ -318,8 +348,12 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
                 const elementId = readString(input, "elementId");
                 const parentId = readString(input, "parentId", "root");
                 const slot = readString(input, "slot", "children");
-                const index = typeof input["index"] === "number" ? input["index"] : 0;
+                const index = readIndex(input) ?? 0;
                 assertElement(elementId);
+                if (parentId !== "root") {
+                    assertElement(parentId);
+                }
+                assertNotInside(parentId, elementId);
                 await access.moveElement({ elementId, parentId, slot, index });
                 const { elements } = access.document();
                 const parent = elements[elementId]?.parent;

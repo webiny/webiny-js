@@ -806,6 +806,53 @@ describe("AdminAssistantUseCase client tools", () => {
         expect(events.map(event => event.type)).toEqual(["error"]);
     });
 
+    it("leaves a call the SDK could not parse to the SDK, which answers it", async () => {
+        const { useCase } = setup(undefined, [{ ...call, invalid: true }]);
+
+        const events = await run(useCase, question);
+
+        expect(events.map(event => event.type)).not.toContain("client-tools");
+    });
+
+    it("refuses a result saved under another tool's name than the call it answers", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        const events = await run(useCase, {
+            chatId: "c1",
+            decisions: [],
+            toolResults: [{ toolCallId: "call-1", toolName: "deletePageElements", output: {} }]
+        });
+
+        expect(requests).toHaveLength(0);
+        expect(events.map(event => event.type)).toEqual(["error"]);
+    });
+
+    it("keeps what a call that ran came to when a new question replaces the run", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        await run(useCase, {
+            chatId: "c1",
+            prompt: "never mind",
+            decisions: [],
+            toolResults: [
+                { toolCallId: "call-1", toolName: "addPageElements", output: { added: 1 } }
+            ]
+        });
+
+        const messages = requests[0].messages as ModelMessage[];
+        expect(messages[messages.length - 2]).toEqual({
+            role: "tool",
+            content: [
+                {
+                    type: "tool-result",
+                    toolCallId: "call-1",
+                    toolName: "addPageElements",
+                    output: { type: "json", value: { added: 1 } }
+                }
+            ]
+        });
+    });
+
     it("answers a waiting call as not run before a new question", async () => {
         const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
 
