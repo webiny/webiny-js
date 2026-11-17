@@ -7,6 +7,7 @@ import { Content } from "./Content/Content.js";
 import { Toolbar } from "./Toolbar/Toolbar.js";
 import { Sidebar } from "./Sidebar/Sidebar.js";
 import { Panels } from "./Panels/Panels.js";
+import type { PanelConfig } from "./Panels/types.js";
 import { Elements } from "./Elements.js";
 import { OnActiveElement } from "./OnActiveElement.js";
 import { NoActiveElement } from "./NoActiveElement.js";
@@ -21,6 +22,7 @@ import { ElementOverlay } from "./ElementOverlay.js";
 export interface EditorConfig {
     elements: ElementConfig[];
     inputRenderers: ElementInputConfig[];
+    panels: PanelConfig[];
 }
 
 const base = createConfigurableComponent<EditorConfig>("DocumentEditor");

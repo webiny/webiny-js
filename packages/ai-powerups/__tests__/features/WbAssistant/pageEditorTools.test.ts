@@ -1,8 +1,12 @@
-import { describe, it, expect } from "vitest";
-import type { ComponentManifest, Document } from "@webiny/website-builder-sdk";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import type { ComponentManifest } from "@webiny/website-builder-sdk";
+import type { Document } from "@webiny/website-builder-sdk";
 import { createPageEditorTools } from "~/admin/presentation/WbAssistant/pageEditorTools.js";
 import type { PageEditorAccess } from "~/admin/presentation/WbAssistant/pageEditorTools.js";
-import { outlineLines, pageOutline } from "~/admin/presentation/WbAssistant/pageOutline.js";
+import { pageOutline } from "~/admin/presentation/WbAssistant/pageOutline.js";
+import { outlineLines } from "~/admin/presentation/WbAssistant/outlineLines.js";
 
 type Elements = Document["elements"];
 
@@ -52,19 +56,29 @@ const fakeEditor = (refuse: string[] = []) => {
         moveElement: async ({ elementId, parentId, slot }) => {
             elements[elementId] = { ...elements[elementId], parent: { id: parentId, slot } };
         },
+        // Like the editor, deleting an element deletes what is inside it.
         deleteElement: async id => {
+            for (const element of Object.values(elements)) {
+                if (element.parent?.id === id) {
+                    delete elements[element.id];
+                }
+            }
             delete elements[id];
         },
         readInputs: () => ({ title: "Hello" }),
         // Stands in for the envelope pipeline: marks what it resolved.
-        resolveValues: async value => ({ ...(value as object), resolved: true }),
+        resolveValues: async value => {
+            const resolved: Record<string, unknown> = { ...value, resolved: true };
+            return resolved;
+        },
         valueTools: () => [
             { name: "textToLexical", description: "HTML to Lexical", inputSchema: {} }
         ]
     };
 
     const tools = createPageEditorTools(access);
-    const run = (name: string, input: unknown) => {
+    // `any`, as a tool's output is to the model: each test reads the shape it expects.
+    const run = (name: string, input: unknown): Promise<any> => {
         const tool = tools.find(candidate => candidate.name === name)!;
         return tool.execute(input);
     };
@@ -76,11 +90,11 @@ describe("page editor tools", () => {
     it("lists the components the generator may use, with the value tools and rules", async () => {
         const { run } = fakeEditor();
 
-        const result = (await run("listPageComponents", {})) as {
+        const result: {
             components: { name: string }[];
             valueTools: { name: string }[];
             rules: string;
-        };
+        } = await run("listPageComponents", {});
 
         expect(result.components.map(component => component.name)).toEqual([
             "Webiny/Lexical",
@@ -152,6 +166,30 @@ describe("page editor tools", () => {
         await expect(
             run("updatePageElement", { elementId: "nope", inputs: { title: "x" } })
         ).rejects.toThrow('There is no element "nope" on the page.');
+    });
+
+    it("checks every id before deleting any", async () => {
+        const { run, elements } = fakeEditor();
+        await run("addPageElements", { elements: [{ component: "Webiny/Lexical" }] });
+
+        await expect(run("deletePageElements", { elementIds: ["el1", "nope"] })).rejects.toThrow(
+            'There is no element "nope" on the page.'
+        );
+        expect(elements["el1"]).toBeDefined();
+    });
+
+    it("counts a child deleted with its parent as deleted", async () => {
+        const { run, elements } = fakeEditor();
+        await run("addPageElements", { elements: [{ component: "Webiny/Grid" }] });
+        await run("addPageElements", {
+            parentId: "el1",
+            slot: "children",
+            elements: [{ component: "Webiny/Lexical" }]
+        });
+        const result = await run("deletePageElements", { elementIds: ["el1", "el2"] });
+
+        expect(result).toEqual({ deleted: ["el1", "el2"] });
+        expect(elements["el2"]).toBeUndefined();
     });
 
     it("deletes elements and reports them", async () => {

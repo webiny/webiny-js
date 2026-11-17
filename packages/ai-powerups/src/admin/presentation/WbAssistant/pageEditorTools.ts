@@ -1,12 +1,14 @@
-import type { AssistantClientTool } from "@webiny/app-admin";
+import type { AssistantClientTools } from "@webiny/app-admin";
 import type { ComponentManifest } from "@webiny/website-builder-sdk";
 import type { Document } from "@webiny/website-builder-sdk";
-import { componentCatalog } from "./pageOutline.js";
+import { WB_GRID_LAYOUTS } from "~/domain/wbGridLayouts.js";
+import { aiComponentCatalog } from "~/admin/presentation/WbAiContext/aiComponentCatalog.js";
 
 /**
- * What the tools need from the page editor. Kept narrow so the tools can be tested without one, and
- * so every change goes through the editor's own commands: undo, constraints and the canvas all work
- * the way they do for a change made by hand.
+ * What the tools need from the page editor. Kept narrow so the tools can be tested without one.
+ * Elements are created, moved and deleted through the editor's commands, and inputs change the way
+ * the sidebar changes them, so undo, constraints and the canvas work as they do for a change made by
+ * hand.
  */
 export interface PageEditorAccess {
     components(): Record<string, ComponentManifest>;
@@ -28,9 +30,9 @@ export interface PageEditorAccess {
     deleteElement(elementId: string): Promise<void>;
     readInputs(elementId: string): Record<string, unknown>;
     /** Turns `{ tool, params }` envelopes into values: Lexical state, image references. */
-    resolveValues(value: unknown): Promise<unknown>;
+    resolveValues(value: Record<string, unknown>): Promise<Record<string, unknown>>;
     /** The envelopes `resolveValues` understands, as the model needs to write them. */
-    valueTools(): { name: string; description: string; inputSchema: unknown }[];
+    valueTools(): unknown[];
 }
 
 interface ElementInput {
@@ -42,18 +44,19 @@ interface ElementInput {
 /** More than this is not something the model needs to see to change one element. */
 const MAX_INPUTS_LENGTH = 6000;
 
-const GRID_LAYOUTS = ["12", "6-6", "4-4-4", "8-4", "4-8", "3-3-3-3"];
+const gridLayouts = WB_GRID_LAYOUTS.join(", ");
 
 /**
- * How to write elements. The same rules the one-shot page generator gives its model
- * (`WbGeneratePageContent/buildPrompt.ts`), cut to what holds for editing as well as generating.
+ * How to write elements. The one-shot page generator (`WbGeneratePageContent/buildPrompt.ts`) gives
+ * its model the same element format; this is the part of it that holds for editing as well as
+ * generating, since the assistant hands elements to a tool rather than returning a page.
  */
 const BUILDING_RULES = `Elements are { "component": "<name>", "inputs": { ... } }.
 - Only use component names from this catalog. Input names come from each component's inputs.
 - Plain values (text, number, boolean, select) are set directly.
 - Values that need converting are written as an envelope: { "tool": "<valueTool>", "params": { ... } }. Rich text ("lexical" inputs) is { "tool": "textToLexical", "params": { "text": "<html>" } }.
 - A slot input takes elements written as { "action": "CreateElement", "params": { "component": "...", "inputs": { ... } } }; a list slot takes an array of them.
-- Webiny/Grid: "gridLayout" is one of ${GRID_LAYOUTS.join(", ")}. "columns" is an array; each column is { "children": { "action": "CreateElement", "params": { "component": "Webiny/GridColumn", "inputs": { "children": [ <CreateElement actions> ] } } } }.
+- Webiny/Grid: "gridLayout" is one of ${gridLayouts}. "columns" is an array; each column is { "children": { "action": "CreateElement", "params": { "component": "Webiny/GridColumn", "inputs": { "children": [ <CreateElement actions> ] } } } }.
 - One Webiny/Lexical element can hold a whole section: headings, paragraphs and lists in one HTML string. Use one <h1> per page, then <h2> and <h3> in order.
 - Images: call listImagesByTag first and use an id it returned, as { "tool": "resolveImage", "params": { "id": "<id>" } }. Never invent an id; leave the image out when nothing fits.`;
 
@@ -61,23 +64,25 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 };
 
+const readElement = (entry: unknown, index: number): ElementInput => {
+    if (!isRecord(entry) || typeof entry["component"] !== "string") {
+        throw new Error(`Element ${index} needs a "component" name.`);
+    }
+    const element: ElementInput = { component: entry["component"] };
+    if (isRecord(entry["inputs"])) {
+        element.inputs = entry["inputs"];
+    }
+    if (isRecord(entry["styles"])) {
+        element.styles = entry["styles"];
+    }
+    return element;
+};
+
 const readElements = (value: unknown): ElementInput[] => {
     if (!Array.isArray(value) || value.length === 0) {
         throw new Error("`elements` must be a non-empty array of { component, inputs }.");
     }
-    return value.map((entry, index) => {
-        if (!isRecord(entry) || typeof entry["component"] !== "string") {
-            throw new Error(`Element ${index} needs a "component" name.`);
-        }
-        const element: ElementInput = { component: entry["component"] };
-        if (isRecord(entry["inputs"])) {
-            element.inputs = entry["inputs"];
-        }
-        if (isRecord(entry["styles"])) {
-            element.styles = entry["styles"];
-        }
-        return element;
-    });
+    return value.map(readElement);
 };
 
 const readString = (input: Record<string, unknown>, key: string, fallback?: string): string => {
@@ -91,7 +96,20 @@ const readString = (input: Record<string, unknown>, key: string, fallback?: stri
     throw new Error(`"${key}" is required.`);
 };
 
-/** Ids of the elements in a parent's slot, in canvas order. */
+const readStrings = (value: unknown): string[] => {
+    const strings: string[] = [];
+    if (!Array.isArray(value)) {
+        return strings;
+    }
+    for (const entry of value) {
+        if (typeof entry === "string") {
+            strings.push(entry);
+        }
+    }
+    return strings;
+};
+
+/** Ids of the elements in a parent's slot. */
 const childrenOf = (access: PageEditorAccess, parentId: string, slot: string): string[] => {
     const { elements } = access.document();
     return Object.values(elements)
@@ -107,14 +125,23 @@ const truncate = (value: unknown): unknown => {
     return { truncated: true, json: serialized.slice(0, MAX_INPUTS_LENGTH) };
 };
 
+const notPlaced = (component: string, slot: string, parentId: string, added: number) => {
+    let message = `"${component}" can't go in the "${slot}" slot of "${parentId}".`;
+    if (added > 0) {
+        message += ` ${added} element(s) before it were added.`;
+    }
+    return new Error(message);
+};
+
 /**
  * The page editor's tools for the assistant. They run in the browser, against the page open in the
  * editor: a change shows on the canvas at once, undo takes it back, and nothing is stored until the
  * user saves.
  */
-export const createPageEditorTools = (access: PageEditorAccess): AssistantClientTool[] => {
+export const createPageEditorTools = (access: PageEditorAccess): AssistantClientTools.Tool[] => {
     const assertComponent = (name: string) => {
-        if (!access.components()[name]) {
+        const components = access.components();
+        if (!components[name]) {
             throw new Error(
                 `There is no component named "${name}". Call listPageComponents for the names.`
             );
@@ -122,7 +149,8 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
     };
 
     const assertElement = (id: string) => {
-        if (!access.document().elements[id]) {
+        const { elements } = access.document();
+        if (!elements[id]) {
             throw new Error(`There is no element "${id}" on the page.`);
         }
     };
@@ -134,8 +162,11 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
                 "Lists the components the page editor can place, with their inputs, the value tools for inputs that need converting, and the rules for writing elements. Call it once before adding or changing elements.",
             inputSchema: { type: "object", properties: {} },
             async execute() {
+                // Global components have one instance per site, placed by the layout, not the page.
+                const manifests = Object.values(access.components());
+                const placeable = manifests.filter(component => !component.global);
                 return {
-                    components: componentCatalog(access.components()),
+                    components: aiComponentCatalog(placeable),
                     valueTools: access.valueTools(),
                     rules: BUILDING_RULES
                 };
@@ -152,14 +183,16 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
                 },
                 required: ["elementId"]
             },
-            async execute(input) {
-                const { elementId } = input as { elementId: string };
+            async execute(raw) {
+                const input = isRecord(raw) ? raw : {};
+                const elementId = readString(input, "elementId");
                 assertElement(elementId);
-                const element = access.document().elements[elementId];
+                const { elements } = access.document();
+                const inputs = access.readInputs(elementId);
                 return {
                     id: elementId,
-                    component: element.component.name,
-                    inputs: truncate(access.readInputs(elementId))
+                    component: elements[elementId].component.name,
+                    inputs: truncate(inputs)
                 };
             }
         },
@@ -214,26 +247,27 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
 
                 const added: { id: string; component: string }[] = [];
                 for (const [offset, element] of elements.entries()) {
-                    const inputs = (await access.resolveValues(element.inputs ?? {})) as Record<
-                        string,
-                        unknown
-                    >;
-                    const before = new Set(childrenOf(access, parentId, slot));
+                    const inputs = await access.resolveValues(element.inputs ?? {});
+                    const bindings: {
+                        inputs: Record<string, unknown>;
+                        styles?: Record<string, unknown>;
+                    } = { inputs };
+                    if (element.styles) {
+                        bindings.styles = element.styles;
+                    }
+                    const children = childrenOf(access, parentId, slot);
+                    const before = new Set(children);
                     await access.createElement({
                         componentName: element.component,
                         parentId,
                         slot,
                         index: index === undefined ? undefined : index + offset,
-                        bindings: element.styles ? { inputs, styles: element.styles } : { inputs }
+                        bindings
                     });
-                    const created = childrenOf(access, parentId, slot).find(id => !before.has(id));
+                    const after = childrenOf(access, parentId, slot);
+                    const created = after.find(id => !before.has(id));
                     if (!created) {
-                        throw new Error(
-                            `"${element.component}" can't go in the "${slot}" slot of "${parentId}".` +
-                                (added.length > 0
-                                    ? ` ${added.length} element(s) before it were added.`
-                                    : "")
-                        );
+                        throw notPlaced(element.component, slot, parentId, added.length);
                     }
                     added.push({ id: created, component: element.component });
                 }
@@ -257,13 +291,11 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
                 const input = isRecord(raw) ? raw : {};
                 const elementId = readString(input, "elementId");
                 assertElement(elementId);
-                if (!isRecord(input["inputs"])) {
+                const values = input["inputs"];
+                if (!isRecord(values)) {
                     throw new Error('"inputs" must be an object of input values.');
                 }
-                const inputs = (await access.resolveValues(input["inputs"])) as Record<
-                    string,
-                    unknown
-                >;
+                const inputs = await access.resolveValues(values);
                 access.updateInputs(elementId, inputs);
                 return { updated: elementId, inputs: Object.keys(inputs) };
             }
@@ -289,8 +321,9 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
                 const index = typeof input["index"] === "number" ? input["index"] : 0;
                 assertElement(elementId);
                 await access.moveElement({ elementId, parentId, slot, index });
-                const element = access.document().elements[elementId];
-                if (element?.parent?.id !== parentId || element.parent.slot !== slot) {
+                const { elements } = access.document();
+                const parent = elements[elementId]?.parent;
+                if (parent?.id !== parentId || parent.slot !== slot) {
                     throw new Error(`The element can't go in the "${slot}" slot of "${parentId}".`);
                 }
                 return { moved: elementId };
@@ -309,23 +342,32 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
             },
             async execute(raw) {
                 const input = isRecord(raw) ? raw : {};
-                const ids = Array.isArray(input["elementIds"])
-                    ? input["elementIds"].filter((id): id is string => typeof id === "string")
-                    : [];
+                const ids = readStrings(input["elementIds"]);
+                // Every id is checked before anything goes, so a bad id deletes nothing.
+                ids.forEach(assertElement);
+
                 const deleted: string[] = [];
                 const kept: string[] = [];
                 for (const id of ids) {
-                    assertElement(id);
+                    const { elements } = access.document();
+                    // Gone with a parent deleted earlier in this call.
+                    if (!elements[id]) {
+                        deleted.push(id);
+                        continue;
+                    }
                     await access.deleteElement(id);
-                    if (access.document().elements[id]) {
+                    const after = access.document();
+                    if (after.elements[id]) {
                         kept.push(id);
                     } else {
                         deleted.push(id);
                     }
                 }
-                return kept.length > 0
-                    ? { deleted, notDeleted: kept, reason: "These can't be deleted." }
-                    : { deleted };
+
+                if (kept.length > 0) {
+                    return { deleted, notDeleted: kept, reason: "These can't be deleted." };
+                }
+                return { deleted };
             }
         }
     ];

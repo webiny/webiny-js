@@ -22,6 +22,21 @@ export interface AssistantClientTool {
     execute(input: unknown): Promise<unknown>;
 }
 
+/** A call the assistant made to one of these tools. */
+export interface AssistantClientToolCall {
+    toolCallId: string;
+    toolName: string;
+    input: unknown;
+}
+
+/** What a call came to: the tool's output, or why it failed. */
+export interface AssistantClientToolResult {
+    toolCallId: string;
+    toolName: string;
+    output?: unknown;
+    error?: string;
+}
+
 /** Identifies one `register`, so each screen removes only the tools it added. */
 export type AssistantClientToolsOwner = symbol;
 
@@ -32,6 +47,11 @@ export interface IAssistantClientTools {
     /** Every tool offered now. A newer registration wins a name both use. */
     list(): AssistantClientTool[];
     get(name: string): AssistantClientTool | undefined;
+    /**
+     * Run one call. Never throws: a tool that throws, or one no longer offered because its screen
+     * was left, comes back as a result with `error`, which the model reads.
+     */
+    run(call: AssistantClientToolCall): Promise<AssistantClientToolResult>;
 }
 
 /**
@@ -45,4 +65,6 @@ export namespace AssistantClientTools {
     export type Interface = IAssistantClientTools;
     export type Tool = AssistantClientTool;
     export type Owner = AssistantClientToolsOwner;
+    export type Call = AssistantClientToolCall;
+    export type Result = AssistantClientToolResult;
 }

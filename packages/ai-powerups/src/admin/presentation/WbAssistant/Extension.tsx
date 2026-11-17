@@ -1,9 +1,12 @@
 import React from "react";
+import { RegisterFeature } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
 import { PageEditorConfig } from "@webiny/app-website-builder";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
-import { AssistantPanel, ASSISTANT_PANEL } from "./AssistantPanel.js";
+import { AssistantPanel } from "./AssistantPanel.js";
+import { ASSISTANT_PANEL } from "./AssistantPanel.js";
 import { PageEditorAssistant } from "./PageEditorAssistant.js";
+import { PageEditorAssistantFeature } from "./feature.js";
 
 const { Ui } = PageEditorConfig;
 
@@ -19,18 +22,21 @@ export const WbAssistant = () => {
     }
 
     return (
-        <PageEditorConfig>
-            <Ui.Panels.Panel
-                name={ASSISTANT_PANEL}
-                label={"AI assistant"}
-                icon={<AiIcon />}
-                element={<AssistantPanel />}
-            />
-            <Ui.Element
-                name={"aiAssistantTools"}
-                group={"overlays"}
-                element={<PageEditorAssistant />}
-            />
-        </PageEditorConfig>
+        <>
+            <RegisterFeature feature={PageEditorAssistantFeature} />
+            <PageEditorConfig>
+                <Ui.Panels.Panel
+                    name={ASSISTANT_PANEL}
+                    label={"AI assistant"}
+                    icon={<AiIcon />}
+                    element={<AssistantPanel />}
+                />
+                <Ui.Element
+                    name={"aiAssistantTools"}
+                    group={"overlays"}
+                    element={<PageEditorAssistant />}
+                />
+            </PageEditorConfig>
+        </>
     );
 };

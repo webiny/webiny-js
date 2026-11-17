@@ -730,6 +730,51 @@ describe("AdminAssistantUseCase client tools", () => {
         ]);
     });
 
+    /*
+     * The SDK reads approval responses only from the last message. Decisions and results in two
+     * messages hid the decisions, so an approved change next to a browser call never ran.
+     */
+    it("answers an approval and a browser call waiting together in one message", async () => {
+        const both: ModelMessage[] = [
+            { role: "user", content: "add a hero and a folder" },
+            {
+                role: "assistant",
+                content: [
+                    {
+                        type: "tool-call",
+                        toolCallId: "call-0",
+                        toolName: "createFolder",
+                        input: { title: "Pages" }
+                    },
+                    { type: "tool-approval-request", approvalId: "a1", toolCallId: "call-0" },
+                    call
+                ]
+            } as unknown as ModelMessage
+        ];
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: both } });
+
+        await run(useCase, {
+            chatId: "c1",
+            decisions: [{ approvalId: "a1", approved: true }],
+            toolResults: [{ toolCallId: "call-1", toolName: "addPageElements", output: {} }]
+        });
+
+        const messages = requests[0].messages as ModelMessage[];
+        expect(messages).toHaveLength(3);
+        expect(messages[2]).toEqual({
+            role: "tool",
+            content: [
+                { type: "tool-approval-response", approvalId: "a1", approved: true },
+                {
+                    type: "tool-result",
+                    toolCallId: "call-1",
+                    toolName: "addPageElements",
+                    output: { type: "json", value: {} }
+                }
+            ]
+        });
+    });
+
     it("passes a failed call on as an error result the model can correct", async () => {
         const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
 

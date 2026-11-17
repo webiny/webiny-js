@@ -20,7 +20,6 @@ import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
 import type { AdminAssistantParams } from "./abstractions.js";
 import { isReadOnlyTool } from "@webiny/api-core/features/ai/index.js";
 import { toPendingApproval } from "./approvals.js";
-import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
 import { FOLLOW_UPS_TOOL } from "./followUps.js";
@@ -29,11 +28,11 @@ import { readFollowUps } from "./followUps.js";
 import { unansweredApprovals } from "./unansweredApprovals.js";
 import { decidesExactly } from "./decidesExactly.js";
 import { describePageContext } from "./describePageContext.js";
-import type { ClientToolCall } from "./clientTools.js";
-import { answersExactly } from "./clientTools.js";
-import { toClientToolSet } from "./clientTools.js";
-import { toResultMessage } from "./clientTools.js";
-import { unansweredClientCalls } from "./clientTools.js";
+import type { ClientToolCall } from "./clientTools/index.js";
+import { answersExactly } from "./clientTools/index.js";
+import { toClientToolSet } from "./clientTools/index.js";
+import { unansweredClientCalls } from "./clientTools/index.js";
+import { toAnswersMessage } from "./toAnswersMessage.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -83,34 +82,6 @@ interface ApprovalRequestPart {
         input: unknown;
     };
 }
-
-/**
- * Turns the caller's approve/reject decisions into the tool message the SDK expects. Sent as its own
- * message so it lands after the assistant message that requested it.
- */
-const toApprovalMessage = (decisions: ApprovalDecision[]): ModelMessage => {
-    return {
-        role: "tool",
-        content: decisions.map(decision => {
-            const part: {
-                type: "tool-approval-response";
-                approvalId: string;
-                approved: boolean;
-                reason?: string;
-            } = {
-                type: "tool-approval-response",
-                approvalId: decision.approvalId,
-                approved: decision.approved
-            };
-
-            if (decision.reason) {
-                part.reason = decision.reason;
-            }
-
-            return part;
-        })
-    };
-};
 
 /**
  * Answers a question about the project by running an agent loop over the registered `AiSdkToolDefinition`s.
@@ -330,29 +301,20 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             if (!answersExactly(params.toolResults ?? [], waitingCalls)) {
                 throw new Error("These results are not for the calls waiting in this chat.");
             }
-            const history = [...stored];
-            if (waiting.length > 0) {
-                history.push(toApprovalMessage(params.decisions));
-            }
-            if (waitingCalls.length > 0) {
-                history.push(toResultMessage(params.toolResults ?? []));
-            }
-            return history;
+            const answers = toAnswersMessage(params.decisions, params.toolResults ?? []);
+            return [...stored, answers];
         }
 
         const history = [...stored];
-        if (waiting.length > 0) {
-            const superseded = waiting.map(approvalId => ({
+        if (waiting.length > 0 || waitingCalls.length > 0) {
+            const rejected = waiting.map(approvalId => ({
                 approvalId,
                 approved: false,
                 reason: SUPERSEDED_REASON
             }));
-            const rejection = toApprovalMessage(superseded);
-            history.push(rejection);
-        }
-        if (waitingCalls.length > 0) {
-            const superseded = waitingCalls.map(call => ({ ...call, error: SUPERSEDED_CALL }));
-            history.push(toResultMessage(superseded));
+            const notRun = waitingCalls.map(call => ({ ...call, error: SUPERSEDED_CALL }));
+            const answers = toAnswersMessage(rejected, notRun);
+            history.push(answers);
         }
         history.push({ role: "user", content: params.prompt });
         return history;
@@ -382,7 +344,8 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             declaration => !(declaration.name in serverTools)
         );
         const clientTools = toClientToolSet(clientDeclarations);
-        const clientToolNames = new Set(Object.keys(clientTools));
+        const clientNames = Object.keys(clientTools);
+        const clientToolNames = new Set(clientNames);
         const tools = { ...serverTools, ...clientTools };
         /*
          * Client tools need no approval: they change what is on the user's screen, in front of them,

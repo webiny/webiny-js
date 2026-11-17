@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ApprovalDecision } from "./approvals.js";
-import type { ClientToolDeclaration, ClientToolResult } from "./clientTools.js";
+import type { ClientToolDeclaration } from "./clientTools/index.js";
+import type { ClientToolResult } from "./clientTools/index.js";
 import type { AdminAssistantEvent } from "./events.js";
 
 /**

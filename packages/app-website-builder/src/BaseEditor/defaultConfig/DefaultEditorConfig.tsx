@@ -42,6 +42,7 @@ export const DefaultEditorConfig = React.memo(() => {
                     label={"Properties"}
                     icon={<PropertiesIcon />}
                     defaultOpen={true}
+                    showInReadOnly={false}
                     element={
                         <Ui.IsNotReadOnly>
                             <Ui.Sidebar />

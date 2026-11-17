@@ -136,7 +136,6 @@ export {
     AssistantClientTools,
     AssistantClientToolsFeature
 } from "./features/assistantClientTools/index.js";
-export type { AssistantClientTool } from "./features/assistantClientTools/index.js";
 
 /*
  * AI chats: the saved assistant conversations and the side panel that lists them. Stored through the

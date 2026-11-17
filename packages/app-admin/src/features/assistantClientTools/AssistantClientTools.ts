@@ -1,5 +1,12 @@
 import { AssistantClientTools as Abstraction } from "./abstractions.js";
 
+/** Reported for a call whose screen was left between the call and running it. */
+const TOOL_GONE = "The screen that runs this tool is no longer open.";
+
+const messageOf = (error: unknown): string => {
+    return error instanceof Error ? error.message : String(error);
+};
+
 interface Entry {
     owner: Abstraction.Owner;
     tools: Abstraction.Tool[];
@@ -34,6 +41,21 @@ class AssistantClientToolsImpl implements Abstraction.Interface {
 
     get(name: string): Abstraction.Tool | undefined {
         return this.list().find(tool => tool.name === name);
+    }
+
+    async run(call: Abstraction.Call): Promise<Abstraction.Result> {
+        const { toolCallId, toolName } = call;
+        const tool = this.get(toolName);
+        if (!tool) {
+            return { toolCallId, toolName, error: TOOL_GONE };
+        }
+
+        try {
+            const output = await tool.execute(call.input);
+            return { toolCallId, toolName, output: output ?? null };
+        } catch (error) {
+            return { toolCallId, toolName, error: messageOf(error) };
+        }
     }
 }
 

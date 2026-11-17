@@ -1,5 +1,5 @@
 import get from "lodash/get.js";
-import type { ComponentManifest, Document } from "@webiny/website-builder-sdk";
+import type { Document } from "@webiny/website-builder-sdk";
 
 /** One element of the page, as the assistant is told of it. */
 export interface OutlineElement {
@@ -43,10 +43,11 @@ export const pageOutline = (document: Pick<Document, "elements" | "bindings">) =
         }
         const { id: parentId, slot } = element.parent;
         const siblings = byParent.get(parentId) ?? [];
+        const index = indexInSlot(document.bindings, element.id, parentId, slot);
         siblings.push({
             element: { id: element.id, component: element.component.name, slot, children: [] },
             slot,
-            index: indexInSlot(document.bindings, element.id, parentId, slot)
+            index
         });
         byParent.set(parentId, siblings);
     }
@@ -70,34 +71,4 @@ export const pageOutline = (document: Pick<Document, "elements" | "bindings">) =
     const elements = build("root");
     const total = Object.keys(document.elements).filter(id => id !== "root" && !isGlobal(id));
     return { elements, truncated: total.length > count };
-};
-
-/** The editor's components, as the assistant needs them to build elements. */
-export const componentCatalog = (components: Record<string, ComponentManifest>) => {
-    return Object.values(components)
-        .filter(component => component.useInAiContentGeneration !== false && !component.global)
-        .map(component => ({
-            name: component.name,
-            label: component.label,
-            aiContext: component.aiContext,
-            inputs: component.inputs.map(input => ({
-                type: input.type,
-                name: input.name,
-                label: input.label,
-                description: input.description
-            }))
-        }));
-};
-
-/**
- * The outline as indented lines, "<id> <component>", with the slot when it is not `children`. Lines
- * rather than nested objects: the same tree in about half the characters, and the page context is
- * capped.
- */
-export const outlineLines = (elements: OutlineElement[], depth = 0): string[] => {
-    return elements.flatMap(element => {
-        const slot = element.slot === "children" ? "" : ` in ${element.slot}`;
-        const line = `${"  ".repeat(depth)}${element.id} ${element.component}${slot}`;
-        return [line, ...outlineLines(element.children, depth + 1)];
-    });
 };

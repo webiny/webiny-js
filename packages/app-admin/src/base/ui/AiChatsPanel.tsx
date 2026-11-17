@@ -1,9 +1,16 @@
-import { createVoidComponent, makeDecoratable } from "@webiny/app";
+import { createVoidComponent } from "@webiny/app";
+import { makeDecoratable } from "@webiny/app";
 
 export interface AiChatsPanelProps {
     /** Sizes the panel's height to its host. The admin frame uses `h-main-content`. */
     className?: string;
     width?: number;
+    /**
+     * Set by a host that decides itself when the panel shows, such as the editor's rail: the panel
+     * then always renders, and its close button calls this. Without it the panel shows while the AI
+     * chats presenter says it is open.
+     */
+    onClose?: () => void;
 }
 
 /**

@@ -13,6 +13,16 @@ export interface RailProps {
     onToggle(name: string): void;
 }
 
+// A tab's icon, sized for the rail.
+const RailIcon = ({ icon }: { icon?: React.JSX.Element }) => {
+    if (!icon) {
+        return null;
+    }
+    return (
+        <span className={"flex size-[16px] items-center justify-center fill-current"}>{icon}</span>
+    );
+};
+
 /**
  * The strip at the editor's right edge: one tab per panel, an icon over a label written down the
  * strip. A tab opens its panel and closes it again.
@@ -44,13 +54,7 @@ export const Rail = ({ panels, onToggle }: RailProps) => {
                         panel.open && "bg-neutral-dimmed text-neutral-primary"
                     )}
                 >
-                    {panel.icon ? (
-                        <span
-                            className={"flex size-[16px] items-center justify-center fill-current"}
-                        >
-                            {panel.icon}
-                        </span>
-                    ) : null}
+                    <RailIcon icon={panel.icon} />
                     <span className={"[writing-mode:vertical-rl]"}>{panel.label}</span>
                 </button>
             ))}

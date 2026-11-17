@@ -10,6 +10,7 @@ import { useSelectFromEditor } from "@webiny/app-website-builder/BaseEditor/hook
 import { useCreateElement } from "@webiny/app-website-builder/BaseEditor/hooks/useCreateElement.js";
 import { GenerateContentFeature } from "./feature.js";
 import { decompressGzipBase64 } from "./decompressGzipBase64.js";
+import { aiComponentCatalog } from "~/admin/presentation/WbAiContext/aiComponentCatalog.js";
 import type { CreateElementParams } from "./abstractions.js";
 
 function formatElapsed(totalSeconds: number): string {
@@ -59,21 +60,8 @@ export const GenerateContentDialog = observer(() => {
     );
 
     useEffect(() => {
-        const aiComponents = Object.values(components)
-            .filter(c => c.useInAiContentGeneration !== false)
-            .map(c => {
-                return {
-                    name: c.name,
-                    label: c.label,
-                    aiContext: c.aiContext,
-                    inputs: c.inputs.map(input => ({
-                        type: input.type,
-                        name: input.name,
-                        label: input.label,
-                        description: input.description
-                    }))
-                };
-            });
+        const manifests = Object.values(components);
+        const aiComponents = aiComponentCatalog(manifests);
         presenter.init(aiComponents, createElements);
     }, [components, createElements]);
 

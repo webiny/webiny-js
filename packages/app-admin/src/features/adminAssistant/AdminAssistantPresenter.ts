@@ -21,13 +21,6 @@ interface Turn extends Omit<AiTurnViewModel, "needsSetup"> {
 /** The code a run fails with when the project's AI settings give the assistant no model. */
 const NOT_CONFIGURED = "AI_CAPABILITY_NOT_CONFIGURED";
 
-/** Reported for a call whose screen was left between the call and running it. */
-const TOOL_GONE = "The screen that runs this tool is no longer open.";
-
-const messageOfError = (error: unknown): string => {
-    return error instanceof Error ? error.message : String(error);
-};
-
 const emptyTurn = (question: string): Turn => ({
     question,
     text: "",
@@ -256,7 +249,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
      * of asking, so a retry describes the screen the user is on now.
      */
     private question(prompt: string): AdminAssistantRequest {
-        return this.withPageContext(this.request({ prompt }));
+        const request = this.request({ prompt });
+        return this.withPageContext(request);
     }
 
     private withPageContext(request: AdminAssistantRequest): AdminAssistantRequest {
@@ -439,7 +433,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         const results: AdminAssistantClientToolResult[] = [];
         for (const call of calls) {
-            const result = await this.runClientCall(call);
+            const result = await this.clientTools.run(call);
             if (generation !== this.generation) {
                 return;
             }
@@ -469,25 +463,9 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        const request = this.withPageContext(this.request({ toolResults: results }));
+        const resume = this.request({ toolResults: results });
+        const request = this.withPageContext(resume);
         await this.run(index, request, true);
-    }
-
-    private async runClientCall(
-        call: AdminAssistantClientToolCall
-    ): Promise<AdminAssistantClientToolResult> {
-        const { toolCallId, toolName } = call;
-        const tool = this.clientTools.get(toolName);
-        if (!tool) {
-            return { toolCallId, toolName, error: TOOL_GONE };
-        }
-
-        try {
-            const output = await tool.execute(call.input);
-            return { toolCallId, toolName, output: output ?? null };
-        } catch (error) {
-            return { toolCallId, toolName, error: messageOfError(error) };
-        }
     }
 
     /*

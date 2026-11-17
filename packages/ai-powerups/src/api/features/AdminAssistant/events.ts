@@ -1,6 +1,6 @@
 import type { AiChatSummary } from "~/api/features/AiChats/domain/types.js";
 import type { PendingApproval } from "./approvals.js";
-import type { ClientToolCall } from "./clientTools.js";
+import type { ClientToolCall } from "./clientTools/index.js";
 
 /**
  * What the assistant emits while it works.

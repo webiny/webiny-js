@@ -28,7 +28,7 @@ import { ChatHistory } from "./ChatHistory.js";
  * Docked beside the page rather than over it, so the admin stays usable: an answer that names a page
  * can be checked without closing the chat.
  */
-const AiChatsPanelBase = ({ className = "h-main-content", width }: AiChatsPanelProps) => {
+const AiChatsPanelBase = ({ className = "h-main-content", width, onClose }: AiChatsPanelProps) => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const { identity } = useIdentity();
@@ -36,14 +36,16 @@ const AiChatsPanelBase = ({ className = "h-main-content", width }: AiChatsPanelP
     const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
     const { vm } = presenter;
 
-    if (!aiEnabled || !vm.isOpen) {
+    // A host that passes `onClose` decides when the panel shows.
+    const isOpen = onClose ? true : vm.isOpen;
+    if (!aiEnabled || !isOpen) {
         return null;
     }
 
     const firstName = identity?.profile?.firstName ?? "";
     const openChatId = assistant.vm.chatId;
     const busy = assistant.vm.busy;
-    const close = () => presenter.close();
+    const close = onClose ?? (() => presenter.close());
     const startNew = () => presenter.startNew();
 
     if (vm.view === "history") {
