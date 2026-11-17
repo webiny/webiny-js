@@ -11,7 +11,8 @@ describe("isRouteNameAllowed", () => {
         ["/v2/orders/:orderId", "PATCH"],
         ["/orders", "GET"]
     ])("allows the name derived from %s %s", (path, method) => {
-        expect(isRouteNameAllowed(deriveRouteName(path, method))).toBe(true);
+        const name = deriveRouteName(path, method);
+        expect(isRouteNameAllowed(name)).toBe(true);
     });
 
     it.each(["my-route", "e2e-api-route-get", "v2-orders"])("allows %s", name => {

@@ -16,7 +16,7 @@ interface GraphqlParams {
 
 export interface AddRouteParams {
     /**
-     * Must be in kebab case (a-z, 0-9 and -)
+     * Must be in kebab case (a-z, 0-9 and -) when the route goes to API Gateway.
      */
     name: string;
     path: `/${string}`;
@@ -106,16 +106,17 @@ export const ApiGraphql = createAppModule({
                 graphql
             },
             addRoute: (routeParams: AddRouteParams) => {
-                if (!isRouteNameAllowed(routeParams.name)) {
-                    console.log(`Route name is not allowed: "${routeParams.name}".`);
-                    return;
-                }
-
                 // With the web function there is no HTTP API Gateway: the route goes to the web
-                // function, whose router matches the method.
+                // function, whose router matches the method. The name isn't used here, so it isn't
+                // checked either.
                 const graphqlWeb = app.getModule(ApiGraphqlWeb, { optional: true });
                 if (graphqlWeb) {
                     graphqlWeb.addRoute(routeParams.path);
+                    return;
+                }
+
+                if (!isRouteNameAllowed(routeParams.name)) {
+                    console.log(`Route name is not allowed: "${routeParams.name}".`);
                     return;
                 }
 
