@@ -1,7 +1,6 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import toKebabCase from "lodash/kebabCase.js";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils.js";
@@ -9,6 +8,7 @@ import { CoreOutput, VpcConfig } from "~/pulumi/apps/index.js";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
 import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
+import { isRouteNameAllowed } from "./isRouteNameAllowed.js";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -16,7 +16,7 @@ interface GraphqlParams {
 
 export interface AddRouteParams {
     /**
-     * Must be in kebab case (a-z and -)
+     * Must be in kebab case (a-z, 0-9 and -)
      */
     name: string;
     path: `/${string}`;
@@ -106,8 +106,7 @@ export const ApiGraphql = createAppModule({
                 graphql
             },
             addRoute: (routeParams: AddRouteParams) => {
-                const kebabName = toKebabCase(routeParams.name);
-                if (kebabName !== routeParams.name) {
+                if (!isRouteNameAllowed(routeParams.name)) {
                     console.log(`Route name is not allowed: "${routeParams.name}".`);
                     return;
                 }
