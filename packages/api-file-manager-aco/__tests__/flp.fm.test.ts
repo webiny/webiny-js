@@ -507,4 +507,47 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             );
         }
     );
+
+    test("listTags should work with FLP and no restricted folders", testOptions, async () => {
+        await gqlIdentityA.fm.createFile({
+            data: createSampleFileData({ tags: ["root-tag"] })
+        });
+
+        const [response] = await gqlIdentityC.fm.listTags();
+        const result = response.data.fileManager.listTags;
+
+        expect(result.error).toBeNull();
+        expect(result.data).toEqual([{ tag: "root-tag", count: 1 }]);
+    });
+
+    test("listTags should exclude tags of files in inaccessible folders", testOptions, async () => {
+        const folder = await gqlIdentityA.aco
+            .createFolder({
+                data: { title: "Tags Folder", slug: "tags-folder", type: FOLDER_TYPE }
+            })
+            .then(([response]) => response.data.aco.createFolder.data);
+
+        await gqlIdentityA.aco.updateFolder({
+            id: folder.id,
+            data: { permissions: [{ target: `admin:${identityB.id}`, level: "owner" }] }
+        });
+
+        await gqlIdentityA.fm.createFile({
+            data: createSampleFileData({ tags: ["root-tag"] })
+        });
+        await gqlIdentityA.fm.createFile({
+            data: createSampleFileData({ tags: ["secret-tag"], location: { folderId: folder.id } })
+        });
+
+        // Identity C cannot read the folder.
+        const [responseC] = await gqlIdentityC.fm.listTags();
+        expect(responseC.data.fileManager.listTags.error).toBeNull();
+        expect(responseC.data.fileManager.listTags.data).toEqual([{ tag: "root-tag", count: 1 }]);
+
+        // Identity B has access to the folder.
+        const [responseB] = await gqlIdentityB.fm.listTags();
+        expect(responseB.data.fileManager.listTags.error).toBeNull();
+        const tagsB = responseB.data.fileManager.listTags.data.map((t: any) => t.tag).sort();
+        expect(tagsB).toEqual(["root-tag", "secret-tag"]);
+    });
 });
