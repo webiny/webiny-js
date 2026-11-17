@@ -26,8 +26,7 @@ class TaskFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
     async folderCreated(folder: Folder): Promise<void> {
         await this.trigger<ICreateFlpTaskInput>(
             CREATE_FLP_TASK_ID,
-            // Nobody to tell when there is no identity, as in some system calls.
-            { folder, notifyIdentityId: this.identityContext.getIdentity()?.id },
+            { folder, notifyIdentityId: this.getNotifyIdentityId() },
             "Could not trigger the task that creates the folder's FLP record."
         );
     }
@@ -35,8 +34,7 @@ class TaskFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
     async folderUpdated({ folder }: FolderCatalogSync.UpdatedParams): Promise<void> {
         await this.trigger<IUpdateFlpTaskInput>(
             UPDATE_FLP_TASK_ID,
-            // Nobody to tell when there is no identity, as in some system calls.
-            { folder, notifyIdentityId: this.identityContext.getIdentity()?.id },
+            { folder, notifyIdentityId: this.getNotifyIdentityId() },
             "Could not trigger the task that updates the FLP records of the folder and its subtree."
         );
     }
@@ -47,6 +45,15 @@ class TaskFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
             { folder },
             "Could not trigger the task that deletes the folder's FLP record."
         );
+    }
+
+    // Nobody to tell when no one is signed in, as in some system calls.
+    private getNotifyIdentityId(): string | undefined {
+        const identity = this.identityContext.getIdentity();
+        if (identity.isAnonymous()) {
+            return undefined;
+        }
+        return identity.id;
     }
 
     private async trigger<TInput extends { folder: Folder }>(

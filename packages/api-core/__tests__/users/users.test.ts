@@ -16,10 +16,8 @@ import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import {
-    AuthenticatedIdentity,
-    IdentityContext
-} from "~/features/security/IdentityContext/index.js";
+import { AuthenticatedIdentity } from "~/features/security/IdentityContext/index.js";
+import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { Logger } from "~/features/logger/index.js";
 import { NullLogger } from "~/features/logger/index.js";
 

@@ -102,7 +102,7 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
         const identity = this.identityContext.getIdentity();
 
         // A notification is a courtesy; failing to send one must not replace the real error.
-        if (identity?.id) {
+        if (!identity.isAnonymous()) {
             try {
                 await this.sendToIdentity.execute(
                     { id: identity.id },
