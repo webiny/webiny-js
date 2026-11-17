@@ -202,7 +202,8 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             restoredOn: getDate(metaInput.restoredOn, latestEntry.restoredOn),
             firstPublishedOn: getDate(metaInput.firstPublishedOn, latestEntry.firstPublishedOn),
             lastPublishedOn: getDate(metaInput.lastPublishedOn, latestEntry.lastPublishedOn),
-            createdBy: getIdentity(metaInput.createdBy, latestEntry.createdBy)!,
+            // The entry owner cannot be changed through an update.
+            createdBy: latestEntry.createdBy,
             savedBy: getIdentity(metaInput.savedBy, entryLevelSaved.savedBy)!,
             modifiedBy: getIdentity(metaInput.modifiedBy, entryLevelSaved.modifiedBy),
             deletedBy: getIdentity(metaInput.deletedBy, latestEntry.deletedBy),

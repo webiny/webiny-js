@@ -121,7 +121,7 @@ describe("Entry meta fields and ownership", () => {
         });
     });
 
-    it("should still allow meta field overrides for an identity which can write all entries", async () => {
+    it("should still allow meta field overrides, except createdBy, for an identity which can write all entries", async () => {
         const { manageApiA, entryA } = await setup();
 
         const updated = await manageApiA.updateTestEntry({
@@ -129,11 +129,13 @@ describe("Entry meta fields and ownership", () => {
                 revision: entryA.id,
                 data: {
                     createdBy: identityB,
+                    modifiedBy: identityB,
                     values: { title: "Handed over" }
                 }
             }
         });
         expect(updated.error).toBeNull();
-        expect(updated.data.createdBy).toMatchObject({ id: identityB.id });
+        expect(updated.data.createdBy).toMatchObject({ id: identityA.id });
+        expect(updated.data.modifiedBy).toMatchObject({ id: identityB.id });
     });
 });
