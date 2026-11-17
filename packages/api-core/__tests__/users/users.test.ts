@@ -16,6 +16,10 @@ import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
+import {
+    AuthenticatedIdentity,
+    IdentityContext
+} from "~/features/security/IdentityContext/index.js";
 import { Logger } from "~/features/logger/index.js";
 import { NullLogger } from "~/features/logger/index.js";
 
@@ -298,5 +302,25 @@ describe("Users", function () {
         expect(result.isOk()).toBe(true);
         expect(result.value.map(user => user.id)).toEqual([userB.value.id]);
         expect(result.value.map(user => user.id)).not.toContain(userA.value.id);
+    });
+
+    it("should set createdBy only when someone is signed in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const identityContext = container.resolve(IdentityContext);
+
+        const anonymousResult = await createUser.execute(users.userA);
+        expect(anonymousResult.isOk()).toBe(true);
+        expect(anonymousResult.value.createdBy).toBeNull();
+
+        identityContext.setIdentity(
+            new AuthenticatedIdentity({ id: "admin-1", displayName: "Admin", type: "admin" })
+        );
+        const signedInResult = await createUser.execute(users.userB);
+        expect(signedInResult.isOk()).toBe(true);
+        expect(signedInResult.value.createdBy).toEqual({
+            id: "admin-1",
+            displayName: "Admin",
+            type: "admin"
+        });
     });
 });

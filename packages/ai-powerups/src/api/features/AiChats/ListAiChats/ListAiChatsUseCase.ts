@@ -18,7 +18,7 @@ class ListAiChatsUseCaseImpl implements UseCaseAbstraction.Interface {
         params: UseCaseAbstraction.Params
     ): Promise<Result<UseCaseAbstraction.ListResult, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
-        if (!identity || identity.isAnonymous()) {
+        if (identity.isAnonymous()) {
             return Result.fail(new AiChatNotAuthenticatedError());
         }
 

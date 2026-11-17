@@ -17,7 +17,7 @@ class UpdateDashboardUseCaseImpl implements UseCaseAbstraction.Interface {
         layout: DashboardLayout
     ): Promise<Result<DashboardLayout, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
-        if (!identity || identity.isAnonymous()) {
+        if (identity.isAnonymous()) {
             return Result.fail(new DashboardNotAuthenticatedError());
         }
 
