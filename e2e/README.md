@@ -65,6 +65,7 @@ tests/
   apiRoute.e2e.ts               tags: api-route
   fileManager/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
+    privateFileDelivery.e2e.ts  tags: wcp, file-manager
     uploadAndDeliver.e2e.ts     tags: file-manager
   tenancy/
     tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager

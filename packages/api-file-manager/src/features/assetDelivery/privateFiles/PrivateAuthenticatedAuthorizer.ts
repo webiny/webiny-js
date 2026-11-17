@@ -12,9 +12,8 @@ export class PrivateAuthenticatedAuthorizer implements IAssetAuthorizer {
 
     async authorize(file: File) {
         if (file.accessControl && file.accessControl.type === "private-authenticated") {
-            const identity = this.identityContext.getIdentity();
-
-            if (!identity) {
+            // A request without a token still has an identity: the anonymous one.
+            if (this.identityContext.getIdentity().isAnonymous()) {
                 throw new Error({
                     code: "NOT_AUTHORIZED",
                     message: "You're not authorized to access this asset!"
