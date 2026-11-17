@@ -467,6 +467,37 @@ const getFunctionEnvs = async (fake: ReturnType<typeof createFakeApi>) => {
 
 const PLAIN_LAMBDAS = ["background-task", "fm-download", "graphql", "graphql-stream"];
 
+describe("the web function's NODE_OPTIONS", () => {
+    beforeAll(() => {
+        sealEnvVariables();
+        process.env.AWS_REGION = process.env.AWS_REGION || "eu-central-1";
+    });
+
+    const getWebFunctionNodeOptions = async (webFunctionEnv: Record<string, string>) => {
+        const fake = createFakeApi(NO_POSTGRES);
+        fake.app.addModule(ApiGraphql as never, { env: { NODE_OPTIONS: "--enable-source-maps" } });
+        fake.app.addModule(ApiGraphqlWeb as never, {
+            namePrefix: "",
+            vpc: null,
+            env: webFunctionEnv
+        });
+        const envs = await getFunctionEnvs(fake);
+        return envs["graphql-web"].NODE_OPTIONS;
+    };
+
+    it("are the graphql Lambda's, with the web function's heap limit", async () => {
+        await expect(getWebFunctionNodeOptions({})).resolves.toBe(
+            "--enable-source-maps --max-old-space-size=1536"
+        );
+    });
+
+    it("are the web function's own when its env sets them, with the heap limit", async () => {
+        await expect(getWebFunctionNodeOptions({ NODE_OPTIONS: "--trace-warnings" })).resolves.toBe(
+            "--trace-warnings --max-old-space-size=1536"
+        );
+    });
+});
+
 describe("the web function's Postgres pool size", () => {
     beforeAll(() => {
         sealEnvVariables();

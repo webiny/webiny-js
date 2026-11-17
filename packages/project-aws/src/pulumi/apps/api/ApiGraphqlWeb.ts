@@ -327,14 +327,16 @@ function getWebFunctionEnvVariables(
     webFunctionEnv: Record<string, string> = {}
 ) {
     return graphqlEnvironment.apply(environment => {
-        const graphqlVariables = environment?.variables ?? {};
-        const nodeOptions = [graphqlVariables.NODE_OPTIONS, "--max-old-space-size=1536"]
+        const overlaid: Record<string, string | undefined> = {
+            ...environment?.variables,
+            ...webFunctionEnv
+        };
+        const nodeOptions = [overlaid.NODE_OPTIONS, "--max-old-space-size=1536"]
             .filter(Boolean)
             .join(" ");
 
         const variables: Record<string, string | undefined> = {
-            ...graphqlVariables,
-            ...webFunctionEnv,
+            ...overlaid,
             AWS_LAMBDA_NODEJS_ENTRYPOINT: "index.mjs",
             NODE_OPTIONS: nodeOptions
         };

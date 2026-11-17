@@ -50,7 +50,13 @@ const answers = (connection: IPgClient, timeoutMs: number): Promise<boolean> => 
  * So, on checkout, a connection that was idle:
  * - `maxIdleMs` or longer is dropped, as the pool's reaping would have done;
  * - `checkAfterIdleMs` or longer gets a `SELECT 1` first, and is dropped if the server doesn't
- *   answer within `checkTimeoutMs`.
+ *   answer within `checkTimeoutMs`;
+ * - at least as long as one that didn't answer its check (released no later than it) is dropped
+ *   without a check: what ended that one (a failover, the server's idle timeout, a dropped network path) most likely
+ *   ended it too. The pool hands out the most recently released connection first and, when it's
+ *   dropped, tries the next one for the same checkout, so a checkout waits for at most one check
+ *   that gets no answer, however many idle connections died. Checking each would take longer
+ *   than the pool waits for a connection.
  *
  * A dropped connection is closed and the pool opens a new one, for every kind of query: reads,
  * writes, transactions with or without a callback, raw statements. A connection used moments ago
@@ -59,6 +65,8 @@ const answers = (connection: IPgClient, timeoutMs: number): Promise<boolean> => 
 export const checkIdleConnections = (knex: Knex, options: ICheckIdleConnectionsOptions): void => {
     const client = knex.client as unknown as IKnexClient;
     const releasedAt = new WeakMap<object, number>();
+    // When the latest connection that didn't answer its check was released.
+    let unansweredReleasedAt = -Infinity;
 
     const releaseConnection = client.releaseConnection;
     client.releaseConnection = function (this: IKnexClient, connection: object) {
@@ -75,11 +83,14 @@ export const checkIdleConnections = (knex: Knex, options: ICheckIdleConnectionsO
             if (idleMs >= options.maxIdleMs) {
                 return false;
             }
-            if (
-                idleMs >= options.checkAfterIdleMs &&
-                !(await answers(connection as IPgClient, options.checkTimeoutMs))
-            ) {
-                return false;
+            if (idleMs >= options.checkAfterIdleMs) {
+                if (released <= unansweredReleasedAt) {
+                    return false;
+                }
+                if (!(await answers(connection as IPgClient, options.checkTimeoutMs))) {
+                    unansweredReleasedAt = Math.max(unansweredReleasedAt, released);
+                    return false;
+                }
             }
         }
         return validateConnection.call(this, connection);

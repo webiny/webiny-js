@@ -21,11 +21,17 @@ export const postgresModules = [
 
 /**
  * A fresh in-memory Postgres (PGlite) over the wire protocol, as `<Infra.Pglite>` runs it. It serves
- * one connection at a time, so every client of it keeps a pool of one.
+ * one connection at a time, so every client of it keeps a pool of one. A test that needs several
+ * open connections raises `maxConnections`: they share one session, and their queries take turns.
  */
-export const startPglite = async () => {
+export const startPglite = async (options: { maxConnections?: number } = {}) => {
     const db = await PGlite.create();
-    const socketServer = new PGLiteSocketServer({ db, port: 0, host: "127.0.0.1" });
+    const socketServer = new PGLiteSocketServer({
+        db,
+        port: 0,
+        host: "127.0.0.1",
+        maxConnections: options.maxConnections ?? 1
+    });
     await socketServer.start();
     const port = (socketServer as unknown as { port: number }).port;
 

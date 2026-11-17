@@ -124,7 +124,8 @@ describe("a pooled connection in a Lambda environment", () => {
     };
 
     beforeAll(async () => {
-        pglite = await startPglite();
+        // A pool opens several connections in one test.
+        pglite = await startPglite({ maxConnections: 8 });
         proxy = new FreezingProxy(Number(pglite.env.WEBINY_PG_PORT));
         await proxy.start();
         Object.assign(process.env, {
@@ -133,7 +134,7 @@ describe("a pooled connection in a Lambda environment", () => {
             WEBINY_PG_USER: "postgres",
             WEBINY_PG_PASSWORD: "postgres",
             WEBINY_PG_DATABASE: "postgres",
-            // PGlite serves one connection at a time.
+            // A plain Lambda function's pool; one test sets the web function's.
             WEBINY_PG_POOL_MAX: "1",
             // No retries: what's tested is that the pool never hands out a dead connection.
             WEBINY_PG_RETRY_MS: "0"
@@ -199,6 +200,36 @@ describe("a pooled connection in a Lambda environment", () => {
         expect(proxy.opened).toBe(opened + 1);
         await knex(TABLE).delete();
     }, 10_000);
+
+    it("is dropped with every connection idle as long, so one write waits for one check only", async () => {
+        // The web function's pool, with all eight connections open and idle.
+        await knex.destroy();
+        process.env.WEBINY_PG_POOL_MAX = "8";
+        try {
+            knex = createLambdaPgConnection();
+        } finally {
+            process.env.WEBINY_PG_POOL_MAX = "1";
+        }
+        const client = knex.client as {
+            acquireConnection(): Promise<object>;
+            releaseConnection(connection: object): Promise<unknown>;
+        };
+        const connections = await Promise.all(
+            Array.from({ length: 8 }, () => client.acquireConnection())
+        );
+        await Promise.all(connections.map(connection => client.releaseConnection(connection)));
+        const opened = proxy.opened;
+
+        freezeFor(5_000);
+        proxy.endUnseen("silent");
+
+        // One check after another would take 8 x 2 s, past the pool's 15 s acquire timeout.
+        const started = realNow();
+        await knex(TABLE).insert({ id: "after-silence-8" });
+        expect(realNow() - started).toBeLessThan(4_000);
+        expect(proxy.opened).toBe(opened + 1);
+        await knex(TABLE).delete();
+    }, 20_000);
 
     it("is kept when it answers the check", async () => {
         await useConnection();
