@@ -1,7 +1,6 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import toKebabCase from "lodash/kebabCase.js";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils.js";
@@ -9,6 +8,7 @@ import { CoreOutput, VpcConfig } from "~/pulumi/apps/index.js";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
 import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
+import { isRouteNameAllowed } from "./isRouteNameAllowed.js";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -16,7 +16,7 @@ interface GraphqlParams {
 
 export interface AddRouteParams {
     /**
-     * Must be in kebab case (a-z and -)
+     * Must be in kebab case (a-z, 0-9 and -) when the route goes to API Gateway.
      */
     name: string;
     path: `/${string}`;
@@ -106,17 +106,17 @@ export const ApiGraphql = createAppModule({
                 graphql
             },
             addRoute: (routeParams: AddRouteParams) => {
-                const kebabName = toKebabCase(routeParams.name);
-                if (kebabName !== routeParams.name) {
-                    console.log(`Route name is not allowed: "${routeParams.name}".`);
-                    return;
-                }
-
                 // With the web function there is no HTTP API Gateway: the route goes to the web
-                // function, whose router matches the method.
+                // function, whose router matches the method. The name isn't used here, so it isn't
+                // checked either.
                 const graphqlWeb = app.getModule(ApiGraphqlWeb, { optional: true });
                 if (graphqlWeb) {
                     graphqlWeb.addRoute(routeParams.path);
+                    return;
+                }
+
+                if (!isRouteNameAllowed(routeParams.name)) {
+                    console.log(`Route name is not allowed: "${routeParams.name}".`);
                     return;
                 }
 
