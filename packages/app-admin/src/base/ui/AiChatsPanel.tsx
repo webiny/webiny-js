@@ -1,3 +1,4 @@
+import type React from "react";
 import { createVoidComponent } from "@webiny/app";
 import { makeDecoratable } from "@webiny/app";
 
@@ -11,6 +12,9 @@ export interface AiChatsPanelProps {
      * chats presenter says it is open.
      */
     onClose?: () => void;
+    /** The close button's label and icon, for a host where closing collapses the panel. */
+    closeLabel?: string;
+    closeIcon?: React.JSX.Element;
 }
 
 /**

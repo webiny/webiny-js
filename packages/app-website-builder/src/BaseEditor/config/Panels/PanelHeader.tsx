@@ -8,7 +8,8 @@ import { useCurrentPanel } from "./usePanel.js";
 /**
  * The panel's label and its collapse button, for content that renders inside a panel. Renders
  * nothing outside one. The button lines up with the open button on the collapsed strip
- * (`CollapsedPanel`), so it stays put when the panel is toggled. `data-panel-collapse` is how
+ * (`CollapsedPanel`), so it stays put when the panel is toggled: both centre it 28px from the top,
+ * where `SidePanel`, the AI assistant's header, has its close button. `data-panel-collapse` is how
  * `PanelSlot` finds it to move focus to it after the panel opens.
  */
 export const PanelHeader = () => {
@@ -18,7 +19,7 @@ export const PanelHeader = () => {
     }
 
     return (
-        <div className={"mb-sm flex h-xl flex-none items-center justify-between"}>
+        <div className={"flex h-[40px] flex-none items-center justify-between"}>
             <Text as="div" size={"sm"} className={"font-semibold text-neutral-primary"}>
                 {panel.label}
             </Text>

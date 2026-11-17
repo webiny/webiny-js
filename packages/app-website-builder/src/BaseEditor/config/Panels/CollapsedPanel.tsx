@@ -30,7 +30,7 @@ export const CollapsedPanel = ({ label, side, onExpand }: CollapsedPanelProps) =
                     : "border-l-sm border-l-neutral-dimmed"
             )}
         >
-            <div className={"flex h-xl items-center"}>
+            <div className={"flex h-[40px] items-center"}>
                 <IconButton
                     variant={"ghost"}
                     size={"xs"}

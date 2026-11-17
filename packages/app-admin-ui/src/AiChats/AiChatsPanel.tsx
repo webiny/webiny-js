@@ -28,7 +28,13 @@ import { ChatHistory } from "./ChatHistory.js";
  * Docked beside the page rather than over it, so the admin stays usable: an answer that names a page
  * can be checked without closing the chat.
  */
-const AiChatsPanelBase = ({ className = "h-main-content", width, onClose }: AiChatsPanelProps) => {
+const AiChatsPanelBase = ({
+    className = "h-main-content",
+    width,
+    onClose,
+    closeLabel = "Close AI chats",
+    closeIcon
+}: AiChatsPanelProps) => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const { identity } = useIdentity();
@@ -69,7 +75,8 @@ const AiChatsPanelBase = ({ className = "h-main-content", width, onClose }: AiCh
                     ) : null
                 }
                 onClose={close}
-                closeLabel="Close AI chats"
+                closeLabel={closeLabel}
+                closeIcon={closeIcon}
                 headerExtra={
                     hasChats ? (
                         <Input
@@ -146,7 +153,8 @@ const AiChatsPanelBase = ({ className = "h-main-content", width, onClose }: AiCh
                 </>
             }
             onClose={close}
-            closeLabel="Close AI chats"
+            closeLabel={closeLabel}
+            closeIcon={closeIcon}
             className={className}
             width={width}
         >
