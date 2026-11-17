@@ -2,6 +2,19 @@ import { GetUniqueFieldValuesUseCase } from "@webiny/api-headless-cms/features/c
 import { createDecorator } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { FM_FILE_TYPE } from "~/constants.js";
+
+/**
+ * File Manager files are stored in the File Manager file model, but their folders use the "FmFile" type.
+ */
+const FM_FILE_MODEL_IDS = ["wbyFmFile", "fmFile"];
+
+const getFolderType = (model: CmsModel): string => {
+    if (FM_FILE_MODEL_IDS.includes(model.modelId)) {
+        return FM_FILE_TYPE;
+    }
+    return `cms:${model.modelId}`;
+};
 
 /**
  * Security: unique values are aggregated in storage, so entries cannot be filtered afterwards.
@@ -41,7 +54,7 @@ class GetUniqueFieldValuesWithFlpDecoratorImpl implements GetUniqueFieldValuesUs
 
     private async listDeniedFolderIds(model: CmsModel): Promise<string[]> {
         const flps = await this.folderLevelPermissions.listFolderLevelPermissions({
-            where: { type: `cms:${model.modelId}` }
+            where: { type: getFolderType(model) }
         });
 
         const denied: string[] = [];
