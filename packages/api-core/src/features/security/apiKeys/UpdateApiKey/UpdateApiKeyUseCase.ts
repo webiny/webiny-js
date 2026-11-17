@@ -7,6 +7,7 @@ import { updateApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
 import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { findNotGrantedPermission } from "../../utils/findNotGrantedPermission.js";
 
 class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interface {
     private repository: ApiKeysRepository.Interface;
@@ -43,6 +44,19 @@ class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interfac
         }
 
         const existingApiKey = existingResult.value;
+
+        const notGranted = await findNotGrantedPermission({
+            identityContext: this.identityContext,
+            requested: validation.data.permissions,
+            existing: existingApiKey.permissions
+        });
+        if (notGranted) {
+            return Result.fail(
+                new ApiKeyNotAuthorizedError({
+                    message: `Not authorized to grant permission "${notGranted.name}".`
+                })
+            );
+        }
 
         const updatedApiKey: ApiKey = {
             ...existingApiKey,
