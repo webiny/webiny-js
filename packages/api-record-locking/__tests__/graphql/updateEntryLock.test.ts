@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 import { createIdentity } from "~tests/helpers/identity";
 
@@ -86,6 +86,68 @@ describe("update entry lock", () => {
                     }
                 }
             }
+        });
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    it("should hand over an expired lock record to the user updating it", async () => {
+        await lockEntryMutation({
+            id: "aTestId#0001",
+            type: "cms#author"
+        });
+
+        // Move past the default lock timeout (60 seconds).
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(new Date(Date.now() + 5 * 60 * 1000));
+
+        const anotherUserMethods = useGraphQLHandler({
+            identity: createIdentity({
+                id: "anotherUserId",
+                displayName: "Another User",
+                type: "admin"
+            })
+        });
+
+        const [result] = await anotherUserMethods.updateEntryLockMutation({
+            id: "aTestId#0001",
+            type: "cms#author"
+        });
+        expect(result).toMatchObject({
+            data: {
+                recordLocking: {
+                    updateEntryLock: {
+                        data: {
+                            id: "aTestId",
+                            lockedBy: {
+                                id: "anotherUserId"
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // The new owner can keep the lock alive.
+        const [renewed] = await anotherUserMethods.updateEntryLockMutation({
+            id: "aTestId#0001",
+            type: "cms#author"
+        });
+        expect(renewed.data.recordLocking.updateEntryLock.error).toBeNull();
+        expect(renewed.data.recordLocking.updateEntryLock.data.lockedBy.id).toEqual(
+            "anotherUserId"
+        );
+
+        // The previous owner cannot.
+        const [previousOwner] = await updateEntryLockMutation({
+            id: "aTestId#0001",
+            type: "cms#author"
+        });
+        expect(previousOwner.data.recordLocking.updateEntryLock.error).toMatchObject({
+            code: "RecordLocking/Identity/MismatchError"
         });
     });
 
