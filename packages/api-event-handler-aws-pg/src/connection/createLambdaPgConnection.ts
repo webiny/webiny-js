@@ -40,8 +40,9 @@ const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
  *   one; otherwise the password above goes into it. A `host` option replaces the string's host.
  * - `WEBINY_PG_SSL=true` connects over TLS and verifies the server's certificate. Amazon RDS
  *   certificates are signed by the RDS CA, which Lambda's Node.js runtime trusts only with
- *   `NODE_EXTRA_CA_CERTS=/var/runtime/ca-cert.pem`; `WEBINY_PG_SSL_CA` and
- *   `WEBINY_PG_SSL_REJECT_UNAUTHORIZED` work as on the standalone server.
+ *   `NODE_EXTRA_CA_CERTS=/var/runtime/ca-cert.pem`. The web function's runtime has no such file, so
+ *   its deploy ships the RDS CA bundle in its code and points `NODE_EXTRA_CA_CERTS` there.
+ *   `WEBINY_PG_SSL_CA` and `WEBINY_PG_SSL_REJECT_UNAUTHORIZED` work as on the standalone server.
  * - `WEBINY_PG_POOL_MAX` (default 1): a plain Lambda environment serves one request at a time. The
  *   API's web function serves several at once, so its deploy sets a bigger pool
  *   (`<Infra.Postgres poolSize>`, default 8). Either way no connection stays open unused (`min: 0`).

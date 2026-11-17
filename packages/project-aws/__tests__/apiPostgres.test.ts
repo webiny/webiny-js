@@ -480,7 +480,8 @@ describe("the web function's Postgres pool size", () => {
         const envs = await getFunctionEnvs(fake);
         expect(envs["graphql-web"].WEBINY_PG_POOL_MAX).toBe("8");
         // Still the database the graphql Lambda connects to.
-        expect(envs["graphql-web"]).toMatchObject(getPostgresLambdaEnv(WITH_PROXY));
+        const { NODE_EXTRA_CA_CERTS: _, ...database } = getPostgresLambdaEnv(WITH_PROXY);
+        expect(envs["graphql-web"]).toMatchObject(database);
     });
 
     it("is the project's `poolSize` when it sets one", async () => {
@@ -517,6 +518,45 @@ describe("the web function's Postgres pool size", () => {
         for (const [name, env] of Object.entries(envs)) {
             expect(env, name).not.toHaveProperty("WEBINY_PG_POOL_MAX");
             expect(env, name).not.toHaveProperty("WEBINY_PG_HOST");
+        }
+    });
+});
+
+describe("the RDS certificates the API functions verify the database with", () => {
+    beforeAll(() => {
+        sealEnvVariables();
+        process.env.AWS_REGION = process.env.AWS_REGION || "eu-central-1";
+    });
+
+    it("are the bundle in its code for the web function, whose runtime has no /var/runtime/ca-cert.pem", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({}));
+
+        const envs = await getFunctionEnvs(fake);
+        expect(envs["graphql-web"].NODE_EXTRA_CA_CERTS).toBe("/var/task/rds-ca-bundle.pem");
+        expect(envs["graphql-web"].WEBINY_PG_SSL).toBe("true");
+    });
+
+    it("stay the Lambda runtime's bundle for the plain Lambda functions", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({}));
+
+        const envs = await getFunctionEnvs(fake);
+        for (const [name, env] of Object.entries(envs)) {
+            if (name === "graphql-web") {
+                continue;
+            }
+            expect(env.NODE_EXTRA_CA_CERTS, name).toBe("/var/runtime/ca-cert.pem");
+        }
+    });
+
+    it("are not set on any function without <Infra.Postgres />", async () => {
+        const fake = createFakeApi(NO_POSTGRES);
+        addApiModulesWithWebFunction(fake, createProjectConfig(undefined));
+
+        const envs = await getFunctionEnvs(fake);
+        for (const [name, env] of Object.entries(envs)) {
+            expect(env, name).not.toHaveProperty("NODE_EXTRA_CA_CERTS");
         }
     });
 });

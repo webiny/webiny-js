@@ -5,6 +5,7 @@ import { createAppModule } from "@webiny/pulumi";
 import type { PostgresOutputs } from "~/pulumi/apps/common/CoreOutput.js";
 import type { PostgresExtensionConfig } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
 import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem.js";
+import { WEB_FUNCTION_RDS_CA_CERTS } from "~/extensions/Postgres/rdsCaBundle.js";
 import { ApiGraphql } from "./ApiGraphql.js";
 
 /* The event `@webiny/api-event-handler-aws-pg` answers with the schema setup. */
@@ -85,9 +86,13 @@ export const getPostgresLambdaEnvFromCore = (
 };
 
 /**
- * Env only the API's web function gets, on top of the `graphql` Lambda's: with `<Infra.Postgres />`,
- * its pool size. One web function environment serves several requests at once, so it needs more than
- * the 1 connection the plain Lambda functions keep. Nothing without Postgres.
+ * Env only the API's web function gets, on top of the `graphql` Lambda's (and over it), with
+ * `<Infra.Postgres />`. Nothing without Postgres.
+ *
+ * - `WEBINY_PG_POOL_MAX`: its pool size. One web function environment serves several requests at
+ *   once, so it needs more than the 1 connection the plain Lambda functions keep.
+ * - `NODE_EXTRA_CA_CERTS`: the RDS CA bundle shipped in its code. Its runtime has no
+ *   `/var/runtime/ca-cert.pem`, the bundle the plain Lambda functions verify the database with.
  */
 export const getPostgresWebFunctionEnv = (
     postgres: Pick<PostgresExtensionConfig, "poolSize"> | undefined
@@ -95,7 +100,10 @@ export const getPostgresWebFunctionEnv = (
     if (!postgres) {
         return {};
     }
-    return { WEBINY_PG_POOL_MAX: String(postgres.poolSize) };
+    return {
+        WEBINY_PG_POOL_MAX: String(postgres.poolSize),
+        NODE_EXTRA_CA_CERTS: WEB_FUNCTION_RDS_CA_CERTS
+    };
 };
 
 /* Lets the API functions read the database password, and nothing else, from the core's secret. */
