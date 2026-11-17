@@ -1,4 +1,3 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { CmsModel } from "~/types.js";
 import { ListModelsUseCase } from "~/features/model/listModels/abstractions.js";
@@ -8,11 +7,8 @@ import { ExportModelsUseCase } from "~/features/model/exportModels/abstractions.
 import { ModelsCache } from "~/features/model/abstractions.js";
 import { ContentModelsPresenter as Abstraction } from "./abstractions.js";
 import { ContentModelsDataSource } from "./ContentModelsDataSource.js";
-import { isListedModel } from "./isListedModel.js";
 
 class ContentModelsPresenterImpl implements Abstraction.Interface {
-    private loading = true;
-
     constructor(
         private listPresenter: ListPresenter.Interface<CmsModel>,
         private listModelsUseCase: ListModelsUseCase.Interface,
@@ -20,30 +16,7 @@ class ContentModelsPresenterImpl implements Abstraction.Interface {
         private cancelDeleteModelUseCase: CancelDeleteModelUseCase.Interface,
         private exportModelsUseCase: ExportModelsUseCase.Interface,
         private cache: ModelsCache.Interface
-    ) {
-        makeAutoObservable<
-            ContentModelsPresenterImpl,
-            | "listModelsUseCase"
-            | "deleteModelUseCase"
-            | "cancelDeleteModelUseCase"
-            | "exportModelsUseCase"
-            | "cache"
-        >(this, {
-            listModelsUseCase: false,
-            deleteModelUseCase: false,
-            cancelDeleteModelUseCase: false,
-            exportModelsUseCase: false,
-            cache: false,
-            vm: computed
-        });
-    }
-
-    get vm(): Abstraction.ViewModel {
-        return {
-            loading: this.loading,
-            models: this.cache.getItems().filter(isListedModel)
-        };
-    }
+    ) {}
 
     get list(): ListPresenter.Interface<CmsModel> {
         return this.listPresenter;
@@ -62,10 +35,6 @@ class ContentModelsPresenterImpl implements Abstraction.Interface {
                 rowTitle: model => model.name,
                 rowId: model => model.modelId
             }
-        });
-
-        runInAction(() => {
-            this.loading = false;
         });
     }
 
