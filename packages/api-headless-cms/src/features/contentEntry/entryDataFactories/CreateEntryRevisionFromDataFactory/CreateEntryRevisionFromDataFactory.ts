@@ -179,7 +179,7 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
             savedOn: getDate(rawInput.savedOn, currentDateTime),
             modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
-            createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy)!,
+            createdBy: latestStorageEntry.createdBy,
             savedBy: getIdentity(rawInput.savedBy, currentIdentity)!,
             modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
             ...entryLevelPublishingMetaFields,

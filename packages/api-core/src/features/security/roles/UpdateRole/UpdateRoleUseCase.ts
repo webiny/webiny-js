@@ -11,6 +11,7 @@ import {
     CannotUpdatePluginRolesError,
     RoleValidationError
 } from "../shared/errors.js";
+import { findNotGrantedPermission } from "../../utils/findNotGrantedPermission.js";
 
 class UpdateRoleUseCaseImpl implements UseCase.Interface {
     private repository: RolesRepository.Interface;
@@ -48,6 +49,21 @@ class UpdateRoleUseCaseImpl implements UseCase.Interface {
         // Check if role is created via plugin
         if (existingRole.plugin) {
             return Result.fail(new CannotUpdatePluginRolesError());
+        }
+
+        if (validation.data.permissions) {
+            const notGranted = await findNotGrantedPermission({
+                identityContext: this.identityContext,
+                requested: validation.data.permissions,
+                existing: existingRole.permissions
+            });
+            if (notGranted) {
+                return Result.fail(
+                    new NotAuthorizedError({
+                        message: `Not authorized to grant permission "${notGranted.name}".`
+                    })
+                );
+            }
         }
 
         const updatedRole: Role = {

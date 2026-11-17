@@ -9,6 +9,7 @@ import { createRoleValidation } from "./schema.js";
 import { RoleBeforeCreateEvent, RoleAfterCreateEvent } from "./events.js";
 import type { Role, CreateRoleInput } from "../shared/types.js";
 import { NotAuthorizedError, RoleExistsError, RoleValidationError } from "../shared/errors.js";
+import { findNotGrantedPermission } from "../../utils/findNotGrantedPermission.js";
 
 class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -31,6 +32,18 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
+
+        const notGranted = await findNotGrantedPermission({
+            identityContext: this.identityContext,
+            requested: data.permissions
+        });
+        if (notGranted) {
+            return Result.fail(
+                new NotAuthorizedError({
+                    message: `Not authorized to grant permission "${notGranted.name}".`
+                })
+            );
+        }
 
         // Check if role with same slug already exists
         const existingRoleResult = await this.repository.get({ slug: data.slug });

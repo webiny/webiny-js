@@ -48,19 +48,13 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(new EntryLockedError());
             }
 
-            const { entry, input } = await this.updateEntryDataFactory.create<T>(
-                model,
-                rawInput,
-                originalEntry,
-                options
-            );
-
             // Singleton entries are shared by everyone who can access the model, so the
             // entry-level (owner) check is skipped for them.
+            // The check runs against the stored entry, never against the one built from input.
             if (!isSingletonModel(model)) {
                 const canAccessEntry = await this.accessControl.canAccessEntry({
                     model,
-                    entry,
+                    entry: originalEntry,
                     rwd: "w"
                 });
 
@@ -68,6 +62,13 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                     return Result.fail(EntryNotAuthorizedError.fromModel(model));
                 }
             }
+
+            const { entry, input } = await this.updateEntryDataFactory.create<T>(
+                model,
+                rawInput,
+                originalEntry,
+                options
+            );
 
             await this.eventPublisher.publish(
                 new EntryBeforeUpdateEvent({ entry, original: originalEntry, input, model })

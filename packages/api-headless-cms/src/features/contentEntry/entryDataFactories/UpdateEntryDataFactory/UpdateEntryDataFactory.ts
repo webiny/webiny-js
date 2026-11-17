@@ -106,7 +106,7 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             restoredOn: getDate(rawInput.restoredOn, null),
             firstPublishedOn: getDate(rawInput.firstPublishedOn, originalEntry.firstPublishedOn),
             lastPublishedOn: getDate(rawInput.lastPublishedOn, originalEntry.lastPublishedOn),
-            createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy)!,
+            createdBy: originalEntry.createdBy,
             savedBy: getIdentity(rawInput.savedBy, currentIdentity)!,
             modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
             deletedBy: getIdentity(rawInput.deletedBy, null),
