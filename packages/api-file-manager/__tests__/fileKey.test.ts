@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { FileKey } from "./FileKey.js";
+import { FileKey } from "~/features/upload/utils/FileKey.js";
 
 describe("FileKey", () => {
     it("should generate a file key (extension is included in the name)", () => {
