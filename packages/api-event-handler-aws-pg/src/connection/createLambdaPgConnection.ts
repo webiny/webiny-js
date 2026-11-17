@@ -32,8 +32,9 @@ const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
  *   certificates are signed by the RDS CA, which Lambda's Node.js runtime trusts only with
  *   `NODE_EXTRA_CA_CERTS=/var/runtime/ca-cert.pem`; `WEBINY_PG_SSL_CA` and
  *   `WEBINY_PG_SSL_REJECT_UNAUTHORIZED` work as on the standalone server.
- * - `WEBINY_PG_POOL_MAX` (default 1): an environment serves one request at a time, and keeps no
- *   connection open it doesn't use (`min: 0`).
+ * - `WEBINY_PG_POOL_MAX` (default 1): a plain Lambda environment serves one request at a time. The
+ *   API's web function serves several at once, so its deploy sets a bigger pool
+ *   (`<Infra.Postgres poolSize>`, default 8). Either way no connection stays open unused (`min: 0`).
  * - `WEBINY_PG_RETRY_MS` (default 15,000; 0 = off): reads and transactions that lose their
  *   connection run again on a new one (see `withPgConnectionRetry`).
  * - `WEBINY_PG_APPLICATION_NAME` (default: the function's name), `WEBINY_PG_CONNECTION_TIMEOUT_MILLIS`

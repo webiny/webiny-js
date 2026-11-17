@@ -3,6 +3,7 @@ import * as aws from "@pulumi/aws";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import type { PostgresOutputs } from "~/pulumi/apps/common/CoreOutput.js";
+import type { PostgresExtensionConfig } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
 import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem.js";
 import { ApiGraphql } from "./ApiGraphql.js";
 
@@ -81,6 +82,20 @@ export const getPostgresLambdaEnvFromCore = (
     return Object.fromEntries(
         POSTGRES_LAMBDA_ENV_NAMES.map(name => [name, env.apply(values => values[name])])
     ) as Record<keyof PostgresLambdaEnv, pulumi.Output<string>>;
+};
+
+/**
+ * Env only the API's web function gets, on top of the `graphql` Lambda's: with `<Infra.Postgres />`,
+ * its pool size. One web function environment serves several requests at once, so it needs more than
+ * the 1 connection the plain Lambda functions keep. Nothing without Postgres.
+ */
+export const getPostgresWebFunctionEnv = (
+    postgres: Pick<PostgresExtensionConfig, "poolSize"> | undefined
+): Record<string, string> => {
+    if (!postgres) {
+        return {};
+    }
+    return { WEBINY_PG_POOL_MAX: String(postgres.poolSize) };
 };
 
 /* Lets the API functions read the database password, and nothing else, from the core's secret. */

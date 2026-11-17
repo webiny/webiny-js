@@ -12,6 +12,13 @@ const POSTGRES_MAX_CAPACITY_LIMIT = 256;
 const POSTGRES_MAX_CAPACITY_FLOOR = 1;
 const POSTGRES_MAX_READERS = 15;
 
+/*
+ * Connections the API's web function keeps per execution environment. One environment serves up to
+ * 16 requests at once; the plain Lambda functions serve one at a time and keep a pool of 1.
+ */
+export const POSTGRES_DEFAULT_POOL_SIZE = 8;
+const POSTGRES_MAX_POOL_SIZE = 64;
+
 const capacitySchema = (min: number, minMessage?: string) =>
     z
         .number()
@@ -44,6 +51,15 @@ export const postgresParamsSchema = z
             .optional()
             .describe(
                 `The number of reader instances next to the writer. Default: ${POSTGRES_DEFAULT_READERS}.`
+            ),
+        poolSize: z
+            .number()
+            .int()
+            .min(1)
+            .max(POSTGRES_MAX_POOL_SIZE)
+            .optional()
+            .describe(
+                `The most database connections one execution environment of the API's web function keeps open; it serves several requests at once. The plain Lambda functions serve one request at a time and keep 1. Default: ${POSTGRES_DEFAULT_POOL_SIZE}.`
             )
     })
     .refine(

@@ -38,6 +38,7 @@ import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgre
 import {
     ApiSchemaSetup,
     getPostgresLambdaEnvFromCore,
+    getPostgresWebFunctionEnv,
     getSchemaSetupServiceManifests
 } from "./ApiSchemaSetup.js";
 import { createApiServiceManifests } from "./apiServiceManifests.js";
@@ -65,7 +66,8 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
-            const usesPostgres = Boolean(getPostgresConfigFromExtension(projectConfig));
+            const postgresConfig = getPostgresConfigFromExtension(projectConfig);
+            const usesPostgres = Boolean(postgresConfig);
 
             let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
@@ -251,7 +253,9 @@ export const createApiPulumiApp = () => {
 
                 graphqlWeb = app.addModule(ApiGraphqlWeb, {
                     namePrefix: pulumiResourceNamePrefix ?? "",
-                    vpc: graphqlWebVpc
+                    vpc: graphqlWebVpc,
+                    // With `<Infra.Postgres />`, a bigger pool than the plain Lambdas' 1.
+                    env: getPostgresWebFunctionEnv(postgresConfig)
                 });
                 app.addOutputs({
                     graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
