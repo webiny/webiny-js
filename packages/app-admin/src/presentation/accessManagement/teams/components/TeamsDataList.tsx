@@ -1,8 +1,5 @@
 import React from "react";
 import { useCallback } from "react";
-import { useMemo } from "react";
-import { useState } from "react";
-import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
 import { useSnackbar } from "~/index.js";
 import { useConfirmationDialog } from "~/index.js";
@@ -29,11 +26,6 @@ const SORTERS = [
     { label: "Name Z-A", sorter: "name_DESC" }
 ];
 
-const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
-    const [field, order] = data.split("_");
-    return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
-};
-
 // Why a team can't be deleted, or null when it can.
 function lockedReason(item: Team): string | null {
     if (item.system) {
@@ -54,32 +46,12 @@ export const TeamsDataList = createReactiveComponent(
             dataTestId: "default-data-list.delete-dialog"
         });
 
-        const [filter, setFilter] = useState("");
-        const [sort, setSort] = useState(SORTERS[0].sorter);
-
-        const teams = presenter.list.vm.rows;
-        const loading = presenter.list.vm.pagination.loading;
-
-        const filteredData = useMemo(() => {
-            if (filter === "") {
-                return teams;
-            }
-            const lc = filter.toLowerCase();
-            return teams.filter(
-                (t: Team) =>
-                    t.name.toLowerCase().includes(lc) ||
-                    t.slug.toLowerCase().includes(lc) ||
-                    (t.description && t.description.toLowerCase().includes(lc))
-            );
-        }, [teams, filter]);
-
-        const sortedData = useMemo(() => {
-            if (!sort) {
-                return filteredData;
-            }
-            const [key, order] = deserializeSorters(sort);
-            return orderBy(filteredData, [key], [order]);
-        }, [filteredData, sort]);
+        const { list } = presenter;
+        const sort = list.vm.sort ? `${list.vm.sort.field}_${list.vm.sort.direction}` : "";
+        const setSort = (value: string) => {
+            const [field, direction] = value.split("_");
+            list.actions.sort.set(field, direction === "ASC" ? "ASC" : "DESC");
+        };
 
         const deleteItem = useCallback(
             (item: Team) => {
@@ -112,12 +84,12 @@ export const TeamsDataList = createReactiveComponent(
                         onClick={() => goToRoute(Routes.Teams.List, { new: true })}
                     />
                 }
-                data={sortedData}
-                loading={loading}
+                data={list.vm.rows}
+                loading={list.vm.pagination.loading}
                 search={
                     <SearchUI
-                        value={filter}
-                        onChange={setFilter}
+                        value={list.vm.search}
+                        onChange={list.actions.search.set}
                         inputPlaceholder={"Search teams..."}
                     />
                 }

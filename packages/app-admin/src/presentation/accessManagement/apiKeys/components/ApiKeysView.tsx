@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
 import {
     SplitView,
@@ -49,11 +48,6 @@ const SORTERS = [
     { label: "Name Z-A", sorter: "name_DESC" }
 ];
 
-const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
-    const [field, order] = data.split("_");
-    return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
-};
-
 const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }) => {
     const { presenter } = useFeature(ApiKeysPresenterFeature);
     const { goToRoute } = useRouter();
@@ -62,32 +56,12 @@ const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(SORTERS[0].sorter);
-
-    const apiKeys = presenter.list.vm.rows;
-    const loading = presenter.list.vm.pagination.loading;
-
-    const filteredData = useMemo(() => {
-        if (filter === "") {
-            return apiKeys;
-        }
-        const lc = filter.toLowerCase();
-        return apiKeys.filter(
-            (k: ApiKey) =>
-                k.name.toLowerCase().includes(lc) ||
-                k.slug.toLowerCase().includes(lc) ||
-                (k.description && k.description.toLowerCase().includes(lc))
-        );
-    }, [apiKeys, filter]);
-
-    const sortedData = useMemo(() => {
-        if (!sort) {
-            return filteredData;
-        }
-        const [key, order] = deserializeSorters(sort);
-        return orderBy(filteredData, [key], [order]);
-    }, [filteredData, sort]);
+    const { list } = presenter;
+    const sort = list.vm.sort ? `${list.vm.sort.field}_${list.vm.sort.direction}` : "";
+    const setSort = (value: string) => {
+        const [field, direction] = value.split("_");
+        list.actions.sort.set(field, direction === "ASC" ? "ASC" : "DESC");
+    };
 
     const deleteItem = useCallback(
         (item: ApiKey) => {
@@ -119,12 +93,12 @@ const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }
                     onClick={() => goToRoute(Routes.ApiKeys.List, { new: true })}
                 />
             }
-            data={sortedData}
-            loading={loading}
+            data={list.vm.rows}
+            loading={list.vm.pagination.loading}
             search={
                 <SearchUI
-                    value={filter}
-                    onChange={setFilter}
+                    value={list.vm.search}
+                    onChange={list.actions.search.set}
                     inputPlaceholder={"Search API keys..."}
                 />
             }
