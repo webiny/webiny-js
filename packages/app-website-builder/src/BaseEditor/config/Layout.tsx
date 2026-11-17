@@ -39,8 +39,13 @@ export const Layout = makeDecoratable("EditorLayout", () => {
              */}
             <div className={"flex min-h-0 flex-1 flex-row"}>
                 <EditorConfig.Ui.Panels side={"left"} />
-                {/* `relative`: the breadcrumb bar sits at its foot, as wide as the panels leave it. */}
-                <div className={"relative flex-auto"}>
+                {/*
+                 * `relative`: the breadcrumb bar sits at its foot, as wide as the panels leave it.
+                 * `min-w-0`: the canvas is sized in pixels after a panel has moved, so while a panel
+                 * animates open this column must give way, or the row overflows and pushes the
+                 * panels beyond it off the window until the canvas catches up.
+                 */}
+                <div className={"relative min-w-0 flex-auto overflow-hidden"}>
                     <EditorConfig.Ui.Content />
                 </div>
                 <EditorConfig.Ui.Panels />
