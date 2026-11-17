@@ -9,6 +9,7 @@ import { ApiKeyBeforeCreateEvent, ApiKeyAfterCreateEvent } from "./events.js";
 import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
 import type { ApiKeyPermission } from "~/types/security.js";
 import { generateToken } from "../shared/generateToken.js";
+import { findNotGrantedPermission } from "../../utils/findNotGrantedPermission.js";
 import { ApiKeyValidationError, ApiKeyNotAuthorizedError } from "../shared/errors.js";
 
 class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interface {
@@ -36,6 +37,18 @@ class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interfac
         const token = generateToken();
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
+
+        const notGranted = await findNotGrantedPermission({
+            identityContext: this.identityContext,
+            requested: data.permissions
+        });
+        if (notGranted) {
+            return Result.fail(
+                new ApiKeyNotAuthorizedError({
+                    message: `Not authorized to grant permission "${notGranted.name}".`
+                })
+            );
+        }
 
         const apiKey: ApiKey = {
             id: mdbid(),
