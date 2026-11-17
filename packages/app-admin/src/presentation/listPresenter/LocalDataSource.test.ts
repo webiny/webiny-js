@@ -83,4 +83,15 @@ describe("LocalDataSource", () => {
 
         expect(dataSource.loads).toHaveBeenCalledTimes(2);
     });
+
+    it("loads again on a search after the first load failed", async () => {
+        const dataSource = new RowsDataSource();
+        dataSource.loads.mockRejectedValueOnce(new Error("Network error"));
+        await expect(dataSource.query({})).rejects.toThrow("Network error");
+
+        await dataSource.query({ search: "edit" });
+
+        expect(dataSource.loads).toHaveBeenCalledTimes(2);
+        expect(ids(dataSource.rows)).toEqual(["1"]);
+    });
 });

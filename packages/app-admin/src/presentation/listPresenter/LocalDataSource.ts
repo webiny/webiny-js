@@ -1,17 +1,31 @@
-import { makeObservable, observable, observableRef, computed, action, runInAction } from "mobx";
-import orderBy from "lodash/orderBy.js";
-import type { IDataSource, IDataSourceQuery, IDataSourceMeta } from "./abstractions.js";
+import { makeObservable } from "mobx";
+import { observable } from "mobx";
+import { observableRef } from "mobx";
+import { computed } from "mobx";
+import { action } from "mobx";
+import { runInAction } from "mobx";
+import type { IDataSource } from "./abstractions.js";
+import type { IDataSourceQuery } from "./abstractions.js";
+import type { IDataSourceMeta } from "./abstractions.js";
+import { compareValues } from "./compareValues.js";
 
 /**
  * A data source for a list small enough to load whole: it loads every row once and answers
  * search and sort from the loaded rows. Because search and sort go through the list presenter,
  * the rows the list hands to the view and to the assistant are the rows on screen.
  *
- * A query that differs from the previous one only in search or sort is answered without loading.
- * Any other query loads again, including the same query repeated, which is how a refresh arrives.
+ * A query that differs from the last loaded one only in search or sort is answered without
+ * loading. Any other query loads again, including the same query repeated, which is how a
+ * refresh arrives. Filters are not applied to the loaded rows; a list that filters needs
+ * `items` to do it.
  */
 export abstract class LocalDataSource<TRow> implements IDataSource<TRow> {
+    /** Search runs over the loaded rows, so it can follow every keystroke. */
+    readonly searchDebounceMs = 0;
+
     private _query: IDataSourceQuery | null = null;
+    /** The query whose rows `items` holds; null until a load succeeds. */
+    private _loadedQuery: IDataSourceQuery | null = null;
     private _loading = false;
 
     protected constructor() {
@@ -38,16 +52,20 @@ export abstract class LocalDataSource<TRow> implements IDataSource<TRow> {
         const search = this._query?.search?.toLowerCase();
         const sort = this._query?.sort;
 
-        const matched = search
-            ? this.items.filter(row =>
-                  this.searchIn(row).some(text => text?.toLowerCase().includes(search))
-              )
-            : this.items;
-
-        if (!sort) {
-            return matched;
+        let rows = this.items;
+        if (search) {
+            rows = rows.filter(row => this.matches(row, search));
         }
-        return orderBy(matched, [sort.field], [sort.direction === "ASC" ? "asc" : "desc"]);
+        if (!sort) {
+            return rows;
+        }
+
+        const direction = sort.direction === "ASC" ? 1 : -1;
+        return [...rows].sort((a, b) => {
+            const left = (a as Record<string, unknown>)[sort.field];
+            const right = (b as Record<string, unknown>)[sort.field];
+            return direction * compareValues(left, right);
+        });
     }
 
     get meta(): IDataSourceMeta {
@@ -59,15 +77,18 @@ export abstract class LocalDataSource<TRow> implements IDataSource<TRow> {
     }
 
     async query(params: IDataSourceQuery): Promise<void> {
-        const previous = this._query;
         this._query = params;
-        if (previous && changesOnlySearchOrSort(previous, params)) {
+        const loaded = this._loadedQuery;
+        if (loaded && changesOnlySearchOrSort(loaded, params)) {
+            this._loadedQuery = params;
             return;
         }
 
+        this._loadedQuery = null;
         this._loading = true;
         try {
             await this.load();
+            this._loadedQuery = params;
         } finally {
             runInAction(() => {
                 this._loading = false;
@@ -77,6 +98,10 @@ export abstract class LocalDataSource<TRow> implements IDataSource<TRow> {
 
     async loadMore(): Promise<void> {
         // Every row is loaded by `query`.
+    }
+
+    private matches(row: TRow, search: string): boolean {
+        return this.searchIn(row).some(text => text?.toLowerCase().includes(search));
     }
 }
 

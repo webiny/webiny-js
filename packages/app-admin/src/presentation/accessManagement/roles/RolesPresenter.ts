@@ -93,8 +93,6 @@ class RolesPresenterImpl implements IRolesPresenter {
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
             limit: 1000,
-            // Search runs over the loaded rows, so it can follow every keystroke.
-            debounceMs: 0,
             itemLabel: { singular: "role", plural: "roles" },
             assistant: {
                 view: () => "Roles in Access Management",

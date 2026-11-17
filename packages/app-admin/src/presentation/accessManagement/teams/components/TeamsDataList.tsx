@@ -18,6 +18,8 @@ import { TeamsPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Team } from "~/features/accessManagement/types.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
+import { toSortOption } from "~/presentation/listPresenter/sortOption.js";
+import { fromSortOption } from "~/presentation/listPresenter/sortOption.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -47,10 +49,10 @@ export const TeamsDataList = createReactiveComponent(
         });
 
         const { list } = presenter;
-        const sort = list.vm.sort ? `${list.vm.sort.field}_${list.vm.sort.direction}` : "";
+        const sort = toSortOption(list.vm.sort);
         const setSort = (value: string) => {
-            const [field, direction] = value.split("_");
-            list.actions.sort.set(field, direction === "ASC" ? "ASC" : "DESC");
+            const option = fromSortOption(value);
+            list.actions.sort.set(option.field, option.direction);
         };
 
         const deleteItem = useCallback(

@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import {
@@ -40,6 +42,8 @@ import { Routes } from "../../routes.js";
 import type { ApiKey } from "~/features/accessManagement/types.js";
 import type { GenericRecord } from "@webiny/app/types.js";
 import { FormErrors } from "~/index.js";
+import { toSortOption } from "~/presentation/listPresenter/sortOption.js";
+import { fromSortOption } from "~/presentation/listPresenter/sortOption.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -57,10 +61,10 @@ const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }
     });
 
     const { list } = presenter;
-    const sort = list.vm.sort ? `${list.vm.sort.field}_${list.vm.sort.direction}` : "";
+    const sort = toSortOption(list.vm.sort);
     const setSort = (value: string) => {
-        const [field, direction] = value.split("_");
-        list.actions.sort.set(field, direction === "ASC" ? "ASC" : "DESC");
+        const option = fromSortOption(value);
+        list.actions.sort.set(option.field, option.direction);
     };
 
     const deleteItem = useCallback(

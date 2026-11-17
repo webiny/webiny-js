@@ -27,6 +27,8 @@ export interface IDataSource<TRow> {
     readonly rows: TRow[];
     readonly meta: IDataSourceMeta;
     readonly loading: boolean;
+    /** How long a search waits for typing to stop. Overrides the list's default of 300 ms. */
+    readonly searchDebounceMs?: number;
     query(params: IDataSourceQuery): Promise<void>;
     loadMore(params: IDataSourceQuery): Promise<void>;
 }
