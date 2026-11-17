@@ -61,6 +61,17 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         const latestStorageEntry = latestResult.value;
 
+        // The check runs against the stored entry, never against the one built from input.
+        const canAccessEntry = await this.accessControl.canAccessEntry({
+            model,
+            entry: latestStorageEntry,
+            rwd: "w"
+        });
+
+        if (!canAccessEntry) {
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
+        }
+
         const { entry, input } = await this.createEntryRevisionFromDataFactory.create<T>(
             sourceId,
             model,
@@ -69,16 +80,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
             latestStorageEntry,
             options
         );
-
-        const canAccessEntry = await this.accessControl.canAccessEntry({
-            model,
-            entry,
-            rwd: "w"
-        });
-
-        if (!canAccessEntry) {
-            return Result.fail(EntryNotAuthorizedError.fromModel(model));
-        }
 
         try {
             await this.eventPublisher.publish(
