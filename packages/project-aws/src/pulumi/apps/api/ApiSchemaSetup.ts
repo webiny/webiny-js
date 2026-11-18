@@ -107,6 +107,31 @@ export const createSchemaSetupEvent = (serviceManifests: ServiceManifest[]) => {
     };
 };
 
+/**
+ * The manifests the api deploy stores: the core's (from the core stack output; the core deploys
+ * before this function exists), then the api app's own. On a repeated name the api's own wins.
+ *
+ * Throws when the core stack has no service manifests: a core deployed before the core put them
+ * in its output. Its `core` manifest would never reach the database.
+ */
+export const getSchemaSetupServiceManifests = (
+    coreManifests: ServiceManifest[] | undefined,
+    apiManifests: ServiceManifest[]
+): ServiceManifest[] => {
+    if (!coreManifests) {
+        throw new Error(
+            "The core app's stack output has no service manifests, which the api deploy stores " +
+                "in the database. Deploy the core app again: `yarn webiny deploy core`."
+        );
+    }
+
+    const byName = new Map<string, ServiceManifest>();
+    for (const manifest of [...coreManifests, ...apiManifests]) {
+        byName.set(manifest.name, manifest);
+    }
+    return [...byName.values()];
+};
+
 export interface ApiSchemaSetupParams {
     /* The core stack's Postgres outputs. */
     postgres: pulumi.Output<PostgresOutputs>;

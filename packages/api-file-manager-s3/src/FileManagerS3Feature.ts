@@ -7,6 +7,7 @@ import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
+import { FileContentsStorageFeature } from "~/features/FileContentsStorage/feature.js";
 import { createS3AssetDeliveryFeature } from "./assetDelivery/feature.js";
 import type { AssetDeliveryParams } from "./assetDelivery/types.js";
 
@@ -28,6 +29,7 @@ export const FileManagerS3Feature = createFeature({
         WriteFileMetadataFeature.register(container);
         GetFileContentsByIdFeature.register(container);
         GetFileContentsByKeyFeature.register(container);
+        FileContentsStorageFeature.register(container);
 
         // Static S3 GraphQL schema (extends FmQuery/FmMutation) — a DI-native
         // CoreGraphQLSchemaFactory contributor (declares its resolver dependencies).

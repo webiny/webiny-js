@@ -4,6 +4,7 @@ import type { AdminAssistantRequest } from "./abstractions.js";
 import { AdminAssistantPresenter as Abstraction } from "./abstractions.js";
 import type { AiTurnViewModel } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
+import { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
@@ -59,13 +60,14 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private gateway: AdminAssistantGateway.Interface,
-        private chats: AiChatsRepository.Interface
+        private chats: AiChatsRepository.Interface,
+        private pageContext: AssistantPageContext.Interface
     ) {
         // Machinery, not state anything renders, so keep them out of the map.
-        makeAutoObservable<AdminAssistantPresenterImpl, "controller" | "generation" | "chats">(
-            this,
-            { controller: false, generation: false, chats: false }
-        );
+        makeAutoObservable<
+            AdminAssistantPresenterImpl,
+            "controller" | "generation" | "chats" | "pageContext"
+        >(this, { controller: false, generation: false, chats: false, pageContext: false });
     }
 
     get vm(): Abstraction.ViewModel {
@@ -123,7 +125,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         const index = this.turns.length;
         this.addTurn(trimmed);
-        const request = this.request({ prompt: trimmed });
+        const request = this.question(trimmed);
         void this.run(index, request);
     }
 
@@ -180,7 +182,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.clearStorageError();
         const fresh = emptyTurn(turn.question);
         this.replaceTurn(index, { ...fresh, running: true });
-        const request = this.request({ prompt: turn.question });
+        const request = this.question(turn.question);
         void this.run(index, request);
     }
 
@@ -218,6 +220,19 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 this.setOpening(false);
             }
         }
+    }
+
+    /**
+     * A question, with whatever the screen behind the palette says about itself. Read at the moment
+     * of asking, so a retry describes the screen the user is on now.
+     */
+    private question(prompt: string): AdminAssistantRequest {
+        const request = this.request({ prompt });
+        const pageContext = this.pageContext.get();
+        if (pageContext) {
+            request.pageContext = pageContext;
+        }
+        return request;
     }
 
     /** A request for the chat on screen: the server reads its history from the saved chat. */
@@ -426,5 +441,5 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
 export const AdminAssistantPresenter = Abstraction.createImplementation({
     implementation: AdminAssistantPresenterImpl,
-    dependencies: [AdminAssistantGateway, AiChatsRepository]
+    dependencies: [AdminAssistantGateway, AiChatsRepository, AssistantPageContext]
 });

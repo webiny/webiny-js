@@ -30,8 +30,18 @@ class SchedulerListPresenterImpl implements ISchedulerListPresenter {
         this._listPresenter.init({
             dataSource,
             initialSort: { field: "scheduledFor", direction: "DESC" },
-            limit: 50
+            limit: 50,
+            itemLabel: { singular: "scheduled action", plural: "scheduled actions" },
+            assistant: {
+                view: () => "Scheduled publish and unpublish actions",
+                rowTitle: entry => `${entry.title} (${entry.actionType})`,
+                details: () => ({ namespace: this._namespace })
+            }
         });
+    }
+
+    dispose(): void {
+        this._listPresenter.dispose();
     }
 
     async cancelItem(id: string) {

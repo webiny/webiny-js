@@ -17,6 +17,7 @@ export const TeamsView = createReactiveComponent(() => {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     return (

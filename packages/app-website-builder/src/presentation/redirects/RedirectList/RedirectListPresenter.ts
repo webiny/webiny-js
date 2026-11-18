@@ -4,6 +4,8 @@ import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abst
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { sortFolders } from "@webiny/app-aco";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
+import { describeFoldersForAssistant } from "@webiny/app-aco/presentation/folderTree/describeFoldersForAssistant.js";
 import { ListRedirectsUseCase } from "~/features/redirects/listRedirects/abstractions.js";
 import { RedirectsListCache } from "~/features/redirects/shared/abstractions.js";
 import {
@@ -33,7 +35,8 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
         private editRedirectPresenter: EditRedirectPresenter.Interface,
         private listRedirectsUseCase: ListRedirectsUseCase.Interface,
         private redirectsListCache: RedirectsListCache.Interface,
-        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
+        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface,
+        private foldersContext: FoldersContext.Interface
     ) {
         this.actions = this.createActions();
         makeAutoObservable<RedirectListPresenterImpl, "_disposeReaction">(this, {
@@ -67,7 +70,22 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
             initialFilters: { folderId: initialFolderId },
-            limit: 50
+            limit: 50,
+            itemLabel: { singular: "redirect", plural: "redirects" },
+            assistant: {
+                view: () => "Redirects in Website Builder",
+                rowTitle: redirect => `${redirect.redirectFrom} -> ${redirect.redirectTo}`,
+                details: () => {
+                    const { currentFolderId, currentFolderTitle } = this.folderTreePresenter.vm;
+                    const childFolders = this.getSortedChildFolders();
+                    return describeFoldersForAssistant({
+                        type: this.foldersContext.type,
+                        currentFolderId,
+                        currentFolderTitle,
+                        childFolders
+                    });
+                }
+            }
         });
 
         if (initialFolderId !== "root") {
@@ -88,6 +106,7 @@ class RedirectListPresenterImpl implements IRedirectListPresenter {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+        this.listPresenter.dispose();
     }
 
     private createActions(): IRedirectListActions {
@@ -223,6 +242,7 @@ export const RedirectListPresenter = Abstraction.createImplementation({
         EditRedirectPresenter,
         ListRedirectsUseCase,
         RedirectsListCache,
-        GetDescendantFoldersUseCase
+        GetDescendantFoldersUseCase,
+        FoldersContext
     ]
 });

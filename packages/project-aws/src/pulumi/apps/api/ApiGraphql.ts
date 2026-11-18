@@ -1,7 +1,6 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import toKebabCase from "lodash/kebabCase.js";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils.js";
@@ -9,6 +8,7 @@ import { CoreOutput, VpcConfig } from "~/pulumi/apps/index.js";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
 import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
+import { isRouteNameAllowed } from "./isRouteNameAllowed.js";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -16,7 +16,7 @@ interface GraphqlParams {
 
 export interface AddRouteParams {
     /**
-     * Must be in kebab case (a-z and -)
+     * Must be in kebab case (a-z, 0-9 and -) when the route goes to API Gateway.
      */
     name: string;
     path: `/${string}`;
@@ -106,17 +106,17 @@ export const ApiGraphql = createAppModule({
                 graphql
             },
             addRoute: (routeParams: AddRouteParams) => {
-                const kebabName = toKebabCase(routeParams.name);
-                if (kebabName !== routeParams.name) {
-                    console.log(`Route name is not allowed: "${routeParams.name}".`);
-                    return;
-                }
-
                 // With the web function there is no HTTP API Gateway: the route goes to the web
-                // function, whose router matches the method.
+                // function, whose router matches the method. The name isn't used here, so it isn't
+                // checked either.
                 const graphqlWeb = app.getModule(ApiGraphqlWeb, { optional: true });
                 if (graphqlWeb) {
                     graphqlWeb.addRoute(routeParams.path);
+                    return;
+                }
+
+                if (!isRouteNameAllowed(routeParams.name)) {
+                    console.log(`Route name is not allowed: "${routeParams.name}".`);
                     return;
                 }
 
@@ -151,75 +151,9 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                 const policy: aws.iam.PolicyDocument = {
                     Version: "2012-10-17",
                     Statement: [
-                        {
-                            Sid: "PermissionForDynamodb",
-                            Effect: "Allow",
-                            Action: [
-                                "dynamodb:BatchGetItem",
-                                "dynamodb:BatchWriteItem",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:CreateBackup",
-                                "dynamodb:CreateTable",
-                                "dynamodb:CreateTableReplica",
-                                "dynamodb:DeleteBackup",
-                                "dynamodb:DeleteItem",
-                                "dynamodb:DeleteTable",
-                                "dynamodb:DeleteTableReplica",
-                                "dynamodb:DescribeBackup",
-                                "dynamodb:DescribeContinuousBackups",
-                                "dynamodb:DescribeContributorInsights",
-                                "dynamodb:DescribeExport",
-                                "dynamodb:DescribeKinesisStreamingDestination",
-                                "dynamodb:DescribeLimits",
-                                "dynamodb:DescribeReservedCapacity",
-                                "dynamodb:DescribeReservedCapacityOfferings",
-                                "dynamodb:DescribeStream",
-                                "dynamodb:DescribeTable",
-                                "dynamodb:DescribeTableReplicaAutoScaling",
-                                "dynamodb:DescribeTimeToLive",
-                                "dynamodb:DisableKinesisStreamingDestination",
-                                "dynamodb:EnableKinesisStreamingDestination",
-                                "dynamodb:ExportTableToPointInTime",
-                                "dynamodb:GetItem",
-                                "dynamodb:GetRecords",
-                                "dynamodb:GetShardIterator",
-                                "dynamodb:ListBackups",
-                                "dynamodb:ListContributorInsights",
-                                "dynamodb:ListExports",
-                                "dynamodb:ListStreams",
-                                "dynamodb:ListTables",
-                                "dynamodb:ListTagsOfResource",
-                                "dynamodb:PartiQLDelete",
-                                "dynamodb:PartiQLInsert",
-                                "dynamodb:PartiQLSelect",
-                                "dynamodb:PartiQLUpdate",
-                                "dynamodb:PurchaseReservedCapacityOfferings",
-                                "dynamodb:PutItem",
-                                "dynamodb:Query",
-                                "dynamodb:RestoreTableFromBackup",
-                                "dynamodb:RestoreTableToPointInTime",
-                                "dynamodb:Scan",
-                                "dynamodb:UpdateContinuousBackups",
-                                "dynamodb:UpdateContributorInsights",
-                                "dynamodb:UpdateItem",
-                                "dynamodb:UpdateTable",
-                                "dynamodb:UpdateTableReplicaAutoScaling",
-                                "dynamodb:UpdateTimeToLive"
-                            ],
-                            Resource: [
-                                `${core.primaryDynamodbTableArn}`,
-                                `${core.primaryDynamodbTableArn}/*`,
-                                `${core.auditLogsDynamodbTableArn}`,
-                                `${core.auditLogsDynamodbTableArn}/*`,
-                                // Attach permissions for elastic search dynamo as well (if ES is enabled).
-                                ...(core.opensearchDynamodbTableArn
-                                    ? [
-                                          `${core.opensearchDynamodbTableArn}`,
-                                          `${core.opensearchDynamodbTableArn}/*`
-                                      ]
-                                    : [])
-                            ]
-                        },
+                        // The core's DynamoDB tables: only the OpenSearch one, if any, with
+                        // `<Infra.Postgres />`.
+                        ...createDynamoDbStatements(core),
                         {
                             Sid: "PermissionForS3",
                             Effect: "Allow",
@@ -281,4 +215,84 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
             })
         }
     });
+}
+
+/*
+ * Every DynamoDB action on the core's tables that exist: the primary and audit logs ones (none with
+ * `<Infra.Postgres />`) and the OpenSearch one (with OpenSearch). No statement when there are none.
+ */
+function createDynamoDbStatements(core: {
+    primaryDynamodbTableArn: string | undefined;
+    auditLogsDynamodbTableArn: string | undefined;
+    opensearchDynamodbTableArn: string | undefined;
+}): aws.iam.PolicyStatement[] {
+    const tableArns = [
+        core.primaryDynamodbTableArn,
+        core.auditLogsDynamodbTableArn,
+        core.opensearchDynamodbTableArn
+    ].filter((arn): arn is string => Boolean(arn));
+
+    if (!tableArns.length) {
+        return [];
+    }
+
+    return [
+        {
+            Sid: "PermissionForDynamodb",
+            Effect: "Allow",
+            Action: [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:CreateBackup",
+                "dynamodb:CreateTable",
+                "dynamodb:CreateTableReplica",
+                "dynamodb:DeleteBackup",
+                "dynamodb:DeleteItem",
+                "dynamodb:DeleteTable",
+                "dynamodb:DeleteTableReplica",
+                "dynamodb:DescribeBackup",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeContributorInsights",
+                "dynamodb:DescribeExport",
+                "dynamodb:DescribeKinesisStreamingDestination",
+                "dynamodb:DescribeLimits",
+                "dynamodb:DescribeReservedCapacity",
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:DescribeStream",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeTableReplicaAutoScaling",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DisableKinesisStreamingDestination",
+                "dynamodb:EnableKinesisStreamingDestination",
+                "dynamodb:ExportTableToPointInTime",
+                "dynamodb:GetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:ListBackups",
+                "dynamodb:ListContributorInsights",
+                "dynamodb:ListExports",
+                "dynamodb:ListStreams",
+                "dynamodb:ListTables",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:PartiQLDelete",
+                "dynamodb:PartiQLInsert",
+                "dynamodb:PartiQLSelect",
+                "dynamodb:PartiQLUpdate",
+                "dynamodb:PurchaseReservedCapacityOfferings",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:RestoreTableFromBackup",
+                "dynamodb:RestoreTableToPointInTime",
+                "dynamodb:Scan",
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:UpdateContributorInsights",
+                "dynamodb:UpdateItem",
+                "dynamodb:UpdateTable",
+                "dynamodb:UpdateTableReplicaAutoScaling",
+                "dynamodb:UpdateTimeToLive"
+            ],
+            Resource: tableArns.flatMap(arn => [arn, `${arn}/*`])
+        }
+    ];
 }

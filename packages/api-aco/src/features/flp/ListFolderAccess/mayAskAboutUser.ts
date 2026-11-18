@@ -8,7 +8,7 @@ export const mayAskAboutUser = async (
     if (!identityContext.isAuthorizationEnabled()) {
         return true;
     }
-    if (identityContext.getIdentity()?.id === userId) {
+    if (identityContext.getIdentity().id === userId) {
         return true;
     }
     const permissions = await identityContext.listPermissions();

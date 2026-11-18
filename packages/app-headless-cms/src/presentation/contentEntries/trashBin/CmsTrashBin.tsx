@@ -1,4 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { TrashBinFeature } from "@webiny/app-admin/presentation/trashBin/feature.js";
@@ -15,11 +18,18 @@ export const CmsTrashBin = observer(() => {
 
     const handleOpen = useCallback(() => {
         presenter.init({
-            nameColumnId: model.titleFieldId || "id"
+            nameColumnId: model.titleFieldId || "id",
+            assistant: {
+                view: `Deleted entries of the "${model.name}" content model in Headless CMS`,
+                details: { modelId: model.modelId, modelName: model.name }
+            }
         });
 
         setOpen(true);
     }, [model, presenter]);
+
+    // Leaving the list with the trash open would leave its description to the assistant.
+    useEffect(() => () => presenter.dispose(), [presenter]);
 
     const handleClose = useCallback(async () => {
         setOpen(false);

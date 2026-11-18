@@ -1,5 +1,6 @@
 export * from "./constants.js";
 export * from "./createPathResolver.js";
+export * from "./ensureNamedImport.js";
 export * from "./getRandomColorForString.js";
 export * from "./getStackName.js";
 export * from "./ExtensionSrcResolver.js";

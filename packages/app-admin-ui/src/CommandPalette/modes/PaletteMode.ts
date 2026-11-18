@@ -31,8 +31,6 @@ export interface PaletteModeAppearance {
     placeholder: string;
     /** The keys that work in this mode, at the end of the footer. */
     hints: Hint[];
-    /** What is answering, at the start of the footer, e.g. "AI assistant · claude-sonnet-4-5". */
-    footerStart?: string;
     /**
      * True when the body is a list of rows, such as suggestions. A list gets the command list's
      * tighter padding, since its rows carry their own; anything else gets the custom body's.

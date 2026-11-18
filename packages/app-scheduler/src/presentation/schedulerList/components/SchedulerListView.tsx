@@ -20,6 +20,7 @@ const SchedulerListViewInner = observer(function SchedulerListViewInner(
 
     useEffect(() => {
         presenter.init({ namespace: props.namespace });
+        return () => presenter.dispose();
     }, [presenter, props.namespace]);
 
     return <SchedulerOverlay presenter={presenter} onExited={props.onClose} title={props.title} />;

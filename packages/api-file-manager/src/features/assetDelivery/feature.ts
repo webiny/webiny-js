@@ -12,6 +12,7 @@ import { ImageAssetType } from "./assetTypes/image/ImageAssetType.js";
 import { PrivateFileAssetRequestResolverDecorator } from "./privateFiles/PrivateFileAssetRequestResolver.js";
 import { PrivateAuthenticatedAuthorizerImpl } from "./privateFiles/PrivateAuthenticatedAuthorizer.js";
 import { PrivateFilesAssetProcessorDecorator } from "./privateFiles/PrivateFilesAssetProcessor.js";
+import { PrivateAssetDeliveryRouteDefinition } from "./privateFiles/PrivateAssetDeliveryRouteDefinition.js";
 
 export const AssetDeliveryFeature = createFeature({
     name: "AssetDelivery",
@@ -25,8 +26,6 @@ export const AssetDeliveryFeature = createFeature({
         container.register(ImageAssetType);
         container.registerInstance(AssetProcessor, new TransformationAssetProcessor(container));
 
-        container.registerDecorator(PrivateFileAssetRequestResolverDecorator);
-
         // Register-time gate on the effective feature flags (userFlag && live WCP license). Valid at
         // register() time because the license is refreshed PRE-register (WcpLicenseLoader.load in
         // registerApiRequestStack) and FeatureFlags reads that process cache — and it re-evaluates per
@@ -37,6 +36,8 @@ export const AssetDeliveryFeature = createFeature({
                 .get()
                 .isEnabled("advancedAccessControlLayer.privateFiles")
         ) {
+            container.register(PrivateAssetDeliveryRouteDefinition);
+            container.registerDecorator(PrivateFileAssetRequestResolverDecorator);
             container.register(PrivateAuthenticatedAuthorizerImpl);
             container.registerDecorator(PrivateFilesAssetProcessorDecorator);
         }

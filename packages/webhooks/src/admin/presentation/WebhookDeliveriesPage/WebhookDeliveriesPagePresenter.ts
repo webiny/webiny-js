@@ -14,6 +14,10 @@ import {
     type IDeliveryPageFilters
 } from "./abstractions.js";
 
+type FilterOptions =
+    | { events: WebhookEvent[]; webhooks: IDeliveryFilterOption[] }
+    | { error: string };
+
 const createEmptyFilters = (): IDeliveryPageFilters => {
     return {
         webhookId: null,
@@ -31,6 +35,8 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
     private _resendingIds: Set<string> = new Set();
     private _loading = false;
     private _error: string | null = null;
+    /** Bumped by every init and by dispose, so an init that resolves after either stops there. */
+    private _initRun = 0;
 
     constructor(
         private readonly listPresenter: ListPresenter.Interface<WebhookDelivery>,
@@ -39,7 +45,10 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
         private readonly resendDeliveryUseCase: ResendWebhookDeliveryUseCase.Interface,
         private readonly listWebhooksUseCase: ListWebhooksUseCase.Interface
     ) {
-        makeAutoObservable(this, { vm: computed });
+        makeAutoObservable<WebhookDeliveriesPagePresenterImpl, "_initRun">(this, {
+            vm: computed,
+            _initRun: false
+        });
     }
 
     get vm(): IWebhookDeliveriesPageViewModel {
@@ -58,6 +67,7 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
     }
 
     public async init(webhookId?: string): Promise<void> {
+        const run = ++this._initRun;
         runInAction(() => {
             this._loading = true;
             this._error = null;
@@ -65,26 +75,16 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
                 this._filters = { ...this._filters, webhookId };
             }
         });
-        try {
-            const [events, webhooksResult] = await Promise.all([
-                this.listAvailableEventsUseCase.execute(),
-                this.listWebhooksUseCase.execute({ limit: 1000 })
-            ]);
-            runInAction(() => {
-                this._availableEvents = events;
-                this._availableWebhooks = webhooksResult.items.map(w => ({
-                    value: w.id,
-                    label: w.name
-                }));
-            });
-        } catch (err) {
-            runInAction(() => {
-                this._error = err instanceof Error ? err.message : "Failed to load data.";
-            });
-        } finally {
-            runInAction(() => {
-                this._loading = false;
-            });
+        const options = await this.loadFilterOptions();
+
+        if (run !== this._initRun) {
+            return;
+        }
+        this.applyFilterOptions(options);
+        if ("error" in options) {
+            // The page shows the error in place of the list, so there is no list to describe.
+            this.listPresenter.dispose();
+            return;
         }
 
         const dataSource = new WebhookDeliveriesDataSource(this.listDeliveriesUseCase);
@@ -92,8 +92,55 @@ class WebhookDeliveriesPagePresenterImpl implements IWebhookDeliveriesPagePresen
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
             initialFilters: this._buildWhere(),
-            limit: 20
+            limit: 20,
+            itemLabel: { singular: "delivery", plural: "deliveries" },
+            assistant: {
+                view: () => "Webhook deliveries",
+                rowTitle: delivery => `${delivery.eventType} (${delivery.status})`,
+                details: () => this.describeForAssistant()
+            }
         });
+    }
+
+    public dispose(): void {
+        this._initRun++;
+        this._loading = false;
+        this._error = null;
+        this.listPresenter.dispose();
+    }
+
+    /** Reads the filter options without writing state, so a run that was replaced can drop them. */
+    private async loadFilterOptions(): Promise<FilterOptions> {
+        try {
+            const [events, webhooksResult] = await Promise.all([
+                this.listAvailableEventsUseCase.execute(),
+                this.listWebhooksUseCase.execute({ limit: 1000 })
+            ]);
+            const webhooks = webhooksResult.items.map(w => ({ value: w.id, label: w.name }));
+            return { events, webhooks };
+        } catch (err) {
+            return { error: err instanceof Error ? err.message : "Failed to load data." };
+        }
+    }
+
+    private applyFilterOptions(options: FilterOptions): void {
+        this._loading = false;
+        if ("error" in options) {
+            this._error = options.error;
+            return;
+        }
+        this._availableEvents = options.events;
+        this._availableWebhooks = options.webhooks;
+    }
+
+    /** The webhook the deliveries are filtered to, if any. */
+    private describeForAssistant(): Record<string, unknown> {
+        const { webhookId } = this._filters;
+        if (!webhookId) {
+            return {};
+        }
+        const webhook = this._availableWebhooks.find(option => option.value === webhookId);
+        return { webhookId, webhookName: webhook?.label ?? null };
     }
 
     public clearFilters(): void {

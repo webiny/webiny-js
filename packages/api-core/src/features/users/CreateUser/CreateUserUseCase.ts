@@ -61,8 +61,9 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const tenant = this.tenantContext.getTenant().id;
         const identity = this.identityContext.getIdentity();
 
+        // A user created with no one signed in (e.g. the first admin during installation) has no creator.
         let createdBy: CreatedBy | null = null;
-        if (identity) {
+        if (!identity.isAnonymous()) {
             createdBy = {
                 id: identity.id,
                 displayName: identity.displayName,
