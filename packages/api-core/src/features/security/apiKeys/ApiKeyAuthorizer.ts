@@ -5,7 +5,7 @@ import type { SecurityPermission } from "~/types/security.js";
 
 class ApiKeyAuthorizerImpl implements IAuthorizer {
     async authorize(identity: Identity): Promise<SecurityPermission[] | null> {
-        if (!identity || identity.type !== "api-key") {
+        if (identity.type !== "api-key") {
             return null;
         }
         const permissions = (identity as any).permissions;

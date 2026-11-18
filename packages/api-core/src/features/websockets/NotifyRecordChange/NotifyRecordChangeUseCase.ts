@@ -18,7 +18,7 @@ class NotifyRecordChangeUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute({ identityId, ...data }: UseCaseAbstraction.Params): Promise<void> {
-        const recipient = identityId ?? this.identityContext.getIdentity()?.id;
+        const recipient = identityId ?? this.getSignedInIdentityId();
         if (!recipient) {
             return;
         }
@@ -31,6 +31,14 @@ class NotifyRecordChangeUseCaseImpl implements UseCaseAbstraction.Interface {
         } catch {
             // See above.
         }
+    }
+
+    private getSignedInIdentityId(): string | undefined {
+        const identity = this.identityContext.getIdentity();
+        if (identity.isAnonymous()) {
+            return undefined;
+        }
+        return identity.id;
     }
 }
 

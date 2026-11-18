@@ -112,7 +112,7 @@ class UpdateUserAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Inpu
             );
         }
 
-        if (user.id === this.identityContext.getIdentity()?.id) {
+        if (user.id === this.identityContext.getIdentity().id) {
             throw new Error(
                 "This is the signed-in user. Change your own roles and teams in the Users screen, so a mistake cannot lock you out. Nothing was changed."
             );
