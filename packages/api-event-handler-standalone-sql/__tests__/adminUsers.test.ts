@@ -2,33 +2,7 @@ import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
 import { createServer } from "./createServer.js";
-
-const INSTALL = /* GraphQL */ `
-    mutation Install($installationInput: JSON!) {
-        system {
-            installSystem(installationInput: $installationInput) {
-                data
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-const LOGIN = /* GraphQL */ `
-    mutation Login($email: String!, $password: String!) {
-        selfHostedAuthLogin(email: $email, password: $password) {
-            data {
-                token
-            }
-            error {
-                code
-            }
-        }
-    }
-`;
+import { admin, INSTALL, LOGIN } from "./installAndLogIn.js";
 
 const CREATE_USER = /* GraphQL */ `
     mutation CreateUser($data: AdminUsersCreateInput!) {
@@ -92,13 +66,6 @@ const DELETE_USER = /* GraphQL */ `
         }
     }
 `;
-
-const admin = {
-    firstName: "Test",
-    lastName: "Admin",
-    email: "test-admin@example.com",
-    password: "test-admin-password"
-};
 
 const editor = {
     firstName: "Ed",
