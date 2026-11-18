@@ -25,3 +25,5 @@ export type {
 } from "./FolderAwareDataSource.js";
 
 export { SimpleDataSource } from "./SimpleDataSource.js";
+export { LocalDataSource } from "./LocalDataSource.js";
+export { toSortOption, fromSortOption } from "./sortOption.js";

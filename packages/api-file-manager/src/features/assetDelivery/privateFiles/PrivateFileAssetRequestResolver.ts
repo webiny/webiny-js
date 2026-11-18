@@ -27,6 +27,8 @@ export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
             },
             options: {
                 ...query,
+                // A presence flag, as in `FilesAssetRequestResolver`: a bare `?original` is "".
+                original: "original" in query,
                 width: query.width ? parseInt(query.width) : undefined
             }
         });

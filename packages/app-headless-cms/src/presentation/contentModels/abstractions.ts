@@ -3,18 +3,12 @@ import type { IListPresenter } from "@webiny/app-admin/presentation/listPresente
 import type { CmsGroup, CmsModel } from "~/types.js";
 import type { DeleteModelResult } from "~/features/model/deleteModel/abstractions.js";
 
-export interface IContentModelsPresenterViewModel {
-    loading: boolean;
-    models: CmsModel[];
-}
-
 export interface IContentModelsPresenterExportModelsResponse {
     groups: CmsGroup[];
     models: CmsModel[];
 }
 
 export interface IContentModelsPresenter {
-    readonly vm: IContentModelsPresenterViewModel;
     readonly list: IListPresenter<CmsModel>;
     init(): void;
     /** Stops telling the assistant about the models list. */
@@ -30,6 +24,5 @@ export const ContentModelsPresenter = createAbstraction<IContentModelsPresenter>
 
 export namespace ContentModelsPresenter {
     export type Interface = IContentModelsPresenter;
-    export type ViewModel = IContentModelsPresenterViewModel;
     export type ExportModelResponse = IContentModelsPresenterExportModelsResponse;
 }

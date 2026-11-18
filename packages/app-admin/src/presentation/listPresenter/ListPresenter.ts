@@ -191,7 +191,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._sort = config.initialSort ?? null;
         this._filters = config.initialFilters ?? {};
         this._initialFilterKeys = new Set(Object.keys(this._filters));
-        this._debounceMs = config.debounceMs ?? 300;
+        this._debounceMs = config.debounceMs ?? config.dataSource.searchDebounceMs ?? 300;
         this._limit = config.limit;
         this._itemLabel = config.itemLabel ?? { singular: "item", plural: "items" };
         this._search = config.initialSearch ?? "";

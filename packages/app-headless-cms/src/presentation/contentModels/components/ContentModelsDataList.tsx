@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import orderBy from "lodash/orderBy.js";
 import { TimeAgo } from "@webiny/admin-ui";
 import { SearchUI, useRouter, useSnackbar } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
@@ -27,6 +28,8 @@ import { Routes } from "~/routes.js";
 import { normalizeIcon } from "~/utils/normalizeIcon.js";
 import { useContentModelsPresenter } from "../useContentModelsPresenter.js";
 import { download } from "../utils/download.js";
+import { toSortOption } from "@webiny/app-admin/presentation/listPresenter/sortOption.js";
+import { fromSortOption } from "@webiny/app-admin/presentation/listPresenter/sortOption.js";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -36,11 +39,6 @@ const SORTERS = [
     { label: "Name A-Z", sorter: "name_ASC" },
     { label: "Name Z-A", sorter: "name_DESC" }
 ];
-
-const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
-    const [field, order] = data.split("_");
-    return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
-};
 
 interface ContentModelsDataListProps {
     canCreate: boolean;
@@ -77,28 +75,14 @@ const ContentModelsDataList = observer(
         const { showSnackbar } = useSnackbar();
         const { canDelete, canEdit } = usePermission();
 
-        const [filter, setFilter] = useState("");
-        const [sort, setSort] = useState(SORTERS[0].sorter);
         const [modelToBeDeleted, setModelToBeDeleted] = useState<CmsModel | null>(null);
 
-        const models = presenter.vm.models;
-        const loading = presenter.vm.loading;
-
-        const filteredData = useMemo(() => {
-            if (filter === "") {
-                return models;
-            }
-            const lc = filter.toLowerCase();
-            return models.filter((m: CmsModel) => m.name.toLowerCase().includes(lc));
-        }, [models, filter]);
-
-        const sortedData = useMemo(() => {
-            if (!sort) {
-                return filteredData;
-            }
-            const [key, order] = deserializeSorters(sort);
-            return orderBy(filteredData, [key], [order]);
-        }, [filteredData, sort]);
+        const { list } = presenter;
+        const sort = toSortOption(list.vm.sort);
+        const setSort = (value: string) => {
+            const option = fromSortOption(value);
+            list.actions.sort.set(option.field, option.direction);
+        };
 
         const editRecord = (contentModel: CmsModel): void => {
             goToRoute(Routes.ContentModels.Editor, { modelId: contentModel.modelId });
@@ -140,8 +124,8 @@ const ContentModelsDataList = observer(
         return (
             <>
                 <DataList
-                    loading={loading}
-                    data={sortedData}
+                    loading={list.vm.pagination.loading}
+                    data={list.vm.rows}
                     title={t`Content Models`}
                     actions={
                         <div className={"flex items-center justify-end gap-xs"}>
@@ -181,8 +165,8 @@ const ContentModelsDataList = observer(
                     }
                     search={
                         <SearchUI
-                            value={filter}
-                            onChange={setFilter}
+                            value={list.vm.search}
+                            onChange={list.actions.search.set}
                             inputPlaceholder={t`Search content model...`}
                         />
                     }

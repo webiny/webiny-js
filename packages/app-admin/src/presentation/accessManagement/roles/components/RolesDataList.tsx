@@ -1,8 +1,5 @@
 import React from "react";
 import { useCallback } from "react";
-import { useMemo } from "react";
-import { useState } from "react";
-import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
 import { useSnackbar } from "~/index.js";
 import { useConfirmationDialog } from "~/index.js";
@@ -21,6 +18,8 @@ import { RolesPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Role } from "~/features/accessManagement/types.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
+import { toSortOption } from "~/presentation/listPresenter/sortOption.js";
+import { fromSortOption } from "~/presentation/listPresenter/sortOption.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -28,11 +27,6 @@ const SORTERS = [
     { label: "Name A-Z", sorter: "name_ASC" },
     { label: "Name Z-A", sorter: "name_DESC" }
 ];
-
-const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
-    const [field, order] = data.split("_");
-    return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
-};
 
 // Why a role can't be deleted, or null when it can.
 function lockedReason(item: Role): string | null {
@@ -54,32 +48,12 @@ export const RolesDataList = createReactiveComponent(
             dataTestId: "default-data-list.delete-dialog"
         });
 
-        const [filter, setFilter] = useState("");
-        const [sort, setSort] = useState(SORTERS[0].sorter);
-
-        const roles = presenter.list.vm.rows;
-        const loading = presenter.list.vm.pagination.loading;
-
-        const filteredData = useMemo(() => {
-            if (filter === "") {
-                return roles;
-            }
-            const lc = filter.toLowerCase();
-            return roles.filter(
-                (r: Role) =>
-                    r.name.toLowerCase().includes(lc) ||
-                    r.slug.toLowerCase().includes(lc) ||
-                    (r.description && r.description.toLowerCase().includes(lc))
-            );
-        }, [roles, filter]);
-
-        const sortedData = useMemo(() => {
-            if (!sort) {
-                return filteredData;
-            }
-            const [key, order] = deserializeSorters(sort);
-            return orderBy(filteredData, [key], [order]);
-        }, [filteredData, sort]);
+        const { list } = presenter;
+        const sort = toSortOption(list.vm.sort);
+        const setSort = (value: string) => {
+            const option = fromSortOption(value);
+            list.actions.sort.set(option.field, option.direction);
+        };
 
         const deleteItem = useCallback(
             (item: Role) => {
@@ -112,12 +86,12 @@ export const RolesDataList = createReactiveComponent(
                         onClick={() => goToRoute(Routes.Roles.List, { new: true })}
                     />
                 }
-                data={sortedData}
-                loading={loading}
+                data={list.vm.rows}
+                loading={list.vm.pagination.loading}
                 search={
                     <SearchUI
-                        value={filter}
-                        onChange={setFilter}
+                        value={list.vm.search}
+                        onChange={list.actions.search.set}
                         inputPlaceholder={"Search roles..."}
                     />
                 }

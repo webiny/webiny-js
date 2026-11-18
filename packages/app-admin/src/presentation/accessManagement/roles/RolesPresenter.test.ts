@@ -30,6 +30,7 @@ describe("RolesPresenter", () => {
     let presenter: Abstraction.Interface;
     let pageContext: AssistantPageContext.Interface;
     let getRole: Mock;
+    let listRoles: Mock;
 
     /** Makes the next role lookup wait until the test resolves it. */
     const deferRole = () => {
@@ -48,11 +49,12 @@ describe("RolesPresenter", () => {
         const cache = new ListCache<Role>();
 
         container.registerInstance(RolesListCache, cache);
+        listRoles = vi.fn(async () => {
+            cache.setItems(ROLES);
+            return { data: ROLES };
+        });
         container.registerInstance(ListRolesUseCase, {
-            execute: vi.fn(async () => {
-                cache.setItems(ROLES);
-                return { data: ROLES };
-            })
+            execute: listRoles
         } as unknown as ListRolesUseCase.Interface);
         getRole = vi.fn(async (id: string) => ROLES.find(r => r.id === id)!);
         container.registerInstance(GetRoleUseCase, {
@@ -94,6 +96,35 @@ describe("RolesPresenter", () => {
 
         presenter.dispose();
         expect(pageContext.get()).toBeNull();
+    });
+
+    it("tells the assistant only the roles the search leaves on screen, in the chosen order", async () => {
+        presenter.init();
+        await vi.waitFor(() => {
+            expect(presenter.list.vm.rows).toHaveLength(2);
+        });
+
+        presenter.list.actions.search.set("REVIEW");
+        await vi.waitFor(() => {
+            expect(pageContext.get()?.details).toMatchObject({
+                search: "REVIEW",
+                totalCount: 1,
+                visibleRows: [{ id: "role-2", title: "Reviewers" }]
+            });
+        });
+        expect(presenter.list.vm.rows.map(row => row.id)).toEqual(["role-2"]);
+
+        presenter.list.actions.search.clear();
+        presenter.list.actions.sort.set("name", "DESC");
+        await vi.waitFor(() => {
+            expect(pageContext.get()?.details["visibleRows"]).toEqual([
+                { id: "role-2", title: "Reviewers" },
+                { id: "role-1", title: "Editors" }
+            ]);
+        });
+
+        // Search and sort run over the loaded roles; only the first query loads them.
+        expect(listRoles).toHaveBeenCalledTimes(1);
     });
 
     it("drops a role lookup that finishes after the page was left", async () => {

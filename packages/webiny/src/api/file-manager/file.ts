@@ -48,3 +48,6 @@ export {
     ListTagsRepository,
     ListTagsUseCase
 } from "@webiny/api-file-manager/features/file/ListTags/abstractions.js";
+export { StoreFileUseCase } from "@webiny/api-file-manager/features/file/StoreFile/abstractions.js";
+export { StoreFileInput } from "@webiny/api-file-manager/domain/file/StoreFileInput.js";
+export type { StoreFileInputOptions } from "@webiny/api-file-manager/domain/file/StoreFileInput.js";
