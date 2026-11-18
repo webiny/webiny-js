@@ -21,6 +21,8 @@ export class RecordingMailer implements MailerService.Interface {
     public failOn: number[] = [];
     public throwOn: number[] = [];
     public failureMessage = "SMTP refused.";
+    /** False stands for an installation without any mail transport configured. */
+    public configured = true;
 
     public async sendMail<T = any>(data: SentMail): MailerService.Return<T> {
         const index = this.sent.length;
@@ -35,6 +37,6 @@ export class RecordingMailer implements MailerService.Interface {
     }
 
     public async canSend(): Promise<boolean> {
-        return true;
+        return this.configured;
     }
 }

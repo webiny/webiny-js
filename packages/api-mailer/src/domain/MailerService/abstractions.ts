@@ -17,8 +17,8 @@ export interface IMailerService {
     ): Promise<Result<TransportSendResponse<T>, MailerServiceError>>;
 
     /**
-     * Whether mail actually leaves this installation: a transport is configured, and it is not the
-     * dummy transport, which reports success without sending.
+     * Whether mail can leave this installation: at least one transport is configured. When none is,
+     * `sendMail()` fails with `NoTransportAvailableError`.
      */
     canSend(): Promise<boolean>;
 }

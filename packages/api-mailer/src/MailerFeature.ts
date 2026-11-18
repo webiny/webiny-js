@@ -1,6 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
 import { CodeMailerSettingsFeature } from "~/features/CodeMailerSettings/feature.js";
-import { DummyTransportFeature } from "~/features/DummyTransport/feature.js";
 import { SmtpTransportFeature } from "~/features/SmtpTransport/feature.js";
 import { GetSettingsFeature } from "~/features/GetSettings/feature.js";
 import { SaveSettingsFeature } from "~/features/SaveSettings/feature.js";
@@ -13,7 +12,6 @@ export const MailerFeature = createFeature({
     name: "Mailer",
     register(container) {
         CodeMailerSettingsFeature.register(container);
-        DummyTransportFeature.register(container);
         SmtpTransportFeature.register(container);
         GetSettingsFeature.register(container);
         SaveSettingsFeature.register(container);

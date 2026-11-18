@@ -27,10 +27,6 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
             return Result.fail(new TestMailNotAuthorized());
         }
 
-        /*
-         * Through the dummy transport the test would report success without sending anything, so
-         * a test that passed would prove nothing.
-         */
         if (!(await this.mailerService.canSend())) {
             return Result.fail(new TestMailNotConfigured());
         }

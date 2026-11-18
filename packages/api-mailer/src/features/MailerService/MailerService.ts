@@ -7,7 +7,6 @@ import {
 } from "~/domain/MailerService/errors.js";
 import { MailTransport } from "~/domain/MailTransport/abstractions.js";
 import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
-import { DUMMY_TRANSPORT_NAME } from "~/constants.js";
 import type { TransportSendData } from "~/types.js";
 
 class MailerServiceImpl implements Abstraction.Interface {
@@ -33,17 +32,14 @@ class MailerServiceImpl implements Abstraction.Interface {
         }
     }
 
-    /*
-     * The dummy transport is always available and reports success without sending, so it does not
-     * count as being able to send.
-     */
     async canSend(): Promise<boolean> {
         const transport = await this.createTransport();
 
-        return transport !== null && transport.name !== DUMMY_TRANSPORT_NAME;
+        return transport !== null;
     }
 
     // The last registered factory that is configured wins, so a project's own transport takes over.
+    // Null when no factory is configured.
     private async createTransport(): Promise<MailTransport.Interface | null> {
         const factories = [...this.transportFactories].reverse();
 

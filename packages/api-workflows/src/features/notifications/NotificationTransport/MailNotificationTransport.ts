@@ -1,4 +1,5 @@
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
+import { MailerService } from "@webiny/api-mailer/domain/MailerService/abstractions.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { MAIL_BCC_CHUNK_SIZE } from "~/features/notifications/shared/constants.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
@@ -18,6 +19,7 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
 
     public constructor(
         private sendMail: SendMailUseCase.Interface,
+        private mailerService: MailerService.Interface,
         private logger: Logger.Interface
     ) {}
 
@@ -39,6 +41,11 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
             return true;
         });
         if (recipients.length === 0) {
+            return;
+        }
+
+        // An installation without mail settings is not an error: nothing is sent and nothing logged.
+        if (!(await this.mailerService.canSend())) {
             return;
         }
 
@@ -82,5 +89,5 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
 
 export const MailNotificationTransport = NotificationTransport.createImplementation({
     implementation: MailNotificationTransportImpl,
-    dependencies: [SendMailUseCase, Logger]
+    dependencies: [SendMailUseCase, MailerService, Logger]
 });

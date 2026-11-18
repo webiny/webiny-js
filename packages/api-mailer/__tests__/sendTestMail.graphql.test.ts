@@ -137,7 +137,7 @@ describe("Mailer sendTestMail GraphQL", () => {
         });
     });
 
-    it("refuses when only the dummy transport is available, instead of reporting its success", async () => {
+    it("refuses when no transport is configured", async () => {
         const handler = createGraphQLHandler();
 
         const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });

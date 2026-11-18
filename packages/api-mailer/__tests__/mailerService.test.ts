@@ -8,9 +8,9 @@ import { MailerService } from "~/domain/MailerService/abstractions.js";
 import { MailTransport } from "~/domain/MailTransport/abstractions.js";
 import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
 import { MailerServiceFeature } from "~/features/MailerService/feature.js";
-import { DummyTransportFeature } from "~/features/DummyTransport/feature.js";
 import { SmtpTransportFeature } from "~/features/SmtpTransport/feature.js";
 import { GetSettingsRepository } from "~/features/GetSettings/abstractions.js";
+import { NoTransportAvailableError } from "~/domain/MailerService/errors.js";
 import type { TransportSettings } from "~/types.js";
 
 const SMTP_SETTINGS: TransportSettings = {
@@ -55,7 +55,6 @@ const setup = ({ smtpSettings, project }: SetupParams) => {
     const get = vi.fn(async () => Result.ok({ settings: smtpSettings, source: null }));
 
     container.registerInstance(GetSettingsRepository, { get });
-    DummyTransportFeature.register(container);
     SmtpTransportFeature.register(container);
     if (project) {
         container.register(project).inSingletonScope();
@@ -66,10 +65,19 @@ const setup = ({ smtpSettings, project }: SetupParams) => {
 };
 
 describe("MailerService", () => {
-    it("cannot send when only the dummy transport is left", async () => {
+    it("cannot send when no transport is configured", async () => {
         const { mailer } = setup({ smtpSettings: null });
 
         expect(await mailer.canSend()).toBe(false);
+    });
+
+    it("fails a send with NoTransportAvailableError when no transport is configured", async () => {
+        const { mailer } = setup({ smtpSettings: null });
+
+        const result = await mailer.sendMail({ to: ["a@example.com"], subject: "Hi", text: "Hi" });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.isFail() && result.error).toBeInstanceOf(NoTransportAvailableError);
     });
 
     it("can send once SMTP settings exist", async () => {
