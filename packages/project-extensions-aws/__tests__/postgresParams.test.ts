@@ -39,6 +39,17 @@ describe("<Infra.Postgres> params", () => {
             true
         );
     });
+
+    it("accepts a whole-number poolSize from 1 to 64, and rejects anything else", () => {
+        expect(postgresParamsSchema.safeParse({ poolSize: 1 }).success).toBe(true);
+        expect(postgresParamsSchema.safeParse({ poolSize: 8 }).success).toBe(true);
+        expect(postgresParamsSchema.safeParse({ poolSize: 64 }).success).toBe(true);
+
+        expect(postgresParamsSchema.safeParse({ poolSize: 0 }).success).toBe(false);
+        expect(postgresParamsSchema.safeParse({ poolSize: -1 }).success).toBe(false);
+        expect(postgresParamsSchema.safeParse({ poolSize: 65 }).success).toBe(false);
+        expect(postgresParamsSchema.safeParse({ poolSize: 2.5 }).success).toBe(false);
+    });
 });
 
 describe("<Infra.Vpc useExistingVpc> params", () => {

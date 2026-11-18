@@ -8,9 +8,13 @@ import {
     createSchemaSetupEvent,
     getPostgresLambdaEnv,
     getPostgresLambdaEnvFromCore,
+    getPostgresWebFunctionEnv,
     getSchemaSetupServiceManifests
 } from "~/pulumi/apps/api/ApiSchemaSetup.js";
 import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
+import { ApiGraphqlWeb } from "~/pulumi/apps/api/ApiGraphqlWeb.js";
+import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
+import type { IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 import { ApiGraphqlStream } from "~/pulumi/apps/api/ApiGraphqlStream.js";
 import { ApiFileManager } from "~/pulumi/apps/api/ApiFileManager.js";
 import { ApiBackgroundTask } from "~/pulumi/apps/api/ApiBackgroundTask.js";
@@ -405,6 +409,185 @@ describe("the schema setup on deploy", () => {
         for (const fn of fake.functions()) {
             const env = (await resolve(fn.config.environment.variables)) as Record<string, string>;
             expect(env, fn.name).toMatchObject(getPostgresLambdaEnv(WITH_PROXY));
+        }
+    });
+});
+
+/* A project config with `<Infra.Postgres {...params} />`, or without it for `undefined`. */
+const createProjectConfig = (postgresParams: Record<string, unknown> | undefined) => {
+    return {
+        extensionsByType: () => (postgresParams ? [{ params: postgresParams }] : [])
+    } as unknown as IProjectConfigModel;
+};
+
+/*
+ * The api app's functions with the web function on, as `createApiPulumiApp` adds them for the given
+ * project config: the Postgres env and the schema setup only with `<Infra.Postgres />`.
+ */
+const addApiModulesWithWebFunction = (
+    fake: ReturnType<typeof createFakeApi>,
+    projectConfig: IProjectConfigModel
+) => {
+    const { app, core } = fake;
+    const postgresConfig = getPostgresConfigFromExtension(projectConfig);
+    const graphqlEnv = {
+        DB_TABLE: "table",
+        ...(postgresConfig ? getPostgresLambdaEnvFromCore(core) : {})
+    };
+    app.addModule(ApiGraphql as never, { env: graphqlEnv });
+    app.addModule(ApiGraphqlStream as never, { env: graphqlEnv });
+    app.addModule(ApiGraphqlWeb as never, {
+        namePrefix: "",
+        vpc: null,
+        env: getPostgresWebFunctionEnv(postgresConfig)
+    });
+    app.addModule(ApiFileManager as never, { env: {}, functionUrl: true });
+    app.addModule(ApiBackgroundTask as never);
+    if (postgresConfig) {
+        app.addModule(ApiSchemaSetup as never, {
+            postgres: core,
+            serviceManifests: [],
+            trigger: "deploy-1"
+        });
+    }
+};
+
+/* Every function's env by name: the plain Lambda functions' and the web function's. */
+const getFunctionEnvs = async (fake: ReturnType<typeof createFakeApi>) => {
+    const envs: Record<string, Record<string, string>> = {};
+    for (const fn of fake.functions()) {
+        envs[fn.name] = (await resolve(fn.config.environment.variables)) as Record<string, string>;
+    }
+    const revision = fake.one(aws.lambdaweb.FunctionRevision, "graphql-web-revision");
+    envs["graphql-web"] = (await resolve(
+        revision.config.serviceConfig.environmentVariables
+    )) as Record<string, string>;
+    return envs;
+};
+
+const PLAIN_LAMBDAS = ["background-task", "fm-download", "graphql", "graphql-stream"];
+
+describe("the web function's NODE_OPTIONS", () => {
+    beforeAll(() => {
+        sealEnvVariables();
+        process.env.AWS_REGION = process.env.AWS_REGION || "eu-central-1";
+    });
+
+    const getWebFunctionNodeOptions = async (webFunctionEnv: Record<string, string>) => {
+        const fake = createFakeApi(NO_POSTGRES);
+        fake.app.addModule(ApiGraphql as never, { env: { NODE_OPTIONS: "--enable-source-maps" } });
+        fake.app.addModule(ApiGraphqlWeb as never, {
+            namePrefix: "",
+            vpc: null,
+            env: webFunctionEnv
+        });
+        const envs = await getFunctionEnvs(fake);
+        return envs["graphql-web"].NODE_OPTIONS;
+    };
+
+    it("are the graphql Lambda's, with the web function's heap limit", async () => {
+        await expect(getWebFunctionNodeOptions({})).resolves.toBe(
+            "--enable-source-maps --max-old-space-size=1536"
+        );
+    });
+
+    it("are the web function's own when its env sets them, with the heap limit", async () => {
+        await expect(getWebFunctionNodeOptions({ NODE_OPTIONS: "--trace-warnings" })).resolves.toBe(
+            "--trace-warnings --max-old-space-size=1536"
+        );
+    });
+});
+
+describe("the web function's Postgres pool size", () => {
+    beforeAll(() => {
+        sealEnvVariables();
+        process.env.AWS_REGION = process.env.AWS_REGION || "eu-central-1";
+    });
+
+    it("is 8 by default with <Infra.Postgres />", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({}));
+
+        const envs = await getFunctionEnvs(fake);
+        expect(envs["graphql-web"].WEBINY_PG_POOL_MAX).toBe("8");
+        // Still the database the graphql Lambda connects to.
+        const { NODE_EXTRA_CA_CERTS: _, ...database } = getPostgresLambdaEnv(WITH_PROXY);
+        expect(envs["graphql-web"]).toMatchObject(database);
+    });
+
+    it("is the project's `poolSize` when it sets one", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({ poolSize: 20 }));
+
+        const envs = await getFunctionEnvs(fake);
+        expect(envs["graphql-web"].WEBINY_PG_POOL_MAX).toBe("20");
+    });
+
+    it("leaves the plain Lambda functions at their default pool of 1", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({ poolSize: 20 }));
+
+        const envs = await getFunctionEnvs(fake);
+        expect(Object.keys(envs).sort()).toEqual(
+            [...PLAIN_LAMBDAS, "graphql-web", "schema-setup"].sort()
+        );
+        for (const [name, env] of Object.entries(envs)) {
+            if (name === "graphql-web") {
+                continue;
+            }
+            expect(env, name).toMatchObject(getPostgresLambdaEnv(WITH_PROXY));
+            expect(env, name).not.toHaveProperty("WEBINY_PG_POOL_MAX");
+        }
+    });
+
+    it("is not set on any function without <Infra.Postgres />", async () => {
+        const fake = createFakeApi(NO_POSTGRES);
+        addApiModulesWithWebFunction(fake, createProjectConfig(undefined));
+
+        const envs = await getFunctionEnvs(fake);
+        expect(Object.keys(envs).sort()).toEqual([...PLAIN_LAMBDAS, "graphql-web"].sort());
+        for (const [name, env] of Object.entries(envs)) {
+            expect(env, name).not.toHaveProperty("WEBINY_PG_POOL_MAX");
+            expect(env, name).not.toHaveProperty("WEBINY_PG_HOST");
+        }
+    });
+});
+
+describe("the RDS certificates the API functions verify the database with", () => {
+    beforeAll(() => {
+        sealEnvVariables();
+        process.env.AWS_REGION = process.env.AWS_REGION || "eu-central-1";
+    });
+
+    it("are the bundle in its code for the web function, whose runtime has no /var/runtime/ca-cert.pem", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({}));
+
+        const envs = await getFunctionEnvs(fake);
+        expect(envs["graphql-web"].NODE_EXTRA_CA_CERTS).toBe("/var/task/rds-ca-bundle.pem");
+        expect(envs["graphql-web"].WEBINY_PG_SSL).toBe("true");
+    });
+
+    it("stay the Lambda runtime's bundle for the plain Lambda functions", async () => {
+        const fake = createFakeApi(WITH_PROXY);
+        addApiModulesWithWebFunction(fake, createProjectConfig({}));
+
+        const envs = await getFunctionEnvs(fake);
+        for (const [name, env] of Object.entries(envs)) {
+            if (name === "graphql-web") {
+                continue;
+            }
+            expect(env.NODE_EXTRA_CA_CERTS, name).toBe("/var/runtime/ca-cert.pem");
+        }
+    });
+
+    it("are not set on any function without <Infra.Postgres />", async () => {
+        const fake = createFakeApi(NO_POSTGRES);
+        addApiModulesWithWebFunction(fake, createProjectConfig(undefined));
+
+        const envs = await getFunctionEnvs(fake);
+        for (const [name, env] of Object.entries(envs)) {
+            expect(env, name).not.toHaveProperty("NODE_EXTRA_CA_CERTS");
         }
     });
 });
