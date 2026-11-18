@@ -157,8 +157,11 @@ describe("a pooled connection in a Lambda environment", () => {
             WEBINY_PG_RETRY_MS: "0"
         });
         const setup = pglite.createKnex();
-        await setup.raw(`CREATE TABLE "${TABLE}" (id text PRIMARY KEY)`);
-        await setup.destroy();
+        try {
+            await setup.raw(`CREATE TABLE "${TABLE}" (id text PRIMARY KEY)`);
+        } finally {
+            await setup.destroy();
+        }
     });
 
     afterAll(async () => {
@@ -314,18 +317,24 @@ describe("a pooled connection in a Lambda environment", () => {
         const connection = await client.acquireConnection();
         await client.releaseConnection(connection);
         const socket = connection.connection.stream;
+        let closedAt: number | undefined;
+        socket.once("close", () => {
+            closedAt = realNow();
+        });
         proxy.clearSent();
 
-        // Dropped without a check, so no query is running on it when it's closed.
+        // Dropped without a check, so no query is running on it when it's closed. The pool drops
+        // it at this checkout, before it opens the replacement.
         freezeFor(61_000);
         proxy.endUnseen("silent");
+        const droppedBy = realNow();
         await knex(TABLE).select("id");
 
         // The goodbye is sent (Terminate), but nothing closes the server's side.
         expect(proxy.sent).toContain("X\0\0\0\x04");
-        await vi.waitFor(() => expect(socket.destroyed).toBe(true), {
-            timeout: 3_000,
-            interval: 50
-        });
+        await vi.waitFor(() => expect(closedAt).toBeDefined(), { timeout: 3_000, interval: 50 });
+        // Timed from before the checkout, not after the replacement's query, so a longer close
+        // deadline (2 s, say) fails here.
+        expect(closedAt! - droppedBy).toBeLessThan(1_500);
     });
 });

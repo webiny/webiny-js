@@ -48,7 +48,9 @@ const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
  *   `WEBINY_PG_SSL_CA` and `WEBINY_PG_SSL_REJECT_UNAUTHORIZED` work as on the standalone server.
  * - `WEBINY_PG_POOL_MAX` (default 1): a plain Lambda environment serves one request at a time. The
  *   API's web function serves several at once, so its deploy sets a bigger pool
- *   (`<Infra.Postgres poolSize>`, default 8). Either way no connection stays open unused (`min: 0`).
+ *   (`<Infra.Postgres poolSize>`, default 8). Either way the pool opens connections only when
+ *   requests need them (`min: 0`). A released connection stays open for the next request, and the
+ *   pool closes it after 60 s idle (on checkout, if the environment was frozen meanwhile).
  *   A connection that sat idle is checked before it's handed out, since the environment may have
  *   been frozen while the server ended it (see `checkIdleConnections`). A connection the pool drops
  *   is closed within a second, even when nothing answers its goodbye.
