@@ -31,7 +31,7 @@ class FreezingProxy {
     public port = 0;
     /** Connections the proxy accepted so far: a new one means the pool opened a new connection. */
     public opened = 0;
-    /** What clients sent since the last `clearSent()`, as text. */
+    /** What clients sent since the last `clearSent()`, as text, whether it reached the server or not. */
     public sent = "";
     private readonly server = net.createServer(client => this.handle(client));
     private readonly links = new Set<ILink>();
@@ -78,10 +78,10 @@ class FreezingProxy {
                 close();
                 return;
             }
+            this.sent += chunk.toString("latin1");
             if (link.ended === "silent") {
                 return;
             }
-            this.sent += chunk.toString("latin1");
             upstream.write(chunk);
         });
         upstream.on("data", chunk => {
@@ -214,11 +214,22 @@ describe("a pooled connection in a Lambda environment", () => {
             acquireConnection(): Promise<object>;
             releaseConnection(connection: object): Promise<unknown>;
         };
-        const connections = await Promise.all(
+        // All eight held at once; whatever was acquired is released even if one acquire failed.
+        const acquired = await Promise.allSettled(
             Array.from({ length: 8 }, () => client.acquireConnection())
         );
-        await Promise.all(connections.map(connection => client.releaseConnection(connection)));
+        await Promise.all(
+            acquired
+                .filter(result => result.status === "fulfilled")
+                .map(result => client.releaseConnection(result.value))
+        );
+        for (const result of acquired) {
+            if (result.status === "rejected") {
+                throw result.reason;
+            }
+        }
         const opened = proxy.opened;
+        proxy.clearSent();
 
         freezeFor(5_000);
         proxy.endUnseen("silent");
@@ -227,6 +238,7 @@ describe("a pooled connection in a Lambda environment", () => {
         const started = realNow();
         await knex(TABLE).insert({ id: "after-silence-8" });
         expect(realNow() - started).toBeLessThan(4_000);
+        expect(proxy.sent.match(new RegExp(CHECK_QUERY, "g"))).toHaveLength(1);
         expect(proxy.opened).toBe(opened + 1);
         await knex(TABLE).delete();
     }, 20_000);
