@@ -36,9 +36,63 @@ const waitFor = async (label: string, check: () => Promise<boolean>): Promise<vo
     throw new Error(`Timed out waiting for ${label}.`);
 };
 
-const connect = (port: number): Promise<WebSocket> => {
+const INSTALL = /* GraphQL */ `
+    mutation Install($installationInput: JSON!) {
+        system {
+            installSystem(installationInput: $installationInput) {
+                data
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const LOGIN = /* GraphQL */ `
+    mutation Login($email: String!, $password: String!) {
+        selfHostedAuthLogin(email: $email, password: $password) {
+            data {
+                token
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+const admin = {
+    firstName: "Test",
+    lastName: "Admin",
+    email: "test-admin@example.com",
+    password: "test-admin-password"
+};
+
+interface TestServer {
+    port: number;
+    knex: Knex;
+    graphql(query: string, variables?: Record<string, unknown>): Promise<{ body: any }>;
+}
+
+/* The server takes an upgrade only with a token that resolves to an identity: the admin's. */
+const installAndLogIn = async (server: TestServer): Promise<string> => {
+    const install = await server.graphql(INSTALL, {
+        installationInput: [{ app: "SelfHostedAuth", data: admin }]
+    });
+    expect(install.body.data.system.installSystem).toEqual({ data: true, error: null });
+
+    const login = await server.graphql(LOGIN, { email: admin.email, password: admin.password });
+    expect(login.body.data.selfHostedAuthLogin.error).toBeNull();
+    return login.body.data.selfHostedAuthLogin.data.token;
+};
+
+const connect = (port: number, token: string): Promise<WebSocket> => {
     return new Promise((resolve, reject) => {
-        const socket = new WebSocket(`ws://127.0.0.1:${port}/?tenant=root`);
+        const query = new URLSearchParams({ token, tenant: "root" });
+        const socket = new WebSocket(`ws://127.0.0.1:${port}/ws?${query}`);
         socket.once("open", () => resolve(socket));
         socket.once("error", reject);
     });
@@ -64,11 +118,12 @@ const insertStaleRow = async (knex: Knex): Promise<void> => {
     });
 };
 
-const runConnectionLifecycle = async (server: { port: number; knex: Knex }) => {
+const runConnectionLifecycle = async (server: TestServer) => {
     const { knex } = server;
+    const token = await installAndLogIn(server);
 
     // Connect: the row is written, owned by this process.
-    const socket = await connect(server.port);
+    const socket = await connect(server.port, token);
     await waitFor("the connection's row", async () => (await readRows(knex)).length === 1);
     const [live] = await readRows(knex);
     expect(live.owner).toBeTruthy();
