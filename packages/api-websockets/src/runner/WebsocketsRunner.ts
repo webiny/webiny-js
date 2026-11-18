@@ -109,7 +109,11 @@ export class WebsocketsRunner implements IWebsocketsRunner {
 
         const getIdentity = (): ConnectionRegistry.Identity | null => {
             const identity = this.context.container.resolve(IdentityContext).getIdentity();
-            return identity || null;
+            // A request without a token gets the anonymous identity, never `undefined`.
+            if (identity.isAnonymous()) {
+                return null;
+            }
+            return identity;
         };
 
         const action = middleware<MiddlewareParams, IWebsocketsRunnerResponse>(
