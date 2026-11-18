@@ -33,6 +33,7 @@ describe("WebhookDeliver", () => {
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         vi.unstubAllGlobals();
     });
 
@@ -40,6 +41,18 @@ describe("WebhookDeliver", () => {
         const container = new Container();
         WebhookDeliverFeature.register(container);
         return container.resolve(WebhookDeliver);
+    };
+
+    // Real timers fire on the monotonic clock while responseTime is read from Date.now(),
+    // so a 1000 ms sleep can measure as 999 ms. Fake timers drive both from one clock.
+    const executeWithFakeTimers = async (
+        deliver: WebhookDeliver.Interface,
+        input: IWebhookDeliverInput
+    ) => {
+        vi.useFakeTimers();
+        const promise = deliver.execute(input);
+        await vi.runAllTimersAsync();
+        return promise;
     };
 
     it("returns 200 on successful first attempt with attempts: 1", async () => {
@@ -86,11 +99,14 @@ describe("WebhookDeliver", () => {
             .mockResolvedValue(mockResponse(200));
         const deliver = resolve();
 
-        const result = await deliver.execute(makeInput({ initialDelay: 1, maxDelay: 2000 }));
+        const result = await executeWithFakeTimers(
+            deliver,
+            makeInput({ initialDelay: 1, maxDelay: 2000 })
+        );
 
         expect(result.status).toBe(200);
         expect(result.attempts).toBe(2);
-        expect(result.responseTime).toBeGreaterThanOrEqual(1000);
+        expect(result.responseTime).toBe(1000);
     });
 
     it("falls back to exponential backoff when Retry-After is unparseable", async () => {
@@ -150,7 +166,8 @@ describe("WebhookDeliver", () => {
             .mockResolvedValue(mockResponse(200));
         const deliver = resolve();
 
-        const result = await deliver.execute(
+        const result = await executeWithFakeTimers(
+            deliver,
             makeInput({
                 maxRetries: 3,
                 initialDelay: 100,
@@ -160,8 +177,8 @@ describe("WebhookDeliver", () => {
 
         expect(result.status).toBe(200);
         expect(result.attempts).toBe(4);
-        expect(result.responseTime).toBeGreaterThanOrEqual(400);
-        expect(result.responseTime).toBeLessThan(2000);
+        // 100 + 150 + 150: the third delay would be 400 without the cap.
+        expect(result.responseTime).toBe(400);
     });
 
     it("returns status 0 when all retries fail with network errors", async () => {
