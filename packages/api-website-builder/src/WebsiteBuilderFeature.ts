@@ -40,6 +40,7 @@ import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js"
 import { MovePageFeature } from "./features/pages/MovePage/feature.js";
 import { GetSettingsFeature } from "./features/pages/GetSettings/feature.js";
 import { ComposePageFeature } from "./features/pages/ComposePage/feature.js";
+import { WbAiToolsFeature } from "./features/ai/index.js";
 // Global components
 import { GetGlobalComponentFeature } from "./features/globals/GetGlobalComponent/feature.js";
 import { ListGlobalComponentsFeature } from "./features/globals/ListGlobalComponents/feature.js";
@@ -155,6 +156,9 @@ export const WebsiteBuilderFeature = createFeature({
         MovePageFeature.register(container);
         GetSettingsFeature.register(container);
         ComposePageFeature.register(container);
+
+        // The assistant's tool for creating a page from any screen.
+        WbAiToolsFeature.register(container);
 
         // Global components: stored apart from pages, one record per component and language.
         GetGlobalComponentFeature.register(container);

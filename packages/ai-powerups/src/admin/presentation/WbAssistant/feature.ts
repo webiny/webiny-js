@@ -5,7 +5,8 @@ import { PageEditorAssistantPresenterImplementation } from "./PageEditorAssistan
 export const PageEditorAssistantFeature = createFeature({
     name: "WbAssistant/PageEditor",
     register(container) {
-        container.register(PageEditorAssistantPresenterImplementation);
+        // One for the editor: its panel and its overlay reach the same connection.
+        container.register(PageEditorAssistantPresenterImplementation).inSingletonScope();
     },
     resolve(container) {
         return { presenter: container.resolve(PageEditorAssistantPresenter) };

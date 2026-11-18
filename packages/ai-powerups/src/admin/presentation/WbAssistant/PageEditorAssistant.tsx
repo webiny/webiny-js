@@ -18,7 +18,11 @@ export const PageEditorAssistant = () => {
     useEffect(() => {
         presenter.attach(editor);
         return () => presenter.detach();
-    }, [editor, isReadOnly]);
+    }, [editor]);
+
+    useEffect(() => {
+        presenter.syncTools();
+    }, [isReadOnly]);
 
     useEffect(() => {
         presenter.refresh();
