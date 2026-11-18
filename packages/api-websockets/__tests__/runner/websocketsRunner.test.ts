@@ -286,6 +286,7 @@ describe("websockets runner", () => {
         const event = await validator.validate(rawEvent);
         const result = await runner.run(event);
         expect(result).toMatchObject({
+            statusCode: 401,
             error: {
                 message: "Missing identity."
             }
