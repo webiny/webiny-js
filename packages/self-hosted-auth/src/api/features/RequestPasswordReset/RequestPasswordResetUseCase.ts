@@ -38,8 +38,8 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Asked first, and asked without reference to the address, so that an installation with no
         // mail answers the same way for every address anyone types in.
-        const canSendMail = await this.mailer.isConfigured();
-        if (!canSendMail) {
+        const mailConfigured = await this.mailer.isConfigured();
+        if (!mailConfigured) {
             return Result.fail(new MailerNotConfiguredError());
         }
 

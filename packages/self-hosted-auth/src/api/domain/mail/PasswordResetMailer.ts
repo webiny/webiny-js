@@ -11,8 +11,8 @@ export interface SendPasswordResetCodeParams {
 
 export interface IPasswordResetMailer {
     /**
-     * Whether mail can actually leave this installation. Asked before the account is looked up, so
-     * that the answer is the same for an address with an account and one without.
+     * Whether a mail transport is set up. Asked before the account is looked up, so that the answer
+     * is the same for an address with an account and one without.
      */
     isConfigured(): Promise<boolean>;
 
@@ -41,14 +41,10 @@ class MailerServicePasswordResetMailer implements IPasswordResetMailer {
     ) {}
 
     isConfigured(): Promise<boolean> {
-        return this.mailerService.canSend();
+        return this.mailerService.isConfigured();
     }
 
     async send(params: SendPasswordResetCodeParams): Promise<boolean> {
-        if (!(await this.mailerService.canSend())) {
-            return false;
-        }
-
         const result = await this.sendMailUseCase.execute({
             to: [params.email],
             subject: "Your password reset code",

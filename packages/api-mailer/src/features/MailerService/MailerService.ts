@@ -32,7 +32,7 @@ class MailerServiceImpl implements Abstraction.Interface {
         }
     }
 
-    async canSend(): Promise<boolean> {
+    async isConfigured(): Promise<boolean> {
         const transport = await this.createTransport();
 
         return transport !== null;

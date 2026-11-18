@@ -220,16 +220,17 @@ describe("MailNotificationTransport (R193)", () => {
         expect(loggedErrors).toEqual([]);
     });
 
-    it("sends nothing and logs nothing when no mail transport is configured", async () => {
+    it("stops after the first chunk and logs nothing when no mail transport is configured", async () => {
         const mailer = new RecordingMailer();
         mailer.configured = false;
         const transport = await createTransport(mailer);
 
         await expect(
-            transport.send({ users: toRecipients(createUsers(3)), message: MESSAGE })
+            transport.send({ users: toRecipients(createUsers(120)), message: MESSAGE })
         ).resolves.toBeUndefined();
 
-        expect(mailer.sent).toEqual([]);
+        // The first chunk finds no transport; the other two are not tried.
+        expect(mailer.sent).toHaveLength(1);
         expect(loggedErrors).toEqual([]);
     });
 

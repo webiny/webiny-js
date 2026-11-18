@@ -6,14 +6,17 @@ import { Container } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
 import { MailerService } from "@webiny/api-mailer/domain/MailerService/abstractions.js";
+import { NoTransportAvailableError } from "@webiny/api-mailer/domain/MailerService/errors.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { PasswordResetMailerFeature } from "~/api/domain/mail/PasswordResetMailer.js";
 
-const setup = (canSend: boolean) => {
+const setup = (configured: boolean) => {
     const container = new Container();
-    const execute = vi.fn(async (): Promise<Result<unknown, Error>> => Result.ok({}));
+    const execute = vi.fn(async (): Promise<Result<unknown, Error>> =>
+        configured ? Result.ok({}) : Result.fail(new NoTransportAvailableError())
+    );
     const sendMailUseCase = { execute } as unknown as SendMailUseCase.Interface;
-    const mailerService = { canSend: async () => canSend } as MailerService.Interface;
+    const mailerService = { isConfigured: async () => configured } as MailerService.Interface;
 
     container.registerInstance(MailerService, mailerService);
     container.registerInstance(SendMailUseCase, sendMailUseCase);
@@ -26,12 +29,11 @@ const setup = (canSend: boolean) => {
 const PARAMS = { email: "admin@example.com", code: "123456" };
 
 describe("PasswordResetMailer", () => {
-    it("is not configured when the mailer cannot send", async () => {
-        const { mailer, execute } = setup(false);
+    it("is not configured when the mailer has no transport, and a send reports false", async () => {
+        const { mailer } = setup(false);
 
         expect(await mailer.isConfigured()).toBe(false);
         expect(await mailer.send(PARAMS)).toBe(false);
-        expect(execute).not.toHaveBeenCalled();
     });
 
     it("sends the code and leaves the sender to the transport", async () => {

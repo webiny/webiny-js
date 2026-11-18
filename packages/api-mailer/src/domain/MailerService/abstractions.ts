@@ -17,10 +17,11 @@ export interface IMailerService {
     ): Promise<Result<TransportSendResponse<T>, MailerServiceError>>;
 
     /**
-     * Whether mail can leave this installation: at least one transport is configured. When none is,
-     * `sendMail()` fails with `NoTransportAvailableError`.
+     * Whether a transport is set up. It does not connect or send, so a transport with wrong
+     * credentials still counts. Only for a question that has to be answered before anything is
+     * sent; otherwise send, and handle `NoTransportAvailableError`.
      */
-    canSend(): Promise<boolean>;
+    isConfigured(): Promise<boolean>;
 }
 
 export const MailerService = createAbstraction<IMailerService>("MailerService");

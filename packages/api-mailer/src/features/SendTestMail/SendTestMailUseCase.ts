@@ -1,10 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { SendTestMailUseCase } from "./abstractions.js";
-import { MailerService } from "~/domain/MailerService/abstractions.js";
 import { SendMailUseCase } from "~/features/SendMail/abstractions.js";
 import { TestMailNotAuthorized } from "~/domain/errors.js";
 import { TestMailNotConfigured } from "~/domain/errors.js";
+import { NoTransportAvailableError } from "~/domain/MailerService/errors.js";
 import { MAILER_SETTINGS_PERMISSION } from "~/constants.js";
 
 const TEST_MAIL_TEXT = [
@@ -17,7 +17,6 @@ const TEST_MAIL_TEXT = [
 class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private mailerService: MailerService.Interface,
         private sendMailUseCase: SendMailUseCase.Interface
     ) {}
 
@@ -27,10 +26,6 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
             return Result.fail(new TestMailNotAuthorized());
         }
 
-        if (!(await this.mailerService.canSend())) {
-            return Result.fail(new TestMailNotConfigured());
-        }
-
         const result = await this.sendMailUseCase.execute({
             to: [input.to],
             subject: "Webiny test email",
@@ -38,6 +33,9 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
         });
 
         if (result.isFail()) {
+            if (result.error instanceof NoTransportAvailableError) {
+                return Result.fail(new TestMailNotConfigured());
+            }
             return Result.fail(result.error);
         }
 
@@ -47,5 +45,5 @@ class SendTestMailUseCaseImpl implements SendTestMailUseCase.Interface {
 
 export const SendTestMailUseCaseImplementation = SendTestMailUseCase.createImplementation({
     implementation: SendTestMailUseCaseImpl,
-    dependencies: [IdentityContext, MailerService, SendMailUseCase]
+    dependencies: [IdentityContext, SendMailUseCase]
 });

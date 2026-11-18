@@ -7,7 +7,7 @@ export class InertMailer implements MailerService.Interface {
         return Result.ok({ result: null, error: null });
     }
 
-    public async canSend(): Promise<boolean> {
+    public async isConfigured(): Promise<boolean> {
         return false;
     }
 }

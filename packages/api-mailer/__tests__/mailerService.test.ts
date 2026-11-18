@@ -65,10 +65,10 @@ const setup = ({ smtpSettings, project }: SetupParams) => {
 };
 
 describe("MailerService", () => {
-    it("cannot send when no transport is configured", async () => {
+    it("is not configured when no transport is configured", async () => {
         const { mailer } = setup({ smtpSettings: null });
 
-        expect(await mailer.canSend()).toBe(false);
+        expect(await mailer.isConfigured()).toBe(false);
     });
 
     it("fails a send with NoTransportAvailableError when no transport is configured", async () => {
@@ -80,17 +80,17 @@ describe("MailerService", () => {
         expect(result.isFail() && result.error).toBeInstanceOf(NoTransportAvailableError);
     });
 
-    it("can send once SMTP settings exist", async () => {
+    it("is configured once SMTP settings exist", async () => {
         const { mailer } = setup({ smtpSettings: SMTP_SETTINGS });
 
-        expect(await mailer.canSend()).toBe(true);
+        expect(await mailer.isConfigured()).toBe(true);
     });
 
     it("sends through a project transport that needs no stored settings", async () => {
         const send = vi.fn(async () => ({ result: "queued", error: null }));
         const { mailer } = setup({ smtpSettings: null, project: createProjectFactory(send) });
 
-        expect(await mailer.canSend()).toBe(true);
+        expect(await mailer.isConfigured()).toBe(true);
         const result = await mailer.sendMail({ to: ["a@example.com"], subject: "Hi", text: "Hi" });
 
         expect(result.isOk()).toBe(true);
@@ -103,7 +103,7 @@ describe("MailerService", () => {
             project: createProjectFactory(null)
         });
 
-        expect(await mailer.canSend()).toBe(true);
+        expect(await mailer.isConfigured()).toBe(true);
         expect(get).toHaveBeenCalledWith("Mailer/SmtpTransport");
     });
 
@@ -114,7 +114,7 @@ describe("MailerService", () => {
             project: createProjectFactory(send)
         });
 
-        await mailer.canSend();
+        await mailer.isConfigured();
 
         expect(get).not.toHaveBeenCalled();
     });
