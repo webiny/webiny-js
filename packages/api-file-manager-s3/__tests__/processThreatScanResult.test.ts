@@ -1,14 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import {
-    WebsocketsListConnectionsUseCase,
-    WebsocketsSendToConnectionsUseCase,
-    ConnectionRegistry
-} from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
@@ -41,28 +38,27 @@ const createEvent = (
     };
 };
 
-function setup(tenantId: string | null) {
+function setup() {
     const sent: string[][] = [];
     const container = new Container();
 
-    container.registerInstance(TenantContext, {
-        getTenant: () => (tenantId ? { id: tenantId, name: tenantId } : null),
-        setTenant: () => {
-            // no-op for the test
-        }
-    } as unknown as TenantContext.Interface);
     container.registerInstance(IdentityContext, {
         withoutAuthorization: (cb: () => Promise<unknown>) => cb()
     } as unknown as IdentityContext.Interface);
     container.registerInstance(WebsocketsListConnectionsUseCase, {
         async execute(params?: WebsocketsListConnectionsUseCase.Params) {
             const tenant = params?.where?.tenant;
-            return Result.ok(tenant ? connections.filter(c => c.tenant === tenant) : connections);
+            if (!tenant) {
+                return Result.ok(connections);
+            }
+            const listed = connections.filter(c => c.tenant === tenant);
+            return Result.ok(listed);
         }
     });
     container.registerInstance(WebsocketsSendToConnectionsUseCase, {
         async execute(targets: Pick<ConnectionRegistry.Data, "connectionId">[]) {
-            sent.push(targets.map(target => target.connectionId));
+            const connectionIds = targets.map(target => target.connectionId);
+            sent.push(connectionIds);
             return Result.ok();
         }
     } as unknown as WebsocketsSendToConnectionsUseCase.Interface);
@@ -88,18 +84,21 @@ function setup(tenantId: string | null) {
 
 describe("processThreatScanResult", () => {
     it("sends the scan result only to connections in the file's tenant", async () => {
-        const { context, sent } = setup("root");
+        const { context, sent } = setup();
+        const event = createEvent("THREATS_FOUND");
 
-        await processThreatScanResult(context, createEvent("THREATS_FOUND"));
+        await processThreatScanResult(context, event, "root");
 
         expect(sent).toEqual([["root-1"]]);
     });
 
-    it("sends nothing when there is no current tenant", async () => {
-        const { context, sent } = setup(null);
+    it("sends nothing when there is no tenant", async () => {
+        const { context, sent } = setup();
+        const event = createEvent("NO_THREATS_FOUND");
 
-        await processThreatScanResult(context, createEvent("NO_THREATS_FOUND"));
+        await processThreatScanResult(context, event, null);
 
-        expect(sent.flat()).toEqual([]);
+        const received = sent.flat();
+        expect(received).toEqual([]);
     });
 });

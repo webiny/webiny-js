@@ -10,18 +10,17 @@ import type { GuardDutyEvent } from "./types.js";
 import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 export const processThreatScanResult = async (
     context: ApiCoreContext,
-    eventDetail: GuardDutyEvent
+    eventDetail: GuardDutyEvent,
+    tenant: string | null
 ) => {
     const listConnections = context.container.resolve(WebsocketsListConnectionsUseCase);
     const sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
     const getFile = context.container.resolve(GetFileUseCase);
     const updateFile = context.container.resolve(UpdateFileUseCase);
     const deleteFile = context.container.resolve(DeleteFileUseCase);
-    const tenantContext = context.container.resolve(TenantContext);
 
     await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
         const scanStatus = eventDetail.scanResultDetails.scanResultStatus;
@@ -38,7 +37,6 @@ export const processThreatScanResult = async (
 
         // Only the file's own tenant hears about it. Without a tenant, nobody does.
         let allConnections: ConnectionRegistry.Data[] = [];
-        const tenant = tenantContext.getTenant()?.id;
         if (tenant) {
             const connectionsResult = await listConnections.execute({ where: { tenant } });
             if (connectionsResult.isOk()) {
