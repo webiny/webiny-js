@@ -10,6 +10,7 @@ import type { GuardDutyEvent } from "./types.js";
 import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 export const processThreatScanResult = async (
     context: ApiCoreContext,
@@ -20,6 +21,7 @@ export const processThreatScanResult = async (
     const getFile = context.container.resolve(GetFileUseCase);
     const updateFile = context.container.resolve(UpdateFileUseCase);
     const deleteFile = context.container.resolve(DeleteFileUseCase);
+    const tenantContext = context.container.resolve(TenantContext);
 
     await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
         const scanStatus = eventDetail.scanResultDetails.scanResultStatus;
@@ -34,10 +36,14 @@ export const processThreatScanResult = async (
 
         const file = fileResult.value;
 
+        // Only the file's own tenant hears about it. Without a tenant, nobody does.
         let allConnections: ConnectionRegistry.Data[] = [];
-        const connectionsResult = await listConnections.execute();
-        if (connectionsResult.isOk()) {
-            allConnections = connectionsResult.value;
+        const tenant = tenantContext.getTenant()?.id;
+        if (tenant) {
+            const connectionsResult = await listConnections.execute({ where: { tenant } });
+            if (connectionsResult.isOk()) {
+                allConnections = connectionsResult.value;
+            }
         }
 
         if (scanStatus === "NO_THREATS_FOUND") {
