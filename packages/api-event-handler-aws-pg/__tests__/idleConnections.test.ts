@@ -17,7 +17,7 @@ import { startPglite } from "./startPglite.js";
 type UnseenEnd =
     /* The server is gone: the client's next packet is answered by a closed connection. */
     | "closed"
-    /* The server is gone and nothing answers: the client's packets are lost. */
+    /* The server is gone and nothing answers: the client's packets, its goodbye too, are lost. */
     | "silent";
 
 interface ILink {
@@ -33,7 +33,10 @@ class FreezingProxy {
     public opened = 0;
     /** What clients sent since the last `clearSent()`, as text, whether it reached the server or not. */
     public sent = "";
-    private readonly server = net.createServer(client => this.handle(client));
+    // Half-open, so a client's FIN isn't answered for it: a silent end never answers it.
+    private readonly server = net.createServer({ allowHalfOpen: true }, client =>
+        this.handle(client)
+    );
     private readonly links = new Set<ILink>();
 
     public constructor(private readonly targetPort: number) {}
@@ -89,6 +92,12 @@ class FreezingProxy {
                 client.write(chunk);
             }
         });
+        // The client closed its side (after a Terminate): a server that's there closes too.
+        client.on("end", () => {
+            if (link.ended !== "silent") {
+                close();
+            }
+        });
         client.on("close", close);
         client.on("error", close);
         upstream.on("error", () => undefined);
@@ -128,6 +137,14 @@ describe("a pooled connection in a Lambda environment", () => {
         pglite = await startPglite({ maxConnections: 8 });
         proxy = new FreezingProxy(Number(pglite.env.WEBINY_PG_PORT));
         await proxy.start();
+        // Postgres settings from the shell or a `.env` (a connection string beats the host and port
+        // below, an SSL mode changes the connection) would send this suite's writes elsewhere.
+        // `afterAll` puts them back.
+        for (const name of Object.keys(process.env)) {
+            if (/^WEBINY_PG_|^PG[A-Z]+$/.test(name)) {
+                delete process.env[name];
+            }
+        }
         Object.assign(process.env, {
             WEBINY_PG_HOST: "127.0.0.1",
             WEBINY_PG_PORT: String(proxy.port),
@@ -286,5 +303,29 @@ describe("a pooled connection in a Lambda environment", () => {
         expect(proxy.sent).not.toMatch(CHECK_QUERY);
         expect(proxy.opened).toBe(opened + 1);
         await knex(TABLE).delete();
+    });
+
+    it("is closed within a second when it's dropped and nothing answers its goodbye", async () => {
+        // The pool's connection, held on to so its socket can be watched after it's dropped.
+        const client = knex.client as {
+            acquireConnection(): Promise<{ connection: { stream: net.Socket } }>;
+            releaseConnection(connection: object): Promise<unknown>;
+        };
+        const connection = await client.acquireConnection();
+        await client.releaseConnection(connection);
+        const socket = connection.connection.stream;
+        proxy.clearSent();
+
+        // Dropped without a check, so no query is running on it when it's closed.
+        freezeFor(61_000);
+        proxy.endUnseen("silent");
+        await knex(TABLE).select("id");
+
+        // The goodbye is sent (Terminate), but nothing closes the server's side.
+        expect(proxy.sent).toContain("X\0\0\0\x04");
+        await vi.waitFor(() => expect(socket.destroyed).toBe(true), {
+            timeout: 3_000,
+            interval: 50
+        });
     });
 });

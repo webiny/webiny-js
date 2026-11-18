@@ -26,6 +26,9 @@ const CHECK_AFTER_IDLE_MS = 1_000;
 /** How long that check waits for the server's reply. */
 const CHECK_TIMEOUT_MS = 2_000;
 
+/** How long a dropped connection's goodbye may take before its socket is closed outright. */
+const CLOSE_TIMEOUT_MS = 1_000;
+
 /* Postgres refused the login: invalid_password, invalid_authorization_specification. */
 const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
 
@@ -47,7 +50,8 @@ const LOGIN_REFUSED_CODES = new Set(["28P01", "28000"]);
  *   API's web function serves several at once, so its deploy sets a bigger pool
  *   (`<Infra.Postgres poolSize>`, default 8). Either way no connection stays open unused (`min: 0`).
  *   A connection that sat idle is checked before it's handed out, since the environment may have
- *   been frozen while the server ended it (see `checkIdleConnections`).
+ *   been frozen while the server ended it (see `checkIdleConnections`). A connection the pool drops
+ *   is closed within a second, even when nothing answers its goodbye.
  * - `WEBINY_PG_RETRY_MS` (default 15,000; 0 = off): reads and transactions that lose their
  *   connection run again on a new one (see `withPgConnectionRetry`).
  * - `WEBINY_PG_APPLICATION_NAME` (default: the function's name), `WEBINY_PG_CONNECTION_TIMEOUT_MILLIS`
@@ -112,6 +116,7 @@ export function createLambdaPgConnection(options: CreateLambdaPgConnectionOption
     });
 
     forgetPasswordOnRefusedLogin(knex);
+    closeDroppedConnectionsWithin(knex, CLOSE_TIMEOUT_MS);
     checkIdleConnections(knex, {
         checkAfterIdleMs: CHECK_AFTER_IDLE_MS,
         checkTimeoutMs: CHECK_TIMEOUT_MS,
@@ -141,6 +146,30 @@ const forgetPasswordOnRefusedLogin = (knex: Knex): void => {
                 forgetPgPassword();
             }
             throw error;
+        }
+    };
+};
+
+/*
+ * The pool closes a connection it drops (idle too long, failed its check) with node-postgres's
+ * `end()`: with no query running, it sends Terminate, half-closes the socket and waits for the
+ * server to close its side. When the network path dropped the connection without a word, that never
+ * comes, and the socket would stay open until TCP gives up, minutes later, next to the connection
+ * that replaced it. So a close that hasn't finished within `timeoutMs` destroys the socket. A
+ * server that answers still gets its goodbye.
+ */
+const closeDroppedConnectionsWithin = (knex: Knex, timeoutMs: number): void => {
+    const client = knex.client as { destroyRawConnection(connection: object): Promise<unknown> };
+    const destroyRawConnection = client.destroyRawConnection;
+    client.destroyRawConnection = async function (this: unknown, connection: object) {
+        const timer = setTimeout(() => {
+            const pgClient = connection as { connection?: { stream?: { destroy(): void } } };
+            pgClient.connection?.stream?.destroy();
+        }, timeoutMs);
+        try {
+            return await destroyRawConnection.call(this, connection);
+        } finally {
+            clearTimeout(timer);
         }
     };
 };
