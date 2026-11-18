@@ -43,8 +43,10 @@ describe("WebhookDeliver", () => {
         return container.resolve(WebhookDeliver);
     };
 
-    // Real timers fire on the monotonic clock while responseTime is read from Date.now(),
-    // so a 1000 ms sleep can measure as 999 ms. Fake timers drive both from one clock.
+    /*
+     * Real timers fire on the monotonic clock while responseTime is read from Date.now(),
+     * so a 1000 ms sleep can measure as 999 ms. Fake timers drive both from one clock.
+     */
     const executeWithFakeTimers = async (
         deliver: WebhookDeliver.Interface,
         input: IWebhookDeliverInput
@@ -98,11 +100,9 @@ describe("WebhookDeliver", () => {
             .mockResolvedValueOnce(mockResponse(429, "Too Many Requests", { "retry-after": "1" }))
             .mockResolvedValue(mockResponse(200));
         const deliver = resolve();
+        const input = makeInput({ initialDelay: 1, maxDelay: 2000 });
 
-        const result = await executeWithFakeTimers(
-            deliver,
-            makeInput({ initialDelay: 1, maxDelay: 2000 })
-        );
+        const result = await executeWithFakeTimers(deliver, input);
 
         expect(result.status).toBe(200);
         expect(result.attempts).toBe(2);
@@ -166,14 +166,13 @@ describe("WebhookDeliver", () => {
             .mockResolvedValue(mockResponse(200));
         const deliver = resolve();
 
-        const result = await executeWithFakeTimers(
-            deliver,
-            makeInput({
-                maxRetries: 3,
-                initialDelay: 100,
-                maxDelay: 150
-            })
-        );
+        const input = makeInput({
+            maxRetries: 3,
+            initialDelay: 100,
+            maxDelay: 150
+        });
+
+        const result = await executeWithFakeTimers(deliver, input);
 
         expect(result.status).toBe(200);
         expect(result.attempts).toBe(4);
