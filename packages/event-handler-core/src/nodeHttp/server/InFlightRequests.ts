@@ -14,7 +14,7 @@ export class InFlightRequests {
     public track(res: http.ServerResponse): void {
         this.responses.add(res);
         if (this.connectionReuseStopped) {
-            this.closeConnectionAfter(res);
+            this.closeConnectionAfterResponse(res);
         }
         res.once("close", () => {
             this.responses.delete(res);
@@ -36,7 +36,7 @@ export class InFlightRequests {
         }
         this.connectionReuseStopped = true;
         for (const res of this.responses) {
-            this.closeConnectionAfter(res);
+            this.closeConnectionAfterResponse(res);
         }
     }
 
@@ -49,7 +49,7 @@ export class InFlightRequests {
         return this.allFinished.promise;
     }
 
-    private closeConnectionAfter(res: http.ServerResponse): void {
+    private closeConnectionAfterResponse(res: http.ServerResponse): void {
         if (!res.headersSent) {
             // The client learns not to reuse the connection, and Node closes it after the response.
             res.setHeader("connection", "close");
