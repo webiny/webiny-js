@@ -8,6 +8,7 @@ import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
+import { GetLatestPageByPathUseCase } from "~/features/pages/GetLatestPageByPath/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
@@ -72,6 +73,27 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                         elements: page.elements,
                         layout: page.layout
                     };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getLatestPageByPath",
+        dependencies: [GetLatestPageByPathUseCase, ComposePageUseCase],
+        resolver(getLatestPageByPath, composePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+
+                    const result = await getLatestPageByPath.execute(args.path);
+
+                    if (result.isFail()) {
+                        // Keeps the code: not found, not authorized and persistence errors stay apart.
+                        throw result.error;
+                    }
+
+                    // The whole page, as `getPageById` returns it, so callers can read its `status`.
+                    return composePage.execute(result.value);
                 });
         }
     });
