@@ -1,4 +1,5 @@
 import type { Document } from "@webiny/website-builder-sdk";
+import { GlobalElementId } from "@webiny/website-builder-sdk";
 
 /** One element of the page, as the assistant is told of it. */
 export interface OutlineElement {
@@ -11,8 +12,6 @@ export interface OutlineElement {
 
 /** More than this and the outline stops listing: it goes into every question's system prompt. */
 const MAX_ELEMENTS = 120;
-
-const isGlobal = (id: string) => id.startsWith("$global");
 
 /*
  * Where an element sits in its parent's slot, read the way the renderer reads it
@@ -32,7 +31,8 @@ const indexInSlot = (
         if (!key.startsWith(prefix) || binding?.static !== elementId) {
             continue;
         }
-        const position = Number(key.slice(prefix.length));
+        const index = key.slice(prefix.length);
+        const position = Number(index);
         if (Number.isInteger(position)) {
             return position;
         }
@@ -55,7 +55,7 @@ export const pageOutline = (document: Pick<Document, "elements" | "bindings">) =
     let count = 0;
 
     for (const element of Object.values(document.elements)) {
-        if (element.id === "root" || isGlobal(element.id) || !element.parent) {
+        if (element.id === "root" || GlobalElementId.isGlobal(element.id) || !element.parent) {
             continue;
         }
         const { id: parentId, slot } = element.parent;
@@ -86,6 +86,8 @@ export const pageOutline = (document: Pick<Document, "elements" | "bindings">) =
     };
 
     const elements = build("root");
-    const total = Object.keys(document.elements).filter(id => id !== "root" && !isGlobal(id));
+    const total = Object.keys(document.elements).filter(
+        id => id !== "root" && !GlobalElementId.isGlobal(id)
+    );
     return { elements, truncated: total.length > count };
 };

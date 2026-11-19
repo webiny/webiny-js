@@ -10,7 +10,7 @@ import { AssistantPageContextFeature } from "@webiny/app-admin";
 import { ToolPipelineRunner } from "@webiny/app-admin";
 import { ToolRegistry } from "@webiny/app-admin";
 import { PageEditorAssistantFeature } from "~/admin/presentation/WbAssistant/feature.js";
-import { BUILD_QUESTION } from "~/admin/presentation/WbAssistant/PageEditorAssistantPresenter.js";
+import { BUILD_QUESTION } from "~/admin/presentation/WbAssistant/PageEditorAssistantConnector.js";
 import type { PageEditor } from "~/admin/presentation/WbAssistant/types.js";
 
 /** An editor with an empty page, whose read-only flag the test flips. */
@@ -58,7 +58,7 @@ const setup = (chat: { chatId: string | null; busy?: boolean } = { chatId: "chat
     PageEditorAssistantFeature.register(container);
 
     return {
-        presenter: PageEditorAssistantFeature.resolve(container).presenter,
+        connector: PageEditorAssistantFeature.resolve(container).connector,
         clientTools: container.resolve(AssistantClientTools),
         asked
     };
@@ -66,68 +66,82 @@ const setup = (chat: { chatId: string | null; busy?: boolean } = { chatId: "chat
 
 const listComponents = { toolCallId: "call-1", toolName: "listPageComponents", input: {} };
 
-describe("PageEditorAssistantPresenter", () => {
+describe("PageEditorAssistantConnector", () => {
     it("offers no tools while the editor is read-only, and the same tools again after", () => {
-        const { presenter, clientTools } = setup();
+        const { connector, clientTools } = setup();
         const { editor, setReadOnly } = fakeEditor();
 
-        presenter.attach(editor);
+        connector.attach(editor);
         const offered = clientTools.list();
         expect(offered.map(tool => tool.name)).toContain("listPageComponents");
 
         setReadOnly(true);
-        presenter.syncTools();
+        connector.syncTools();
         expect(clientTools.list()).toEqual([]);
 
         setReadOnly(false);
-        presenter.syncTools();
+        connector.syncTools();
         expect(clientTools.list()).toEqual(offered);
     });
 
     it("runs a call offered before the editor turned read-only and back", async () => {
-        const { presenter, clientTools } = setup();
+        const { connector, clientTools } = setup();
         const { editor, setReadOnly } = fakeEditor();
 
-        presenter.attach(editor);
+        connector.attach(editor);
         const offered = clientTools.list();
 
         // What a page does as it opens, while its review state loads.
         setReadOnly(true);
-        presenter.syncTools();
+        connector.syncTools();
         setReadOnly(false);
-        presenter.syncTools();
+        connector.syncTools();
 
         const result = await clientTools.run(listComponents, offered);
         expect(result.error).toBeUndefined();
     });
 
     it("asks to build the page once the editor offers its tools", () => {
-        const { presenter, asked } = setup();
+        const { connector, asked } = setup();
         const { editor, setReadOnly } = fakeEditor();
 
         // The panel asks before the editor is attached, and the editor opens read-only.
-        presenter.continueBuild();
+        connector.continueBuild();
         setReadOnly(true);
-        presenter.attach(editor);
+        connector.attach(editor);
         expect(asked).toEqual([]);
 
         setReadOnly(false);
-        presenter.syncTools();
+        connector.syncTools();
         expect(asked).toEqual([BUILD_QUESTION]);
 
         // Once: the tools being offered again later asks nothing more.
         setReadOnly(true);
-        presenter.syncTools();
+        connector.syncTools();
         setReadOnly(false);
-        presenter.syncTools();
+        connector.syncTools();
         expect(asked).toEqual([BUILD_QUESTION]);
+    });
+
+    it("drops a build request when its editor closes without becoming editable", () => {
+        const { connector, asked } = setup();
+        const first = fakeEditor();
+        first.setReadOnly(true);
+
+        connector.continueBuild();
+        connector.attach(first.editor);
+        connector.detach();
+
+        // The next page opened is editable; it was not the one the request was for.
+        connector.attach(fakeEditor().editor);
+        expect(asked).toEqual([]);
     });
 
     it("asks nothing with no chat to carry on, or while the chat is running", () => {
         for (const chat of [{ chatId: null }, { chatId: "chat-1", busy: true }]) {
-            const { presenter, asked } = setup(chat);
-            presenter.attach(fakeEditor().editor);
-            presenter.continueBuild();
+            const { connector, asked } = setup(chat);
+            connector.attach(fakeEditor().editor);
+            connector.continueBuild();
             expect(asked).toEqual([]);
         }
     });

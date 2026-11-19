@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 
 const inputSchema = z.object({

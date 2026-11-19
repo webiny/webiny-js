@@ -6,26 +6,26 @@ import { PageEditorAssistantFeature } from "./feature.js";
 import type { PageDocument } from "./types.js";
 
 /**
- * Connects the page editor to the assistant while the editor is open. The presenter does the work;
+ * Connects the page editor to the assistant while the editor is open. The connector does the work;
  * this hands it the editor and tells it when the selection changes.
  */
 export const PageEditorAssistant = () => {
     const editor = useDocumentEditor<PageDocument>();
-    const { presenter } = useFeature(PageEditorAssistantFeature);
+    const { connector } = useFeature(PageEditorAssistantFeature);
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
     const selectedElementId = useSelectFromEditor(state => state.selectedElement);
 
     useEffect(() => {
-        presenter.attach(editor);
-        return () => presenter.detach();
+        connector.attach(editor);
+        return () => connector.detach();
     }, [editor]);
 
     useEffect(() => {
-        presenter.syncTools();
+        connector.syncTools();
     }, [isReadOnly]);
 
     useEffect(() => {
-        presenter.refresh();
+        connector.refresh();
     }, [selectedElementId]);
 
     return null;

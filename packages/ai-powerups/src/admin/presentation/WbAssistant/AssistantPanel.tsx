@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { useFeature, useRoute } from "@webiny/app";
+import { useFeature } from "@webiny/app";
+import { useRoute } from "@webiny/app";
 import { AiChatsPanelRenderer } from "@webiny/app-admin";
 import { Editor } from "@webiny/app-website-builder";
 import { ReactComponent as CollapseIcon } from "@webiny/icons/left_panel_open.svg";
@@ -22,7 +23,7 @@ const BUILD_VALUE = "build";
  */
 export const AssistantPanel = () => {
     const panel = Editor.usePanel(ASSISTANT_PANEL);
-    const { presenter } = useFeature(PageEditorAssistantFeature);
+    const { connector } = useFeature(PageEditorAssistantFeature);
     const { route, replaceRouteParams } = useRoute();
 
     /*
@@ -42,7 +43,7 @@ export const AssistantPanel = () => {
             return rest;
         });
         panel.open();
-        presenter.continueBuild();
+        connector.continueBuild();
     }, [fromAssistant]);
 
     /*

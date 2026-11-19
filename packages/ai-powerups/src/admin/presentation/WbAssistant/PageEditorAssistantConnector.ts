@@ -3,7 +3,7 @@ import { AssistantClientTools } from "@webiny/app-admin";
 import { AssistantPageContext } from "@webiny/app-admin";
 import { ToolPipelineRunner } from "@webiny/app-admin";
 import { ToolRegistry } from "@webiny/app-admin";
-import { PageEditorAssistantPresenter as Abstraction } from "./abstractions.js";
+import { PageEditorAssistantConnector as Abstraction } from "./abstractions.js";
 import { createPageEditorAccess } from "./createPageEditorAccess.js";
 import { createPageEditorTools } from "./pageEditorTools.js";
 import { describePage } from "./describePage.js";
@@ -30,7 +30,7 @@ interface Connection {
     unsubscribe: () => void;
 }
 
-class PageEditorAssistantPresenterImpl implements Abstraction.Interface {
+class PageEditorAssistantConnectorImpl implements Abstraction.Interface {
     private connection: Connection | null = null;
     /*
      * The panel asks for the build and the editor attaches from components of their own, in no set
@@ -47,7 +47,7 @@ class PageEditorAssistantPresenterImpl implements Abstraction.Interface {
     ) {}
 
     attach(editor: PageEditor): void {
-        this.detach();
+        this.disconnect();
 
         const page = describePage(editor);
         const context = this.pageContext.set(page);
@@ -92,7 +92,16 @@ class PageEditorAssistantPresenterImpl implements Abstraction.Interface {
         this.pageContext.update(this.connection.context, page);
     }
 
+    /*
+     * The editor closed. A build request still waiting was for this page: one that never became
+     * editable must not be asked on the next page opened.
+     */
     detach(): void {
+        this.buildRequested = false;
+        this.disconnect();
+    }
+
+    private disconnect(): void {
         if (!this.connection) {
             return;
         }
@@ -121,8 +130,8 @@ class PageEditorAssistantPresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const PageEditorAssistantPresenterImplementation = Abstraction.createImplementation({
-    implementation: PageEditorAssistantPresenterImpl,
+export const PageEditorAssistantConnectorImplementation = Abstraction.createImplementation({
+    implementation: PageEditorAssistantConnectorImpl,
     dependencies: [
         AssistantClientTools,
         AssistantPageContext,

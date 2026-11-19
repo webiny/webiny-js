@@ -1,14 +1,14 @@
 import { createFeature } from "@webiny/feature/admin";
-import { PageEditorAssistantPresenter } from "./abstractions.js";
-import { PageEditorAssistantPresenterImplementation } from "./PageEditorAssistantPresenter.js";
+import { PageEditorAssistantConnector } from "./abstractions.js";
+import { PageEditorAssistantConnectorImplementation } from "./PageEditorAssistantConnector.js";
 
 export const PageEditorAssistantFeature = createFeature({
     name: "WbAssistant/PageEditor",
     register(container) {
         // One for the editor: its panel and its overlay reach the same connection.
-        container.register(PageEditorAssistantPresenterImplementation).inSingletonScope();
+        container.register(PageEditorAssistantConnectorImplementation).inSingletonScope();
     },
     resolve(container) {
-        return { presenter: container.resolve(PageEditorAssistantPresenter) };
+        return { connector: container.resolve(PageEditorAssistantConnector) };
     }
 });
