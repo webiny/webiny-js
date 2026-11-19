@@ -6,43 +6,47 @@ import type http from "node:http";
  */
 export class InFlightRequests {
     private readonly responses = new Set<http.ServerResponse>();
-    private draining = false;
-    // The `resolve` of each promise `drain()` handed out, called once the last request closes.
-    private drainWaiters: Array<() => void> = [];
+    private connectionReuseStopped = false;
+    // Created by the first `whenAllFinished()` call; resolved when the last response closes.
+    private allFinished: PromiseWithResolvers<void> | undefined;
 
     /** Counts the request until its response closes, whether it finished or the client went away. */
     public track(res: http.ServerResponse): void {
         this.responses.add(res);
-        if (this.draining) {
+        if (this.connectionReuseStopped) {
             this.closeConnectionAfter(res);
         }
         res.once("close", () => {
             this.responses.delete(res);
-            // The last request of a shutdown just closed: the waiting `drain()` can resolve.
-            if (this.draining && this.responses.size === 0) {
-                this.resolveDrainWaiters();
+            if (this.responses.size === 0) {
+                this.allFinished?.resolve();
+                this.allFinished = undefined;
             }
         });
     }
 
     /**
-     * Resolves once no request is in flight; at once if none is. From the first call on, every
-     * response, the ones in flight included, closes its connection once sent: a keep-alive client
-     * would otherwise send its next request on it, and the exit would cut that request off.
+     * From now on every response, the ones in flight included, closes its connection once sent. A
+     * keep-alive client would otherwise send its next request on that connection, and the exit
+     * would cut that request off.
      */
-    public drain(): Promise<void> {
-        if (!this.draining) {
-            this.draining = true;
-            for (const res of this.responses) {
-                this.closeConnectionAfter(res);
-            }
+    public stopConnectionReuse(): void {
+        if (this.connectionReuseStopped) {
+            return;
         }
+        this.connectionReuseStopped = true;
+        for (const res of this.responses) {
+            this.closeConnectionAfter(res);
+        }
+    }
+
+    /** Resolves once no request is in flight; at once if none is. */
+    public whenAllFinished(): Promise<void> {
         if (this.responses.size === 0) {
             return Promise.resolve();
         }
-        return new Promise<void>(resolve => {
-            this.drainWaiters.push(resolve);
-        });
+        this.allFinished ??= Promise.withResolvers<void>();
+        return this.allFinished.promise;
     }
 
     private closeConnectionAfter(res: http.ServerResponse): void {
@@ -58,13 +62,5 @@ export class InFlightRequests {
         res.once("finish", () => {
             res.req.socket.end();
         });
-    }
-
-    private resolveDrainWaiters(): void {
-        const waiters = this.drainWaiters;
-        this.drainWaiters = [];
-        for (const resolve of waiters) {
-            resolve();
-        }
     }
 }

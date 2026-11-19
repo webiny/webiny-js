@@ -11,10 +11,10 @@ const SHUTDOWN_TIMEOUT_MS = 8000;
 
 interface IHandleShutdownSignalsParams {
     server: http.Server;
-    /** Resolves once no HTTP request is in flight. */
-    requestsDrained: () => Promise<void>;
-    /** Gets the drain, so it can keep what requests still use open until they are done. */
-    shutdown: (requestsDrained: Promise<void>) => Promise<void>;
+    /** Stops connection reuse and resolves once no HTTP request is in flight. */
+    waitForRequests: () => Promise<void>;
+    /** Gets that promise, so it can keep what requests still use open until they are done. */
+    shutdown: (requestsFinished: Promise<void>) => Promise<void>;
 }
 
 /**
@@ -24,7 +24,7 @@ interface IHandleShutdownSignalsParams {
  * Node's default of exiting, so this always exits itself.
  */
 export function handleShutdownSignals(params: IHandleShutdownSignalsParams): void {
-    const { server, requestsDrained, shutdown } = params;
+    const { server, waitForRequests, shutdown } = params;
     let stopping = false;
 
     const onSignal = async (signal: string) => {
@@ -35,9 +35,9 @@ export function handleShutdownSignals(params: IHandleShutdownSignalsParams): voi
         server.close();
         server.closeIdleConnections();
 
-        const drained = requestsDrained();
+        const requestsFinished = waitForRequests();
         // A failed shutdown is reported, and requests in flight still get their time.
-        const shutdownDone = shutdown(drained).catch(error => {
+        const shutdownDone = shutdown(requestsFinished).catch(error => {
             console.error("[server] shutdown failed:", error);
         });
 
@@ -45,7 +45,7 @@ export function handleShutdownSignals(params: IHandleShutdownSignalsParams): voi
         const timeout = new Promise<void>(resolve => {
             timer = setTimeout(resolve, SHUTDOWN_TIMEOUT_MS);
         });
-        const done = Promise.all([shutdownDone, drained]);
+        const done = Promise.all([shutdownDone, requestsFinished]);
         await Promise.race([done, timeout]);
         clearTimeout(timer);
         process.exit(0);

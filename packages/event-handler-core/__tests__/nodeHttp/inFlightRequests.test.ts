@@ -51,11 +51,11 @@ const listen = async (respond: (res: http.ServerResponse) => void) => {
 };
 
 describe("InFlightRequests", () => {
-    it("resolves the drain at once when no request is in flight", async () => {
-        await expect(new InFlightRequests().drain()).resolves.toBeUndefined();
+    it("resolves at once when no request is in flight", async () => {
+        await expect(new InFlightRequests().whenAllFinished()).resolves.toBeUndefined();
     });
 
-    it("closes a keep-alive connection after the response in flight at the drain", async () => {
+    it("closes a keep-alive connection after the response in flight when reuse stops", async () => {
         const { inFlight, server, port, firstRequest, received } = await listen(res => {
             setTimeout(() => res.end("done"), 100);
         });
@@ -63,10 +63,11 @@ describe("InFlightRequests", () => {
         const first = get(port);
         await firstRequest;
         server.close();
-        const drained = inFlight.drain();
+        inFlight.stopConnectionReuse();
+        const allFinished = inFlight.whenAllFinished();
 
         await expect(first).resolves.toEqual({ body: "done", connection: "close" });
-        await drained;
+        await allFinished;
         // The connection is gone, so the next request needs a new one, and the server takes none.
         await expect(get(port)).rejects.toMatchObject({ code: "ECONNREFUSED" });
         expect(received.count).toBe(1);
@@ -82,10 +83,11 @@ describe("InFlightRequests", () => {
         const first = get(port);
         await firstRequest;
         server.close();
-        const drained = inFlight.drain();
+        inFlight.stopConnectionReuse();
+        const allFinished = inFlight.whenAllFinished();
 
         await expect(first).resolves.toEqual({ body: "part done", connection: "keep-alive" });
-        await drained;
+        await allFinished;
         /*
          * The client could not be told, so it may reuse the connection before it sees it close: the
          * request is then reset (ECONNRESET) instead of refused, but the server never reads it.
@@ -103,10 +105,11 @@ describe("InFlightRequests", () => {
         const first = get(port);
         await firstRequest;
         server.close();
-        const drained = inFlight.drain();
+        inFlight.stopConnectionReuse();
+        const allFinished = inFlight.whenAllFinished();
 
         await expect(first).resolves.toEqual({ body: "done", connection: "keep-alive" });
-        await drained;
+        await allFinished;
         await expect(get(port)).rejects.toMatchObject({ code: /^ECONN(RESET|REFUSED)$/ });
         expect(received.count).toBe(1);
     });

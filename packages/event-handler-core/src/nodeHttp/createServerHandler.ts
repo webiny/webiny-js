@@ -21,7 +21,7 @@ export interface CreateServerHandlerOptions {
     /**
      * Called once, when the process is asked to stop (SIGTERM or SIGINT), after the server stops
      * taking connections and before the process exits. HTTP requests already in flight keep
-     * running alongside it; `requestsDrained` resolves once they are done, so anything they still
+     * running alongside it; `requestsFinished` resolves once they are done, so anything they still
      * use (a message bus, a pool) should close after it. The hook and the requests share at most
      * 8 seconds. Without the hook, the process keeps Node's default and exits at once.
      */
@@ -36,7 +36,7 @@ export interface CreateServerHandlerOptions {
 
 export interface IOnShutdownParams {
     /** Resolves once no HTTP request is in flight. WebSocket connections are not counted. */
-    requestsDrained: Promise<void>;
+    requestsFinished: Promise<void>;
 }
 
 export async function createServerHandler(
@@ -74,13 +74,16 @@ export async function createServerHandler(
     if (onShutdown || options.exitOnShutdownSignal) {
         handleShutdownSignals({
             server,
-            requestsDrained: () => inFlight.drain(),
-            shutdown: async requestsDrained => {
+            waitForRequests: () => {
+                inFlight.stopConnectionReuse();
+                return inFlight.whenAllFinished();
+            },
+            shutdown: async requestsFinished => {
                 if (!onShutdown) {
                     return;
                 }
                 const rootContainer = await app.getRootContainer();
-                await onShutdown(rootContainer, { requestsDrained });
+                await onShutdown(rootContainer, { requestsFinished });
             }
         });
     }

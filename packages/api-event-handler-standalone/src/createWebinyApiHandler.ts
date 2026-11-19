@@ -291,7 +291,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             stopTaskRecovery = startTaskRecovery(rootContainer);
         },
 
-        onShutdown: async (rootContainer, { requestsDrained }) => {
+        onShutdown: async (rootContainer, { requestsFinished }) => {
             /*
              * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
              * Then wait for what is running: tasks hand themselves back, so another process picks
@@ -305,7 +305,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
             const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
             const websockets = stopWebsockets?.();
-            const workDone = Promise.allSettled([tasks, scheduledActions, requestsDrained]);
+            const workDone = Promise.allSettled([tasks, scheduledActions, requestsFinished]);
             const messageBus = workDone.then(() => closeMessageBus?.());
 
             // One failing part must not cut the others short; the first failure is reported after.

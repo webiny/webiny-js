@@ -57,7 +57,7 @@ describe("handleShutdownSignals", () => {
         const exit = mockExit();
         const server = createServer();
         const shutdown = vi.fn(async () => {});
-        handleShutdownSignals({ server, requestsDrained: noRequests, shutdown });
+        handleShutdownSignals({ server, waitForRequests: noRequests, shutdown });
 
         process.emit("SIGTERM", "SIGTERM");
         await vi.advanceTimersByTimeAsync(0);
@@ -70,7 +70,7 @@ describe("handleShutdownSignals", () => {
     it("exits after eight seconds even if the shutdown hangs", async () => {
         const exit = mockExit();
         const shutdown = () => new Promise<void>(() => {});
-        handleShutdownSignals({ server: createServer(), requestsDrained: noRequests, shutdown });
+        handleShutdownSignals({ server: createServer(), waitForRequests: noRequests, shutdown });
 
         process.emit("SIGTERM", "SIGTERM");
         await vi.advanceTimersByTimeAsync(7999);
@@ -82,9 +82,9 @@ describe("handleShutdownSignals", () => {
 
     it("exits after eight seconds even if a request never finishes", async () => {
         const exit = mockExit();
-        const requestsDrained = () => new Promise<void>(() => {});
+        const waitForRequests = () => new Promise<void>(() => {});
         const shutdown = async () => {};
-        handleShutdownSignals({ server: createServer(), requestsDrained, shutdown });
+        handleShutdownSignals({ server: createServer(), waitForRequests, shutdown });
 
         process.emit("SIGTERM", "SIGTERM");
         await vi.advanceTimersByTimeAsync(7999);
@@ -97,7 +97,7 @@ describe("handleShutdownSignals", () => {
     it("exits at once on a second signal", async () => {
         const exit = mockExit();
         const shutdown = vi.fn(() => new Promise<void>(() => {}));
-        handleShutdownSignals({ server: createServer(), requestsDrained: noRequests, shutdown });
+        handleShutdownSignals({ server: createServer(), waitForRequests: noRequests, shutdown });
 
         process.emit("SIGINT", "SIGINT");
         process.emit("SIGINT", "SIGINT");
@@ -113,7 +113,7 @@ describe("handleShutdownSignals", () => {
         const shutdown = async () => {
             throw new Error("database gone");
         };
-        handleShutdownSignals({ server: createServer(), requestsDrained: noRequests, shutdown });
+        handleShutdownSignals({ server: createServer(), waitForRequests: noRequests, shutdown });
 
         process.emit("SIGTERM", "SIGTERM");
         await vi.advanceTimersByTimeAsync(0);
@@ -125,13 +125,17 @@ describe("handleShutdownSignals", () => {
         const exit = mockExit();
         vi.spyOn(console, "error").mockImplementation(() => {});
         let finishRequests = () => {};
-        const drained = new Promise<void>(resolve => {
+        const requestsFinished = new Promise<void>(resolve => {
             finishRequests = resolve;
         });
         const shutdown = async () => {
             throw new Error("message bus gone");
         };
-        handleShutdownSignals({ server: createServer(), requestsDrained: () => drained, shutdown });
+        handleShutdownSignals({
+            server: createServer(),
+            waitForRequests: () => requestsFinished,
+            shutdown
+        });
 
         process.emit("SIGTERM", "SIGTERM");
         await vi.advanceTimersByTimeAsync(1000);
@@ -142,16 +146,20 @@ describe("handleShutdownSignals", () => {
         expect(exit).toHaveBeenCalledWith(0);
     });
 
-    it("hands the drain to the shutdown", async () => {
+    it("hands the requests promise to the shutdown", async () => {
         mockExit();
-        const drained = Promise.resolve();
+        const requestsFinished = Promise.resolve();
         const shutdown = vi.fn(async () => {});
-        handleShutdownSignals({ server: createServer(), requestsDrained: () => drained, shutdown });
+        handleShutdownSignals({
+            server: createServer(),
+            waitForRequests: () => requestsFinished,
+            shutdown
+        });
 
         process.emit("SIGTERM", "SIGTERM");
         await vi.advanceTimersByTimeAsync(0);
 
-        expect(shutdown).toHaveBeenCalledWith(drained);
+        expect(shutdown).toHaveBeenCalledWith(requestsFinished);
     });
 
     it("lets a request in flight finish before exiting", async () => {
@@ -174,7 +182,10 @@ describe("handleShutdownSignals", () => {
         const { port } = server.address() as AddressInfo;
         handleShutdownSignals({
             server,
-            requestsDrained: () => inFlight.drain(),
+            waitForRequests: () => {
+                inFlight.stopConnectionReuse();
+                return inFlight.whenAllFinished();
+            },
             shutdown: async () => {}
         });
 
