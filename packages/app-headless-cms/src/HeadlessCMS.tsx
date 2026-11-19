@@ -9,7 +9,7 @@ import { CmsPermissionsFeature } from "~/features/permissions/feature.js";
 import { CmsGraphQLClientFeature } from "~/features/graphQLClient/feature.js";
 import { ModelFeature } from "~/features/model/feature.js";
 import { ListFolderPermissionsTargetsFeature } from "~/features/listFolderPermissionsTargets/feature.js";
-import { ListEntryAuthorsFeature } from "~/features/listEntryAuthors/feature.js";
+import { CmsAdvancedSearchFeature } from "~/presentation/contentEntries/advancedSearch/feature.js";
 import { ModelGroupFeature } from "~/features/modelGroup/feature.js";
 import { ModelGroupPresenterFeature } from "~/presentation/modelGroup/feature.js";
 import { ContentGroupsMenuPresenterFeature } from "~/presentation/contentGroupsMenu/feature.js";
@@ -57,7 +57,7 @@ const HeadlessCMSExtension = () => {
             <RegisterFeature feature={ModelFeature} />
             <RegisterFeature feature={ModelGroupFeature} />
             <RegisterFeature feature={ListFolderPermissionsTargetsFeature} />
-            <RegisterFeature feature={ListEntryAuthorsFeature} />
+            <RegisterFeature feature={CmsAdvancedSearchFeature} />
             <RegisterFeature feature={ModelGroupPresenterFeature} />
             <RegisterFeature feature={ContentGroupsMenuPresenterFeature} />
             <RegisterFeature feature={ContentModelsPresenterFeature} />
