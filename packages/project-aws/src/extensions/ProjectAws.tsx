@@ -51,6 +51,8 @@ export const ProjectAws = () => {
             <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
 
             {/* Deployment gates — AWS-only (there is no Pulumi stack output to check off-AWS) */}
+            {/* First, so its message wins: watch can't reach Aurora, deployed or not. */}
+            <ApiBeforeWatch src={p("ProjectAws/RefuseApiWatchWithPostgres.js")} />
             <ApiBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeWatch.js")} />
             <AdminBeforeBuild src={p("ProjectAws/EnsureApiDeployedBeforeAdminBuild.js")} />
             <AdminBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeAdminWatch.js")} />

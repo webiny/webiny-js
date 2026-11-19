@@ -3,6 +3,7 @@ import type { Knex } from "knex";
 import { WebSocket } from "ws";
 import { createServer } from "./createServer.js";
 import { createPgServer } from "./createPgServer.js";
+import { installAndLogIn } from "./installAndLogIn.js";
 
 /**
  * The server holds its live sockets in the root, in memory; the connections' rows are a storage, in
@@ -36,9 +37,10 @@ const waitFor = async (label: string, check: () => Promise<boolean>): Promise<vo
     throw new Error(`Timed out waiting for ${label}.`);
 };
 
-const connect = (port: number): Promise<WebSocket> => {
+const connect = (port: number, token: string): Promise<WebSocket> => {
     return new Promise((resolve, reject) => {
-        const socket = new WebSocket(`ws://127.0.0.1:${port}/?tenant=root`);
+        const query = new URLSearchParams({ token, tenant: "root" });
+        const socket = new WebSocket(`ws://127.0.0.1:${port}/ws?${query}`);
         socket.once("open", () => resolve(socket));
         socket.once("error", reject);
     });
@@ -64,11 +66,17 @@ const insertStaleRow = async (knex: Knex): Promise<void> => {
     });
 };
 
-const runConnectionLifecycle = async (server: { port: number; knex: Knex }) => {
+type TestServer =
+    | Awaited<ReturnType<typeof createServer>>
+    | Awaited<ReturnType<typeof createPgServer>>;
+
+const runConnectionLifecycle = async (server: TestServer) => {
     const { knex } = server;
+    // The server takes an upgrade only with a token that resolves to an identity: the admin's.
+    const token = await installAndLogIn(server);
 
     // Connect: the row is written, owned by this process.
-    const socket = await connect(server.port);
+    const socket = await connect(server.port, token);
     await waitFor("the connection's row", async () => (await readRows(knex)).length === 1);
     const [live] = await readRows(knex);
     expect(live.owner).toBeTruthy();

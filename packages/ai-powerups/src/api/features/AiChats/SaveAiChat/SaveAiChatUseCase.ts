@@ -22,7 +22,7 @@ class SaveAiChatUseCaseImpl implements UseCaseAbstraction.Interface {
         input: UseCaseAbstraction.Input
     ): Promise<Result<AiChat, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
-        if (!identity || identity.isAnonymous()) {
+        if (identity.isAnonymous()) {
             return Result.fail(new AiChatNotAuthenticatedError());
         }
 

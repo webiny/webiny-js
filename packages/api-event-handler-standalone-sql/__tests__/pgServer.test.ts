@@ -1,33 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { acoPg, createPgServer, signingSecret } from "./createPgServer.js";
-
-const INSTALL = /* GraphQL */ `
-    mutation Install($installationInput: JSON!) {
-        system {
-            installSystem(installationInput: $installationInput) {
-                data
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-const LOGIN = /* GraphQL */ `
-    mutation Login($email: String!, $password: String!) {
-        selfHostedAuthLogin(email: $email, password: $password) {
-            data {
-                token
-            }
-            error {
-                code
-                message
-            }
-        }
-    }
-`;
+import { installAndLogIn } from "./installAndLogIn.js";
 
 const CREATE_FOLDER = /* GraphQL */ `
     mutation CreateFolder($data: FolderCreateInput!) {
@@ -158,32 +131,12 @@ const LIST_NOTES = /* GraphQL */ `
     }
 `;
 
-const admin = {
-    firstName: "Test",
-    lastName: "Admin",
-    email: "test-admin@example.com",
-    password: "test-admin-password"
-};
-
 const tablesLike = async (knex: any, suffix: string): Promise<string[]> => {
     const result = await knex.raw(
         "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename LIKE ?",
         [`%${suffix}`]
     );
     return result.rows.map((row: { tablename: string }) => row.tablename);
-};
-
-/** Installs the system with the test admin and logs in as them; returns the token. */
-const installAndLogIn = async (server: Awaited<ReturnType<typeof createPgServer>>) => {
-    const install = await server.graphql(INSTALL, {
-        installationInput: [{ app: "SelfHostedAuth", data: admin }]
-    });
-    expect(install.raw).not.toContain("No registration found");
-    expect(install.body.data.system.installSystem).toEqual({ data: true, error: null });
-
-    const login = await server.graphql(LOGIN, { email: admin.email, password: admin.password });
-    expect(login.body.data.selfHostedAuthLogin.error).toBeNull();
-    return login.body.data.selfHostedAuthLogin.data.token as string;
 };
 
 /**

@@ -14,7 +14,7 @@ class DeleteAiChatUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
-        if (!identity || identity.isAnonymous()) {
+        if (identity.isAnonymous()) {
             return Result.fail(new AiChatNotAuthenticatedError());
         }
 
