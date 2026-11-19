@@ -2,6 +2,7 @@ import React from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { useMemo } from "react";
+import { useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
@@ -52,17 +53,26 @@ export const CmsAdvancedSearch = observer(() => {
     const fields = useMemo(() => FieldsMapper.toRaw(model, authors), [model, authors]);
     const repository = useFilterRepository(`cms:${model.modelId}`);
 
+    // The list filters also hold keys set by other controls, such as `folderId`. Only the keys
+    // this search set are cleared when a filter is replaced or removed.
+    const appliedKeys = useRef<string[]>([]);
+
     const onApplyFilter = useCallback(
         (data: FilterDTO | null) => {
-            if (!data || !Object.keys(data).length) {
-                presenter.list.actions.filter.clearAll();
-                return;
-            }
+            const where =
+                data && Object.keys(data).length
+                    ? wrapUserFields(GraphQLInputMapper.toGraphQL(data))
+                    : {};
 
-            const where = wrapUserFields(GraphQLInputMapper.toGraphQL(data));
+            for (const key of appliedKeys.current) {
+                if (!(key in where)) {
+                    presenter.list.actions.filter.clear(key);
+                }
+            }
             for (const [key, value] of Object.entries(where)) {
                 presenter.list.actions.filter.set(key, value);
             }
+            appliedKeys.current = Object.keys(where);
         },
         [presenter]
     );

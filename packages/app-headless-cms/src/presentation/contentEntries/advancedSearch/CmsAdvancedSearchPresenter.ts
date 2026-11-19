@@ -31,7 +31,8 @@ class CmsAdvancedSearchPresenterImpl implements ICmsAdvancedSearchPresenter {
 
     /**
      * Users are listed once per session. An identity that cannot read users gets no Author filter,
-     * and nothing is requested for it.
+     * and nothing is requested for it. A failed request leaves the Author filter out and is tried
+     * again the next time the search mounts.
      */
     async loadAuthors(): Promise<void> {
         if (this.authorsLoaded || !this.permissions.canRead("user")) {
@@ -39,10 +40,16 @@ class CmsAdvancedSearchPresenterImpl implements ICmsAdvancedSearchPresenter {
         }
         this.authorsLoaded = true;
 
-        const users = await this.listUsers.execute();
-        runInAction(() => {
-            this.authors = users.map(toAuthor);
-        });
+        try {
+            const users = await this.listUsers.execute();
+            runInAction(() => {
+                this.authors = users.map(toAuthor);
+            });
+        } catch {
+            runInAction(() => {
+                this.authorsLoaded = false;
+            });
+        }
     }
 }
 
