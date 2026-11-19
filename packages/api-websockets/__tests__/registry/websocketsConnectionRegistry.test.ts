@@ -128,4 +128,28 @@ describe("websockets connection registry", () => {
         const connectionsViaRootTenantAfterUnregister = await registry.listViaTenant("root");
         expect(connectionsViaRootTenantAfterUnregister).toHaveLength(0);
     });
+
+    it("should list only the exact tenant, not tenants that share its prefix", async () => {
+        const { handle } = useHandler();
+        const context = await handle();
+        const registry = context.container.resolve(ConnectionRegistry);
+
+        for (const tenant of ["acme", "acme2", "acme-eu"]) {
+            await registry.register({
+                connectionId: `connection-${tenant}`,
+                tenant,
+                identity: {
+                    id: `id-${tenant}`,
+                    displayName: "John Doe",
+                    type: "admin"
+                },
+                endpoint: "https://webiny.com/dev",
+                connectedOn: new Date().toISOString()
+            });
+        }
+
+        const connections = await registry.listViaTenant("acme");
+        const connectionIds = connections.map(connection => connection.connectionId);
+        expect(connectionIds).toEqual(["connection-acme"]);
+    });
 });

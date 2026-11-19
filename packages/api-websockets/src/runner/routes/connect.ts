@@ -20,7 +20,9 @@ export const websocketsRouteConnect: WebsocketsRouteHandler.Interface = {
                 message: "Missing tenant."
             });
         } else if (!identity) {
+            // On `$connect`, API Gateway accepts the socket on any 2xx.
             return response.error({
+                statusCode: 401,
                 message: "Missing identity."
             });
         }

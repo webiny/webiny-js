@@ -13,7 +13,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 
 export const processThreatScanResult = async (
     context: ApiCoreContext,
-    eventDetail: GuardDutyEvent
+    eventDetail: GuardDutyEvent,
+    tenant: string | null
 ) => {
     const listConnections = context.container.resolve(WebsocketsListConnectionsUseCase);
     const sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
@@ -34,10 +35,13 @@ export const processThreatScanResult = async (
 
         const file = fileResult.value;
 
+        // Only the file's own tenant hears about it. Without a tenant, nobody does.
         let allConnections: ConnectionRegistry.Data[] = [];
-        const connectionsResult = await listConnections.execute();
-        if (connectionsResult.isOk()) {
-            allConnections = connectionsResult.value;
+        if (tenant) {
+            const connectionsResult = await listConnections.execute({ where: { tenant } });
+            if (connectionsResult.isOk()) {
+                allConnections = connectionsResult.value;
+            }
         }
 
         if (scanStatus === "NO_THREATS_FOUND") {
