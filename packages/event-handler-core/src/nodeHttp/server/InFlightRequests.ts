@@ -18,9 +18,14 @@ export class InFlightRequests {
         }
         res.once("close", () => {
             this.responses.delete(res);
-            if (this.responses.size === 0) {
-                this.allFinished?.resolve();
+            /*
+             * Only a shutdown waits here. Until something calls `whenAllFinished()` there is no
+             * promise, so requests that finish while the server runs normally skip this.
+             */
+            const shutdownWaiting = this.allFinished;
+            if (shutdownWaiting !== undefined && this.responses.size === 0) {
                 this.allFinished = undefined;
+                shutdownWaiting.resolve();
             }
         });
     }
