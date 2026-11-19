@@ -143,3 +143,80 @@ admin-ui has no: `WorkflowStatus`, sortable or selectable `Table`, standalone `P
 
 Per area: the unit tests of the touched files, by path. Then `yarn build`, deploy `api` and
 `admin` to dev, and a click-through of the changed screens.
+
+## Update, 2026-11-19: decisions and answers
+
+Batch A is done (`d6e1c97fbf`, `be753a3da9`), deployed to dev.
+
+The user answered the product questions, and `project/notes/answers.md` in the canvas (version
+`1795101692-d52b`) answers the 37 code-side questions. Those answers were written by Claude
+(Cowork) from the canvas markup, not by the designer: PROPOSED items are built unless the designer
+objects, OPEN items keep the interim behaviour. Item numbers below are from that file.
+
+The design system in the canvas (`project/ds/webiny/components/bundle.js`) is ahead of
+`packages/admin-ui`. DS 2.0 does not exist in code and porting it is ours. The "Needs a component"
+list above is therefore a porting list, not a list of questions.
+
+Settled, no work: per-app pages (7), navigation (36), models list in the editor (19), reorder
+controls (20, interim), role group layout (30, interim), role notes (31), no per-event toast
+icons (32, interim), model delete unblocked dialog (37), Load more (3), no row selection (4).
+
+### Batch B1: admin only, no API change
+
+Review bar and dialogs (`app-workflows/src/review`):
+
+- Website Builder uses the CMS lock copy again; the per-app lock texts from Batch A are removed.
+  No read-only alert in the page editor in any state (12).
+- Review state tag: shown only on a finished review. "Approved" (success), "Rejected"
+  (destructive). No "Review:" prefix. While in progress only the step tag shows (13).
+- A finished review shows no step line, step tag or owner, in both apps (11).
+- Cancel review and Reassign move into a "More review actions" overflow menu on the bar (8).
+  The Review details footer mirrors the bar, with the same overflow (17).
+- The progress popover is removed; the text stays next to the bar (10).
+- Reject dialog button is primary (user decision).
+- Start keeps its confirmation in both places (9): no change.
+- Nobody-eligible warning: "Nobody in {team} other than you can review this step. Ask a workflow
+  manager to add reviewers." (14).
+- A step that is failed now: a destructive alert at the top of Review details, "Failed at
+  {time}: {reason}"; Attempts stays as history (16).
+
+Workflow editor (`app-workflows/src/editor`):
+
+- The more-actions menu in the header is removed; Delete workflow is its own button (22).
+- A rule's field error replaces its warning; never both (23).
+- Rules empty state: "No routing rules. {Strategy} assigns every review on this step." and, for
+  None, "No routing rules. Every review waits in the team pool.", with an Add rule button (24).
+
+Reviewer exclusions (`app-workflows/src/settings`):
+
+- "Search by name" replaces the "All users" filter (26).
+- Empty states: Expired "No expired exclusions"; a search with no match "No one matches
+  “{query}”" with a Clear search button (29).
+
+Review list (`reviewList/`): filtered-empty text per app, CMS "Try another title, content model
+or state, or clear the filters.", Website Builder "Try another title or state, or clear the
+filters." (6).
+
+### Batch B2: needs API or data changes, plan separately
+
+- List controls (1, 2): scope Assigned to me · Team pool · Team in review · Requested by me ·
+  All, and state All · In review · Failed · Approved · Rejected. Today the API has five list
+  kinds and a state filter only for My requests; an "All" scope and a state filter on every scope
+  are new.
+- Sortable Name column (user decision): the API sorts by last change only.
+- Content model filter inside a Filter button, CMS only (5, 6); model filter All / With workflow
+  / Without workflow and the item menu in the editor (22).
+- Cancelled review in the drawer: "This review was cancelled by {name} on {date}." with the
+  steps read-only below (18). Needs who cancelled and when.
+- Exclusions: teams per user, comma-joined (27). Needs team data per user.
+- Automation step: its one key setting as a row (25). Needs a field in the automation catalogue.
+- Pool message names the recipient's own team or teams (33): the text differs per recipient
+  group, so the batch is split by team set.
+- "View review details" links open the content with the drawer open (34). Needs a deep link.
+- E-mail: generic greeting and footer plus the details table (35). The user has yet to confirm.
+
+### Batch C: admin-ui DS 2.0 port, own plan and PR
+
+`WorkflowStatus`, `Pagination`, `ButtonGroup`, `Table` sort and selection, `Switch variant` and
+`inline`, `Alert size`, `RadioGroup inline`, `Accordion spacing`, `ProgressBar trailing`,
+`Toast status`, `Drawer headerExtra` and `footerStart`. Additive only: no changed defaults.
