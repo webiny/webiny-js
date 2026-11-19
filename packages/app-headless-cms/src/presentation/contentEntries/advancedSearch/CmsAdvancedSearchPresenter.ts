@@ -17,8 +17,10 @@ const toAuthor = (target: FolderLevelPermissionsTarget): EntryAuthor => {
 
 class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
     private authors: EntryAuthor[] = [];
-    // The keys of the list's where input this search set. The list's filters also hold keys set by
-    // other controls, such as `folderId`, and those are never cleared from here.
+    /*
+     * The keys of the list's where input this search set. The list's filters also hold keys set by
+     * other controls, such as `folderId`, and those are never cleared from here.
+     */
     private appliedKeys: string[] = [];
 
     constructor(
