@@ -5,10 +5,10 @@ import { Icon } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
+import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as AccountTreeIcon } from "@webiny/icons/account_tree.svg";
-import { ReactComponent as DotIcon } from "@webiny/icons/fiber_manual_record.svg";
 import type { ModelPanelVm } from "~/editor/presentation/editor/abstractions.js";
 import type { ModelRowVm } from "~/editor/presentation/editor/abstractions.js";
 
@@ -50,17 +50,17 @@ const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
         boundIndicator = <Icon icon={<AccountTreeIcon />} label="Has a workflow" size="sm" />;
     }
 
-    let unsavedDot: React.ReactNode = null;
+    let unsavedTag: React.ReactNode = null;
     if (row.unsaved) {
-        unsavedDot = <Icon icon={<DotIcon />} label="Unsaved changes" size="xs" color="accent" />;
+        unsavedTag = <Tag variant="warning" content="Unsaved" aria-label="Unsaved changes" />;
     }
 
     let actions: React.ReactNode = null;
-    if (boundIndicator !== null || unsavedDot !== null) {
+    if (boundIndicator !== null || unsavedTag !== null) {
         actions = (
             <>
                 {boundIndicator}
-                {unsavedDot}
+                {unsavedTag}
             </>
         );
     }

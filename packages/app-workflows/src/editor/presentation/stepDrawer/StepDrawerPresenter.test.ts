@@ -96,7 +96,7 @@ describe("StepDrawerPresenter: opening (R270)", () => {
 
         expect(presenter.vm.kind).toBe("review");
         expect(presenter.vm.typeLabel).toBe("People");
-        expect(presenter.vm.subtitle).toBe("People step · the type can't be changed");
+        expect(presenter.vm.subtitle).toBe("People step · the type can’t be changed");
         expect(presenter.vm.title).toBe("Legal sign-off");
         expect(presenter.vm.footerText).toBe("Edits stay in this workflow until you save it.");
         expect(presenter.vm.doneLabel).toBe("Done");
@@ -873,7 +873,7 @@ describe("StepDrawerPresenter: unknown step type (R269, R270)", () => {
 
         expect(presenter.vm.kind).toBe("unknown");
         expect(presenter.vm.typeLabel).toBe("Custom check");
-        expect(presenter.vm.subtitle).toBe("Custom check step · the type can't be changed");
+        expect(presenter.vm.subtitle).toBe("Custom check step · the type can’t be changed");
         expect(presenter.vm.form).toBeNull();
         expect(presenter.vm.readOnly).toBe(true);
         expect(presenter.vm.licenceAlert).toBeNull();

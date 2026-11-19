@@ -168,7 +168,7 @@ describe("ReviewBar", () => {
 
     it("renders the full lock text without truncation", () => {
         const lockText =
-            "This revision is locked for good. Create a new revision to fix it, then request a new review.";
+            "This revision is locked. Create a new revision to fix it, then request a new review.";
         const { container } = renderBar(
             createTargetReviewViewModel({ status: "none", lockText, progress: null })
         );
@@ -199,7 +199,7 @@ describe("ReviewBar", () => {
         const { presenter } = renderBar(
             createTargetReviewViewModel({
                 status: "none",
-                message: "This content needs review before publishing",
+                message: "This content needs a review before it can be published.",
                 lockText: "Publishing needs an approved review.",
                 tile: "rule",
                 stateTag: null,
@@ -221,7 +221,9 @@ describe("ReviewBar", () => {
             })
         );
 
-        expect(screen.getByText("This content needs review before publishing")).toBeTruthy();
+        expect(
+            screen.getByText("This content needs a review before it can be published.")
+        ).toBeTruthy();
         expect(screen.getByText("Publishing needs an approved review.")).toBeTruthy();
         fireEvent.click(screen.getByText("Request review"));
         expect(presenter.openAction).toHaveBeenCalledWith("request", null);
@@ -259,7 +261,7 @@ describe("ReviewBar", () => {
             })
         );
 
-        expect(screen.getByText("Luka Perić is reviewing")).toBeTruthy();
+        expect(screen.getByText("Luka Perić is reviewing this step.")).toBeTruthy();
         expect(screen.getByText("Review: In progress")).toBeTruthy();
         expect(screen.getByText("In review")).toBeTruthy();
         expect(screen.getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
@@ -742,7 +744,7 @@ describe("ReviewBar, an action dialog across a refresh (R2)", () => {
             container
         );
         act(() => presenter.openAction("approve", "step-1"));
-        await screen.findByText("Approve “Editorial check”");
+        await screen.findByText("Approve “Editorial check”?");
 
         fireEvent.click(screen.getByRole("button", { name: "Approve" }));
 
@@ -773,14 +775,14 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
         description: null,
         comment: null,
         tag: runningTag,
-        message: "AI tone check running since 14:20",
+        message: "AI tone check is running.",
         tooltip: "AI tone check is running since 14:20."
     };
 
     it("renders the running message, the Running tag with its icon and the meta line", () => {
         renderBar(
             createTargetReviewViewModel({
-                message: "AI tone check running since 14:20",
+                message: "AI tone check is running.",
                 tile: "rate_review",
                 stepStateTag: runningTag,
                 stepStateTooltip: "AI tone check is running since 14:20.",
@@ -790,7 +792,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
             })
         );
 
-        expect(screen.getByText("AI tone check running since 14:20")).toBeTruthy();
+        expect(screen.getByText("AI tone check is running.")).toBeTruthy();
         const tag = screen.getByText("Running");
         expect(tag.parentElement?.querySelector("[data-testid='svg-icon']")).not.toBeNull();
         expect(
@@ -822,7 +824,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
     it("shows the run message of a segment in the popover instead of a quoted comment", async () => {
         renderBar(
             createTargetReviewViewModel({
-                message: "Luka Perić is reviewing",
+                message: "Luka Perić is reviewing this step.",
                 progress: {
                     approved: 1,
                     total: 2,
@@ -847,9 +849,9 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
 
         fireEvent.click(screen.getByText("1 of 2 steps approved"));
 
-        expect(await screen.findByText("AI tone check running since 14:20")).toBeTruthy();
+        expect(await screen.findByText("AI tone check is running.")).toBeTruthy();
         expect(screen.getByText("“Fine.”")).toBeTruthy();
-        expect(screen.queryByText("“AI tone check running since 14:20”")).toBeNull();
+        expect(screen.queryByText("“AI tone check is running.”")).toBeNull();
     });
 });
 

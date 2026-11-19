@@ -82,12 +82,8 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                 open
                 modal
                 width={"560px"}
-                title={
-                    <div className={"flex flex-col"}>
-                        <Text size={"sm"}>{vm.subtitle}</Text>
-                        <span>{vm.title}</span>
-                    </div>
-                }
+                title={vm.title}
+                description={vm.subtitle}
                 icon={<StepTypeTile kind={vm.kind} />}
                 bodyPadding
                 headerSeparator

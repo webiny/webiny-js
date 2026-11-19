@@ -13,7 +13,6 @@ import { ExclusionsLoadError } from "./ExclusionsLoadError.js";
 import { ExclusionsLoading } from "./ExclusionsLoading.js";
 import { ExclusionsNamesBanner } from "./ExclusionsNamesBanner.js";
 import { ExclusionsNoAccess } from "./ExclusionsNoAccess.js";
-import { ExclusionsRulesCard } from "./ExclusionsRulesCard.js";
 import { ExclusionsTable } from "./ExclusionsTable.js";
 import { ExclusionsToolbar } from "./ExclusionsToolbar.js";
 
@@ -58,7 +57,6 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
         body = (
             <>
                 {namesBanner}
-                <ExclusionsRulesCard />
                 <ExclusionsToolbar
                     tab={vm.tab}
                     tabs={vm.tabs}

@@ -255,7 +255,7 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
 
         expect(presenter.vm.empty).toEqual({
             title: "No exclusions",
-            text: EVERYONE,
+            text: "Everyone in the reviewing teams can be assigned automatically.",
             showAdd: true
         });
     });

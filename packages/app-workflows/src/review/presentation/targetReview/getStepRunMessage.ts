@@ -5,7 +5,7 @@ import { isStepRunning } from "./isStepRunning.js";
 
 /*
  * What the bar and the progress popover say about a running or failed step (R263, R264):
- * "{Step} running since {hh:mm}", "{Step} failed: {reason}" and, without a reason, "{Step} failed."
+ * "{Step} is running.", "{Step} failed: {reason}" and, without a reason, "{Step} failed."
  * (`reason` is the step comment). `null` for every other step, and for a running step without a
  * usable start time. Pure.
  */
@@ -25,5 +25,5 @@ export const getStepRunMessage = (step: ReviewStep): string | null => {
     if (startedAt === null) {
         return null;
     }
-    return `${step.title} running since ${startedAt}`;
+    return `${step.title} is running.`;
 };

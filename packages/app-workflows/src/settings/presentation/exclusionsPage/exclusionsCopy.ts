@@ -2,17 +2,9 @@
 export const EXCLUSIONS_PAGE_TITLE = "Reviewer exclusions";
 
 export const EXCLUSIONS_PAGE_SUB =
-    "Take people out of automatic assignment for a while, e.g. during leave or when their workload is too high.";
+    "Take people out of automatic assignment for a while, e.g. during leave. Automatic assignment skips them and reviewer pickers show them as Unavailable; work they already hold stays with them.";
 
 export const EXCLUSIONS_ADD_LABEL = "Add exclusion";
-
-export const EXCLUSIONS_RULE_SKIPPED = "Automatic assignment skips excluded people.";
-
-export const EXCLUSIONS_RULE_UNAVAILABLE = "Reviewer pickers show them as Unavailable.";
-
-export const EXCLUSIONS_RULE_HELD_WORK = "Work they already hold stays with them.";
-
-export const EXCLUSIONS_RULE_OWN_WORK = "They can still start or take over work themselves.";
 
 // The filter's accessible name; it has no visible label (R340).
 export const EXCLUSIONS_FILTER_LABEL = "Filter by user";

@@ -24,6 +24,10 @@ const STEP: StepCardVm = {
     typeLabel: "People",
     type: "review",
     summary: "Legal + Editors",
+    details: [
+        { label: "Reviewing teams", value: "Legal, Editors" },
+        { label: "Assignment", value: "Team pool" }
+    ],
     description: null,
     readOnly: false,
     warnings: [],
@@ -51,6 +55,7 @@ const createProps = (overrides: Partial<StepCardProps> = {}): StepCardProps => {
         index: 1,
         sortable: createItemProps(),
         onEdit: vi.fn(),
+        onAddAfter: vi.fn(),
         onMove: vi.fn(),
         onDelete: vi.fn(),
         ...overrides
@@ -209,6 +214,15 @@ describe("StepCard", () => {
         expect(props.onEdit).toHaveBeenCalledWith("step-2");
     });
 
+    it("adds a step after this one through the plus action", () => {
+        const props = createProps({ index: 1 });
+        renderCard(props);
+
+        fireEvent.click(screen.getByRole("button", { name: "Add a step after Legal sign-off" }));
+
+        expect(props.onAddAfter).toHaveBeenCalledWith(1);
+    });
+
     it("deletes through the Delete action", () => {
         const props = createProps();
         renderCard(props);
@@ -231,11 +245,17 @@ describe("StepCard", () => {
         const props = createProps({ disabled: true });
         renderCard(props);
 
-        for (const name of ["Move up", "Move down", "Delete step"]) {
+        for (const name of [
+            "Move up",
+            "Move down",
+            "Delete step",
+            "Add a step after Legal sign-off"
+        ]) {
             const button = screen.getByRole("button", { name });
             expect(button.getAttribute("aria-disabled")).toBe("true");
             fireEvent.click(button);
         }
+        expect(props.onAddAfter).not.toHaveBeenCalled();
         expect(props.onMove).not.toHaveBeenCalled();
         expect(props.onDelete).not.toHaveBeenCalled();
     });
@@ -405,13 +425,49 @@ describe("StepCard", () => {
         );
     });
 
-    it("shows the meta line in the body of an item with no description, warnings or error", () => {
-        renderCard(createProps());
+    it("shows the key and value rows, then an Edit step button, in the expanded body", () => {
+        const props = createProps();
+        renderCard(props);
 
         fireEvent.click(screen.getByText("Legal sign-off"));
 
-        const details = cardOf("step-2").querySelector('[data-role="step-details"]');
-        expect(details?.textContent).toBe("Legal + Editors");
+        const details = cardOf("step-2").querySelector('[data-role="step-details"]') as HTMLElement;
+        const rows = Array.from(details.querySelectorAll('[data-role="step-detail-row"]'));
+        expect(rows.map(row => row.textContent)).toEqual([
+            "Reviewing teamsLegal, Editors",
+            "AssignmentTeam pool"
+        ]);
+        const button = within(details).getByRole("button", { name: "Edit step" });
+        expect(
+            rows[1].compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+
+        fireEvent.click(button);
+        expect(props.onEdit).toHaveBeenCalledWith("step-2");
+    });
+
+    it("puts the warning and error alerts between the rows and the Edit step button", () => {
+        const step: StepCardVm = { ...STEP, error: "Enter a title." };
+        renderCard(createProps({ step }));
+
+        const details = cardOf("step-2").querySelector('[data-role="step-details"]') as HTMLElement;
+        const row = details.querySelector('[data-role="step-detail-row"]') as HTMLElement;
+        const alert = within(details).getByRole("alert");
+        const button = within(details).getByRole("button", { name: "Edit step" });
+        expect(row.compareDocumentPosition(alert) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(
+            alert.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+    });
+
+    it("shows only the Edit step button for a step without rows", () => {
+        renderCard(createProps({ step: { ...STEP, details: [] } }));
+
+        fireEvent.click(screen.getByText("Legal sign-off"));
+
+        const details = cardOf("step-2").querySelector('[data-role="step-details"]') as HTMLElement;
+        expect(details.querySelectorAll('[data-role="step-detail-row"]')).toHaveLength(0);
+        expect(within(details).getByRole("button", { name: "Edit step" })).toBeTruthy();
     });
 
     it("renders the step number in a fixed-width slot", () => {

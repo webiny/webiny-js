@@ -162,7 +162,7 @@ describe("ReviewListPresenter", () => {
         expect(row.contentTypeLabel).toBe("Type article");
         expect(row.contentTypeApp).toBe("Headless CMS");
         expect(row.stepColor).toBe("#FA5723");
-        expect(row.stepStateIcon).toBeNull();
+        expect(row.stepStateIcon).toBe("rate_review");
         expect(row.contentUrl).toBe("/cms/content-entries/article?id=e1#0002");
         expect(row.highlighted).toBe(false);
     });
@@ -373,7 +373,7 @@ describe("ReviewListPresenter", () => {
         await presenter.setSearch("nothing like this");
         expect(presenter.vm.empty).toEqual({
             title: "No reviews match these filters",
-            description: ""
+            description: "Try another title, content type or state, or clear the filters."
         });
 
         listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
@@ -1071,7 +1071,7 @@ describe("ReviewListPresenter", () => {
 
             const row = presenter.vm.rows[0];
             expect(row.stepStateLabel).toBe("Failed");
-            expect(row.stepStateVariant).toBe("destructive");
+            expect(row.stepStateVariant).toBe("destructive-light");
             expect(row.stepTitle).toBe("AI tone check");
             expect(row.ownerLabel).toBe("AI tone check");
             expect(row.actions.map(action => action.kind).sort()).toEqual(["cancel", "restart"]);

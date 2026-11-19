@@ -47,6 +47,8 @@ export interface ReviewDetailsViewModelInput {
 }
 
 const BARE_TIME = /^\d{2}:\d{2}$/;
+const YESTERDAY_TIME = /^Yesterday (\d{2}:\d{2})$/;
+const DATE_TIME = /^(.+), (\d{2}:\d{2})$/;
 
 // The reason of a failed step has its own field and box (`failedReason`), not a quoted comment.
 const getComment = (step: ReviewStep): string | null => {
@@ -198,10 +200,15 @@ export const buildReviewDetailsViewModel = (
     if (input.contentTypeLabel) {
         contentLabel = `${input.contentTypeLabel} · ${contentLabel}`;
     }
-    // "Today" only when the time is a bare clock time, which follows the viewer's day boundary.
-    let requestedTime = formatReviewTime(review.createdOn, now);
-    if (BARE_TIME.test(requestedTime)) {
-        requestedTime = `Today ${requestedTime}`;
+    // The formatter returns a bare clock time, `Yesterday {time}` or `{date}, {time}` (follows the viewer's day boundary);
+    // the requested line reads them as "today at", "yesterday at" and "on {date} at".
+    let requestedText = formatReviewTime(review.createdOn, now);
+    if (BARE_TIME.test(requestedText)) {
+        requestedText = `today at ${requestedText}`;
+    } else if (YESTERDAY_TIME.test(requestedText)) {
+        requestedText = requestedText.replace(YESTERDAY_TIME, "yesterday at $1");
+    } else if (DATE_TIME.test(requestedText)) {
+        requestedText = requestedText.replace(DATE_TIME, "on $1 at $2");
     }
 
     const header: ReviewDetailsHeaderVm = {
@@ -210,8 +217,8 @@ export const buildReviewDetailsViewModel = (
         stateVariant,
         contentLabel,
         contentUrl: input.contentUrl,
-        requesterLine: `Requester: ${review.createdBy.displayName}`,
-        requestedLine: `Requested: ${requestedTime}`,
+        requesterLine: `Requested by ${review.createdBy.displayName}`,
+        requestedLine: `Requested ${requestedText}`,
         requestedTitle: formatReviewTimeFull(review.createdOn)
     };
 

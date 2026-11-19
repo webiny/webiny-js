@@ -50,6 +50,23 @@ describe("ReviewerPicker", () => {
         expect(screen.getByText("Picks are checked again.")).toBeTruthy();
     });
 
+    it("shows the label as a visible field label only with showLabel", async () => {
+        const presenter = createPresenter();
+        await presenter.init({
+            load: vi.fn().mockResolvedValue(CANDIDATES),
+            currentOwnerId: null,
+            selectedId: null
+        });
+
+        renderWithAdminUi(
+            <ReviewerPicker presenter={presenter} label={"New owner"} showLabel={true} />
+        );
+
+        // The visible field label is the only group-level name: the group itself carries no aria-label.
+        expect(screen.getByText("New owner", { selector: "span" })).toBeTruthy();
+        expect(screen.queryByRole("group", { name: "New owner" })).toBeNull();
+    });
+
     it("keeps the field on a load error and shows the error with Try again in the open list", async () => {
         const presenter = createPresenter();
         const load = vi

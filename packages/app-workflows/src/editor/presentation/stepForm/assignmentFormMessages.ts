@@ -9,7 +9,7 @@ export const ASSIGNMENT_FORM_MESSAGES = {
     strategyLabel: "Strategy",
     allowManualPickLabel: "Let the requester pick a reviewer",
     allowManualPickHint:
-        "The requester can choose a person from this step's eligible reviewers when requesting a review. Picks are checked again when the step is reached.",
+        "The requester can choose a reviewer when they request a review. Picks are checked again when the step is reached.",
     rulesLabel: "Routing rules",
     rulesHint: "The first matching rule wins. If no rule matches, the strategy decides.",
     addRule: "Add rule",
@@ -32,7 +32,6 @@ export const ASSIGNMENT_FORM_MESSAGES = {
     includeSubfolders: "Include subfolders",
     targetLabel: "Then assign to",
     targetPlaceholder: "Search reviewers or teams",
-    targetHint: "Only members of this step's reviewing teams, or one of those teams.",
     searchUsersPlaceholder: "Search users",
     searchFoldersPlaceholder: "Search folders",
     ruleTitle: (position: number): string => {

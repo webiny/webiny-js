@@ -32,13 +32,13 @@ describe("getStepStartedAt", () => {
 });
 
 describe("getStepRunMessage (R263)", () => {
-    it("reads '{Step} running since {hh:mm}' for a running AI step", () => {
-        expect(getStepRunMessage(createRunningAiStep())).toBe("AI tone check running since 14:20");
+    it("reads '{Step} is running.' for a running AI step", () => {
+        expect(getStepRunMessage(createRunningAiStep())).toBe("AI tone check is running.");
     });
 
     it("reads the same for a running automation step", () => {
         const step = createRunningAutomationStep();
-        expect(getStepRunMessage(step)).toBe("Notify web team running since 14:20");
+        expect(getStepRunMessage(step)).toBe("Notify web team is running.");
     });
 
     it("is null for a running step without a usable start time", () => {
@@ -124,21 +124,23 @@ describe("getStepStateTag with running (R263)", () => {
         });
     });
 
-    it("keeps 'In review' without the icon for a step a person reviews", () => {
+    it("gives 'In review' the rate_review icon for a step a person reviews", () => {
         expect(getStepStateTag(StepState.InReview, false)).toEqual({
             label: "In review",
-            variant: "accent-light"
+            variant: "accent-light",
+            icon: "rate_review"
         });
         expect(getStepStateTag(StepState.InReview)).toEqual({
             label: "In review",
-            variant: "accent-light"
+            variant: "accent-light",
+            icon: "rate_review"
         });
     });
 
     it("ignores running for every other state and keeps Failed with sync_problem (R263)", () => {
         expect(getStepStateTag(StepState.Failed, true)).toEqual({
             label: "Failed",
-            variant: "destructive",
+            variant: "destructive-light",
             icon: "sync_problem"
         });
         expect(getStepStateTag(StepState.Approved, true)).toEqual({
@@ -183,11 +185,11 @@ describe("getReviewProgress with running and failed steps", () => {
             variant: "accent-light",
             icon: "progress_activity"
         });
-        expect(segments[0].message).toBe("AI tone check running since 14:20");
+        expect(segments[0].message).toBe("AI tone check is running.");
         expect(segments[0].tooltip).toBe("AI tone check is running since 14:20.");
         expect(segments[1].tag).toEqual({
             label: "Failed",
-            variant: "destructive",
+            variant: "destructive-light",
             icon: "sync_problem"
         });
         expect(segments[1].message).toBe(

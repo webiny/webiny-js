@@ -133,11 +133,15 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.reviewId).toBe("review-1");
         expect(vm.reviewKind).toBe("inProgress");
         expect(vm.tile).toBe("rate_review");
-        expect(vm.message).toBe("Luka Perić is reviewing");
+        expect(vm.message).toBe("Luka Perić is reviewing this step.");
         expect(vm.stepMeta).toBe("Step 2 of 2: Legal sign-off");
         expect(vm.ownerName).toBe("Luka Perić");
         expect(vm.stateTag).toEqual({ label: "Review: In progress", variant: "accent-light" });
-        expect(vm.stepStateTag).toEqual({ label: "In review", variant: "accent-light" });
+        expect(vm.stepStateTag).toEqual({
+            label: "In review",
+            variant: "accent-light",
+            icon: "rate_review"
+        });
         expect(vm.progress?.approved).toBe(1);
         expect(vm.progress?.total).toBe(2);
         expect(vm.actions).toEqual([
@@ -155,7 +159,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.moveDisabledReason).toBe("Can’t move while this revision is in review.");
     });
 
-    it("uses the hourglass tile for a step in the team pool", () => {
+    it("uses the hourglass tile for a step in the team pool.", () => {
         const vm = buildTargetReviewViewModel(
             input({ status: "active", review: createReviewWithFlags() })
         );
@@ -247,7 +251,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(unpublished.message).toBe(
             "Approved and unpublished. Publishing again needs no new review."
         );
-        expect(ready.message).toBe("Approved, ready to publish");
+        expect(ready.message).toBe("Every step approved. Ready to publish.");
     });
 
     it("enables Publish for an unpublished revision with no review (Q19)", () => {
@@ -285,7 +289,7 @@ describe("buildTargetReviewViewModel", () => {
                 viewerTeamIds: ["t2"]
             })
         );
-        expect(vm.message).toBe("Waiting in the Legal team pool");
+        expect(vm.message).toBe("Waiting in the Legal team pool.");
         expect(vm.ownerName).toBe("Team pool (Marketing, Legal)");
     });
 
@@ -327,7 +331,7 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         const vm = buildTargetReviewViewModel(input({ status: "active", review }));
 
         expect(vm.tile).toBe("rate_review");
-        expect(vm.message).toBe("AI tone check running since 14:20");
+        expect(vm.message).toBe("AI tone check is running.");
         expect(vm.stepStateTag).toEqual({
             label: "Running",
             variant: "accent-light",
@@ -335,7 +339,7 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         });
         expect(vm.stepStateTooltip).toBe("AI tone check is running since 14:20.");
         expect(vm.ownerName).toBe("AI tone check");
-        expect(vm.progress?.segments[0].message).toBe("AI tone check running since 14:20");
+        expect(vm.progress?.segments[0].message).toBe("AI tone check is running.");
     });
 
     it("shows a failed automation step with the sync_problem tile and the Failed tag", () => {
@@ -347,7 +351,7 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         expect(vm.message).toBe("Notify web team failed: Webhook returned 503 Service Unavailable");
         expect(vm.stepStateTag).toEqual({
             label: "Failed",
-            variant: "destructive",
+            variant: "destructive-light",
             icon: "sync_problem"
         });
         expect(vm.stepStateTooltip).toBe(
@@ -368,7 +372,11 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         );
 
         expect(vm.tile).toBe("rate_review");
-        expect(vm.stepStateTag).toEqual({ label: "In review", variant: "accent-light" });
+        expect(vm.stepStateTag).toEqual({
+            label: "In review",
+            variant: "accent-light",
+            icon: "rate_review"
+        });
         expect(vm.stepStateTooltip).toBeNull();
     });
 

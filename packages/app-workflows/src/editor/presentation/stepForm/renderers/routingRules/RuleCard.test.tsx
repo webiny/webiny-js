@@ -359,7 +359,7 @@ describe("RuleCard: the folder fields (R292, R295, QBZ-15)", () => {
     it("disables Include subfolders while there is no folder", () => {
         renderCard(createProps());
 
-        const checkbox: HTMLButtonElement = screen.getByRole("checkbox", {
+        const checkbox: HTMLButtonElement = screen.getByRole("switch", {
             name: "Include subfolders"
         });
         expect(checkbox.disabled).toBe(true);
@@ -371,7 +371,7 @@ describe("RuleCard: the folder fields (R292, R295, QBZ-15)", () => {
         const props = createProps({ rule: createRuleValue({ folder }) });
         renderCard(props);
 
-        const checkbox: HTMLButtonElement = screen.getByRole("checkbox", {
+        const checkbox: HTMLButtonElement = screen.getByRole("switch", {
             name: "Include subfolders"
         });
         expect(checkbox.disabled).toBe(false);
@@ -389,7 +389,7 @@ describe("RuleCard: the folder fields (R292, R295, QBZ-15)", () => {
         const props = createProps({ rule: createRuleValue({ folder }) });
         renderCard(props);
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "Include subfolders" }));
+        fireEvent.click(screen.getByRole("switch", { name: "Include subfolders" }));
 
         expect(props.onChange).toHaveBeenCalledWith({
             folder: { id: "folder-1", type: "cms:other", includeDescendants: true }
@@ -404,7 +404,7 @@ describe("RuleCard: the folder fields (R292, R295, QBZ-15)", () => {
         expect(picker.getAttribute("data-selected")).toBe("Restricted folder");
         expect(picker.getAttribute("data-disabled")).toBe("true");
         expect(screen.getByText(HINT)).toBeDefined();
-        const checkbox: HTMLButtonElement = screen.getByRole("checkbox", {
+        const checkbox: HTMLButtonElement = screen.getByRole("switch", {
             name: "Include subfolders"
         });
         expect(checkbox.disabled).toBe(true);
@@ -441,7 +441,7 @@ describe("RuleCard: the folder fields (R292, R295, QBZ-15)", () => {
         expect(getPicker("Content is in folder").getAttribute("data-selected")).toBe(
             "Deleted folder"
         );
-        expect(screen.getByText("The folder no longer exists.")).toBeDefined();
+        expect(screen.getByText("Rule 1: The folder no longer exists.")).toBeDefined();
     });
 });
 
@@ -450,15 +450,13 @@ describe("RuleCard: the target field (R296, R299, R307)", () => {
         cleanup();
     });
 
-    it("is required, with its placeholder and hint, and lists the pools and the members", () => {
+    it("is required, with its placeholder and no helper text, and lists the pools and the members", () => {
         renderCard(createProps());
 
         const picker = getPicker("Then assign to");
         expect(picker.getAttribute("data-required")).toBe("true");
         expect(picker.getAttribute("data-placeholder")).toBe("Search reviewers or teams");
-        expect(picker.getAttribute("data-description")).toBe(
-            "Only members of this step's reviewing teams, or one of those teams."
-        );
+        expect(picker.getAttribute("data-description")).toBe("");
         expect(getOptionDetails("Then assign to").map(option => option.label)).toEqual([
             "Legal team pool",
             "Marketing team pool",
@@ -647,7 +645,7 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
         expect(getPicker("Then assign to").getAttribute("data-error")).toBe("");
     });
 
-    it("lists the warnings below the fields without the Rule prefix, and keeps the neutral border", () => {
+    it("lists the warnings below the fields with the Rule prefix, and keeps the neutral border", () => {
         const issues: RuleIssue[] = [
             {
                 ruleId: "rule-1",
@@ -659,8 +657,7 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
         ];
         renderCard(createProps({ issues }));
 
-        expect(screen.getByText("The team was deleted.")).toBeDefined();
-        expect(screen.queryByText(/^Rule 1:/)).toBeNull();
+        expect(screen.getByText("Rule 1: The team was deleted.")).toBeDefined();
     });
 
     it("renders no read-access warning, no exclusion note and no Unavailable option text (Q50)", () => {
@@ -696,7 +693,7 @@ describe("RuleCard: read-only", () => {
         ]) {
             expect(getPicker(label).getAttribute("data-disabled")).toBe("true");
         }
-        const checkbox: HTMLButtonElement = screen.getByRole("checkbox", {
+        const checkbox: HTMLButtonElement = screen.getByRole("switch", {
             name: "Include subfolders"
         });
         expect(checkbox.disabled).toBe(true);

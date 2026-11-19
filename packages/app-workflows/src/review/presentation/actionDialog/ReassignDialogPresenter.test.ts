@@ -125,6 +125,7 @@ describe("ReassignDialogPresenter", () => {
         const { vm } = setup.presenter;
         expect(vm.status).toBe("ready");
         expect(vm.title).toBe("Reassign “Legal sign-off”");
+        expect(vm.description).toBe("Choose who reviews this step on “Spring campaign”.");
         expect(vm.hint).toBe("The previous owner (if any) and the new owner are notified.");
         expect(vm.confirmLabel).toBe("Reassign");
         expect(vm.cancelLabel).toBe("Cancel");

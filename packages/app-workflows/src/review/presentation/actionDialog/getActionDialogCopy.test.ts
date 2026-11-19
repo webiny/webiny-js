@@ -10,7 +10,7 @@ import { at } from "~/review/testing/at.js";
 import type { ReviewStep } from "~/review/domain/types.js";
 
 const FAILED_AT = at(10, 20);
-const SUFFIX = "Restarting runs the step again from the beginning.";
+const SUFFIX = "Restarting runs the step again from the start.";
 const AI = createActor({ type: "ai" });
 
 const failedStep = (overrides: Partial<ReviewStep> = {}): ReviewStep => {
@@ -109,7 +109,7 @@ describe("getActionDialogCopy: restart (R266, R264)", () => {
 
 describe("getActionDialogCopy: cancel (design 4c, frame 23)", () => {
     const cancelBody = (steps: ReviewStep[], currentStepId: string | null): string => {
-        const review = createReview({ currentStepId, steps });
+        const review = createReview({ title: "Summer launch", currentStepId, steps });
         return getActionDialogCopy({
             kind: "cancel",
             review,
@@ -120,7 +120,7 @@ describe("getActionDialogCopy: cancel (design 4c, frame 23)", () => {
         }).body;
     };
     const BASE =
-        "Review progress is lost. Editing is unlocked, and a new request starts again from the first step.";
+        "Review progress on “Summer launch” is lost and editing is unlocked for the requester.";
 
     it("keeps the 8a text for a person's step", () => {
         const step = createStep({
@@ -201,6 +201,24 @@ describe("getActionDialogCopy: confirm button variant (C5)", () => {
 
         expect(copy.confirmVariant).toBe(variant);
     });
+
+    it("gives the approve confirm the check icon and no other confirm an icon", () => {
+        const kinds = ["approve", "reject", "cancel", "start", "takeOver", "restart"] as const;
+        const icons = kinds.map(kind => {
+            const step = createStep({ id: "step-1", title: "Legal sign-off" });
+            const review = createReview({ currentStepId: step.id, steps: [step] });
+            return getActionDialogCopy({
+                kind,
+                review,
+                stepId: step.id,
+                comment: "",
+                context: "editor",
+                touched: false
+            }).confirmIcon;
+        });
+
+        expect(icons).toEqual(["check", null, null, null, null, null]);
+    });
 });
 
 describe("getActionDialogCopy: comment hints and reject validation (AD1, AD2)", () => {
@@ -217,23 +235,30 @@ describe("getActionDialogCopy: comment hints and reject validation (AD1, AD2)", 
         });
     };
 
-    it("shows the approve placeholder and note, optional", () => {
+    it("shows the approve description, placeholder and hint, optional, without a note", () => {
         const copy = copyOf("approve", "", false);
 
+        expect(copy.title).toBe("Approve “Legal sign-off”?");
+        expect(copy.description).toBe("The review moves on to the next step.");
         expect(copy.commentLabel).toBe("Comment");
+        expect(copy.commentDescription).toBe("(optional)");
         expect(copy.commentRequired).toBe(false);
-        expect(copy.commentPlaceholder).toBe("Anything the requester or next reviewer should know");
-        expect(copy.commentNote).toBe("Visible to the requester and in review details.");
+        expect(copy.commentPlaceholder).toBe("Anything the author should know");
+        expect(copy.commentNote).toBeNull();
         expect(copy.commentCounter).toBeNull();
     });
 
-    it("shows the reject hint and counter without an error before the first edit", () => {
+    it("shows the reject counter without an error before the first edit", () => {
         const copy = copyOf("reject", "abc", false);
 
-        expect(copy.commentLabel).toBe("Comment");
+        expect(copy.title).toBe("Reject “Legal sign-off”?");
+        expect(copy.body).toBe(
+            "Rejection is final for this revision. The author creates a new revision to fix it and requests a new review."
+        );
+        expect(copy.commentLabel).toBe("Reason");
         expect(copy.commentRequired).toBe(true);
-        expect(copy.commentPlaceholder).toBe("Explain what needs to change");
-        expect(copy.commentNote).toBe("Required. The requester sees this.");
+        expect(copy.commentPlaceholder).toBe("");
+        expect(copy.commentNote).toBeNull();
         expect(copy.commentCounter).toBe("3 / 10 min.");
         expect(copy.commentError).toBeNull();
     });
@@ -241,16 +266,14 @@ describe("getActionDialogCopy: comment hints and reject validation (AD1, AD2)", 
     it("turns the reject hint into an error after the first edit", () => {
         const copy = copyOf("reject", "12345678", true);
 
-        expect(copy.commentError).toBe("Write at least 10 characters.");
+        expect(copy.commentError).toBe("Use at least 10 characters.");
         expect(copy.commentCounter).toBe("8 / 10 min.");
-        expect(copy.commentNote).toBeNull();
     });
 
     it("shows no error once the reject comment is long enough", () => {
         const copy = copyOf("reject", "1234567890", true);
 
         expect(copy.commentError).toBeNull();
-        expect(copy.commentNote).toBe("Required. The requester sees this.");
         expect(copy.canSubmit).toBe(true);
     });
 });
@@ -293,11 +316,11 @@ describe("getActionDialogCopy: list and editor wording (AD3, AD4)", () => {
             "Ivan Horvat is reviewing “Editorial check” on “Summer launch”. If you take over, you become the owner."
         );
         expect(bodyOf("takeOver", "editor")).toBe(
-            "Ivan Horvat is reviewing “Editorial check”. If you take over, you become the owner and Ivan can no longer approve or reject it."
+            "Ivan Horvat is reviewing “Editorial check”. If you take over, you become the owner and Ivan no longer reviews it."
         );
     });
 
-    it("names the review in the list cancel text, with the running suffix", () => {
+    it("names the review in the cancel text of the list and the editor, with the running suffix", () => {
         const idle = createStep({ id: "step-1", state: StepState.InReview });
         const running = failedStep({ id: "step-1", state: StepState.InReview, comment: null });
         const cancel = (step: ReviewStep, context: "list" | "editor") =>
@@ -314,14 +337,12 @@ describe("getActionDialogCopy: list and editor wording (AD3, AD4)", () => {
                 touched: false
             }).body;
         const LIST =
-            "“Summer launch”: review progress is lost. Editing is unlocked, and a new request starts again from the first step.";
+            "Review progress on “Summer launch” is lost and editing is unlocked for the requester.";
 
         expect(cancel(idle, "list")).toBe(LIST);
         expect(cancel(running, "list")).toBe(
             `${LIST} AI tone check is running and will be stopped.`
         );
-        expect(cancel(idle, "editor")).toBe(
-            "Review progress is lost. Editing is unlocked, and a new request starts again from the first step."
-        );
+        expect(cancel(idle, "editor")).toBe(LIST);
     });
 });

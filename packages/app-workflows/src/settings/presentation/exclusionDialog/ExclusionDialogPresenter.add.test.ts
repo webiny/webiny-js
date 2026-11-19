@@ -93,7 +93,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
         );
     });
 
-    it("disables users already in the list with the note In the list (Q64)", async () => {
+    it("disables users already in the list with the note Already excluded (Q64)", async () => {
         await openAdd(setup);
 
         expect(setup.presenter.vm.user.options).toEqual([
@@ -105,7 +105,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
                 muted: false,
                 disabled: true,
                 icon: "person",
-                note: "In the list"
+                note: "Already excluded"
             },
             {
                 id: "user-ivan",

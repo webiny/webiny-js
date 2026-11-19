@@ -64,7 +64,7 @@ export interface ReviewAttemptVm {
 // One issue an AI step reported, as the cells of the design's table (R264).
 export interface ReviewAiIssueVm {
     severityLabel: string;
-    // The tag treatment of the severity: a warning is the warning tag, every other one neutral.
+    // The tag treatment of the severity: an error is destructive, a warning is the warning tag, every other one the Info tag.
     severityVariant: TargetReviewTagVariant;
     field: string;
     message: string;

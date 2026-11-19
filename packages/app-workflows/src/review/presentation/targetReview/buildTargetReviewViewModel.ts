@@ -17,6 +17,7 @@ import { getReviewProgress } from "./getReviewProgress.js";
 import { getReviewStateTag } from "./getReviewStateTag.js";
 import { getStepOwnerLabel } from "./getStepOwnerLabel.js";
 import { getStepStateTag } from "./getStepStateTag.js";
+import type { ReviewLockCopy } from "./ReviewLockCopy.js";
 import { getStepTagTooltip } from "./getStepTagTooltip.js";
 import { isStepRunning } from "./isStepRunning.js";
 
@@ -35,6 +36,7 @@ export interface TargetReviewViewModelInput {
     openAction: TargetReviewOpenAction | null;
     contentNotice: ReviewContentNoticeVm | null;
     requestBlockReason: string | null;
+    lockCopy?: ReviewLockCopy;
 }
 
 const getTile = (input: TargetReviewViewModelInput): TargetReviewTile => {
@@ -82,7 +84,8 @@ export const buildTargetReviewViewModel = (
         flags,
         isPublished: input.isPublished,
         isUnpublished: input.isUnpublished,
-        viewerTeamIds: input.viewerTeamIds
+        viewerTeamIds: input.viewerTeamIds,
+        lockCopy: input.lockCopy
     });
     const reviewKind = getReviewKind(input.status, review);
     const rules = getEditorRules({

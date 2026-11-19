@@ -17,6 +17,7 @@ import { WbPageUnsavedChanges } from "~/features/editorReview/WbPageUnsavedChang
 import { Routes } from "~/routes.js";
 import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
 import { getPageReviewContext } from "./getPageReviewContext.js";
+import { PAGE_REVIEW_LOCK_COPY } from "./pageReviewLockCopy.js";
 import type { IPageEditorDocument } from "./pageEditorDocument.js";
 import type { ISelectedPage } from "./pageEditorDocument.js";
 
@@ -49,6 +50,7 @@ export const PageReviewBar = createReactiveComponent(() => {
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
             contentReloader,
             unsavedChanges,
+            lockCopy: PAGE_REVIEW_LOCK_COPY,
             ...context
         });
         return () => {

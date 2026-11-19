@@ -146,9 +146,9 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
 
         expect(message).toEqual({
             title: "“Launch page” was rejected at Legal review",
-            body: "Rob Reviewer: “The hero image is missing alt text.”. Create a new revision to fix it, then request a new review.",
+            body: "Rob Reviewer: “The hero image is missing alt text.”. Create a new revision to fix it.",
             subject: "Rejected: Launch page (Legal review)",
-            text: "Rob Reviewer rejected this revision at Legal review: “The hero image is missing alt text.”. Create a new revision to fix it, then request a new review.",
+            text: "Rob Reviewer rejected this revision at Legal review: “The hero image is missing alt text.”. Create a new revision, fix it and request a new review.",
             linkLabel: "Open content"
         });
     });
@@ -162,7 +162,7 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
         });
 
         expect(message.body).toBe(
-            "Brand check: “The tone is off.”. Create a new revision to fix it, then request a new review."
+            "Brand check: “The tone is off.”. Create a new revision to fix it."
         );
     });
 

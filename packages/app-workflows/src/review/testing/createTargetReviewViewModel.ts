@@ -11,7 +11,7 @@ export const createTargetReviewViewModel = (
         targetTitle: "Spring campaign",
         namespace: "cms.article",
         targetRevisionId: "entry-1#0001",
-        message: "Luka Perić is reviewing",
+        message: "Luka Perić is reviewing this step.",
         lockText: "Editing, publishing and moving are locked while this revision is in review.",
         tile: "rate_review",
         stateTag: { label: "Review: In progress", variant: "accent-light" },

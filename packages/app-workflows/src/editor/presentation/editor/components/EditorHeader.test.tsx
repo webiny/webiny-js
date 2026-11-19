@@ -22,26 +22,23 @@ const createProps = (overrides: Partial<WorkflowHeaderVm> = {}): EditorHeaderPro
 };
 
 describe("EditorHeader", () => {
-    it("shows the name, the applies-to line and the note under Save", () => {
+    it("shows the name and the applies-to line", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
         expect(screen.getByText("Article review")).toBeTruthy();
-        expect(screen.getByText("Applies to Article · Headless CMS model")).toBeTruthy();
         expect(
             screen.getByText(
-                "Changes apply to new review requests; reviews already running are not affected."
+                "Applies to Article (Headless CMS model) · Created by Ada Lovelace on 17.10.2026"
             )
         ).toBeTruthy();
     });
 
-    it("keeps the hint out of the actions column, under the More actions menu trigger area", () => {
+    it("does not show the changes note: it sits below the add button", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
+        expect(screen.queryByText(/Changes apply to new review requests/)).toBeNull();
         const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
-        const hint = document.querySelector('[data-role="changes-hint"]') as HTMLElement;
-        expect(actions.contains(hint)).toBe(false);
         expect(actions.querySelector('[aria-label="More actions"]')).toBeTruthy();
-        expect(hint.textContent).toContain("Changes apply to new review requests");
     });
 
     it("shows the Unsaved changes tag only while dirty", () => {
@@ -140,10 +137,28 @@ describe("EditorHeader", () => {
         expect(screen.queryByText("Enter a workflow name.", { selector: "div" })).not.toBeNull();
     });
 
-    it("shows the save icon on the Save button", () => {
+    it("shows no icon on the Save button", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
-        expect(screen.getByRole("button", { name: "Save" }).querySelector("svg")).not.toBeNull();
+        expect(screen.getByRole("button", { name: "Save" }).querySelector("svg")).toBeNull();
+    });
+
+    it("deletes through the visible Delete workflow icon button", () => {
+        const props = createProps();
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
+
+        expect(props.onDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it("disables the Delete workflow icon button for a draft that was never saved", () => {
+        const props = createProps({ canDelete: false });
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
+
+        expect(props.onDelete).not.toHaveBeenCalled();
     });
 
     it("saves on click when Save is enabled", () => {

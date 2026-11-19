@@ -135,7 +135,7 @@ describe("review list pure functions", () => {
             label: "Restart",
             icon: "refresh",
             stepId: "step-4",
-            emphasis: "primary",
+            emphasis: "secondary",
             disabledReason: null
         });
     });
@@ -159,7 +159,7 @@ describe("review list pure functions", () => {
         });
         expect(getReviewListEmpty("pool", true, true)).toEqual({
             title: "No reviews match these filters",
-            description: ""
+            description: "Try another title, content type or state, or clear the filters."
         });
 
         const noTeam = {
@@ -187,7 +187,7 @@ describe("review list pure functions", () => {
         expect(getReviewListEmpty("failedSteps", false, false).title).toBe("No failed steps");
         expect(getReviewListEmpty("failedSteps", true, true)).toEqual({
             title: "No reviews match these filters",
-            description: ""
+            description: "Try another title, content type or state, or clear the filters."
         });
     });
 

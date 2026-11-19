@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
-import { ReactComponent as PersonOffIcon } from "@webiny/icons/person_off.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import type { ExclusionsEmptyVm } from "~/settings/model/list/ExclusionsEmptyVm.js";
 import { EXCLUSIONS_ADD_LABEL } from "../exclusionsCopy.js";
 
@@ -18,7 +18,8 @@ export const ExclusionsEmpty = ({ empty, onAdd }: ExclusionsEmptyProps) => {
             <Button
                 variant="primary"
                 text={EXCLUSIONS_ADD_LABEL}
-                icon={<PersonOffIcon />}
+                icon={<AddIcon />}
+                size="sm"
                 onClick={() => onAdd()}
             />
         );
@@ -27,7 +28,8 @@ export const ExclusionsEmpty = ({ empty, onAdd }: ExclusionsEmptyProps) => {
     return (
         <div data-testid="exclusions-empty" className="flex flex-col items-center pt-xl">
             <EmptyState
-                type="listing"
+                type="table"
+                size="sm"
                 title={empty.title}
                 description={empty.text}
                 actions={actions}

@@ -2,7 +2,7 @@ import type { ReviewToastParams } from "./abstractions.js";
 
 export interface ReviewToastText {
     title: string;
-    description: string | null;
+    description: string;
 }
 
 /*
@@ -45,7 +45,10 @@ export const getReviewToastText = (params: ReviewToastParams): ReviewToastText =
             };
         case "tookOver": {
             if (params.personName === null) {
-                return { title: `Took over “${params.stepTitle}”`, description: null };
+                return {
+                    title: `Took over “${params.stepTitle}”`,
+                    description: "You’re now the owner of this step."
+                };
             }
             return {
                 title: `Took over “${params.stepTitle}”`,
@@ -58,6 +61,9 @@ export const getReviewToastText = (params: ReviewToastParams): ReviewToastText =
                 description: "Both the previous and the new owner are notified."
             };
         case "cancelled":
-            return { title: "Review cancelled", description: "Editing is unlocked." };
+            return {
+                title: "Review cancelled",
+                description: "Editing is unlocked for the requester."
+            };
     }
 };

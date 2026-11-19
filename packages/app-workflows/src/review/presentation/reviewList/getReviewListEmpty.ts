@@ -26,7 +26,7 @@ const TAB_EMPTY: Record<ReviewListTab, ReviewListEmptyVm> = {
 
 const FILTERED_EMPTY: ReviewListEmptyVm = {
     title: "No reviews match these filters",
-    description: ""
+    description: "Try another title, content type or state, or clear the filters."
 };
 
 const NO_TEAM_EMPTY: ReviewListEmptyVm = {
@@ -35,7 +35,7 @@ const NO_TEAM_EMPTY: ReviewListEmptyVm = {
 };
 
 /*
- * Empty-state copy of README 8, QBZ-72 and QBZ-73. The filtered state has a title only. A viewer
+ * Empty-state copy of README 8, QBZ-72 and QBZ-73. A viewer
  * with no teams gets the no-team text on the two team tabs; the client cannot tell which teams
  * review content, so a member of only non-reviewing teams still sees the normal text.
  */

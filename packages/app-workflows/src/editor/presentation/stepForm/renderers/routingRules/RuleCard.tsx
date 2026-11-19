@@ -86,7 +86,7 @@ export const RuleCard = (props: RuleCardProps) => {
                         onChange={props.onChange}
                         onRemoveFolder={props.onRemoveFolder}
                     />
-                    <RuleWarnings warnings={messages.warnings} />
+                    <RuleWarnings index={index} warnings={messages.warnings} />
                 </div>
             </Card>
         </div>

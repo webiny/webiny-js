@@ -72,18 +72,19 @@ describe("ModelPanel", () => {
         expect(within(rowOf("Author")).getByTestId("icon-author")).toBeTruthy();
     });
 
-    it("marks the open row, the bound indicator and the unsaved dot", () => {
+    it("marks the open row, the bound indicator and the Unsaved tag", () => {
         renderWithAdminUi(<ModelPanel {...createProps()} />);
 
         const article = rowOf("Article");
         expect(article.getAttribute("aria-current")).toBe("true");
         expect(within(article).getByText("Has a workflow")).toBeTruthy();
-        expect(within(article).getByText("Unsaved changes")).toBeTruthy();
+        expect(within(article).getByText("Unsaved")).toBeTruthy();
+        expect(within(article).getByLabelText("Unsaved changes")).toBeTruthy();
 
         const author = rowOf("Author");
         expect(author.getAttribute("aria-current")).toBeNull();
         expect(within(author).queryByText("Has a workflow")).toBeNull();
-        expect(within(author).queryByText("Unsaved changes")).toBeNull();
+        expect(within(author).queryByText("Unsaved")).toBeNull();
     });
 
     it("selects a model on a row click", () => {

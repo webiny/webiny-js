@@ -13,7 +13,7 @@ export const getExclusionsEmptyState = (params: EmptyStateParams): ExclusionsEmp
     if (total === 0) {
         return {
             title: "No exclusions",
-            text: NO_ONE_EXCLUDED,
+            text: "Everyone in the reviewing teams can be assigned automatically.",
             showAdd: true
         };
     }

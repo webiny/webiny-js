@@ -10,6 +10,7 @@ import { deleteWorkflowDialog } from "./dialogs/deleteWorkflowDialog.js";
 import { deletedDialog } from "./dialogs/deletedDialog.js";
 import { reloadWorkflowDialog } from "./dialogs/reloadWorkflowDialog.js";
 import { duplicateBannerMessage } from "./duplicateBannerMessage.js";
+import { formatAppliesTo } from "./formatAppliesTo.js";
 import { mapSaveError } from "./mapSaveError.js";
 import type { SaveFailure } from "./mapSaveError.js";
 import type { ValidationFailure } from "./mapSaveError.js";
@@ -97,6 +98,7 @@ import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import { createNewStep } from "~/editor/model/createNewStep.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import { getStepDetails } from "~/editor/model/getStepDetails.js";
 import { getStepSummary } from "~/editor/model/getStepSummary.js";
 import { getStepTypeLabel } from "~/editor/model/getStepTypeLabel.js";
 import { getStepTypeOptions } from "~/editor/model/getStepTypeOptions.js";
@@ -1008,7 +1010,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         return {
             name: this.draft.name,
             nameError: this.nameError,
-            appliesTo: `Applies to ${row.name} · ${params.app.appliesToLabel}`,
+            appliesTo: formatAppliesTo({
+                modelName: row.name,
+                appLabel: params.app.appliesToLabel,
+                createdBy: this.draft.createdBy,
+                createdOn: this.draft.createdOn
+            }),
             dirty: draftDirty || stepEdited,
             saving: this.saving,
             canSave: draftDirty && !this.saving,
@@ -1098,6 +1105,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 count,
                 typeLabel: getStepTypeLabel(step.type, stepTypes),
                 summary: getStepSummary(step, context),
+                details: getStepDetails(step, context),
                 warnings: getStepWarnings(step, context),
                 errors: entry ? entry.errors : [],
                 ruleIds: getStepRuleIds(step),

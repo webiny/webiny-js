@@ -98,7 +98,7 @@ describe("EditorReviewBar", () => {
 
         renderBar(session, fakes);
 
-        expect(screen.getByText("Luka Perić is reviewing")).toBeTruthy();
+        expect(screen.getByText("Luka Perić is reviewing this step.")).toBeTruthy();
         expect(screen.getByText("Review details")).toBeTruthy();
     });
 
@@ -108,7 +108,7 @@ describe("EditorReviewBar", () => {
             reviewId: "review-1"
         });
         const toasts = renderBar(session, fakes);
-        await screen.findByText("Approve “Legal sign-off”");
+        await screen.findByText("Approve “Legal sign-off”?");
 
         fireEvent.click(screen.getByText("Approve", { selector: "button *, button" }));
 
@@ -160,7 +160,7 @@ describe("EditorReviewBar", () => {
         await screen.findByText("Spring campaign review");
 
         fireEvent.click(await screen.findByText("Approve", { selector: "button *, button" }));
-        await screen.findByText("Approve “Legal sign-off”");
+        await screen.findByText("Approve “Legal sign-off”?");
         fireEvent.click(screen.getAllByText("Approve", { selector: "button *, button" }).pop()!);
 
         await vi.waitFor(() => expect(fakes.approveReviewStep.execute).toHaveBeenCalledTimes(1));
@@ -180,7 +180,7 @@ describe("EditorReviewBar", () => {
         await screen.findByText("Spring campaign review");
 
         fireEvent.click(await screen.findByText("Approve", { selector: "button *, button" }));
-        await screen.findByText("Approve “Legal sign-off”");
+        await screen.findByText("Approve “Legal sign-off”?");
         fireEvent.click(screen.getAllByText("Approve", { selector: "button *, button" }).pop()!);
 
         expect(await screen.findByText("Someone else acted first")).toBeTruthy();

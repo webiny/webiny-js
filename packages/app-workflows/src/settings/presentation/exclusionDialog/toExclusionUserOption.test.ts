@@ -20,11 +20,11 @@ describe("toExclusionUserOption (R324, Q64)", () => {
         });
     });
 
-    it("disables a user who is already in the list, with the note In the list", () => {
+    it("disables a user who is already in the list, with the note Already excluded", () => {
         const option = toExclusionUserOption(ivan, true);
 
         expect(option.disabled).toBe(true);
-        expect(option.note).toBe("In the list");
+        expect(option.note).toBe("Already excluded");
         expect(option.muted).toBe(false);
     });
 });

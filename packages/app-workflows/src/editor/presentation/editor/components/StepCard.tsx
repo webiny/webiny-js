@@ -4,9 +4,11 @@ import { useRef } from "react";
 import { useState } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as ArrowDownwardIcon } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as ArrowUpwardIcon } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -21,14 +23,16 @@ export interface StepCardProps {
     // A save is in flight: move and delete do nothing (Task 10).
     disabled?: boolean;
     onEdit(stepId: string): void;
+    // The "+" next to the step: add a step after the one at `index`.
+    onAddAfter(index: number): void;
     onMove(from: number, to: number): void;
     onDelete(stepId: string): void;
 }
 
 /*
  * One step of the flow as an accordion item: the number, title, type tag and meta line in the
- * header with move up, move down, edit and delete as the item's actions; the warning lines and the
- * error in the expanded body. The sortable item props make the item a drop target and the
+ * header with move up, move down, edit, delete and add after as the item's actions; the key and
+ * value rows, the warning lines, the error and an Edit step button in the expanded body. The sortable item props make the item a drop target and the
  * accordion's drag handle the drag source. Must render inside an `Accordion`.
  */
 export const StepCard = (props: StepCardProps) => {
@@ -88,6 +92,12 @@ export const StepCard = (props: StepCardProps) => {
                 disabled={disabled}
                 onClick={() => props.onDelete(step.id)}
             />
+            <Accordion.Item.Action
+                aria-label={`Add a step after ${step.title}`}
+                icon={<AddIcon />}
+                disabled={disabled}
+                onClick={() => props.onAddAfter(index)}
+            />
         </span>
     );
 
@@ -112,15 +122,16 @@ export const StepCard = (props: StepCardProps) => {
             </Text>
         );
     }
-    // A step with nothing to expand shows its meta line, so every item keeps the same chevron.
-    let summaryText: React.ReactNode = null;
-    if (step.description === null && !hasProblem) {
-        summaryText = (
-            <Text as="div" size="md">
-                {step.summary}
+    const detailRows = step.details.map(row => (
+        <div key={row.label} data-role="step-detail-row" className="flex gap-sm">
+            <Text as="span" size="md" className="shrink-0">
+                {row.label}
             </Text>
-        );
-    }
+            <Text as="span" size="md">
+                {row.value}
+            </Text>
+        </div>
+    ));
 
     return (
         <div
@@ -146,7 +157,7 @@ export const StepCard = (props: StepCardProps) => {
             >
                 <div data-role="step-details" className="flex flex-col gap-xs">
                     {descriptionText}
-                    {summaryText}
+                    {detailRows}
                     {step.warnings.map((line, lineIndex) => (
                         <Alert
                             key={`${lineIndex}:${line.text}`}
@@ -162,6 +173,14 @@ export const StepCard = (props: StepCardProps) => {
                             <Text as="span">{step.error}</Text>
                         </Alert>
                     ) : null}
+                    <div className="flex">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            text="Edit step"
+                            onClick={() => props.onEdit(step.id)}
+                        />
+                    </div>
                 </div>
             </Accordion.Item>
         </div>

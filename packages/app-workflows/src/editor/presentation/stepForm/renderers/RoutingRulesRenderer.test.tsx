@@ -221,8 +221,10 @@ describe("RoutingRulesRenderer: the cards", () => {
         });
         renderRules(createForm(createRules()), options);
 
-        expect(within(getCard("rule-2")).getByText("The folder no longer exists.")).toBeDefined();
-        expect(within(getCard("rule-1")).queryByText("The folder no longer exists.")).toBeNull();
+        expect(
+            within(getCard("rule-2")).getByText("Rule 2: The folder no longer exists.")
+        ).toBeDefined();
+        expect(within(getCard("rule-1")).queryByText(/The folder no longer exists\./)).toBeNull();
         expect(
             within(getCard("rule-3"))
                 .getByTestId("picker-Then assign to")

@@ -222,7 +222,7 @@ describe("RequestReviewDialog", () => {
         await screen.findByText("Editorial check");
 
         fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));
-        const picker = await screen.findByPlaceholderText("Search reviewers by name");
+        const picker = await screen.findByPlaceholderText("Search people");
         const radio = screen.getByRole("radio", { name: "Automatic" });
         const hint = screen.getByText(/^Picks are checked again/);
 

@@ -3,7 +3,6 @@ import { Button } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
-import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import type { ReviewAttemptVm } from "../abstractions.js";
 import type { AttemptOutcomeTone } from "../AttemptOutcomeTone.js";
 import type { TargetReviewTagVariant } from "../../targetReview/abstractions.js";
@@ -11,7 +10,7 @@ import { getStepStateTag } from "../../targetReview/getStepStateTag.js";
 import { StepState } from "~/review/domain/StepState.js";
 
 const OUTCOME_VARIANTS: Record<AttemptOutcomeTone, TargetReviewTagVariant> = {
-    failed: "destructive",
+    failed: "destructive-light",
     approved: "success-light",
     rejected: getStepStateTag(StepState.Rejected).variant,
     running: "accent-light"
@@ -39,8 +38,6 @@ export const ReviewStepAttempts = (props: ReviewStepAttemptsProps) => {
                                 variant={"link"}
                                 size={"sm"}
                                 text={"Background task"}
-                                icon={<OpenInNewIcon />}
-                                iconPosition={"end"}
                                 onClick={() => props.onOpenTask(taskId)}
                             />
                         );

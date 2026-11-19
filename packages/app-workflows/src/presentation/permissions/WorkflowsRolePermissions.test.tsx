@@ -66,7 +66,7 @@ describe("WorkflowsRolePermissions (R333)", () => {
     it("shows the labelled level control, No access, its note and the reviewing note for a role without workflows entries", () => {
         const onChange = renderGroup([{ name: "cms.*" }]);
 
-        expect(screen.getByText("Access level")).toBeDefined();
+        expect(screen.getByText("Workflows access")).toBeDefined();
         const none = screen.getByRole("radio", { name: "No access" });
         const full = screen.getByRole("radio", { name: "Full access" });
         const custom = screen.getByRole("radio", { name: "Custom" });
@@ -74,13 +74,11 @@ describe("WorkflowsRolePermissions (R333)", () => {
         expect(isChecked(full)).toBe(false);
         expect(isChecked(custom)).toBe(false);
         expect(
-            screen.getByText(
-                "Can't build workflows or operate reviews. Can still review content as a member of a reviewing team."
-            )
+            screen.getByText("People with this role can’t manage workflows or operate reviews.")
         ).toBeDefined();
         expect(
             screen.getByText(
-                "Reviewing is not a permission. Anyone in a step's reviewing teams who can read the content can review it."
+                "Reviewing is not a permission. Anyone in a step’s reviewing teams who can read the content can review it."
             )
         ).toBeDefined();
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
@@ -97,7 +95,9 @@ describe("WorkflowsRolePermissions (R333)", () => {
         const full = screen.getByRole("radio", { name: "Full access" });
         expect(isChecked(full)).toBe(true);
         expect(
-            screen.getByText("Includes Manage workflows and Reassign and operate.")
+            screen.getByText(
+                "People with this role can manage workflows, reassign reviewers and operate reviews."
+            )
         ).toBeDefined();
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     });
@@ -260,7 +260,9 @@ describe("WorkflowsRolePermissions (R333)", () => {
 
         expect(onChange).not.toHaveBeenCalled();
         expect(
-            screen.getByText("Includes Manage workflows and Reassign and operate.")
+            screen.getByText(
+                "People with this role can manage workflows, reassign reviewers and operate reviews."
+            )
         ).toBeDefined();
     });
 

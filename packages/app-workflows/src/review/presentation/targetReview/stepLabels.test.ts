@@ -111,13 +111,13 @@ describe("tags", () => {
     it("makes only the failed step state red, with the sync_problem icon (R239, Q24, R263)", () => {
         expect(getStepStateTag(StepState.Failed)).toEqual({
             label: "Failed",
-            variant: "destructive",
+            variant: "destructive-light",
             icon: "sync_problem"
         });
         expect(getStepStateTag(StepState.Rejected).variant).toBe("neutral-dark");
         const others = ALL_STEP_STATES.filter(state => state !== StepState.Failed);
         const variants = others.map(state => getStepStateTag(state).variant);
-        expect(variants).not.toContain("destructive");
+        expect(variants).not.toContain("destructive-light");
     });
 
     it("tags all six step states with distinct labels", () => {
@@ -177,7 +177,7 @@ describe("getReviewProgress", () => {
                     color: "#FA5723",
                     description: null,
                     comment: null,
-                    tag: { label: "Awaiting", variant: "warning" },
+                    tag: { label: "Awaiting", variant: "warning", icon: "hourglass_empty" },
                     message: null,
                     tooltip: null
                 },

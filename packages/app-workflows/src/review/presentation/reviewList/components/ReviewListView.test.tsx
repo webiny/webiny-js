@@ -161,6 +161,11 @@ const rowOf = (title: string): HTMLElement => {
     return screen.getByText(title).closest("tr") as HTMLElement;
 };
 
+const openMenu = (title: string): void => {
+    const trigger = within(rowOf(title)).getByRole("button", { name: `Actions for ${title}` });
+    fireEvent.keyDown(trigger, { key: "Enter" });
+};
+
 describe("ReviewListView", () => {
     afterEach(() => {
         vi.unstubAllGlobals();
@@ -199,13 +204,15 @@ describe("ReviewListView", () => {
         const link = await screen.findByRole("link", { name: "Bound review" });
         expect(link.getAttribute("href")).toBe("/cms/content-entries/article?id=e1%230001");
         expect(screen.getByText("Type article")).toBeTruthy();
-        expect(within(rowOf("Bound review")).getByRole("button", { name: "Start" })).toBeTruthy();
+        openMenu("Bound review");
+        expect(await screen.findByRole("menuitem", { name: "Start" })).toBeTruthy();
+        expect(screen.getByRole("menuitem", { name: "Open in new window" })).toBeTruthy();
+        fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
 
         expect(screen.queryByRole("link", { name: "Unbound review" })).toBeNull();
         const unbound = within(rowOf("Unbound review"));
         expect(unbound.queryByRole("button", { name: "Start" })).toBeNull();
-        expect(unbound.queryByRole("button", { name: "More actions" })).toBeNull();
-        expect(unbound.queryByRole("button", { name: "Open in new window" })).toBeNull();
+        expect(unbound.queryByRole("button", { name: "Actions for Unbound review" })).toBeNull();
     });
 
     it("shows the actions the flags allow and nothing else (D5, D54)", async () => {
@@ -229,18 +236,23 @@ describe("ReviewListView", () => {
 
         await screen.findByText("Can start");
 
-        const start = within(rowOf("Can start"));
-        expect(start.getByRole("button", { name: "Start" })).toBeTruthy();
-        expect(start.queryByRole("button", { name: "Take over" })).toBeNull();
+        openMenu("Can start");
+        expect(await screen.findByRole("menuitem", { name: "Start" })).toBeTruthy();
+        expect(screen.queryByRole("menuitem", { name: "Take over" })).toBeNull();
+        fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Start" })).toBeNull());
 
-        const take = within(rowOf("Can take"));
-        expect(take.getByRole("button", { name: "Take over" })).toBeTruthy();
-        expect(take.queryByRole("button", { name: "Start" })).toBeNull();
+        openMenu("Can take");
+        expect(await screen.findByRole("menuitem", { name: "Take over" })).toBeTruthy();
+        expect(screen.queryByRole("menuitem", { name: "Start" })).toBeNull();
+        fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+        await waitFor(() =>
+            expect(screen.queryByRole("menuitem", { name: "Take over" })).toBeNull()
+        );
 
         const none = within(rowOf("No actions"));
         expect(none.queryByRole("button", { name: "Start" })).toBeNull();
-        expect(none.queryByRole("button", { name: "Take over" })).toBeNull();
-        expect(none.getByRole("button", { name: "More actions" })).toBeTruthy();
+        expect(none.getByRole("button", { name: "Actions for No actions" })).toBeTruthy();
     });
 
     it("opens the dialog of an inline action on the row's use cases and refetches once when it is done", async () => {
@@ -262,7 +274,8 @@ describe("ReviewListView", () => {
         );
         await screen.findByText("Review one");
 
-        fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
+        openMenu("Review one");
+        fireEvent.click(await screen.findByText("Start"));
 
         expect(await screen.findByText("Start “Legal sign-off”?")).toBeTruthy();
         expect(fakes.getReview.execute).toHaveBeenCalledWith({
@@ -305,7 +318,8 @@ describe("ReviewListView", () => {
             })
         );
         await screen.findByText("Review one");
-        fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
+        openMenu("Review one");
+        fireEvent.click(await screen.findByText("Start"));
         await screen.findByText("Start “Legal sign-off”?");
         expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
@@ -333,18 +347,25 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("Review one");
 
-        const row = within(rowOf("Review one"));
-        fireEvent.click(row.getByRole("button", { name: "Open in new window" }));
+        openMenu("Review one");
+        fireEvent.click(await screen.findByText("Open in new window"));
         expect(open).toHaveBeenCalledWith(
             "/cms/content-entries/article?id=entry-r1%230001",
             "_blank",
             "noopener,noreferrer"
         );
 
-        fireEvent.keyDown(row.getByRole("button", { name: "More actions" }), { key: "Enter" });
+        await waitFor(() => expect(screen.queryByRole("menuitem")).toBeNull());
+        openMenu("Review one");
         await screen.findByRole("menuitem", { name: "Open content" });
         const names = screen.getAllByRole("menuitem").map(item => item.textContent);
-        expect(names).toEqual(["Open content", "View details", "Reassign", "Cancel review"]);
+        expect(names).toEqual([
+            "Open content",
+            "Open in new window",
+            "View details",
+            "Reassign",
+            "Cancel review"
+        ]);
     });
 
     it("opens the menu actions and View details", async () => {
@@ -365,7 +386,9 @@ describe("ReviewListView", () => {
         );
         await screen.findByText("Review one");
 
-        const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
+        const more = within(rowOf("Review one")).getByRole("button", {
+            name: "Actions for Review one"
+        });
         fireEvent.keyDown(more, { key: "Enter" });
         expect(await screen.findByRole("menuitem", { name: "Reassign" })).toBeTruthy();
         expect(screen.getByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
@@ -413,7 +436,9 @@ describe("ReviewListView", () => {
             })
         );
         await screen.findByText("Review one");
-        const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
+        const more = within(rowOf("Review one")).getByRole("button", {
+            name: "Actions for Review one"
+        });
         fireEvent.keyDown(more, { key: "Enter" });
         await screen.findByRole("menuitem", { name: "View details" });
         fireEvent.click(screen.getByText("View details"));
@@ -697,7 +722,7 @@ describe("ReviewListView", () => {
         );
     });
 
-    it("lists a failed step with its tag, the step title as owner and an inline Restart (QBZ-29, QBZ-79)", async () => {
+    it("lists a failed step with its tag, the step title as owner and a Restart menu item (QBZ-29, QBZ-79)", async () => {
         renderView({
             initialTab: "failedSteps",
             permissions: REASSIGN,
@@ -720,12 +745,11 @@ describe("ReviewListView", () => {
         const row = within(rowOf("Spring campaign"));
         expect(row.getByText("Failed")).toBeTruthy();
         expect(row.getAllByText("AI tone check")).toHaveLength(2);
-        expect(row.getByRole("button", { name: "Restart" })).toBeTruthy();
+        expect(row.queryByRole("button", { name: "Restart" })).toBeNull();
 
-        const more = row.getByRole("button", { name: "More actions" });
-        fireEvent.keyDown(more, { key: "Enter" });
-        expect(await screen.findByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
-        expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
+        openMenu("Spring campaign");
+        expect(await screen.findByRole("menuitem", { name: "Restart" })).toBeTruthy();
+        expect(screen.getByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
     });
 
     it("opens the restart dialog on the row's use cases and refetches once when it is done (R210, R266)", async () => {
@@ -751,7 +775,8 @@ describe("ReviewListView", () => {
         );
         await screen.findByText("Spring campaign");
 
-        fireEvent.click(within(rowOf("Spring campaign")).getByRole("button", { name: "Restart" }));
+        openMenu("Spring campaign");
+        fireEvent.click(await screen.findByText("Restart"));
 
         expect(await screen.findByText("Restart “AI tone check”?")).toBeTruthy();
         expect(fakes.getReview.execute).toHaveBeenCalledWith({
@@ -784,7 +809,9 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("Plain review");
 
-        expect(within(rowOf("Plain review")).queryByRole("button", { name: "Restart" })).toBeNull();
+        openMenu("Plain review");
+        await screen.findByRole("menuitem", { name: "Open content" });
+        expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
     });
 
     it("shows the Content type column and filter only when the app asks for them (D113)", async () => {

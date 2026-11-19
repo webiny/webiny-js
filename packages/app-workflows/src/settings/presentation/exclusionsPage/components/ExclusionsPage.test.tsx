@@ -98,19 +98,18 @@ describe("ExclusionsPage states (R322, R329)", () => {
             ).toBeTruthy();
             expect(
                 screen.getByText(
-                    "Take people out of automatic assignment for a while, e.g. during leave or when their workload is too high."
+                    "Take people out of automatic assignment for a while, e.g. during leave. Automatic assignment skips them and reviewer pickers show them as Unavailable; work they already hold stays with them."
                 )
             ).toBeTruthy();
             result.unmount();
         });
     });
 
-    it("shows five skeleton rows while loading, without the Add button, rules or toolbar", () => {
+    it("shows five skeleton rows while loading, without the Add button or toolbar", () => {
         renderPage(LOADING);
 
         expect(screen.getAllByTestId("exclusions-loading-row")).toHaveLength(5);
         expect(queryAddButtons()).toHaveLength(0);
-        expect(screen.queryByTestId("exclusions-rules")).toBeNull();
         expect(screen.queryByTestId("exclusions-toolbar")).toBeNull();
     });
 
@@ -144,7 +143,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
             screen.getByTestId("exclusions-no-access").querySelector("svg[aria-hidden]")
         ).not.toBeNull();
         expect(queryAddButtons()).toHaveLength(0);
-        expect(screen.queryByTestId("exclusions-rules")).toBeNull();
         expect(screen.queryByTestId("exclusions-toolbar")).toBeNull();
         expect(screen.queryByTestId("exclusions-table")).toBeNull();
     });
@@ -168,20 +166,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(queryAddButtons()).toHaveLength(0);
     });
 
-    it("shows the four rules with their icons when ready", () => {
-        const { result } = renderPage(READY);
-
-        expect(screen.getByText("Automatic assignment skips excluded people.")).toBeTruthy();
-        expect(screen.getByText("Reviewer pickers show them as Unavailable.")).toBeTruthy();
-        expect(screen.getByText("Work they already hold stays with them.")).toBeTruthy();
-        expect(screen.getByText("They can still start or take over work themselves.")).toBeTruthy();
-        const rules = result.container.querySelector('[data-testid="exclusions-rules"]');
-        const icons = Array.from(rules?.querySelectorAll("[data-icon]") ?? []).map(icon =>
-            icon.getAttribute("data-icon")
-        );
-        expect(icons).toEqual(["block", "person_off", "assignment_ind", "front_hand"]);
-    });
-
     it("shows the table with the rows when ready and not empty", () => {
         renderPage(READY);
 
@@ -195,7 +179,7 @@ describe("ExclusionsPage states (R322, R329)", () => {
             createExclusionsPageViewModel({
                 empty: {
                     title: "No exclusions",
-                    text: "Everyone in reviewing teams can be assigned automatically.",
+                    text: "Everyone in the reviewing teams can be assigned automatically.",
                     showAdd: true
                 }
             })
@@ -204,7 +188,7 @@ describe("ExclusionsPage states (R322, R329)", () => {
         const empty = screen.getByTestId("exclusions-empty");
         expect(screen.getByText("No exclusions")).toBeTruthy();
         expect(
-            screen.getByText("Everyone in reviewing teams can be assigned automatically.")
+            screen.getByText("Everyone in the reviewing teams can be assigned automatically.")
         ).toBeTruthy();
         expect(empty.querySelector("[data-icon]")).toBeNull();
         expect(empty.querySelector("svg[aria-hidden]")).not.toBeNull();
@@ -372,13 +356,5 @@ describe("ExclusionsPage frame and polish (C11, S2)", () => {
         renderPage(READY);
 
         expect(screen.getByRole("heading", { level: 1, name: "Reviewer exclusions" })).toBeTruthy();
-    });
-
-    it("renders the rules in an admin-ui Card", () => {
-        const { result } = renderPage(READY);
-
-        const rules = result.container.querySelector('[data-testid="exclusions-rules"]');
-
-        expect(rules?.querySelector('[data-card="body"]')).not.toBeNull();
     });
 });

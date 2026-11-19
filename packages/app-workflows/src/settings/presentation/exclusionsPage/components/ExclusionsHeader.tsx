@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
-import { ReactComponent as PersonOffIcon } from "@webiny/icons/person_off.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { EXCLUSIONS_ADD_LABEL } from "../exclusionsCopy.js";
 import { EXCLUSIONS_PAGE_SUB } from "../exclusionsCopy.js";
 import { EXCLUSIONS_PAGE_TITLE } from "../exclusionsCopy.js";
@@ -20,7 +20,8 @@ export const ExclusionsHeader = ({ canAdd, onAdd }: ExclusionsHeaderProps) => {
             <Button
                 variant="primary"
                 text={EXCLUSIONS_ADD_LABEL}
-                icon={<PersonOffIcon />}
+                icon={<AddIcon />}
+                size="sm"
                 onClick={() => onAdd()}
             />
         );

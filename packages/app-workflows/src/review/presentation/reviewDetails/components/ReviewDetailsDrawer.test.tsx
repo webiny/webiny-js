@@ -137,7 +137,7 @@ describe("ReviewDetailsDrawer", () => {
         renderDrawer();
 
         expect(await screen.findByText("Spring campaign review")).toBeTruthy();
-        expect(screen.getByText("Requester: Maja Kos")).toBeTruthy();
+        expect(screen.getByText("Requested by Maja Kos")).toBeTruthy();
         expect(screen.getByText("Editorial check")).toBeTruthy();
         expect(screen.getByText("Team pool (Legal)")).toBeTruthy();
         fireEvent.click(screen.getByText("Editorial check"));
@@ -182,7 +182,7 @@ describe("ReviewDetailsDrawer", () => {
         renderDrawer();
         await screen.findByText("Spring campaign review");
 
-        const requested = screen.getByText(/^Requested:/);
+        const requested = screen.getByText(/^Requested (?!by)/);
 
         expect(requested.getAttribute("title")).toMatch(/\d{4}/);
     });
@@ -547,8 +547,8 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
 
         const content = screen.getByText("Content:");
         const description = content.parentElement as HTMLElement;
-        expect(description.textContent).toContain("Requester: Maja Kos");
-        expect(description.textContent).toContain("Requested: ");
+        expect(description.textContent).toContain("Requested by Maja Kos");
+        expect(description.textContent).toContain("Requested ");
         expect(content.textContent).toMatch(/^Content: Article · .+ \(#\d+\)$/);
     });
 
@@ -689,13 +689,13 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
         expect(within(issues).getByText("Tone is too casual.")).toBeTruthy();
     });
 
-    it("renders Background task as a link button with its icon after the text", async () => {
+    it("renders Background task as a plain link button without an icon", async () => {
         renderDrawer(createAiUseCases(), vi.fn(), [{ name: "workflows", editor: true }]);
         await screen.findByText("Attempts");
 
         const button = screen.getAllByText("Background task")[0].closest("button")!;
 
-        expect(button.lastElementChild?.getAttribute("data-testid")).toBe("svg-icon");
+        expect(button.querySelector("[data-testid='svg-icon']")).toBeNull();
     });
 
     describe("cancelled review", () => {
@@ -718,7 +718,7 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
             expect(await screen.findByText("This review was cancelled")).toBeTruthy();
             expect(document.querySelector("[data-role='step-circle']")).toBeNull();
             expect(screen.queryByText("Content:")).toBeNull();
-            expect(screen.queryByText(/^Requester:/)).toBeNull();
+            expect(screen.queryByText(/^Requested by/)).toBeNull();
             expect(screen.getByText(/The revision has no review now/)).toBeTruthy();
             const open = screen.getByText("Open content");
             expect(open.closest("a")?.getAttribute("href")).toBe("/c/1");

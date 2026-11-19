@@ -160,7 +160,7 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(screen.getByText("Let the requester pick a reviewer")).toBeDefined();
         expect(
             screen.getByText(
-                "The requester can choose a person from this step's eligible reviewers when requesting a review. Picks are checked again when the step is reached."
+                "The requester can choose a reviewer when they request a review. Picks are checked again when the step is reached."
             )
         ).toBeDefined();
 

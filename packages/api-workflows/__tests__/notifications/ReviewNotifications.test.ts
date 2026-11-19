@@ -513,7 +513,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
                 event: "rejected",
                 stepId: "legal",
                 title: `“${TITLE}” was rejected at Legal review`,
-                body: `Anna: “${COMMENT}”. Create a new revision to fix it, then request a new review.`
+                body: `Anna: “${COMMENT}”. Create a new revision to fix it.`
             });
             expect(mailer.sent).toHaveLength(1);
             expect(mailer.sent[0].bcc).toEqual(["user-requester@webiny.test"]);

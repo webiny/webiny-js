@@ -10,8 +10,9 @@ import { renderReviewerOption } from "./renderReviewerOption.js";
 
 export interface ReviewerPickerProps {
     presenter: ReviewerPickerPresenter.Interface;
-    // The accessible name only; the dialogs show no visible label (design).
+    // The accessible name; shown as a visible required field label only with `showLabel`.
     label?: string;
+    showLabel?: boolean;
     hint?: string;
 }
 
@@ -19,7 +20,7 @@ export interface ReviewerPickerProps {
 export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     props: ReviewerPickerProps
 ) {
-    const { presenter, label, hint } = props;
+    const { presenter, label, showLabel, hint } = props;
     const { vm } = presenter;
 
     let emptyMessage: React.ReactNode = vm.emptyMessage;
@@ -48,10 +49,12 @@ export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     });
 
     return (
-        <div role={"group"} aria-label={label}>
+        <div role={"group"} aria-label={showLabel ? undefined : label}>
             <AutoComplete
+                label={showLabel ? label : undefined}
+                required={showLabel ? true : undefined}
                 note={hint}
-                placeholder={"Search reviewers by name"}
+                placeholder={"Search people"}
                 startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
                 displayResetAction={vm.value !== null}
                 options={options}

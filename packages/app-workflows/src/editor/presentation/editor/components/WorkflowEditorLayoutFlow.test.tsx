@@ -36,6 +36,7 @@ const STEPS: StepCardVm[] = [
         typeLabel: "People",
         type: "review",
         summary: "Editors",
+        details: [],
         description: null,
         readOnly: false,
         warnings: [],
@@ -51,6 +52,7 @@ const STEPS: StepCardVm[] = [
         typeLabel: "People",
         type: "review",
         summary: "Legal",
+        details: [],
         description: null,
         readOnly: false,
         warnings: [],
@@ -95,7 +97,7 @@ describe("WorkflowEditorLayout flow", () => {
         renderLayout({ detail: "none", header: null });
 
         expect(screen.queryByTestId("step-card-s1")).toBeNull();
-        expect(screen.queryByRole("button", { name: "Add step" })).toBeNull();
+        expect(screen.queryByRole("button", { name: "Add new step" })).toBeNull();
     });
 
     it("mounts the step drawer once", () => {
@@ -120,7 +122,7 @@ describe("WorkflowEditorLayout flow", () => {
             flow: { steps: STEPS, stepsError: null, modelName: "Article" }
         });
 
-        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
+        fireEvent.click(screen.getByRole("button", { name: "Add new step" }));
         expect(presenter.openTypePicker).toHaveBeenCalledWith(STEPS.length);
 
         const first = screen.getByTestId("step-card-s1");
@@ -139,7 +141,7 @@ describe("WorkflowEditorLayout flow", () => {
             flow: { steps: STEPS, stepsError: null, modelName: "Article" }
         });
 
-        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
+        fireEvent.click(screen.getByRole("button", { name: "Add new step" }));
         const first = screen.getByTestId("step-card-s1");
         fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
         const second = screen.getByTestId("step-card-s2");
@@ -183,14 +185,15 @@ describe("WorkflowEditorLayout flow", () => {
                     {
                         type: "review",
                         label: "People",
-                        description: "Members of one or more teams review.",
+                        description:
+                            "Members of the reviewing teams approve or reject the revision.",
                         addable: true,
                         reason: null
                     },
                     {
                         type: "ai",
                         label: "AI",
-                        description: "An AI model reviews against your written instructions.",
+                        description: "An AI model checks the content and approves or rejects it.",
                         addable: false,
                         reason: "Requires the AI Power-Ups licence."
                     }

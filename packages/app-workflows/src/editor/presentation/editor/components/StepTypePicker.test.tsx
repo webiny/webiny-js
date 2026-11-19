@@ -15,7 +15,7 @@ import type { StepTypePickerProps } from "./StepTypePicker.js";
 const PEOPLE: StepTypeOption = {
     type: "review",
     label: "People",
-    description: "Members of one or more teams review.",
+    description: "Members of the reviewing teams approve or reject the revision.",
     addable: true,
     reason: null
 };
@@ -23,7 +23,7 @@ const PEOPLE: StepTypeOption = {
 const AUTOMATION: StepTypeOption = {
     type: "automation",
     label: "Automation",
-    description: "Runs a code-defined automation, such as Send webhook.",
+    description: "Runs an automation, e.g. sends a webhook.",
     addable: true,
     reason: null
 };
@@ -31,7 +31,7 @@ const AUTOMATION: StepTypeOption = {
 const AI: StepTypeOption = {
     type: "ai",
     label: "AI",
-    description: "An AI model reviews against your written instructions.",
+    description: "An AI model checks the content and approves or rejects it.",
     addable: true,
     reason: null
 };
@@ -60,12 +60,12 @@ describe("StepTypePicker", () => {
             "step-type-automation",
             "step-type-ai"
         ]);
-        expect(screen.getByText("Members of one or more teams review.")).toBeTruthy();
         expect(
-            screen.getByText("Runs a code-defined automation, such as Send webhook.")
+            screen.getByText("Members of the reviewing teams approve or reject the revision.")
         ).toBeTruthy();
+        expect(screen.getByText("Runs an automation, e.g. sends a webhook.")).toBeTruthy();
         expect(
-            screen.getByText("An AI model reviews against your written instructions.")
+            screen.getByText("An AI model checks the content and approves or rejects it.")
         ).toBeTruthy();
     });
 

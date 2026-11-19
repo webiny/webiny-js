@@ -9,7 +9,7 @@ describe("getExclusionsEmptyState (R322, design DS:241)", () => {
     it("says No exclusions with Add when the list is empty, on any tab", () => {
         const expected = {
             title: "No exclusions",
-            text: NO_ONE_EXCLUDED,
+            text: "Everyone in the reviewing teams can be assigned automatically.",
             showAdd: true
         };
 

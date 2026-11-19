@@ -8,6 +8,7 @@ import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
+import type { StepDetailRow } from "~/editor/model/StepDetailRow.js";
 import type { RoutingStepConfig } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
@@ -59,7 +60,7 @@ export interface ModelPanelVm {
 export interface WorkflowHeaderVm {
     name: string;
     nameError: string | null;
-    // `Applies to {Model} · {appliesToLabel}`.
+    // `Applies to {Model} ({appliesToLabel}) · Created by {name} on {dd.mm.yyyy}`; no `Created by` part for a draft never saved.
     appliesTo: string;
     dirty: boolean;
     saving: boolean;
@@ -89,6 +90,8 @@ export interface StepCardVm {
     typeLabel: string;
     type: string;
     summary: string;
+    // The key and value rows of the expanded body (`Reviewing teams`, `Model`, ...); empty when there are none.
+    details: StepDetailRow[];
     // The step's own description, or null when empty.
     description: string | null;
     readOnly: boolean;

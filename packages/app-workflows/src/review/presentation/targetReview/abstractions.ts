@@ -3,6 +3,7 @@ import type { ReviewTarget } from "~/review/domain/types.js";
 import type { IReviewUnsavedChanges } from "~/review/content/IReviewUnsavedChanges.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
+import type { ReviewLockCopy } from "./ReviewLockCopy.js";
 
 export type TargetReviewStatus = "loading" | "failed" | "noWorkflow" | "none" | "active";
 
@@ -38,6 +39,8 @@ export type TargetReviewTagVariant =
     | "accent-light"
     | "success-light"
     | "destructive"
+    | "destructive-light"
+    | "neutral-light"
     | "warning"
     | "neutral-base-outline"
     | "neutral-dark";
@@ -52,8 +55,12 @@ export type TargetReviewTile =
     | "check_circle"
     | "cancel";
 
-// The icon of a step tag: only the running tag has one (R263).
-export type TargetReviewTagIcon = "progress_activity" | "sync_problem";
+// The icon of a step tag: Awaiting, In review, Running and Failed have one.
+export type TargetReviewTagIcon =
+    | "progress_activity"
+    | "sync_problem"
+    | "hourglass_empty"
+    | "rate_review";
 
 export interface TargetReviewTag {
     label: string;
@@ -83,7 +90,7 @@ export interface TargetReviewSegmentVm {
     // The decision comment of the step.
     comment: string | null;
     tag: TargetReviewTag;
-    // "{Step} running since {hh:mm}" or "{Step} failed: {reason}", else `null` (R263).
+    // "{Step} is running." or "{Step} failed: {reason}", else `null` (R263).
     message: string | null;
     // The tag tooltip of a running or failed step (R264), else `null`.
     tooltip: string | null;
@@ -161,6 +168,8 @@ export interface TargetReviewInitParams extends TargetReviewContext {
     contentReloader: IReviewContentReloader | null;
     // Why Request review is blocked (unsaved edits, an auto-save in flight); `null` for none.
     unsavedChanges: IReviewUnsavedChanges | null;
+    // The app's own lock texts for the bar; the default texts apply when it passes none.
+    lockCopy?: ReviewLockCopy;
 }
 
 export interface ITargetReviewPresenter {

@@ -31,9 +31,9 @@ export const buildRejectedMessage = (params: RejectedMessageParams): Notificatio
     }
     return {
         title: `“${contentTitle}” was rejected at ${stepTitle}`,
-        body: `${decider}: “${comment}”. Create a new revision to fix it, then request a new review.`,
+        body: `${decider}: “${comment}”. Create a new revision to fix it.`,
         subject: `Rejected: ${contentTitle} (${stepTitle})`,
-        text: `${decider} rejected this revision at ${stepTitle}: “${comment}”. Create a new revision to fix it, then request a new review.`,
+        text: `${decider} rejected this revision at ${stepTitle}: “${comment}”. Create a new revision, fix it and request a new review.`,
         linkLabel: "Open content"
     };
 };

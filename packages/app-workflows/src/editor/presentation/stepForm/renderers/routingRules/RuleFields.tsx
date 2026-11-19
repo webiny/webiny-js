@@ -1,5 +1,5 @@
 import React from "react";
-import { Checkbox } from "@webiny/admin-ui";
+import { Switch } from "@webiny/admin-ui";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
 import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
 import type { RulePatch } from "~/editor/model/rules/RulePatch.js";
@@ -135,7 +135,6 @@ export const RuleFields = (props: RuleFieldsProps) => {
         targetPicker = (
             <WorkflowPicker
                 label={ASSIGNMENT_FORM_MESSAGES.targetLabel}
-                description={ASSIGNMENT_FORM_MESSAGES.targetHint}
                 required
                 placeholder={ASSIGNMENT_FORM_MESSAGES.targetPlaceholder}
                 value={targetValue}
@@ -179,9 +178,10 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 onChange={handleFolderChange}
             />
             <div className={"flex items-end pb-xs"}>
-                <Checkbox
+                <Switch
                     id={`${rule.id}-include-subfolders`}
                     label={ASSIGNMENT_FORM_MESSAGES.includeSubfolders}
+                    labelPosition={"end"}
                     checked={includeDescendants}
                     disabled={readOnly || rule.folder === null || restricted}
                     onChange={handleSubfoldersChange}

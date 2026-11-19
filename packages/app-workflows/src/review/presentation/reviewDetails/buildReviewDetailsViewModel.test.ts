@@ -207,8 +207,8 @@ describe("buildReviewDetailsViewModel", () => {
             stateVariant: "accent-light",
             contentLabel: "Spring campaign (#3)",
             contentUrl: null,
-            requesterLine: "Requester: Maja Kos",
-            requestedLine: "Requested: Today 09:05",
+            requesterLine: "Requested by Maja Kos",
+            requestedLine: "Requested today at 09:05",
             requestedTitle: expect.stringMatching(/^Fri 16 Oct 2026, 09:05 /)
         });
     });
@@ -241,15 +241,21 @@ describe("buildReviewDetailsViewModel", () => {
         expect(header?.contentLabel).toBe(`${review.targetContext.title}`);
     });
 
-    it("reads a request created today as 'Today' and one created yesterday as 'Yesterday'", () => {
+    it("reads a request created today as 'today at' and one created yesterday as 'yesterday at'", () => {
         const today = build(createReview({ createdOn: at(16, 9, 58) }));
         const yesterday = build(createReview({ createdOn: at(15, 23, 50) }));
 
-        expect(today.header?.requestedLine).toBe("Requested: Today 09:58");
-        expect(yesterday.header?.requestedLine).toBe("Requested: Yesterday 23:50");
+        expect(today.header?.requestedLine).toBe("Requested today at 09:58");
+        expect(yesterday.header?.requestedLine).toBe("Requested yesterday at 23:50");
     });
 
-    it("follows the viewer's day boundary: created 23:50, viewed 00:10 next day is Yesterday", () => {
+    it("reads an older request as 'on {date} at {time}'", () => {
+        const older = build(createReview({ createdOn: at(6, 14, 20) }));
+
+        expect(older.header?.requestedLine).toBe("Requested on 6 Oct at 14:20");
+    });
+
+    it("follows the viewer's day boundary: created 23:50, viewed 00:10 next day is yesterday", () => {
         const review = createReview({ createdOn: at(15, 23, 50) });
 
         const { header } = buildReviewDetailsViewModel({
@@ -265,7 +271,7 @@ describe("buildReviewDetailsViewModel", () => {
             contentUrl: null
         });
 
-        expect(header?.requestedLine).toBe("Requested: Yesterday 23:50");
+        expect(header?.requestedLine).toBe("Requested yesterday at 23:50");
     });
 
     it("builds a timeline for all six step states", () => {
