@@ -76,7 +76,7 @@ export async function createServerHandler(
             server,
             waitForRequests: () => {
                 inFlight.stopConnectionReuse();
-                return inFlight.whenAllFinished();
+                return inFlight.waitUntilAllFinished();
             },
             shutdown: async requestsFinished => {
                 if (!onShutdown) {

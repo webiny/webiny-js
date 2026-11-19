@@ -184,7 +184,7 @@ describe("handleShutdownSignals", () => {
             server,
             waitForRequests: () => {
                 inFlight.stopConnectionReuse();
-                return inFlight.whenAllFinished();
+                return inFlight.waitUntilAllFinished();
             },
             shutdown: async () => {}
         });

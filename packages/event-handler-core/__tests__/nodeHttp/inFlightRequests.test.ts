@@ -52,7 +52,7 @@ const listen = async (respond: (res: http.ServerResponse) => void) => {
 
 describe("InFlightRequests", () => {
     it("resolves at once when no request is in flight", async () => {
-        await expect(new InFlightRequests().whenAllFinished()).resolves.toBeUndefined();
+        await expect(new InFlightRequests().waitUntilAllFinished()).resolves.toBeUndefined();
     });
 
     it("closes a keep-alive connection after the response in flight when reuse stops", async () => {
@@ -64,7 +64,7 @@ describe("InFlightRequests", () => {
         await firstRequest;
         server.close();
         inFlight.stopConnectionReuse();
-        const allFinished = inFlight.whenAllFinished();
+        const allFinished = inFlight.waitUntilAllFinished();
 
         await expect(first).resolves.toEqual({ body: "done", connection: "close" });
         await allFinished;
@@ -84,7 +84,7 @@ describe("InFlightRequests", () => {
         await firstRequest;
         server.close();
         inFlight.stopConnectionReuse();
-        const allFinished = inFlight.whenAllFinished();
+        const allFinished = inFlight.waitUntilAllFinished();
 
         await expect(first).resolves.toEqual({ body: "part done", connection: "keep-alive" });
         await allFinished;
@@ -106,7 +106,7 @@ describe("InFlightRequests", () => {
         await firstRequest;
         server.close();
         inFlight.stopConnectionReuse();
-        const allFinished = inFlight.whenAllFinished();
+        const allFinished = inFlight.waitUntilAllFinished();
 
         await expect(first).resolves.toEqual({ body: "done", connection: "keep-alive" });
         await allFinished;

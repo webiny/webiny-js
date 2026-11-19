@@ -7,7 +7,7 @@ import type http from "node:http";
 export class InFlightRequests {
     private readonly responses = new Set<http.ServerResponse>();
     private connectionReuseStopped = false;
-    // Created by the first `whenAllFinished()` call; resolved when the last response closes.
+    // Created by the first `waitUntilAllFinished()` call; resolved when the last response closes.
     private allFinished: PromiseWithResolvers<void> | undefined;
 
     /** Counts the request until its response closes, whether it finished or the client went away. */
@@ -19,8 +19,8 @@ export class InFlightRequests {
         res.once("close", () => {
             this.responses.delete(res);
             /*
-             * Only a shutdown waits here. Until something calls `whenAllFinished()` there is no
-             * promise, so requests that finish while the server runs normally skip this.
+             * Only a shutdown waits here. Until something calls `waitUntilAllFinished()` there is
+             * no promise, so requests that finish while the server runs normally skip this.
              */
             const shutdownWaiting = this.allFinished;
             if (shutdownWaiting !== undefined && this.responses.size === 0) {
@@ -46,7 +46,7 @@ export class InFlightRequests {
     }
 
     /** Resolves once no request is in flight; at once if none is. */
-    public whenAllFinished(): Promise<void> {
+    public waitUntilAllFinished(): Promise<void> {
         if (this.responses.size === 0) {
             return Promise.resolve();
         }
