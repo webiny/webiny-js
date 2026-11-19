@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
@@ -125,6 +125,38 @@ describe("websockets runner", () => {
             message: "No access to this tenant."
         });
         expect(await registry.listViaIdentity("id-12345678")).toHaveLength(0);
+    });
+
+    // The runner answers a thrown error with a 200, which would open the socket.
+    it("should refuse a connect with a 500 when accepting it fails", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+        const registry = context.container.resolve(ConnectionRegistry);
+        vi.spyOn(registry, "register").mockRejectedValue(new Error("database unreachable"));
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                connectionId: "myConnectionIdAbcdefg",
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+            },
+            body: JSON.stringify({
+                token: "aToken",
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 500,
+            message: "Could not accept the connection."
+        });
     });
 
     it("should run and return error status - disconnect route", async () => {

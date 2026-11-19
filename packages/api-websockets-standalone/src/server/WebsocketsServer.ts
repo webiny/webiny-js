@@ -281,7 +281,8 @@ class WebsocketsServer implements IWebsocketsServer {
             return null;
         }
 
-        const tenant = url.searchParams.get("tenant") ?? "";
+        // The same default as the request tenant loader and the AWS transport.
+        const tenant = url.searchParams.get("tenant") || "root";
         const identity = await this.authenticate(token, tenant);
         if (!identity?.id) {
             return null;
