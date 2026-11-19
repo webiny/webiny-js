@@ -15,6 +15,9 @@ export interface IMailerService {
     sendMail<T = any>(
         data: TransportSendData
     ): Promise<Result<TransportSendResponse<T>, MailerServiceError>>;
+
+    /** Whether a transport is set up. Outside api-mailer, ask `IsMailerConfiguredUseCase`. */
+    isConfigured(): Promise<boolean>;
 }
 
 export const MailerService = createAbstraction<IMailerService>("MailerService");

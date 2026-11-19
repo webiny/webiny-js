@@ -6,7 +6,8 @@ import { PasswordResetDeliveryError } from "~/api/domain/errors.js";
 import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
-import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
+import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
+import { createPasswordResetMessage } from "~/api/domain/mail/passwordResetMessage.js";
 
 class SendPasswordResetCodeUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -14,7 +15,7 @@ class SendPasswordResetCodeUseCaseImpl implements UseCaseAbstraction.Interface {
         private codes: PasswordResetCodesRepository.Interface,
         private generator: PasswordResetCodeGenerator.Interface,
         private hasher: Hasher.Interface,
-        private mailer: PasswordResetMailer.Interface
+        private sendMail: SendMailUseCase.Interface
     ) {}
 
     async execute(
@@ -45,8 +46,10 @@ class SendPasswordResetCodeUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.ok("alreadyIssued");
         }
 
-        const sent = await this.mailer.send({ email: credential.email, code });
-        if (!sent) {
+        const sent = await this.sendMail.execute(
+            createPasswordResetMessage({ email: credential.email, code })
+        );
+        if (sent.isFail()) {
             return Result.fail(new PasswordResetDeliveryError());
         }
 
@@ -61,6 +64,6 @@ export const SendPasswordResetCodeUseCase = UseCaseAbstraction.createImplementat
         PasswordResetCodesRepository,
         PasswordResetCodeGenerator,
         Hasher,
-        PasswordResetMailer
+        SendMailUseCase
     ]
 });

@@ -6,4 +6,8 @@ export class InertMailer implements MailerService.Interface {
     public async sendMail<T = any>(): MailerService.Return<T> {
         return Result.ok({ result: null, error: null });
     }
+
+    public async isConfigured(): Promise<boolean> {
+        return false;
+    }
 }

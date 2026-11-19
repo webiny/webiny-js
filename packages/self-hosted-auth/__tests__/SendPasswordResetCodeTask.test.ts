@@ -13,7 +13,8 @@ import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepo
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
-import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
+import { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
+import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { RequestPasswordResetFeature } from "~/api/features/RequestPasswordReset/index.js";
 import { RequestPasswordResetUseCase } from "~/api/features/RequestPasswordReset/index.js";
@@ -22,7 +23,7 @@ import { ResetPasswordWithCodeUseCase } from "~/api/features/ResetPasswordWithCo
 import { SendPasswordResetCodeFeature } from "~/api/features/SendPasswordResetCode/index.js";
 import { SendPasswordResetCodeUseCase } from "~/api/features/SendPasswordResetCode/index.js";
 import type { SendPasswordResetCodeInput } from "~/api/features/SendPasswordResetCode/index.js";
-import type { SendPasswordResetCodeParams } from "~/api/domain/mail/PasswordResetMailer.js";
+import type { PasswordResetMessageParams } from "~/api/domain/mail/passwordResetMessage.js";
 import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
 import { createInMemoryPasswordResetCodes } from "./helpers/inMemoryPasswordResetCodes.js";
 
@@ -76,12 +77,21 @@ const setup = (options: SetupOptions = {}) => {
         verify: async (value: string, storedHash: string) => `hashed:${value}` === storedHash
     });
 
-    const sent: SendPasswordResetCodeParams[] = [];
-    const send = vi.fn(async (params: SendPasswordResetCodeParams) => {
+    // Records each mail as the address and the code read back out of its text.
+    const sent: PasswordResetMessageParams[] = [];
+    const send = vi.fn(async (params: PasswordResetMessageParams) => {
         sent.push(params);
         return options.sendSucceeds ?? true;
     });
-    container.registerInstance(PasswordResetMailer, { isConfigured: async () => true, send });
+    const sendMail = {
+        execute: async (data: { to?: string[]; text?: string }) => {
+            const code = data.text?.match(/code is (\d+)\./)?.[1] ?? "";
+            const delivered = await send({ email: data.to?.[0] ?? "", code });
+            return delivered ? Result.ok({}) : Result.fail(new Error("Refused."));
+        }
+    } as unknown as SendMailUseCase.Interface;
+    container.registerInstance(SendMailUseCase, sendMail);
+    container.registerInstance(IsMailerConfiguredUseCase, { execute: async () => true });
 
     const logError = vi.fn();
     const logger = {

@@ -551,47 +551,43 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ## Mailer Features
 
-### MailerService
-
-- **Import:** `import { MailerService } from "@webiny/api-mailer"`
-- **Interface Type:** See `packages/api-mailer/src/domain/MailerService/abstractions.ts`
-- **Usage:** Send email via the currently-active transport. Resolves settings through `GetSettingsRepository` (code source first, KV second) and delegates to a `MailTransportFactory`. Returns `Result<TransportSendResponse, NoTransportAvailable | NoSettingsConfigured | TransportSend>`.
+Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration; the built-in one is SMTP. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
 
 ### SendMailUseCase
 
-- **Import:** `import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail"`
+- **Import:** `import { SendMailUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/features/SendMail/abstractions.ts`
-- **Usage:** Validated wrapper around `MailerService.sendMail`. Accepts `TransportSendData` (`to`, `from`, `subject`, `text|html`, …), validates with zod, publishes `MailBeforeSend`/`MailAfterSend`/`MailSendError` domain events.
+- **Usage:** The way to send mail. Accepts `TransportSendData` (`to`, `from`, `subject`, `text|html`, …), validates with zod, publishes `MailBeforeSend`/`MailAfterSend`/`MailSendError` domain events. With no transport configured it fails with `NoTransportAvailableError`; handle that instead of asking first.
+
+### IsMailerConfiguredUseCase
+
+- **Import:** `import { IsMailerConfiguredUseCase } from "webiny/api/mailer"`
+- **Interface Type:** See `packages/api-mailer/src/features/IsMailerConfigured/abstractions.ts`
+- **Usage:** `execute(): Promise<boolean>`, whether a transport is set up. Does not connect or send. Only for a question that must be answered before anything is sent (the password reset request uses it). No permission check.
+
+### MailTransportFactory
+
+- **Import:** `import { MailTransportFactory, MailTransport } from "webiny/api/mailer"`
+- **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
+- **Usage:** Register a custom mail transport (SES, an HTTP API). `createTransport()` takes no arguments, reads the transport's own configuration (env vars, stored settings, anything) and returns a `MailTransport`, or `null` when not configured. The last registered factory that returns a transport is used. Example: the `aws-ses-mailer` extension in webiny/extensions.
 
 ### GetSettingsUseCase (Mailer)
 
-- **Import:** `import { GetSettingsUseCase } from "@webiny/api-mailer/features/GetSettings"`
+- **Import:** `import { GetSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/features/GetSettings/abstractions.ts`
-- **Usage:** Read mailer transport settings. Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Infra.Mailer.*>` is driving the config; `"storage"` means settings were saved via the admin UI.
+- **Usage:** Read stored transport settings (SMTP today). Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Api.Mailer.Smtp>` is driving the config; `"storage"` means settings were saved via the admin UI.
 
 ### SaveSettingsUseCase (Mailer)
 
-- **Import:** `import { SaveSettingsUseCase } from "@webiny/api-mailer/features/SaveSettings"`
+- **Import:** `import { SaveSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/features/SaveSettings/abstractions.ts`
-- **Usage:** Persist mailer settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when code-driven settings exist for the active transport. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
+- **Usage:** Persist mailer settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when any registered transport has code-defined settings. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
 
 ### CodeMailerSettings
 
 - **Import:** `import { CodeMailerSettings } from "@webiny/api-mailer/domain/CodeMailerSettings/abstractions"`
 - **Interface Type:** See `packages/api-mailer/src/domain/CodeMailerSettings/abstractions.ts`
-- **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<Infra.Mailer.Smtp>` registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
-
-### ActiveTransport (Mailer)
-
-- **Import:** `import { ActiveTransport } from "@webiny/api-mailer/domain/MailTransport/abstractions"`
-- **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
-- **Usage:** Centralized resolver for the currently-active transport. `name()` returns the last-registered `MailTransportFactory`'s `name` (`"Mailer/SmtpTransport"` or `"Mailer/DummyTransport"` for built-ins), or `null` when none are registered. Used by `MailerService` and `SaveSettingsUseCase` to know which transport they're dealing with.
-
-### MailTransportFactory
-
-- **Import:** `import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions"`
-- **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
-- **Usage:** Register a custom mail transport. Implementations expose a stable `name: string` (used to route code-driven settings from `<Infra.Mailer.*>` BuildParams) and a `createTransport(settings)` factory method. Multiple factories can be registered; `ActiveTransport.name()` returns the last-registered one.
+- **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<Api.Mailer.Smtp>` registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
 
 ---
 
