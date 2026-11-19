@@ -32,7 +32,7 @@ export const CollapsedPanel = ({ label, side, onExpand }: CollapsedPanelProps) =
             data-role={"editor-collapsed-panel"}
             onClick={onExpand}
             className={cn(
-                "flex h-full w-[45px] flex-none cursor-pointer flex-col items-center gap-md bg-neutral-base pt-sm select-none hover:bg-neutral-light",
+                "flex h-full w-[45px] flex-none cursor-pointer flex-col items-center gap-md bg-neutral-base pt-sm select-none",
                 border
             )}
         >

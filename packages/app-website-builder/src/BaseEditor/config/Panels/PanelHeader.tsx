@@ -18,8 +18,17 @@ export const PanelHeader = () => {
         return null;
     }
 
+    /*
+     * The whole row collapses the panel, label included, as the whole strip opens it. The button is
+     * there for the keyboard; its click reaches this handler too.
+     */
     return (
-        <div className={"flex h-[40px] flex-none items-center justify-between"}>
+        <div
+            onClick={panel.close}
+            className={
+                "flex h-[40px] flex-none cursor-pointer items-center justify-between select-none"
+            }
+        >
             <Text as="div" size={"sm"} className={"font-semibold text-neutral-primary"}>
                 {panel.label}
             </Text>
@@ -29,7 +38,6 @@ export const PanelHeader = () => {
                 icon={panel.side === "left" ? <RightPanelIcon /> : <LeftPanelIcon />}
                 title={`Collapse ${panel.label}`}
                 data-panel-collapse
-                onClick={panel.close}
             />
         </div>
     );
