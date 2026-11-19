@@ -5,7 +5,12 @@
 
 const specialCharactersToRemove = [`\\?`];
 
-const specialCharacterToSpace = ["-", "\\\\"];
+/**
+ * The standard analyzer splits words on these, so "11/14" is indexed as "11" and "14". Wildcard
+ * terms are not analyzed, so "11\/14*" would look for a single word that does not exist. Searching
+ * for the parts as separate words matches what was indexed.
+ */
+const specialCharacterToSpace = ["-", "\\\\", "/"];
 
 const specialCharacters = [
     "\\\\",
@@ -28,7 +33,6 @@ const specialCharacters = [
     "\\~",
     "\\*",
     `:`,
-    `/`,
     "\\#"
 ];
 
@@ -64,14 +68,14 @@ export const normalizeValueWithAsterisk = (initial: string) => {
 
     let result = value;
     /**
-     * If there is a / in the first word, do not put asterisk in front of it.
+     * If the first word has an escaped special character, do not put asterisk in front of it.
      */
     const firstWord = results[0];
     if (hasSpecialChar(firstWord) === false) {
         result = `*${result}`;
     }
     /**
-     * If there is a / in the last word, do not put asterisk at the end of it.
+     * If the last word has an escaped special character, do not put asterisk at the end of it.
      */
     const lastWord = results[results.length - 1];
     if (hasSpecialChar(lastWord) === false) {
