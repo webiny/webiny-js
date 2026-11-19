@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
-import { ListEntryAuthorsFeature } from "~/features/listEntryAuthors/feature.js";
-import type { EntryAuthor } from "~/features/listEntryAuthors/abstractions.js";
+import { CmsAdvancedSearchFeature } from "~/presentation/contentEntries/advancedSearch/feature.js";
 import { FieldsMapper } from "./FieldsMapper.js";
 
 const SYSTEM_FIELD_PREFIXES = ["status", "createdOn", "savedOn", "createdBy", "AND", "OR"];
@@ -39,18 +41,14 @@ function wrapUserFields(where: Record<string, unknown>): Record<string, unknown>
 export const CmsAdvancedSearch = observer(() => {
     const presenter = useContentEntriesPresenter();
     const { browser } = useContentEntryListConfig();
-    const { useCase: listAuthors } = useFeature(ListEntryAuthorsFeature);
-    const [authors, setAuthors] = useState<EntryAuthor[]>([]);
+    const { presenter: advancedSearch } = useFeature(CmsAdvancedSearchFeature);
 
     useEffect(() => {
-        // Users without permission to list users get no Author filter rather than an error.
-        listAuthors
-            .execute()
-            .then(setAuthors)
-            .catch(() => setAuthors([]));
-    }, [listAuthors]);
+        advancedSearch.loadAuthors();
+    }, [advancedSearch]);
 
     const model = presenter.vm.model;
+    const authors = advancedSearch.vm.authors;
     const fields = useMemo(() => FieldsMapper.toRaw(model, authors), [model, authors]);
     const repository = useFilterRepository(`cms:${model.modelId}`);
 

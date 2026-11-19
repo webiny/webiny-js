@@ -334,6 +334,38 @@ describe("SDK GraphQL - CMS Search", () => {
             }
         });
 
+        it("should match a contains filter with a slash in the value", async () => {
+            await createAndPublishEntry({
+                name: "Introduction to Rope Climbing 11/14",
+                sku: "CLS-001",
+                description: "Beginner class",
+                price: 30
+            });
+            await createAndPublishEntry({
+                name: "Introduction to Bouldering",
+                sku: "CLS-002",
+                description: "Beginner class",
+                price: 30
+            });
+
+            for (const value of ["Climbing 11/", "11/1", "Climbing 11/14"]) {
+                const listResult = await sdk.cms.listEntries<ProductValues>({
+                    modelId: "product",
+                    where: { "values.name_contains": value },
+                    fields: ["id", "values.name"]
+                });
+
+                expect(listResult.isOk()).toBe(true);
+                expect({
+                    value,
+                    names: listResult.value.data.map(item => item.values?.name)
+                }).toEqual({
+                    value,
+                    names: ["Introduction to Rope Climbing 11/14"]
+                });
+            }
+        });
+
         it("should return all entries when search is undefined", async () => {
             // Create 3 products.
             await createAndPublishEntry({

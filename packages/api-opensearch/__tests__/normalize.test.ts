@@ -9,6 +9,8 @@ describe(`GraphQL "contains" operator - query normalization`, () => {
             "AE0003   VFW Post 12139 Donnersberg, Sembach Germany"
         );
 
+        expect(normalizeValue("Climbing 11/14")).toBe("Climbing 11 14");
+
         // expect(normalizeValue('+ 1 - = && || > < ! ( A ) { } [ ] ^ " ~ * ? : \\ 2 /')).toEqual(
         //     "\\+ 1   \\= \&\& \\|\\| \> \< \! \\( A \\) \\{ \\} \\[ \\] \\^ \\\" \\~ \\*  \:   2 \/"
         // );
