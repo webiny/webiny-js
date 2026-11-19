@@ -1,6 +1,7 @@
 import sortBy from "lodash/sortBy.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
+import type { EntryAuthor } from "~/features/listEntryAuthors/abstractions.js";
 
 export class FieldsMapper {
     private static excluded: FieldRaw["type"][] = ["rich-text", "file", "object", "dynamicZone"];
@@ -42,7 +43,7 @@ export class FieldsMapper {
         }
     ];
 
-    static toRaw(model: CmsModel): FieldRaw[] {
+    static toRaw(model: CmsModel, authors: EntryAuthor[] = []): FieldRaw[] {
         const modelFields = model.fields
             .filter(modelField => !this.excluded.includes(modelField.type))
             .map(modelField => {
@@ -56,6 +57,24 @@ export class FieldsMapper {
                 };
             });
 
-        return sortBy([...this.defaultFields, ...modelFields], ["label"]);
+        const authorFields = authors.length > 0 ? [this.createAuthorField(authors)] : [];
+
+        return sortBy([...this.defaultFields, ...authorFields, ...modelFields], ["label"]);
+    }
+
+    private static createAuthorField(authors: EntryAuthor[]): FieldRaw {
+        return {
+            id: "createdBy",
+            type: "text",
+            label: "Author",
+            list: false,
+            predefinedValues: {
+                enabled: true,
+                values: sortBy(authors, ["displayName"]).map(author => ({
+                    label: author.displayName,
+                    value: author.id
+                }))
+            }
+        };
     }
 }

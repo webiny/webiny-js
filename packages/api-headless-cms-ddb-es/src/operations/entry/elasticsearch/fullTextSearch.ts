@@ -5,6 +5,15 @@ import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSe
 import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 
 /**
+ * The standard analyzer splits text on slashes, so "11/14" is indexed as the words "11" and "14".
+ * Wildcard terms are not analyzed, so "11\/14*" would look for a single word that does not exist.
+ * Searching for the parts as separate words matches what was indexed.
+ */
+const prepareFullTextSearchTerm = (term: string): string => {
+    return normalizeValue(term.replace(/\//g, " ")).replace(/\s+/g, " ").trim();
+};
+
+/**
  * Our default implementation works with the AND operator for the multiple words query string.
  */
 const defaultFullTextSearch: CmsEntryOpenSearchFullTextSearch.Interface = {
@@ -109,6 +118,6 @@ export const applyFullTextSearch = (params: Params): void => {
         fields,
         query,
         term,
-        prepareTerm: normalizeValue
+        prepareTerm: prepareFullTextSearchTerm
     });
 };
