@@ -7,7 +7,8 @@ import type http from "node:http";
 export class InFlightRequests {
     private readonly responses = new Set<http.ServerResponse>();
     private draining = false;
-    private waiters: Array<() => void> = [];
+    // The `resolve` of each promise `drain()` handed out, called once the last request closes.
+    private drainWaiters: Array<() => void> = [];
 
     /** Counts the request until its response closes, whether it finished or the client went away. */
     public track(res: http.ServerResponse): void {
@@ -17,8 +18,9 @@ export class InFlightRequests {
         }
         res.once("close", () => {
             this.responses.delete(res);
-            if (this.responses.size === 0) {
-                this.release();
+            // The last request of a shutdown just closed: the waiting `drain()` can resolve.
+            if (this.draining && this.responses.size === 0) {
+                this.resolveDrainWaiters();
             }
         });
     }
@@ -39,7 +41,7 @@ export class InFlightRequests {
             return Promise.resolve();
         }
         return new Promise<void>(resolve => {
-            this.waiters.push(resolve);
+            this.drainWaiters.push(resolve);
         });
     }
 
@@ -58,9 +60,9 @@ export class InFlightRequests {
         });
     }
 
-    private release(): void {
-        const waiters = this.waiters;
-        this.waiters = [];
+    private resolveDrainWaiters(): void {
+        const waiters = this.drainWaiters;
+        this.drainWaiters = [];
         for (const resolve of waiters) {
             resolve();
         }
