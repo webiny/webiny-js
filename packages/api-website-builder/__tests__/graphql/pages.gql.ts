@@ -181,6 +181,27 @@ export const GET_PAGE_BY_PATH = /* GraphQL */ `
     }
 `;
 
+export const GET_LATEST_PAGE_BY_PATH = /* GraphQL */ `
+    query GetLatestPageByPath($path: String!) {
+        websiteBuilder {
+            getLatestPageByPath(path: $path) {
+                data {
+                    id
+                    entryId
+                    status
+                    version
+                    properties
+                    metadata
+                    elements
+                    bindings
+                    extensions
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 // The selection used before `version`, `metadata` and `extensions` were resolved.
 export const GET_PAGE_BY_PATH_MINIMAL = /* GraphQL */ `
     query GetPageByPathMinimal($path: String!) {

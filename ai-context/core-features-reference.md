@@ -674,6 +674,12 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/api-headless-cms-utils-os/src/features/CmsEntryOpenSearchUtilsFeature.ts`
 - **Usage:** Composite feature that registers all CMS OpenSearch utilities (field indexing, filtering, body building, sorting, querying, value search, full-text search, index management). Register once to get the full CMS OpenSearch query infrastructure.
 
+### GetLatestPageByPathUseCase (Website Builder — Pages)
+
+- **Import:** `import { GetLatestPageByPathUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js"`
+- **Interface Type:** See `packages/api-website-builder/src/features/pages/GetLatestPageByPath/abstractions.ts`
+- **Usage:** `.execute(path)` returns the latest non-deleted revision of the page at that path, whatever its status (draft, unpublished or published). Reads through `GetLatestPageByPathRepository` (`ListLatestEntriesUseCase`, so trashed pages are excluded). Fails with `PageNotFoundError` (code `WebsiteBuilder/Page/NotFound`) when no page is at the path, `PageNotAuthorizedError` without `wb.page` read permission or access to the page, or `PagePersistenceError` if storage fails. `GetPageByPathUseCase` is the published-only counterpart. GraphQL: `websiteBuilder { getLatestPageByPath(path: String!) }`, which returns the composed page and keeps the error code.
+
 ### GetGlobalComponentUseCase (Website Builder — Globals)
 
 - **Import:** `import { GetGlobalComponentUseCase } from "@webiny/api-website-builder/exports/api/website-builder/globals.js"`
