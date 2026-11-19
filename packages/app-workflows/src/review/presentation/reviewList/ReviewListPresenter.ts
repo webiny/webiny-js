@@ -67,6 +67,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     // The app the list was opened for; the list use case routes by it (R348).
     private app: WorkflowAppKind | null = null;
     private rowProvider: IReviewRowProvider | null = null;
+    private showContentType = false;
     private unsubscribe: (() => void) | null = null;
     // A generation: every load, reload and dispose starts a new one, and a response of an older
     // generation is ignored. An in-flight refetch only counts for the generation it started in.
@@ -89,6 +90,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             | "identityContext"
             | "app"
             | "rowProvider"
+            | "showContentType"
             | "unsubscribe"
             | "loadToken"
             | "refreshingToken"
@@ -101,6 +103,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             identityContext: false,
             app: false,
             rowProvider: false,
+            showContentType: false,
             unsubscribe: false,
             loadToken: false,
             refreshingToken: false,
@@ -126,7 +129,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         let empty: ReviewListEmptyVm | null = null;
         if (this._status === "ready" && this._entries.length === 0 && this._heldIds.length === 0) {
-            empty = getReviewListEmpty(this._tab, isFiltered, hasTeams);
+            empty = getReviewListEmpty(this._tab, isFiltered, hasTeams, this.showContentType);
         }
 
         let notice: string | null = null;
@@ -159,6 +162,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.dispose();
         this.app = params.app;
         this.rowProvider = params.rowProvider;
+        this.showContentType = params.showContentType;
         // A tab the viewer may not open (`?tab=failedSteps` without `reassign`) falls back to the
         // default tab, so the server's refusal is never provoked (R259).
         const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());

@@ -58,11 +58,11 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
     const namespacesKey = namespaces.join("|");
 
     useEffect(() => {
-        void presenter.init({ app, namespaces, rowProvider, initialTab });
+        void presenter.init({ app, namespaces, rowProvider, initialTab, showContentType });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, app, rowProvider, namespacesKey, initialTab]);
+    }, [presenter, app, rowProvider, namespacesKey, initialTab, showContentType]);
 
     const vm = presenter.vm;
 

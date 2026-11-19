@@ -249,11 +249,11 @@ describe("RequestReviewDialog", () => {
 
         expect(
             await screen.findByText(
-                "No one other than you can review this step right now. It may wait in the team pool until someone reassigns it."
+                "Nobody other than you can review this step. Ask a workflow manager to add reviewers."
             )
         ).toBeTruthy();
         expect(screen.queryByText("Reviewer")).toBeNull();
-        const note = screen.getByText(/^No one other than you/);
+        const note = screen.getByText(/^Nobody other than you/);
         const hint = screen.getByText(/^Picks are checked again/);
         expect(note.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         const choose = screen.getByRole("radio", { name: "Choose a person" });

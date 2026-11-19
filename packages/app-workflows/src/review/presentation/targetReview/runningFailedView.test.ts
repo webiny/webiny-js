@@ -5,10 +5,8 @@ import { getStepStartedAt } from "./getStepStartedAt.js";
 import { getStepRunMessage } from "./getStepRunMessage.js";
 import { getStepTagTooltip } from "./getStepTagTooltip.js";
 import { getStepStateTag } from "./getStepStateTag.js";
-import { getReviewProgress } from "./getReviewProgress.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { createActor } from "~/review/testing/createActor.js";
-import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
 import { at } from "~/review/testing/at.js";
 import { createFailedAutomationStep } from "~/review/testing/createAutomatedStep.js";
@@ -147,77 +145,5 @@ describe("getStepStateTag with running (R263)", () => {
             label: "Approved",
             variant: "success-light"
         });
-    });
-});
-
-describe("getReviewProgress segment colour and description", () => {
-    it("carries the step colour and description on each segment", () => {
-        const review = createReview({
-            steps: [
-                createStep({ id: "a", color: "#112233", description: "Checks the tone" }),
-                createStep({ id: "b", color: "#445566", description: null })
-            ]
-        });
-
-        const { segments } = getReviewProgress(review);
-
-        expect(segments[0].color).toBe("#112233");
-        expect(segments[0].description).toBe("Checks the tone");
-        expect(segments[1].color).toBe("#445566");
-        expect(segments[1].description).toBeNull();
-    });
-});
-
-describe("getReviewProgress with running and failed steps", () => {
-    it("gives each segment its tag, its run message and its tooltip", () => {
-        const review = createReview({
-            steps: [
-                createRunningAiStep({ id: "a" }),
-                createFailedAutomationStep({ id: "b" }),
-                createStep({ id: "c", title: "Legal sign-off", state: StepState.Pending })
-            ]
-        });
-
-        const { segments } = getReviewProgress(review);
-
-        expect(segments[0].tag).toEqual({
-            label: "Running",
-            variant: "accent-light",
-            icon: "progress_activity"
-        });
-        expect(segments[0].message).toBe("AI tone check is running.");
-        expect(segments[0].tooltip).toBe("AI tone check is running since 14:20.");
-        expect(segments[1].tag).toEqual({
-            label: "Failed",
-            variant: "destructive-light",
-            icon: "sync_problem"
-        });
-        expect(segments[1].message).toBe(
-            "Notify web team failed: Webhook returned 503 Service Unavailable"
-        );
-        expect(segments[1].tooltip).toBe(
-            "Notify web team failed. The requester or an operator can restart it."
-        );
-        expect(segments[2].tag).toEqual({ label: "Pending", variant: "neutral-base-outline" });
-        expect(segments[2].message).toBeNull();
-        expect(segments[2].tooltip).toBeNull();
-    });
-
-    it("keeps the decision comment of an approved step as its comment", () => {
-        const review = createReview({
-            steps: [
-                createStep({
-                    id: "a",
-                    state: StepState.Approved,
-                    owner: LUKA,
-                    comment: "Fine."
-                })
-            ]
-        });
-
-        const { segments } = getReviewProgress(review);
-
-        expect(segments[0].comment).toBe("Fine.");
-        expect(segments[0].message).toBeNull();
     });
 });

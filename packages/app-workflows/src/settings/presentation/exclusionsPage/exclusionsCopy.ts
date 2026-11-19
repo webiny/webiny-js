@@ -6,11 +6,11 @@ export const EXCLUSIONS_PAGE_SUB =
 
 export const EXCLUSIONS_ADD_LABEL = "Add exclusion";
 
-// The filter's accessible name; it has no visible label (R340).
-export const EXCLUSIONS_FILTER_LABEL = "Filter by user";
+// The search box's accessible name and placeholder; it has no visible label (R340).
+export const EXCLUSIONS_SEARCH_LABEL = "Search by name";
 
-// The filter's clear row and, while nothing is chosen, its placeholder.
-export const EXCLUSIONS_FILTER_ANY_LABEL = "All users";
+// The empty state's button for a search that matches no one.
+export const EXCLUSIONS_CLEAR_SEARCH_LABEL = "Clear search";
 
 export const EXCLUSIONS_COLUMN_USER = "User";
 

@@ -13,9 +13,10 @@ export const ASSIGNMENT_FORM_MESSAGES = {
     rulesLabel: "Routing rules",
     rulesHint: "The first matching rule wins. If no rule matches, the strategy decides.",
     addRule: "Add rule",
-    emptyRulesLead: "No rules. ",
-    emptyRulesPool: "Reviews wait in the team pool.",
-    emptyRulesStrategy: "The strategy picks the reviewer.",
+    emptyRulesPool: "No routing rules. Every review waits in the team pool.",
+    emptyRulesStrategy: (strategyName: string) =>
+        `No routing rules. ${strategyName} assigns every review on this step.`,
+    emptyRulesUnknownStrategy: "The strategy",
     moveRuleUp: "Move rule up",
     moveRuleDown: "Move rule down",
     deleteRule: "Delete rule",

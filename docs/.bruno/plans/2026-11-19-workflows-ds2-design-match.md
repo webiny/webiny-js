@@ -197,7 +197,7 @@ Review list (`reviewList/`): filtered-empty text per app, CMS "Try another title
 or state, or clear the filters.", Website Builder "Try another title or state, or clear the
 filters." (6).
 
-### Batch B2: needs API or data changes, plan separately
+### Batch B2: needs API or data changes
 
 - List controls (1, 2): scope Assigned to me · Team pool · Team in review · Requested by me ·
   All, and state All · In review · Failed · Approved · Rejected. Today the API has five list
@@ -215,8 +215,11 @@ filters." (6).
 - "View review details" links open the content with the drawer open (34). Needs a deep link.
 - E-mail: generic greeting and footer plus the details table (35). The user has yet to confirm.
 
-### Batch C: admin-ui DS 2.0 port, own plan and PR
+### Batch C: admin-ui DS 2.0 port
 
 `WorkflowStatus`, `Pagination`, `ButtonGroup`, `Table` sort and selection, `Switch variant` and
 `inline`, `Alert size`, `RadioGroup inline`, `Accordion spacing`, `ProgressBar trailing`,
 `Toast status`, `Drawer headerExtra` and `footerStart`. Additive only: no changed defaults.
+
+All batches go into this branch and PR #6223 (user, 2026-11-19): no separate PR and no separate
+plan file. B2 and C are detailed in this file before they start.

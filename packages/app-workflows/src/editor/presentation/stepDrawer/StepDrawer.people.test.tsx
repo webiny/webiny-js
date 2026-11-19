@@ -202,8 +202,8 @@ describe("StepDrawer with the real People form (R234, R293, R300)", () => {
         activateTab(/Assignment/);
 
         expect(screen.getByText("Rule 1")).toBeTruthy();
-        // The step's warnings banner and the rule card both show the warning.
-        expect(screen.getAllByText("Rule 1: The folder no longer exists.")).toHaveLength(2);
+        // The rule has a field error, so only the step's warnings banner shows its warning, not the rule card.
+        expect(screen.getAllByText("Rule 1: The folder no longer exists.")).toHaveLength(1);
         expect(
             screen.getByText("The target team is not one of the step's reviewing teams.")
         ).toBeTruthy();

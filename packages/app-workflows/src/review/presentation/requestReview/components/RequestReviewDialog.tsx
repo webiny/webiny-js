@@ -27,7 +27,7 @@ import type { RequestReviewPresenter } from "../abstractions.js";
 const PICK_HINT =
     "Picks are checked again when the step is reached. If the person is no longer eligible, a reviewer is assigned automatically.";
 const NOBODY_NOTE =
-    "No one other than you can review this step right now. It may wait in the team pool until someone reassigns it.";
+    "Nobody other than you can review this step. Ask a workflow manager to add reviewers.";
 
 const PICK_BLOCK = "ml-lg flex flex-col gap-sm";
 

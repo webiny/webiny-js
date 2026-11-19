@@ -3,7 +3,6 @@ import type { ReviewTarget } from "~/review/domain/types.js";
 import type { IReviewUnsavedChanges } from "~/review/content/IReviewUnsavedChanges.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
-import type { ReviewLockCopy } from "./ReviewLockCopy.js";
 
 export type TargetReviewStatus = "loading" | "failed" | "noWorkflow" | "none" | "active";
 
@@ -78,28 +77,9 @@ export interface TargetReviewActionVm {
     disabledReason: string | null;
 }
 
-export interface TargetReviewSegmentVm {
-    stepId: string;
-    title: string;
-    state: StepStateValue;
-    ownerLabel: string;
-    // The step colour, shown as the dot of the popover row.
-    color: string;
-    // The step description, shown muted after the title.
-    description: string | null;
-    // The decision comment of the step.
-    comment: string | null;
-    tag: TargetReviewTag;
-    // "{Step} is running." or "{Step} failed: {reason}", else `null` (R263).
-    message: string | null;
-    // The tag tooltip of a running or failed step (R264), else `null`.
-    tooltip: string | null;
-}
-
 export interface TargetReviewProgressVm {
     approved: number;
     total: number;
-    segments: TargetReviewSegmentVm[];
 }
 
 // The icon of the "Content updated by {step}" notice: AI `auto_awesome`, automation `bolt` (R262).
@@ -168,8 +148,6 @@ export interface TargetReviewInitParams extends TargetReviewContext {
     contentReloader: IReviewContentReloader | null;
     // Why Request review is blocked (unsaved edits, an auto-save in flight); `null` for none.
     unsavedChanges: IReviewUnsavedChanges | null;
-    // The app's own lock texts for the bar; the default texts apply when it passes none.
-    lockCopy?: ReviewLockCopy;
 }
 
 export interface ITargetReviewPresenter {

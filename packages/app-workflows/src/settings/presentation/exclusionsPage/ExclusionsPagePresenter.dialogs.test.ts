@@ -175,41 +175,6 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
         expect(presenter.vm.tab).toBe("expired");
     });
 
-    it("resets a user filter whose user left the list", async () => {
-        const { presenter } = createExclusionsPageSetup([
-            createAnaExclusion(),
-            createBenExclusion()
-        ]);
-        await presenter.init(MANAGE);
-        presenter.setUserFilter("user-ben");
-
-        presenter.applySaved({
-            settings: { exclusions: [createAnaExclusion()] },
-            change: "remove",
-            user: null
-        });
-
-        expect(presenter.vm.filter.value).toBeNull();
-        expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-ana"]);
-    });
-
-    it("keeps a user filter whose user is still in the list", async () => {
-        const { presenter } = createExclusionsPageSetup([
-            createAnaExclusion(),
-            createBenExclusion()
-        ]);
-        await presenter.init(MANAGE);
-        presenter.setUserFilter("user-ben");
-
-        presenter.applySaved({
-            settings: { exclusions: [createBenExclusion()] },
-            change: "remove",
-            user: null
-        });
-
-        expect(presenter.vm.filter.value).toBe("user-ben");
-    });
-
     it("does not close the dialog in applySaved (the dialog presenter does)", async () => {
         const { presenter } = createExclusionsPageSetup([createAnaExclusion()]);
         await presenter.init(MANAGE);

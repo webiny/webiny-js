@@ -3,6 +3,7 @@ import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { TargetReviewActionKind } from "../targetReview/abstractions.js";
 import type { TargetReviewActionVm } from "../targetReview/abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
+import type { TargetReviewTag } from "../targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "../targetReview/abstractions.js";
 import type { AttemptOutcomeTone } from "./AttemptOutcomeTone.js";
 
@@ -28,8 +29,8 @@ export interface ReviewDetailsInitParams {
 
 export interface ReviewDetailsHeaderVm {
     title: string;
-    stateLabel: string;
-    stateVariant: TargetReviewTagVariant;
+    // Set on a finished or cancelled review; `null` while the review is in progress.
+    stateTag: TargetReviewTag | null;
     // "Article · Summer launch (#3)", or "Summer launch (#3)" without a type label.
     contentLabel: string;
     contentUrl: string | null;
@@ -91,7 +92,7 @@ export interface ReviewDetailsStepVm {
     skipped: ReviewDetailsSkippedVm[] | null;
     // An AI or automation step is running (R263): the tag reads Running with its icon.
     running: boolean;
-    // The reason a failed step failed (its comment); `null` for any other step or without one.
+    // The alert text of a failed step, "Failed at {time}: {reason}"; `null` for any other step or without a reason.
     failedReason: string | null;
     attempts: ReviewAttemptVm[];
     issues: ReviewAiIssueVm[];

@@ -94,17 +94,15 @@ const ALL_STEP_STATES = [
 
 describe("tags", () => {
     it("tags the review state (QBZ-52)", () => {
-        expect(getReviewStateTag(ReviewState.InProgress)).toEqual({
-            label: "Review: In progress",
-            variant: "accent-light"
-        });
+        expect(getReviewStateTag(ReviewState.InProgress)).toBeNull();
+        expect(getReviewStateTag(ReviewState.Cancelled)).toBeNull();
         expect(getReviewStateTag(ReviewState.Approved)).toEqual({
-            label: "Review: Approved",
+            label: "Approved",
             variant: "success-light"
         });
         expect(getReviewStateTag(ReviewState.Rejected)).toEqual({
-            label: "Review: Rejected",
-            variant: "neutral-dark"
+            label: "Rejected",
+            variant: "destructive"
         });
     });
 
@@ -139,62 +137,15 @@ describe("tags", () => {
 });
 
 describe("getReviewProgress", () => {
-    it("counts approved steps and lists every step with its owner label and comment", () => {
+    it("counts the approved steps and all steps", () => {
         const review = createReview({
             steps: [
-                createStep({
-                    id: "a",
-                    title: "Editorial",
-                    state: StepState.Approved,
-                    comment: "Fine.",
-                    owner: createActor({ displayName: "Ivan Horvat" })
-                }),
-                createStep({ id: "b", title: "Legal", state: StepState.Awaiting }),
-                createStep({ id: "c", title: "Brand", state: StepState.Pending })
+                createStep({ id: "a", state: StepState.Approved }),
+                createStep({ id: "b", state: StepState.Awaiting }),
+                createStep({ id: "c", state: StepState.Pending })
             ]
         });
-        expect(getReviewProgress(review)).toEqual({
-            approved: 1,
-            total: 3,
-            segments: [
-                {
-                    stepId: "a",
-                    title: "Editorial",
-                    state: StepState.Approved,
-                    ownerLabel: "Ivan Horvat",
-                    color: "#FA5723",
-                    description: null,
-                    comment: "Fine.",
-                    tag: { label: "Approved", variant: "success-light" },
-                    message: null,
-                    tooltip: null
-                },
-                {
-                    stepId: "b",
-                    title: "Legal",
-                    state: StepState.Awaiting,
-                    ownerLabel: "Team pool",
-                    color: "#FA5723",
-                    description: null,
-                    comment: null,
-                    tag: { label: "Awaiting", variant: "warning", icon: "hourglass_empty" },
-                    message: null,
-                    tooltip: null
-                },
-                {
-                    stepId: "c",
-                    title: "Brand",
-                    state: StepState.Pending,
-                    ownerLabel: "Not reached yet",
-                    color: "#FA5723",
-                    description: null,
-                    comment: null,
-                    tag: { label: "Pending", variant: "neutral-base-outline" },
-                    message: null,
-                    tooltip: null
-                }
-            ]
-        });
+        expect(getReviewProgress(review)).toEqual({ approved: 1, total: 3 });
     });
 });
 

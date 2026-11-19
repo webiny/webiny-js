@@ -227,28 +227,6 @@ describe("getReviewMessage", () => {
         });
     });
 
-    it("uses the lock texts of the app when it passes its own", () => {
-        const lockCopy = { inReview: "In review lock.", approved: "Approved lock." };
-        const approved = createReview({
-            state: ReviewState.Approved,
-            currentStepId: null,
-            currentStepState: null,
-            steps: [createStep({ state: StepState.Approved })]
-        });
-        const inProgress = createReview({
-            currentStepState: StepState.InReview,
-            steps: [createStep({ state: StepState.InReview, owner: null })]
-        });
-
-        expect(getReviewMessage(params({ review: approved, lockCopy })).lockText).toBe(
-            "Approved lock."
-        );
-        expect(
-            getReviewMessage(params({ review: inProgress, flags: createFlags(), lockCopy }))
-                .lockText
-        ).toBe("In review lock.");
-    });
-
     it("reads a rejection with the comment", () => {
         const review = createReview({
             state: ReviewState.Rejected,

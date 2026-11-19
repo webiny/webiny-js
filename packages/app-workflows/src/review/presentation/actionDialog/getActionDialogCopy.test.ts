@@ -181,7 +181,7 @@ describe("getActionDialogCopy: cancel (design 4c, frame 23)", () => {
 
 describe("getActionDialogCopy: confirm button variant (C5)", () => {
     it.each([
-        ["reject", "destructive"],
+        ["reject", "primary"],
         ["cancel", "destructive"],
         ["approve", "primary"],
         ["start", "primary"],

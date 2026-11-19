@@ -43,6 +43,11 @@ export const RuleCard = (props: RuleCardProps) => {
     const messages = getRuleFieldMessages(props.issues, props.errors);
     const summary = describeRule(rule, options.references);
     const title = ASSIGNMENT_FORM_MESSAGES.ruleTitle(index + 1);
+    // A field error replaces the rule's warnings: the card never shows both.
+    let warnings = messages.warnings;
+    if (messages.hasError) {
+        warnings = [];
+    }
 
     const actions = (
         <div className={"flex items-center gap-xxs"}>
@@ -86,7 +91,7 @@ export const RuleCard = (props: RuleCardProps) => {
                         onChange={props.onChange}
                         onRemoveFolder={props.onRemoveFolder}
                     />
-                    <RuleWarnings index={index} warnings={messages.warnings} />
+                    <RuleWarnings index={index} warnings={warnings} />
                 </div>
             </Card>
         </div>

@@ -90,7 +90,7 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             />
         );
     } else if (vm.empty) {
-        const empty = getReviewListEmpty(vm.tab ?? "myRequests", false, vm.hasTeams);
+        const empty = getReviewListEmpty(vm.tab ?? "myRequests", false, vm.hasTeams, false);
         body = (
             <EmptyState
                 type="table"

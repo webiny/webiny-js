@@ -24,9 +24,16 @@ const TAB_EMPTY: Record<ReviewListTab, ReviewListEmptyVm> = {
     }
 };
 
+const FILTERED_EMPTY_TITLE = "No reviews match these filters";
+
 const FILTERED_EMPTY: ReviewListEmptyVm = {
-    title: "No reviews match these filters",
-    description: "Try another title, content type or state, or clear the filters."
+    title: FILTERED_EMPTY_TITLE,
+    description: "Try another title or state, or clear the filters."
+};
+
+const FILTERED_EMPTY_WITH_CONTENT_TYPE: ReviewListEmptyVm = {
+    title: FILTERED_EMPTY_TITLE,
+    description: "Try another title, content model or state, or clear the filters."
 };
 
 const NO_TEAM_EMPTY: ReviewListEmptyVm = {
@@ -42,9 +49,13 @@ const NO_TEAM_EMPTY: ReviewListEmptyVm = {
 export const getReviewListEmpty = (
     tab: ReviewListTab,
     isFiltered: boolean,
-    hasTeams: boolean
+    hasTeams: boolean,
+    showContentType: boolean
 ): ReviewListEmptyVm => {
     if (isFiltered) {
+        if (showContentType) {
+            return FILTERED_EMPTY_WITH_CONTENT_TYPE;
+        }
         return FILTERED_EMPTY;
     }
     if (!hasTeams && (tab === "pool" || tab === "teamInReview")) {

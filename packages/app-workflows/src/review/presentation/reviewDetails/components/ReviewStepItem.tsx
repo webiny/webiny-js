@@ -86,6 +86,11 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                 interactive={hasDetails}
             >
                 <div className={"flex flex-col gap-sm pb-md"}>
+                    {step.failedReason !== null && (
+                        <Alert data-role={"failed-reason"} type={"danger"} variant={"subtle"}>
+                            <Text as={"span"}>{step.failedReason}</Text>
+                        </Alert>
+                    )}
                     {ownerRows}
                     {step.comment !== null && (
                         <div data-role={"step-comment"} className={"px-md"}>
@@ -93,11 +98,6 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                                 {step.comment}
                             </Text>
                         </div>
-                    )}
-                    {step.failedReason !== null && (
-                        <Alert data-role={"failed-reason"} type={"danger"} variant={"subtle"}>
-                            <Text as={"span"}>{step.failedReason}</Text>
-                        </Alert>
                     )}
                     {step.issues.length > 0 && (
                         <div data-role={"issues"} className={"flex flex-col gap-xs"}>

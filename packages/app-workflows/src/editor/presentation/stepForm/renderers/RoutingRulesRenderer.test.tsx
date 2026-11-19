@@ -112,6 +112,15 @@ const getCardOrder = (): string[] => {
     return cards.map(card => card.getAttribute("data-rule-id") ?? "");
 };
 
+// While the list is empty there are two Add rule buttons: the header one comes first, the empty state one second.
+const getHeaderAddButton = (): HTMLElement => {
+    return screen.getAllByRole("button", { name: "Add rule" })[0];
+};
+
+const getEmptyStateAddButton = (): HTMLElement => {
+    return screen.getAllByRole("button", { name: "Add rule" })[1];
+};
+
 const press = (ruleId: string, name: string) => {
     fireEvent.click(within(getCard(ruleId)).getByRole("button", { name }));
 };
@@ -146,7 +155,9 @@ describe("RoutingRulesRenderer: header and empty note (design 4.2)", () => {
     it("shows the empty note for the strategy none and no card", () => {
         renderRules(createForm([]));
 
-        expect(screen.getByText("No rules. Reviews wait in the team pool.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. Every review waits in the team pool.")
+        ).toBeDefined();
         expect(screen.queryAllByRole("group", { name: /^Rule \d+$/ })).toHaveLength(0);
     });
 
@@ -156,7 +167,9 @@ describe("RoutingRulesRenderer: header and empty note (design 4.2)", () => {
         });
         renderRules(createForm([]), picking);
 
-        expect(screen.getByText("No rules. The strategy picks the reviewer.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. Round-robin assigns every review on this step.")
+        ).toBeDefined();
 
         cleanup();
         const unknown = createOptions({
@@ -164,13 +177,15 @@ describe("RoutingRulesRenderer: header and empty note (design 4.2)", () => {
         });
         renderRules(createForm([]), unknown);
 
-        expect(screen.getByText("No rules. The strategy picks the reviewer.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. The strategy assigns every review on this step.")
+        ).toBeDefined();
     });
 
     it("hides the empty note once there is a rule", () => {
         renderRules(createForm(createRules()));
 
-        expect(screen.queryByText(/^No rules\./)).toBeNull();
+        expect(screen.queryByText(/^No routing rules\./)).toBeNull();
     });
 });
 
@@ -276,9 +291,19 @@ describe("RoutingRulesRenderer: add (R294, R296)", () => {
         });
         renderRules(form, options);
 
-        fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+        fireEvent.click(getHeaderAddButton());
 
         expect(getStoredRules(form)[0].target).toEqual({ type: "team", id: "team-2" });
+    });
+
+    it("adds a rule from the Add rule button of the empty state", () => {
+        const form = createForm([]);
+        renderRules(form);
+
+        fireEvent.click(getEmptyStateAddButton());
+
+        expect(getStoredRules(form)).toHaveLength(1);
+        expect(getStoredRules(form)[0].target).toEqual({ type: "team", id: "team-1" });
     });
 
     it("adds a rule with no target when the step has no teams", () => {
@@ -288,7 +313,7 @@ describe("RoutingRulesRenderer: add (R294, R296)", () => {
         });
         renderRules(form, options);
 
-        fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+        fireEvent.click(getHeaderAddButton());
 
         expect(getStoredRules(form)[0].target).toBeNull();
     });
@@ -297,8 +322,8 @@ describe("RoutingRulesRenderer: add (R294, R296)", () => {
         const form = createForm([]);
         renderRules(form);
 
-        fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
-        fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+        fireEvent.click(getHeaderAddButton());
+        fireEvent.click(getHeaderAddButton());
 
         const ids = getStoredRules(form).map(rule => rule.id);
         expect(new Set(ids).size).toBe(2);

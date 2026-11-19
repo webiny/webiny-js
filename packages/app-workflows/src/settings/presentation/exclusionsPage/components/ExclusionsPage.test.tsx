@@ -8,7 +8,6 @@ import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
-import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import { createExclusionRowVm } from "~/settings/testing/createExclusionRowVm.js";
 import { createExclusionsPageViewModel } from "~/settings/testing/createExclusionsPageViewModel.js";
 import { createFakeExclusionsPagePresenter } from "~/settings/testing/fakeExclusionsPagePresenter.js";
@@ -180,7 +179,8 @@ describe("ExclusionsPage states (R322, R329)", () => {
                 empty: {
                     title: "No exclusions",
                     text: "Everyone in the reviewing teams can be assigned automatically.",
-                    showAdd: true
+                    showAdd: true,
+                    showClearSearch: false
                 }
             })
         );
@@ -208,7 +208,8 @@ describe("ExclusionsPage states (R322, R329)", () => {
                 empty: {
                     title: "No expired exclusions",
                     text: "Exclusions move here after their end date.",
-                    showAdd: false
+                    showAdd: false,
+                    showClearSearch: false
                 }
             })
         );
@@ -221,19 +222,25 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(queryAddButtons()).toHaveLength(1);
     });
 
-    it("shows the user-filter empty state without its button", () => {
-        renderPage(
+    it("shows the no-match empty state with Clear search, which empties the search", () => {
+        const { presenter } = renderPage(
             createExclusionsPageViewModel({
+                search: "zed",
                 empty: {
-                    title: "No exclusions for this user",
-                    text: "Everyone in reviewing teams can be assigned automatically.",
-                    showAdd: false
+                    title: "No one matches \u201czed\u201d",
+                    text: null,
+                    showAdd: false,
+                    showClearSearch: true
                 }
             })
         );
 
-        expect(screen.getByText("No exclusions for this user")).toBeTruthy();
+        expect(screen.getByText("No one matches \u201czed\u201d")).toBeTruthy();
         expect(queryAddButtons()).toHaveLength(1);
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+
+        expect(presenter.setSearch).toHaveBeenCalledWith("");
     });
 
     it("shows the names banner with Try again, which retries the names (Q68.1)", () => {
@@ -284,66 +291,23 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
         expect(presenter.setTab).toHaveBeenCalledWith("all");
     });
 
-    it("names the user filter Filter by user without a visible label and shows All users while no user is chosen", () => {
-        renderPage(READY);
+    it("shows Search by name with its placeholder and the current text", () => {
+        renderPage(createExclusionsPageViewModel({ rows: [createExclusionRowVm()], search: "an" }));
 
-        expect(screen.queryByText("Filter by user")).toBeNull();
-        expect(screen.getByRole("group", { name: "Filter by user" })).toBeTruthy();
-        expect(screen.getByDisplayValue("All users")).toBeTruthy();
+        const input = screen.getByRole("textbox", { name: "Search by name" });
+        expect(input.getAttribute("placeholder")).toBe("Search by name");
+        expect((input as HTMLInputElement).value).toBe("an");
+        expect(screen.queryByText("All users")).toBeNull();
     });
 
-    it("lists the filter options and sets the picked user", async () => {
-        const options = [
-            createPickerOption({ id: "user-1", label: "Ana Kovač" }),
-            createPickerOption({
-                id: "user-9",
-                label: "Deleted user",
-                description: "user-9",
-                muted: true,
-                icon: "person_off"
-            })
-        ];
-        const { presenter } = renderPage(
-            createExclusionsPageViewModel({
-                rows: [createExclusionRowVm()],
-                filter: { value: null, selected: null, options }
-            })
-        );
-
-        const input = screen.getByRole("combobox");
-        fireEvent.focus(input);
-        fireEvent.keyDown(input, { key: "ArrowDown" });
-        fireEvent.click(await screen.findByText("user-9"));
-
-        expect(presenter.setUserFilter).toHaveBeenCalledWith("user-9");
-    });
-
-    it("sends the typed filter text to the presenter", () => {
+    it("sends the typed text to the presenter", () => {
         const { presenter } = renderPage(READY);
 
-        fireEvent.change(screen.getByRole("combobox"), { target: { value: "ana" } });
+        fireEvent.change(screen.getByRole("textbox", { name: "Search by name" }), {
+            target: { value: "ana" }
+        });
 
-        expect(presenter.searchUserFilter).toHaveBeenCalledWith("ana");
-    });
-
-    it("clears the filter through the All users row", async () => {
-        const selected = createPickerOption({ id: "user-1", label: "Ana Kovač" });
-        const { presenter } = renderPage(
-            createExclusionsPageViewModel({
-                rows: [createExclusionRowVm()],
-                filter: { value: "user-1", selected, options: [selected] }
-            })
-        );
-
-        const input = screen.getByRole("combobox");
-        fireEvent.focus(input);
-        fireEvent.keyDown(input, { key: "ArrowDown" });
-        // With a user chosen the input shows its name and the list filters by it, so type the
-        // clear row's label first (as `WorkflowPicker.test.tsx` does).
-        fireEvent.change(input, { target: { value: "All" } });
-        fireEvent.click(await screen.findByText("All users"));
-
-        expect(presenter.setUserFilter).toHaveBeenCalledWith(null);
+        expect(presenter.setSearch).toHaveBeenCalledWith("ana");
     });
 });
 

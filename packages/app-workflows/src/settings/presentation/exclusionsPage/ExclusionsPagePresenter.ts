@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
-import type { PickerOption } from "~/components/picker/PickerOption.js";
 import type { WorkflowUserList } from "~/editor/domain/types.js";
 import { chunkIds } from "~/editor/presentation/editor/chunkIds.js";
 import { USER_IDS_LIMIT } from "~/editor/presentation/editor/constants.js";
@@ -13,12 +12,11 @@ import type { ExclusionTab } from "~/settings/model/list/ExclusionTab.js";
 import type { ExclusionsEmptyVm } from "~/settings/model/list/ExclusionsEmptyVm.js";
 import { filterExclusions } from "~/settings/model/list/filterExclusions.js";
 import { getExclusionsEmptyState } from "~/settings/model/list/getExclusionsEmptyState.js";
-import { searchFilterOptions } from "~/settings/model/list/searchFilterOptions.js";
+import { searchExclusionsByName } from "~/settings/model/list/searchExclusionsByName.js";
 import { sortExclusions } from "~/settings/model/list/sortExclusions.js";
 import { GetWorkflowSettingsUseCase } from "~/settings/useCases/getWorkflowSettings/abstractions.js";
 import { ExclusionsPagePresenter as Abstraction } from "./abstractions.js";
 import type { ExclusionDialogRequest } from "./abstractions.js";
-import type { ExclusionFilterVm } from "./abstractions.js";
 import type { ExclusionRowVm } from "./abstractions.js";
 import type { ExclusionTabVm } from "./abstractions.js";
 import type { ExclusionsPageInitParams } from "./abstractions.js";
@@ -28,7 +26,6 @@ import type { ExclusionUserName } from "./ExclusionsSource.js";
 import { buildExclusionRowVm } from "./buildExclusionRowVm.js";
 import { collectNameLookupIds } from "./collectNameLookupIds.js";
 import { mergeUserNames } from "./mergeUserNames.js";
-import { toUserNameOption } from "./toUserNameOption.js";
 
 const TABS: ExclusionTabVm[] = [
     { id: "active", label: "Active" },
@@ -41,18 +38,6 @@ const toUnknownName = (userId: string): ExclusionUserName => {
     return { userId, label: userId, state: "unknown" };
 };
 
-/*
- * A user of the list as an option of `Filter by user` (R332): a deleted or unresolved user carries
- * the raw id as its description, so several `Deleted user` options can be told apart.
- */
-const toFilterOption = (name: ExclusionUserName): PickerOption => {
-    let description: string | null = null;
-    if (name.state !== "found") {
-        description = name.userId;
-    }
-    return toUserNameOption(name, description);
-};
-
 const isNotAuthorized = (error: unknown): boolean => {
     if (!(error instanceof GraphQLOperationError)) {
         return false;
@@ -62,7 +47,7 @@ const isNotAuthorized = (error: unknown): boolean => {
 
 /*
  * The Reviewer exclusions page (R318, R322, R329): loads the whole list once the viewer may manage
- * it, keeps it as the last-loaded list, and builds the rows, tabs, filter and empty states. The
+ * it, keeps it as the last-loaded list, and builds the rows, tabs, search and empty states. The
  * dialogs read and write through it as their `ExclusionsSource`.
  */
 class ExclusionsPagePresenterImpl implements Abstraction.Interface {
@@ -74,8 +59,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
     private names = new Map<string, ExclusionUserName>();
     private namesFailed = false;
     private tab: ExclusionTab = "active";
-    private userFilter: string | null = null;
-    private filterSearch = "";
+    private search = "";
     private dialog: ExclusionDialogRequest | null = null;
     // Every load and dispose starts a new one; an older answer is dropped.
     private loadToken = 0;
@@ -115,7 +99,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             canAdd: this.canManage && this.status === "ready",
             tab: this.tab,
             tabs: TABS,
-            filter: this.buildFilter(),
+            search: this.search,
             rows,
             empty: this.buildEmpty(rows.length),
             namesFailed: this.namesFailed,
@@ -199,13 +183,8 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         this.tab = tab;
     }
 
-    setUserFilter(userId: string | null): void {
-        this.userFilter = userId;
-        this.filterSearch = "";
-    }
-
-    searchUserFilter(search: string): void {
-        this.filterSearch = search;
+    setSearch(search: string): void {
+        this.search = search;
     }
 
     openAdd(): void {
@@ -262,7 +241,6 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         if (params.change === "add") {
             this.tab = "active";
         }
-        this.dropStaleFilter();
         // Names only for ids the saved record brings that the page does not know yet (R318).
         void this.retryNames();
     }
@@ -277,8 +255,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         this.names = new Map();
         this.namesFailed = false;
         this.tab = "active";
-        this.userFilter = null;
-        this.filterSearch = "";
+        this.search = "";
         this.dialog = null;
     }
 
@@ -304,7 +281,6 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
     private applyLoaded(settings: WorkflowSettings): void {
         this.exclusions = settings.exclusions;
         this.status = "ready";
-        this.dropStaleFilter();
     }
 
     private applyLoadFailure(error: unknown): void {
@@ -314,14 +290,6 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         }
         // A transport failure and any other server error show the same load error (Copy gap 3).
         this.status = "failed";
-    }
-
-    // A filter whose user is no longer in the list shows all users again (R322).
-    private dropStaleFilter(): void {
-        const filter = this.userFilter;
-        if (filter !== null && !this.hasEntry(filter)) {
-            this.userFilter = null;
-        }
     }
 
     private hasEntry(userId: string): boolean {
@@ -345,36 +313,14 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         if (this.status !== "ready") {
             return [];
         }
-        const filtered = filterExclusions(this.exclusions, {
-            tab: this.tab,
-            userId: this.userFilter,
-            now
-        });
-        const labels = this.buildLabels(filtered);
-        const sorted = sortExclusions(filtered, labels);
+        const tabbed = filterExclusions(this.exclusions, { tab: this.tab, now });
+        const labels = this.buildLabels(tabbed);
+        const searched = searchExclusionsByName(tabbed, labels, this.search);
+        const sorted = sortExclusions(searched, labels);
         return sorted.map(exclusion => {
             const name = this.getUserName(exclusion.userId);
             return buildExclusionRowVm(exclusion, name, now, this.timeZone);
         });
-    }
-
-    private buildFilter(): ExclusionFilterVm {
-        if (this.status !== "ready") {
-            return { value: this.userFilter, selected: null, options: [] };
-        }
-        const labels = this.buildLabels(this.exclusions);
-        const sorted = sortExclusions(this.exclusions, labels);
-        const all = sorted.map(exclusion => {
-            const name = this.getUserName(exclusion.userId);
-            return toFilterOption(name);
-        });
-        const options = searchFilterOptions(all, this.filterSearch);
-        let selected: PickerOption | null = null;
-        const chosen = all.find(option => option.id === this.userFilter);
-        if (chosen !== undefined) {
-            selected = chosen;
-        }
-        return { value: this.userFilter, selected, options };
     }
 
     private buildEmpty(rowCount: number): ExclusionsEmptyVm | null {
@@ -384,7 +330,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         return getExclusionsEmptyState({
             total: this.exclusions.length,
             tab: this.tab,
-            userFiltered: this.userFilter !== null
+            search: this.search.trim()
         });
     }
 }

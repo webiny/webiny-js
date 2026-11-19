@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { EditableTitle } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { WorkflowHeaderVm } from "~/editor/presentation/editor/abstractions.js";
 
@@ -17,7 +15,7 @@ export interface EditorHeaderProps {
     onDelete(): void;
 }
 
-// The sticky header: name, Unsaved changes tag, applies-to line, Delete workflow, the menu and Save (design README 3).
+// The sticky header: name, Unsaved changes tag, applies-to line, Delete workflow, Save (design README 3).
 export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorHeaderProps) => {
     let saveText = "Save";
     if (header.saving) {
@@ -26,7 +24,6 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
     const saveDisabled = !header.canSave || header.saving;
     const deleteDisabled = !header.canDelete || header.saving;
 
-    // The item's onClick sits on an inner element that still fires when the item is disabled.
     const handleDelete = () => {
         if (deleteDisabled) {
             return;
@@ -103,25 +100,6 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                         disabled={deleteDisabled}
                         onClick={handleDelete}
                     />
-                    <DropdownMenu
-                        align="end"
-                        side="bottom"
-                        trigger={
-                            <IconButton
-                                variant="ghost"
-                                aria-label="More actions"
-                                title="More actions"
-                                icon={<MoreHorizIcon />}
-                            />
-                        }
-                    >
-                        <DropdownMenu.Item
-                            variant="destructive"
-                            text="Delete workflow"
-                            disabled={deleteDisabled}
-                            onClick={handleDelete}
-                        />
-                    </DropdownMenu>
                     <Button
                         variant="primary"
                         text={saveText}

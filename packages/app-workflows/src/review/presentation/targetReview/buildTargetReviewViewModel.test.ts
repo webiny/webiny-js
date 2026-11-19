@@ -136,7 +136,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.message).toBe("Luka Perić is reviewing this step.");
         expect(vm.stepMeta).toBe("Step 2 of 2: Legal sign-off");
         expect(vm.ownerName).toBe("Luka Perić");
-        expect(vm.stateTag).toEqual({ label: "Review: In progress", variant: "accent-light" });
+        expect(vm.stateTag).toBeNull();
         expect(vm.stepStateTag).toEqual({
             label: "In review",
             variant: "accent-light",
@@ -174,7 +174,7 @@ describe("buildTargetReviewViewModel", () => {
         );
         expect(vm.reviewKind).toBe("approved");
         expect(vm.tile).toBe("check_circle");
-        expect(vm.stateTag).toEqual({ label: "Review: Approved", variant: "success-light" });
+        expect(vm.stateTag).toEqual({ label: "Approved", variant: "success-light" });
         expect(vm.allowsPublishing).toBe(true);
         expect(vm.allowsEditing).toBe(false);
         expect(vm.message).toBe("Approved and published");
@@ -203,7 +203,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.stepColor).toBe("#FA5723");
     });
 
-    it("keeps the rejecting step's name, and leaves the step tag to the review tag (QBZ-52)", () => {
+    it("has no step line, step tag, owner or step colour for a rejected review", () => {
         const review = createReview({
             state: ReviewState.Rejected,
             currentStepId: "step-1",
@@ -221,12 +221,12 @@ describe("buildTargetReviewViewModel", () => {
         );
         expect(vm.reviewKind).toBe("rejected");
         expect(vm.tile).toBe("cancel");
-        expect(vm.stepMeta).toBe("Step 1 of 1: Legal sign-off");
-        expect(vm.ownerName).toBe("Ana Legal");
+        expect(vm.stepMeta).toBeNull();
+        expect(vm.ownerName).toBeNull();
         expect(vm.stepColor).toBeNull();
         expect(vm.stepStateTag).toBeNull();
         expect(vm.stepStateTooltip).toBeNull();
-        expect(vm.stateTag).toEqual({ label: "Review: Rejected", variant: "neutral-dark" });
+        expect(vm.stateTag).toEqual({ label: "Rejected", variant: "destructive" });
     });
 
     it("carries the target the bar belongs to (R-f)", () => {
@@ -339,7 +339,6 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         });
         expect(vm.stepStateTooltip).toBe("AI tone check is running since 14:20.");
         expect(vm.ownerName).toBe("AI tone check");
-        expect(vm.progress?.segments[0].message).toBe("AI tone check is running.");
     });
 
     it("shows a failed automation step with the sync_problem tile and the Failed tag", () => {

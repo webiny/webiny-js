@@ -51,7 +51,13 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
 
         let list: React.ReactNode = <ExclusionsTable rows={vm.rows} presenter={presenter} />;
         if (vm.empty !== null) {
-            list = <ExclusionsEmpty empty={vm.empty} onAdd={() => presenter.openAdd()} />;
+            list = (
+                <ExclusionsEmpty
+                    empty={vm.empty}
+                    onAdd={() => presenter.openAdd()}
+                    onClearSearch={() => presenter.setSearch("")}
+                />
+            );
         }
 
         body = (
@@ -60,7 +66,7 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
                 <ExclusionsToolbar
                     tab={vm.tab}
                     tabs={vm.tabs}
-                    filter={vm.filter}
+                    search={vm.search}
                     presenter={presenter}
                 />
                 {list}

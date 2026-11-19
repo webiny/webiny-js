@@ -14,7 +14,7 @@ export const createTargetReviewViewModel = (
         message: "Luka Perić is reviewing this step.",
         lockText: "Editing, publishing and moving are locked while this revision is in review.",
         tile: "rate_review",
-        stateTag: { label: "Review: In progress", variant: "accent-light" },
+        stateTag: null,
         stepStateTag: { label: "In review", variant: "accent-light" },
         stepStateTooltip: null,
         stepMeta: "Step 2 of 3: Legal sign-off",
@@ -22,45 +22,7 @@ export const createTargetReviewViewModel = (
         ownerName: "Luka Perić",
         progress: {
             approved: 1,
-            total: 3,
-            segments: [
-                {
-                    stepId: "step-1",
-                    title: "Editorial check",
-                    state: "approved",
-                    ownerLabel: "Ivan Horvat",
-                    color: "#FA5723",
-                    description: null,
-                    comment: null,
-                    tag: { label: "Approved", variant: "success-light" },
-                    message: null,
-                    tooltip: null
-                },
-                {
-                    stepId: "step-2",
-                    title: "Legal sign-off",
-                    state: "inReview",
-                    ownerLabel: "Luka Perić",
-                    color: "#FA5723",
-                    description: null,
-                    comment: null,
-                    tag: { label: "In review", variant: "accent-light" },
-                    message: null,
-                    tooltip: null
-                },
-                {
-                    stepId: "step-3",
-                    title: "Brand check",
-                    state: "pending",
-                    ownerLabel: "Not reached yet",
-                    color: "#FA5723",
-                    description: null,
-                    comment: null,
-                    tag: { label: "Pending", variant: "neutral-base-outline" },
-                    message: null,
-                    tooltip: null
-                }
-            ]
+            total: 3
         },
         actions: [],
         allowsEditing: false,

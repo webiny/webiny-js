@@ -20,6 +20,7 @@ import type { ReviewDetailsStatus } from "./abstractions.js";
 import type { ReviewDetailsStepVm } from "./abstractions.js";
 import type { ReviewStepRunPanelVm } from "./abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
+import type { TargetReviewTag } from "../targetReview/abstractions.js";
 import { getRevisionNumber } from "./getRevisionNumber.js";
 import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { getExpandedStepId } from "./getExpandedStepId.js";
@@ -114,7 +115,9 @@ const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
     return skipped;
 };
 
-const getFailedReason = (step: ReviewStep): string | null => {
+// "Failed at 10:05: reason", the time in the format of the Times row (DS 2.0). Without a usable
+// time the message reads "Failed: reason".
+const getFailedReason = (step: ReviewStep, now: Date): string | null => {
     if (step.state !== StepState.Failed) {
         return null;
     }
@@ -122,7 +125,12 @@ const getFailedReason = (step: ReviewStep): string | null => {
     if (reason === "") {
         return null;
     }
-    return reason;
+    const failedOn = step.finishedOn ?? step.startedOn ?? step.reachedOn;
+    const time = failedOn === null ? "" : formatReviewTime(failedOn, now);
+    if (time === "") {
+        return `Failed: ${reason}`;
+    }
+    return `Failed at ${time}: ${reason}`;
 };
 
 const getStepVm = (
@@ -155,7 +163,7 @@ const getStepVm = (
         comment: getComment(step),
         skipped: getSkipped(step),
         running,
-        failedReason: getFailedReason(step),
+        failedReason: getFailedReason(step, now),
         attempts: getAttempts(step, canViewStepRun),
         issues: getAiIssues(step, fieldLabels)
     };
@@ -187,11 +195,14 @@ export const buildReviewDetailsViewModel = (
 
     const review = withFlags.review;
     const stateTag = getReviewStateTag(review.state);
-    let stateVariant: ReviewDetailsHeaderVm["stateVariant"] = "neutral-base-outline";
-    if (stateTag) {
-        stateVariant = stateTag.variant;
+    // Only a finished review has a state tag; a cancelled one keeps its own.
+    let headerTag: TargetReviewTag | null = stateTag;
+    if (review.state === ReviewState.Cancelled) {
+        headerTag = {
+            label: REVIEW_STATE_LABELS[review.state],
+            variant: "neutral-base-outline"
+        };
     }
-    const stateLabel = REVIEW_STATE_LABELS[review.state];
     const revision = getRevisionNumber(review.targetRevisionId);
     let contentLabel = review.targetContext.title;
     if (revision !== null) {
@@ -213,8 +224,7 @@ export const buildReviewDetailsViewModel = (
 
     const header: ReviewDetailsHeaderVm = {
         title: review.title,
-        stateLabel,
-        stateVariant,
+        stateTag: headerTag,
         contentLabel,
         contentUrl: input.contentUrl,
         requesterLine: `Requested by ${review.createdBy.displayName}`,

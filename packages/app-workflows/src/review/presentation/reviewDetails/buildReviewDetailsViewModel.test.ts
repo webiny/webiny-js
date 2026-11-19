@@ -203,8 +203,7 @@ describe("buildReviewDetailsViewModel", () => {
 
         expect(header).toEqual({
             title: "Spring campaign review",
-            stateLabel: "In progress",
-            stateVariant: "accent-light",
+            stateTag: null,
             contentLabel: "Spring campaign (#3)",
             contentUrl: null,
             requesterLine: "Requested by Maja Kos",
@@ -515,7 +514,10 @@ describe("buildReviewDetailsViewModel", () => {
 
         const vm = build(review, createFlags({ canCancel: true }));
 
-        expect(vm.header?.stateLabel).toBe("Cancelled");
+        expect(vm.header?.stateTag).toEqual({
+            label: "Cancelled",
+            variant: "neutral-base-outline"
+        });
         expect(vm.steps).toEqual([]);
         expect(vm.actions).toEqual([]);
         expect(vm.cancelledText).toBe(
@@ -618,7 +620,9 @@ describe("buildReviewDetailsViewModel", () => {
         const { steps } = build(review, createFlags(), true);
 
         expect(steps[0].running).toBe(false);
-        expect(steps[0].failedReason).toBe("Provider unavailable: request timed out after 60 s");
+        expect(steps[0].failedReason).toBe(
+            "Failed at 10:05: Provider unavailable: request timed out after 60 s"
+        );
         expect(steps[0].comment).toBeNull();
         expect(steps[0].attempts).toEqual([
             {

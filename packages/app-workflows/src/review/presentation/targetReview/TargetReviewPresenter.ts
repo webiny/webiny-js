@@ -101,8 +101,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             busy: this.busy,
             openAction: this.action,
             contentNotice: this.contentNotice,
-            requestBlockReason: params?.unsavedChanges?.getRequestBlockReason() ?? null,
-            lockCopy: params?.lockCopy
+            requestBlockReason: params?.unsavedChanges?.getRequestBlockReason() ?? null
         });
     }
 

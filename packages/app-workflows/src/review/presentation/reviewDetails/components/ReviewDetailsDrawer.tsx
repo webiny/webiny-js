@@ -12,7 +12,7 @@ import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
-import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
+import { ReviewActionList } from "../../targetReview/components/ReviewActionList.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
 import type { ReviewFieldLabels } from "../abstractions.js";
@@ -51,20 +51,6 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
     const { vm } = presenter;
     const request = toActionRequest(vm.openAction);
 
-    const footer = vm.actions.map(action => {
-        const ActionIcon = REVIEW_ACTION_ICONS[action.icon];
-        return (
-            <Button
-                key={action.kind}
-                variant={action.emphasis}
-                size={"md"}
-                text={action.label}
-                icon={<ActionIcon />}
-                onClick={() => presenter.openAction(action.kind, action.stepId)}
-            />
-        );
-    });
-
     // A conflict means the review changed behind the drawer: reload it and tell the host.
     const handleConflict = async () => {
         await presenter.refresh();
@@ -74,8 +60,13 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
     };
 
     let actions: React.ReactNode = undefined;
-    if (footer.length > 0) {
-        actions = <>{footer}</>;
+    if (vm.actions.length > 0) {
+        actions = (
+            <ReviewActionList
+                actions={vm.actions}
+                onSelect={(kind, stepId) => presenter.openAction(kind, stepId)}
+            />
+        );
     }
 
     let title: React.ReactNode = "Review details";
@@ -93,7 +84,12 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                     <Text as={"span"} size={"lg"}>
                         {vm.header.title}
                     </Text>
-                    <Tag variant={vm.header.stateVariant} content={vm.header.stateLabel} />
+                    {vm.header.stateTag && (
+                        <Tag
+                            variant={vm.header.stateTag.variant}
+                            content={vm.header.stateTag.label}
+                        />
+                    )}
                 </span>
             </span>
         );

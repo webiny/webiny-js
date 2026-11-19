@@ -35,7 +35,7 @@ export interface ActionDialogCopy {
     showNotify: boolean;
     notifyLabel: string | null;
     confirmLabel: string;
-    // Reject and Cancel review end work for good, so their confirm is red (C5).
+    // Cancel review ends work for good, so its confirm is red; Reject stays primary (DS 2.0).
     confirmVariant: ActionDialogConfirmVariant;
     confirmIcon: TargetReviewActionIcon | null;
     cancelLabel: string;
@@ -135,7 +135,6 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
             commentError,
             commentCounter: `${length} / ${REJECT_COMMENT_MIN_LENGTH} min.`,
             confirmLabel: "Reject",
-            confirmVariant: "destructive",
             canSubmit: !tooShort
         };
     }

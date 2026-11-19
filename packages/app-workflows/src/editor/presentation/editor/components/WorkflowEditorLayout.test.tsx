@@ -92,7 +92,7 @@ describe("WorkflowEditorLayout", () => {
         expect(presenter.createWorkflow).toHaveBeenCalledTimes(1);
     });
 
-    it("wires the header to the presenter", async () => {
+    it("wires the header to the presenter", () => {
         const presenter = renderLayout({ detail: "workflow", header: HEADER });
 
         expect(screen.getByText("Unsaved changes", { selector: "span" })).toBeTruthy();
@@ -106,9 +106,7 @@ describe("WorkflowEditorLayout", () => {
         fireEvent.click(screen.getByRole("button", { name: "Save" }));
         expect(presenter.save).toHaveBeenCalledTimes(1);
 
-        fireEvent.keyDown(screen.getByRole("button", { name: "More actions" }), { key: "Enter" });
-        await screen.findByRole("menuitem", { name: "Delete workflow" });
-        fireEvent.click(screen.getByText("Delete workflow"));
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
         expect(presenter.requestDelete).toHaveBeenCalledTimes(1);
     });
 

@@ -11,7 +11,6 @@ import { getRejectionText } from "./getRejectionText.js";
 import { getStepOwnerLabel } from "./getStepOwnerLabel.js";
 import { getStepRunMessage } from "./getStepRunMessage.js";
 import { getTeamNames } from "./getTeamNames.js";
-import type { ReviewLockCopy } from "./ReviewLockCopy.js";
 
 export interface ReviewMessageParams {
     status: TargetReviewStatus;
@@ -22,8 +21,6 @@ export interface ReviewMessageParams {
     isUnpublished: boolean;
     // The ids of the viewer's own teams (`Identity.teams`), for the QBZ-25 wording (R232, R247).
     viewerTeamIds: string[];
-    // The app's own lock texts; the default texts apply when it has none.
-    lockCopy?: ReviewLockCopy;
 }
 
 export interface ReviewMessage {
@@ -42,10 +39,11 @@ const LEGACY_PUBLISHED: ReviewMessage = {
         "This revision was published before the workflow existed. Create a new revision to change it."
 };
 
-const DEFAULT_LOCK_COPY: ReviewLockCopy = {
-    inReview: "Editing, publishing and moving are locked while this revision is in review.",
-    approved: "Editing is locked. To make changes, create a new revision; it needs a new review."
-};
+const LOCK_IN_REVIEW =
+    "Editing, publishing and moving are locked while this revision is in review.";
+
+const LOCK_APPROVED =
+    "Editing is locked. To make changes, create a new revision; it needs a new review.";
 
 const LOCK_REJECTED =
     "This revision is locked. Create a new revision to fix it, then request a new review.";
@@ -65,10 +63,9 @@ const getPoolNames = (step: ReviewStep, viewerTeamIds: string[]): string => {
 const getInProgressMessage = (
     review: Review,
     flags: ReviewViewerFlags | null,
-    viewerTeamIds: string[],
-    lockCopy: ReviewLockCopy
+    viewerTeamIds: string[]
 ): ReviewMessage => {
-    const lockInReview = lockCopy.inReview;
+    const lockInReview = LOCK_IN_REVIEW;
     const display = getDisplayStep(review);
     if (!display) {
         return { message: "Review in progress", lockText: lockInReview };
@@ -109,8 +106,7 @@ const getInProgressMessage = (
 export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => {
     const { status, failureKind, review, flags, isPublished, isUnpublished, viewerTeamIds } =
         params;
-    const lockCopy = params.lockCopy ?? DEFAULT_LOCK_COPY;
-    const lockApproved = lockCopy.approved;
+    const lockApproved = LOCK_APPROVED;
 
     if (status === "loading") {
         return { message: "Loading review status…", lockText: null };
@@ -159,5 +155,5 @@ export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => 
         return { message: rejection, lockText: LOCK_REJECTED };
     }
 
-    return getInProgressMessage(review, flags, viewerTeamIds, lockCopy);
+    return getInProgressMessage(review, flags, viewerTeamIds);
 };

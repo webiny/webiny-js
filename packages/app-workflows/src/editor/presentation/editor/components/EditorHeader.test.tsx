@@ -38,7 +38,8 @@ describe("EditorHeader", () => {
 
         expect(screen.queryByText(/Changes apply to new review requests/)).toBeNull();
         const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
-        expect(actions.querySelector('[aria-label="More actions"]')).toBeTruthy();
+        expect(actions.querySelector('[aria-label="More actions"]')).toBeNull();
+        expect(actions.querySelector('[aria-label="Delete workflow"]')).toBeTruthy();
     });
 
     it("shows the Unsaved changes tag only while dirty", () => {
@@ -189,27 +190,23 @@ describe("EditorHeader", () => {
         expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
     });
 
-    it("deletes through the menu", async () => {
+    it("deletes through the Delete workflow button", () => {
         const props = createProps();
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        fireEvent.keyDown(screen.getByRole("button", { name: "More actions" }), { key: "Enter" });
-        await screen.findByRole("menuitem", { name: "Delete workflow" });
-        // The item's onClick sits on its inner element, so click the label.
-        fireEvent.click(screen.getByText("Delete workflow"));
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
 
         expect(props.onDelete).toHaveBeenCalledTimes(1);
     });
 
-    it("disables Delete workflow for a draft that was never saved", async () => {
+    it("disables Delete workflow for a draft that was never saved", () => {
         const props = createProps({ canDelete: false });
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        fireEvent.keyDown(screen.getByRole("button", { name: "More actions" }), { key: "Enter" });
-        const item = await screen.findByRole("menuitem", { name: "Delete workflow" });
+        const button = screen.getByRole("button", { name: "Delete workflow" });
 
-        expect(item.getAttribute("data-disabled")).not.toBeNull();
-        fireEvent.click(screen.getByText("Delete workflow"));
+        expect(button.getAttribute("aria-disabled")).toBe("true");
+        fireEvent.click(button);
         expect(props.onDelete).not.toHaveBeenCalled();
     });
 

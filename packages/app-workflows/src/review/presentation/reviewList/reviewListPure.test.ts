@@ -141,53 +141,60 @@ describe("review list pure functions", () => {
     });
 
     it("has an empty state per tab, for filters and for a viewer in no team (README 8, QBZ-72, QBZ-73)", () => {
-        expect(getReviewListEmpty("assignedToMe", false, true)).toEqual({
+        expect(getReviewListEmpty("assignedToMe", false, true, true)).toEqual({
             title: "Nothing assigned to you",
             description: "Steps you own and are reviewing appear here."
         });
-        expect(getReviewListEmpty("pool", false, true)).toEqual({
+        expect(getReviewListEmpty("pool", false, true, true)).toEqual({
             title: "Your team pools are empty",
             description: "Steps waiting for someone in your teams to start them appear here."
         });
-        expect(getReviewListEmpty("teamInReview", false, true)).toEqual({
+        expect(getReviewListEmpty("teamInReview", false, true, true)).toEqual({
             title: "Nobody in your teams is reviewing",
             description: "Steps that a teammate is reviewing appear here."
         });
-        expect(getReviewListEmpty("myRequests", false, true)).toEqual({
+        expect(getReviewListEmpty("myRequests", false, true, true)).toEqual({
             title: "You haven’t requested any reviews",
             description: "Request a review from the review bar in the content editor."
         });
-        expect(getReviewListEmpty("pool", true, true)).toEqual({
+        expect(getReviewListEmpty("pool", true, true, true)).toEqual({
             title: "No reviews match these filters",
-            description: "Try another title, content type or state, or clear the filters."
+            description: "Try another title, content model or state, or clear the filters."
         });
 
         const noTeam = {
             title: "You’re not in a reviewing team",
             description: "Steps appear here once you’re added to a team that reviews content."
         };
-        expect(getReviewListEmpty("pool", false, false)).toEqual(noTeam);
-        expect(getReviewListEmpty("teamInReview", false, false)).toEqual(noTeam);
-        expect(getReviewListEmpty("assignedToMe", false, false).title).toBe(
+        expect(getReviewListEmpty("pool", false, false, true)).toEqual(noTeam);
+        expect(getReviewListEmpty("teamInReview", false, false, true)).toEqual(noTeam);
+        expect(getReviewListEmpty("assignedToMe", false, false, true).title).toBe(
             "Nothing assigned to you"
         );
-        expect(getReviewListEmpty("myRequests", false, false).title).toBe(
+        expect(getReviewListEmpty("myRequests", false, false, true).title).toBe(
             "You haven’t requested any reviews"
         );
-        expect(getReviewListEmpty("pool", true, false).title).toBe(
+        expect(getReviewListEmpty("pool", true, false, true).title).toBe(
             "No reviews match these filters"
         );
     });
 
+    it("names no content model in the filtered empty state of an app without one", () => {
+        expect(getReviewListEmpty("pool", true, true, false)).toEqual({
+            title: "No reviews match these filters",
+            description: "Try another title or state, or clear the filters."
+        });
+    });
+
     it("has the Failed steps empty state (QBZ-29) and the shared filtered state", () => {
-        expect(getReviewListEmpty("failedSteps", false, true)).toEqual({
+        expect(getReviewListEmpty("failedSteps", false, true, true)).toEqual({
             title: "No failed steps",
             description: "AI and automation steps that hit a technical error appear here."
         });
-        expect(getReviewListEmpty("failedSteps", false, false).title).toBe("No failed steps");
-        expect(getReviewListEmpty("failedSteps", true, true)).toEqual({
+        expect(getReviewListEmpty("failedSteps", false, false, true).title).toBe("No failed steps");
+        expect(getReviewListEmpty("failedSteps", true, true, true)).toEqual({
             title: "No reviews match these filters",
-            description: "Try another title, content type or state, or clear the filters."
+            description: "Try another title, content model or state, or clear the filters."
         });
     });
 

@@ -262,7 +262,7 @@ describe("ReviewBar", () => {
         );
 
         expect(screen.getByText("Luka Perić is reviewing this step.")).toBeTruthy();
-        expect(screen.getByText("Review: In progress")).toBeTruthy();
+        expect(screen.queryByText(/^Review:/)).toBeNull();
         expect(screen.getByText("In review")).toBeTruthy();
         expect(screen.getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
         expect(screen.getByText("Owner: Luka Perić")).toBeTruthy();
@@ -275,7 +275,7 @@ describe("ReviewBar", () => {
             .getAllByRole("button")
             .map(button => button.textContent)
             .filter(text => ["Cancel review", "Take over", "Approve"].includes(text ?? ""));
-        expect(labels).toEqual(["Cancel review", "Take over", "Approve"]);
+        expect(labels).toEqual(["Take over", "Approve"]);
 
         fireEvent.click(screen.getByText("Take over"));
         expect(presenter.openAction).toHaveBeenCalledWith("takeOver", "step-2");
@@ -309,7 +309,8 @@ describe("ReviewBar", () => {
             .getAllByRole("button")
             .map(button => button.textContent)
             .filter(text => ["Cancel review", "Restart"].includes(text ?? ""));
-        expect(labels).toEqual(["Cancel review", "Restart"]);
+        // Cancel review lives in the More review actions menu, only Restart stays a button.
+        expect(labels).toEqual(["Restart"]);
 
         fireEvent.click(screen.getByText("Restart"));
         expect(presenter.openAction).toHaveBeenCalledWith("restart", "step-2");
@@ -414,7 +415,8 @@ describe("ReviewBar", () => {
         expect(within(row).getByRole("progressbar")).toBeTruthy();
         const details = within(row).getByRole("button", { name: /Review details/ });
         expect(details.querySelector("svg")).not.toBeNull();
-        expect(within(row).getByRole("button", { name: "1 of 3 steps approved" })).toBeTruthy();
+        expect(within(row).getByText("1 of 3 steps approved")).toBeTruthy();
+        expect(within(row).queryByRole("button", { name: "1 of 3 steps approved" })).toBeNull();
     });
 
     it("centres the actions column", () => {
@@ -447,125 +449,6 @@ describe("ReviewBar", () => {
         expect(presenter.openAction).not.toHaveBeenCalled();
     });
 
-    it("lists all six step states with owner and the full comment in the popover (QBZ-64)", () => {
-        const longComment = "x".repeat(120);
-        renderBar(
-            createTargetReviewViewModel({
-                progress: {
-                    approved: 1,
-                    total: 6,
-                    segments: [
-                        {
-                            stepId: "s1",
-                            title: "Step pending",
-                            state: "pending",
-                            ownerLabel: "Not reached yet",
-                            color: "#FA5723",
-                            description: null,
-                            comment: null,
-                            tag: { label: "Pending", variant: "neutral-base-outline" },
-                            message: null,
-                            tooltip: null
-                        },
-                        {
-                            stepId: "s2",
-                            title: "Step awaiting",
-                            state: "awaiting",
-                            ownerLabel: "Team pool (Legal)",
-                            color: "#FA5723",
-                            description: null,
-                            comment: null,
-                            tag: { label: "Awaiting", variant: "warning" },
-                            message: null,
-                            tooltip: null
-                        },
-                        {
-                            stepId: "s3",
-                            title: "Step in review",
-                            state: "inReview",
-                            ownerLabel: "Luka Perić",
-                            color: "#FA5723",
-                            description: null,
-                            comment: null,
-                            tag: { label: "In review", variant: "accent-light" },
-                            message: null,
-                            tooltip: null
-                        },
-                        {
-                            stepId: "s4",
-                            title: "Step approved",
-                            state: "approved",
-                            ownerLabel: "Ivan Horvat",
-                            color: "#FA5723",
-                            description: null,
-                            comment: "Looks fine.",
-                            tag: { label: "Approved", variant: "success-light" },
-                            message: null,
-                            tooltip: null
-                        },
-                        {
-                            stepId: "s5",
-                            title: "Step rejected",
-                            state: "rejected",
-                            ownerLabel: "Ana Legal",
-                            color: "#FA5723",
-                            description: null,
-                            comment: longComment,
-                            tag: { label: "Rejected", variant: "neutral-dark" },
-                            message: null,
-                            tooltip: null
-                        },
-                        {
-                            stepId: "s6",
-                            title: "Step failed",
-                            state: "failed",
-                            ownerLabel: "Step failed",
-                            color: "#FA5723",
-                            description: null,
-                            comment: null,
-                            tag: { label: "Failed", variant: "destructive" },
-                            message: null,
-                            tooltip: null
-                        }
-                    ]
-                }
-            })
-        );
-
-        fireEvent.click(screen.getByText("1 of 6 steps approved"));
-
-        const popover = document.querySelector("[data-slot='popover-content']") as HTMLElement;
-        const view = within(popover);
-        ["Pending", "Awaiting", "In review", "Approved", "Rejected", "Failed"].forEach(label => {
-            expect(view.getByText(label)).toBeTruthy();
-        });
-        expect(view.getByText("Team pool (Legal)")).toBeTruthy();
-        expect(view.getByText("Ivan Horvat")).toBeTruthy();
-        expect(view.getByText("“Looks fine.”")).toBeTruthy();
-        expect(view.getByText(`“${longComment}”`)).toBeTruthy();
-    });
-
-    it("caps the popover content width and keeps a very long comment inside it", () => {
-        const longComment = "x".repeat(600);
-        const base = createTargetReviewViewModel();
-        const progress = base.progress!;
-        renderBar(
-            createTargetReviewViewModel({
-                progress: {
-                    ...progress,
-                    segments: [{ ...progress.segments[0], comment: longComment }]
-                }
-            })
-        );
-
-        fireEvent.click(screen.getByRole("button", { name: "1 of 3 steps approved" }));
-
-        const popover = document.querySelector("[data-slot='popover-content']") as HTMLElement;
-        const content = popover.querySelector("[data-role='review-steps-content']") as HTMLElement;
-        expect(content).not.toBeNull();
-        expect(within(content).getByText(`“${longComment}”`)).toBeTruthy();
-    });
-
     it("gives the progress bar the approved share as a percent", () => {
         const base = createTargetReviewViewModel();
         const progress = base.progress!;
@@ -578,7 +461,7 @@ describe("ReviewBar", () => {
 
     it("renders no progress row for a review without steps", () => {
         const { container } = renderBar(
-            createTargetReviewViewModel({ progress: { approved: 0, total: 0, segments: [] } })
+            createTargetReviewViewModel({ progress: { approved: 0, total: 0 } })
         );
 
         expect(container.querySelector("[data-role='review-bar-progress']")).toBeNull();
@@ -605,43 +488,72 @@ describe("ReviewBar", () => {
         expect(screen.getByText(message)).toBeTruthy();
     });
 
-    it("does not open the popover on hover, so the focus stays where it was (R3)", () => {
+    it("keeps the progress text plain: no popover opens from it", () => {
         renderBar(createTargetReviewViewModel());
-        const editor = document.createElement("input");
-        document.body.appendChild(editor);
-        editor.focus();
 
-        fireEvent.mouseEnter(screen.getByText("1 of 3 steps approved"));
-        fireEvent.mouseOver(screen.getByText("1 of 3 steps approved"));
+        fireEvent.click(screen.getByText("1 of 3 steps approved"));
 
         expect(document.querySelector("[data-slot='popover-content']")).toBeNull();
-        expect(document.activeElement).toBe(editor);
-        editor.remove();
+        expect(screen.queryByRole("button", { name: /steps approved/ })).toBeNull();
+    });
+});
+
+describe("ReviewBar, overflow menu", () => {
+    const cancel: TargetReviewPresenter.ViewModel["actions"][number] = {
+        kind: "cancel",
+        label: "Cancel review",
+        icon: "block",
+        stepId: "step-2",
+        emphasis: "ghost",
+        disabledReason: null
+    };
+    const reassign: TargetReviewPresenter.ViewModel["actions"][number] = {
+        kind: "reassign",
+        label: "Reassign",
+        icon: "swap_horiz",
+        stepId: "step-2",
+        emphasis: "tertiary",
+        disabledReason: null
+    };
+    const approve: TargetReviewPresenter.ViewModel["actions"][number] = {
+        kind: "approve",
+        label: "Approve",
+        icon: "check",
+        stepId: "step-2",
+        emphasis: "primary",
+        disabledReason: null
+    };
+
+    it("puts Cancel review and Reassign into the More review actions menu", async () => {
+        const { presenter } = renderBar(
+            createTargetReviewViewModel({ actions: [cancel, reassign, approve] })
+        );
+
+        expect(screen.queryByRole("button", { name: "Cancel review" })).toBeNull();
+        expect(screen.queryByRole("button", { name: "Reassign" })).toBeNull();
+        expect(screen.getByRole("button", { name: "Approve" })).toBeTruthy();
+
+        const trigger = screen.getByRole("button", { name: "More review actions" });
+        fireEvent.keyDown(trigger, { key: "Enter" });
+
+        const items = await screen.findAllByRole("menuitem");
+        expect(items.map(item => item.textContent)).toEqual(["Cancel review", "Reassign"]);
+
+        // The item's onClick sits on its inner element, so click the label.
+        fireEvent.click(screen.getByText("Reassign"));
+        expect(presenter.openAction).toHaveBeenCalledWith("reassign", "step-2");
     });
 
-    it("opens the popover on click (R3)", () => {
-        renderBar(createTargetReviewViewModel());
+    it("renders no menu when neither Cancel review nor Reassign is available", () => {
+        renderBar(createTargetReviewViewModel({ actions: [approve] }));
 
-        fireEvent.click(screen.getByRole("button", { name: "1 of 3 steps approved" }));
-
-        expect(document.querySelector("[data-slot='popover-content']")).not.toBeNull();
+        expect(screen.queryByRole("button", { name: "More review actions" })).toBeNull();
     });
 
-    /*
-     * The trigger is a native button, so Enter and Space on it are a click in the browser. jsdom
-     * does not run that activation, so the test focuses the trigger and clicks the focused element.
-     */
-    it("opens the popover from the keyboard on the focused trigger (R3)", () => {
-        renderBar(createTargetReviewViewModel());
-        const trigger = screen.getByRole("button", { name: "1 of 3 steps approved" });
-        expect(trigger.tagName).toBe("BUTTON");
-        expect(trigger.getAttribute("type")).toBe("button");
-        trigger.focus();
-        expect(document.activeElement).toBe(trigger);
+    it("renders the menu for one available overflow action", () => {
+        renderBar(createTargetReviewViewModel({ actions: [reassign] }));
 
-        fireEvent.click(document.activeElement as HTMLElement);
-
-        expect(document.querySelector("[data-slot='popover-content']")).not.toBeNull();
+        expect(screen.getByRole("button", { name: "More review actions" })).toBeTruthy();
     });
 });
 
@@ -766,19 +678,6 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
         icon: "progress_activity" as const
     };
 
-    const runningSegment = {
-        stepId: "step-1",
-        title: "AI tone check",
-        state: "inReview" as const,
-        ownerLabel: "AI tone check",
-        color: "#FA5723",
-        description: null,
-        comment: null,
-        tag: runningTag,
-        message: "AI tone check is running.",
-        tooltip: "AI tone check is running since 14:20."
-    };
-
     it("renders the running message, the Running tag with its icon and the meta line", () => {
         renderBar(
             createTargetReviewViewModel({
@@ -788,7 +687,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
                 stepStateTooltip: "AI tone check is running since 14:20.",
                 stepMeta: "Step 1 of 1: AI tone check",
                 ownerName: "AI tone check",
-                progress: { approved: 0, total: 1, segments: [runningSegment] }
+                progress: { approved: 0, total: 1 }
             })
         );
 
@@ -819,39 +718,6 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
             screen.getByText("Notify web team failed: Webhook returned 503 Service Unavailable")
         ).toBeTruthy();
         expect(screen.getByText("Failed")).toBeTruthy();
-    });
-
-    it("shows the run message of a segment in the popover instead of a quoted comment", async () => {
-        renderBar(
-            createTargetReviewViewModel({
-                message: "Luka Perić is reviewing this step.",
-                progress: {
-                    approved: 1,
-                    total: 2,
-                    segments: [
-                        {
-                            stepId: "step-0",
-                            title: "Editorial check",
-                            state: "approved",
-                            ownerLabel: "Ivan Horvat",
-                            color: "#FA5723",
-                            description: null,
-                            comment: "Fine.",
-                            tag: { label: "Approved", variant: "success-light" },
-                            message: null,
-                            tooltip: null
-                        },
-                        runningSegment
-                    ]
-                }
-            })
-        );
-
-        fireEvent.click(screen.getByText("1 of 2 steps approved"));
-
-        expect(await screen.findByText("AI tone check is running.")).toBeTruthy();
-        expect(screen.getByText("“Fine.”")).toBeTruthy();
-        expect(screen.queryByText("“AI tone check is running.”")).toBeNull();
     });
 });
 
@@ -937,73 +803,5 @@ describe("ReviewBar, content notice (R262)", () => {
             expect(bar.closest("[data-card='content']")).toBeNull();
             expect(bar.nextElementSibling?.getAttribute("role")).toBe("none");
         });
-    });
-});
-
-describe("ReviewBar, steps popover layout (RB10)", () => {
-    const renderPopover = () => {
-        renderBar(
-            createTargetReviewViewModel({
-                progress: {
-                    approved: 1,
-                    total: 2,
-                    segments: [
-                        {
-                            stepId: "s1",
-                            title: "Editorial check",
-                            state: "approved",
-                            ownerLabel: "Ivan Horvat",
-                            color: "#112233",
-                            description: "Checks the tone",
-                            comment: "Looks fine.",
-                            tag: { label: "Approved", variant: "success-light" },
-                            message: null,
-                            tooltip: null
-                        },
-                        {
-                            stepId: "s2",
-                            title: "Legal sign-off",
-                            state: "pending",
-                            ownerLabel: "Not reached yet",
-                            color: "#445566",
-                            description: null,
-                            comment: null,
-                            tag: { label: "Pending", variant: "neutral-base-outline" },
-                            message: null,
-                            tooltip: null
-                        }
-                    ]
-                }
-            })
-        );
-        fireEvent.click(screen.getByText("1 of 2 steps approved"));
-        return document.querySelector("[data-slot='popover-content']") as HTMLElement;
-    };
-
-    it("lists every step with its title, owner and tag", () => {
-        const view = within(renderPopover());
-
-        const items = view.getAllByText(/^(Editorial check|Legal sign-off)$/);
-        expect(items).toHaveLength(2);
-        expect(view.getByText("Ivan Horvat")).toBeTruthy();
-        expect(view.getByText("Not reached yet")).toBeTruthy();
-        expect(view.getByText("Approved")).toBeTruthy();
-        expect(view.getByText("Pending")).toBeTruthy();
-    });
-
-    it("shows the step colour and no step description", () => {
-        const view = within(renderPopover());
-
-        expect(view.queryByText("Checks the tone")).toBeNull();
-        const marks = document.querySelectorAll(
-            "[data-slot='popover-content'] [style*='background']"
-        );
-        expect(marks).toHaveLength(2);
-    });
-
-    it("quotes the comment as plain text", () => {
-        const view = within(renderPopover());
-
-        expect(view.getByText("“Looks fine.”")).toBeTruthy();
     });
 });

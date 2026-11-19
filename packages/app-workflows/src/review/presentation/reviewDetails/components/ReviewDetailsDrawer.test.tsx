@@ -208,6 +208,35 @@ describe("ReviewDetailsDrawer", () => {
         expect(await screen.findByText("Start “Legal sign-off”?")).toBeTruthy();
     });
 
+    it("puts Cancel review and Reassign into the More review actions menu of the footer", async () => {
+        const fakes = createUseCases();
+        const base = await fakes.getReview.execute({ namespace: "cms.article", reviewId: "r" });
+        fakes.getReview.execute.mockResolvedValue({
+            ...base,
+            flags: createFlags({ canStart: true, canCancel: true, canReassign: true })
+        });
+        renderDrawer(fakes);
+        await screen.findByText("Spring campaign review");
+
+        expect(screen.queryByRole("button", { name: "Cancel review" })).toBeNull();
+        expect(screen.queryByRole("button", { name: "Reassign" })).toBeNull();
+        expect(screen.getByRole("button", { name: "Start" })).toBeTruthy();
+
+        const trigger = screen.getByRole("button", { name: "More review actions" });
+        fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false });
+        fireEvent.click(trigger);
+
+        const items = await screen.findAllByRole("menuitem");
+        expect(items.map(item => item.textContent)).toEqual(["Cancel review", "Reassign"]);
+    });
+
+    it("renders no overflow menu when neither Cancel review nor Reassign is available", async () => {
+        renderDrawer();
+        await screen.findByText("Spring campaign review");
+
+        expect(screen.queryByRole("button", { name: "More review actions" })).toBeNull();
+    });
+
     it("opens the action dialog with the editor wording, even from Content Reviews (AD3)", async () => {
         renderDrawer();
         await screen.findByText("Spring campaign review");
@@ -330,9 +359,10 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
         await screen.findByText("Attempts");
 
         const reason = document.querySelector("[data-role='failed-reason']") as HTMLElement;
-        expect(
-            within(reason).getByText("Provider unavailable: request timed out after 60 s")
-        ).toBeTruthy();
+        // The alert carries an icon label before its text.
+        expect(reason.textContent).toMatch(
+            /Failed at .*10:05: Provider unavailable: request timed out after 60 s$/
+        );
         expect(screen.queryByText(/AI tone check: “/)).toBeNull();
     });
 
@@ -531,14 +561,14 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
 });
 
 describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P2C-5, RD5)", () => {
-    it("holds the eyebrow, title and state tag in the drawer title", async () => {
+    it("holds the eyebrow and title in the drawer title, with no state tag while in progress", async () => {
         renderDrawer();
         await screen.findByText("Spring campaign review");
 
         const dialog = screen.getByRole("dialog");
         const eyebrow = within(dialog).getByText("Review details");
         expect(eyebrow.parentElement?.textContent).toContain("Spring campaign review");
-        expect(eyebrow.parentElement?.textContent).toContain("In progress");
+        expect(eyebrow.parentElement?.textContent).not.toContain("In progress");
     });
 
     it("holds Content, Requester and Requested in the description", async () => {
@@ -639,7 +669,7 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
 
             expect(isOpen("s1")).toBe(true);
             expect(
-                screen.getByText("Provider unavailable: request timed out after 60 s", {
+                screen.getByText(/Provider unavailable: request timed out after 60 s$/, {
                     selector: "[data-role='failed-reason'] *"
                 })
             ).toBeTruthy();

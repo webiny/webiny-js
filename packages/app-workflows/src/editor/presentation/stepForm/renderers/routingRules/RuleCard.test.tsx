@@ -660,6 +660,28 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
         expect(screen.getByText("Rule 1: The team was deleted.")).toBeDefined();
     });
 
+    it("hides the warning of a rule that has an error", () => {
+        const issues: RuleIssue[] = [
+            {
+                ruleId: "rule-1",
+                index: 0,
+                kind: "error",
+                field: "target",
+                message: "The assigned user was deleted."
+            },
+            {
+                ruleId: "rule-1",
+                index: 0,
+                kind: "warning",
+                field: "requesterTeam",
+                message: "The team was deleted."
+            }
+        ];
+        renderCard(createProps({ issues }));
+
+        expect(screen.queryByText("Rule 1: The team was deleted.")).toBeNull();
+    });
+
     it("renders no read-access warning, no exclusion note and no Unavailable option text (Q50)", () => {
         renderCard(createProps());
 

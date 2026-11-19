@@ -46,6 +46,8 @@ export interface ReviewListInitParams {
     namespaces: string[];
     rowProvider: IReviewRowProvider;
     initialTab: ReviewListTab;
+    // Whether the list shows the content type column and filter (CMS); the filtered empty copy names it.
+    showContentType: boolean;
 }
 
 export interface ReviewListRowVm {

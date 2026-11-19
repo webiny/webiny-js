@@ -86,7 +86,8 @@ const setup = (teamCount = 1, permissions: IPermission[] = []) => {
         app: "cms",
         namespaces: ["cms.article", "cms.press"],
         rowProvider,
-        initialTab: "assignedToMe"
+        initialTab: "assignedToMe",
+        showContentType: true
     };
     return { container, presenter, activity, listReviews, params };
 };
@@ -373,7 +374,7 @@ describe("ReviewListPresenter", () => {
         await presenter.setSearch("nothing like this");
         expect(presenter.vm.empty).toEqual({
             title: "No reviews match these filters",
-            description: "Try another title, content type or state, or clear the filters."
+            description: "Try another title, content model or state, or clear the filters."
         });
 
         listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));

@@ -171,7 +171,13 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
                     onClick={handleAdd}
                 />
             </div>
-            {rules.length === 0 && <RulesEmptyNote strategy={options.assignment.strategy} />}
+            {rules.length === 0 && (
+                <RulesEmptyNote
+                    strategy={options.assignment.strategy}
+                    disabled={readOnly}
+                    onAdd={handleAdd}
+                />
+            )}
             {rules.map((rule, index) => (
                 <RuleCard
                     key={rule.id}
