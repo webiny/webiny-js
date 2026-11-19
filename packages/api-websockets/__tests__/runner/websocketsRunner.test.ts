@@ -96,6 +96,37 @@ describe("websockets runner", () => {
         });
     });
 
+    it("should refuse a connect from an identity with no permissions in the tenant", async () => {
+        const handler = useHandler({ permissions: [] });
+
+        const context = await handler.handle();
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+        const registry = context.container.resolve(ConnectionRegistry);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                connectionId: "myConnectionIdAbcdefg",
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+            },
+            body: JSON.stringify({
+                token: "aToken",
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 403,
+            message: "No access to this tenant."
+        });
+        expect(await registry.listViaIdentity("id-12345678")).toHaveLength(0);
+    });
+
     it("should run and return error status - disconnect route", async () => {
         const handler = useHandler();
 
