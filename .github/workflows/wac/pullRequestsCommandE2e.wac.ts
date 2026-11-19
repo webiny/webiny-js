@@ -20,6 +20,7 @@ import {
     WCP_VARIANTS,
     createPrFeature,
     createFinalStatusCommentJob,
+    type AwsVariantJobsContext,
     type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
@@ -62,6 +63,18 @@ for (const [name, path] of Object.entries(PR_FEATURE_PATHS)) {
     );
 }
 
+const AWS_VARIANT_JOBS_CONTEXT: AwsVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2e-aws",
+    deployNeeds: ["baseBranch", "publish", "checkComment"],
+    // The checkout path comes from the base branch.
+    testsNeeds: ["baseBranch"],
+    setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
+    report: true,
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE
+};
+
 const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     workingDirectory: DIR_WEBINY_JS,
     jobKeyPrefix: "e2e-standalone",
@@ -80,7 +93,7 @@ const VARIANT_JOBS: Record<string, NormalJob> = {
     ...AWS_VARIANTS.reduce(
         (jobs, variant) => ({
             ...jobs,
-            ...createAwsJobs(variant, { bugReporter: BUG_REPORTER, apiRoute: API_ROUTE })
+            ...createAwsJobs(variant, AWS_VARIANT_JOBS_CONTEXT)
         }),
         {}
     ),
