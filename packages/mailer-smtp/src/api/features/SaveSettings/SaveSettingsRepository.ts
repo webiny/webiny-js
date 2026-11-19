@@ -1,0 +1,64 @@
+import { Result } from "@webiny/feature/api";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
+import type { TransportSettings } from "~/api/types.js";
+import { SettingsPersistenceError } from "~/api/domain/errors.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { MAILER_TRANSPORT_SETTINGS } from "~/api/constants.js";
+
+const DEFAULT_PORT = 587;
+
+class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
+    constructor(
+        private keyValueStore: KeyValueStore.Interface,
+        private encryption: Encryption.Interface
+    ) {}
+
+    async execute(input: SaveSettingsInput): SaveSettingsRepository.Return {
+        // Check if settings exist
+        const existingResult =
+            await this.keyValueStore.get<TransportSettings>(MAILER_TRANSPORT_SETTINGS);
+        const existingSettings = existingResult.isOk() ? existingResult.value : null;
+        const transportSettings: Partial<TransportSettings> = existingSettings ?? {};
+
+        // If updating and no password provided, keep the existing password
+        let passwordToStore = input.password || "";
+        if (!input.password && existingSettings) {
+            passwordToStore = await this.encryption.decrypt(transportSettings.password || "");
+        }
+
+        // Encrypt password
+        const encryptedPassword = await this.encryption.encrypt(passwordToStore);
+
+        // Prepare data
+        const port = input.port ?? transportSettings.port ?? DEFAULT_PORT;
+
+        const data = {
+            host: input.host ?? transportSettings.host,
+            port,
+            secure: input.secure ?? transportSettings.secure ?? port === 465,
+            user: input.user ?? transportSettings.user,
+            password: encryptedPassword,
+            from: input.from ?? transportSettings.from,
+            replyTo: input.replyTo ?? transportSettings.replyTo
+        };
+
+        // Save settings.
+        const result = await this.keyValueStore.set(MAILER_TRANSPORT_SETTINGS, data);
+
+        if (result.isFail()) {
+            return Result.fail(new SettingsPersistenceError(result.error));
+        }
+
+        // Return the stored state without the password. Callers that need the
+        // plaintext password go through GetSettingsRepository.get(transportName).
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _password, ...savedSettings } = data as TransportSettings;
+        return Result.ok(savedSettings);
+    }
+}
+
+export const SaveSettingsRepositoryImplementation = SaveSettingsRepository.createImplementation({
+    implementation: SaveSettingsRepositoryImpl,
+    dependencies: [KeyValueStore, Encryption]
+});

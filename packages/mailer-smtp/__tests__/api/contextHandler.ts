@@ -1,0 +1,113 @@
+// No createTestHttpHandler here — context tests call use-case methods directly on the
+// context object, bypassing HTTP entirely. createTestHttpHandler spins up an HTTP router
+// and requires a POST /graphql invocation; that overhead is only warranted in graphQLHandler.ts
+// where we're testing the full request/response cycle.
+import { Container } from "@webiny/di";
+import { RequestContainer } from "@webiny/event-handler-core";
+import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
+import { registerApiCoreStorageOperations } from "@webiny/api-core";
+import { MailerFeature } from "@webiny/api-mailer";
+import { MailerSmtpFeature } from "~/api/MailerSmtpFeature.js";
+import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
+import {
+    IdentityContext,
+    AuthenticatedIdentity
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { until, sleep, createPermissions } from "./context/helpers";
+import type { PermissionsArg } from "./context/helpers";
+import type { Plugin, PluginCollection } from "@webiny/plugins/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
+import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
+
+export type ContainerPlugin = (container: Container) => void;
+
+export type HandlerPlugin = Plugin | ContainerPlugin | PluginCollection;
+
+export interface CreateHandlerParams {
+    permissions?: PermissionsArg[];
+    identity?: IdentityData;
+    plugins?: HandlerPlugin | HandlerPlugin[] | HandlerPlugin[][];
+}
+
+function createTestAuthorizer(permissions: PermissionsArg[]) {
+    class TestAuthorizerImpl implements IAuthorizer {
+        async authorize(_identity: Identity): Promise<SecurityPermission[] | null> {
+            return permissions as SecurityPermission[];
+        }
+    }
+    return Authorizer.createImplementation({
+        implementation: TestAuthorizerImpl,
+        dependencies: []
+    });
+}
+
+export const createContextHandler = (params?: CreateHandlerParams) => {
+    return {
+        until,
+        sleep,
+        handle: async (): Promise<ApiCoreContext> => {
+            const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+
+            const root = new Container();
+            const child = root.createChildContainer();
+            child.registerInstance(RequestContainer, child);
+
+            registerApiCoreStorageOperations(child, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            child.registerInstance(Logger, logger);
+            ApiCoreFeature.register(child, {});
+            MailerFeature.register(child);
+            MailerSmtpFeature.register(child);
+
+            const permissions = createPermissions(params?.permissions);
+            child.register(createTestAuthorizer(permissions));
+
+            const ctx: Record<string, any> = { container: child };
+
+            // Apply additional plugins (e.g. registerCodeSmtpSettings). DI-native plugins are plain
+            // `container => {}` functions; legacy ContextPlugins expose `apply(ctx)`.
+            const additionalPlugins = [params?.plugins ?? []].flat(Infinity as 1).filter(Boolean);
+            for (const plugin of additionalPlugins as any[]) {
+                if (typeof plugin === "function" && !plugin.prototype) {
+                    plugin(child);
+                } else if (typeof plugin.apply === "function") {
+                    await plugin.apply(ctx);
+                }
+            }
+
+            // Set up root tenant so KeyValueStore and other tenant-scoped services work
+            const tenantCtx = child.resolve(TenantContext);
+            tenantCtx.setTenant({
+                id: "root",
+                name: "Root",
+                description: "",
+                status: "enabled",
+                isInstalled: false,
+                settings: { domains: [] } as any,
+                tags: [],
+                parent: null,
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString()
+            });
+
+            // Set up test identity so use cases that check permissions work
+            const identityCtx = child.resolve(IdentityContext);
+            const identityData = params?.identity ?? {
+                id: "12345678",
+                displayName: "John Doe",
+                type: "admin"
+            };
+            identityCtx.setIdentity(new AuthenticatedIdentity(identityData));
+
+            return ctx as unknown as ApiCoreContext;
+        }
+    };
+};

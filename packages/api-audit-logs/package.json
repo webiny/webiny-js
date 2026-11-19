@@ -40,12 +40,12 @@
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/api-mailer": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/common-audit-logs": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
+    "@webiny/mailer-smtp": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "zod": "4.6.7"

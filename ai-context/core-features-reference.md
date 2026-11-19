@@ -551,7 +551,9 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ## Mailer Features
 
-Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration; the built-in one is SMTP. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
+Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration. `@webiny/api-mailer` has no transport of its own. SMTP, its settings and its Admin form live in `@webiny/mailer-smtp`, which every project mounts through `<MailerSmtp />` in `DefaultExtensions`. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
+
+`webiny/api/mailer` merges exports from both packages, so the settings use cases below are imported from the same path as before.
 
 ### SendMailUseCase
 
@@ -574,20 +576,24 @@ Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` 
 ### GetSettingsUseCase (Mailer)
 
 - **Import:** `import { GetSettingsUseCase } from "webiny/api/mailer"`
-- **Interface Type:** See `packages/api-mailer/src/features/GetSettings/abstractions.ts`
-- **Usage:** Read stored transport settings (SMTP today). Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Api.Mailer.Smtp>` is driving the config; `"storage"` means settings were saved via the admin UI.
+- **Interface Type:** See `packages/mailer-smtp/src/api/features/GetSettings/abstractions.ts`
+- **Usage:** Read the SMTP settings. Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Api.Mailer.Smtp>` is driving the config; `"storage"` means settings were saved via the admin UI.
 
 ### SaveSettingsUseCase (Mailer)
 
 - **Import:** `import { SaveSettingsUseCase } from "webiny/api/mailer"`
-- **Interface Type:** See `packages/api-mailer/src/features/SaveSettings/abstractions.ts`
-- **Usage:** Persist mailer settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when any registered transport has code-defined settings. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
+- **Interface Type:** See `packages/mailer-smtp/src/api/features/SaveSettings/abstractions.ts`
+- **Usage:** Persist the SMTP settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when any registered transport has code-defined settings. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
 
 ### CodeMailerSettings
 
-- **Import:** `import { CodeMailerSettings } from "@webiny/api-mailer/domain/CodeMailerSettings/abstractions"`
-- **Interface Type:** See `packages/api-mailer/src/domain/CodeMailerSettings/abstractions.ts`
+- **Import:** `import { CodeMailerSettings } from "@webiny/mailer-smtp/api/domain/CodeMailerSettings/abstractions.js"`
+- **Interface Type:** See `packages/mailer-smtp/src/api/domain/CodeMailerSettings/abstractions.ts`
 - **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<Api.Mailer.Smtp>` registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
+
+### Mailer settings screen (Admin)
+
+`@webiny/app-mailer` owns the Settings > Mailer route, the menu item and the test email. A transport package adds its form by decorating `MailerTransportSettings` (render `Original` too). To hold the test back while its form has unsaved changes, it registers a `TestMailGuard`. It reads and clears the test's state through `TestMailState`. All three are exported from `@webiny/app-mailer`. See `packages/mailer-smtp/src/admin/presentation/SmtpSettings/`.
 
 ---
 

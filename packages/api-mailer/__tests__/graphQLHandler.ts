@@ -17,9 +17,7 @@ import type { CreateHandlerParams } from "./contextHandler";
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { GET_SETTINGS_QUERY } from "./graphql/settings";
-import { SAVE_SETTINGS_MUTATION } from "./graphql/settings";
-import { SEND_TEST_MAIL_MUTATION } from "./graphql/settings";
+import { SEND_TEST_MAIL_MUTATION } from "./graphql/sendTestMail";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
@@ -68,7 +66,7 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
             GraphQLEngineFeature.register(container);
             MailerFeature.register(container);
 
-            // Apply additional plugins (e.g. registerCodeSmtpSettings). DI-native plugins are plain
+            // Apply additional plugins (e.g. a project transport). DI-native plugins are plain
             // `container => {}` functions; legacy ContextPlugins expose a custom `apply(ctx)`. Check
             // for a function FIRST — a plain function also has `Function.prototype.apply`, which would
             // otherwise be invoked with no args (container undefined).
@@ -129,12 +127,6 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
         invoke,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
-        },
-        async getSettings() {
-            return invoke({ body: { query: GET_SETTINGS_QUERY } });
-        },
-        async saveSettings(variables: Record<string, any>) {
-            return invoke({ body: { query: SAVE_SETTINGS_MUTATION, variables } });
         },
         async sendTestMail(variables: { to: string }) {
             return invoke({ body: { query: SEND_TEST_MAIL_MUTATION, variables } });

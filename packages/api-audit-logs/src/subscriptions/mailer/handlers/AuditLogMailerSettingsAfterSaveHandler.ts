@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { MailerSettingsAfterSaveEventHandler } from "@webiny/api-mailer/features/SaveSettings/index.js";
+import { MailerSettingsAfterSaveEventHandler } from "@webiny/mailer-smtp/api/features/SaveSettings/index.js";
 import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
