@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { createContextHandler } from "./contextHandler.js";
 import { registerCodeSmtpSettings } from "./helpers/registerCodeSmtpSettings.js";
 import { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
@@ -18,7 +20,9 @@ describe("IsMailerConfiguredUseCase", () => {
         const { handle } = createContextHandler();
         const context = await handle();
 
-        expect(await context.container.resolve(IsMailerConfiguredUseCase).execute()).toBe(false);
+        const isConfigured = context.container.resolve(IsMailerConfiguredUseCase);
+        const configured = await isConfigured.execute();
+        expect(configured).toBe(false);
     });
 
     it("is true once SMTP settings are set in code", async () => {
@@ -27,6 +31,8 @@ describe("IsMailerConfiguredUseCase", () => {
         });
         const context = await handle();
 
-        expect(await context.container.resolve(IsMailerConfiguredUseCase).execute()).toBe(true);
+        const isConfigured = context.container.resolve(IsMailerConfiguredUseCase);
+        const configured = await isConfigured.execute();
+        expect(configured).toBe(true);
     });
 });

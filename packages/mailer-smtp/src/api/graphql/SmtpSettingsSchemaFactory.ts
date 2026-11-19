@@ -1,6 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import type { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse } from "@webiny/api-graphql/responses.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/api/features/SaveSettings/abstractions.js";
@@ -9,11 +9,12 @@ import type { SaveSettingsInput } from "~/api/features/SaveSettings/abstractions
 import type { TransportSettings } from "~/api/types.js";
 import { SMTP_TRANSPORT_NAME } from "~/api/constants.js";
 
-// Strip `password` before the settings leave the server and tack on `source`
-// so the admin UI can branch on code-vs-storage. Accepts both the full
-// `TransportSettings` (from getSettings) and the already-stripped
-// `Omit<TransportSettings, "password">` (from saveSettings) — defense in depth
-// even when the input type carries no password to begin with.
+/*
+ * Strip `password` before the settings leave the server and add `source`, so the admin UI can
+ * branch on code vs storage. Accepts both the full `TransportSettings` (from getSettings) and the
+ * already-stripped `Omit<TransportSettings, "password">` (from saveSettings), as a second check
+ * even when the input carries no password.
+ */
 const toPublicSettings = (
     settings: TransportSettings | Omit<TransportSettings, "password"> | null,
     source: MailerSettingsSource
@@ -29,7 +30,9 @@ const toPublicSettings = (
 class SmtpSettingsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("mailer-smtp/SmtpSettingsSchemaFactory");
 
-    async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
+    async execute(
+        builder: GraphQLSchemaBuilder.Interface
+    ): Promise<GraphQLSchemaBuilder.Interface> {
         // `MailerMutation` and `MailerTransportSettingsError` come from the core mailer schema.
         builder.addTypeDefs(`
             type MailerTransportSettings {

@@ -1,5 +1,6 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
-import type { MailerSettings, TransportSettings } from "~/admin/types.js";
+import type { MailerSettings } from "~/admin/types.js";
+import type { TransportSettings } from "~/admin/types.js";
 import { SaveSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 
 const SAVE_SETTINGS = /* GraphQL */ `

@@ -66,10 +66,12 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
             GraphQLEngineFeature.register(container);
             MailerFeature.register(container);
 
-            // Apply additional plugins (e.g. a project transport). DI-native plugins are plain
-            // `container => {}` functions; legacy ContextPlugins expose a custom `apply(ctx)`. Check
-            // for a function FIRST — a plain function also has `Function.prototype.apply`, which would
-            // otherwise be invoked with no args (container undefined).
+            /*
+             * Apply additional plugins (for example a project transport). DI-native plugins are plain
+             * `container => {}` functions; legacy ContextPlugins expose a custom `apply(ctx)`. Check
+             * for a function first: a plain function also has `Function.prototype.apply`, which would
+             * otherwise be called with no arguments.
+             */
             const additionalPlugins = [params?.plugins ?? []].flat(Infinity as 1).filter(Boolean);
             const ctx: Record<string, any> = { container };
             for (const plugin of additionalPlugins as any[]) {

@@ -7,8 +7,10 @@ import { expect } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
-import { TestMailGuard, TestMailState } from "@webiny/app-mailer";
-import { TestMailState as TestMailStateImplementation } from "@webiny/app-mailer/presentation/testMail/TestMailState.js";
+import { TestMailGuard } from "@webiny/app-mailer";
+import { TestMailRuns } from "@webiny/app-mailer/presentation/testMail/abstractions.js";
+import { TestMailState } from "@webiny/app-mailer/presentation/testMail/abstractions.js";
+import { TestMailStore } from "@webiny/app-mailer/presentation/testMail/TestMailStore.js";
 import { GetSettingsUseCase } from "~/admin/features/getSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/admin/features/saveSettings/abstractions.js";
 import { SmtpSettingsPresenter as PresenterAbstraction } from "~/admin/presentation/SmtpSettings/abstractions.js";
@@ -17,8 +19,10 @@ import { SmtpTestMailGuard } from "~/admin/presentation/SmtpSettings/SmtpTestMai
 
 const settings = { host: "smtp.webiny.com", user: "user", from: "a@webiny.com" };
 
-// A class rather than a plain object: MobX copies a plain object it is given, and the test changes
-// `isDirty` on the instance the presenter holds.
+/*
+ * A class rather than a plain object: MobX copies a plain object it is given, and the test changes
+ * `isDirty` on the instance the presenter holds.
+ */
 class FakeForm {
     vm = { isDirty: false };
     setData = vi.fn();
@@ -37,14 +41,16 @@ const setup = () => {
     container.registerInstance(FormModelFactory, {
         create: () => form
     } as unknown as FormModelFactory.Interface);
-    container.register(TestMailStateImplementation).inSingletonScope();
+    const store = new TestMailStore();
+    container.registerInstance(TestMailState, store);
+    container.registerInstance(TestMailRuns, store);
     container.register(SmtpSettingsPresenter).inSingletonScope();
     container.register(SmtpTestMailGuard).inSingletonScope();
 
     return {
         presenter: container.resolve(PresenterAbstraction),
         guard: container.resolve(TestMailGuard),
-        testMail: container.resolve(TestMailState),
+        testMail: container.resolve(TestMailRuns),
         form,
         save
     };
@@ -69,7 +75,8 @@ describe("SmtpSettingsPresenter", () => {
         testMail.start();
 
         expect(presenter.vm.testMailSending).toBe(true);
-        expect(await presenter.save()).toBe(false);
+        const saved = await presenter.save();
+        expect(saved).toBe(false);
         expect(save).not.toHaveBeenCalled();
     });
 
@@ -78,7 +85,8 @@ describe("SmtpSettingsPresenter", () => {
         const run = testMail.start();
         testMail.finish(run, { type: "success", message: "Accepted." });
 
-        expect(await presenter.save()).toBe(true);
+        const saved = await presenter.save();
+        expect(saved).toBe(true);
         expect(save).toHaveBeenCalledTimes(1);
         expect(testMail.result).toBeNull();
     });

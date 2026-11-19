@@ -1,30 +1,25 @@
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    SaveSettingsUseCase,
-    SaveSettingsRepository,
-    type SaveSettingsInput
-} from "./abstractions.js";
+import { SaveSettingsUseCase } from "./abstractions.js";
+import { SaveSettingsRepository } from "./abstractions.js";
+import type { SaveSettingsInput } from "./abstractions.js";
 import { MailerSettingsBeforeSaveEvent, MailerSettingsAfterSaveEvent } from "./events.js";
 import { saveValidation } from "./validation.js";
-import {
-    SettingsValidationError,
-    SettingsPersistenceError,
-    SettingsNotAuthorized,
-    SettingsLockedByCode
-} from "~/api/domain/errors.js";
+import { SettingsValidationError } from "~/api/domain/errors.js";
+import { SettingsPersistenceError } from "~/api/domain/errors.js";
+import { SettingsNotAuthorized } from "~/api/domain/errors.js";
+import { SettingsLockedByCode } from "~/api/domain/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CodeMailerSettings } from "~/api/domain/CodeMailerSettings/abstractions.js";
-import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
 import { MAILER_SETTINGS_PERMISSION } from "@webiny/api-mailer/constants.js";
+import { SMTP_TRANSPORT_NAME } from "~/api/constants.js";
 
 class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: SaveSettingsRepository.Interface,
-        private codeSettings: CodeMailerSettings.Interface,
-        private transportFactories: MailTransportFactory.Interface[]
+        private codeSettings: CodeMailerSettings.Interface
     ) {}
 
     async execute(input: SaveSettingsInput): SaveSettingsUseCase.Return {
@@ -39,12 +34,8 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
             return Result.fail(new SettingsValidationError(validationResult.error.issues));
         }
 
-        /* Refuse when any registered transport has code-defined settings. */
-        const isLockedByCode = this.transportFactories.some(
-            f => this.codeSettings.get(f.name) !== null
-        );
-
-        if (isLockedByCode) {
+        // Settings from `Api.Mailer.Smtp` win over stored ones, so saving would change nothing.
+        if (this.codeSettings.get(SMTP_TRANSPORT_NAME) !== null) {
             return Result.fail(new SettingsLockedByCode());
         }
 
@@ -68,11 +59,5 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
 
 export const SaveSettingsUseCaseImplementation = SaveSettingsUseCase.createImplementation({
     implementation: SaveSettingsUseCaseImpl,
-    dependencies: [
-        IdentityContext,
-        EventPublisher,
-        SaveSettingsRepository,
-        CodeMailerSettings,
-        [MailTransportFactory, { multiple: true }]
-    ]
+    dependencies: [IdentityContext, EventPublisher, SaveSettingsRepository, CodeMailerSettings]
 });

@@ -1,4 +1,5 @@
-import type { MailerSettings, TransportSettings } from "~/admin/types.js";
+import type { MailerSettings } from "~/admin/types.js";
+import type { TransportSettings } from "~/admin/types.js";
 import { SaveSettingsUseCase as UseCaseAbstraction, SaveSettingsGateway } from "./abstractions.js";
 import { GetSettingsRepository } from "~/admin/features/getSettings/abstractions.js";
 

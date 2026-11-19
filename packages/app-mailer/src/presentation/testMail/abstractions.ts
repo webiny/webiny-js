@@ -21,25 +21,38 @@ export namespace TestMailGuard {
 }
 
 /**
- * The test in flight and its result, shared with the transport settings forms: a form does not
- * save while a test is sending, and a save drops the result, which described the old settings.
+ * What a transport's settings form needs from the test email: a form does not save while a test is
+ * sending, and a save drops the result, which described the old settings.
  */
 export interface ITestMailState {
     readonly sending: boolean;
-    readonly result: ITestMailResult | null;
-    /** Starts a run and returns its id. */
-    start(): number;
-    /** Ends a run. A run that `reset()` made stale is ignored. */
-    finish(run: number, result: ITestMailResult): void;
     clearResult(): void;
-    /** Drops the run in flight and the result, which would otherwise outlive the screen. */
-    reset(): void;
 }
 
 export const TestMailState = createAbstraction<ITestMailState>("Mailer/TestMailState");
 
 export namespace TestMailState {
     export type Interface = ITestMailState;
+}
+
+/**
+ * The run protocol behind `TestMailState`, driven only by `TestMailPresenter`. Not exported from
+ * the package.
+ */
+export interface ITestMailRuns extends ITestMailState {
+    readonly result: ITestMailResult | null;
+    /** Starts a run and returns its id. */
+    start(): number;
+    /** Ends a run. A run that `reset()` made stale is ignored. */
+    finish(run: number, result: ITestMailResult): void;
+    /** Drops the run in flight and the result, which would otherwise outlive the screen. */
+    reset(): void;
+}
+
+export const TestMailRuns = createAbstraction<ITestMailRuns>("Mailer/TestMailRuns");
+
+export namespace TestMailRuns {
+    export type Interface = ITestMailRuns;
 }
 
 export interface ITestMailViewModel {

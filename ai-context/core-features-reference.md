@@ -577,13 +577,13 @@ Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` 
 
 - **Import:** `import { GetSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/mailer-smtp/src/api/features/GetSettings/abstractions.ts`
-- **Usage:** Read the SMTP settings. Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Api.Mailer.Smtp>` is driving the config; `"storage"` means settings were saved via the admin UI.
+- **Usage:** Read the SMTP settings. Takes a `transportName` argument (only `"Mailer/SmtpTransport"` has settings) and returns `Promise<Result<{ settings: TransportSettings | null, source: "code" | "storage" | null }>>`; check `isOk()` and read `.value`. `source: "code"` means `<Api.Mailer.Smtp>` is driving the config; `"storage"` means settings were saved via the admin UI.
 
 ### SaveSettingsUseCase (Mailer)
 
 - **Import:** `import { SaveSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/mailer-smtp/src/api/features/SaveSettings/abstractions.ts`
-- **Usage:** Persist the SMTP settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when any registered transport has code-defined settings. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
+- **Usage:** Persist the SMTP settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when `<Api.Mailer.Smtp>` sets the settings in code. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
 
 ### CodeMailerSettings
 

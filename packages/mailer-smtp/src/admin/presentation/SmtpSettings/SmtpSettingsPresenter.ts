@@ -1,17 +1,17 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { runInAction } from "mobx";
+import { computed } from "mobx";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { TestMailState } from "@webiny/app-mailer";
 import { GetSettingsUseCase } from "~/admin/features/getSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/admin/features/saveSettings/abstractions.js";
-import {
-    SmtpSettingsPresenter as Abstraction,
-    type ISmtpSettingsPresenter,
-    type ISmtpSettingsViewModel
-} from "./abstractions.js";
-import type { MailerSettings, MailerSettingsSource, TransportSettings } from "~/admin/types.js";
+import { SmtpSettingsPresenter as Abstraction } from "./abstractions.js";
+import type { MailerSettings } from "~/admin/types.js";
+import type { MailerSettingsSource } from "~/admin/types.js";
+import type { TransportSettings } from "~/admin/types.js";
 
-class SmtpSettingsPresenterImpl implements ISmtpSettingsPresenter {
+class SmtpSettingsPresenterImpl implements Abstraction.Interface {
     private loading = false;
     private saving = false;
     private source: MailerSettingsSource = null;
@@ -27,7 +27,7 @@ class SmtpSettingsPresenterImpl implements ISmtpSettingsPresenter {
         makeAutoObservable(this, { vm: computed });
     }
 
-    get vm(): ISmtpSettingsViewModel {
+    get vm(): Abstraction.ViewModel {
         return {
             loading: this.loading,
             saving: this.saving,

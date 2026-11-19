@@ -4,12 +4,11 @@ import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
 import { SendTestMailUseCase } from "~/features/sendTestMail/abstractions.js";
-import {
-    TestMailGuard,
-    TestMailPresenter as PresenterAbstraction
-} from "~/presentation/testMail/abstractions.js";
+import { TestMailGuard } from "~/presentation/testMail/abstractions.js";
+import { TestMailPresenter as PresenterAbstraction } from "~/presentation/testMail/abstractions.js";
+import { TestMailRuns } from "~/presentation/testMail/abstractions.js";
 import { TestMailPresenter } from "~/presentation/testMail/TestMailPresenter.js";
-import { TestMailState } from "~/presentation/testMail/TestMailState.js";
+import { TestMailStore } from "~/presentation/testMail/TestMailStore.js";
 
 interface Deferred {
     promise: Promise<void>;
@@ -43,7 +42,8 @@ const setup = (guards: TestMailGuard.Interface[] = []) => {
     for (const guard of guards) {
         container.registerInstance(TestMailGuard, guard);
     }
-    container.register(TestMailState).inSingletonScope();
+    const store = new TestMailStore();
+    container.registerInstance(TestMailRuns, store);
     container.register(TestMailPresenter).inSingletonScope();
 
     return { presenter: container.resolve(PresenterAbstraction), sends };
@@ -81,6 +81,18 @@ describe("TestMailPresenter", () => {
 
         expect(presenter.vm.disabledReason).toBeNull();
         expect(presenter.vm.result).toMatchObject({ type: "success" });
+    });
+
+    it("does not send while a guard holds the test", async () => {
+        const reason = "Save your changes first. The test uses the saved settings.";
+        const guard = { getDisabledReason: () => reason };
+        const { presenter, sends } = setup([guard]);
+        presenter.init();
+
+        await presenter.send();
+
+        expect(sends).toHaveLength(0);
+        expect(presenter.vm.sending).toBe(false);
     });
 
     it("ignores a test that finishes after the screen was left and a new test started", async () => {

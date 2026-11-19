@@ -1,12 +1,11 @@
-import { makeAutoObservable, computed } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { computed } from "mobx";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
 import { SendTestMailUseCase } from "~/features/sendTestMail/abstractions.js";
-import {
-    TestMailPresenter as Abstraction,
-    TestMailGuard,
-    TestMailState,
-    type ITestMailResult
-} from "./abstractions.js";
+import { TestMailPresenter as Abstraction } from "./abstractions.js";
+import { TestMailGuard } from "./abstractions.js";
+import { TestMailRuns } from "./abstractions.js";
+import type { ITestMailResult } from "./abstractions.js";
 
 class TestMailPresenterImpl implements Abstraction.Interface {
     private recipient = "";
@@ -14,7 +13,7 @@ class TestMailPresenterImpl implements Abstraction.Interface {
     constructor(
         private sendTestMailUseCase: SendTestMailUseCase.Interface,
         private identityContext: IdentityContext.Interface,
-        private state: TestMailState.Interface,
+        private state: TestMailRuns.Interface,
         private guards: TestMailGuard.Interface[]
     ) {
         makeAutoObservable(this, { vm: computed });
@@ -26,7 +25,7 @@ class TestMailPresenterImpl implements Abstraction.Interface {
         return {
             recipient: this.recipient,
             sending: this.state.sending,
-            disabledReason: guardReason ?? (this.recipient.trim() ? null : "Enter a recipient."),
+            disabledReason: this.getDisabledReason(),
             // A result describes the saved settings, so it is hidden while a guard holds the test.
             result: guardReason ? null : this.state.result
         };
@@ -43,6 +42,10 @@ class TestMailPresenterImpl implements Abstraction.Interface {
     }
 
     async send(): Promise<void> {
+        if (this.state.sending || this.getDisabledReason()) {
+            return;
+        }
+
         const to = this.recipient.trim();
         const run = this.state.start();
 
@@ -68,6 +71,17 @@ class TestMailPresenterImpl implements Abstraction.Interface {
         this.recipient = "";
     }
 
+    private getDisabledReason(): string | null {
+        const guardReason = this.getGuardReason();
+        if (guardReason) {
+            return guardReason;
+        }
+        if (!this.recipient.trim()) {
+            return "Enter a recipient.";
+        }
+        return null;
+    }
+
     private getGuardReason(): string | null {
         for (const guard of this.guards) {
             const reason = guard.getDisabledReason();
@@ -84,7 +98,7 @@ export const TestMailPresenter = Abstraction.createImplementation({
     dependencies: [
         SendTestMailUseCase,
         IdentityContext,
-        TestMailState,
+        TestMailRuns,
         [TestMailGuard, { multiple: true }]
     ]
 });

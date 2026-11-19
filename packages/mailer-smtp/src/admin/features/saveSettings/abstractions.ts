@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { MailerSettings, TransportSettings } from "~/admin/types.js";
+import type { MailerSettings } from "~/admin/types.js";
+import type { TransportSettings } from "~/admin/types.js";
 
 export interface ISaveSettingsGateway {
     execute(data: TransportSettings): Promise<MailerSettings>;

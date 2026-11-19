@@ -1,8 +1,12 @@
 import { makeAutoObservable } from "mobx";
-import { TestMailState as Abstraction } from "./abstractions.js";
 import type { ITestMailResult } from "./abstractions.js";
+import type { TestMailRuns } from "./abstractions.js";
 
-class TestMailStateImpl implements Abstraction.Interface {
+/*
+ * One instance is registered as both `TestMailState` and `TestMailRuns` (see `feature.ts`), so the
+ * presenter and the transport forms share it.
+ */
+export class TestMailStore implements TestMailRuns.Interface {
     sending = false;
     result: ITestMailResult | null = null;
     /*
@@ -39,8 +43,3 @@ class TestMailStateImpl implements Abstraction.Interface {
         this.sending = false;
     }
 }
-
-export const TestMailState = Abstraction.createImplementation({
-    implementation: TestMailStateImpl,
-    dependencies: []
-});
