@@ -13,7 +13,7 @@ import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepo
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
-import { MailerService } from "@webiny/api-mailer/domain/MailerService/abstractions.js";
+import { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { RequestPasswordResetFeature } from "~/api/features/RequestPasswordReset/index.js";
@@ -91,8 +91,7 @@ const setup = (options: SetupOptions = {}) => {
         }
     } as unknown as SendMailUseCase.Interface;
     container.registerInstance(SendMailUseCase, sendMail);
-    const mailerService = { isConfigured: async () => true } as unknown as MailerService.Interface;
-    container.registerInstance(MailerService, mailerService);
+    container.registerInstance(IsMailerConfiguredUseCase, { execute: async () => true });
 
     const logError = vi.fn();
     const logger = {

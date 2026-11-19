@@ -6,6 +6,7 @@ import { SaveSettingsFeature } from "~/features/SaveSettings/feature.js";
 import { MailerServiceFeature } from "~/features/MailerService/feature.js";
 import { SendMailFeature } from "~/features/SendMail/feature.js";
 import { SendTestMailFeature } from "~/features/SendTestMail/feature.js";
+import { IsMailerConfiguredFeature } from "~/features/IsMailerConfigured/feature.js";
 import { MailerSchemaFactory } from "~/graphql/MailerSchemaFactory.js";
 
 export const MailerFeature = createFeature({
@@ -18,6 +19,7 @@ export const MailerFeature = createFeature({
         MailerServiceFeature.register(container);
         SendMailFeature.register(container);
         SendTestMailFeature.register(container);
+        IsMailerConfiguredFeature.register(container);
         container.register(MailerSchemaFactory);
     }
 });

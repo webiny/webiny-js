@@ -16,11 +16,7 @@ export interface IMailerService {
         data: TransportSendData
     ): Promise<Result<TransportSendResponse<T>, MailerServiceError>>;
 
-    /**
-     * Whether a transport is set up. It does not connect or send, so a transport with wrong
-     * credentials still counts. Only for a question that has to be answered before anything is
-     * sent; otherwise send, and handle `NoTransportAvailableError`.
-     */
+    /** Whether a transport is set up. Outside api-mailer, ask `IsMailerConfiguredUseCase`. */
     isConfigured(): Promise<boolean>;
 }
 
