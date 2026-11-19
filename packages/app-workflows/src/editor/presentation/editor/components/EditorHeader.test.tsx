@@ -28,7 +28,7 @@ describe("EditorHeader", () => {
         expect(screen.getByText("Article review")).toBeTruthy();
         expect(
             screen.getByText(
-                "Applies to Article (Headless CMS model) · Created by Ada Lovelace on 17.10.2026"
+                "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
             )
         ).toBeTruthy();
     });

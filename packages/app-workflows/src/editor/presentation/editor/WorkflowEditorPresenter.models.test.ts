@@ -242,7 +242,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
         expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-2" });
         expect(presenter.vm.header?.name).toBe("Press approval");
         expect(presenter.vm.header?.appliesTo).toBe(
-            "Applies to Press (Headless CMS model) · Created by Ada Lovelace on 17.10.2026"
+            "Applies to Press (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
         );
         expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
         expect(presenter.vm.dialog).toBeNull();

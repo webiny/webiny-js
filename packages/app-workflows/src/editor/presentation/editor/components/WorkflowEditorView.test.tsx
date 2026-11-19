@@ -49,7 +49,7 @@ vi.mock("./useLeaveGuard.js", () => {
 const app = {
     appKind: "cms",
     panelLabel: "Content models",
-    appliesToLabel: "Headless CMS model",
+    appliesToLabel: "Headless CMS",
     init: vi.fn(),
     renderModelIcon: (modelId: string) => <span data-testid={`icon-${modelId}`} />
 } as unknown as WorkflowEditorAppAdapter;

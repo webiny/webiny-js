@@ -8,8 +8,7 @@ export const createWorkflowHeaderVm = (
     return {
         name: "Article review",
         nameError: null,
-        appliesTo:
-            "Applies to Article (Headless CMS model) · Created by Ada Lovelace on 17.10.2026",
+        appliesTo: "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026",
         dirty: false,
         saving: false,
         canSave: true,

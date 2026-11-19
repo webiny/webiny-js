@@ -161,8 +161,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(presenter.vm.header).toEqual({
             name: "Article review",
             nameError: null,
-            appliesTo:
-                "Applies to Article (Headless CMS model) · Created by Ada Lovelace on 17.10.2026",
+            appliesTo: "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026",
             dirty: false,
             saving: false,
             canSave: false,

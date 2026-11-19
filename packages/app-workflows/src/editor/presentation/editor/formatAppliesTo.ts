@@ -2,7 +2,7 @@ import type { EditorActor } from "~/editor/domain/types.js";
 
 export interface AppliesToParams {
     modelName: string;
-    // `Headless CMS model`, `Website Builder`.
+    // `Headless CMS`, `Website Builder`.
     appLabel: string;
     // Both null for a workflow that was never saved.
     createdBy: EditorActor | null;
