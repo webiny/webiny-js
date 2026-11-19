@@ -238,6 +238,8 @@ export const pagesTypeDefs = /* GraphQL */ `
     extend type WbQuery {
         getPageModel: WbPageModelResponse
         getPageByPath(path: String!): WbPageResponse
+        # The latest non-deleted revision at the path, whatever its status (draft, unpublished, published).
+        getLatestPageByPath(path: String!): WbPageResponse
         # Delivered composed (global instances added, override layers merged); "raw: true" returns it as stored.
         getPageById(id: ID!, raw: Boolean): WbPageResponse
         getPageRevisions(entryId: ID!): WbPageRevisionsResponse
