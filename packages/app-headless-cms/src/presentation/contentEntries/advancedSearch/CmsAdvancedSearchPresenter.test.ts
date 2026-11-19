@@ -69,4 +69,16 @@ describe("CmsAdvancedSearchPresenter", () => {
 
         expect(execute).toHaveBeenCalledTimes(1);
     });
+
+    it("tries again after a failed request", async () => {
+        const { presenter, execute } = createPresenter(true);
+        execute.mockRejectedValueOnce(new Error("Network error"));
+
+        await presenter.loadAuthors();
+        expect(presenter.vm.authors).toEqual([]);
+
+        await presenter.loadAuthors();
+        expect(execute).toHaveBeenCalledTimes(2);
+        expect(presenter.vm.authors).toHaveLength(2);
+    });
 });
