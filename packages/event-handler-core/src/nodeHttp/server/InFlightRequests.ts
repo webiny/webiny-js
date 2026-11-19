@@ -8,9 +8,9 @@ export class InFlightRequests {
     private readonly responses = new Set<http.ServerResponse>();
     private connectionReuseStopped = false;
     // Created by the first `waitUntilAllFinished()` call; resolved when the last response closes.
-    private allFinished: PromiseWithResolvers<void> | undefined;
+    private waitUntilAllFinishedPromise: PromiseWithResolvers<void> | undefined;
 
-    /** Counts the request until its response closes, whether it finished or the client went away. */
+    /** Counts the request until its response closes, whether it finished or the client left. */
     public track(res: http.ServerResponse): void {
         this.responses.add(res);
         if (this.connectionReuseStopped) {
@@ -22,9 +22,9 @@ export class InFlightRequests {
              * Only a shutdown waits here. Until something calls `waitUntilAllFinished()` there is
              * no promise, so requests that finish while the server runs normally skip this.
              */
-            const shutdownWaiting = this.allFinished;
+            const shutdownWaiting = this.waitUntilAllFinishedPromise;
             if (shutdownWaiting !== undefined && this.responses.size === 0) {
-                this.allFinished = undefined;
+                this.waitUntilAllFinishedPromise = undefined;
                 shutdownWaiting.resolve();
             }
         });
@@ -50,10 +50,10 @@ export class InFlightRequests {
         if (this.responses.size === 0) {
             return Promise.resolve();
         }
-        if (!this.allFinished) {
-            this.allFinished = Promise.withResolvers<void>();
+        if (!this.waitUntilAllFinishedPromise) {
+            this.waitUntilAllFinishedPromise = Promise.withResolvers<void>();
         }
-        return this.allFinished.promise;
+        return this.waitUntilAllFinishedPromise.promise;
     }
 
     private closeConnectionAfterResponse(res: http.ServerResponse): void {
