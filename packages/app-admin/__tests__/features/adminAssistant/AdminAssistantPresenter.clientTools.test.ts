@@ -304,7 +304,7 @@ describe("AdminAssistantPresenter client tools", () => {
         expect(runs).toBe(0);
     });
 
-    it("retries a failed decision with the same decision and results", async () => {
+    it("retries a failed decision by asking again, never by sending the decision twice", async () => {
         const withApproval: AdminAssistantStreamEvent[] = [
             {
                 type: "approval",
@@ -337,9 +337,10 @@ describe("AdminAssistantPresenter client tools", () => {
         await settle(presenter);
 
         expect(runs).toBe(1);
-        expect(requests[2].prompt).toBeUndefined();
+        // The approved tool may have run before the failure: the decision is not sent again.
+        expect(requests[2].approvals).toBeUndefined();
         expect(requests[2]).toMatchObject({
-            approvals: [{ approvalId: "a1", approved: true }],
+            prompt: "Add a hero and a folder",
             toolResults: [{ toolCallId: "call-1", output: { added: ["el-1"] } }]
         });
     });

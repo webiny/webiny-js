@@ -247,32 +247,36 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
         const unsaved = this.unsaved;
 
-        // A failed resume: send the same decisions and results, since the browser's changes are made.
-        if (unsaved && !unsaved.withQuestion && this.chatId) {
+        /*
+         * A failed resume that carried only browser results: send the same results, since the
+         * browser's changes are made. A decision is never sent again: the server may have run the
+         * approved tool before the run failed, and the saved chat would still show it waiting, so a
+         * second approval would run it twice.
+         */
+        const resend = unsaved && !unsaved.withQuestion && unsaved.approvals.length === 0;
+        if (resend && this.chatId) {
             this.patch(index, {
                 error: undefined,
                 errorCode: undefined,
                 settled: false,
                 running: true
             });
-            const resume = this.request({});
-            if (unsaved.approvals.length > 0) {
-                resume.approvals = unsaved.approvals;
-            }
-            if (unsaved.toolResults.length > 0) {
-                resume.toolResults = unsaved.toolResults;
-            }
+            const resume = this.request({ toolResults: unsaved.toolResults });
             const request = this.withPageContext(resume);
             void this.run(index, request, true);
             return;
         }
 
+        /*
+         * Otherwise the question is asked again. The server rejects a decision still waiting, so the
+         * model asks for approval again. Results of calls that ran go with it.
+         */
         const fresh = emptyTurn(turn.question);
         this.replaceTurn(index, { ...fresh, running: true });
         const request = this.question(turn.question);
-        // A question that carried results of calls that ran carries them again.
-        if (unsaved?.withQuestion && request.chatId) {
-            request.toolResults = unsaved.toolResults;
+        const ran = unsaved?.toolResults ?? [];
+        if (ran.length > 0 && request.chatId) {
+            request.toolResults = ran;
         }
         void this.run(index, request);
     }
