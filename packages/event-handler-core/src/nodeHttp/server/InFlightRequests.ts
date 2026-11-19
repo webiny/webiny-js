@@ -45,7 +45,9 @@ export class InFlightRequests {
         if (this.responses.size === 0) {
             return Promise.resolve();
         }
-        this.allFinished ??= Promise.withResolvers<void>();
+        if (!this.allFinished) {
+            this.allFinished = Promise.withResolvers<void>();
+        }
         return this.allFinished.promise;
     }
 
