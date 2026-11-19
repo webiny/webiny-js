@@ -1,43 +1,14 @@
 import React from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
-import { useMemo } from "react";
-import { useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
-import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
+import { AdvancedSearch } from "@webiny/app-aco";
+import { useFilterRepository } from "@webiny/app-aco";
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { CmsAdvancedSearchFeature } from "~/presentation/contentEntries/advancedSearch/feature.js";
-import { FieldsMapper } from "./FieldsMapper.js";
-
-const SYSTEM_FIELD_PREFIXES = ["status", "createdOn", "savedOn", "createdBy", "AND", "OR"];
-
-function isSystemKey(key: string): boolean {
-    return SYSTEM_FIELD_PREFIXES.some(prefix => key === prefix || key.startsWith(`${prefix}_`));
-}
-
-function wrapUserFields(where: Record<string, unknown>): Record<string, unknown> {
-    const result: Record<string, unknown> = {};
-    const values: Record<string, unknown> = {};
-
-    for (const [key, value] of Object.entries(where)) {
-        if (key === "AND" || key === "OR") {
-            result[key] = (value as Record<string, unknown>[]).map(item => wrapUserFields(item));
-        } else if (isSystemKey(key)) {
-            result[key] = value;
-        } else {
-            values[key] = value;
-        }
-    }
-
-    if (Object.keys(values).length > 0) {
-        result["values"] = values;
-    }
-
-    return result;
-}
 
 export const CmsAdvancedSearch = observer(() => {
     const presenter = useContentEntriesPresenter();
@@ -46,40 +17,19 @@ export const CmsAdvancedSearch = observer(() => {
 
     useEffect(() => {
         advancedSearch.loadAuthors();
+        return () => advancedSearch.clearFilter();
     }, [advancedSearch]);
 
-    const model = presenter.vm.model;
-    const authors = advancedSearch.vm.authors;
-    const fields = useMemo(() => FieldsMapper.toRaw(model, authors), [model, authors]);
-    const repository = useFilterRepository(`cms:${model.modelId}`);
-
-    // The list filters also hold keys set by other controls, such as `folderId`. Only the keys
-    // this search set are cleared when a filter is replaced or removed.
-    const appliedKeys = useRef<string[]>([]);
+    const repository = useFilterRepository(`cms:${presenter.vm.model.modelId}`);
 
     const onApplyFilter = useCallback(
-        (data: FilterDTO | null) => {
-            const where =
-                data && Object.keys(data).length
-                    ? wrapUserFields(GraphQLInputMapper.toGraphQL(data))
-                    : {};
-
-            for (const key of appliedKeys.current) {
-                if (!(key in where)) {
-                    presenter.list.actions.filter.clear(key);
-                }
-            }
-            for (const [key, value] of Object.entries(where)) {
-                presenter.list.actions.filter.set(key, value);
-            }
-            appliedKeys.current = Object.keys(where);
-        },
-        [presenter]
+        (data: FilterDTO | null) => advancedSearch.applyFilter(data),
+        [advancedSearch]
     );
 
     return (
         <AdvancedSearch
-            fields={fields}
+            fields={advancedSearch.vm.fields}
             fieldRenderers={browser.advancedSearch.fieldRenderers}
             repository={repository}
             onApplyFilter={onApplyFilter}
