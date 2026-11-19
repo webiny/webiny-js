@@ -2,12 +2,15 @@ import type { NormalJob } from "github-actions-wac";
 import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
-import { ACTION, AWS_REGION } from "../utils/index.js";
+import { ACTION } from "../utils/index.js";
+import { AWS_REGION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
-import { DIR_TEST_PROJECT, PATH_TEST_PROJECT } from "./constants.js";
+import { DIR_TEST_PROJECT } from "./constants.js";
+import { PATH_TEST_PROJECT } from "./constants.js";
 import { createReportStatusJob } from "./reportStatus.js";
 import { createStatusRowStep } from "./statusRowStep.js";
-import { createInstallationTestSteps, createPlaywrightSetupSteps } from "./installationTest.js";
+import { createInstallationTestSteps } from "./installationTest.js";
+import { createPlaywrightSetupSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import { createRestoreVerdaccioSteps } from "./verdaccio.js";
 import type { PrFeature } from "./prFeature.js";
@@ -142,11 +145,31 @@ export const createAwsJobs = (
         deployJobNeeds.push(apiRoute.needs);
     }
 
+    // Writes the admin URL into the status comment.
+    const statusRowSteps: JobStep[] = [];
+    const deployPermissions: Record<string, string> = {};
+    if (report) {
+        deployPermissions["pull-requests"] = "write";
+        statusRowSteps.push(
+            createStatusRowStep(
+                {
+                    label: dbDisplayName,
+                    urlExpression: "$ADMIN_URL",
+                    env: { ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}` }
+                },
+                {
+                    name: "Update PR comment with admin URL",
+                    condition: "success()",
+                    status: "✅ Ready"
+                }
+            )
+        );
+    }
+
     const deployJob: NormalJob = createJob({
         needs: deployJobNeeds,
         name: `E2E - ${dbDisplayName} - Deploy`,
-        // Writes the admin URL into the status comment.
-        ...(report ? { permissions: { "pull-requests": "write" } } : {}),
+        permissions: deployPermissions,
         outputs: {
             "admin-url": "${{ steps.admin-url.outputs.admin-url }}",
             "api-url": "${{ steps.api-url.outputs.api-url }}"
@@ -236,22 +259,7 @@ export const createAwsJobs = (
                 "working-directory": DIR_TEST_PROJECT,
                 run: `echo "api-url=$(yarn webiny output api --env dev --json 2>/dev/null | jq -r '.apiUrl // empty')" >> $GITHUB_OUTPUT`
             },
-            ...(report
-                ? [
-                      createStatusRowStep(
-                          {
-                              label: dbDisplayName,
-                              urlExpression: "$ADMIN_URL",
-                              env: { ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}` }
-                          },
-                          {
-                              name: "Update PR comment with admin URL",
-                              condition: "success()",
-                              status: "✅ Ready"
-                          }
-                      )
-                  ]
-                : []),
+            ...statusRowSteps,
             ...createInstallationTestSteps({
                 workingDirectory,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",

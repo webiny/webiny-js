@@ -758,6 +758,10 @@ jobs:
     needs:
       - e2eTests-publish
     name: E2E - DDB - Deploy
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
     outputs:
       admin-url: ${{ steps.admin-url.outputs.admin-url }}
       api-url: ${{ steps.api-url.outputs.api-url }}
@@ -930,10 +934,6 @@ jobs:
           include-hidden-files: true
           path: v6/e2e/.e2e
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
   e2eTests-aws-ddb:
     needs:
       - e2eTests-aws-ddb-deploy
@@ -1028,6 +1028,10 @@ jobs:
     needs:
       - e2eTests-publish
     name: E2E - DDB+OS - Deploy
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
     outputs:
       admin-url: ${{ steps.admin-url.outputs.admin-url }}
       api-url: ${{ steps.api-url.outputs.api-url }}
@@ -1221,10 +1225,6 @@ jobs:
           include-hidden-files: true
           path: v6/e2e/.e2e
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
   e2eTests-aws-ddb-os:
     needs:
       - e2eTests-aws-ddb-os-deploy
