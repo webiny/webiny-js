@@ -368,7 +368,8 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         const tools = { ...serverTools, ...clientTools };
         /*
          * Client tools need no approval: they change what is on the user's screen, in front of them,
-         * where undo takes it back, and nothing is stored until the user saves.
+         * where undo takes it back. What they change is a draft, which the editor saves as it changes
+         * and nobody sees until it is published.
          */
         const readOnlyNames = new Set([
             ...this.declarations.filter(isReadOnlyTool).map(declaration => declaration.name),

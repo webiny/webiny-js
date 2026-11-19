@@ -148,8 +148,8 @@ const notPlaced = (component: string, slot: string, parentId: string, added: num
 
 /**
  * The page editor's tools for the assistant. They run in the browser, against the page open in the
- * editor: a change shows on the canvas at once, undo takes it back, and nothing is stored until the
- * user saves.
+ * editor: a change shows on the canvas at once, the editor saves it to the page's draft as it does
+ * a change made by hand, and undo takes it back.
  */
 export const createPageEditorTools = (access: PageEditorAccess): AssistantClientTools.Tool[] => {
     const assertComponent = (name: string) => {
@@ -227,7 +227,7 @@ export const createPageEditorTools = (access: PageEditorAccess): AssistantClient
         {
             name: "addPageElements",
             description:
-                "Adds elements to the page open in the editor, in order. Nested elements go in slot inputs as CreateElement actions, so a whole section is one element. The change shows on the canvas at once and is not saved until the user saves the page.",
+                "Adds elements to the page open in the editor, in order. Nested elements go in slot inputs as CreateElement actions, so a whole section is one element. The change shows on the canvas at once and the editor saves it to the page's draft.",
             inputSchema: {
                 type: "object",
                 properties: {

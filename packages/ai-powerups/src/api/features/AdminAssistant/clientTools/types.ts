@@ -1,7 +1,7 @@
 /**
  * A tool the admin screen the user is on runs itself, in the browser. The page editor offers
- * "add these elements to the page": the page lives in the editor until the user saves it, so no
- * server tool can change it.
+ * "add these elements to the page": the editor holds the page and saves its draft on every change,
+ * so a server tool's change would not show in the open editor and its next save would overwrite it.
  *
  * Declared by the screen with each request. The server offers it to the model with no `execute`, so
  * a call to it ends the run the same way an approval does, and the browser's result resumes it.

@@ -4,7 +4,7 @@ import { pageOutline } from "./pageOutline.js";
 import { outlineLines } from "./outlineLines.js";
 
 const TOOLS_HINT =
-    "Change this page with the page editor tools (addPageElements and the rest). Call listPageComponents before the first change. Changes show on the canvas and are saved when the user saves the page.";
+    "Change this page with the page editor tools (addPageElements and the rest). Call listPageComponents before the first change. Changes show on the canvas, and the editor saves them to the page's draft as they are made: there is no save step, so don't ask the user to save. Publishing is separate.";
 
 const readString = (properties: Record<string, unknown>, key: string, fallback: string) => {
     const value = properties[key];
