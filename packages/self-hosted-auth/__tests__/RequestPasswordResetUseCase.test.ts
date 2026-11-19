@@ -7,7 +7,7 @@ import { Result } from "@webiny/feature/api";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
-import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
+import { MailerService } from "@webiny/api-mailer/domain/MailerService/abstractions.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
 import { RequestPasswordResetFeature } from "~/api/features/RequestPasswordReset/index.js";
 import { RequestPasswordResetUseCase } from "~/api/features/RequestPasswordReset/index.js";
@@ -25,7 +25,7 @@ const setup = (options: SetupOptions = {}) => {
     const container = new Container();
 
     const codes = createInMemoryPasswordResetCodes();
-    const send = vi.fn(async () => true);
+    const send = vi.fn(async () => Result.ok({ result: null, error: null }));
     const logError = vi.fn();
     const trigger = vi.fn(async (): Promise<Result<unknown, any>> => {
         if (options.triggerFails) {
@@ -38,10 +38,11 @@ const setup = (options: SetupOptions = {}) => {
     codes.register(container);
     PasswordResetCodesRepositoryFeature.register(container);
 
-    container.registerInstance(PasswordResetMailer, {
+    const mailerService = {
         isConfigured: async () => options.mailerConfigured ?? true,
-        send
-    });
+        sendMail: send
+    } as unknown as MailerService.Interface;
+    container.registerInstance(MailerService, mailerService);
 
     const taskService = { trigger } as unknown as TaskService.Interface;
     container.registerInstance(TaskService, taskService);
