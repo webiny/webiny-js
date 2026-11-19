@@ -1,3 +1,9 @@
+const GRAPHQL_NAME = /^[_A-Za-z][_0-9A-Za-z]*$/;
+
+const isValidFieldName = (name: string): boolean => {
+    return GRAPHQL_NAME.test(name);
+};
+
 /**
  * Helper to build GraphQL fields selection from fields array.
  * Supports both top-level fields (e.g., "createdOn", "id") and values fields (e.g., "values.author.name").
@@ -33,19 +39,26 @@ export const buildFieldsSelection = (fields?: string[]): string => {
         [key: string]: FieldNode | null;
     }
 
-    const fieldTree: FieldNode = {};
+    // Security: the tree has no prototype, so caller-supplied keys can never reach Object.prototype.
+    const fieldTree: FieldNode = Object.create(null);
 
     fields.forEach(field => {
         const parts = field.split(".");
+        // Security: each part is inserted into a GraphQL query, so it must be a plain GraphQL name.
+        for (const part of parts) {
+            if (!isValidFieldName(part)) {
+                throw new Error(`Invalid field "${field}".`);
+            }
+        }
         let current = fieldTree;
 
         parts.forEach((part, index) => {
             if (current[part] === undefined) {
                 // Leaf node (null) or new branch (empty object)
-                current[part] = index === parts.length - 1 ? null : {};
+                current[part] = index === parts.length - 1 ? null : Object.create(null);
             } else if (current[part] === null && index < parts.length - 1) {
                 // Convert leaf to branch if we need to traverse deeper
-                current[part] = {};
+                current[part] = Object.create(null);
             }
             if (current[part] !== null) {
                 current = current[part] as FieldNode;

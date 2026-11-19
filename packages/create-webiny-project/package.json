@@ -28,7 +28,7 @@
     "ora": "10.0.0",
     "os": "0.1.2",
     "rimraf": "^6.1.4",
-    "type-fest": "^5.10.0",
+    "type-fest": "^6.0.0",
     "uuid": "^14.0.3",
     "validate-npm-package-name": "^8.0.0",
     "write-json-file": "^7.0.0",

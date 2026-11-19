@@ -62,6 +62,11 @@ class CognitoIdentityProviderImpl implements OidcIdentityProvider.Interface {
     }
 
     async verifyTokenClaims(token: OidcIdentityProvider.JwtPayload): Promise<void> {
+        // Security: only Cognito ID tokens identify a user; reject access tokens.
+        if (token.token_use !== "id") {
+            throw new Error(`Invalid token: "token_use" must be "id".`);
+        }
+
         if (this.config?.verifyTokenClaims) {
             await this.config.verifyTokenClaims(token);
         }
