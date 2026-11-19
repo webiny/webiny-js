@@ -247,21 +247,22 @@ const CommandPaletteBase = () => {
     }
 
     /*
-     * 108px from the top, 64px under the header, and never centred: a centred palette jumps every time
-     * its results change height. The panel fits its body up to the window's height, and the body
-     * scrolls past that.
+     * At most 640px tall, and placed so that a palette that tall sits in the middle of the window, but
+     * never closer to the top than 108px, 64px under the header. The top depends on the window alone:
+     * a palette that recentred itself would jump every time its results change height. The body
+     * scrolls past the panel's height.
      */
     return (
         <div
             role="presentation"
             onClick={close}
-            className="fixed inset-0 z-overlay flex animate-in items-start justify-center bg-neutral-dark/50 px-md pt-[108px] fade-in duration-150"
+            className="fixed inset-0 z-overlay flex animate-in items-start justify-center bg-neutral-dark/50 px-md pt-[max(108px,calc((100vh-640px)/2))] fade-in duration-150"
         >
             <div
                 onClick={keepFocusInPalette}
                 onKeyDown={onKeyDown}
                 className={cn(
-                    "flex max-h-[calc(100vh-124px)] w-full max-w-[720px] animate-in flex-col overflow-hidden rounded-xl border-sm border-neutral-dimmed bg-neutral-base duration-150 zoom-in-95 slide-in-from-top-2",
+                    "flex max-h-[min(640px,calc(100vh-124px))] w-full max-w-[720px] animate-in flex-col overflow-hidden rounded-xl border-sm border-neutral-dimmed bg-neutral-base duration-150 zoom-in-95 slide-in-from-top-2",
                     PANEL_SHADOW
                 )}
             >
@@ -321,7 +322,7 @@ const CommandPaletteBase = () => {
                         <ScrollArea
                             className="min-h-0 flex-initial"
                             viewportClassName={cn(
-                                "max-h-[calc(100vh-240px)] [&>div]:!block",
+                                "max-h-[min(524px,calc(100vh-240px))] [&>div]:!block",
                                 appearance && !appearance.listBody ? "p-md" : "p-sm"
                             )}
                             viewportRef={scrollRef}
