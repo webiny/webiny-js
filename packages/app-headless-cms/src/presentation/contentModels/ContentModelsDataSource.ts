@@ -1,11 +1,10 @@
-import { SimpleDataSource } from "@webiny/app-admin/presentation/listPresenter/SimpleDataSource.js";
-import type { IDataSourceQuery } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import type { FetchResult } from "@webiny/app-admin/presentation/listPresenter/FolderAwareDataSource.js";
+import { LocalDataSource } from "@webiny/app-admin/presentation/listPresenter/LocalDataSource.js";
 import type { CmsModel } from "~/types.js";
 import type { IListModelsUseCase } from "~/features/model/listModels/abstractions.js";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
+import { isListedModel } from "./isListedModel.js";
 
-export class ContentModelsDataSource extends SimpleDataSource<CmsModel> {
+export class ContentModelsDataSource extends LocalDataSource<CmsModel> {
     constructor(
         private listModelsUseCase: IListModelsUseCase,
         private cache: IListCache<CmsModel>
@@ -13,15 +12,15 @@ export class ContentModelsDataSource extends SimpleDataSource<CmsModel> {
         super();
     }
 
-    get rows(): CmsModel[] {
-        return this.cache.getItems();
+    protected get items(): CmsModel[] {
+        return this.cache.getItems().filter(isListedModel);
     }
 
-    async fetch(_params: IDataSourceQuery): Promise<FetchResult<CmsModel>> {
-        const result = await this.listModelsUseCase.execute();
-        return {
-            data: result,
-            meta: { cursor: null, hasMoreItems: false, totalCount: result.length }
-        };
+    protected async load(): Promise<void> {
+        await this.listModelsUseCase.execute();
+    }
+
+    protected searchIn(model: CmsModel): Array<string | null | undefined> {
+        return [model.name];
     }
 }

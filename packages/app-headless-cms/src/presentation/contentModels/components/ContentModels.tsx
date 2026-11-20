@@ -31,6 +31,7 @@ const ContentModels = observer(() => {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     const onCreate = useCallback((): void => openNewContentModelDialog(true), []);

@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import type { AiChatsRepository } from "~/features/aiChats/abstractions.js";
+import type { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
 
 /**
  * A message of a saved chat. Opaque on purpose: the admin only reads them to show an opened chat,
@@ -39,6 +40,8 @@ export interface AdminAssistantRequest {
     prompt?: string;
     /** Approve or reject calls the server paused on. Needs the `chatId` of the paused run. */
     approvals?: AdminAssistantDecision[];
+    /** What the user had on screen when they asked. Sent with questions only. */
+    pageContext?: AssistantPageContext.Data;
 }
 
 /**

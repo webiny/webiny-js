@@ -88,13 +88,14 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
         const raw = eventCtx.event as IWebsocketsIncomingEvent;
         const { token, tenant, endpoint } = getEventValues(raw);
 
-        const identity = await this.authCtx.authenticate(token ?? "");
-        this.identityCtx.setIdentity(identity);
-
+        // The tenant first: an API key is looked up in the current tenant.
         const tenantResult = await this.getTenantById.execute(tenant);
         if (tenantResult.isOk()) {
             this.tenantCtx.setTenant(tenantResult.value);
         }
+
+        const identity = await this.authCtx.authenticate(token ?? "");
+        this.identityCtx.setIdentity(identity);
 
         const response = this.container.resolve(WebsocketsResponse);
         const runner = new WebsocketsRunner(ctx as Context, response);

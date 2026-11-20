@@ -4,6 +4,9 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
+import { ListPresenter as ListPresenterImpl } from "~/presentation/listPresenter/ListPresenter.js";
+import { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
+import { AssistantPageContext as AssistantPageContextImpl } from "~/features/assistantPageContext/AssistantPageContext.js";
 import type { IDataSource } from "~/presentation/listPresenter/abstractions.js";
 import { TrashBinBulkActionGateway } from "./abstractions.js";
 import { TrashBinDeleteGateway } from "./abstractions.js";
@@ -71,5 +74,62 @@ describe("TrashBinPresenter.deleteItem", () => {
 
         expect(result).toBe(false);
         expect(dataSource.rows.map(row => row.id)).toEqual(["a", "b"]);
+    });
+});
+
+describe("TrashBinPresenter assistant page context", () => {
+    const setupWithList = () => {
+        const container = new Container();
+        container.register(AssistantPageContextImpl).inSingletonScope();
+        container.register(ListPresenterImpl);
+        container.registerInstance(TrashBinListGateway, {
+            execute: vi.fn(async () => ({
+                data: [item("a"), item("b")],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 2 }
+            }))
+        });
+        container.registerInstance(TrashBinDeleteGateway, { execute: vi.fn() });
+        container.registerInstance(TrashBinRestoreGateway, { execute: vi.fn() });
+        container.registerInstance(TrashBinBulkActionGateway, { execute: vi.fn() });
+        container.register(TrashBinPresenter).inSingletonScope();
+
+        return {
+            presenter: container.resolve(Abstraction),
+            pageContext: container.resolve(AssistantPageContext)
+        };
+    };
+
+    it("tells the assistant whose trash is open and what is in it, until disposed", async () => {
+        const { presenter, pageContext } = setupWithList();
+
+        presenter.init({
+            nameColumnId: "title",
+            assistant: {
+                view: 'Deleted entries of the "Product" content model in Headless CMS',
+                details: { modelId: "product" }
+            }
+        });
+
+        await vi.waitFor(() => {
+            expect(pageContext.get()?.details["visibleRows"]).toEqual([
+                { id: "a", title: "Item a" },
+                { id: "b", title: "Item b" }
+            ]);
+        });
+        expect(pageContext.get()?.view).toBe(
+            'Deleted entries of the "Product" content model in Headless CMS'
+        );
+        expect(pageContext.get()?.details).toMatchObject({ modelId: "product", totalCount: 2 });
+
+        presenter.dispose();
+        expect(pageContext.get()).toBeNull();
+    });
+
+    it("tells the assistant nothing when the caller gives no description", () => {
+        const { presenter, pageContext } = setupWithList();
+
+        presenter.init({ nameColumnId: "title" });
+
+        expect(pageContext.get()).toBeNull();
     });
 });

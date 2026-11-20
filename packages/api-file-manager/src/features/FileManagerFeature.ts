@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { CreateFileFeature } from "~/features/file/CreateFile/feature.js";
+import { StoreFileFeature } from "~/features/file/StoreFile/feature.js";
 import { CreateFilesInBatchFeature } from "~/features/file/CreateFilesInBatch/feature.js";
 import { DeleteFileFeature } from "~/features/file/DeleteFile/feature.js";
 import { GetFileFeature } from "~/features/file/GetFile/feature.js";
@@ -19,6 +20,7 @@ export const FileManagerFeature = createFeature({
     name: "FileManager",
     register(container) {
         CreateFileFeature.register(container);
+        StoreFileFeature.register(container);
         CreateFilesInBatchFeature.register(container);
         UpdateFileFeature.register(container);
         DeleteFileFeature.register(container);

@@ -98,7 +98,7 @@ export class WebsocketsConnectionRegistry implements ConnectionRegistry.Interfac
 
     public async listViaTenant(tenant: string): Promise<ConnectionRegistry.Data[]> {
         const options: Partial<EntityQueryOptions> = {
-            beginsWith: `T#${tenant}`
+            eq: `T#${tenant}`
         };
 
         const items = await this.entity.queryAll({

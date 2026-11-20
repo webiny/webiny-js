@@ -12,6 +12,7 @@ import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
+import { FileContentsStorageFeature } from "~/features/FileContentsStorage/feature.js";
 import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js";
 import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
 import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
@@ -45,6 +46,7 @@ export const FileManagerStandaloneFeature = createFeature({
         ExtractMetadataFeature.register(container);
         GetFileContentsByIdFeature.register(container);
         GetFileContentsByKeyFeature.register(container);
+        FileContentsStorageFeature.register(container);
         GetUploadPayloadFeature.register(container);
         CreateMultiPartUploadFeature.register(container);
         CompleteMultiPartUploadFeature.register(container);

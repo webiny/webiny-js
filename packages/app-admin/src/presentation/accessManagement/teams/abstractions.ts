@@ -16,6 +16,8 @@ export interface ITeamsPresenter {
     readonly vm: ITeamsPresenterViewModel;
     readonly list: IListPresenter<Team>;
     init(): void;
+    /** Closes the open team and stops telling the assistant about the list. */
+    dispose(): void;
     selectTeam(id: string): Promise<void>;
     createNew(): void;
     deselect(): void;

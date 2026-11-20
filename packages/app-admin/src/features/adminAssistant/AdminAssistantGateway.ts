@@ -25,6 +25,9 @@ const toBody = (request: AdminAssistantRequest): Record<string, unknown> => {
     if (request.approvals?.length) {
         body["approvals"] = request.approvals;
     }
+    if (request.pageContext) {
+        body["pageContext"] = request.pageContext;
+    }
 
     return body;
 };

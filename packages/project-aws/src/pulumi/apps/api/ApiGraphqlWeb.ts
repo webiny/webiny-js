@@ -23,6 +23,11 @@ interface GraphqlWebParams {
      * function reaches them through an egress network connector.
      */
     vpc: GraphqlWebVpc | null;
+    /**
+     * Env for the web function only, on top of the `graphql` Lambda's (and over it, for a variable
+     * both have). The `graphql` Lambda and the functions that copy its env don't get it.
+     */
+    env?: Record<string, string>;
 }
 
 export type ApiGraphqlWeb = PulumiAppModule<typeof ApiGraphqlWeb>;
@@ -173,7 +178,10 @@ export const ApiGraphqlWeb = createAppModule({
                     // Default is 64. One environment has a fixed 2 GB, and building the GraphQL schema
                     // is memory heavy, so start lower.
                     maxConcurrencyPerEnvironment: 16,
-                    environmentVariables: getWebFunctionEnvVariables(graphqlEnvironment),
+                    environmentVariables: getWebFunctionEnvVariables(
+                        graphqlEnvironment,
+                        params.env
+                    ),
                     // Unset without a VPC: the function then reaches public endpoints directly.
                     egressNetworkConnectorArn,
                     telemetryConfig: {
@@ -312,16 +320,23 @@ function createNetworkConnector(app: PulumiApp, vpc: GraphqlWebVpc) {
  * The `graphql` Lambda's final environment, read from its output so that variables added later (by a
  * project's `ApiPulumi` handler, for example) reach the web function too. The web function rejects a
  * variable with an empty value, so those are left out; several usually are (OpenSearch, Okta).
+ * `webFunctionEnv` (the module's `env`) goes on top.
  */
-function getWebFunctionEnvVariables(graphqlEnvironment: aws.lambda.Function["environment"]) {
+function getWebFunctionEnvVariables(
+    graphqlEnvironment: aws.lambda.Function["environment"],
+    webFunctionEnv: Record<string, string> = {}
+) {
     return graphqlEnvironment.apply(environment => {
-        const graphqlVariables = environment?.variables ?? {};
-        const nodeOptions = [graphqlVariables.NODE_OPTIONS, "--max-old-space-size=1536"]
+        const overlaid: Record<string, string | undefined> = {
+            ...environment?.variables,
+            ...webFunctionEnv
+        };
+        const nodeOptions = [overlaid.NODE_OPTIONS, "--max-old-space-size=1536"]
             .filter(Boolean)
             .join(" ");
 
         const variables: Record<string, string | undefined> = {
-            ...graphqlVariables,
+            ...overlaid,
             AWS_LAMBDA_NODEJS_ENTRYPOINT: "index.mjs",
             NODE_OPTIONS: nodeOptions
         };

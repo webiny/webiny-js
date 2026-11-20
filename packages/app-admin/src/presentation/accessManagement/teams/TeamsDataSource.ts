@@ -1,11 +1,9 @@
-import { SimpleDataSource } from "~/presentation/listPresenter/SimpleDataSource.js";
-import type { IDataSourceQuery } from "~/presentation/listPresenter/abstractions.js";
-import type { FetchResult } from "~/presentation/listPresenter/FolderAwareDataSource.js";
+import { LocalDataSource } from "~/presentation/listPresenter/LocalDataSource.js";
 import type { Team } from "~/features/accessManagement/types.js";
 import type { IListTeamsUseCase } from "~/features/accessManagement/teams/listTeams/abstractions.js";
 import type { IListCache } from "~/features/listCache/index.js";
 
-export class TeamsDataSource extends SimpleDataSource<Team> {
+export class TeamsDataSource extends LocalDataSource<Team> {
     constructor(
         private listTeamsUseCase: IListTeamsUseCase,
         private cache: IListCache<Team>
@@ -13,15 +11,15 @@ export class TeamsDataSource extends SimpleDataSource<Team> {
         super();
     }
 
-    get rows(): Team[] {
+    protected get items(): Team[] {
         return this.cache.getItems();
     }
 
-    async fetch(_params: IDataSourceQuery): Promise<FetchResult<Team>> {
-        const result = await this.listTeamsUseCase.execute();
-        return {
-            data: result.data,
-            meta: { cursor: null, hasMoreItems: false, totalCount: result.data.length }
-        };
+    protected async load(): Promise<void> {
+        await this.listTeamsUseCase.execute();
+    }
+
+    protected searchIn(team: Team): Array<string | null | undefined> {
+        return [team.name, team.slug, team.description];
     }
 }

@@ -84,8 +84,17 @@ class WebhookListPresenterImpl implements IWebhookListPresenter {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 20
+            limit: 20,
+            itemLabel: { singular: "webhook", plural: "webhooks" },
+            assistant: {
+                view: () => "Webhooks",
+                rowTitle: webhook => webhook.name
+            }
         });
+    }
+
+    dispose(): void {
+        this.listPresenter.dispose();
     }
 }
 

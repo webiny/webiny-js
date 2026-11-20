@@ -5,20 +5,17 @@ import {
     TransportCreateError,
     TransportSendError
 } from "~/domain/MailerService/errors.js";
-import { MailTransport, MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
-import { GetSettingsRepository } from "../GetSettings/abstractions.js";
+import { MailTransport } from "~/domain/MailTransport/abstractions.js";
+import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
 import type { TransportSendData } from "~/types.js";
 
 class MailerServiceImpl implements Abstraction.Interface {
-    constructor(
-        private getSettingsRepository: GetSettingsRepository.Interface,
-        private transportFactories: MailTransportFactory.Interface[]
-    ) {}
+    constructor(private transportFactories: MailTransportFactory.Interface[]) {}
 
     async sendMail<T = any>(data: TransportSendData): Abstraction.Return<T> {
-        const { factory, transport } = await this.resolveTransport();
+        const transport = await this.createTransport();
 
-        if (!factory || !transport) {
+        if (!transport) {
             return Result.fail(new NoTransportAvailableError());
         }
 
@@ -35,33 +32,35 @@ class MailerServiceImpl implements Abstraction.Interface {
         }
     }
 
-    private async resolveTransport(): Promise<{
-        factory: MailTransportFactory.Interface | null;
-        transport: MailTransport.Interface | null;
-    }> {
+    async isConfigured(): Promise<boolean> {
+        const transport = await this.createTransport();
+
+        return transport !== null;
+    }
+
+    // The last registered factory that is configured wins, so a project's own transport takes over.
+    // Null when no factory is configured.
+    private async createTransport(): Promise<MailTransport.Interface | null> {
         const factories = [...this.transportFactories].reverse();
 
         for (const factory of factories) {
-            const result = await this.getSettingsRepository.get(factory.name);
-            const { settings } = result.value;
-
-            if (!factory.canUse(settings)) {
-                continue;
-            }
-
+            let transport: MailTransport.Interface | null;
             try {
-                const transport = await factory.createTransport(settings!);
-                return { factory, transport };
+                transport = await factory.createTransport();
             } catch (error) {
                 throw new TransportCreateError(error);
             }
+
+            if (transport) {
+                return transport;
+            }
         }
 
-        return { factory: null, transport: null };
+        return null;
     }
 }
 
 export const MailerService = Abstraction.createImplementation({
     implementation: MailerServiceImpl,
-    dependencies: [GetSettingsRepository, [MailTransportFactory, { multiple: true }]]
+    dependencies: [[MailTransportFactory, { multiple: true }]]
 });

@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
 import {
     SplitView,
@@ -41,6 +42,8 @@ import { Routes } from "../../routes.js";
 import type { ApiKey } from "~/features/accessManagement/types.js";
 import type { GenericRecord } from "@webiny/app/types.js";
 import { FormErrors } from "~/index.js";
+import { toSortOption } from "~/presentation/listPresenter/sortOption.js";
+import { fromSortOption } from "~/presentation/listPresenter/sortOption.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -48,11 +51,6 @@ const SORTERS = [
     { label: "Name A-Z", sorter: "name_ASC" },
     { label: "Name Z-A", sorter: "name_DESC" }
 ];
-
-const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
-    const [field, order] = data.split("_");
-    return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
-};
 
 const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }) => {
     const { presenter } = useFeature(ApiKeysPresenterFeature);
@@ -62,32 +60,12 @@ const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(SORTERS[0].sorter);
-
-    const apiKeys = presenter.list.vm.rows;
-    const loading = presenter.list.vm.pagination.loading;
-
-    const filteredData = useMemo(() => {
-        if (filter === "") {
-            return apiKeys;
-        }
-        const lc = filter.toLowerCase();
-        return apiKeys.filter(
-            (k: ApiKey) =>
-                k.name.toLowerCase().includes(lc) ||
-                k.slug.toLowerCase().includes(lc) ||
-                (k.description && k.description.toLowerCase().includes(lc))
-        );
-    }, [apiKeys, filter]);
-
-    const sortedData = useMemo(() => {
-        if (!sort) {
-            return filteredData;
-        }
-        const [key, order] = deserializeSorters(sort);
-        return orderBy(filteredData, [key], [order]);
-    }, [filteredData, sort]);
+    const { list } = presenter;
+    const sort = toSortOption(list.vm.sort);
+    const setSort = (value: string) => {
+        const option = fromSortOption(value);
+        list.actions.sort.set(option.field, option.direction);
+    };
 
     const deleteItem = useCallback(
         (item: ApiKey) => {
@@ -119,12 +97,12 @@ const ApiKeysDataList = observer(({ activeId }: { activeId: string | undefined }
                     onClick={() => goToRoute(Routes.ApiKeys.List, { new: true })}
                 />
             }
-            data={sortedData}
-            loading={loading}
+            data={list.vm.rows}
+            loading={list.vm.pagination.loading}
             search={
                 <SearchUI
-                    value={filter}
-                    onChange={setFilter}
+                    value={list.vm.search}
+                    onChange={list.actions.search.set}
                     inputPlaceholder={"Search API keys..."}
                 />
             }
@@ -279,6 +257,7 @@ export const ApiKeysView = observer(() => {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     return (

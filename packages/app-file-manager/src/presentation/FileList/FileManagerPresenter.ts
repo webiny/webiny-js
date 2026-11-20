@@ -6,6 +6,8 @@ import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abs
 import { sortFolders } from "@webiny/app-aco";
 import { LocalStorage } from "@webiny/app/features/localStorage";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
+import { describeFoldersForAssistant } from "@webiny/app-aco/presentation/folderTree/describeFoldersForAssistant.js";
 import {
     FileManagerPresenter as Abstraction,
     type IFileManagerPresenter,
@@ -48,7 +50,8 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         private listFilesUseCase: ListFilesUseCase.Interface,
         private filesListCache: FilesListCache.Interface,
         private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface,
-        private fileModelProvider: FileModelProvider.Interface
+        private fileModelProvider: FileModelProvider.Interface,
+        private foldersContext: FoldersContext.Interface
     ) {
         makeAutoObservable<
             FileManagerPresenterImpl,
@@ -215,7 +218,13 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
             initialFilters,
-            limit: 50
+            limit: 50,
+            itemLabel: { singular: "file", plural: "files" },
+            assistant: {
+                view: () => "Files in File Manager",
+                rowTitle: file => file.name,
+                details: () => this.describeForAssistant()
+            }
         });
 
         if (initialFolderId !== "root") {
@@ -253,6 +262,26 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+        this.listPresenter.dispose();
+    }
+
+    /** The folders, and the file whose details are open. */
+    private describeForAssistant(): Record<string, unknown> {
+        const { currentFolderId, currentFolderTitle } = this.folderTreePresenter.vm;
+        const childFolders = this.getSortedChildFolders();
+        const details = describeFoldersForAssistant({
+            type: this.foldersContext.type,
+            currentFolderId,
+            currentFolderTitle,
+            childFolders
+        });
+
+        const openFile = this._fileDetails?.vm.file;
+        if (openFile) {
+            details["openFileId"] = openFile.id;
+        }
+
+        return details;
     }
 
     private isLoading(): boolean {
@@ -323,6 +352,7 @@ export const FileManagerPresenter = Abstraction.createImplementation({
         ListFilesUseCase,
         FilesListCache,
         GetDescendantFoldersUseCase,
-        FileModelProvider
+        FileModelProvider,
+        FoldersContext
     ]
 });

@@ -1,11 +1,9 @@
-import { SimpleDataSource } from "~/presentation/listPresenter/SimpleDataSource.js";
-import type { IDataSourceQuery } from "~/presentation/listPresenter/abstractions.js";
-import type { FetchResult } from "~/presentation/listPresenter/FolderAwareDataSource.js";
+import { LocalDataSource } from "~/presentation/listPresenter/LocalDataSource.js";
 import type { Role } from "~/features/accessManagement/types.js";
 import type { IListRolesUseCase } from "~/features/accessManagement/roles/listRoles/abstractions.js";
 import type { IListCache } from "~/features/listCache/index.js";
 
-export class RolesDataSource extends SimpleDataSource<Role> {
+export class RolesDataSource extends LocalDataSource<Role> {
     constructor(
         private listRolesUseCase: IListRolesUseCase,
         private cache: IListCache<Role>
@@ -13,15 +11,15 @@ export class RolesDataSource extends SimpleDataSource<Role> {
         super();
     }
 
-    get rows(): Role[] {
+    protected get items(): Role[] {
         return this.cache.getItems();
     }
 
-    async fetch(_params: IDataSourceQuery): Promise<FetchResult<Role>> {
-        const result = await this.listRolesUseCase.execute();
-        return {
-            data: result.data,
-            meta: { cursor: null, hasMoreItems: false, totalCount: result.data.length }
-        };
+    protected async load(): Promise<void> {
+        await this.listRolesUseCase.execute();
+    }
+
+    protected searchIn(role: Role): Array<string | null | undefined> {
+        return [role.name, role.slug, role.description];
     }
 }

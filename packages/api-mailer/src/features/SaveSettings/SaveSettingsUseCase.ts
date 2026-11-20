@@ -16,6 +16,7 @@ import {
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CodeMailerSettings } from "~/domain/CodeMailerSettings/abstractions.js";
 import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
+import { MAILER_SETTINGS_PERMISSION } from "~/constants.js";
 
 class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
     constructor(
@@ -27,7 +28,7 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
     ) {}
 
     async execute(input: SaveSettingsInput): SaveSettingsUseCase.Return {
-        const permission = await this.identityContext.getPermission("mailer.settings");
+        const permission = await this.identityContext.getPermission(MAILER_SETTINGS_PERMISSION);
 
         if (!permission) {
             return Result.fail(new SettingsNotAuthorized());

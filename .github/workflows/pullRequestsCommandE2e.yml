@@ -427,8 +427,7 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOps":"ddb"}'
+          --template-options '{"region":"eu-central-1","storageOps":"ddb"}'
       - name: Configure the bug reporter in webiny.config.tsx
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -571,8 +570,8 @@ jobs:
     runs-on: ubuntu-latest
   e2e-aws-ddb:
     needs:
-      - baseBranch
       - e2e-aws-ddb-deploy
+      - baseBranch
     name: E2E - DDB / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -839,8 +838,7 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOps":"ddb-os"}'
+          --template-options '{"region":"eu-central-1","storageOps":"ddb-os"}'
       - name: Configure OpenSearch domain name and index prefix in webiny.config.tsx
         working-directory: new-webiny-project
         run: >-
@@ -999,8 +997,8 @@ jobs:
     runs-on: ubuntu-latest
   e2e-aws-ddb-os:
     needs:
-      - baseBranch
       - e2e-aws-ddb-os-deploy
+      - baseBranch
     name: E2E - DDB+OS / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false

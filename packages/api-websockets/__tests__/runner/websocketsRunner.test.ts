@@ -4,6 +4,7 @@ import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
 import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("websockets runner", () => {
     it("should run and fail the route action - missing route", async () => {
@@ -257,6 +258,69 @@ describe("websockets runner", () => {
         const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
+        });
+    });
+
+    it("should not register a connection without a signed-in identity - connect route", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+        const registry = context.container.resolve(ConnectionRegistry);
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                connectionId: "anonymousConnectionId",
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+            },
+            body: JSON.stringify({
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 401,
+            error: {
+                message: "Missing identity."
+            }
+        });
+
+        const connections = await registry.listViaTenant("root");
+        expect(connections).toHaveLength(0);
+    });
+
+    it("should return error status without a signed-in identity - default route", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                route: "default"
+            },
+            body: JSON.stringify({
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            error: {
+                message: "Missing identity."
+            }
         });
     });
 });

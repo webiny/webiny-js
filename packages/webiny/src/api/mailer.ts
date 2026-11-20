@@ -14,4 +14,8 @@ export {
     MailerSettingsAfterSaveEventHandler,
     MailerSettingsBeforeSaveEventHandler
 } from "@webiny/api-mailer/features/SaveSettings/index.js";
-export { MailerService } from "@webiny/api-mailer/domain/MailerService/abstractions.js";
+export { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
+export {
+    MailTransport,
+    MailTransportFactory
+} from "@webiny/api-mailer/domain/MailTransport/abstractions.js";

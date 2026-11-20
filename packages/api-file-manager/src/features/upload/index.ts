@@ -7,10 +7,13 @@ export type { CreateMultiPartUploadResult } from "./types.js";
 export { checkPermissions } from "./utils/checkPermissions.js";
 export { FileKey } from "./utils/FileKey.js";
 export { FileExtension } from "./utils/FileExtension.js";
-export { mimeTypes } from "./utils/mimeTypes.js";
+export { mimeTypes } from "~/domain/file/mimeTypes.js";
 export { FileNormalizer } from "./utils/FileNormalizer.js";
 export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { FileUploadModifierPlugin } from "./utils/FileUploadModifier.js";
+export { FileUploadModifier } from "./utils/FileUploadModifier.js";
+export type { FileModifier } from "./utils/FileUploadModifier.js";
+export type { FileToSign } from "./utils/FileNormalizer.js";
 export { createModifierFromPlugins } from "./utils/FileUploadModifier.js";
 export { createFileNormalizerFromContext } from "./utils/createFileNormalizerFromContext.js";
 

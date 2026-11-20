@@ -3,7 +3,9 @@ import * as aws from "@pulumi/aws";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import type { PostgresOutputs } from "~/pulumi/apps/common/CoreOutput.js";
+import type { PostgresExtensionConfig } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
 import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem.js";
+import { WEB_FUNCTION_RDS_CA_CERTS } from "~/extensions/Postgres/rdsCaBundle.js";
 import { ApiGraphql } from "./ApiGraphql.js";
 
 /* The event `@webiny/api-event-handler-aws-pg` answers with the schema setup. */
@@ -83,6 +85,27 @@ export const getPostgresLambdaEnvFromCore = (
     ) as Record<keyof PostgresLambdaEnv, pulumi.Output<string>>;
 };
 
+/**
+ * Env only the API's web function gets, on top of the `graphql` Lambda's (and over it), with
+ * `<Infra.Postgres />`. Nothing without Postgres.
+ *
+ * - `WEBINY_PG_POOL_MAX`: its pool size. One web function environment serves several requests at
+ *   once, so it needs more than the 1 connection the plain Lambda functions keep.
+ * - `NODE_EXTRA_CA_CERTS`: the RDS CA bundle shipped in its code. Its runtime has no
+ *   `/var/runtime/ca-cert.pem`, the bundle the plain Lambda functions verify the database with.
+ */
+export const getPostgresWebFunctionEnv = (
+    postgres: Pick<PostgresExtensionConfig, "poolSize"> | undefined
+): Record<string, string> => {
+    if (!postgres) {
+        return {};
+    }
+    return {
+        WEBINY_PG_POOL_MAX: String(postgres.poolSize),
+        NODE_EXTRA_CA_CERTS: WEB_FUNCTION_RDS_CA_CERTS
+    };
+};
+
 /* Lets the API functions read the database password, and nothing else, from the core's secret. */
 export const createPostgresSecretPolicy = (secretArn: string): aws.iam.PolicyDocument => {
     return {
@@ -105,6 +128,31 @@ export const createSchemaSetupEvent = (serviceManifests: ServiceManifest[]) => {
             serviceManifests: serviceManifests.map(({ name, manifest }) => ({ name, manifest }))
         }
     };
+};
+
+/**
+ * The manifests the api deploy stores: the core's (from the core stack output; the core deploys
+ * before this function exists), then the api app's own. On a repeated name the api's own wins.
+ *
+ * Throws when the core stack has no service manifests: a core deployed before the core put them
+ * in its output. Its `core` manifest would never reach the database.
+ */
+export const getSchemaSetupServiceManifests = (
+    coreManifests: ServiceManifest[] | undefined,
+    apiManifests: ServiceManifest[]
+): ServiceManifest[] => {
+    if (!coreManifests) {
+        throw new Error(
+            "The core app's stack output has no service manifests, which the api deploy stores " +
+                "in the database. Deploy the core app again: `yarn webiny deploy core`."
+        );
+    }
+
+    const byName = new Map<string, ServiceManifest>();
+    for (const manifest of [...coreManifests, ...apiManifests]) {
+        byName.set(manifest.name, manifest);
+    }
+    return [...byName.values()];
 };
 
 export interface ApiSchemaSetupParams {

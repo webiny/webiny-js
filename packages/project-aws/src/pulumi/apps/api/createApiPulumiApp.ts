@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import pick from "lodash/pick.js";
 import { createPulumiApp, isResourceOfType, type PulumiApp } from "@webiny/pulumi";
 import {
     ApiBackgroundTask,
@@ -22,7 +23,10 @@ import {
 import { getEnvVariableAwsRegion } from "~/pulumi/env/awsRegion.js";
 // import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { applyAwsResourceTags, getAwsAccountId } from "~/pulumi/apps/awsUtils.js";
-import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
+import {
+    addServiceManifestTableItems,
+    type WithServiceManifest
+} from "~/pulumi/utils/withServiceManifest.js";
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
@@ -30,8 +34,15 @@ import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { isWebFunctionEnabled } from "~/pulumi/apps/extensions/isWebFunctionEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
-import { ApiSchemaSetup, getPostgresLambdaEnvFromCore } from "./ApiSchemaSetup.js";
+import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgres.js";
+import {
+    ApiSchemaSetup,
+    getPostgresLambdaEnvFromCore,
+    getPostgresWebFunctionEnv,
+    getSchemaSetupServiceManifests
+} from "./ApiSchemaSetup.js";
 import { createApiServiceManifests } from "./apiServiceManifests.js";
+import { addDynamoDbOutputs, getDynamoDbLambdaEnv } from "./apiDynamoDb.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import {
     ApiPulumi,
@@ -55,7 +66,8 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
-            const usesPostgres = Boolean(getPostgresConfigFromExtension(projectConfig));
+            const postgresConfig = getPostgresConfigFromExtension(projectConfig);
+            const usesPostgres = Boolean(postgresConfig);
 
             let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
@@ -186,12 +198,12 @@ export const createApiPulumiApp = () => {
 
             // Shared by the buffered `graphql` function and its response-streaming twin: both run the
             // same code bundle, so they must see the same environment.
+            const dynamoDbEnv = getDynamoDbLambdaEnv(core, usesPostgres);
             const graphqlEnv = {
                 COGNITO_REGION: getEnvVariableAwsRegion(),
                 COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                DB_TABLE: core.primaryDynamodbTableName,
-                DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+                ...dynamoDbEnv,
                 OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
                 // Not required. Useful for testing purposes / ephemeral environments.
@@ -241,7 +253,9 @@ export const createApiPulumiApp = () => {
 
                 graphqlWeb = app.addModule(ApiGraphqlWeb, {
                     namePrefix: pulumiResourceNamePrefix ?? "",
-                    vpc: graphqlWebVpc
+                    vpc: graphqlWebVpc,
+                    // With `<Infra.Postgres />`, a bigger pool than the plain Lambdas' 1.
+                    env: getPostgresWebFunctionEnv(postgresConfig)
                 });
                 app.addOutputs({
                     graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
@@ -255,10 +269,7 @@ export const createApiPulumiApp = () => {
             const websocket = app.addModule(ApiWebsocket);
 
             const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName
-                },
+                env: pick(dynamoDbEnv, ["DB_TABLE", "DB_TABLE_AUDIT_LOGS"]),
                 functionUrl: webFunctionEnabled
             });
 
@@ -272,13 +283,17 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            // With `<Infra.Postgres />`, every deploy sets the database up, and stores the same
-            // service manifests the DynamoDB table gets: the `api` and `scheduler` ones (see below)
-            // and any an extension adds with `addServiceManifest`.
+            // With `<Infra.Postgres />`, every deploy sets the database up and stores the service
+            // manifests: the core's (from its stack output), then the api's own: `api` and
+            // `scheduler` (see below) and any an extension adds with `addServiceManifest`.
             const schemaSetup = usesPostgres
                 ? app.addModule(ApiSchemaSetup, {
                       postgres: core,
-                      serviceManifests: app.getServiceManifests()
+                      serviceManifests: pulumi
+                          .all([core.serviceManifests, app.getServiceManifests()])
+                          .apply(([coreManifests, apiManifests]) =>
+                              getSchemaSetupServiceManifests(coreManifests, apiManifests)
+                          )
                   })
                 : null;
 
@@ -300,8 +315,6 @@ export const createApiPulumiApp = () => {
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
-                dynamoDbTable: core.primaryDynamodbTableName,
-                auditLogsDynamoDbTable: core.auditLogsDynamodbTableName,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
                 graphqlLambdaRoleName: graphql.role.output.name,
@@ -314,6 +327,9 @@ export const createApiPulumiApp = () => {
                 websocketApiUrl: websocket.websocketApiUrl,
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
+
+            // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+            addDynamoDbOutputs(app, core, usesPostgres);
 
             if (schemaSetup) {
                 app.addOutputs({
@@ -367,7 +383,13 @@ export const createApiPulumiApp = () => {
         }
     });
 
-    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp), async manifests => {
+        // With Postgres, the schema-setup invocation stores them (see `ApiSchemaSetup` above).
+        if (await projectUsesPostgres()) {
+            return;
+        }
+        addServiceManifestTableItems(baseApp, manifests);
+    });
 
     app.addHandler(() => {
         for (const manifest of createApiServiceManifests(baseApp.resources)) {

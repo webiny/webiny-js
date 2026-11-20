@@ -1,4 +1,5 @@
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
+import { NoTransportAvailableError } from "@webiny/api-mailer/domain/MailerService/errors.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { MAIL_BCC_CHUNK_SIZE } from "~/features/notifications/shared/constants.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
@@ -58,6 +59,11 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
             try {
                 // oxlint-disable-next-line no-await-in-loop -- one mail per BCC chunk.
                 const result = await this.sendMail.execute({ bcc, subject, text, html });
+                // An installation without mail settings is not an error: nothing is logged, and
+                // the other chunks would find no transport either.
+                if (result.isFail() && result.error instanceof NoTransportAvailableError) {
+                    return;
+                }
                 if (result.isFail()) {
                     this.logger.error(
                         {
