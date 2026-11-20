@@ -4,6 +4,7 @@ import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/in
 import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
+import { LinkUserUseCase } from "~/api/features/LinkUser/index.js";
 
 interface UserInstallationData {
     firstName: string;
@@ -21,6 +22,7 @@ class UsersInstallerImpl implements AppInstaller.Interface<UserInstallationData>
     constructor(
         private getRole: GetRoleUseCase.Interface,
         private createUserUseCase: CreateUserUseCase.Interface,
+        private linkUserUseCase: LinkUserUseCase.Interface,
         private deleteUserUseCase: DeleteUserUseCase.Interface
     ) {}
 
@@ -42,11 +44,27 @@ class UsersInstallerImpl implements AppInstaller.Interface<UserInstallationData>
         };
 
         const createResult = await this.createUserUseCase.execute(userWithDisplayName);
-        if (createResult.isFail()) {
+        if (createResult.isOk()) {
+            this.createdUser = createResult.value;
+            return;
+        }
+
+        if (createResult.error.code !== "Cognito/Account/ExistsInOtherTenant") {
             throw new Error(`Failed to create admin user: ${createResult.error.message}`);
         }
 
-        this.createdUser = createResult.value;
+        // Creating a tenant for someone who already has an account is deliberate, so their
+        // account is linked: they keep their name and password, and the given ones aren't used.
+        const linkResult = await this.linkUserUseCase.execute({
+            email: data.email,
+            roles: [role.id],
+            teams: []
+        });
+        if (linkResult.isFail()) {
+            throw new Error(`Failed to link admin user: ${linkResult.error.message}`);
+        }
+
+        this.createdUser = linkResult.value;
     }
 
     async uninstall(): Promise<void> {
@@ -58,5 +76,5 @@ class UsersInstallerImpl implements AppInstaller.Interface<UserInstallationData>
 
 export const UserInstaller = AppInstaller.createImplementation({
     implementation: UsersInstallerImpl,
-    dependencies: [GetRoleUseCase, CreateUserUseCase, DeleteUserUseCase]
+    dependencies: [GetRoleUseCase, CreateUserUseCase, LinkUserUseCase, DeleteUserUseCase]
 });

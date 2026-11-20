@@ -26,7 +26,10 @@ class FunctionUrlStreamIdentityLoaderDecoratorImpl
 
     async execute(ctx: EventContext<any>, next: NextFunction): Promise<void> {
         const headers = headersFromFunctionUrlEvent(ctx.event);
-        const authToken = extractAuthToken(headers);
+        const authToken = extractAuthToken(headers, {
+            method: ctx.event?.requestContext?.http?.method,
+            path: ctx.event?.rawPath
+        });
 
         this.rawAuthToken.set(authToken);
 

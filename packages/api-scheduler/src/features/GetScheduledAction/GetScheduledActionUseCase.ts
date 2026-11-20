@@ -14,14 +14,6 @@ import { SchedulerPermissionsResolver } from "~/features/permissions/abstraction
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
-/**
- * Retrieves a scheduled action by its ID
- *
- * Flow:
- * 1. Fetch schedule entry from CMS storage by ID
- * 2. Return null if not found
- * 3. Transform CMS entry to IScheduledAction format
- */
 class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
@@ -35,7 +27,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const { id, namespace } = params;
         const permissions = this.permissionsResolver.forNamespace(namespace);
-        if (!(await permissions.canRead())) {
+        if (!(await permissions.canRead({ namespace }))) {
             return Result.fail(new NotAuthorizedError());
         }
         const model = await this.modelProvider.get();
@@ -54,7 +46,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const ownRecordsOnly = await permissions.onlyOwnRecords();
+        const ownRecordsOnly = await permissions.onlyOwnRecords({ namespace });
         if (ownRecordsOnly) {
             if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
                 return Result.fail(new NotAuthorizedError());
@@ -62,9 +54,6 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const entry = entryResult.value;
-        /**
-         * Always check if the namespace is correct because entry is loaded directly, not via filtering.
-         */
         if (entry.values.namespace !== namespace) {
             return Result.fail(new ScheduledActionNotFoundError(scheduleId));
         }

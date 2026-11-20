@@ -1,3 +1,4 @@
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
@@ -98,15 +99,19 @@ describe("Create index task", () => {
             task: createIndexesTask
         });
 
-        await createIndexesTask.onBeforeTrigger!({
-            data: {
-                input: {
-                    matching: "-car"
+        // System tasks may only be triggered by full access in the root tenant; this test runs as
+        // trusted code, so trigger outside of authorization.
+        await context.container.resolve(IdentityContext).withoutAuthorization(() => {
+            return createIndexesTask.onBeforeTrigger!({
+                data: {
+                    input: {
+                        matching: "-car"
+                    },
+                    name: createIndexesTask.title,
+                    definitionId: createIndexesTask.id
                 },
-                name: createIndexesTask.title,
-                definitionId: createIndexesTask.id
-            },
-            definition: createIndexesTask
+                definition: createIndexesTask
+            });
         });
 
         const result = await runner({

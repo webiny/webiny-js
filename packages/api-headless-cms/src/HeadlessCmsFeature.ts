@@ -4,6 +4,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
 import { createCmsRoute } from "./createCmsRoute.js";
+import { checkEndpointAccess } from "~/graphql/checkEndpointAccess.js";
+import { ModelAccessGuard } from "~/features/contentModel/ModelAccessGuard/index.js";
 import { createRequestBody, processRequestBody } from "@webiny/api-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { Benchmark } from "@webiny/api/Benchmark.js";
@@ -226,7 +228,9 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
                             throw result.error;
                         }
                         return result.value;
-                    }
+                    },
+                    // Resolved on each check: guards may be registered after this is built.
+                    getModelAccessGuards: () => container.resolveAll(ModelAccessGuard)
                 });
             }
             return accessControlInstance;
@@ -239,19 +243,36 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema.
         container.registerInstance(CmsSchemaExecutor, {
             execute: async (schemaType: ApiEndpoint, body: any) => {
-                const bm = container.resolve(BenchmarkAbstraction);
-                const schema = await bm.measure("headlessCms.graphql.getSchema", () =>
-                    identityContext.withoutAuthorization(() =>
-                        getSchema({ context: cmsContext, getTenant, type: schemaType })
-                    )
-                );
-                const requestBody = await bm.measure(
-                    "headlessCms.graphql.createRequestBody",
-                    async () => createRequestBody(body)
-                );
-                return bm.measure("headlessCms.graphql.processRequestBody", () =>
-                    processRequestBody(requestBody, schema, cmsContext)
-                );
+                // The proxy (Query.cms / Mutation.cms) must respect the same endpoint permission
+                // as the /cms/{type} routes.
+                await checkEndpointAccess(container, schemaType);
+
+                /*
+                 * Security: the schema is built, cached per type and executed as the requested
+                 * endpoint. Without this, a proxy call from another endpoint would build (and cache)
+                 * the schema of `schemaType` with the parts of the endpoint the request came in on.
+                 */
+                const original = container.resolve(HeadlessCmsEndpointConfig);
+                container.registerInstance(HeadlessCmsEndpointConfig, { type: schemaType });
+                try {
+                    const bm = container.resolve(BenchmarkAbstraction);
+                    const schema = await bm.measure("headlessCms.graphql.getSchema", () =>
+                        identityContext.withoutAuthorization(() =>
+                            getSchema({ context: cmsContext, getTenant, type: schemaType })
+                        )
+                    );
+                    const requestBody = await bm.measure(
+                        "headlessCms.graphql.createRequestBody",
+                        async () => createRequestBody(body)
+                    );
+                    return await bm.measure("headlessCms.graphql.processRequestBody", () =>
+                        processRequestBody(requestBody, schema, cmsContext)
+                    );
+                } finally {
+                    if (original.type !== schemaType) {
+                        container.registerInstance(HeadlessCmsEndpointConfig, original);
+                    }
+                }
             }
         });
 

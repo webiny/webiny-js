@@ -67,6 +67,8 @@ tests/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
     privateFileDelivery.e2e.ts  tags: wcp, file-manager
     uploadAndDeliver.e2e.ts     tags: file-manager
+  scheduler/
+    schedulePublish.e2e.ts      tags: scheduler
   tenancy/
     tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager
   installation.e2e.ts           tags: installation

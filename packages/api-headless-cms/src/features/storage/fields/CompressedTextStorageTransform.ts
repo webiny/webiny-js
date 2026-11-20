@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 import { StorageTransform } from "../abstractions/StorageTransform.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { TextFieldTypes } from "~/features/modelBuilder/index.js";
@@ -17,7 +18,7 @@ class CompressedTextStorageTransformImpl implements StorageTransform.Interface<s
             return value;
         }
         try {
-            const parsed = JSON.parse(value);
+            const parsed = parseJson(value);
             return await this.compressionHandler.decompress<string>(parsed);
         } catch {
             return value;

@@ -36,7 +36,7 @@ const setup = (stored: AssumePermissionsContext.Value | null) => {
         }
     });
     container.registerInstance(LogInRepository, {
-        login: async () => identity
+        login: async () => ({ step: "done" as const, identity })
     });
     container.register(AssumePermissionsUseCase);
 

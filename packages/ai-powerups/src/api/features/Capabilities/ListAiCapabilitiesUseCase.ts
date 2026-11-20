@@ -1,3 +1,6 @@
+import { Result } from "@webiny/feature/api";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { AiCapability, ListAiCapabilitiesUseCase } from "./abstractions.js";
 import type { IAiCapabilitySummary } from "./abstractions.js";
 
@@ -9,20 +12,28 @@ import type { IAiCapabilitySummary } from "./abstractions.js";
  * capability's prompt is implementation, and the summary simply has no field for it.
  */
 class ListAiCapabilitiesUseCaseImpl implements ListAiCapabilitiesUseCase.Interface {
-    constructor(private capabilities: AiCapability.Interface[]) {}
+    constructor(
+        private identityContext: IdentityContext.Interface,
+        private capabilities: AiCapability.Interface[]
+    ) {}
 
-    async execute(): Promise<IAiCapabilitySummary[]> {
-        return this.capabilities.map(capability => ({
-            id: capability.id,
-            label: capability.label,
-            description: capability.description,
-            defaultRole: capability.defaultRole
-        }));
+    async execute(): Promise<Result<IAiCapabilitySummary[], Error>> {
+        if (this.identityContext.getIdentity().isAnonymous()) {
+            return Result.fail(new NotAuthorizedError());
+        }
+
+        return Result.ok(
+            this.capabilities.map(capability => ({
+                id: capability.id,
+                label: capability.label,
+                description: capability.description,
+                defaultRole: capability.defaultRole
+            }))
+        );
     }
 }
 
-export const ListAiCapabilitiesUseCaseImplementation =
-    ListAiCapabilitiesUseCase.createImplementation({
-        implementation: ListAiCapabilitiesUseCaseImpl,
-        dependencies: [[AiCapability, { multiple: true }]]
-    });
+export default ListAiCapabilitiesUseCase.createImplementation({
+    implementation: ListAiCapabilitiesUseCaseImpl,
+    dependencies: [IdentityContext, [AiCapability, { multiple: true }]]
+});
