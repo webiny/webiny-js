@@ -17,11 +17,14 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-headless-cms-tasks": "0.0.0",
+    "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0"

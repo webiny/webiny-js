@@ -11731,15 +11731,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows"
   dependencies:
+    "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
@@ -12129,6 +12132,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows"
   dependencies:
+    "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
@@ -12136,7 +12140,9 @@ __metadata:
     "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-headless-cms-workflows": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-website-builder-scheduler": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"

@@ -10,6 +10,7 @@ import { BlockPageUpdateWhileInReview } from "./BlockPageUpdateWhileInReview.js"
 import { BlockPageFolderChangeWhileInReview } from "./BlockPageFolderChangeWhileInReview.js";
 import { NullReviewStateOnPageRevisionCreate } from "./NullReviewStateOnPageRevisionCreate.js";
 import { NullReviewStateOnGraduatedVariantDecorator } from "./NullReviewStateOnGraduatedVariantDecorator.js";
+import { RequireApprovedReviewOnPageSchedulePublishDecorator } from "~/features/scheduler/RequireApprovedReviewOnPageSchedulePublishDecorator.js";
 
 /**
  * `wb.page` adapter rules on the Website Builder page events (R52). The page model publishes no
@@ -34,5 +35,8 @@ export const WbHooksFeature = createFeature({
         // The page revision delete (R235): the same block and cleanup for one revision.
         container.register(BlockPageRevisionDeleteWhileInReview);
         container.register(DeleteReviewsOnPageRevisionDelete);
+        // Scheduling a page publish needs what publishing needs (the rule is registered by the
+        // CMS workflows); without the scheduler nothing is decorated.
+        container.registerDecorator(RequireApprovedReviewOnPageSchedulePublishDecorator);
     }
 });
