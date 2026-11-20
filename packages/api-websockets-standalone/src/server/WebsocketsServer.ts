@@ -272,8 +272,8 @@ class WebsocketsServer implements IWebsocketsServer {
 
     /**
      * Reads the `?token`/`?tenant` query the app-websockets client sends and resolves the token to an
-     * identity. Returns `null` when there is no token or it doesn't resolve to one, and the upgrade
-     * is refused.
+     * identity in that tenant. Returns `null` when there is no token, or the token doesn't resolve to
+     * an identity that can access the tenant, and the upgrade is refused.
      */
     private async authenticateUpgrade(url: URL): Promise<IHandshake | null> {
         const token = url.searchParams.get("token") ?? "";
@@ -281,12 +281,14 @@ class WebsocketsServer implements IWebsocketsServer {
             return null;
         }
 
-        const identity = await this.authenticate(token);
+        // The same default as the request tenant loader and the AWS transport.
+        const tenant = url.searchParams.get("tenant") || "root";
+        const identity = await this.authenticate(token, tenant);
         if (!identity?.id) {
             return null;
         }
 
-        return { identity, tenant: url.searchParams.get("tenant") ?? "" };
+        return { identity, tenant };
     }
 
     /**
