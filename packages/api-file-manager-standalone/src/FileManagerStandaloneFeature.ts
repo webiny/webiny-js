@@ -7,12 +7,13 @@ import { FileManagerStandaloneConfigFeature } from "~/features/FileManagerStanda
 import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
 import { UploadPartRouteFeature } from "~/routes/UploadPartRoute/feature.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
-import { DeleteFileFromDiskFeature } from "~/features/DeleteFileFromDisk/feature.js";
+import { DeleteFileFromStorageFeature } from "~/features/DeleteFileFromStorage/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
 import { FileContentsStorageFeature } from "~/features/FileContentsStorage/feature.js";
+import { ObjectStorageFeature } from "~/features/ObjectStorage/feature.js";
 import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js";
 import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
 import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
@@ -24,7 +25,10 @@ export const FileManagerStandaloneFeature = createFeature({
         // The standalone API handler reads these from env when the server starts.
         FileManagerStandaloneConfigFeature.register(container, config);
 
-        // Local (disk) asset-delivery implementations (LocalAssetResolver/OutputStrategy/SharpTransform)
+        // Where the files are kept: a folder on disk or an S3-compatible bucket.
+        ObjectStorageFeature.register(container, config);
+
+        // In-process asset-delivery implementations (LocalAssetResolver/OutputStrategy/SharpTransform)
         // override the null delivery registered by AssetDeliveryFeature in FileManagerAppFeature — the
         // same seam FileManagerS3Feature uses with createS3AssetDeliveryFeature. Without this the domain
         // AssetDeliveryRoute resolves the null impls and serves nothing.
@@ -37,12 +41,12 @@ export const FileManagerStandaloneFeature = createFeature({
 
         // Metadata writer — the generic domain WriteMetadataAfterCreate/BatchCreate event handlers write
         // the asset metadata (id/tenant/size/contentType/bucketKey) to the GlobalKeyValueStore on file
-        // create. Asset delivery (LocalAssetResolver) reads that metadata to locate the file on disk;
+        // create. Asset delivery (LocalAssetResolver) reads that metadata to locate the file in storage;
         // without it every delivered file 404s ("asset not found"). Mirrors S3's WriteFileMetadataFeature.
         WriteFileMetadataFeature.register(container);
 
         FlushCacheFeature.register(container);
-        DeleteFileFromDiskFeature.register(container);
+        DeleteFileFromStorageFeature.register(container);
         ExtractMetadataFeature.register(container);
         GetFileContentsByIdFeature.register(container);
         GetFileContentsByKeyFeature.register(container);

@@ -4,6 +4,8 @@ import os from "node:os";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import type { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import type { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { DiskObjectStorage } from "~/features/ObjectStorage/DiskObjectStorage.js";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 
 export const SECRET = "test-upload-secret";
@@ -23,9 +25,13 @@ export const tenant = {
 };
 
 export const makeConfig = (): FileManagerStandaloneConfig.Interface => ({
-    storagePath: storagePath,
+    storage: { type: "disk", path: storagePath },
     uploadSecret: SECRET
 });
+
+export const makeDiskStorage = (): ObjectStorage.Interface => {
+    return new DiskObjectStorage(makeConfig());
+};
 
 export const makeTenantContext = (): TenantContext.Interface => ({
     getTenant: () => tenant,

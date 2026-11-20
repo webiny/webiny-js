@@ -1,10 +1,8 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import {
     TaskDefinition,
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
 
 export interface CleanupStaleMultipartUploadsInput {
     /* Reserved for future use. */
@@ -13,20 +11,8 @@ export interface CleanupStaleMultipartUploadsInput {
 
 const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
-/* Returns directory entries or an empty array if the path does not exist. */
-async function readdirSafe(dirPath: string): Promise<string[]> {
-    try {
-        return await fs.readdir(dirPath);
-    } catch (err) {
-        if ((err as NodeJS.ErrnoException).code === "ENOENT") {
-            return [];
-        }
-        throw err;
-    }
-}
-
 class CleanupStaleMultipartUploadsTaskHandlerImpl implements TaskHandler.Interface<CleanupStaleMultipartUploadsInput> {
-    public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}
+    public constructor(private readonly objectStorage: ObjectStorage.Interface) {}
 
     public async run({
         controller
@@ -37,34 +23,8 @@ class CleanupStaleMultipartUploadsTaskHandlerImpl implements TaskHandler.Interfa
             return controller.response.aborted();
         }
 
-        const storagePath = this.config.storagePath;
-        const tenantsDir = path.join(storagePath, "tenants");
-        const now = Date.now();
-
-        const tenantDirs = await readdirSafe(tenantsDir);
-
-        for (const tenantId of tenantDirs) {
-            const multipartDir = path.join(tenantsDir, tenantId, "multipart");
-            const uploadDirs = await readdirSafe(multipartDir);
-
-            for (const uploadId of uploadDirs) {
-                const uploadPath = path.join(multipartDir, uploadId);
-
-                try {
-                    const stat = await fs.stat(uploadPath);
-                    const ageMs = now - stat.mtimeMs;
-
-                    if (ageMs > STALE_THRESHOLD_MS) {
-                        await fs.rm(uploadPath, { recursive: true, force: true });
-                    }
-                } catch (err) {
-                    /* Skip entries that have already been removed or cannot be accessed. */
-                    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
-                        throw err;
-                    }
-                }
-            }
-        }
+        const startedBefore = new Date(Date.now() - STALE_THRESHOLD_MS);
+        await this.objectStorage.abortMultipartUploadsStartedBefore(startedBefore);
 
         return controller.response.done();
     }
@@ -72,14 +32,13 @@ class CleanupStaleMultipartUploadsTaskHandlerImpl implements TaskHandler.Interfa
 
 const CleanupStaleMultipartUploadsTaskHandler = TaskHandler.createImplementation({
     implementation: CleanupStaleMultipartUploadsTaskHandlerImpl,
-    dependencies: [FileManagerStandaloneConfig]
+    dependencies: [ObjectStorage]
 });
 
 class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface {
     public readonly id = "fileManagerCleanupStaleMultipartUploads";
-    public readonly title = "Clean up stale multipart upload directories";
-    public readonly description =
-        "Removes multipart upload directories that are older than 24 hours.";
+    public readonly title = "Clean up stale multipart uploads";
+    public readonly description = "Abandons multipart uploads started more than 24 hours ago.";
     public readonly maxIterations = 1;
     public readonly isPrivate = true;
     public readonly databaseLogs = false;

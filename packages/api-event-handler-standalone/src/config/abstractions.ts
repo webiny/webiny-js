@@ -1,17 +1,18 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
+import type { FileManagerStandaloneConfig } from "@webiny/api-file-manager-standalone/features/FileManagerStandaloneConfig/abstractions.js";
 
 export interface IStandaloneConfig {
     /** `WEBINY_API_URL`. Required. */
     readonly apiUrl: PublicUrl;
     /** `WEBINY_ADMIN_URL`. Optional: unknown when not set. */
     readonly adminUrl: PublicUrl;
-    readonly fileStorage: {
-        /** `WEBINY_LOCAL_STORAGE_PATH`, resolved to an absolute path. Required. */
-        readonly storagePath: string;
-        /** `WEBINY_UPLOAD_SECRET`. Required. */
-        readonly uploadSecret: string;
-    };
+    /**
+     * `WEBINY_LOCAL_STORAGE_PATH` (a folder on disk, resolved to an absolute path) or
+     * `WEBINY_S3_BUCKET` and the other `WEBINY_S3_*` variables (an S3-compatible bucket), plus
+     * `WEBINY_UPLOAD_SECRET`. Required.
+     */
+    readonly fileStorage: FileManagerStandaloneConfig.Interface;
     readonly encryption: {
         /** `WEBINY_ENCRYPTION_PASSPHRASE`. Required: standalone always encrypts. */
         readonly passphrase: string;

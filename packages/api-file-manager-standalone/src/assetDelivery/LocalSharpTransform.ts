@@ -1,5 +1,3 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import {
@@ -20,8 +18,7 @@ import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetD
 import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import type { SharpTransformer } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js";
-import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
-import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
+import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
@@ -34,7 +31,7 @@ const hasTransform = (options: TransformOptions): boolean => {
 };
 
 export class LocalSharpTransform implements IAssetTypeHandler {
-    private readonly storagePath: string;
+    private readonly objectStorage: ObjectStorage.Interface;
     private readonly imageResizeWidths: number[];
     private readonly imageQuality: Record<ImageFormat, number>;
     private readonly identityContext: IdentityContext.Interface;
@@ -42,12 +39,12 @@ export class LocalSharpTransform implements IAssetTypeHandler {
     private transformer?: SharpTransformer;
 
     constructor(
-        storagePath: string,
+        objectStorage: ObjectStorage.Interface,
         config: ILocalAssetDeliveryConfig,
         identityContext: IdentityContext.Interface,
         getFile: GetFileUseCase.Interface
     ) {
-        this.storagePath = storagePath;
+        this.objectStorage = objectStorage;
         this.imageResizeWidths = config.imageResizeWidths;
         this.imageQuality = { ...DEFAULT_IMAGE_QUALITY, ...(config.imageQuality ?? {}) };
         this.identityContext = identityContext;
@@ -104,17 +101,15 @@ export class LocalSharpTransform implements IAssetTypeHandler {
     private async transformAsset(asset: Asset, options: TransformOptions, framing: Framing) {
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const transformedAssetKey = assetKey.getTransformedImageKey(options);
-        const transformedFilePath = resolveStoragePath(this.storagePath, transformedAssetKey);
 
         const contentType = options.format
             ? contentTypeForFormat(options.format)
             : asset.getContentType();
 
-        try {
-            const buffer = await fs.readFile(transformedFilePath);
-
-            const newAsset = asset.withProps({ size: buffer.length, contentType });
-            newAsset.setContentsReader(CallableContentsReader.create(() => buffer));
+        const cachedBuffer = await this.objectStorage.get(transformedAssetKey);
+        if (cachedBuffer) {
+            const newAsset = asset.withProps({ size: cachedBuffer.length, contentType });
+            newAsset.setContentsReader(CallableContentsReader.create(() => cachedBuffer));
 
             console.log(`Return a previously transformed asset`, {
                 key: transformedAssetKey,
@@ -122,39 +117,39 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             });
 
             return newAsset;
-        } catch {
-            const optimizedImage = await this.optimizeAsset(asset, framing);
-
-            console.log(`Transform the asset`, options);
-            const baseBuffer = await optimizedImage.getContents();
-            const transformer = await this.getTransformer();
-            const { buffer: transformedBuffer, contentType: outputContentType } =
-                await transformer.transformBuffer({
-                    buffer: baseBuffer,
-                    animated: this.isAssetAnimated(asset),
-                    sourceContentType: asset.getContentType(),
-                    widths: this.imageResizeWidths,
-                    options,
-                    qualityDefaults: this.imageQuality
-                });
-
-            const newAsset = asset.withProps({
-                size: transformedBuffer.length,
-                contentType: outputContentType
-            });
-            newAsset.setContentsReader(CallableContentsReader.create(() => transformedBuffer));
-
-            await fs.mkdir(path.dirname(transformedFilePath), { recursive: true });
-            await fs.writeFile(transformedFilePath, await newAsset.getContents());
-
-            console.log(`Return the transformed asset`, {
-                key: transformedAssetKey,
-                size: newAsset.getSize(),
-                contentType: newAsset.getContentType()
-            });
-
-            return newAsset;
         }
+
+        const optimizedImage = await this.optimizeAsset(asset, framing);
+
+        console.log(`Transform the asset`, options);
+        const baseBuffer = await optimizedImage.getContents();
+        const transformer = await this.getTransformer();
+        const { buffer: transformedBuffer, contentType: outputContentType } =
+            await transformer.transformBuffer({
+                buffer: baseBuffer,
+                animated: this.isAssetAnimated(asset),
+                sourceContentType: asset.getContentType(),
+                widths: this.imageResizeWidths,
+                options,
+                qualityDefaults: this.imageQuality
+            });
+
+        const newAsset = asset.withProps({
+            size: transformedBuffer.length,
+            contentType: outputContentType
+        });
+        newAsset.setContentsReader(CallableContentsReader.create(() => transformedBuffer));
+
+        const transformedContents = await newAsset.getContents();
+        await this.objectStorage.put(transformedAssetKey, transformedContents);
+
+        console.log(`Return the transformed asset`, {
+            key: transformedAssetKey,
+            size: newAsset.getSize(),
+            contentType: newAsset.getContentType()
+        });
+
+        return newAsset;
     }
 
     private async optimizeAsset(asset: Asset, framing: Framing) {
@@ -167,56 +162,54 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
-        const optimizedFilePath = resolveStoragePath(this.storagePath, optimizedAssetKey);
 
-        try {
-            const buffer = await fs.readFile(optimizedFilePath);
-
+        const cachedBuffer = await this.objectStorage.get(optimizedAssetKey);
+        if (cachedBuffer) {
             console.log("Return a previously optimized asset", optimizedAssetKey);
 
-            const newAsset = asset.withProps({ size: buffer.length });
-            newAsset.setContentsReader(CallableContentsReader.create(() => buffer));
-
-            return newAsset;
-        } catch {
-            console.log("Create an optimized version of the original asset", asset.getKey());
-            let buffer = await asset.getContents();
-
-            const transformer = await this.getTransformer();
-            const framed = await transformer.extractFramedRegion(buffer, framing);
-            const cropped = framed !== buffer;
-            buffer = framed;
-
-            const contentType = asset.getContentType();
-            const canOptimize =
-                contentType === "image/png" ||
-                contentType === "image/jpeg" ||
-                contentType === "image/jpg";
-
-            if (!canOptimize && !cropped) {
-                console.log(`No optimizations defined for ${contentType}`);
-                return asset;
-            }
-
-            let finalBuffer = buffer;
-            if (canOptimize) {
-                const pipeline =
-                    contentType === "image/png"
-                        ? await transformer.optimizePng(buffer)
-                        : await transformer.optimizeJpeg(buffer);
-                finalBuffer = await pipeline.toBuffer();
-            }
-
-            console.log("Optimized asset size", finalBuffer.length);
-
-            const newAsset = asset.withProps({ size: finalBuffer.length });
-            newAsset.setContentsReader(CallableContentsReader.create(() => finalBuffer));
-
-            await fs.mkdir(path.dirname(optimizedFilePath), { recursive: true });
-            await fs.writeFile(optimizedFilePath, await newAsset.getContents());
+            const newAsset = asset.withProps({ size: cachedBuffer.length });
+            newAsset.setContentsReader(CallableContentsReader.create(() => cachedBuffer));
 
             return newAsset;
         }
+
+        console.log("Create an optimized version of the original asset", asset.getKey());
+        let buffer = await asset.getContents();
+
+        const transformer = await this.getTransformer();
+        const framed = await transformer.extractFramedRegion(buffer, framing);
+        const cropped = framed !== buffer;
+        buffer = framed;
+
+        const contentType = asset.getContentType();
+        const canOptimize =
+            contentType === "image/png" ||
+            contentType === "image/jpeg" ||
+            contentType === "image/jpg";
+
+        if (!canOptimize && !cropped) {
+            console.log(`No optimizations defined for ${contentType}`);
+            return asset;
+        }
+
+        let finalBuffer = buffer;
+        if (canOptimize) {
+            const pipeline =
+                contentType === "image/png"
+                    ? await transformer.optimizePng(buffer)
+                    : await transformer.optimizeJpeg(buffer);
+            finalBuffer = await pipeline.toBuffer();
+        }
+
+        console.log("Optimized asset size", finalBuffer.length);
+
+        const newAsset = asset.withProps({ size: finalBuffer.length });
+        newAsset.setContentsReader(CallableContentsReader.create(() => finalBuffer));
+
+        const optimizedContents = await newAsset.getContents();
+        await this.objectStorage.put(optimizedAssetKey, optimizedContents);
+
+        return newAsset;
     }
 
     private isAssetAnimated(asset: Asset) {
@@ -226,5 +219,5 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
 export const LocalSharpTransformImpl = ImageAssetTypeHandler.createImplementation({
     implementation: LocalSharpTransform,
-    dependencies: [LocalStoragePath, LocalAssetDeliveryConfig, IdentityContext, GetFileUseCase]
+    dependencies: [ObjectStorage, LocalAssetDeliveryConfig, IdentityContext, GetFileUseCase]
 });

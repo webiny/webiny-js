@@ -4,7 +4,8 @@ import { ImageAssetTypeHandler } from "@webiny/api-file-manager/features/assetDe
 import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
 import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
-import { LocalAssetDeliveryConfig, LocalStoragePath } from "~/assetDelivery/abstractions.js";
+import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
+import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
 /**
@@ -24,7 +25,7 @@ class LazyLocalSharpTransform implements IAssetTypeHandler {
     private handler: Promise<IAssetTypeHandler> | null = null;
 
     constructor(
-        private readonly storagePath: string,
+        private readonly objectStorage: ObjectStorage.Interface,
         private readonly config: ILocalAssetDeliveryConfig,
         private readonly identityContext: IdentityContext.Interface,
         private readonly getFile: GetFileUseCase.Interface
@@ -37,7 +38,7 @@ class LazyLocalSharpTransform implements IAssetTypeHandler {
             ).then(
                 ({ LocalSharpTransform }) =>
                     new LocalSharpTransform(
-                        this.storagePath,
+                        this.objectStorage,
                         this.config,
                         this.identityContext,
                         this.getFile
@@ -54,5 +55,5 @@ class LazyLocalSharpTransform implements IAssetTypeHandler {
 
 export const LazyLocalSharpTransformImpl = ImageAssetTypeHandler.createImplementation({
     implementation: LazyLocalSharpTransform,
-    dependencies: [LocalStoragePath, LocalAssetDeliveryConfig, IdentityContext, GetFileUseCase]
+    dependencies: [ObjectStorage, LocalAssetDeliveryConfig, IdentityContext, GetFileUseCase]
 });

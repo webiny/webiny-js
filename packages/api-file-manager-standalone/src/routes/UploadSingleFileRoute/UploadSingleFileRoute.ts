@@ -1,18 +1,20 @@
-import path from "node:path";
-import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { getTenantFilesPrefix } from "~/utils/getTenantFilesPrefix.js";
+import { isKeyInsidePrefix } from "~/utils/isKeyInsidePrefix.js";
 import { toBuffer } from "../utils.js";
 import { parseMultipart } from "../utils.js";
 import { getBoundary } from "../utils.js";
-import { isPathContained } from "~/utils/isPathContained.js";
 
 class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
-    public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}
+    public constructor(
+        private readonly config: FileManagerStandaloneConfig.Interface,
+        private readonly objectStorage: ObjectStorage.Interface
+    ) {}
 
     public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
-        const storagePath = this.config.storagePath;
         const secret = this.config.uploadSecret;
 
         const contentType =
@@ -46,7 +48,7 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
                 .json({ error: err instanceof Error ? err.message : "Invalid token." });
         }
 
-        if (payload.key !== key) {
+        if (payload.key !== key || payload.multipart) {
             return response.status(400).json({ error: "Token key mismatch." });
         }
 
@@ -59,15 +61,13 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
             return response.status(400).json({ error: "File is below minimum allowed size." });
         }
 
-        // The signed key must stay inside the files folder of the tenant the token was issued for.
-        const filesPath = path.join(storagePath, "tenants", payload.tenantId, "files");
-        const destPath = path.join(storagePath, key);
-        if (!isPathContained(destPath, filesPath)) {
+        // The signed key must stay inside the files of the tenant the token was issued for.
+        const filesPrefix = getTenantFilesPrefix(payload.tenantId);
+        if (!isKeyInsidePrefix(key, filesPrefix)) {
             return response.status(400).json({ error: "Invalid path." });
         }
 
-        await mkdir(path.dirname(destPath), { recursive: true });
-        await writeFile(destPath, file.data);
+        await this.objectStorage.put(key, file.data);
 
         return response.status(204);
     }
@@ -75,7 +75,7 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
 
 export const UploadSingleFileRoute = HttpRouteHandler.createImplementation({
     implementation: UploadSingleFileRouteImpl,
-    dependencies: [FileManagerStandaloneConfig]
+    dependencies: [FileManagerStandaloneConfig, ObjectStorage]
 });
 
 class UploadSingleFileRouteDefinitionImpl implements HttpRouteDefinition.Interface {

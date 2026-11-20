@@ -1,17 +1,18 @@
-import path from "node:path";
-import { createHash } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { getTenantFilesPrefix } from "~/utils/getTenantFilesPrefix.js";
+import { isKeyInsidePrefix } from "~/utils/isKeyInsidePrefix.js";
 import { toBuffer } from "../utils.js";
-import { isPathContained } from "~/utils/isPathContained.js";
 
 class UploadPartRouteImpl implements HttpRouteHandler.Interface {
-    public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}
+    public constructor(
+        private readonly config: FileManagerStandaloneConfig.Interface,
+        private readonly objectStorage: ObjectStorage.Interface
+    ) {}
 
     public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
-        const storagePath = this.config.storagePath;
         const secret = this.config.uploadSecret;
 
         const query = request.query ?? {};
@@ -37,22 +38,25 @@ class UploadPartRouteImpl implements HttpRouteHandler.Interface {
                 .json({ error: err instanceof Error ? err.message : "Invalid token." });
         }
 
-        const expectedKey = `tenants/${payload.tenantId}/multipart/${uploadId}/part-${partNumber}`;
-        if (payload.key !== expectedKey) {
+        if (
+            payload.multipart?.uploadId !== uploadId ||
+            payload.multipart.partNumber !== partNumber
+        ) {
             return response.status(400).json({ error: "Token key mismatch." });
         }
 
-        const destPath = path.join(storagePath, expectedKey);
-        if (!isPathContained(destPath, storagePath)) {
+        const filesPrefix = getTenantFilesPrefix(payload.tenantId);
+        if (!isKeyInsidePrefix(payload.key, filesPrefix)) {
             return response.status(400).json({ error: "Invalid path." });
         }
 
-        await mkdir(path.dirname(destPath), { recursive: true });
-
         const body = toBuffer(request.body);
-        await writeFile(destPath, body);
-
-        const etag = createHash("md5").update(body).digest("hex");
+        const etag = await this.objectStorage.uploadPart({
+            key: payload.key,
+            uploadId,
+            partNumber,
+            body
+        });
 
         return response.header("etag", etag);
     }
@@ -60,7 +64,7 @@ class UploadPartRouteImpl implements HttpRouteHandler.Interface {
 
 export const UploadPartRoute = HttpRouteHandler.createImplementation({
     implementation: UploadPartRouteImpl,
-    dependencies: [FileManagerStandaloneConfig]
+    dependencies: [FileManagerStandaloneConfig, ObjectStorage]
 });
 
 class UploadPartRouteDefinitionImpl implements HttpRouteDefinition.Interface {

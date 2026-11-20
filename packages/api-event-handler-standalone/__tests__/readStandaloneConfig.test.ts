@@ -25,7 +25,7 @@ describe("readStandaloneConfig", () => {
         expect(config.apiUrl.toString()).toBe("https://api.staging.example.com");
         expect(config.adminUrl.toString()).toBe("https://admin.staging.example.com");
         expect(config.fileStorage).toEqual({
-            storagePath: nodePath.resolve("data/storage"),
+            storage: { type: "disk", path: nodePath.resolve("data/storage") },
             uploadSecret: "staging-upload-secret"
         });
         expect(config.encryption).toEqual({ passphrase: "staging-passphrase", salt: "" });

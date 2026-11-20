@@ -131,10 +131,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 realtime: requestContainer => {
                     WebsocketsStandaloneFeature.register(requestContainer);
                 },
-                // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
-                // delivery Lambda), the single-process server stores files on disk and serves them
-                // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
-                // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
+                // File-manager storage transport: a folder on disk or an S3-compatible bucket. Where
+                // AWS uploads straight to S3 (+ a separate asset-delivery Lambda), the server takes
+                // uploads and serves files in-process. FileManagerStandaloneFeature registers asset
+                // delivery (overriding the domain's null impls), the upload/multipart HTTP routes,
+                // and the storage they write to.
                 fileManager: requestContainer => {
                     FileManagerStandaloneFeature.register(
                         requestContainer,
@@ -160,7 +161,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // Names this process in shared storage: task claims and websocket connections.
             rootContainer.register(RandomProcessOwner).inSingletonScope();
-            mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
+            const fileStorage = standaloneConfig.fileStorage.storage;
+            if (fileStorage.type === "disk") {
+                mkdirSync(fileStorage.path, { recursive: true });
+            }
 
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
