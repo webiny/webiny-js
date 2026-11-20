@@ -503,3 +503,61 @@ small control size (32px fields and buttons, 48px table rows), the live screens 
   delete is attempted and refused. Verify from code and a test, not by deleting.
 - Escape did not close dialogs or the Filter popover for two agents, who suspect the automation
   tool; dialogs open with a focus ring on the close button.
+
+## Visual pass 4 and designer questions, 2026-11-20
+
+Pass 4 compared every screen again after `ad3d2c299a`. Fixed from it: the "In review" tag on an open
+review (bar and details drawer) and a drop indicator for step drag. User (2026-11-20): every open
+question goes to the designer; the admin keeps what it does today until answered.
+
+Questions from the code side on "Publishing Workflows — Webiny DS 2.0". Until answered, the admin keeps what it does today (stated per item).
+
+Entry Review / Website Builder Review
+1. Request review dialog: the hint "Picks are checked again when the step is reached…" is drawn only under "Choose a person". Should it also show under "Automatic"? Today: shown in both.
+2. Website Builder Review: the grey banner "This page is in review, so it can't be edited." repeats the strip's line "Editing, publishing and moving are locked while this revision is in review." Keep both, or only one? Today: no banner.
+3. Review bar and Review details footer: Cancel review and Reassign are not drawn. Today they sit in a kebab menu left of Reject / Approve (and left of Take over). Is that the right place?
+4. The bar shows "In review" twice for an open review (yellow review tag, then the step tag). Intended? Today: built as drawn.
+5. Tags: the list and widgets are drawn with text-only soft tags; the bar draws tags with icons, and Rejected is solid red. Which is right for the list and the Home widgets? Today: icons everywhere, solid red Rejected.
+
+Content Reviews list (Main)
+6. Column header "Content model": the same list exists for Website Builder, where rows are pages. One wording for both apps ("Content type"?), or per app? Today: "Content type" in Headless CMS, no column in Website Builder, and the empty state says "content model".
+7. Scope "All": who may see it, and what does it mean for someone who is not an admin?
+8. Scope × state pairs that are empty by definition (Team pool × Approved / Rejected / Failed, Assigned to me × Failed, Team in review × Failed): hide the state, disable it, or show an empty state? Today: disabled.
+9. Does "Assigned to me × Approved" mean "I held the final step"?
+10. Default state per scope. Today: In review for the queues, All for Requested by me and for All.
+11. Should a scope or state change reset the sort, the search and the content type filter? Today: yes. Team pool always sorts oldest first.
+12. Is "Failed" limited to AI and automation steps? Today: any failed step.
+13. Toolbar: the icon buttons (filter, refresh, columns) have no drawn behaviour. Today: a text "Filter" button with a content type select, no refresh button. What opens from each icon?
+14. Row checkboxes and "select all": what bulk actions do they serve? Today: no checkboxes.
+15. Footer: "Showing 10 of 10" needs a total; the API pages by cursor. Is "Showing N reviews" plus "Load more" acceptable?
+16. Row menu: item labels look right-aligned in the artboard. Intended? "Reassign" is not listed; should it be there?
+17. Empty states "Nothing assigned to you" and "You are not in a reviewing team" have no artboard.
+
+Workflow editor / Step drawer
+18. Header kebab "More workflow actions": what does it contain? Today: only delete and Save.
+19. Left panel lists workflows in the design; the admin lists content models (one workflow per model) with a filter All / With / Without. Acceptable?
+20. Workflow title: the editable title of the design system is orange and indented. Should it be dark like a page title?
+21. Step drawer tabs are drawn in the drawer header. Today they are under the header divider. Is the header position required?
+22. Only the People step's Assignment tab is drawn. Needed: General tab (the Colour field is a ten-row radio list today), Test routing tab, the AI step form, the Automation step form, and the empty state of Routing rules.
+23. The live "Check this step" panel above the tabs lists all problems of the step and repeats the inline field errors. Keep, or inline errors only?
+24. Rule summary: drawn as a neutral rounded box. Is it a new component (an Alert has alert semantics)?
+25. Drag to reorder: no drop state is drawn. Today: the dragged step dims to 40 % and a 2px primary line shows on the edge where it lands. Acceptable?
+
+Reviewer exclusions
+26. "Until" field: drawn 146px wide with placeholder "DD/MM/YYYY". The date picker of the admin is wider and says "Pick a date". Is the drawn size required?
+27. The empty state ("No exclusions") and the table's expired rows: no artboard for the empty state.
+28. Add exclusion: should a team be selectable, or only a person? Today: person only.
+
+Home widgets
+29. The widgets are drawn in a row. The dashboard has only a left and a right column, so they stack on the right. Acceptable? Rows are drawn without dividers and two per widget; today five rows with dividers and "View all".
+30. One pair of widgets per app (Headless CMS, Website Builder), four in total: intended?
+31. Empty state of "For me to review": no artboard.
+
+Role permissions
+32. The access control is drawn at the right of the card header, card always open. The admin's permission sections are accordions with the control under a label. Is the drawn layout required?
+
+Notifications
+33. Toasts are drawn as white cards; the admin's toast is dark. Change the base toast, or keep it?
+34. Pool message for several teams: wording ("Legal, Editors and 2 more"?).
+35. E-mail footer for requesters and previous owners; the Cancelled and Taken over e-mails use the previous-owner footer today.
+36. Review details of a cancelled review: which tag does the step that was current at cancel time get?
