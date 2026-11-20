@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import { EmptyState } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Accordion } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
@@ -93,41 +93,25 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                 </span>
             </span>
         );
-        if (vm.cancelledText === null) {
-            let contentLink = (
-                <Button
-                    variant={"link"}
-                    size={"sm"}
-                    text={vm.header.contentLabel}
-                    onClick={onClose}
-                />
-            );
-            if (vm.header.contentUrl !== null) {
-                contentLink = <Link to={vm.header.contentUrl}>{vm.header.contentLabel}</Link>;
-            }
-            description = (
-                <span className={"flex flex-wrap items-center gap-x-md gap-y-xs"}>
-                    <Text as={"span"} size={"sm"}>
-                        {"Content: "}
-                        {contentLink}
-                    </Text>
-                    <Text as={"span"} size={"sm"}>
-                        {vm.header.requesterLine}
-                    </Text>
-                    <Text as={"span"} size={"sm"} title={vm.header.requestedTitle}>
-                        {vm.header.requestedLine}
-                    </Text>
-                </span>
-            );
+        let contentLink = (
+            <Button variant={"link"} size={"sm"} text={vm.header.contentLabel} onClick={onClose} />
+        );
+        if (vm.header.contentUrl !== null) {
+            contentLink = <Link to={vm.header.contentUrl}>{vm.header.contentLabel}</Link>;
         }
-    }
-
-    let openContent = <Button variant={"tertiary"} text={"Open content"} onClick={onClose} />;
-    if (vm.header?.contentUrl) {
-        openContent = (
-            <Button variant={"tertiary"} asChild={true}>
-                <Link to={vm.header.contentUrl}>{"Open content"}</Link>
-            </Button>
+        description = (
+            <span className={"flex flex-wrap items-center gap-x-md gap-y-xs"}>
+                <Text as={"span"} size={"sm"}>
+                    {"Content: "}
+                    {contentLink}
+                </Text>
+                <Text as={"span"} size={"sm"}>
+                    {vm.header.requesterLine}
+                </Text>
+                <Text as={"span"} size={"sm"} title={vm.header.requestedTitle}>
+                    {vm.header.requestedLine}
+                </Text>
+            </span>
         );
     }
 
@@ -163,12 +147,11 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                         </div>
                     )}
                     {vm.cancelledText !== null && (
-                        <EmptyState
-                            type={"content"}
-                            title={"This review was cancelled"}
-                            description={vm.cancelledText}
-                            actions={openContent}
-                        />
+                        <div className={"mb-md"}>
+                            <Alert data-role={"cancelled-alert"} type={"info"} variant={"subtle"}>
+                                <Text as={"span"}>{vm.cancelledText}</Text>
+                            </Alert>
+                        </div>
                     )}
                     {vm.steps.length > 0 && (
                         <Accordion variant={"container"}>

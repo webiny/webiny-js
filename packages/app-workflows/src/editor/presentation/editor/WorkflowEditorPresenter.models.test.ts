@@ -71,6 +71,7 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
         expect(listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "arti",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -144,6 +145,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: "c1"
         });
@@ -171,6 +173,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
             app: "cms",
             search: "x",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });

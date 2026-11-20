@@ -71,13 +71,17 @@ describe("ReviewStepFailedNotifications (R181, R183, R184, R189, R146)", () => {
         const [call] = notifier.calls;
         expect(call.event).toBe("failed");
         expect(call.stepId).toBe("legal");
-        expect(call.recipients).toEqual([{ id: "user-requester", displayName: "Rita Requester" }]);
-        expect(call.message).toEqual({
+        expect(call.deliveries[0].recipients).toEqual([
+            { id: "user-requester", displayName: "Rita Requester" }
+        ]);
+        expect(call.deliveries[0].message).toEqual({
             title: "Legal review failed on “Article 1”",
             body: "The automation failed. You can restart the step.",
             subject: "Step failed: Article 1 (Legal review)",
             text: "Legal review hit a technical error: The automation failed. The review is paused at this step until it is restarted.",
-            linkLabel: "Open content"
+            linkLabel: "View review details",
+            link: "reviewDetails",
+            footer: "You get this e-mail because you requested this review and it notifies by e-mail."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: LEGAL_CHANNEL }
@@ -107,7 +111,7 @@ describe("ReviewStepFailedNotifications (R181, R183, R184, R189, R146)", () => {
         await handle(createNotificationReview(), createFact({ actor: requester }));
 
         expect(notifier.calls).toHaveLength(1);
-        expect(notifier.calls[0].recipients).toEqual([
+        expect(notifier.calls[0].deliveries[0].recipients).toEqual([
             { id: "user-requester", displayName: "Rita Requester" }
         ]);
     });
@@ -128,7 +132,7 @@ describe("ReviewStepFailedNotifications (R181, R183, R184, R189, R146)", () => {
 
         await handle(review, createFact());
 
-        expect(JSON.stringify(notifier.calls[0].message)).not.toContain("SECRET");
+        expect(JSON.stringify(notifier.calls[0].deliveries[0].message)).not.toContain("SECRET");
     });
 
     it("logs and returns when the step is not in the review", async () => {

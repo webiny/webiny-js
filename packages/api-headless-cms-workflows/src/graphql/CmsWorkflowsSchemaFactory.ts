@@ -153,10 +153,8 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         "The model id, without the cms. prefix (R94)."
         modelId: String
         titleContains: String
-        "My requests only (R91)."
-        reviewState: WorkflowsReviewState
-        "My requests only (R91)."
-        stepState: WorkflowsStepState
+        "Default all; applies to every scope."
+        state: WorkflowsReviewListState
     }
 
     type CmsEntryRoutingInspectionResponse {
@@ -176,7 +174,8 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             taskId: ID!
         ): CmsEntryReviewStepRunResponse!
         listCmsEntryReviews(
-            list: WorkflowsReviewListKind!
+            "all needs reassign."
+            scope: WorkflowsReviewListScope!
             where: CmsEntryReviewListWhere
             sort: WorkflowsReviewListSort
             limit: Int
@@ -188,6 +187,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         ): CmsEntryBlockingReviewsResponse!
         listCmsEntryWorkflowModels(
             search: String
+            hasWorkflow: Boolean
             limit: Int
             after: String
         ): CmsEntryWorkflowModelListResponse!
@@ -358,6 +358,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 return async ({ args }) => {
                     const result = await listModels.execute({
                         search: args.search,
+                        hasWorkflow: args.hasWorkflow,
                         limit: args.limit,
                         after: args.after
                     });
@@ -452,7 +453,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             ) => {
                 return async ({ args }) => {
                     const result = await listReviews.execute({
-                        list: args.list,
+                        scope: args.scope,
                         where: args.where,
                         sort: args.sort,
                         limit: args.limit,

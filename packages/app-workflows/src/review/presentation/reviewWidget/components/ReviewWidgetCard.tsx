@@ -12,7 +12,8 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
-import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { getReviewListEmpty } from "~/review/presentation/reviewList/getReviewListEmpty.js";
 import type { ReviewWidgetKind } from "../abstractions.js";
 import type { ReviewWidgetTab } from "../abstractions.js";
@@ -27,7 +28,7 @@ export interface ReviewWidgetCardProps {
     app: WorkflowAppKind;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
-    viewAllUrl: (tab: ReviewListTab) => string;
+    viewAllUrl: (scope: ReviewListScope, state: ReviewListState) => string;
 }
 
 const SEGMENTS = [
@@ -64,6 +65,14 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
         segment = <SegmentedControl items={SEGMENTS} value={vm.tab} onChange={onChange} />;
     }
 
+    // "View all" opens the list the widget shows: the segment's queue in review, or every request.
+    let viewAllScope: ReviewListScope = "myRequests";
+    let viewAllState: ReviewListState = "all";
+    if (vm.tab) {
+        viewAllScope = vm.tab;
+        viewAllState = "inReview";
+    }
+
     let body: React.ReactNode = null;
     if (vm.status === "loading") {
         body = (
@@ -90,7 +99,13 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             />
         );
     } else if (vm.empty) {
-        const empty = getReviewListEmpty(vm.tab ?? "myRequests", false, vm.hasTeams, false);
+        const empty = getReviewListEmpty({
+            scope: viewAllScope,
+            state: viewAllState,
+            hasFilters: false,
+            hasTeams: vm.hasTeams,
+            showContentType: false
+        });
         body = (
             <EmptyState
                 type="table"
@@ -108,8 +123,6 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             </List>
         );
     }
-
-    const viewAllTab: ReviewListTab = vm.tab ?? "myRequests";
 
     return (
         <div data-testid={`review-widget-${kind}`}>
@@ -131,7 +144,7 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
                         icon={<ArrowForwardIcon />}
                         iconPosition="end"
                     >
-                        <Link to={viewAllUrl(viewAllTab)}>View all</Link>
+                        <Link to={viewAllUrl(viewAllScope, viewAllState)}>View all</Link>
                     </Widget.Action>
                 }
             >

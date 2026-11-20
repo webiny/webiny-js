@@ -4,7 +4,8 @@ import { useRouter } from "@webiny/app-admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
-import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewForMeWidget } from "~/review/presentation/reviewWidget/components/ReviewForMeWidget.js";
 import { ReviewMyRequestsWidget } from "~/review/presentation/reviewWidget/components/ReviewMyRequestsWidget.js";
 import { ReactComponent as RateReviewIcon } from "@webiny/icons/rate_review.svg";
@@ -96,8 +97,8 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
         return null;
     }
 
-    const viewAllUrl = (tab: ReviewListTab): string => {
-        return router.getLink(viewAllRoute, { tab });
+    const viewAllUrl = (scope: ReviewListScope, state: ReviewListState): string => {
+        return router.getLink(viewAllRoute, { scope, state });
     };
 
     return (

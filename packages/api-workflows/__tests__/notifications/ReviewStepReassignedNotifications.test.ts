@@ -76,25 +76,31 @@ describe("ReviewStepReassignedNotifications (R181, R183, R184, R189)", () => {
         const [assigned, reassigned] = notifier.calls;
         expect(assigned.event).toBe("assigned");
         expect(assigned.stepId).toBe("legal");
-        expect(assigned.recipients).toEqual([{ id: "user-anna", displayName: "Anna" }]);
-        expect(assigned.message).toEqual({
+        expect(assigned.deliveries[0].recipients).toEqual([
+            { id: "user-anna", displayName: "Anna" }
+        ]);
+        expect(assigned.deliveries[0].message).toEqual({
             title: "You’re reviewing “Article 1”",
             body: "Legal review · reassigned to you by Mona Manager",
             subject: "You’re reviewing: Article 1 (Legal review)",
             text: "You are the owner of Legal review. Open the content to approve or reject it.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: "You get this e-mail because you review this step and it notifies by e-mail."
         });
         expect(reassigned.event).toBe("reassigned");
         expect(reassigned.stepId).toBe("legal");
-        expect(reassigned.recipients).toEqual([
+        expect(reassigned.deliveries[0].recipients).toEqual([
             { id: "user-reviewer", displayName: "Rob Reviewer" }
         ]);
-        expect(reassigned.message).toEqual({
+        expect(reassigned.deliveries[0].message).toEqual({
             title: "“Article 1” was reassigned to Anna",
             body: "Legal review · reassigned by Mona Manager. You no longer own this step.",
             subject: "Reassigned: Article 1 (Legal review)",
             text: "Mona Manager reassigned this step to Anna. You don’t need to review it any more.",
-            linkLabel: "Open content"
+            linkLabel: "View review details",
+            link: "reviewDetails",
+            footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail."
         });
     });
 
@@ -109,7 +115,7 @@ describe("ReviewStepReassignedNotifications (R181, R183, R184, R189)", () => {
         );
 
         expect(notifier.calls.map(call => call.stepId)).toEqual(["editorial", "editorial"]);
-        expect(notifier.calls[0].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
             "Editorial review · reassigned to you by Mona Manager"
         );
         for (const call of notifier.calls) {
@@ -150,7 +156,7 @@ describe("ReviewStepReassignedNotifications (R181, R183, R184, R189)", () => {
         await handle(createNotificationReview(), createFact({ actor: ANNA }));
 
         expect(notifier.calls.map(call => call.event)).toEqual(["reassigned"]);
-        expect(notifier.calls[0].recipients).toEqual([
+        expect(notifier.calls[0].deliveries[0].recipients).toEqual([
             { id: "user-reviewer", displayName: "Rob Reviewer" }
         ]);
     });
@@ -161,7 +167,7 @@ describe("ReviewStepReassignedNotifications (R181, R183, R184, R189)", () => {
         await handle(createNotificationReview(), createFact({ actor: reviewer }));
 
         expect(notifier.calls.map(call => call.event)).toEqual(["assigned"]);
-        expect(notifier.calls[0].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
             "Legal review · reassigned to you by Rob Reviewer"
         );
     });
@@ -177,9 +183,13 @@ describe("ReviewStepReassignedNotifications (R181, R183, R184, R189)", () => {
             })
         );
 
-        expect(notifier.calls[0].message.body).toBe("Legal review · reassigned to you by A user");
-        expect(notifier.calls[1].message.title).toBe("“Article 1” was reassigned to A user");
-        expect(notifier.calls[1].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
+            "Legal review · reassigned to you by A user"
+        );
+        expect(notifier.calls[1].deliveries[0].message.title).toBe(
+            "“Article 1” was reassigned to A user"
+        );
+        expect(notifier.calls[1].deliveries[0].message.body).toBe(
             "Legal review · reassigned by A user. You no longer own this step."
         );
     });

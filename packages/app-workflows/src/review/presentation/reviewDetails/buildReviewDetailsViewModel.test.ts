@@ -505,11 +505,15 @@ describe("buildReviewDetailsViewModel", () => {
         ]);
     });
 
-    it("shows a cancelled review with its header, no timeline and no actions (QBZ-1)", () => {
+    it("shows a cancelled review read-only: steps without an open one, no actions (QBZ-1)", () => {
         const review = createReview({
             state: ReviewState.Cancelled,
             isActive: false,
-            lastChangedOn: at(16, 14, 20)
+            lastChangedOn: at(16, 14, 20),
+            steps: [
+                createStep({ id: "s1", state: StepState.Approved }),
+                createStep({ id: "s2", state: StepState.InReview, owner: LUKA })
+            ]
         });
 
         const vm = build(review, createFlags({ canCancel: true }));
@@ -518,14 +522,36 @@ describe("buildReviewDetailsViewModel", () => {
             label: "Cancelled",
             variant: "neutral-base-outline"
         });
-        expect(vm.steps).toEqual([]);
+        expect(vm.steps.map(step => step.stepId)).toEqual(["s1", "s2"]);
+        expect(vm.steps.some(step => step.expanded)).toBe(false);
         expect(vm.actions).toEqual([]);
-        expect(vm.cancelledText).toBe(
-            "Someone cancelled this review at 14:20. The revision has no review now; a new request starts again from the first step."
-        );
     });
 
-    it("names who cancelled the review when the review carries it (R252)", () => {
+    it("replaces the tag of an unfinished step with a neutral Cancelled one", () => {
+        const review = createReview({
+            state: ReviewState.Cancelled,
+            isActive: false,
+            steps: [
+                createStep({ id: "s1", state: StepState.Approved }),
+                createStep({ id: "s2", state: StepState.Awaiting, owner: LUKA }),
+                createStep({ id: "s3", state: StepState.InReview, owner: LUKA }),
+                createStep({ id: "s4", state: StepState.Failed, owner: LUKA }),
+                createStep({ id: "s5", state: StepState.Pending })
+            ]
+        });
+
+        const tags = build(review).steps.map(step => [step.stateLabel, step.stateVariant]);
+
+        expect(tags).toEqual([
+            ["Approved", "success-light"],
+            ["Cancelled", "neutral-base-outline"],
+            ["Cancelled", "neutral-base-outline"],
+            ["Cancelled", "neutral-base-outline"],
+            ["Pending", "neutral-base-outline"]
+        ]);
+    });
+
+    it("names who cancelled the review and when (R252)", () => {
         const review = createReview({
             state: ReviewState.Cancelled,
             isActive: false,
@@ -535,20 +561,27 @@ describe("buildReviewDetailsViewModel", () => {
 
         const vm = build(review);
 
-        expect(vm.cancelledText).toBe(
-            "Nina Cole cancelled this review at 14:20. The revision has no review now; a new request starts again from the first step."
+        expect(vm.cancelledText).toMatch(
+            /^This review was cancelled by Nina Cole on Fri 16 Oct 2026, 14:20 .+\.$/
         );
     });
 
-    it("falls back to 'Someone' for a blank canceller name", () => {
-        const review = createReview({
+    it("falls back to 'Someone' for a blank or missing canceller name", () => {
+        const blank = createReview({
             state: ReviewState.Cancelled,
             isActive: false,
             lastChangedOn: at(16, 14, 20),
             cancelledBy: createActor({ displayName: "  " })
         });
+        const missing = createReview({
+            state: ReviewState.Cancelled,
+            isActive: false,
+            lastChangedOn: at(16, 14, 20),
+            cancelledBy: null
+        });
 
-        expect(build(review).cancelledText).toContain("Someone cancelled this review at 14:20.");
+        expect(build(blank).cancelledText).toContain("This review was cancelled by Someone on ");
+        expect(build(missing).cancelledText).toContain("This review was cancelled by Someone on ");
     });
 
     it("builds the loading and failed states without a header", () => {

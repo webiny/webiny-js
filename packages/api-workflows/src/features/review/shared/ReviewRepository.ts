@@ -14,11 +14,21 @@ import { GetUniqueFieldValuesUseCase } from "@webiny/api-headless-cms/features/c
 import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelProvider.js";
 import { ReviewRepository as ReviewRepositoryAbstraction } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
-import type { ReviewData, ReviewListReadFilter } from "~/domain/review/types.js";
+import type { ReviewData, ReviewListReadFilter, ReviewListSort } from "~/domain/review/types.js";
 import { toChunks } from "~/domain/toChunks.js";
 import { ReviewEntryMapper, type ReviewEntryValues } from "./ReviewEntryMapper.js";
 
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
+
+/** The stored field each list sort reads; titles sort by the storage-only `titleSortKey`. */
+// Values fields sort with the `values_` prefix (CMS sort mapper).
+const REPOSITORY_SORT: Record<ReviewListSort, `${string}_ASC` | `${string}_DESC`> = {
+    lastChangedOn_ASC: "values_lastChangedOn_ASC",
+    lastChangedOn_DESC: "values_lastChangedOn_DESC",
+    title_ASC: "values_titleSortKey_ASC",
+    title_DESC: "values_titleSortKey_DESC"
+};
+
 /** At most one review per revision is active (D23); a few extra hits cover stale list results. */
 const ACTIVE_BY_TARGET_LIMIT = 10;
 const COUNT_PAGE_SIZE = 100;
@@ -363,6 +373,9 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
         if (where.currentStepState !== undefined) {
             values.currentStepState = where.currentStepState;
         }
+        if (where.currentStepState_not !== undefined) {
+            values.currentStepState_not = where.currentStepState_not;
+        }
         if (where.currentOwnerId !== undefined) {
             values.currentOwnerId = where.currentOwnerId;
         }
@@ -384,6 +397,12 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
         if (where.lastChangedOn_lte !== undefined) {
             values.lastChangedOn_lte = where.lastChangedOn_lte;
         }
+        if (where.titleSortKey_gte !== undefined) {
+            values.titleSortKey_gte = where.titleSortKey_gte;
+        }
+        if (where.titleSortKey_lte !== undefined) {
+            values.titleSortKey_lte = where.titleSortKey_lte;
+        }
         const requester: CmsEntryListWhereValues = {};
         if (where.requesterId !== undefined) {
             requester.id = where.requesterId;
@@ -396,6 +415,10 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
         }
 
         const listWhere: CmsEntryListWhere = { values };
+        // A second `currentOwnerId` condition next to `currentOwnerId_not`, so it goes in an AND.
+        if (where.hasCurrentOwner) {
+            listWhere.AND = [{ values: { currentOwnerId_not: null } }];
+        }
         applyReadFilter(listWhere, where.read);
         // An empty list would match nothing on some storages: leave the filter out.
         if (where.id_not_in?.length) {
@@ -404,8 +427,7 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
 
         const result = await this.listLatestEntries.execute<ReviewEntryValues>(model, {
             where: listWhere,
-            // Values fields sort with the `values_` prefix (CMS sort mapper).
-            sort: [`values_${params.sort}`],
+            sort: [REPOSITORY_SORT[params.sort]],
             limit: params.limit,
             after: params.after ?? null
         });

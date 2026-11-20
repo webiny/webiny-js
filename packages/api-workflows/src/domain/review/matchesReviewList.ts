@@ -1,11 +1,10 @@
-import { AI_STEP_TYPE, AUTOMATION_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
-import type { ReviewData, ReviewListKind, ReviewListWhere } from "./types.js";
-
-/** Current step types the failed steps list shows (D112). */
-export const FAILED_STEP_LIST_TYPES: readonly string[] = [AI_STEP_TYPE, AUTOMATION_STEP_TYPE];
+import { matchesReviewListScope } from "./matchesReviewListScope.js";
+import { matchesReviewListState } from "./matchesReviewListState.js";
+import type { ReviewListScope } from "./ReviewListScope.js";
+import type { ReviewData, ReviewListWhere } from "./types.js";
 
 export interface ReviewListMatchParams {
-    list: ReviewListKind;
+    scope: ReviewListScope;
     viewerUserId: string;
     viewerTeamIds: string[];
     /** Namespace ids the app lists. */
@@ -13,12 +12,9 @@ export interface ReviewListMatchParams {
     where: ReviewListWhere;
 }
 
-const sharesTeam = (review: ReviewData, teamIds: string[]): boolean => {
-    return review.currentCandidateTeamIds.some(teamId => teamIds.includes(teamId));
-};
-
 /**
- * Whether a review belongs to a list for one viewer (spec 11, R91). Pure. Run on the
+ * Whether a review belongs to a list for one viewer (spec 11, R91, B2 design 1): active, in a
+ * listed namespace, matching the title words, the scope and the state. Pure. Run on the
  * primary-storage row of every listed hit: the storage pre-filter can be stale (R18) or, on a
  * storage that cannot express a condition, missing (A40).
  */
@@ -35,36 +31,8 @@ export const matchesReviewList = (review: ReviewData, params: ReviewListMatchPar
     if (titleWords.length && !titleWords.every(word => title.includes(word))) {
         return false;
     }
-
-    switch (params.list) {
-        case "assignedToMe":
-            return (
-                review.currentStepState === "inReview" &&
-                review.currentOwnerId === params.viewerUserId
-            );
-        case "pool":
-            return (
-                review.currentStepState === "awaiting" &&
-                sharesTeam(review, params.viewerTeamIds) &&
-                review.createdBy.id !== params.viewerUserId
-            );
-        case "teamInReview":
-            return (
-                review.currentStepState === "inReview" &&
-                review.currentOwnerId !== params.viewerUserId &&
-                sharesTeam(review, params.viewerTeamIds)
-            );
-        case "myRequests":
-            return (
-                review.createdBy.id === params.viewerUserId &&
-                (!params.where.reviewState || review.state === params.where.reviewState) &&
-                (!params.where.stepState || review.currentStepState === params.where.stepState)
-            );
-        case "failedSteps":
-            return (
-                review.currentStepState === "failed" &&
-                review.currentStepType !== null &&
-                FAILED_STEP_LIST_TYPES.includes(review.currentStepType)
-            );
-    }
+    return (
+        matchesReviewListScope(review, params) &&
+        matchesReviewListState(review, params.where.state ?? "all")
+    );
 };

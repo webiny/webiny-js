@@ -91,7 +91,7 @@ describe("WB review list wrapper", () => {
         const { review, lockedReview, cmsReview } = await createScenario();
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const result = expectOk(await list(reviewer, { list: "pool" }));
+        const result = expectOk(await list(reviewer, { scope: "pool" }));
 
         expect(reviewIds(result.items)).toEqual([review.id, lockedReview.id]);
         expect(reviewIds(result.items)).not.toContain(cmsReview.id);
@@ -113,7 +113,7 @@ describe("WB review list wrapper", () => {
         folderLevels.set("folder-locked", new Map([[REVIEWER.id, "no-access"]]));
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const result = expectOk(await list(reviewer, { list: "pool" }));
+        const result = expectOk(await list(reviewer, { scope: "pool" }));
 
         expect(reviewIds(result.items)).toEqual([review.id]);
     });
@@ -122,7 +122,7 @@ describe("WB review list wrapper", () => {
         await createScenario();
         const reviewer = await asUser(REVIEWER, []);
 
-        const result = expectOk(await list(reviewer, { list: "pool" }));
+        const result = expectOk(await list(reviewer, { scope: "pool" }));
 
         expect(result).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
         expect(engineCalls).toEqual([]);
@@ -141,8 +141,8 @@ describe("WB review list wrapper", () => {
         const ownWriter = await asUser(WRITER, WB_OWN_WRITER);
         const writer = await asUser(WRITER, WB_WRITER);
 
-        const ownOnly = expectOk(await list(ownWriter, { list: "myRequests" }));
-        const all = expectOk(await list(writer, { list: "myRequests" }));
+        const ownOnly = expectOk(await list(ownWriter, { scope: "myRequests" }));
+        const all = expectOk(await list(writer, { scope: "myRequests" }));
 
         expect(reviewIds(ownOnly.items)).toEqual([ownReview.id]);
         expect(reviewIds(all.items).sort()).toEqual([ownReview.id, othersReview.id].sort());
@@ -154,7 +154,7 @@ describe("WB review list wrapper", () => {
         const reviewer = await asUser(REVIEWER, WB_READER);
 
         resetCmsEntryReads();
-        const few = expectOk(await list(reviewer, { list: "pool" }));
+        const few = expectOk(await list(reviewer, { scope: "pool" }));
         const fewReads = { ...cmsEntryReads };
         const fewFolderLists = folderPermissionLists.count;
         for (const title of ["Page B", "Page C", "Page D", "Page E", "Page F"]) {
@@ -164,7 +164,7 @@ describe("WB review list wrapper", () => {
         const more = await asUser(REVIEWER, WB_READER);
         resetCmsEntryReads();
         folderPermissionLists.count = 0;
-        const many = expectOk(await list(more, { list: "pool" }));
+        const many = expectOk(await list(more, { scope: "pool" }));
 
         expect(few.items).toHaveLength(1);
         expect(many.items).toHaveLength(6);
@@ -184,7 +184,7 @@ describe("WB review list wrapper", () => {
         await createCmsReview(admin);
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const result = expectOk(await list(reviewer, { list: "pool" }));
+        const result = expectOk(await list(reviewer, { scope: "pool" }));
 
         expect(result.items).toEqual([]);
         expect(cmsEntryReads.getUniqueFieldValues).toBe(1);
@@ -195,28 +195,34 @@ describe("WB review list wrapper", () => {
         const { review, lockedReview } = await createScenario();
         const requester = await asUser(REQUESTER, WB_WRITER);
 
-        const result = expectOk(await list(requester, { list: "myRequests" }));
+        const result = expectOk(await list(requester, { scope: "myRequests" }));
 
         expect(reviewIds(result.items)).toEqual([lockedReview.id, review.id]);
         expect(result.items[0].flags.canCancel).toBe(true);
     });
 
-    it("filters my requests by review state and refuses state filters on other lists (R91)", async () => {
+    it("filters every scope by state (B2 design 1)", async () => {
         const { review, lockedReview } = await createScenario();
         const requester = await asUser(REQUESTER, WB_WRITER);
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const inProgress = expectOk(
-            await list(requester, { list: "myRequests", where: { reviewState: "inProgress" } })
+        const inReview = expectOk(
+            await list(requester, { scope: "myRequests", where: { state: "inReview" } })
         );
         const approved = expectOk(
-            await list(requester, { list: "myRequests", where: { reviewState: "approved" } })
+            await list(requester, { scope: "myRequests", where: { state: "approved" } })
         );
-        const refused = await list(reviewer, { list: "pool", where: { stepState: "awaiting" } });
+        const pool = expectOk(
+            await list(reviewer, { scope: "pool", where: { state: "inReview" } })
+        );
+        const emptyPool = expectOk(
+            await list(reviewer, { scope: "pool", where: { state: "approved" } })
+        );
 
-        expect(reviewIds(inProgress.items)).toEqual([lockedReview.id, review.id]);
+        expect(reviewIds(inReview.items)).toEqual([lockedReview.id, review.id]);
         expect(approved.items).toEqual([]);
-        expect(refused.error.code).toBe("Workflows/Review/Validation");
+        expect(reviewIds(pool.items)).toEqual([review.id, lockedReview.id]);
+        expect(emptyPool.items).toEqual([]);
     });
 
     it("lists assigned to me and team in review once a reviewer started a step", async () => {
@@ -225,9 +231,9 @@ describe("WB review list wrapper", () => {
         const reviewer = await asUser(REVIEWER, WB_READER);
         const otherReviewer = await asUser(OTHER_REVIEWER, WB_READER);
 
-        const assigned = expectOk(await list(reviewer, { list: "assignedToMe" }));
-        const teamInReview = expectOk(await list(otherReviewer, { list: "teamInReview" }));
-        const pool = expectOk(await list(otherReviewer, { list: "pool" }));
+        const assigned = expectOk(await list(reviewer, { scope: "assignedToMe" }));
+        const teamInReview = expectOk(await list(otherReviewer, { scope: "teamInReview" }));
+        const pool = expectOk(await list(otherReviewer, { scope: "pool" }));
 
         expect(reviewIds(assigned.items)).toEqual([review.id]);
         expect(assigned.items[0].flags).toMatchObject({ canApprove: true, canReject: true });
@@ -241,7 +247,7 @@ describe("WB review list wrapper", () => {
         const reviewer = await asUser(REVIEWER, WB_READER);
 
         const result = expectOk(
-            await list(reviewer, { list: "pool", where: { titleContains: "Locked" } })
+            await list(reviewer, { scope: "pool", where: { titleContains: "Locked" } })
         );
 
         expect(reviewIds(result.items)).toEqual([lockedReview.id]);
@@ -251,9 +257,9 @@ describe("WB review list wrapper", () => {
         const { review, lockedReview } = await createScenario();
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const first = expectOk(await list(reviewer, { list: "pool", limit: 1 }));
+        const first = expectOk(await list(reviewer, { scope: "pool", limit: 1 }));
         const second = expectOk(
-            await list(reviewer, { list: "pool", limit: 1, after: first.meta.cursor })
+            await list(reviewer, { scope: "pool", limit: 1, after: first.meta.cursor })
         );
 
         expect(reviewIds(first.items)).toEqual([review.id]);
@@ -263,14 +269,14 @@ describe("WB review list wrapper", () => {
         expect(second.meta.hasMoreItems).toBe(false);
     });
 
-    it("refuses the failed steps list without reassign, before the engine (R95)", async () => {
+    it("refuses the all scope without reassign, before the engine (R95)", async () => {
         await createScenario();
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const result = await list(reviewer, { list: "failedSteps" });
+        const result = await list(reviewer, { scope: "all", where: { state: "failed" } });
 
         expect(result.error.code).toBe("Workflows/NotAuthorized");
-        expect(result.error.data).toEqual({ action: "list failed steps" });
+        expect(result.error.data).toEqual({ action: "list all reviews" });
         expect(engineCalls).toEqual([]);
     });
 
@@ -290,7 +296,9 @@ describe("WB review list wrapper", () => {
         );
         const reassigner = await asUser(REASSIGNER, [...WB_READER, WORKFLOWS_REASSIGN]);
 
-        const result = expectOk(await list(reassigner, { list: "failedSteps" }));
+        const result = expectOk(
+            await list(reassigner, { scope: "all", where: { state: "failed" } })
+        );
 
         expect(reviewIds(result.items)).toEqual([review.id]);
         expect(result.items[0].review.currentStepType).toBe("ai");
@@ -301,7 +309,7 @@ describe("WB review list wrapper", () => {
         await createScenario();
         const reviewer = await asUser(REVIEWER, WB_READER, [throwOnWorkflowsPermissions]);
 
-        const result = await list(reviewer, { list: "pool" });
+        const result = await list(reviewer, { scope: "pool" });
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).toEqual([]);
@@ -311,7 +319,7 @@ describe("WB review list wrapper", () => {
         await createScenario();
         const anonymous = await asUser(null, []);
 
-        const result = await list(anonymous, { list: "pool" });
+        const result = await list(anonymous, { scope: "pool" });
 
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
         expect(engineCalls).toEqual([]);
@@ -331,7 +339,9 @@ describe("WB review list wrapper", () => {
         );
         const reassigner = await asUser(REASSIGNER, [...WB_READER, WORKFLOWS_REASSIGN]);
 
-        const result = expectOk(await list(reassigner, { list: "failedSteps" }));
+        const result = expectOk(
+            await list(reassigner, { scope: "all", where: { state: "failed" } })
+        );
 
         expect(reviewIds(result.items)).toEqual([review.id]);
         expect(result.items[0].review.currentStepType).toBe("automation");

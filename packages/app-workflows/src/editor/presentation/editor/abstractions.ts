@@ -33,6 +33,9 @@ export type WorkflowEditorStatus = "loading" | "ready" | "failed" | "noAccess";
 // What the right side shows: nothing, a loading workflow, a model without a workflow, or a draft.
 export type WorkflowEditorDetailKind = "none" | "loading" | "empty" | "workflow";
 
+// The model list filter of the panel: every model, only with a workflow, only without.
+export type ModelWorkflowFilter = "all" | "with" | "without";
+
 export interface ModelRowVm {
     modelId: string;
     name: string;
@@ -41,12 +44,17 @@ export interface ModelRowVm {
     bound: boolean;
     unsaved: boolean;
     active: boolean;
+    // The row menu is off while a save or a dialog action runs, as the header's Delete is.
+    actionsDisabled: boolean;
 }
 
 export interface ModelPanelVm {
     label: string;
     showSearch: boolean;
     search: string;
+    // The All / With workflow / Without workflow control; the CMS only.
+    showFilter: boolean;
+    filter: ModelWorkflowFilter;
     rows: ModelRowVm[];
     loading: boolean;
     loadingMore: boolean;
@@ -272,6 +280,12 @@ export interface IWorkflowEditorPresenter {
     // The `Delete workflow` menu item: asks first (R278).
     requestDelete(): void;
     setSearch(search: string): void;
+    // Sets the filter and reloads the model list from the first page.
+    setWorkflowFilter(filter: ModelWorkflowFilter): void;
+    // The row menu: opens the model, then starts the same flow as the no-workflow state's button.
+    createWorkflowForModel(modelId: string): Promise<void>;
+    // The row menu: opens the model, then asks to delete its workflow like the header's button.
+    requestDeleteWorkflowForModel(modelId: string): Promise<void>;
     loadMore(): Promise<void>;
     selectModel(modelId: string): Promise<void>;
     createWorkflow(): void;

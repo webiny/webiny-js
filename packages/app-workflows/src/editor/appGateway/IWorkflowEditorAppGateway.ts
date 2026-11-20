@@ -9,6 +9,8 @@ import type { RoutingStepConfig } from "~/editor/domain/types.js";
 export interface ListWorkflowModelsParams {
     // The model name filter; an empty string lists every model.
     search: string;
+    // `true` lists only models with a workflow, `false` only without, `null` every model.
+    hasWorkflow: boolean | null;
     limit: number;
     after: string | null;
 }

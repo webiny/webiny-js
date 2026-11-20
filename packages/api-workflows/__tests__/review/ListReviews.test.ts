@@ -24,7 +24,9 @@ import {
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { matchesReviewReadFilter } from "~/domain/review/matchesReviewReadFilter.js";
-import type { ReviewData, ReviewListKind } from "~/domain/review/types.js";
+import type { ReviewData } from "~/domain/review/types.js";
+import type { ReviewListScope } from "~/domain/review/ReviewListScope.js";
+import type { ReviewListState } from "~/domain/review/ReviewListState.js";
 import { ListReviewsUseCase } from "~/features/review/ListReviews/index.js";
 import { ReviewListLimits } from "~/features/review/ListReviews/ReviewListLimits.js";
 import { decodeReviewListCursor } from "~/features/review/ListReviews/reviewListCursor.js";
@@ -148,21 +150,15 @@ const poolRows = (count: number): ReviewData[] => {
 };
 
 /** What makes a seeded review match each list for the `reviewer` viewer. */
-const MATCHING: Record<ReviewListKind, Partial<ListedReviewParams>> = {
+const MATCHING: Record<ReviewListScope, Partial<ListedReviewParams>> = {
     assignedToMe: { stepState: "inReview", ownerId: reviewer.id },
     pool: { stepState: "awaiting" },
     teamInReview: { stepState: "inReview", ownerId: otherReviewer.id },
     myRequests: { requester: reviewer },
-    failedSteps: { stepState: "failed", stepType: "ai" }
+    all: { stepState: "failed", stepType: "ai" }
 };
 
-const ALL_LISTS: ReviewListKind[] = [
-    "assignedToMe",
-    "pool",
-    "teamInReview",
-    "myRequests",
-    "failedSteps"
-];
+const ALL_SCOPES: ReviewListScope[] = ["assignedToMe", "pool", "teamInReview", "myRequests", "all"];
 
 describe("ListReviewsUseCase lists (spec 11, R91)", () => {
     it("lists the viewer's in-review reviews in assignedToMe, oldest change first", async () => {
@@ -189,7 +185,7 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         ]);
 
         const result = expectOk(
-            await listReviews.execute(createListInput({ list: "assignedToMe" }))
+            await listReviews.execute(createListInput({ scope: "assignedToMe" }))
         );
 
         expect(listedIds(result)).toEqual(["a02", "a01"]);
@@ -205,7 +201,7 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
             { id: "p05", minute: 5, stepState: "inReview", ownerId: otherReviewer.id }
         ]);
 
-        const result = expectOk(await listReviews.execute(createListInput({ list: "pool" })));
+        const result = expectOk(await listReviews.execute(createListInput({ scope: "pool" })));
 
         expect(listedIds(result)).toEqual(["p01", "p04"]);
     });
@@ -225,7 +221,7 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         ]);
 
         const result = expectOk(
-            await listReviews.execute(createListInput({ list: "teamInReview" }))
+            await listReviews.execute(createListInput({ scope: "teamInReview" }))
         );
 
         expect(listedIds(result)).toEqual(["t01"]);
@@ -252,15 +248,17 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
             }
         ]);
 
-        const all = expectOk(await listReviews.execute(createListInput({ list: "myRequests" })));
+        const all = expectOk(
+            await listReviews.execute(createListInput({ scope: "myRequests", where: {} }))
+        );
         const approved = expectOk(
             await listReviews.execute(
-                createListInput({ list: "myRequests", where: { reviewState: "approved" } })
+                createListInput({ scope: "myRequests", where: { state: "approved" } })
             )
         );
         const awaiting = expectOk(
             await listReviews.execute(
-                createListInput({ list: "myRequests", where: { stepState: "awaiting" } })
+                createListInput({ scope: "myRequests", where: { state: "inReview" } })
             )
         );
 
@@ -269,30 +267,119 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         expect(listedIds(awaiting)).toEqual(["m01"]);
     });
 
-    it("lists failed AI and automation steps in failedSteps", async () => {
+    it("lists every readable review in all, by state, with the default sort per state", async () => {
         const listReviews = await createStorageContext([
             { id: "f01", minute: 1, stepState: "failed", stepType: "ai" },
             { id: "f02", minute: 2, stepState: "failed", stepType: "automation" },
-            { id: "f03", minute: 3, stepState: "failed", stepType: "review" },
-            { id: "f04", minute: 4, stepState: "awaiting", stepType: "ai" }
+            { id: "f03", minute: 3, stepState: "awaiting", stepType: "ai", teamIds: [] },
+            {
+                id: "f04",
+                minute: 4,
+                requester: otherReviewer,
+                stepState: "inReview",
+                ownerId: otherReviewer.id,
+                teamIds: [OTHER_TEAM_ID]
+            },
+            { id: "f05", minute: 5, state: "approved", stepState: "approved" },
+            { id: "f06", minute: 6, state: "rejected", stepState: "rejected" },
+            { id: "f07", minute: 7, isActive: false, state: "cancelled", stepState: null }
         ]);
+        const list = async (state: ReviewListState) => {
+            return listedIds(
+                expectOk(
+                    await listReviews.execute(createListInput({ scope: "all", where: { state } }))
+                )
+            );
+        };
 
-        const result = expectOk(
-            await listReviews.execute(createListInput({ list: "failedSteps" }))
-        );
-
-        expect(listedIds(result)).toEqual(["f01", "f02"]);
+        expect(await list("all")).toEqual(["f06", "f05", "f04", "f03", "f02", "f01"]);
+        expect(await list("failed")).toEqual(["f01", "f02"]);
+        expect(await list("inReview")).toEqual(["f03", "f04"]);
+        expect(await list("approved")).toEqual(["f05"]);
+        expect(await list("rejected")).toEqual(["f06"]);
     });
 
-    it.each(ALL_LISTS)("filters %s by a part of the title", async list => {
+    it("filters the queues by state", async () => {
         const listReviews = await createStorageContext([
-            { id: "x01", minute: 1, title: "Spring LAUNCH", ...MATCHING[list] },
-            { id: "x02", minute: 2, title: "Autumn sale", ...MATCHING[list] }
+            { id: "q01", minute: 1, stepState: "inReview", ownerId: reviewer.id },
+            {
+                id: "q02",
+                minute: 2,
+                state: "approved",
+                stepState: "approved",
+                ownerId: reviewer.id
+            },
+            {
+                id: "q03",
+                minute: 3,
+                state: "rejected",
+                stepState: "rejected",
+                ownerId: otherReviewer.id
+            },
+            { id: "q04", minute: 4, stepState: "inReview", ownerId: otherReviewer.id }
+        ]);
+        const list = async (scope: ReviewListScope, state: ReviewListState) => {
+            return listedIds(
+                expectOk(await listReviews.execute(createListInput({ scope, where: { state } })))
+            );
+        };
+
+        expect(await list("assignedToMe", "inReview")).toEqual(["q01"]);
+        expect(await list("assignedToMe", "approved")).toEqual(["q02"]);
+        expect(await list("assignedToMe", "all")).toEqual(["q02", "q01"]);
+        expect(await list("teamInReview", "inReview")).toEqual(["q04"]);
+        expect(await list("teamInReview", "rejected")).toEqual(["q03"]);
+        expect(await list("teamInReview", "all")).toEqual(["q04", "q03"]);
+    });
+
+    it("sorts by title both ways and pages through equal titles without a gap (B2 design 2)", async () => {
+        const listReviews = await createStorageContext([
+            { id: "n01", minute: 1, title: "beta" },
+            { id: "n02", minute: 2, title: "  Alpha " },
+            { id: "n03", minute: 3, title: "Gamma" },
+            { id: "n04", minute: 4, title: "alpha" },
+            { id: "n05", minute: 5, title: "ALPHA" },
+            { id: "n06", minute: 6, title: "Delta" }
+        ]);
+        const pageThrough = async (sort: "title_ASC" | "title_DESC") => {
+            const ids: string[] = [];
+            let after: string | null = null;
+            for (let call = 0; call < 10; call++) {
+                const page: ListReviewsUseCase.Output = expectOk(
+                    await listReviews.execute(createListInput({ sort, limit: 2, after }))
+                );
+                ids.push(...listedIds(page));
+                after = page.meta.cursor;
+                if (!page.meta.hasMoreItems) {
+                    break;
+                }
+            }
+            return ids;
+        };
+
+        const ascending = await pageThrough("title_ASC");
+        const descending = await pageThrough("title_DESC");
+
+        // The three "alpha" titles tie; their order among themselves is the storage's.
+        expect(ascending.slice(0, 3).sort()).toEqual(["n02", "n04", "n05"]);
+        expect(ascending.slice(3)).toEqual(["n01", "n06", "n03"]);
+        expect(descending.slice(0, 3)).toEqual(["n03", "n06", "n01"]);
+        expect(descending.slice(3).sort()).toEqual(["n02", "n04", "n05"]);
+    });
+
+    it.each(ALL_SCOPES)("filters %s by a part of the title", async scope => {
+        const listReviews = await createStorageContext([
+            { id: "x01", minute: 1, title: "Spring LAUNCH", ...MATCHING[scope] },
+            { id: "x02", minute: 2, title: "Autumn sale", ...MATCHING[scope] }
         ]);
 
-        const all = expectOk(await listReviews.execute(createListInput({ list })));
+        const all = expectOk(
+            await listReviews.execute(createListInput({ scope, where: { state: "all" } }))
+        );
         const filtered = expectOk(
-            await listReviews.execute(createListInput({ list, where: { titleContains: "launch" } }))
+            await listReviews.execute(
+                createListInput({ scope, where: { state: "all", titleContains: "launch" } })
+            )
         );
 
         expect(listedIds(all).sort()).toEqual(["x01", "x02"]);
@@ -308,11 +395,13 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         ]);
 
         const poolDescending = expectOk(
-            await listReviews.execute(createListInput({ list: "pool", sort: "lastChangedOn_DESC" }))
+            await listReviews.execute(
+                createListInput({ scope: "pool", sort: "lastChangedOn_DESC" })
+            )
         );
         const myRequestsAscending = expectOk(
             await listReviews.execute(
-                createListInput({ list: "myRequests", sort: "lastChangedOn_ASC" })
+                createListInput({ scope: "myRequests", sort: "lastChangedOn_ASC" })
             )
         );
 
@@ -419,28 +508,40 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
 });
 
 describe("ListReviewsUseCase input rules (R91, R92)", () => {
-    it.each(["assignedToMe", "pool", "teamInReview", "failedSteps"] as ReviewListKind[])(
-        "rejects reviewState and stepState outside myRequests: %s",
-        async list => {
+    it.each([
+        ["pool", "failed"],
+        ["pool", "approved"],
+        ["pool", "rejected"],
+        ["assignedToMe", "failed"],
+        ["teamInReview", "failed"]
+    ] as [ReviewListScope, ReviewListState][])(
+        "answers %s × %s, empty by definition, without a query",
+        async (scope, state) => {
             const { listReviews, calls } = await createMemoryContext(poolRows(1));
 
-            const byReviewState = await listReviews.execute(
-                createListInput({ list, where: { reviewState: "approved" } })
-            );
-            const byStepState = await listReviews.execute(
-                createListInput({ list, where: { stepState: "awaiting" } })
+            const result = expectOk(
+                await listReviews.execute(createListInput({ scope, where: { state } }))
             );
 
-            for (const result of [byReviewState, byStepState]) {
-                expect(result.isFail()).toBe(true);
-                expect(result.error.code).toBe("Workflows/Review/Validation");
-                expect(result.error.message).toBe(
-                    "The review and step state filters apply only to the my requests list."
-                );
-            }
+            expect(result).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
             expect(calls.list).toBe(0);
         }
     );
+
+    it("fails a cursor made with another sort with a validation error and no query", async () => {
+        const { listReviews, calls } = await createMemoryContext(poolRows(3));
+        const first = expectOk(await listReviews.execute(createListInput({ limit: 1 })));
+        const before = calls.list;
+
+        const result = await listReviews.execute(
+            createListInput({ limit: 1, sort: "title_ASC", after: first.meta.cursor })
+        );
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe("The list cursor was made with another sort.");
+        expect(calls.list).toBe(before);
+    });
 
     it("returns an empty page without a query for no models, or no teams in pool and teamInReview", async () => {
         const { listReviews, calls } = await createMemoryContext(poolRows(3));
@@ -451,10 +552,10 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
             )
         );
         const noTeamsPool = expectOk(
-            await listReviews.execute(createListInput({ list: "pool", viewerTeamIds: [] }))
+            await listReviews.execute(createListInput({ scope: "pool", viewerTeamIds: [] }))
         );
         const noTeamsInReview = expectOk(
-            await listReviews.execute(createListInput({ list: "teamInReview", viewerTeamIds: [] }))
+            await listReviews.execute(createListInput({ scope: "teamInReview", viewerTeamIds: [] }))
         );
 
         for (const result of [noModels, noTeamsPool, noTeamsInReview]) {
@@ -522,7 +623,8 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
 
         expect(listedIds(first).at(-1)).toBe("pool-100");
         expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({
-            lastChangedOn: rows[99].lastChangedOn,
+            sort: "lastChangedOn_ASC",
+            value: rows[99].lastChangedOn,
             ids: ["pool-100"]
         });
         expect(listedIds(second)[0]).toBe("pool-101");
@@ -576,7 +678,8 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         expect(calls.getMany).toBe(1);
         expect(result.meta.hasMoreItems).toBe(true);
         expect(decodeReviewListCursor(result.meta.cursor ?? "")).toEqual({
-            lastChangedOn: rows[2].lastChangedOn,
+            sort: "lastChangedOn_ASC",
+            value: rows[2].lastChangedOn,
             ids: ["pool-3"]
         });
     });
@@ -592,7 +695,8 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         // One page of 50 rows read and confirmed; only the first three were examined.
         expect(firstCalls).toEqual({ list: 1, getMany: 1 });
         expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({
-            lastChangedOn: rows[2].lastChangedOn,
+            sort: "lastChangedOn_ASC",
+            value: rows[2].lastChangedOn,
             ids: ["pool-3"]
         });
         expect(full.items).toHaveLength(100);
@@ -628,7 +732,8 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
 
         expect(listedIds(first)).toEqual(["pool-1", "pool-2"]);
         expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({
-            lastChangedOn: sameTime,
+            sort: "lastChangedOn_ASC",
+            value: sameTime,
             ids: ["pool-1", "pool-2"]
         });
         expect(listedIds(second)).toEqual(["pool-3"]);

@@ -12,13 +12,15 @@ import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { IReviewRowProvider } from "../abstractions.js";
-import type { ReviewListTab } from "../abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewListPresenterFeature } from "../feature.js";
 import { ReviewListDialogs } from "./ReviewListDialogs.js";
 import { ReviewListEmpty } from "./ReviewListEmpty.js";
 import { ReviewListNotice } from "./ReviewListNotice.js";
+import { ReviewListScopeControl } from "./ReviewListScopeControl.js";
+import { ReviewListStateControl } from "./ReviewListStateControl.js";
 import { ReviewListTable } from "./ReviewListTable.js";
-import { ReviewListTabs } from "./ReviewListTabs.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
 export interface ReviewListViewProps {
@@ -27,7 +29,9 @@ export interface ReviewListViewProps {
     namespaces: string[];
     showContentType: boolean;
     contentTypeFilter: IReviewContentTypeFilter | null;
-    initialTab?: ReviewListTab;
+    // From the route; the presenter falls back to the defaults for a missing or invalid value.
+    initialScope?: ReviewListScope | null;
+    initialState?: ReviewListState | null;
 }
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4, 5];
@@ -53,16 +57,24 @@ const ReviewListSkeleton = () => {
 
 export const ReviewListView = createReactiveComponent((props: ReviewListViewProps) => {
     const { app, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
-    const initialTab = props.initialTab ?? "assignedToMe";
+    const initialScope = props.initialScope ?? null;
+    const initialState = props.initialState ?? null;
     const { presenter } = useFeature(ReviewListPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
     useEffect(() => {
-        void presenter.init({ app, namespaces, rowProvider, initialTab, showContentType });
+        void presenter.init({
+            app,
+            namespaces,
+            rowProvider,
+            initialScope,
+            initialState,
+            showContentType
+        });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, app, rowProvider, namespacesKey, initialTab, showContentType]);
+    }, [presenter, app, rowProvider, namespacesKey, initialScope, initialState, showContentType]);
 
     const vm = presenter.vm;
 
@@ -139,8 +151,9 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                         </Heading>
                     </div>
                 </div>
-                <div className="px-lg">
-                    <ReviewListTabs presenter={presenter} />
+                <div className="px-lg flex flex-wrap items-center gap-sm">
+                    <ReviewListScopeControl presenter={presenter} />
+                    <ReviewListStateControl presenter={presenter} />
                 </div>
                 <div className="px-md pb-sm">
                     <ReviewListToolbar

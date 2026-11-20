@@ -21,7 +21,8 @@ import { StepState } from "~/review/domain/StepState.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import type { IReviewRowProvider } from "../abstractions.js";
-import type { ReviewListTab } from "../abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewListPresenterFeature } from "../feature.js";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -80,7 +81,8 @@ interface RenderOptions {
     results?: ListResult[];
     showContentType?: boolean;
     contentTypeFilter?: IReviewContentTypeFilter | null;
-    initialTab?: ReviewListTab;
+    initialScope?: ReviewListScope;
+    initialState?: ReviewListState;
     permissions?: IPermission[];
     loading?: boolean;
 }
@@ -126,7 +128,8 @@ const renderView = (options: RenderOptions = {}) => {
                 namespaces={["cms.article", "other.app"]}
                 showContentType={options.showContentType ?? true}
                 contentTypeFilter={options.contentTypeFilter ?? null}
-                initialTab={options.initialTab}
+                initialScope={options.initialScope}
+                initialState={options.initialState}
             />
         </DiContainerProvider>
     );
@@ -633,98 +636,155 @@ describe("ReviewListView", () => {
         expect(listReviews.execute).toHaveBeenCalledTimes(2);
     });
 
-    it("shows the empty state of the tab and switches tabs", async () => {
+    const scopeControl = () => screen.getByRole("radiogroup", { name: "Whose reviews" });
+    const stateControl = () => screen.getByRole("radiogroup", { name: "Review state" });
+    const radioLabels = (group: HTMLElement) => {
+        return within(group)
+            .getAllByRole("radio")
+            .map(radio => radio.textContent);
+    };
+
+    it("shows the empty state of the scope and switches scopes", async () => {
         const { listReviews } = renderView({ results: [page([]), page([])] });
 
         expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
 
-        fireEvent.mouseDown(await screen.findByRole("tab", { name: "Team pool" }));
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "Team pool" }));
 
         expect(await screen.findByText("Your team pools are empty")).toBeTruthy();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ list: "pool", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({
+                scope: "pool",
+                where: { state: "inReview" },
+                sort: "lastChangedOn_ASC"
+            })
         );
     });
 
-    it("renders the four tabs in design order", async () => {
+    it("renders the four scopes and the five states in design order, with accessible names", async () => {
         renderView();
+        await screen.findByText("Nothing assigned to you");
 
-        const tabs = await screen.findAllByRole("tab");
-
-        expect(tabs.map(tab => tab.textContent)).toEqual([
+        expect(radioLabels(scopeControl())).toEqual([
             "Assigned to me",
             "Team pool",
             "Team in review",
-            "My requests"
+            "Requested by me"
         ]);
+        expect(radioLabels(stateControl())).toEqual([
+            "All",
+            "In review",
+            "Failed",
+            "Approved",
+            "Rejected"
+        ]);
+        const inReview = within(stateControl()).getByRole("radio", { name: "In review" });
+        expect(inReview.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("renders the Failed steps tab as the fifth tab for a viewer with reassign (QBZ-29)", async () => {
+    it("renders All as the fifth scope for a viewer with reassign (QBZ-29)", async () => {
         renderView({ permissions: REASSIGN });
+        await screen.findByText("Nothing assigned to you");
 
-        const tabs = await screen.findAllByRole("tab");
-
-        expect(tabs.map(tab => tab.textContent)).toEqual([
+        expect(radioLabels(scopeControl())).toEqual([
             "Assigned to me",
             "Team pool",
             "Team in review",
-            "My requests",
-            "Failed steps"
+            "Requested by me",
+            "All"
         ]);
     });
 
-    it("has no Failed steps tab for a viewer with the editor permission only", async () => {
+    it("has no All scope for a viewer with the editor permission only", async () => {
         renderView({ permissions: [{ name: "workflows", editor: true }] });
+        await screen.findByText("Nothing assigned to you");
 
-        const tabs = await screen.findAllByRole("tab");
-
-        expect(tabs.map(tab => tab.textContent)).not.toContain("Failed steps");
-        expect(tabs).toHaveLength(4);
+        expect(radioLabels(scopeControl())).not.toContain("All");
+        expect(radioLabels(scopeControl())).toHaveLength(4);
     });
 
-    it("opens the tab named by the route with reassign and shows its empty state (QBZ-29)", async () => {
-        const { listReviews } = renderView({ initialTab: "failedSteps", permissions: REASSIGN });
+    it("disables the states empty by definition for the scope, without hiding them", async () => {
+        renderView({ initialScope: "pool" });
+        await screen.findByText("Your team pools are empty");
+
+        const disabled = within(stateControl())
+            .getAllByRole("radio")
+            .filter(radio => radio.hasAttribute("disabled"))
+            .map(radio => radio.textContent);
+        expect(disabled).toEqual(["Failed", "Approved", "Rejected"]);
+    });
+
+    it("switches the state and keeps the scope", async () => {
+        const { listReviews } = renderView({
+            initialScope: "myRequests",
+            results: [page([]), page([])]
+        });
+        await screen.findByText("You haven’t requested any reviews");
+
+        fireEvent.click(within(stateControl()).getByRole("radio", { name: "Approved" }));
+
+        expect(await screen.findByText("No reviews match these filters")).toBeTruthy();
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { state: "approved" },
+                sort: "lastChangedOn_DESC"
+            })
+        );
+    });
+
+    it("opens the scope and state named by the route with reassign and shows their empty state (QBZ-29)", async () => {
+        const { listReviews } = renderView({
+            initialScope: "all",
+            initialState: "failed",
+            permissions: REASSIGN
+        });
 
         expect(await screen.findByText("No failed steps")).toBeTruthy();
         expect(
             screen.getByText("AI and automation steps that hit a technical error appear here.")
         ).toBeTruthy();
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({
+                scope: "all",
+                where: { state: "failed" },
+                sort: "lastChangedOn_ASC"
+            })
         );
-        const tab = screen.getByRole("tab", { name: "Failed steps" });
-        expect(tab.getAttribute("aria-selected")).toBe("true");
+        const all = within(scopeControl()).getByRole("radio", { name: "All" });
+        expect(all.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("falls back to the default tab when the route asks for Failed steps without permission", async () => {
-        const { listReviews } = renderView({ initialTab: "failedSteps" });
+    it("falls back to the default scope when the route asks for All without permission", async () => {
+        const { listReviews } = renderView({ initialScope: "all", initialState: "failed" });
 
         expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
         expect(listReviews.execute).toHaveBeenCalledTimes(1);
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "assignedToMe" })
+            expect.objectContaining({ scope: "assignedToMe", where: { state: "inReview" } })
         );
-        expect(screen.queryByRole("tab", { name: "Failed steps" })).toBeNull();
+        expect(within(scopeControl()).queryByRole("radio", { name: "All" })).toBeNull();
     });
 
-    it("switches to the Failed steps tab from the tab bar", async () => {
+    it("switches to All from the scope control and shows its empty state", async () => {
         const { listReviews } = renderView({
             permissions: REASSIGN,
             results: [page([]), page([])]
         });
         await screen.findByText("Nothing assigned to you");
 
-        fireEvent.mouseDown(await screen.findByRole("tab", { name: "Failed steps" }));
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "All" }));
 
-        expect(await screen.findByText("No failed steps")).toBeTruthy();
+        expect(await screen.findByText("No reviews yet")).toBeTruthy();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({ scope: "all", where: { state: "inReview" } })
         );
     });
 
     it("lists a failed step with its tag, the step title as owner and a Restart menu item (QBZ-29, QBZ-79)", async () => {
         renderView({
-            initialTab: "failedSteps",
+            initialScope: "all",
+            initialState: "failed",
             permissions: REASSIGN,
             results: [
                 page([
@@ -754,7 +814,8 @@ describe("ReviewListView", () => {
 
     it("opens the restart dialog on the row's use cases and refetches once when it is done (R210, R266)", async () => {
         const { listReviews, fakes } = renderView({
-            initialTab: "failedSteps",
+            initialScope: "all",
+            initialState: "failed",
             permissions: REASSIGN,
             results: [
                 page([
@@ -840,19 +901,53 @@ describe("ReviewListView", () => {
         expect(screen.queryAllByRole("combobox")).toHaveLength(0);
     });
 
-    it("shows the review state and step state filters on My requests", async () => {
-        renderView({ initialTab: "myRequests", showContentType: false });
+    it("has no separate review state or step state select on Requested by me", async () => {
+        renderView({ initialScope: "myRequests", showContentType: false });
         await screen.findByText("You haven’t requested any reviews");
-        expect(screen.getAllByRole("combobox")).toHaveLength(2);
+        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByText("Any review state")).toBeNull();
+        expect(screen.queryByText("Any step state")).toBeNull();
     });
 
-    it("uses the initial tab and the tab's default sort on the first request", async () => {
-        const { listReviews } = renderView({ initialTab: "myRequests" });
+    it("uses the initial scope, its default state and their default sort on the first request", async () => {
+        const { listReviews } = renderView({ initialScope: "myRequests" });
         await screen.findByText("You haven’t requested any reviews");
 
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "myRequests", sort: "lastChangedOn_DESC" })
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { state: "all" },
+                sort: "lastChangedOn_DESC"
+            })
         );
+    });
+
+    it("sorts by title from the Title header, one sort at a time (B2 design 2)", async () => {
+        const { listReviews } = renderView({
+            results: [
+                page([createReviewListItem({ id: "r1", title: "Sortable" })]),
+                page([createReviewListItem({ id: "r1", title: "Sortable" })]),
+                page([createReviewListItem({ id: "r1", title: "Sortable" })])
+            ]
+        });
+        await screen.findByText("Sortable");
+
+        fireEvent.click(screen.getByTitle("Sort by title, A to Z"));
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sort: "title_ASC" })
+        );
+        expect(await screen.findByText("Title ↑")).toBeTruthy();
+        expect(screen.getByText("Last change")).toBeTruthy();
+
+        fireEvent.click(screen.getByTitle("Title, A to Z"));
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sort: "title_DESC" })
+        );
+        expect(await screen.findByText("Title ↓")).toBeTruthy();
     });
 
     it("toggles the sort from the Last change header", async () => {

@@ -94,7 +94,7 @@ describe("CMS review list wrapper", () => {
         const { review, lockedReview } = await createScenario();
         const reviewer = await createUserContext({ identity: REVIEWER, permissions: CMS_READER });
 
-        const page = expectOk(await list(reviewer, { list: "pool" }));
+        const page = expectOk(await list(reviewer, { scope: "pool" }));
 
         expect(page.items.map(item => item.review.id).sort()).toEqual(
             [review.id, lockedReview.id].sort()
@@ -116,7 +116,7 @@ describe("CMS review list wrapper", () => {
         folderLevels.set("folder-locked", new Map([[REVIEWER.id, "no-access"]]));
         const reviewer = await createUserContext({ identity: REVIEWER, permissions: CMS_READER });
 
-        const page = expectOk(await list(reviewer, { list: "pool" }));
+        const page = expectOk(await list(reviewer, { scope: "pool" }));
 
         expect(page.items.map(item => item.review.id)).toEqual([review.id]);
         expect(page.items.map(item => item.review.title)).toEqual(["Ann"]);
@@ -131,9 +131,9 @@ describe("CMS review list wrapper", () => {
             permissions: CMS_READER
         });
 
-        const assigned = expectOk(await list(reviewer, { list: "assignedToMe" }));
-        const teamInReview = expectOk(await list(otherReviewer, { list: "teamInReview" }));
-        const ownTeamInReview = expectOk(await list(reviewer, { list: "teamInReview" }));
+        const assigned = expectOk(await list(reviewer, { scope: "assignedToMe" }));
+        const teamInReview = expectOk(await list(otherReviewer, { scope: "teamInReview" }));
+        const ownTeamInReview = expectOk(await list(reviewer, { scope: "teamInReview" }));
 
         expect(assigned.items.map(item => item.review.id)).toEqual([review.id]);
         expect(assigned.items[0].flags.canApprove).toBe(true);
@@ -151,7 +151,7 @@ describe("CMS review list wrapper", () => {
             permissions: CMS_WRITER
         });
 
-        const page = expectOk(await list(requester, { list: "myRequests" }));
+        const page = expectOk(await list(requester, { scope: "myRequests" }));
 
         expect(page.items.map(item => item.review.id).sort()).toEqual(
             [review.id, lockedReview.id].sort()
@@ -167,7 +167,7 @@ describe("CMS review list wrapper", () => {
             permissions: CMS_WRITER
         });
 
-        const page = expectOk(await list(requester, { list: "myRequests" }));
+        const page = expectOk(await list(requester, { scope: "myRequests" }));
 
         expect(page.items.map(item => item.review.model)).toEqual(["cms.author", "cms.author"]);
         expect(page.items.map(item => item.review.id).sort()).toEqual(
@@ -183,11 +183,11 @@ describe("CMS review list wrapper", () => {
         });
 
         const author = expectOk(
-            await list(requester, { list: "myRequests", where: { modelId: "author" } })
+            await list(requester, { scope: "myRequests", where: { modelId: "author" } })
         );
         engineCalls.length = 0;
         const unknown = expectOk(
-            await list(requester, { list: "myRequests", where: { modelId: "book" } })
+            await list(requester, { scope: "myRequests", where: { modelId: "book" } })
         );
 
         expect(author.items.map(item => item.review.id).sort()).toEqual(
@@ -205,23 +205,23 @@ describe("CMS review list wrapper", () => {
         });
 
         const page = expectOk(
-            await list(requester, { list: "myRequests", where: { titleContains: "Lock" } })
+            await list(requester, { scope: "myRequests", where: { titleContains: "Lock" } })
         );
 
         expect(page.items.map(item => item.review.id)).toEqual([lockedReview.id]);
     });
 
-    it("refuses the failed steps list without reassign", async () => {
+    it("refuses the all scope without reassign", async () => {
         await createScenario();
         const reviewer = await createCountingContext({
             identity: REVIEWER,
             permissions: CMS_READER
         });
 
-        const result = await list(reviewer, { list: "failedSteps" });
+        const result = await list(reviewer, { scope: "all", where: { state: "failed" } });
 
         expect(result.error.code).toBe("Workflows/NotAuthorized");
-        expect(result.error.data).toEqual({ action: "list failed steps" });
+        expect(result.error.data).toEqual({ action: "list all reviews" });
         expect(engineCalls).not.toContain("ListReviews");
     });
 
@@ -233,7 +233,7 @@ describe("CMS review list wrapper", () => {
             permissions: [...CMS_READER, WORKFLOWS_REASSIGN]
         });
 
-        const page = expectOk(await list(reassigner, { list: "failedSteps" }));
+        const page = expectOk(await list(reassigner, { scope: "all", where: { state: "failed" } }));
 
         expect(page.items.map(item => item.review.id)).toEqual([review.id]);
         expect(page.items[0].review.currentStepType).toBe("ai");
@@ -246,9 +246,9 @@ describe("CMS review list wrapper", () => {
             permissions: CMS_WRITER
         });
 
-        const first = expectOk(await list(requester, { list: "myRequests", limit: 1 }));
+        const first = expectOk(await list(requester, { scope: "myRequests", limit: 1 }));
         const second = expectOk(
-            await list(requester, { list: "myRequests", limit: 1, after: first.meta.cursor })
+            await list(requester, { scope: "myRequests", limit: 1, after: first.meta.cursor })
         );
 
         expect(first.items).toHaveLength(1);
@@ -264,7 +264,7 @@ describe("CMS review list wrapper", () => {
         await createScenario();
         const nobody = await createCountingContext({ identity: NOBODY, permissions: [] });
 
-        const page = expectOk(await list(nobody, { list: "pool" }));
+        const page = expectOk(await list(nobody, { scope: "pool" }));
 
         expect(page).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
         expect(engineCalls).not.toContain("ListReviews");
@@ -278,7 +278,7 @@ describe("CMS review list wrapper", () => {
             legacyPlugins: [throwOnWorkflowsPermissions]
         });
 
-        const result = await list(reviewer, { list: "pool" });
+        const result = await list(reviewer, { scope: "pool" });
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).not.toContain("ListReviews");
@@ -288,7 +288,7 @@ describe("CMS review list wrapper", () => {
         await createScenario();
         const anonymous = await createCountingContext({ identity: null, permissions: [] });
 
-        const result = await list(anonymous, { list: "pool" });
+        const result = await list(anonymous, { scope: "pool" });
 
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
         expect(engineCalls).toEqual([]);
@@ -302,7 +302,7 @@ describe("CMS review list wrapper", () => {
             legacyPlugins: [throwOnListModels]
         });
 
-        const result = await list(reviewer, { list: "pool" });
+        const result = await list(reviewer, { scope: "pool" });
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).not.toContain("ListReviews");
@@ -317,7 +317,7 @@ describe("CMS review list wrapper", () => {
         engineCalls.length = 0;
 
         const page = expectOk(
-            await list(requester, { list: "myRequests", where: { modelId: "" } })
+            await list(requester, { scope: "myRequests", where: { modelId: "" } })
         );
 
         expect(page).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
@@ -341,9 +341,9 @@ describe("CMS review list wrapper", () => {
         });
         engineCalls.length = 0;
 
-        const all = expectOk(await list(requester, { list: "myRequests" }));
+        const all = expectOk(await list(requester, { scope: "myRequests" }));
         const asked = expectOk(
-            await list(requester, { list: "myRequests", where: { modelId: "siteSetting" } })
+            await list(requester, { scope: "myRequests", where: { modelId: "siteSetting" } })
         );
 
         expect(all.items.map(item => item.review.id).sort()).toEqual(
@@ -367,8 +367,8 @@ describe("CMS review list wrapper", () => {
         );
         const writer = await createUserContext({ identity: WRITER, permissions: CMS_WRITER });
 
-        const ownOnly = expectOk(await list(ownWriter, { list: "myRequests" }));
-        const all = expectOk(await list(writer, { list: "myRequests" }));
+        const ownOnly = expectOk(await list(ownWriter, { scope: "myRequests" }));
+        const all = expectOk(await list(writer, { scope: "myRequests" }));
 
         expect(ownOnly.items.map(item => item.review.id)).toEqual([ownReview.id]);
         expect(all.items.map(item => item.review.id).sort()).toEqual(
@@ -417,11 +417,11 @@ describe("CMS review list wrapper", () => {
         };
 
         const readable = expectOk(
-            await list(await asRequester(), { list: "myRequests", where: { modelId: "book" } })
+            await list(await asRequester(), { scope: "myRequests", where: { modelId: "book" } })
         );
         folderLevels.set("folder-locked", new Map([[REQUESTER.id, "no-access"]]));
         const denied = expectOk(
-            await list(await asRequester(), { list: "myRequests", where: { modelId: "book" } })
+            await list(await asRequester(), { scope: "myRequests", where: { modelId: "book" } })
         );
 
         // An approved review stays active, so "book" gets folder rules and the review is listed
@@ -441,8 +441,8 @@ describe("CMS review list wrapper", () => {
             permissions: CMS_ENTRY_READER_WITHOUT_MODEL
         });
 
-        const noGroup = expectOk(await list(withoutGroupRead, { list: "pool" }));
-        const noModel = expectOk(await list(withoutModelRead, { list: "pool" }));
+        const noGroup = expectOk(await list(withoutGroupRead, { scope: "pool" }));
+        const noModel = expectOk(await list(withoutModelRead, { scope: "pool" }));
 
         expect(noGroup).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
         expect(noModel).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
@@ -461,7 +461,7 @@ describe("CMS review list wrapper", () => {
 
         resetCmsEntryReads();
         folderPermissionLists.count = 0;
-        const few = expectOk(await list(reviewer, { list: "pool" }));
+        const few = expectOk(await list(reviewer, { scope: "pool" }));
         const fewReads = { ...cmsEntryReads };
         const fewFolderLists = folderPermissionLists.count;
         for (const name of ["Bea", "Cid", "Dot", "Eve", "Fay", "Gus"]) {
@@ -475,7 +475,7 @@ describe("CMS review list wrapper", () => {
         });
         resetCmsEntryReads();
         folderPermissionLists.count = 0;
-        const many = expectOk(await list(more, { list: "pool" }));
+        const many = expectOk(await list(more, { scope: "pool" }));
 
         expect(few.items).toHaveLength(1);
         expect(many.items).toHaveLength(7);
@@ -498,7 +498,7 @@ describe("CMS review list wrapper", () => {
             permissions: [...CMS_READER, WORKFLOWS_REASSIGN]
         });
 
-        const page = expectOk(await list(reassigner, { list: "failedSteps" }));
+        const page = expectOk(await list(reassigner, { scope: "all", where: { state: "failed" } }));
 
         expect(page.items.map(item => item.review.id)).toEqual([review.id]);
         expect(page.items[0].review.currentStepType).toBe("automation");
@@ -512,7 +512,7 @@ describe("CMS review list wrapper", () => {
             legacyPlugins: [failListModels]
         });
 
-        const result = await list(reviewer, { list: "pool" });
+        const result = await list(reviewer, { scope: "pool" });
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).not.toContain("ListReviews");

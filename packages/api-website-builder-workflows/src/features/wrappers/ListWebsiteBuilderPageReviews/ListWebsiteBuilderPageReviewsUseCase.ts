@@ -32,8 +32,9 @@ class ListWebsiteBuilderPageReviewsUseCaseImpl implements UseCase.Interface {
         }
         const reviewViewer = viewer.value;
 
-        if (input.list === "failedSteps" && !canReassignByPermission(reviewViewer)) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list failed steps" }));
+        // "All" is for operators for now (B2 design 1); opening it to everyone is this check.
+        if (input.scope === "all" && !canReassignByPermission(reviewViewer)) {
+            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list all reviews" }));
         }
 
         // Read access as the page list applies it, once per call, as query filters (Q77), so no
@@ -48,7 +49,7 @@ class ListWebsiteBuilderPageReviewsUseCaseImpl implements UseCase.Interface {
         }
 
         const listed = await this.listReviews.execute({
-            list: input.list,
+            scope: input.scope,
             viewerUserId: reviewViewer.actor.id,
             viewerTeamIds: reviewViewer.teamIds,
             readFilter: readable,

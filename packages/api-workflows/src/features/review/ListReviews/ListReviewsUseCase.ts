@@ -7,7 +7,10 @@ import {
     type ReviewListMatchParams
 } from "~/domain/review/matchesReviewList.js";
 import { matchesReviewReadFilter } from "~/domain/review/matchesReviewReadFilter.js";
+import { isEmptyReviewListFilter } from "~/domain/review/isEmptyReviewListFilter.js";
+import { getDefaultReviewListSort } from "~/domain/review/getDefaultReviewListSort.js";
 import type { ReviewData } from "~/domain/review/types.js";
+import { createReviewTitleSortKey } from "~/features/review/shared/createReviewTitleSortKey.js";
 import { createReviewListWhere } from "./createReviewListWhere.js";
 import {
     decodeReviewListCursor,
@@ -27,24 +30,28 @@ class ListReviewsUseCaseImpl implements ListReviewsUseCaseAbstraction.Interface 
         input: ListReviewsUseCaseAbstraction.Input
     ): ListReviewsUseCaseAbstraction.Return {
         const where = input.where ?? {};
-        if (input.list !== "myRequests" && (where.reviewState || where.stepState)) {
-            return Result.fail(
-                new ReviewValidationError(
-                    "The review and step state filters apply only to the my requests list."
-                )
-            );
-        }
+        const state = where.state ?? "all";
+        const sort = input.sort ?? getDefaultReviewListSort(input.scope, state);
         let position: ReviewListCursor | null = null;
         if (input.after) {
             position = decodeReviewListCursor(input.after);
             if (!position) {
                 return Result.fail(new ReviewValidationError("The list cursor is invalid."));
             }
+            if (position.sort !== sort) {
+                return Result.fail(
+                    new ReviewValidationError("The list cursor was made with another sort.")
+                );
+            }
         }
         const { readFilter } = input;
         const models = [...readFilter.models, ...readFilter.ownOnlyModels];
-        const needsTeams = input.list === "pool" || input.list === "teamInReview";
-        if (models.length === 0 || (needsTeams && input.viewerTeamIds.length === 0)) {
+        const needsTeams = input.scope === "pool" || input.scope === "teamInReview";
+        if (
+            models.length === 0 ||
+            (needsTeams && input.viewerTeamIds.length === 0) ||
+            isEmptyReviewListFilter(input.scope, state)
+        ) {
             return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });
         }
 
@@ -54,26 +61,33 @@ class ListReviewsUseCaseImpl implements ListReviewsUseCaseAbstraction.Interface 
                 ? Math.floor(input.limit)
                 : DEFAULT_REVIEW_LIST_LIMIT;
         const limit = Math.min(Math.max(requestedLimit, 1), MAX_REVIEW_LIST_LIMIT);
-        const sort =
-            input.sort ??
-            (input.list === "myRequests" ? "lastChangedOn_DESC" : "lastChangedOn_ASC");
         const match: ReviewListMatchParams = {
-            list: input.list,
+            scope: input.scope,
             viewerUserId: input.viewerUserId,
             viewerTeamIds: input.viewerTeamIds,
             models,
-            where
+            where: { ...where, state }
         };
         const repositoryWhere = createReviewListWhere(match, readFilter);
         if (position) {
-            // Resume at the cursor's time; the rows already examined at it are left out.
-            if (sort === "lastChangedOn_ASC") {
-                repositoryWhere.lastChangedOn_gte = position.lastChangedOn;
-            } else {
-                repositoryWhere.lastChangedOn_lte = position.lastChangedOn;
+            // Resume at the cursor's value; the rows already examined at it are left out.
+            switch (sort) {
+                case "lastChangedOn_ASC":
+                    repositoryWhere.lastChangedOn_gte = position.value;
+                    break;
+                case "lastChangedOn_DESC":
+                    repositoryWhere.lastChangedOn_lte = position.value;
+                    break;
+                case "title_ASC":
+                    repositoryWhere.titleSortKey_gte = position.value;
+                    break;
+                case "title_DESC":
+                    repositoryWhere.titleSortKey_lte = position.value;
+                    break;
             }
             repositoryWhere.id_not_in = [...position.ids];
         }
+        const byTitle = sort === "title_ASC" || sort === "title_DESC";
 
         const items: ReviewData[] = [];
         let examined = 0;
@@ -115,12 +129,14 @@ class ListReviewsUseCaseImpl implements ListReviewsUseCaseAbstraction.Interface 
                     });
                 }
                 examined++;
-                // The listed row's own time keeps the cursor in the order the list is read in,
-                // even when the primary row is newer (R18).
-                if (position && position.lastChangedOn === row.lastChangedOn) {
-                    position = { lastChangedOn: row.lastChangedOn, ids: [...position.ids, row.id] };
+                // The listed row's own value keeps the cursor in the order the list is read in,
+                // even when the primary row is newer (R18). The title sort key is derived from the
+                // listed title, as the mapper stored it.
+                const value = byTitle ? createReviewTitleSortKey(row.title) : row.lastChangedOn;
+                if (position && position.value === value) {
+                    position = { sort, value, ids: [...position.ids, row.id] };
                 } else {
-                    position = { lastChangedOn: row.lastChangedOn, ids: [row.id] };
+                    position = { sort, value, ids: [row.id] };
                 }
 
                 const review = primaryById.get(row.id);

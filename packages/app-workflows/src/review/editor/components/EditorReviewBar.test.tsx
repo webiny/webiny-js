@@ -1,9 +1,11 @@
 import React from "react";
+import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
+import { within } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { observable } from "mobx";
 import { runInAction } from "mobx";
@@ -34,12 +36,23 @@ import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCa
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 
+const routeMocks = vi.hoisted(() => {
+    return {
+        params: {} as Record<string, unknown>,
+        replaceRouteParams: vi.fn()
+    };
+});
+
 vi.mock("@webiny/app", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app")>();
     return {
         ...actual,
         useRouter: () => ({
             getLink: (route: { path: string }) => route.path
+        }),
+        useRoute: () => ({
+            route: { name: "Cms/ContentEntries/List", params: routeMocks.params },
+            replaceRouteParams: routeMocks.replaceRouteParams
         })
     };
 });
@@ -93,6 +106,11 @@ describe("RouteUrl (A76)", () => {
 });
 
 describe("EditorReviewBar", () => {
+    beforeEach(() => {
+        routeMocks.params = {};
+        routeMocks.replaceRouteParams.mockReset();
+    });
+
     it("renders the shared review card for the session", () => {
         const { session, fakes } = createSession();
 
@@ -185,6 +203,60 @@ describe("EditorReviewBar", () => {
 
         expect(await screen.findByText("Someone else acted first")).toBeTruthy();
         await vi.waitFor(() => expect(presenter.refresh).toHaveBeenCalled());
+    });
+
+    it("opens the drawer for the review a notification link names, and removes the param on close (B2 design 9)", async () => {
+        routeMocks.params = { modelId: "article", id: "a#1", reviewId: "review-7" };
+        const { session, fakes } = createSession();
+
+        renderBar(session, fakes);
+
+        expect(await screen.findByText("Spring campaign review")).toBeTruthy();
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-7"
+        });
+        expect(routeMocks.replaceRouteParams).not.toHaveBeenCalled();
+
+        fireEvent.click(within(screen.getByRole("dialog")).getAllByRole("button")[0]);
+
+        await vi.waitFor(() => expect(routeMocks.replaceRouteParams).toHaveBeenCalledTimes(1));
+        const [update] = routeMocks.replaceRouteParams.mock.calls[0];
+        expect(update({ modelId: "article", id: "a#1", reviewId: "review-7" })).toEqual({
+            modelId: "article",
+            id: "a#1"
+        });
+    });
+
+    it("waits for the bar's namespace before it opens the linked review", async () => {
+        routeMocks.params = { reviewId: "review-7" };
+        const { session, presenter, fakes } = createSession({ namespace: "" });
+        const vmBox = observable.box(presenter.vm, { deep: false });
+        Object.defineProperty(presenter, "vm", { get: () => vmBox.get() });
+
+        renderBar(session, fakes);
+
+        expect(fakes.getReview.execute).not.toHaveBeenCalled();
+
+        runInAction(() => vmBox.set(createTargetReviewViewModel({ namespace: "cms.article" })));
+
+        expect(await screen.findByText("Spring campaign review")).toBeTruthy();
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-7"
+        });
+    });
+
+    it("leaves the location alone when the drawer was opened from the bar", async () => {
+        const { session, fakes } = createSession();
+        renderBar(session, fakes);
+        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByText("Spring campaign review");
+
+        fireEvent.click(within(screen.getByRole("dialog")).getAllByRole("button")[0]);
+
+        await vi.waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        expect(routeMocks.replaceRouteParams).not.toHaveBeenCalled();
     });
 
     it("renders nothing for content without a workflow", () => {

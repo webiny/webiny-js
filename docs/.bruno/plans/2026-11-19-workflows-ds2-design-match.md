@@ -288,11 +288,15 @@ unless the pair is empty by definition.
 
 ### 2. Sort by name
 
-- A storage-only `titleSortKey` on the review model, `title.trim().toLocaleLowerCase()`, written by
-  `ReviewEntryMapper.toValues` and never mapped out.
+- A storage-only `titleSortKey` on the review model, written by `ReviewEntryMapper.toValues` and
+  never mapped out. It is the UTF-8 hex of `title.trim().toLocaleLowerCase()`, capped at 200
+  characters: a storage test showed that OpenSearch range filters on a text field compare analysed
+  tokens, so a plain lower-case key did not page in sort order there. A hex key is one token and
+  orders the same on DynamoDB, SQL and OpenSearch.
 - Sort enum gains `title_ASC | title_DESC`; the cursor becomes `{ sort, value, ids }` and is
   refused with another sort; the repository gains `titleSortKey_gte` / `_lte`.
-- To verify with a storage test: text `_gte` / `_lte` order equals the sort order on DynamoDB and SQL.
+- Verified with a storage test on DynamoDB, SQL and OpenSearch. A review saved before the key
+  existed has none until its next save and drops out of title-sorted pages after the first.
 
 ### 3. Filters
 
@@ -356,3 +360,8 @@ Meaning and audience of "All"; whether Assigned to me × Approved means "held th
 how empty-by-definition pairs look; default state per scope; wording for several teams in the pool
 message; the e-mail footer for requesters and previous owners; the tag of the step that was current
 when a review was cancelled.
+
+Wave 1 is built (items 1, 2, 3 editor part, 4, 8, 9, 10). Choices made while building, to confirm
+with the designer: Team pool always sorts oldest first; the default state of All is All; a scope or
+state change resets the sort, the search and the content type; state Failed is not limited to AI
+and automation steps; the Cancelled and Taken over e-mails use the previous-owner footer.

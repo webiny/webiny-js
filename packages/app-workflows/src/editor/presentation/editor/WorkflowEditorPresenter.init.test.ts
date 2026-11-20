@@ -70,6 +70,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -89,12 +90,14 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(cms.listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
         expect(wb.listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "wb",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });

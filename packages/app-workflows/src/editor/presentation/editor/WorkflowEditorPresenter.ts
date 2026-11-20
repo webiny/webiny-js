@@ -57,6 +57,7 @@ import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissio
 import { WorkflowEditorPresenter as Abstraction } from "./abstractions.js";
 import type { EmptyWorkflowVm } from "./abstractions.js";
 import type { ModelPanelVm } from "./abstractions.js";
+import type { ModelWorkflowFilter } from "./abstractions.js";
 import type { OptionList } from "./abstractions.js";
 import type { OptionsBannerVm } from "./abstractions.js";
 import type { WorkflowEditorDetailKind } from "./abstractions.js";
@@ -139,6 +140,13 @@ function mergeTeams(
     return merged;
 }
 
+const toHasWorkflow = (filter: ModelWorkflowFilter): boolean | null => {
+    if (filter === "with") {
+        return true;
+    }
+    return filter === "without" ? false : null;
+};
+
 class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private params: WorkflowEditorInitParams | null = null;
     private status: WorkflowEditorStatus = "loading";
@@ -153,6 +161,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private modelsFailed = false;
     private searchDraft = "";
     private search = "";
+    private workflowFilter: ModelWorkflowFilter = "all";
     private selectedRow: WorkflowModelRow | null = null;
     private detail: WorkflowEditorDetailKind = "none";
     private stepTypes: OptionList<EditorStepType> = createOptionList("loading");
@@ -506,6 +515,38 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             this.modelSearchTimer = null;
             void this.applySearch(search);
         }, SEARCH_DEBOUNCE_MS);
+    }
+
+    setWorkflowFilter(filter: ModelWorkflowFilter): void {
+        if (filter === this.workflowFilter) {
+            return;
+        }
+        this.workflowFilter = filter;
+        // A search still waiting for its debounce applies with the new filter.
+        this.cancelModelSearchTimer();
+        void this.applySearch(this.searchDraft);
+    }
+
+    async createWorkflowForModel(modelId: string): Promise<void> {
+        if (this.saving || this.dialogBusy || this.pending !== null) {
+            return;
+        }
+        await this.selectModel(modelId);
+        const selected = this.selectedRow;
+        if (selected !== null && selected.modelId === modelId) {
+            this.createWorkflow();
+        }
+    }
+
+    async requestDeleteWorkflowForModel(modelId: string): Promise<void> {
+        if (this.saving || this.dialogBusy || this.pending !== null) {
+            return;
+        }
+        await this.selectModel(modelId);
+        const selected = this.selectedRow;
+        if (selected !== null && selected.modelId === modelId) {
+            this.requestDelete();
+        }
     }
 
     async loadMore(): Promise<void> {
@@ -928,6 +969,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.modelsFailed = false;
         this.searchDraft = "";
         this.search = "";
+        this.workflowFilter = "all";
         this.selectedRow = null;
         this.detail = "none";
         this.stepTypes = createOptionList("loading");
@@ -981,13 +1023,16 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             label: params ? params.app.panelLabel : "",
             showSearch: params ? params.app.appKind === "cms" : false,
             search: this.searchDraft,
+            showFilter: params ? params.app.appKind === "cms" : false,
+            filter: this.workflowFilter,
             rows: buildModelRowVms({
                 rows: this.rows,
                 activeModelId: selected ? selected.modelId : null,
                 draftOpen: this.draft.isOpen,
                 draftIsNew: this.draft.isNew,
                 draftDirty: this.draft.isDirty,
-                draftStepCount: this.draft.steps.length
+                draftStepCount: this.draft.steps.length,
+                actionsDisabled: this.saving || this.dialogBusy
             }),
             loading: this.modelsLoading,
             loadingMore: this.loadingMore,
@@ -1178,6 +1223,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             const page = await this.listWorkflowModelsUseCase.execute({
                 app: params.app.appKind,
                 search: this.search,
+                hasWorkflow: toHasWorkflow(this.workflowFilter),
                 limit: MODEL_PAGE_SIZE,
                 after
             });

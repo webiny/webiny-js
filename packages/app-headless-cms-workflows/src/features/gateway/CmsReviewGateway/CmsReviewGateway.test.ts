@@ -145,14 +145,13 @@ describe("CmsReviewGateway", () => {
         client.execute.mockResolvedValue({ cms: { listCmsEntryReviews: envelope } });
 
         const result = await gateway.listReviews({
-            list: "myRequests",
+            scope: "myRequests",
             where: {
                 modelId: "article",
                 titleContains: "launch",
-                reviewState: ReviewState.Approved,
-                stepState: StepState.Approved
+                state: "approved"
             },
-            sort: "lastChangedOn_DESC",
+            sort: "title_ASC",
             limit: 20,
             after: "cursor-1"
         });
@@ -160,14 +159,13 @@ describe("CmsReviewGateway", () => {
         expect(result).toEqual(envelope);
         const request = client.execute.mock.calls[0][0];
         expect(request.variables).toEqual({
-            list: "myRequests",
+            scope: "myRequests",
             where: {
                 modelId: "article",
                 titleContains: "launch",
-                reviewState: ReviewState.Approved,
-                stepState: StepState.Approved
+                state: "approved"
             },
-            sort: "lastChangedOn_DESC",
+            sort: "title_ASC",
             limit: 20,
             after: "cursor-1"
         });

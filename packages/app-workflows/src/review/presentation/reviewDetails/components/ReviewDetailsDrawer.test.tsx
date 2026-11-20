@@ -742,25 +742,23 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
             return fakes;
         };
 
-        it("shows an empty state with the cancel text and no meta line", async () => {
+        it("shows an info alert with the cancel text, the steps read-only and the meta line", async () => {
             renderDrawer(createCancelledUseCases(), vi.fn(), [], { contentUrl: "/c/1" });
 
-            expect(await screen.findByText("This review was cancelled")).toBeTruthy();
-            expect(document.querySelector("[data-role='step-circle']")).toBeNull();
-            expect(screen.queryByText("Content:")).toBeNull();
-            expect(screen.queryByText(/^Requested by/)).toBeNull();
-            expect(screen.getByText(/The revision has no review now/)).toBeTruthy();
-            const open = screen.getByText("Open content");
-            expect(open.closest("a")?.getAttribute("href")).toBe("/c/1");
+            const alert = await screen.findByText(/^This review was cancelled by .+ on /);
+            expect(alert.closest("[data-role='cancelled-alert']")).toBeTruthy();
+            expect(screen.queryByText("This review was cancelled")).toBeNull();
+            expect(screen.getByText("Editorial check")).toBeTruthy();
+            expect(screen.getByText("Content:")).toBeTruthy();
+            expect(screen.getByText(/^Requested by/)).toBeTruthy();
         });
 
-        it("closes the drawer from Open content without a content URL", async () => {
-            const { onClose } = renderDrawer(createCancelledUseCases());
-            await screen.findByText("This review was cancelled");
+        it("shows no footer actions", async () => {
+            renderDrawer(createCancelledUseCases());
+            await screen.findByText(/^This review was cancelled by /);
 
-            fireEvent.click(screen.getByText("Open content"));
-
-            expect(onClose).toHaveBeenCalled();
+            expect(screen.queryByRole("button", { name: "Start" })).toBeNull();
+            expect(screen.queryByRole("button", { name: "More review actions" })).toBeNull();
         });
     });
 });

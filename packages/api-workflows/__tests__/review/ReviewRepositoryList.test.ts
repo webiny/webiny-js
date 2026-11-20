@@ -11,6 +11,7 @@ import {
     reviewer
 } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import { createReviewTitleSortKey } from "~/features/review/shared/createReviewTitleSortKey.js";
 import type { ReviewListReadFilter } from "~/domain/review/types.js";
 
 const BOTH_MODELS = [ARTICLE_MODEL, "wb.page"];
@@ -94,6 +95,17 @@ const CASES: RepositoryListCase[] = [
     { name: "isActive", where: { isActive: true }, expected: ["r01", "r02", "r03"] },
     { name: "state", where: { state: "cancelled" }, expected: ["r04"] },
     { name: "currentStepState", where: { currentStepState: "inReview" }, expected: ["r02"] },
+    {
+        name: "currentStepState_not",
+        where: { currentStepState_not: "failed" },
+        expected: ["r01", "r02", "r04"]
+    },
+    { name: "hasCurrentOwner", where: { hasCurrentOwner: true }, expected: ["r02"] },
+    {
+        name: "hasCurrentOwner with currentOwnerId_not",
+        where: { hasCurrentOwner: true, currentOwnerId_not: reviewer.id },
+        expected: []
+    },
     { name: "currentOwnerId", where: { currentOwnerId: reviewer.id }, expected: ["r02"] },
     {
         name: "currentOwnerId_not",
@@ -116,7 +128,17 @@ const CASES: RepositoryListCase[] = [
         where: { requesterId_not: otherReviewer.id },
         expected: ["r01", "r03", "r04"]
     },
-    { name: "title_contains", where: { title_contains: "launch" }, expected: ["r01"] }
+    { name: "title_contains", where: { title_contains: "launch" }, expected: ["r01"] },
+    {
+        name: "titleSortKey_gte",
+        where: { titleSortKey_gte: createReviewTitleSortKey("Review r04") },
+        expected: ["r01", "r04"]
+    },
+    {
+        name: "titleSortKey_lte",
+        where: { titleSortKey_lte: createReviewTitleSortKey("Review r03") },
+        expected: ["r02", "r03"]
+    }
 ];
 
 describe("ReviewRepository.list (A40)", () => {
@@ -158,6 +180,63 @@ describe("ReviewRepository.list (A40)", () => {
         expect(first.meta.hasMoreItems).toBe(true);
         expect(second.items.map(item => item.id)).toEqual(["r03", "r04"]);
         expect(second.meta.hasMoreItems).toBe(false);
+    });
+
+    it("sorts by the title sort key both ways, in the order its _gte and _lte compare (B2 design 2)", async () => {
+        const { context } = await createContextHandler();
+        const repository = context.container.resolve(ReviewRepository);
+        // Mixed case, spaces, digits and punctuation: the sort and the range must agree.
+        const titles = [
+            "beta 2",
+            "Beta 10",
+            "  alpha",
+            "Alpha-beta",
+            "alpha beta",
+            "Zed",
+            "zebra",
+            "Ápple"
+        ];
+        await seedListedReviews(
+            repository,
+            titles.map((title, index) => ({ id: `ts${index + 1}`, minute: index + 1, title }))
+        );
+        const where = { read: READ_BOTH };
+        const titleOf = (id: string) => createReviewTitleSortKey(titles[Number(id.slice(2)) - 1]);
+
+        const ascending = expectOk(await repository.list({ where, sort: "title_ASC", limit: 50 }));
+        const descending = expectOk(
+            await repository.list({ where, sort: "title_DESC", limit: 50 })
+        );
+        const ascendingKeys = ascending.items.map(item => titleOf(item.id));
+
+        expect(ascendingKeys).toHaveLength(titles.length);
+        expect(descending.items.map(item => item.id)).toEqual(
+            [...ascending.items.map(item => item.id)].reverse()
+        );
+        // Every key from a position on is what `_gte` of that key returns, in the same order;
+        // every key up to it is what `_lte` returns.
+        for (const [index, key] of ascendingKeys.entries()) {
+            const from = expectOk(
+                await repository.list({
+                    where: { ...where, titleSortKey_gte: key },
+                    sort: "title_ASC",
+                    limit: 50
+                })
+            );
+            const upTo = expectOk(
+                await repository.list({
+                    where: { ...where, titleSortKey_lte: key },
+                    sort: "title_DESC",
+                    limit: 50
+                })
+            );
+            expect(from.items.map(item => item.id)).toEqual(
+                ascending.items.slice(index).map(item => item.id)
+            );
+            expect(upTo.items.map(item => item.id)).toEqual(
+                descending.items.slice(titles.length - 1 - index).map(item => item.id)
+            );
+        }
     });
 
     it("resumes at a list cursor's time and leaves out the ids it already examined", async () => {

@@ -36,8 +36,9 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
         if (viewer.isFail()) {
             return Result.fail(viewer.error);
         }
-        if (input.list === "failedSteps" && !canReassignByPermission(viewer.value)) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list failed steps" }));
+        // "All" is for operators for now (B2 design 1); opening it to everyone is this check.
+        if (input.scope === "all" && !canReassignByPermission(viewer.value)) {
+            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list all reviews" }));
         }
 
         // The models the viewer can list (R94); a viewer who can read none gets an empty page.
@@ -73,7 +74,7 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
         }
 
         const page = await this.listReviews.execute({
-            list: input.list,
+            scope: input.scope,
             viewerUserId: viewer.value.actor.id,
             viewerTeamIds: viewer.value.teamIds,
             readFilter: readable,

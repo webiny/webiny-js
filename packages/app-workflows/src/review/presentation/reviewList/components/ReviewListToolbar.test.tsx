@@ -9,9 +9,9 @@ import { act } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { renderWithAdminUi as render } from "~/review/testing/renderWithAdminUi.js";
 import { screen } from "@testing-library/react";
-import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { ReviewListPresenter } from "../abstractions.js";
-import { REVIEW_LIST_TABS } from "../reviewListTabs.js";
+import { getReviewListStates } from "../getReviewListStates.js";
+import { REVIEW_LIST_SCOPES } from "../reviewListScopes.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
@@ -19,8 +19,10 @@ const createVm = (
     overrides: Partial<ReviewListPresenter.ViewModel> = {}
 ): ReviewListPresenter.ViewModel => {
     return {
-        tab: "assignedToMe",
-        tabs: REVIEW_LIST_TABS,
+        scope: "assignedToMe",
+        scopes: REVIEW_LIST_SCOPES,
+        state: "inReview",
+        states: getReviewListStates("assignedToMe"),
         rows: [],
         status: "ready",
         loadingMore: false,
@@ -29,8 +31,6 @@ const createVm = (
         search: "",
         searchDraft: "",
         contentTypeId: null,
-        reviewState: null,
-        stepState: null,
         notice: null,
         error: null,
         empty: null,
@@ -44,12 +44,11 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
     return {
         vm,
         init: vi.fn(),
-        setTab: vi.fn(),
+        setScope: vi.fn(),
+        setState: vi.fn(),
         setSearchDraft: vi.fn(),
         setSearch: vi.fn(),
         setContentType: vi.fn(),
-        setReviewState: vi.fn(),
-        setStepState: vi.fn(),
         toggleSort: vi.fn(),
         loadMore: vi.fn(),
         refresh: vi.fn(),
@@ -144,73 +143,43 @@ describe("ReviewListToolbar", () => {
         expect(screen.getAllByRole("combobox")).toHaveLength(1);
     });
 
-    it("adds the review state and step state selects on My requests only", () => {
+    it("has no review state or step state select on any scope (B2 design 1)", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
 
-        const other = render(
-            <ReviewListToolbar
-                presenter={createPresenter(createVm({ tab: "pool" }))}
-                showContentType={true}
-                contentTypeFilter={filter}
-            />
-        );
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
-        other.unmount();
-
-        render(
-            <ReviewListToolbar
-                presenter={createPresenter(
-                    createVm({ tab: "myRequests", reviewState: ReviewState.Approved })
-                )}
-                showContentType={true}
-                contentTypeFilter={filter}
-            />
-        );
-        expect(screen.getAllByRole("combobox")).toHaveLength(3);
-    });
-
-    it("lays the search and every filter out as cells of one toolbar row on every tab", () => {
-        const filter: IReviewContentTypeFilter = {
-            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
-        };
-
-        for (const tab of ["pool", "myRequests"] as const) {
+        for (const scope of ["pool", "myRequests", "all"] as const) {
             const view = render(
                 <ReviewListToolbar
-                    presenter={createPresenter(createVm({ tab }))}
+                    presenter={createPresenter(createVm({ scope, state: "all" }))}
                     showContentType={true}
                     contentTypeFilter={filter}
                 />
             );
-
-            const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
-            const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
-            const expected = ["toolbar-search", "toolbar-filter"];
-            if (tab === "myRequests") {
-                expected.push("toolbar-filter", "toolbar-filter");
-            }
-            expect(cells).toEqual(expected);
+            expect(screen.getAllByRole("combobox")).toHaveLength(1);
+            expect(screen.queryByText("Any review state")).toBeNull();
+            expect(screen.queryByText("Any step state")).toBeNull();
             view.unmount();
         }
     });
 
-    it("shows the search and the content type filter only on Failed steps (QBZ-29)", () => {
+    it("lays the search and the content type filter out as cells of one toolbar row", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
 
         render(
             <ReviewListToolbar
-                presenter={createPresenter(createVm({ tab: "failedSteps" }))}
+                presenter={createPresenter(createVm({ scope: "myRequests" }))}
                 showContentType={true}
                 contentTypeFilter={filter}
             />
         );
 
+        const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
+        const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
+        expect(cells).toEqual(["toolbar-search", "toolbar-filter"]);
         expect(screen.getByPlaceholderText("Search by title")).toBeTruthy();
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
     });
 
     it("renders the content type filter as a picker with the filter icon and no clear button", () => {
@@ -262,10 +231,10 @@ describe("ReviewListToolbar", () => {
         expect(presenter.setContentType).toHaveBeenCalledWith("press");
     });
 
-    it("gives the search input a search icon and shows the state selects", () => {
+    it("gives the search input a search icon", () => {
         render(
             <ReviewListToolbar
-                presenter={createPresenter(createVm({ tab: "myRequests" }))}
+                presenter={createPresenter(createVm({ scope: "myRequests" }))}
                 showContentType={false}
                 contentTypeFilter={null}
             />
@@ -274,7 +243,5 @@ describe("ReviewListToolbar", () => {
         expect(
             screen.getByPlaceholderText("Search by title").parentElement?.querySelector("svg")
         ).not.toBeNull();
-        expect(screen.getByText("Any review state")).toBeTruthy();
-        expect(screen.getByText("Any step state")).toBeTruthy();
     });
 });

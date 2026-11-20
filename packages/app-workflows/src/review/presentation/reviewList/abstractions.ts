@@ -1,9 +1,9 @@
 import type React from "react";
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewContentRef } from "~/review/content/IReviewContentAdapter.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
-import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
-import type { StepStateValue } from "~/review/domain/StepState.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import type { ReviewActionKind } from "~/review/presentation/actionDialog/ReviewActionKind.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagIcon } from "~/review/presentation/targetReview/abstractions.js";
@@ -29,12 +29,20 @@ export interface IReviewRowProvider {
     getBinding(namespace: string): IReviewRowBinding | null;
 }
 
-export type ReviewListTab = "assignedToMe" | "pool" | "teamInReview" | "myRequests" | "failedSteps";
-
-export interface ReviewListTabVm {
-    value: ReviewListTab;
+export interface ReviewListScopeVm {
+    value: ReviewListScope;
     label: string;
 }
+
+export interface ReviewListStateVm {
+    value: ReviewListState;
+    label: string;
+    // Empty by definition for the chosen scope (`isEmptyReviewListFilter`): shown, not chosen.
+    disabled: boolean;
+}
+
+// The column a list sorts by; the table toggles the direction of the active one.
+export type ReviewListSortField = "title" | "lastChangedOn";
 
 export type ReviewListStatus = "loading" | "ready" | "failed";
 
@@ -45,7 +53,9 @@ export interface ReviewListInitParams {
     app: WorkflowAppKind;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
-    initialTab: ReviewListTab;
+    // From the route; an invalid or unavailable value falls back to the default.
+    initialScope: ReviewListScope | null;
+    initialState: ReviewListState | null;
     // Whether the list shows the content type column and filter (CMS); the filtered empty copy names it.
     showContentType: boolean;
 }
@@ -84,9 +94,11 @@ export interface ReviewListDialogVm {
 }
 
 export interface IReviewListViewModel {
-    tab: ReviewListTab;
-    // The tabs this viewer may open (Failed steps only with `reassign` or full access, R259).
-    tabs: ReviewListTabVm[];
+    scope: ReviewListScope;
+    // The scopes this viewer may open (All only with `reassign` or full access, R259).
+    scopes: ReviewListScopeVm[];
+    state: ReviewListState;
+    states: ReviewListStateVm[];
     rows: ReviewListRowVm[];
     status: ReviewListStatus;
     loadingMore: boolean;
@@ -95,8 +107,6 @@ export interface IReviewListViewModel {
     search: string;
     searchDraft: string;
     contentTypeId: string | null;
-    reviewState: ReviewStateValue | null;
-    stepState: StepStateValue | null;
     notice: string | null;
     error: string | null;
     empty: ReviewListEmptyVm | null;
@@ -107,13 +117,13 @@ export interface IReviewListViewModel {
 export interface IReviewListPresenter {
     readonly vm: IReviewListViewModel;
     init(params: ReviewListInitParams): Promise<void>;
-    setTab(tab: ReviewListTab): Promise<void>;
+    setScope(scope: ReviewListScope): Promise<void>;
+    setState(state: ReviewListState): Promise<void>;
     setSearchDraft(search: string): void;
     setSearch(search: string): Promise<void>;
     setContentType(contentTypeId: string | null): Promise<void>;
-    setReviewState(reviewState: ReviewStateValue | null): Promise<void>;
-    setStepState(stepState: StepStateValue | null): Promise<void>;
-    toggleSort(): Promise<void>;
+    // The active field flips its direction; another field becomes the only sort, ascending.
+    toggleSort(field: ReviewListSortField): Promise<void>;
     loadMore(): Promise<void>;
     refresh(): Promise<void>;
     showNewReviews(): Promise<void>;

@@ -1,5 +1,8 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
+import { DropdownMenu } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { SegmentedControl } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
@@ -8,15 +11,22 @@ import { Skeleton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AccountTreeIcon } from "@webiny/icons/account_tree.svg";
 import type { ModelPanelVm } from "~/editor/presentation/editor/abstractions.js";
+import type { ModelWorkflowFilter } from "~/editor/presentation/editor/abstractions.js";
 import type { ModelRowVm } from "~/editor/presentation/editor/abstractions.js";
 
 export interface ModelPanelProps {
     panel: ModelPanelVm;
     renderIcon(modelId: string): React.ReactNode;
     onSearch(search: string): void;
+    onFilter(filter: ModelWorkflowFilter): void;
     onSelect(modelId: string): void;
+    onCreateWorkflow(modelId: string): void;
+    onDeleteWorkflow(modelId: string): void;
     onLoadMore(): void;
     onRetry(): void;
 }
@@ -25,11 +35,19 @@ interface ModelRowProps {
     row: ModelRowVm;
     icon: React.ReactNode;
     onSelect(modelId: string): void;
+    onCreateWorkflow(modelId: string): void;
+    onDeleteWorkflow(modelId: string): void;
 }
+
+const FILTER_ITEMS = [
+    { value: "all", label: "All" },
+    { value: "with", label: "With workflow" },
+    { value: "without", label: "Without workflow" }
+];
 
 const SKELETON_ROWS = [0, 1, 2, 3];
 
-const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
+const ModelRow = ({ row, icon, onSelect, onCreateWorkflow, onDeleteWorkflow }: ModelRowProps) => {
     let ariaCurrent: "true" | undefined = undefined;
     if (row.active) {
         ariaCurrent = "true";
@@ -55,15 +73,44 @@ const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
         unsavedTag = <Tag variant="warning" content="Unsaved" aria-label="Unsaved changes" />;
     }
 
-    let actions: React.ReactNode = null;
-    if (boundIndicator !== null || unsavedTag !== null) {
-        actions = (
-            <>
-                {boundIndicator}
-                {unsavedTag}
-            </>
+    let menuItem: React.ReactNode = (
+        <DropdownMenu.Item
+            icon={<AddIcon />}
+            text="Create workflow"
+            onClick={() => onCreateWorkflow(row.modelId)}
+        />
+    );
+    if (row.bound) {
+        menuItem = (
+            <DropdownMenu.Item
+                icon={<DeleteIcon />}
+                text="Delete workflow"
+                onClick={() => onDeleteWorkflow(row.modelId)}
+            />
         );
     }
+
+    const actions = (
+        <>
+            {boundIndicator}
+            {unsavedTag}
+            <DropdownMenu
+                align="end"
+                side="bottom"
+                trigger={
+                    <IconButton
+                        variant="ghost"
+                        disabled={row.actionsDisabled}
+                        aria-label={`Actions for ${row.name}`}
+                        title={`Actions for ${row.name}`}
+                        icon={<MoreVerticalIcon />}
+                    />
+                }
+            >
+                {menuItem}
+            </DropdownMenu>
+        </>
+    );
 
     return (
         <List.Item
@@ -97,6 +144,19 @@ export const ModelPanel = (props: ModelPanelProps) => {
         );
     }
 
+    let filterControl: React.ReactNode = null;
+    if (panel.showFilter) {
+        filterControl = (
+            <SegmentedControl
+                label="Filter models"
+                items={FILTER_ITEMS}
+                value={panel.filter}
+                onChange={value => props.onFilter(value as ModelWorkflowFilter)}
+                fullWidth
+            />
+        );
+    }
+
     let list: React.ReactNode = null;
     if (panel.loading) {
         list = (
@@ -117,6 +177,8 @@ export const ModelPanel = (props: ModelPanelProps) => {
                         row={row}
                         icon={props.renderIcon(row.modelId)}
                         onSelect={props.onSelect}
+                        onCreateWorkflow={props.onCreateWorkflow}
+                        onDeleteWorkflow={props.onDeleteWorkflow}
                     />
                 ))}
             </List>
@@ -155,6 +217,7 @@ export const ModelPanel = (props: ModelPanelProps) => {
                 {panel.label}
             </Text>
             {searchInput}
+            {filterControl}
             {list}
             {error}
             {loadMore}

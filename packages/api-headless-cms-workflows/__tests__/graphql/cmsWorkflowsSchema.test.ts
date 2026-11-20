@@ -110,7 +110,7 @@ const GET_TARGET_REVIEW = /* GraphQL */ `
 
 const LIST_REVIEWS = /* GraphQL */ `
     query ListReviews(
-        $list: WorkflowsReviewListKind!
+        $scope: WorkflowsReviewListScope!
         $where: CmsEntryReviewListWhere
         $sort: WorkflowsReviewListSort
         $limit: Int
@@ -118,7 +118,7 @@ const LIST_REVIEWS = /* GraphQL */ `
     ) {
         cms {
             listCmsEntryReviews(
-                list: $list
+                scope: $scope
                 where: $where
                 sort: $sort
                 limit: $limit
@@ -598,7 +598,7 @@ describe("CMS workflows GraphQL", () => {
         await createWbReview();
         const requester = createGraphQLClient({ identity: REQUESTER, permissions: CMS_WRITER });
 
-        const result = await run(requester, LIST_REVIEWS, { list: "myRequests" });
+        const result = await run(requester, LIST_REVIEWS, { scope: "myRequests" });
 
         const rows = result.listCmsEntryReviews.data;
         expect(rows.map((row: { review: { model: string } }) => row.review.model)).toEqual([
@@ -631,11 +631,11 @@ describe("CMS workflows GraphQL", () => {
         });
 
         const books = await run(requester, LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             where: { modelId: "book" }
         });
         const authors = await run(requester, LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             where: { modelId: "author" }
         });
 
@@ -658,16 +658,16 @@ describe("CMS workflows GraphQL", () => {
         const requester = createGraphQLClient({ identity: REQUESTER, permissions: CMS_WRITER });
 
         const filtered = await run(requester, LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             where: { modelId: "author", titleContains: "Lock" }
         });
         const first = await run(requester, LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             sort: "lastChangedOn_ASC",
             limit: 1
         });
         const second = await run(requester, LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             sort: "lastChangedOn_ASC",
             limit: 1,
             after: first.listCmsEntryReviews.meta.cursor
@@ -686,19 +686,19 @@ describe("CMS workflows GraphQL", () => {
         ).toEqual([review.id, lockedReview.id].sort());
     });
 
-    it("returns the failed steps refusal with code, data and no meta (R95)", async () => {
+    it("returns the all scope refusal with code, data and no meta (R95)", async () => {
         await createScenario();
         const reviewer = createGraphQLClient({ identity: REVIEWER, permissions: CMS_READER });
 
-        const result = await run(reviewer, LIST_REVIEWS, { list: "failedSteps" });
+        const result = await run(reviewer, LIST_REVIEWS, { scope: "all" });
 
         expect(result.listCmsEntryReviews).toEqual({
             data: null,
             meta: null,
             error: {
                 code: "Workflows/NotAuthorized",
-                message: "You are not allowed to list failed steps.",
-                data: { action: "list failed steps" }
+                message: "You are not allowed to list all reviews.",
+                data: { action: "list all reviews" }
             }
         });
     });
@@ -872,7 +872,7 @@ describe("CMS workflows GraphQL", () => {
         await createScenario();
         const anonymous = createGraphQLClient({ identity: null, permissions: [] });
 
-        const result = await run(anonymous, LIST_REVIEWS, { list: "pool" });
+        const result = await run(anonymous, LIST_REVIEWS, { scope: "pool" });
 
         expect(result.listCmsEntryReviews.error.code).toBe("Workflows/NotAuthenticated");
         expect(result.listCmsEntryReviews.data).toBeNull();

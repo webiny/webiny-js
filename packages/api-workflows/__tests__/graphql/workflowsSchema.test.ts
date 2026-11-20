@@ -1133,16 +1133,26 @@ describe("workflows GraphQL root", () => {
             "stepCount",
             "stepName"
         ]);
-        expect(memberNames(types, "WorkflowsReviewListKind")).toEqual([
+        expect(types.some(item => item.name === "WorkflowsReviewListKind")).toBe(false);
+        expect(memberNames(types, "WorkflowsReviewListScope")).toEqual([
             "assignedToMe",
             "pool",
             "teamInReview",
             "myRequests",
-            "failedSteps"
+            "all"
+        ]);
+        expect(memberNames(types, "WorkflowsReviewListState")).toEqual([
+            "all",
+            "inReview",
+            "failed",
+            "approved",
+            "rejected"
         ]);
         expect(memberNames(types, "WorkflowsReviewListSort")).toEqual([
             "lastChangedOn_ASC",
-            "lastChangedOn_DESC"
+            "lastChangedOn_DESC",
+            "title_ASC",
+            "title_DESC"
         ]);
         // The review list filter is each app's own; the CMS one has a model id (R94).
         expect(types.some(item => item.name === "WorkflowsReviewListWhere")).toBe(false);

@@ -44,8 +44,11 @@ export interface ReviewRepositoryListWhere {
     isActive?: boolean;
     state?: ReviewState;
     currentStepState?: StepState;
+    currentStepState_not?: StepState;
     currentOwnerId?: string;
     currentOwnerId_not?: string;
+    /** `true`: the current step has a user owner (`currentOwnerId` is not `null`). */
+    hasCurrentOwner?: true;
     /** Any shared team; an empty list matches nothing and is answered without a query. */
     currentCandidateTeamIds_in?: string[];
     currentStepType_in?: string[];
@@ -57,6 +60,13 @@ export interface ReviewRepositoryListWhere {
     lastChangedOn_gte?: string;
     /** Changed at or before this time (ISO); where a descending list cursor resumes. */
     lastChangedOn_lte?: string;
+    /**
+     * Title sort key (trimmed, lower-cased title) at or after this value; where an ascending title
+     * cursor resumes. A row stored before the key existed has none and is left out.
+     */
+    titleSortKey_gte?: string;
+    /** Title sort key at or before this value; where a descending title cursor resumes. */
+    titleSortKey_lte?: string;
     /** Review ids to leave out; the rows a list cursor already examined at its time. */
     id_not_in?: string[];
 }

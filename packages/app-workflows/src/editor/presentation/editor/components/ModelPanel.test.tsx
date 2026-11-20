@@ -18,7 +18,8 @@ const ARTICLE: ModelRowVm = {
     subLine: "3 steps",
     bound: true,
     unsaved: true,
-    active: true
+    active: true,
+    actionsDisabled: false
 };
 
 const AUTHOR: ModelRowVm = {
@@ -27,7 +28,8 @@ const AUTHOR: ModelRowVm = {
     subLine: "No workflow",
     bound: false,
     unsaved: false,
-    active: false
+    active: false,
+    actionsDisabled: false
 };
 
 const createPanel = (overrides: Partial<ModelPanelVm> = {}): ModelPanelVm => {
@@ -35,6 +37,8 @@ const createPanel = (overrides: Partial<ModelPanelVm> = {}): ModelPanelVm => {
         label: "Content models",
         showSearch: true,
         search: "",
+        showFilter: true,
+        filter: "all",
         rows: [ARTICLE, AUTHOR],
         loading: false,
         loadingMore: false,
@@ -50,7 +54,10 @@ const createProps = (overrides: Partial<ModelPanelProps> = {}): ModelPanelProps 
         panel: createPanel(),
         renderIcon: modelId => <span data-testid={`icon-${modelId}`} />,
         onSearch: vi.fn(),
+        onFilter: vi.fn(),
         onSelect: vi.fn(),
+        onCreateWorkflow: vi.fn(),
+        onDeleteWorkflow: vi.fn(),
         onLoadMore: vi.fn(),
         onRetry: vi.fn(),
         ...overrides
@@ -59,6 +66,11 @@ const createProps = (overrides: Partial<ModelPanelProps> = {}): ModelPanelProps 
 
 const rowOf = (name: string): HTMLElement => {
     return screen.getByText(name).closest("[role='button']") as HTMLElement;
+};
+
+const openMenu = (name: string): void => {
+    const trigger = within(rowOf(name)).getByRole("button", { name: `Actions for ${name}` });
+    fireEvent.keyDown(trigger, { key: "Enter" });
 };
 
 describe("ModelPanel", () => {
@@ -193,5 +205,74 @@ describe("ModelPanel", () => {
         renderWithAdminUi(<ModelPanel {...createProps()} />);
 
         expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+    });
+
+    it("filters the models with the All, With workflow and Without workflow control", () => {
+        const props = createProps();
+        renderWithAdminUi(<ModelPanel {...props} />);
+
+        const group = screen.getByRole("radiogroup", { name: "Filter models" });
+        expect(within(group).getByRole("radio", { name: "All" }).getAttribute("aria-checked")).toBe(
+            "true"
+        );
+
+        fireEvent.click(within(group).getByRole("radio", { name: "With workflow" }));
+        fireEvent.click(within(group).getByRole("radio", { name: "Without workflow" }));
+
+        expect(props.onFilter).toHaveBeenNthCalledWith(1, "with");
+        expect(props.onFilter).toHaveBeenNthCalledWith(2, "without");
+    });
+
+    it("shows the current filter as the checked option", () => {
+        renderWithAdminUi(
+            <ModelPanel {...createProps({ panel: createPanel({ filter: "without" }) })} />
+        );
+
+        const radio = screen.getByRole("radio", { name: "Without workflow" });
+        expect(radio.getAttribute("aria-checked")).toBe("true");
+    });
+
+    it("has no filter control when the app shows none (Website Builder)", () => {
+        renderWithAdminUi(
+            <ModelPanel {...createProps({ panel: createPanel({ showFilter: false }) })} />
+        );
+
+        expect(screen.queryByRole("radiogroup", { name: "Filter models" })).toBeNull();
+    });
+
+    it("offers Delete workflow in the menu of a model with a workflow", () => {
+        const props = createProps();
+        renderWithAdminUi(<ModelPanel {...props} />);
+
+        openMenu("Article");
+        expect(screen.queryByRole("menuitem", { name: "Create workflow" })).toBeNull();
+        // The item's onClick sits on its inner element, so click the label.
+        fireEvent.click(screen.getByText("Delete workflow"));
+
+        expect(props.onDeleteWorkflow).toHaveBeenCalledWith("article");
+        expect(props.onSelect).not.toHaveBeenCalled();
+    });
+
+    it("offers Create workflow in the menu of a model without a workflow", () => {
+        const props = createProps();
+        renderWithAdminUi(<ModelPanel {...props} />);
+
+        openMenu("Author");
+        expect(screen.queryByRole("menuitem", { name: "Delete workflow" })).toBeNull();
+        // The item's onClick sits on its inner element, so click the label.
+        fireEvent.click(screen.getByText("Create workflow"));
+
+        expect(props.onCreateWorkflow).toHaveBeenCalledWith("author");
+        expect(props.onSelect).not.toHaveBeenCalled();
+    });
+
+    it("disables the row menu while a save or a dialog action runs", () => {
+        const rows = [{ ...ARTICLE, actionsDisabled: true }];
+        renderWithAdminUi(<ModelPanel {...createProps({ panel: createPanel({ rows }) })} />);
+
+        const trigger = screen.getByRole("button", { name: "Actions for Article" });
+        expect(
+            trigger.hasAttribute("disabled") || trigger.getAttribute("aria-disabled")
+        ).toBeTruthy();
     });
 });

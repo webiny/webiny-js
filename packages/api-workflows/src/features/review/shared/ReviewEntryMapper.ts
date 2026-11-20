@@ -16,6 +16,7 @@ import type {
 } from "~/domain/review/types.js";
 import { toIsoString } from "~/features/shared/toIsoString.js";
 import { ActorEntryMapper, type ActorEntryValues } from "~/features/shared/ActorEntryMapper.js";
+import { createReviewTitleSortKey } from "./createReviewTitleSortKey.js";
 
 export interface ReviewEntryStepAssignment {
     source: string;
@@ -66,6 +67,8 @@ export interface ReviewEntryTargetContext {
     folder: TargetContextFolder | null;
     modelId: string;
     title: string;
+    // Absent on entries stored before the field existed.
+    contentTypeName?: string | null;
     author: TargetContextAuthor | null;
 }
 
@@ -80,6 +83,11 @@ export interface ReviewEntryValues {
     targetId: string;
     targetRevisionId: string;
     title: string;
+    /**
+     * Storage only (B2 design 2): the list sort key of `title`, written on every save and never
+     * read back into `ReviewData`. Absent on entries stored before the field existed.
+     */
+    titleSortKey?: string | null;
     isActive: boolean;
     state: string;
     currentStepId: string | null;
@@ -105,6 +113,7 @@ export class ReviewEntryMapper {
             targetId: review.targetId,
             targetRevisionId: review.targetRevisionId,
             title: review.title,
+            titleSortKey: createReviewTitleSortKey(review.title),
             isActive: review.isActive,
             state: review.state,
             currentStepId: review.currentStepId,
@@ -116,6 +125,7 @@ export class ReviewEntryMapper {
                 folder: review.targetContext.folder ? { ...review.targetContext.folder } : null,
                 modelId: review.targetContext.modelId,
                 title: review.targetContext.title,
+                contentTypeName: review.targetContext.contentTypeName,
                 author: { ...review.targetContext.author }
             },
             workflow: {
@@ -152,6 +162,8 @@ export class ReviewEntryMapper {
                 folder: folder?.id ? { id: folder.id, type: folder.type } : null,
                 modelId: values.targetContext?.modelId ?? "",
                 title: values.targetContext?.title ?? "",
+                // Reviews requested before the field existed read `null`.
+                contentTypeName: values.targetContext?.contentTypeName || null,
                 author: {
                     id: values.targetContext?.author?.id ?? "",
                     displayName: values.targetContext?.author?.displayName ?? ""

@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { ReviewListScope } from "@webiny/api-workflows/domain/review/ReviewListScope.js";
 import type {
-    ReviewListKind,
     ReviewListMeta,
     ReviewListSort,
     ReviewListWhere,
@@ -19,9 +19,10 @@ export interface ListCmsEntryReviewsWhere extends ReviewListWhere {
 }
 
 export interface ListCmsEntryReviewsInput {
-    list: ReviewListKind;
+    /** `all` needs `reassign` (B2 design 1). */
+    scope: ReviewListScope;
     where?: ListCmsEntryReviewsWhere | null;
-    /** Default per list (D119). */
+    /** Default per scope and state (`getDefaultReviewListSort`, D119). */
     sort?: ReviewListSort | null;
     /** Default 20, max 100 (R92). */
     limit?: number | null;
@@ -54,7 +55,7 @@ export interface IListCmsEntryReviewsUseCase {
  * viewer can read, and only rows whose entry the CMS entry list would show the viewer (D76, Q77):
  * own entries only with an own-only permission, none in a folder the viewer cannot read. A custom
  * per-entry read check added with a decorator is not applied, as CMS lists do not apply it either.
- * Failed steps need `reassign` (D112, R95). Each row carries the viewer's flags (A43).
+ * The `all` scope needs `reassign` (R95, B2 design 1). Each row carries the viewer's flags (A43).
  */
 export const ListCmsEntryReviewsUseCase = createAbstraction<IListCmsEntryReviewsUseCase>(
     "ListCmsEntryReviewsUseCase"

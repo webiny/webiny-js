@@ -1,4 +1,5 @@
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { REQUESTER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface FailedMessageParams {
     /** `review.title`. */
@@ -19,6 +20,8 @@ export const buildFailedMessage = (params: FailedMessageParams): NotificationMes
         body: `${reason} You can restart the step.`,
         subject: `Step failed: ${contentTitle} (${stepTitle})`,
         text: `${stepTitle} hit a technical error: ${reason} The review is paused at this step until it is restarted.`,
-        linkLabel: "Open content"
+        linkLabel: "View review details",
+        link: "reviewDetails",
+        footer: REQUESTER_FOOTER
     };
 };

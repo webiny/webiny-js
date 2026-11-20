@@ -107,12 +107,16 @@ export const createReadFilter = (
     };
 };
 
-/** The `reviewer` fixture as viewer, member of `REVIEW_TEAM_ID`, every article readable. */
+/**
+ * The `reviewer` fixture as viewer, member of `REVIEW_TEAM_ID`, every article readable: the pool
+ * in review, oldest change first by default.
+ */
 export const createListInput = (
     overrides: Partial<ListReviewsUseCase.Input> = {}
 ): ListReviewsUseCase.Input => {
     return {
-        list: "pool",
+        scope: "pool",
+        where: { state: "inReview" },
         viewerUserId: reviewer.id,
         viewerTeamIds: [REVIEW_TEAM_ID],
         readFilter: createReadFilter(),

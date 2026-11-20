@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { REVIEW_WIDGET_PAGE_SIZE } from "~/review/domain/constants.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
@@ -103,8 +104,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         try {
             const listed = await this.listReviewsUseCase.execute({
                 app: params.app,
-                list: this.getList(),
-                where: {},
+                scope: this.getScope(),
+                where: { state: this.getState() },
                 sort: this.getSort(),
                 limit: REVIEW_WIDGET_PAGE_SIZE,
                 after: null
@@ -131,8 +132,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         try {
             const listed = await this.listReviewsUseCase.execute({
                 app,
-                list: this.getList(),
-                where: {},
+                scope: this.getScope(),
+                where: { state: this.getState() },
                 sort: this.getSort(),
                 limit: REVIEW_WIDGET_PAGE_SIZE,
                 after: null
@@ -159,8 +160,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             try {
                 const listed = await this.listReviewsUseCase.execute({
                     app,
-                    list: this.getList(),
-                    where: {},
+                    scope: this.getScope(),
+                    where: { state: this.getState() },
                     sort: this.getSort(),
                     limit: REVIEW_WIDGET_PAGE_SIZE,
                     after: null
@@ -194,8 +195,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         try {
             const listed = await this.listReviewsUseCase.execute({
                 app,
-                list: this.getList(),
-                where: {},
+                scope: this.getScope(),
+                where: { state: this.getState() },
                 sort: this.getSort(),
                 limit: REVIEW_WIDGET_PAGE_SIZE,
                 after: null
@@ -262,11 +263,19 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         this._status = "failed";
     }
 
-    private getList(): "assignedToMe" | "pool" | "myRequests" {
+    private getScope(): "assignedToMe" | "pool" | "myRequests" {
         if (this._kind === "myRequests") {
             return "myRequests";
         }
         return this._tab;
+    }
+
+    // For me to review lists the work in review; My requests every request, finished or not.
+    private getState(): ReviewListState {
+        if (this._kind === "myRequests") {
+            return "all";
+        }
+        return "inReview";
     }
 
     private getSort(): ReviewListSort {

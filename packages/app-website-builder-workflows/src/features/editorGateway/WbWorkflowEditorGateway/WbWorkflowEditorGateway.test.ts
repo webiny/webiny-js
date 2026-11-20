@@ -91,7 +91,12 @@ describe("WbWorkflowEditorGateway", () => {
                 }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result).toEqual({
                 data: {
@@ -126,7 +131,12 @@ describe("WbWorkflowEditorGateway", () => {
                 }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result.data?.rows).toEqual([
                 { model: "wb.page", modelId: "page", name: "Pages", workflow: null }
@@ -138,7 +148,12 @@ describe("WbWorkflowEditorGateway", () => {
                 websiteBuilder: { listWebsiteBuilderPageWorkflows: { data: [], error: null } }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result.data?.rows[0].workflow).toBeNull();
             expect(result.error).toBeNull();
@@ -167,7 +182,12 @@ describe("WbWorkflowEditorGateway", () => {
                 }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result.data?.rows[0].workflow).toEqual({
                 id: "workflow-1",
@@ -181,7 +201,12 @@ describe("WbWorkflowEditorGateway", () => {
                 websiteBuilder: { listWebsiteBuilderPageWorkflows: { data: [], error: null } }
             });
 
-            const result = await gateway.listModels({ search: "zzz", limit: 5, after: "cursor-9" });
+            const result = await gateway.listModels({
+                search: "zzz",
+                hasWorkflow: null,
+                limit: 5,
+                after: "cursor-9"
+            });
 
             expect(client.execute).toHaveBeenCalledTimes(1);
             const request = client.execute.mock.calls[0][0];
@@ -200,7 +225,12 @@ describe("WbWorkflowEditorGateway", () => {
                 websiteBuilder: { listWebsiteBuilderPageWorkflows: { data: null, error } }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result).toEqual({ data: null, error });
         });
@@ -210,7 +240,12 @@ describe("WbWorkflowEditorGateway", () => {
                 websiteBuilder: { listWebsiteBuilderPageWorkflows: { data: null, error: null } }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result).toEqual({ data: null, error: null });
         });
@@ -219,9 +254,9 @@ describe("WbWorkflowEditorGateway", () => {
             const failure = new Error("Network down.");
             client.execute.mockRejectedValue(failure);
 
-            await expect(gateway.listModels({ search: "", limit: 20, after: null })).rejects.toBe(
-                failure
-            );
+            await expect(
+                gateway.listModels({ search: "", hasWorkflow: null, limit: 20, after: null })
+            ).rejects.toBe(failure);
         });
     });
 

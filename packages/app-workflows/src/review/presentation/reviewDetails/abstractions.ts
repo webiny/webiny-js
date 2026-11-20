@@ -120,6 +120,7 @@ export interface IReviewDetailsViewModel {
     status: ReviewDetailsStatus;
     header: ReviewDetailsHeaderVm | null;
     steps: ReviewDetailsStepVm[];
+    // The info alert text of a cancelled review, "This review was cancelled by {name} on {date}."; `null` otherwise.
     cancelledText: string | null;
     actions: TargetReviewActionVm[];
     error: string | null;

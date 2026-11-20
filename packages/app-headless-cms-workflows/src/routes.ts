@@ -13,7 +13,8 @@ export const Routes = {
             path: "/cms/content-reviews",
             params: zod => {
                 return {
-                    tab: zod.string().optional()
+                    scope: zod.string().optional(),
+                    state: zod.string().optional()
                 };
             }
         })

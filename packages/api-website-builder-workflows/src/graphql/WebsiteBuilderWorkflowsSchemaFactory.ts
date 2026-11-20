@@ -118,10 +118,8 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
 
     input WbPageReviewListWhere {
         titleContains: String
-        "My requests only (R91)."
-        reviewState: WorkflowsReviewState
-        "My requests only (R91)."
-        stepState: WorkflowsStepState
+        "Default all; applies to every scope."
+        state: WorkflowsReviewListState
     }
 
     extend type WbQuery {
@@ -137,7 +135,8 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             taskId: ID!
         ): WbPageReviewStepRunResponse!
         listWebsiteBuilderPageReviews(
-            list: WorkflowsReviewListKind!
+            "all needs reassign."
+            scope: WorkflowsReviewListScope!
             where: WbPageReviewListWhere
             sort: WorkflowsReviewListSort
             limit: Int
@@ -389,7 +388,7 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
             ) => {
                 return async ({ args }) => {
                     const result = await listReviews.execute({
-                        list: args.list,
+                        scope: args.scope,
                         where: args.where,
                         sort: args.sort,
                         limit: args.limit,

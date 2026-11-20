@@ -146,6 +146,9 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                     panel={vm.panel}
                     renderIcon={modelId => app.renderModelIcon(modelId)}
                     onSearch={search => presenter.setSearch(search)}
+                    onFilter={filter => presenter.setWorkflowFilter(filter)}
+                    onCreateWorkflow={modelId => presenter.createWorkflowForModel(modelId)}
+                    onDeleteWorkflow={modelId => presenter.requestDeleteWorkflowForModel(modelId)}
                     onSelect={modelId => presenter.selectModel(modelId)}
                     onLoadMore={() => presenter.loadMore()}
                     onRetry={() => presenter.retryModels()}

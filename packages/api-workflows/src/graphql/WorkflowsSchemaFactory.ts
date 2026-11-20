@@ -400,17 +400,29 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         stepName: String!
     }
 
-    enum WorkflowsReviewListKind {
+    "Whose reviews a list shows. all needs reassign."
+    enum WorkflowsReviewListScope {
         assignedToMe
         pool
         teamInReview
         myRequests
-        failedSteps
+        all
+    }
+
+    "Where the listed reviews are; applies to every scope."
+    enum WorkflowsReviewListState {
+        all
+        inReview
+        failed
+        approved
+        rejected
     }
 
     enum WorkflowsReviewListSort {
         lastChangedOn_ASC
         lastChangedOn_DESC
+        title_ASC
+        title_DESC
     }
 
     input WorkflowsReviewPickInput {

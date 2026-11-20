@@ -58,13 +58,17 @@ describe("ReviewApprovedNotifications (R181, R183, R184, R189)", () => {
         const [call] = notifier.calls;
         expect(call.event).toBe("approved");
         expect(call.stepId).toBe("editorial");
-        expect(call.recipients).toEqual([{ id: "user-requester", displayName: "Rita Requester" }]);
-        expect(call.message).toEqual({
+        expect(call.deliveries[0].recipients).toEqual([
+            { id: "user-requester", displayName: "Rita Requester" }
+        ]);
+        expect(call.deliveries[0].message).toEqual({
             title: "“Article 1” was approved",
             body: "All steps approved. It’s ready to publish.",
             subject: "Approved: Article 1",
             text: "Every step approved this revision. It’s ready to publish.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: "You get this e-mail because you requested this review and it notifies by e-mail."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: EDITORIAL_CHANNEL }
@@ -77,7 +81,7 @@ describe("ReviewApprovedNotifications (R181, R183, R184, R189)", () => {
         await handle(createNotificationReview(), createFact({ actor: AI_ACTOR }));
 
         expect(notifier.calls).toHaveLength(1);
-        expect(notifier.calls[0].recipients).toEqual([
+        expect(notifier.calls[0].deliveries[0].recipients).toEqual([
             { id: "user-requester", displayName: "Rita Requester" }
         ]);
     });

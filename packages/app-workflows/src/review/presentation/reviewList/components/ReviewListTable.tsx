@@ -105,11 +105,24 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
         contentTypeHead = <Table.Head>Content type</Table.Head>;
     }
 
-    let sortTitle = "Oldest change first";
-    let sortArrow = "↑";
-    if (vm.sort === "lastChangedOn_DESC") {
-        sortTitle = "Newest change first";
-        sortArrow = "↓";
+    // One sort at a time: only the active column shows its arrow.
+    let titleSortTitle = "Sort by title, A to Z";
+    let titleLabel = "Title";
+    if (vm.sort === "title_ASC") {
+        titleSortTitle = "Title, A to Z";
+        titleLabel = "Title ↑";
+    } else if (vm.sort === "title_DESC") {
+        titleSortTitle = "Title, Z to A";
+        titleLabel = "Title ↓";
+    }
+    let lastChangeSortTitle = "Sort by last change, oldest first";
+    let lastChangeLabel = "Last change";
+    if (vm.sort === "lastChangedOn_ASC") {
+        lastChangeSortTitle = "Oldest change first";
+        lastChangeLabel = "Last change ↑";
+    } else if (vm.sort === "lastChangedOn_DESC") {
+        lastChangeSortTitle = "Newest change first";
+        lastChangeLabel = "Last change ↓";
     }
 
     // The same bar as the CMS entry list (app-admin ListView.BottomBar); the API gives no total.
@@ -134,7 +147,15 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
             <Table sticky>
                 <Table.Header sticky>
                     <Table.Row>
-                        <Table.Head>Title</Table.Head>
+                        <Table.Head>
+                            <button
+                                type="button"
+                                title={titleSortTitle}
+                                onClick={() => presenter.toggleSort("title")}
+                            >
+                                {titleLabel}
+                            </button>
+                        </Table.Head>
                         {contentTypeHead}
                         <Table.Head>Current step</Table.Head>
                         <Table.Head>Step state</Table.Head>
@@ -143,10 +164,10 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
                         <Table.Head>
                             <button
                                 type="button"
-                                title={sortTitle}
-                                onClick={() => presenter.toggleSort()}
+                                title={lastChangeSortTitle}
+                                onClick={() => presenter.toggleSort("lastChangedOn")}
                             >
-                                {`Last change ${sortArrow}`}
+                                {lastChangeLabel}
                             </button>
                         </Table.Head>
                         <Table.Head />

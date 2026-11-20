@@ -14,14 +14,23 @@ import { getDefaultReviewListSort } from "./getDefaultReviewListSort.js";
 import { getListOwnerLabel } from "./getListOwnerLabel.js";
 import { getListReviewStateLabel } from "./getListReviewStateLabel.js";
 import { getListRowActions } from "./getListRowActions.js";
+import { getDefaultReviewListState } from "./getDefaultReviewListState.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
-import { getVisibleReviewListTabs } from "./getVisibleReviewListTabs.js";
+import type { ReviewListEmptyParams } from "./getReviewListEmpty.js";
+import { getReviewListStates } from "./getReviewListStates.js";
+import { getVisibleReviewListScopes } from "./getVisibleReviewListScopes.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
-import { isReviewListTabAvailable } from "./isReviewListTabAvailable.js";
-import { parseReviewListTab } from "./parseReviewListTab.js";
+import { isReviewListScopeAvailable } from "./isReviewListScopeAvailable.js";
+import { parseReviewListScope } from "./parseReviewListScope.js";
+import { parseReviewListState } from "./parseReviewListState.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
-import { REVIEW_LIST_TABS } from "./reviewListTabs.js";
+import { REVIEW_LIST_SCOPES } from "./reviewListScopes.js";
+import { REVIEW_LIST_STATES } from "./reviewListStates.js";
+import { toggleReviewListSort } from "./toggleReviewListSort.js";
+import { isEmptyReviewListFilter } from "~/review/domain/isEmptyReviewListFilter.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 
 const row = (overrides: ReviewListItemOverrides = {}) => {
     return toReviewListRow(createReviewListItem(overrides));
@@ -32,12 +41,68 @@ const permissions = (overrides: Partial<WorkflowsPermissionSet> = {}): Workflows
 };
 
 describe("review list pure functions", () => {
-    it("sorts the work queues oldest first and My requests newest first (QBZ-69)", () => {
-        expect(getDefaultReviewListSort("assignedToMe")).toBe("lastChangedOn_ASC");
-        expect(getDefaultReviewListSort("pool")).toBe("lastChangedOn_ASC");
-        expect(getDefaultReviewListSort("teamInReview")).toBe("lastChangedOn_ASC");
-        expect(getDefaultReviewListSort("failedSteps")).toBe("lastChangedOn_ASC");
-        expect(getDefaultReviewListSort("myRequests")).toBe("lastChangedOn_DESC");
+    it("sorts waiting work oldest first and everything else newest first (QBZ-69, B2 design 1)", () => {
+        const scopes: ReviewListScope[] = [
+            "assignedToMe",
+            "pool",
+            "teamInReview",
+            "myRequests",
+            "all"
+        ];
+        const states: ReviewListState[] = ["all", "inReview", "failed", "approved", "rejected"];
+        for (const scope of scopes) {
+            for (const state of states) {
+                const oldestFirst =
+                    scope === "pool" ||
+                    (scope !== "myRequests" && (state === "inReview" || state === "failed"));
+                expect(getDefaultReviewListSort(scope, state)).toBe(
+                    oldestFirst ? "lastChangedOn_ASC" : "lastChangedOn_DESC"
+                );
+            }
+        }
+    });
+
+    it("flips the active sort and starts another field ascending", () => {
+        expect(toggleReviewListSort("lastChangedOn_ASC", "lastChangedOn")).toBe(
+            "lastChangedOn_DESC"
+        );
+        expect(toggleReviewListSort("lastChangedOn_DESC", "lastChangedOn")).toBe(
+            "lastChangedOn_ASC"
+        );
+        expect(toggleReviewListSort("lastChangedOn_DESC", "title")).toBe("title_ASC");
+        expect(toggleReviewListSort("title_ASC", "title")).toBe("title_DESC");
+        expect(toggleReviewListSort("title_DESC", "title")).toBe("title_ASC");
+        expect(toggleReviewListSort("title_DESC", "lastChangedOn")).toBe("lastChangedOn_ASC");
+    });
+
+    it("knows the scope and state pairs that are empty by definition (B2 design 1)", () => {
+        const empty = [
+            "pool×failed",
+            "pool×approved",
+            "pool×rejected",
+            "assignedToMe×failed",
+            "teamInReview×failed"
+        ];
+        for (const scope of REVIEW_LIST_SCOPES.map(item => item.value)) {
+            for (const state of REVIEW_LIST_STATES.map(item => item.value)) {
+                expect(isEmptyReviewListFilter(scope, state)).toBe(
+                    empty.includes(`${scope}×${state}`)
+                );
+            }
+            expect(
+                getReviewListStates(scope)
+                    .filter(item => item.disabled)
+                    .map(item => `${scope}×${item.value}`)
+            ).toEqual(empty.filter(pair => pair.startsWith(`${scope}×`)));
+        }
+    });
+
+    it("defaults the queues to In review and Requested by me and All to All", () => {
+        expect(getDefaultReviewListState("assignedToMe")).toBe("inReview");
+        expect(getDefaultReviewListState("pool")).toBe("inReview");
+        expect(getDefaultReviewListState("teamInReview")).toBe("inReview");
+        expect(getDefaultReviewListState("myRequests")).toBe("all");
+        expect(getDefaultReviewListState("all")).toBe("all");
     });
 
     it("labels every review state", () => {
@@ -140,109 +205,133 @@ describe("review list pure functions", () => {
         });
     });
 
-    it("has an empty state per tab, for filters and for a viewer in no team (README 8, QBZ-72, QBZ-73)", () => {
-        expect(getReviewListEmpty("assignedToMe", false, true, true)).toEqual({
+    it("has an empty state per scope, for filters and for a viewer in no team (README 8, QBZ-72, QBZ-73)", () => {
+        const empty = (overrides: Partial<ReviewListEmptyParams>) => {
+            return getReviewListEmpty({
+                scope: "assignedToMe",
+                state: "inReview",
+                hasFilters: false,
+                hasTeams: true,
+                showContentType: true,
+                ...overrides
+            });
+        };
+        const filtered = {
+            title: "No reviews match these filters",
+            description: "Try another title, content model or state, or clear the filters."
+        };
+
+        expect(empty({})).toEqual({
             title: "Nothing assigned to you",
             description: "Steps you own and are reviewing appear here."
         });
-        expect(getReviewListEmpty("pool", false, true, true)).toEqual({
+        expect(empty({ state: "all" }).title).toBe("Nothing assigned to you");
+        expect(empty({ scope: "pool" })).toEqual({
             title: "Your team pools are empty",
             description: "Steps waiting for someone in your teams to start them appear here."
         });
-        expect(getReviewListEmpty("teamInReview", false, true, true)).toEqual({
+        expect(empty({ scope: "teamInReview" })).toEqual({
             title: "Nobody in your teams is reviewing",
             description: "Steps that a teammate is reviewing appear here."
         });
-        expect(getReviewListEmpty("myRequests", false, true, true)).toEqual({
+        expect(empty({ scope: "myRequests", state: "all" })).toEqual({
             title: "You haven’t requested any reviews",
             description: "Request a review from the review bar in the content editor."
         });
-        expect(getReviewListEmpty("pool", true, true, true)).toEqual({
-            title: "No reviews match these filters",
-            description: "Try another title, content model or state, or clear the filters."
+        expect(empty({ scope: "myRequests" }).title).toBe("You haven’t requested any reviews");
+        expect(empty({ scope: "all", state: "all" })).toEqual({
+            title: "No reviews yet",
+            description: "Reviews you can act on or follow appear here."
         });
+        expect(empty({ scope: "pool", hasFilters: true })).toEqual(filtered);
+        expect(empty({ scope: "myRequests", state: "approved" })).toEqual(filtered);
+        expect(empty({ scope: "assignedToMe", state: "rejected" })).toEqual(filtered);
 
         const noTeam = {
             title: "You’re not in a reviewing team",
             description: "Steps appear here once you’re added to a team that reviews content."
         };
-        expect(getReviewListEmpty("pool", false, false, true)).toEqual(noTeam);
-        expect(getReviewListEmpty("teamInReview", false, false, true)).toEqual(noTeam);
-        expect(getReviewListEmpty("assignedToMe", false, false, true).title).toBe(
-            "Nothing assigned to you"
-        );
-        expect(getReviewListEmpty("myRequests", false, false, true).title).toBe(
-            "You haven’t requested any reviews"
-        );
-        expect(getReviewListEmpty("pool", true, false, true).title).toBe(
-            "No reviews match these filters"
-        );
+        expect(empty({ scope: "pool", hasTeams: false })).toEqual(noTeam);
+        expect(empty({ scope: "teamInReview", hasTeams: false })).toEqual(noTeam);
+        expect(empty({ hasTeams: false }).title).toBe("Nothing assigned to you");
+        expect(empty({ scope: "pool", hasTeams: false, hasFilters: true })).toEqual(filtered);
     });
 
     it("names no content model in the filtered empty state of an app without one", () => {
-        expect(getReviewListEmpty("pool", true, true, false)).toEqual({
+        expect(
+            getReviewListEmpty({
+                scope: "pool",
+                state: "inReview",
+                hasFilters: true,
+                hasTeams: true,
+                showContentType: false
+            })
+        ).toEqual({
             title: "No reviews match these filters",
             description: "Try another title or state, or clear the filters."
         });
     });
 
-    it("has the Failed steps empty state (QBZ-29) and the shared filtered state", () => {
-        expect(getReviewListEmpty("failedSteps", false, true, true)).toEqual({
+    it("keeps the failed steps empty state for state Failed (QBZ-29)", () => {
+        const failed = {
             title: "No failed steps",
             description: "AI and automation steps that hit a technical error appear here."
-        });
-        expect(getReviewListEmpty("failedSteps", false, false, true).title).toBe("No failed steps");
-        expect(getReviewListEmpty("failedSteps", true, true, true)).toEqual({
-            title: "No reviews match these filters",
-            description: "Try another title, content model or state, or clear the filters."
-        });
+        };
+        for (const scope of ["all", "myRequests"] as ReviewListScope[]) {
+            expect(
+                getReviewListEmpty({
+                    scope,
+                    state: "failed",
+                    hasFilters: false,
+                    hasTeams: false,
+                    showContentType: true
+                })
+            ).toEqual(failed);
+        }
     });
 
-    it("lists the five tabs in design order and parses a tab value", () => {
-        expect(REVIEW_LIST_TABS.map(tab => tab.label)).toEqual([
+    it("lists the scopes and states in design order and parses their values", () => {
+        expect(REVIEW_LIST_SCOPES.map(scope => scope.label)).toEqual([
             "Assigned to me",
             "Team pool",
             "Team in review",
-            "My requests",
-            "Failed steps"
+            "Requested by me",
+            "All"
         ]);
-        expect(REVIEW_LIST_TABS[4].value).toBe("failedSteps");
-        expect(parseReviewListTab("pool")).toBe("pool");
-        expect(parseReviewListTab("myRequests")).toBe("myRequests");
-        expect(parseReviewListTab("failedSteps")).toBe("failedSteps");
-        expect(parseReviewListTab("nonsense")).toBeNull();
-        expect(parseReviewListTab(undefined)).toBeNull();
+        expect(REVIEW_LIST_STATES.map(state => state.label)).toEqual([
+            "All",
+            "In review",
+            "Failed",
+            "Approved",
+            "Rejected"
+        ]);
+        expect(parseReviewListScope("pool")).toBe("pool");
+        expect(parseReviewListScope("all")).toBe("all");
+        expect(parseReviewListScope("failedSteps")).toBeNull();
+        expect(parseReviewListScope(undefined)).toBeNull();
+        expect(parseReviewListState("failed")).toBe("failed");
+        expect(parseReviewListState("awaiting")).toBeNull();
+        expect(parseReviewListState(null)).toBeNull();
     });
 
-    it("opens Failed steps only with reassign or full access and every other tab to everyone (QBZ-29, R259)", () => {
+    it("opens All only with reassign or full access and every other scope to everyone (R259)", () => {
         const none = permissions();
-        const editorOnly = permissions({ editor: true });
-        const reassign = permissions({ reassign: true });
-        const fullAccess = permissions({ fullAccess: true, editor: true, reassign: true });
-
-        expect(isReviewListTabAvailable("failedSteps", none)).toBe(false);
-        expect(isReviewListTabAvailable("failedSteps", editorOnly)).toBe(false);
-        expect(isReviewListTabAvailable("failedSteps", reassign)).toBe(true);
-        expect(isReviewListTabAvailable("failedSteps", fullAccess)).toBe(true);
-        expect(isReviewListTabAvailable("failedSteps", permissions({ fullAccess: true }))).toBe(
-            true
-        );
-        expect(isReviewListTabAvailable("assignedToMe", none)).toBe(true);
-        expect(isReviewListTabAvailable("pool", none)).toBe(true);
-        expect(isReviewListTabAvailable("teamInReview", none)).toBe(true);
-        expect(isReviewListTabAvailable("myRequests", none)).toBe(true);
-    });
-
-    it("lists four visible tabs without reassign and five with it, in design order", () => {
-        const four = ["assignedToMe", "pool", "teamInReview", "myRequests"];
-
-        expect(getVisibleReviewListTabs(permissions()).map(tab => tab.value)).toEqual(four);
+        expect(isReviewListScopeAvailable("all", none)).toBe(false);
+        expect(isReviewListScopeAvailable("all", permissions({ editor: true }))).toBe(false);
+        expect(isReviewListScopeAvailable("all", permissions({ reassign: true }))).toBe(true);
+        expect(isReviewListScopeAvailable("all", permissions({ fullAccess: true }))).toBe(true);
+        for (const scope of ["assignedToMe", "pool", "teamInReview", "myRequests"] as const) {
+            expect(isReviewListScopeAvailable(scope, none)).toBe(true);
+        }
+        expect(getVisibleReviewListScopes(none).map(scope => scope.value)).toEqual([
+            "assignedToMe",
+            "pool",
+            "teamInReview",
+            "myRequests"
+        ]);
         expect(
-            getVisibleReviewListTabs(permissions({ editor: true })).map(tab => tab.value)
-        ).toEqual(four);
-        const five = getVisibleReviewListTabs(permissions({ reassign: true }));
-        expect(five.map(tab => tab.value)).toEqual([...four, "failedSteps"]);
-        expect(five[4]).toEqual({ value: "failedSteps", label: "Failed steps" });
+            getVisibleReviewListScopes(permissions({ reassign: true })).map(scope => scope.value)
+        ).toEqual(["assignedToMe", "pool", "teamInReview", "myRequests", "all"]);
     });
 
     it("detects a changed row by step, state, owner, review state and last change", () => {
@@ -272,6 +361,16 @@ describe("review list pure functions", () => {
         expect(isBeyondRefetchWindow(early, late, "lastChangedOn_DESC")).toBe(true);
         expect(isBeyondRefetchWindow(late, early, "lastChangedOn_DESC")).toBe(false);
         expect(isBeyondRefetchWindow(late, null, "lastChangedOn_ASC")).toBe(true);
+
+        const alpha = row({ id: "alpha", title: "  alpha" });
+        const beta = row({ id: "beta", title: "Beta" });
+        expect(isBeyondRefetchWindow(beta, alpha, "title_ASC")).toBe(true);
+        expect(isBeyondRefetchWindow(alpha, beta, "title_ASC")).toBe(false);
+        expect(isBeyondRefetchWindow(alpha, beta, "title_DESC")).toBe(true);
+        expect(isBeyondRefetchWindow(beta, alpha, "title_DESC")).toBe(false);
+        expect(isBeyondRefetchWindow(alpha, row({ id: "a2", title: "ALPHA" }), "title_ASC")).toBe(
+            true
+        );
     });
 
     it("resolves a row's binding, URL and content type label, or nothing for an unbound namespace", () => {

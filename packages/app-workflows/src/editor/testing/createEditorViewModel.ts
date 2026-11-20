@@ -28,6 +28,8 @@ export const createEditorViewModel = (
             label: "Content models",
             showSearch: true,
             search: "",
+            showFilter: true,
+            filter: "all",
             rows: [
                 {
                     modelId: "article",
@@ -35,7 +37,8 @@ export const createEditorViewModel = (
                     subLine: "No workflow",
                     bound: false,
                     unsaved: false,
-                    active: false
+                    active: false,
+                    actionsDisabled: false
                 }
             ],
             loading: false,

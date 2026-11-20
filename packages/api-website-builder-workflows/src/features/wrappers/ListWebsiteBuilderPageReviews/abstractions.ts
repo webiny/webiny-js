@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { ReviewListScope } from "@webiny/api-workflows/domain/review/ReviewListScope.js";
 import type {
-    ReviewListKind,
     ReviewListMeta,
     ReviewListSort,
     ReviewListWhere,
@@ -13,10 +13,11 @@ import type {
 import type { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 
 export interface ListWebsiteBuilderPageReviewsInput {
-    list: ReviewListKind;
-    /** `reviewState` and `stepState` only with `myRequests`; the engine refuses them elsewhere (R91). */
+    /** `all` needs `reassign` (B2 design 1). */
+    scope: ReviewListScope;
+    /** Title words and the review state, on every scope (B2 design 1). */
     where?: ReviewListWhere | null;
-    /** Defaults per list: oldest first, newest first for `myRequests` (D119). */
+    /** Default per scope and state (`getDefaultReviewListSort`, D119). */
     sort?: ReviewListSort | null;
     /** Default 20, at most 100 (R92). */
     limit?: number | null;
@@ -47,8 +48,8 @@ export interface IListWebsiteBuilderPageReviewsUseCase {
 /**
  * The viewer's page review lists (spec 11, D47, D133): `wb.page` reviews only, each row a page the
  * Website Builder page list would show the viewer (D76, Q77): own pages only with an own-only
- * permission, none in a folder the viewer cannot read. Each row carries the viewer's flags. Failed
- * steps need `reassign` (D112, R95).
+ * permission, none in a folder the viewer cannot read. Each row carries the viewer's flags. The
+ * `all` scope needs `reassign` (R95, B2 design 1).
  */
 export const ListWebsiteBuilderPageReviewsUseCase =
     createAbstraction<IListWebsiteBuilderPageReviewsUseCase>(
