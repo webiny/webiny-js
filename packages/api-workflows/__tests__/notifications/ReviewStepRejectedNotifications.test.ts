@@ -82,7 +82,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
             text: "Rob Reviewer rejected this revision at Legal review: “The terms are unclear.”. Create a new revision, fix it and request a new review.",
             linkLabel: "Open content",
             link: "content",
-            footer: "You get this e-mail because you requested this review and it notifies by e-mail."
+            footer: "You get this e-mail because you requested this review."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: LEGAL_CHANNEL }

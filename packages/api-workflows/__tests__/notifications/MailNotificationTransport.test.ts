@@ -42,7 +42,7 @@ const DETAILS: NotificationTransport.MessageDetails = {
 const FULL_MESSAGE: NotificationTransport.Message = {
     ...MESSAGE,
     linkLabel: "View review details",
-    footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail.",
+    footer: "You get this e-mail because you owned this step.",
     details: DETAILS
 };
 

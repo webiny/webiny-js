@@ -77,7 +77,7 @@ describe("ReviewStepTakenOverNotifications (R181, R183, R185, D111)", () => {
             text: "Anna took over Legal review on “Article 1”. You don’t need to review it any more.",
             linkLabel: "Open content",
             link: "content",
-            footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail."
+            footer: "You get this e-mail because you owned this step."
         });
     });
 

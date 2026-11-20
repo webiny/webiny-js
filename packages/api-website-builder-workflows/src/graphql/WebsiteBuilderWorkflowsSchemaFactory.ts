@@ -135,7 +135,7 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             taskId: ID!
         ): WbPageReviewStepRunResponse!
         listWebsiteBuilderPageReviews(
-            "all needs reassign."
+            "all: every review with reassign, else the reviews that involve the viewer."
             scope: WorkflowsReviewListScope!
             where: WbPageReviewListWhere
             sort: WorkflowsReviewListSort

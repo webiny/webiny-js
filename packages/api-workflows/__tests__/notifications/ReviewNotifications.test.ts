@@ -820,7 +820,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
                 `View review details: ${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}&reviewId=${review.id}`
             );
             expect(reassignedMail?.text).toContain(
-                "You get this e-mail because you were reviewing this step and it notifies by e-mail."
+                "You get this e-mail because you owned this step."
             );
             expect(assignedMail?.text).toContain(
                 `Open content: ${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}\n`

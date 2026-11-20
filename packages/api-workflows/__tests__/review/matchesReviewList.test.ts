@@ -145,7 +145,7 @@ const SCOPE_CASES: MatchCase[] = [
         expected: false
     },
     {
-        name: "anyone's review, any team",
+        name: "with reassign: anyone's review, any team",
         scope: "all",
         review: { requester: otherReviewer, teamIds: [OTHER_TEAM_ID] },
         expected: true
@@ -192,23 +192,153 @@ const STATE_MATRIX = STATE_CASES.flatMap(testCase =>
     }))
 );
 
-const match = (scope: ReviewListScope, review: Partial<ListedReviewParams>, where = {}) => {
+const match = (
+    scope: ReviewListScope,
+    review: Partial<ListedReviewParams>,
+    where = {},
+    viewerCanReassign = true
+) => {
     return matchesReviewList(createListedReview({ id: "review-1", minute: 1, ...review }), {
         scope,
         viewerUserId: reviewer.id,
         viewerTeamIds: [REVIEW_TEAM_ID],
+        viewerCanReassign,
         models: [ARTICLE_MODEL],
         where
     });
 };
 
+interface InvolvedCase {
+    name: string;
+    review: Partial<ListedReviewParams>;
+    expected: boolean;
+}
+
+/** `all` for a viewer without `reassign` (B7): only the reviews that involve the viewer. */
+const INVOLVED_CASES: InvolvedCase[] = [
+    {
+        name: "requested by the viewer",
+        review: { requester: reviewer, teamIds: [OTHER_TEAM_ID] },
+        expected: true
+    },
+    {
+        name: "current step of one of the viewer's teams",
+        review: { requester: otherReviewer, teamIds: [OTHER_TEAM_ID, REVIEW_TEAM_ID] },
+        expected: true
+    },
+    {
+        name: "the viewer owns the current step",
+        review: {
+            requester: otherReviewer,
+            teamIds: [OTHER_TEAM_ID],
+            stepState: "inReview",
+            ownerId: reviewer.id
+        },
+        expected: true
+    },
+    {
+        name: "the viewer owned an earlier step",
+        review: {
+            requester: otherReviewer,
+            teamIds: [OTHER_TEAM_ID],
+            stepState: "inReview",
+            ownerId: otherReviewer.id,
+            stepOwnerIds: [reviewer.id, otherReviewer.id]
+        },
+        expected: true
+    },
+    {
+        name: "someone else's review of another team",
+        review: {
+            requester: otherReviewer,
+            teamIds: [OTHER_TEAM_ID],
+            stepState: "inReview",
+            ownerId: otherReviewer.id
+        },
+        expected: false
+    }
+];
+
+/** `assignedToMe` keeps a finished review for every user who owned one of its steps (B9). */
+const OWNED_STEP_CASES: MatchCase[] = [
+    {
+        name: "approved, the viewer owned the first step only",
+        scope: "assignedToMe",
+        review: {
+            state: "approved",
+            stepState: "approved",
+            ownerId: otherReviewer.id,
+            stepOwnerIds: [reviewer.id, otherReviewer.id]
+        },
+        expected: true
+    },
+    {
+        name: "rejected, the viewer owned the first step only",
+        scope: "assignedToMe",
+        review: {
+            state: "rejected",
+            stepState: "rejected",
+            ownerId: otherReviewer.id,
+            stepOwnerIds: [reviewer.id, otherReviewer.id]
+        },
+        expected: true
+    },
+    {
+        name: "approved, the viewer owned no step",
+        scope: "assignedToMe",
+        review: {
+            state: "approved",
+            stepState: "approved",
+            ownerId: otherReviewer.id,
+            stepOwnerIds: [otherReviewer.id, otherReviewer.id]
+        },
+        expected: false
+    },
+    {
+        name: "in review, the viewer owned an earlier step",
+        scope: "assignedToMe",
+        review: {
+            stepState: "inReview",
+            ownerId: otherReviewer.id,
+            stepOwnerIds: [reviewer.id, otherReviewer.id]
+        },
+        expected: false
+    }
+];
+
 describe("matchesReviewList (R91, A40, B2 design 1)", () => {
-    it.each([...COMMON_CASES, ...SCOPE_CASES])(
+    it.each([...COMMON_CASES, ...SCOPE_CASES, ...OWNED_STEP_CASES])(
         "$scope: $name -> $expected",
         ({ scope, review, where, expected }) => {
             expect(match(scope, review, where ?? {})).toBe(expected);
         }
     );
+
+    it.each(INVOLVED_CASES)("all without reassign: $name -> $expected", ({ review, expected }) => {
+        expect(match("all", review, {}, false)).toBe(expected);
+    });
+
+    it("does not count an AI owner, which carries the requester's id, as owning a step", () => {
+        const review = createListedReview({
+            id: "review-1",
+            minute: 1,
+            requester: reviewer,
+            state: "approved",
+            stepState: "approved"
+        });
+        review.steps[0].owner = { type: "ai", id: reviewer.id, displayName: "AI" };
+
+        expect(
+            matchesReviewList(review, {
+                scope: "assignedToMe",
+                viewerUserId: reviewer.id,
+                viewerTeamIds: [REVIEW_TEAM_ID],
+                viewerCanReassign: false,
+                models: [ARTICLE_MODEL],
+                where: { state: "approved" }
+            })
+        ).toBe(false);
+    });
 
     it.each(STATE_MATRIX)("state $state: $name -> $expected", ({ review, state, expected }) => {
         expect(match("all", review, { state })).toBe(expected);

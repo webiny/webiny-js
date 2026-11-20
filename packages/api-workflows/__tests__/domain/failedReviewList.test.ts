@@ -19,6 +19,7 @@ const matches = (
         scope,
         viewerUserId,
         viewerTeamIds: [REVIEW_TEAM_ID],
+        viewerCanReassign: true,
         models: [ARTICLE_MODEL],
         where: { state }
     });

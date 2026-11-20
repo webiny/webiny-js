@@ -29,9 +29,16 @@ export const createReviewListWhere = (
         where.title_contains = titleContains;
     }
 
+    const state = params.where.state ?? "all";
     switch (params.scope) {
         case "assignedToMe":
-            where.currentOwnerId = params.viewerUserId;
+            if (state === "inReview" || state === "failed") {
+                where.currentOwnerId = params.viewerUserId;
+            } else {
+                // Finished reviews of any step the viewer owned (B9); the current owner is one of
+                // the step owners, so this covers the open ones too.
+                where.stepOwnerId = params.viewerUserId;
+            }
             break;
         case "pool":
             where.currentStepState = "awaiting";
@@ -47,10 +54,17 @@ export const createReviewListWhere = (
             where.requesterId = params.viewerUserId;
             break;
         case "all":
+            // Everyone but `reassign` holders sees only the reviews that involve them (B7).
+            if (!params.viewerCanReassign) {
+                where.involvedUser = {
+                    userId: params.viewerUserId,
+                    teamIds: [...params.viewerTeamIds]
+                };
+            }
             break;
     }
 
-    switch (params.where.state ?? "all") {
+    switch (state) {
         case "all":
             break;
         case "inReview":

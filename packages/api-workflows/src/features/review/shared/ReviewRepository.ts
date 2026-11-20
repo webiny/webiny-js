@@ -414,10 +414,32 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
             values.requester = requester;
         }
 
+        if (where.stepOwnerId !== undefined) {
+            // Matches when any step of the list holds this owner id.
+            values.steps = { owner: { id: where.stepOwnerId } };
+        }
+
         const listWhere: CmsEntryListWhere = { values };
+        const and: CmsEntryListWhere[] = [];
         // A second `currentOwnerId` condition next to `currentOwnerId_not`, so it goes in an AND.
         if (where.hasCurrentOwner) {
-            listWhere.AND = [{ values: { currentOwnerId_not: null } }];
+            and.push({ values: { currentOwnerId_not: null } });
+        }
+        // An OR of its own, next to the read filter's top-level OR (B7).
+        if (where.involvedUser) {
+            const { userId, teamIds } = where.involvedUser;
+            const involved: CmsEntryListWhere[] = [
+                { values: { requester: { id: userId } } },
+                { values: { steps: { owner: { id: userId } } } }
+            ];
+            // An empty `In` list throws on OpenSearch: a viewer without teams leaves it out.
+            if (teamIds.length > 0) {
+                involved.push({ values: { currentCandidateTeamIds_in: [...teamIds] } });
+            }
+            and.push({ OR: involved });
+        }
+        if (and.length > 0) {
+            listWhere.AND = and;
         }
         applyReadFilter(listWhere, where.read);
         // An empty list would match nothing on some storages: leave the filter out.

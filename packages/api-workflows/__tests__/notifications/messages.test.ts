@@ -19,10 +19,8 @@ import type { AssignmentSource } from "~/domain/assignment/types.js";
 const CONTENT = "Launch page";
 const REVIEWER_FOOTER =
     "You get this e-mail because you review this step and it notifies by e-mail.";
-const REQUESTER_FOOTER =
-    "You get this e-mail because you requested this review and it notifies by e-mail.";
-const PREVIOUS_REVIEWER_FOOTER =
-    "You get this e-mail because you were reviewing this step and it notifies by e-mail.";
+const REQUESTER_FOOTER = "You get this e-mail because you requested this review.";
+const PREVIOUS_REVIEWER_FOOTER = "You get this e-mail because you owned this step.";
 const STEP = "Legal review";
 
 describe("buildPoolReachedMessage (R189)", () => {

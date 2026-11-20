@@ -19,7 +19,7 @@ export interface ListCmsEntryReviewsWhere extends ReviewListWhere {
 }
 
 export interface ListCmsEntryReviewsInput {
-    /** `all` needs `reassign` (B2 design 1). */
+    /** `all` is open to everyone: every review with `reassign`, else the viewer's own (B7). */
     scope: ReviewListScope;
     where?: ListCmsEntryReviewsWhere | null;
     /** Default per scope and state (`getDefaultReviewListSort`, D119). */
@@ -55,7 +55,8 @@ export interface IListCmsEntryReviewsUseCase {
  * viewer can read, and only rows whose entry the CMS entry list would show the viewer (D76, Q77):
  * own entries only with an own-only permission, none in a folder the viewer cannot read. A custom
  * per-entry read check added with a decorator is not applied, as CMS lists do not apply it either.
- * The `all` scope needs `reassign` (R95, B2 design 1). Each row carries the viewer's flags (A43).
+ * The `all` scope is every review with `reassign`, else the ones that involve the viewer (B7).
+ * Each row carries the viewer's flags (A43).
  */
 export const ListCmsEntryReviewsUseCase = createAbstraction<IListCmsEntryReviewsUseCase>(
     "ListCmsEntryReviewsUseCase"

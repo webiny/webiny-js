@@ -421,7 +421,7 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         stepName: String!
     }
 
-    "Whose reviews a list shows. all needs reassign."
+    "Whose reviews a list shows. all: every review with reassign, else the reviews that involve the viewer."
     enum WorkflowsReviewListScope {
         assignedToMe
         pool

@@ -13,7 +13,7 @@ import type {
 import type { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 
 export interface ListWebsiteBuilderPageReviewsInput {
-    /** `all` needs `reassign` (B2 design 1). */
+    /** `all` is open to everyone: every review with `reassign`, else the viewer's own (B7). */
     scope: ReviewListScope;
     /** Title words and the review state, on every scope (B2 design 1). */
     where?: ReviewListWhere | null;
@@ -49,7 +49,8 @@ export interface IListWebsiteBuilderPageReviewsUseCase {
  * The viewer's page review lists (spec 11, D47, D133): `wb.page` reviews only, each row a page the
  * Website Builder page list would show the viewer (D76, Q77): own pages only with an own-only
  * permission, none in a folder the viewer cannot read. Each row carries the viewer's flags. The
- * `all` scope needs `reassign` (R95, B2 design 1).
+ * `all` scope is every review for a viewer with `reassign`, else the reviews that involve the
+ * viewer (B7).
  */
 export const ListWebsiteBuilderPageReviewsUseCase =
     createAbstraction<IListWebsiteBuilderPageReviewsUseCase>(

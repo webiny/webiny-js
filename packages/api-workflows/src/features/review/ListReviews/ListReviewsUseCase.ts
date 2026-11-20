@@ -65,6 +65,7 @@ class ListReviewsUseCaseImpl implements ListReviewsUseCaseAbstraction.Interface 
             scope: input.scope,
             viewerUserId: input.viewerUserId,
             viewerTeamIds: input.viewerTeamIds,
+            viewerCanReassign: input.viewerCanReassign,
             models,
             where: { ...where, state }
         };

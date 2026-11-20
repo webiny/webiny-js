@@ -92,7 +92,7 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
             text: "Rita Requester cancelled this review. You don’t need to review Legal review any more.",
             linkLabel: "Open content",
             link: "content",
-            footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail."
+            footer: "You get this e-mail because you owned this step."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: LEGAL_CHANNEL }
@@ -197,7 +197,7 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
             text: "The content was moved to the trash, so this review was cancelled. You don’t need to review Legal review any more.",
             linkLabel: "Open content",
             link: "content",
-            footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail."
+            footer: "You get this e-mail because you owned this step."
         });
     });
 

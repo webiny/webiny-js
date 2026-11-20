@@ -15,6 +15,11 @@ export interface ListReviewsInput {
     viewerUserId: string;
     viewerTeamIds: string[];
     /**
+     * The viewer holds `reassign` ("Reassign and operate"), from the app wrapper: `all` is then
+     * every readable review, else the readable reviews that involve the viewer (B7).
+     */
+    viewerCanReassign: boolean;
+    /**
      * What the viewer may read (Q77), built once per call by the app wrapper from the viewer's
      * permissions: the namespaces the app lists and the viewer reads (R91, R94), the own-only
      * ones and the denied folders. No readable namespace returns an empty page without a query.
@@ -51,8 +56,8 @@ export interface IListReviewsUseCase {
 
 /**
  * One page of a review list (spec 11, D47, D76, R91, R92). Internal (D132): the app wrapper
- * passes the viewer and its read filter, and checks `reassign` for the `all` scope (R95).
- * Read access is part of the query (Q77); each storage page is confirmed with one batch read
+ * passes the viewer, whether it holds `reassign` and its read filter; `all` is open to everyone
+ * (B7). Read access is part of the query (Q77); each storage page is confirmed with one batch read
  * (Q78). Rows the confirm drops are skipped; a call examines at most 200 rows, so a page can be
  * short while `hasMoreItems` is true (A41). A scope and state pair that is empty by definition
  * (`isEmptyReviewListFilter`) returns an empty page without a query.

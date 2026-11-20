@@ -68,7 +68,7 @@ describe("ReviewApprovedNotifications (R181, R183, R184, R189)", () => {
             text: "Every step approved this revision. It’s ready to publish.",
             linkLabel: "Open content",
             link: "content",
-            footer: "You get this e-mail because you requested this review and it notifies by e-mail."
+            footer: "You get this e-mail because you requested this review."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: EDITORIAL_CHANNEL }

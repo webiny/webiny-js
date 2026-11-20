@@ -4,7 +4,6 @@ import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/Cur
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 import { getReviewViewerFlags } from "@webiny/api-workflows/domain/review/getReviewViewerFlags.js";
 import { canReassignByPermission } from "@webiny/api-workflows/domain/review/canReassignByPermission.js";
-import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
 import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
 import { CmsEntryReviewReadFilter } from "~/features/target/CmsEntryReviewReadFilter/index.js";
 import { isBindableModel } from "~/utils/isBindableModel.js";
@@ -36,11 +35,6 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
         if (viewer.isFail()) {
             return Result.fail(viewer.error);
         }
-        // "All" is for operators for now (B2 design 1); opening it to everyone is this check.
-        if (input.scope === "all" && !canReassignByPermission(viewer.value)) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list all reviews" }));
-        }
-
         // The models the viewer can list (R94); a viewer who can read none gets an empty page.
         let models: Awaited<ListModelsUseCase.Return>;
         try {
@@ -77,6 +71,8 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
             scope: input.scope,
             viewerUserId: viewer.value.actor.id,
             viewerTeamIds: viewer.value.teamIds,
+            // `all` is open to everyone; without `reassign` it lists only their reviews (B7).
+            viewerCanReassign: canReassignByPermission(viewer.value),
             readFilter: readable,
             where: listWhere,
             sort: input.sort ?? undefined,

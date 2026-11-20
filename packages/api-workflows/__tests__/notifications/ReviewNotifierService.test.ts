@@ -63,7 +63,7 @@ const MESSAGE: NotificationMessage = {
     text: "Every step approved this revision. It’s ready to publish.",
     linkLabel: "Open content",
     link: "content",
-    footer: "You get this e-mail because you requested this review and it notifies by e-mail."
+    footer: "You get this e-mail because you requested this review."
 };
 
 const DETAILS_MESSAGE: NotificationMessage = {
@@ -73,7 +73,7 @@ const DETAILS_MESSAGE: NotificationMessage = {
     text: "Mona reassigned this step to Bob. You don’t need to review it any more.",
     linkLabel: "View review details",
     link: "reviewDetails",
-    footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail."
+    footer: "You get this e-mail because you owned this step."
 };
 
 /** The details every transport gets for the "legal" step of `createReview`. */

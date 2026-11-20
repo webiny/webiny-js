@@ -7,6 +7,7 @@ import { createUserContext, type UserContextParams } from "~tests/__helpers/user
 import {
     NOBODY,
     OTHER_REVIEWER,
+    READER,
     REASSIGNER,
     REQUESTER,
     REVIEWER,
@@ -211,18 +212,25 @@ describe("CMS review list wrapper", () => {
         expect(page.items.map(item => item.review.id)).toEqual([lockedReview.id]);
     });
 
-    it("refuses the all scope without reassign", async () => {
-        await createScenario();
-        const reviewer = await createCountingContext({
-            identity: REVIEWER,
+    it("lists in all only the reviews that involve a viewer without reassign (B7)", async () => {
+        const { review, lockedReview } = await createScenario();
+        const reviewer = await createUserContext({ identity: REVIEWER, permissions: CMS_READER });
+        const requester = await createUserContext({
+            identity: REQUESTER,
             permissions: CMS_READER
         });
+        const reader = await createUserContext({ identity: READER, permissions: CMS_READER });
+        const both = [review.id, lockedReview.id].sort();
+        const listAll = async (context: CmsContext) => {
+            const page = expectOk(await list(context, { scope: "all" }));
+            return page.items.map(item => item.review.id).sort();
+        };
 
-        const result = await list(reviewer, { scope: "all", where: { state: "failed" } });
-
-        expect(result.error.code).toBe("Workflows/NotAuthorized");
-        expect(result.error.data).toEqual({ action: "list all reviews" });
-        expect(engineCalls).not.toContain("ListReviews");
+        // The current step is the reviewer's team's; the requester asked for both.
+        expect(await listAll(reviewer)).toEqual(both);
+        expect(await listAll(requester)).toEqual(both);
+        // Neither the requester, in a current team, nor the owner of a step.
+        expect(await listAll(reader)).toEqual([]);
     });
 
     it("lists failed AI and automation steps for a viewer with reassign (D112)", async () => {

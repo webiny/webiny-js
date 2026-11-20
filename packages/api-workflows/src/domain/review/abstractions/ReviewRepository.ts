@@ -32,6 +32,15 @@ export interface ReviewRepositoryByTargetsParams {
 }
 
 /**
+ * The reviews that involve one user (B7), any of: the requester, a current candidate team shared
+ * with `teamIds` (left out when empty), or the owner of a step.
+ */
+export interface ReviewRepositoryListInvolvedUser {
+    userId: string;
+    teamIds: string[];
+}
+
+/**
  * Storage pre-filter of the review lists (R91). Keys combine with AND; omitted keys do not
  * restrict. `ListReviewsUseCase` checks every condition again in code on the primary row (R18).
  */
@@ -55,6 +64,13 @@ export interface ReviewRepositoryListWhere {
     /** The requester's id (stored as `requester.id`). */
     requesterId?: string;
     requesterId_not?: string;
+    /**
+     * Some step has an owner with this id (`steps.owner.id`), the current one included. The owner
+     * type is not filtered: `ListReviewsUseCase` keeps only `user` owners in code (B9).
+     */
+    stepOwnerId?: string;
+    /** Only the reviews that involve this user (B7). */
+    involvedUser?: ReviewRepositoryListInvolvedUser;
     title_contains?: string;
     /** Changed at or after this time (ISO); where an ascending list cursor resumes. */
     lastChangedOn_gte?: string;
@@ -154,6 +170,7 @@ export namespace ReviewRepository {
     export type ByTargetParams = ReviewRepositoryByTargetParams;
     export type ByTargetsParams = ReviewRepositoryByTargetsParams;
     export type ListWhere = ReviewRepositoryListWhere;
+    export type ListInvolvedUser = ReviewRepositoryListInvolvedUser;
     export type ListParams = ReviewRepositoryListParams;
     export type ListResult = ReviewRepositoryListResult;
 }

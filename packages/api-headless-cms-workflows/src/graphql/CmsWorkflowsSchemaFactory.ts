@@ -174,7 +174,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             taskId: ID!
         ): CmsEntryReviewStepRunResponse!
         listCmsEntryReviews(
-            "all needs reassign."
+            "all: every review with reassign, else the reviews that involve the viewer."
             scope: WorkflowsReviewListScope!
             where: CmsEntryReviewListWhere
             sort: WorkflowsReviewListSort

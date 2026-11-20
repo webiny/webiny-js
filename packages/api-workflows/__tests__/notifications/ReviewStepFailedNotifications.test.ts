@@ -81,7 +81,7 @@ describe("ReviewStepFailedNotifications (R181, R183, R184, R189, R146)", () => {
             text: "Legal review hit a technical error: The automation failed. The review is paused at this step until it is restarted.",
             linkLabel: "View review details",
             link: "reviewDetails",
-            footer: "You get this e-mail because you requested this review and it notifies by e-mail."
+            footer: "You get this e-mail because you requested this review."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: LEGAL_CHANNEL }

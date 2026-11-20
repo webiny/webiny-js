@@ -336,8 +336,8 @@ describe("ReviewStepReachedNotifications (R181, R183, R184, R189)", () => {
                 },
                 {
                     ids: ["user-dan"],
-                    title: "“Article 1” is waiting in the Legal, Marketing and Design team pool",
-                    text: "“Editorial review” is waiting in the Legal, Marketing and Design team pool. Anyone in the team can start it."
+                    title: "“Article 1” is waiting in the Legal, Marketing and 1 more team pool",
+                    text: "“Editorial review” is waiting in the Legal, Marketing and 1 more team pool. Anyone in the team can start it."
                 }
             ]);
             for (const delivery of call.deliveries) {

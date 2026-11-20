@@ -686,21 +686,18 @@ describe("CMS workflows GraphQL", () => {
         ).toEqual([review.id, lockedReview.id].sort());
     });
 
-    it("returns the all scope refusal with code, data and no meta (R95)", async () => {
-        await createScenario();
+    it("lists the all scope for a viewer without reassign: the reviews that involve them (B7)", async () => {
+        const { review, lockedReview } = await createScenario();
         const reviewer = createGraphQLClient({ identity: REVIEWER, permissions: CMS_READER });
 
         const result = await run(reviewer, LIST_REVIEWS, { scope: "all" });
 
-        expect(result.listCmsEntryReviews).toEqual({
-            data: null,
-            meta: null,
-            error: {
-                code: "Workflows/NotAuthorized",
-                message: "You are not allowed to list all reviews.",
-                data: { action: "list all reviews" }
-            }
-        });
+        expect(result.listCmsEntryReviews.error).toBeNull();
+        expect(
+            result.listCmsEntryReviews.data
+                .map((row: { review: { id: string } }) => row.review.id)
+                .sort()
+        ).toEqual([review.id, lockedReview.id].sort());
     });
 
     it("starts, takes over and approves a step", async () => {

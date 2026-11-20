@@ -100,7 +100,7 @@ describe("ReviewStepReassignedNotifications (R181, R183, R184, R189)", () => {
             text: "Mona Manager reassigned this step to Anna. You don’t need to review it any more.",
             linkLabel: "View review details",
             link: "reviewDetails",
-            footer: "You get this e-mail because you were reviewing this step and it notifies by e-mail."
+            footer: "You get this e-mail because you owned this step."
         });
     });
 

@@ -10,6 +10,7 @@ import { requestPageReview, startPageReview, storeWbWorkflow } from "~tests/__he
 import { createCmsReview } from "~tests/__helpers/cmsReview.js";
 import {
     OTHER_REVIEWER,
+    READER,
     REASSIGNER,
     REQUESTER,
     REVIEWER,
@@ -269,15 +270,20 @@ describe("WB review list wrapper", () => {
         expect(second.meta.hasMoreItems).toBe(false);
     });
 
-    it("refuses the all scope without reassign, before the engine (R95)", async () => {
-        await createScenario();
-        const reviewer = await asUser(REVIEWER, WB_READER);
+    it("lists in all only the reviews that involve a viewer without reassign (B7)", async () => {
+        const { review, lockedReview } = await createScenario();
+        const both = [review.id, lockedReview.id].sort();
+        const listAll = async (identity: IdentityData) => {
+            const context = await asUser(identity, WB_READER);
+            const page = expectOk(await list(context, { scope: "all" }));
+            return reviewIds(page.items).sort();
+        };
 
-        const result = await list(reviewer, { scope: "all", where: { state: "failed" } });
-
-        expect(result.error.code).toBe("Workflows/NotAuthorized");
-        expect(result.error.data).toEqual({ action: "list all reviews" });
-        expect(engineCalls).toEqual([]);
+        // The current step is the reviewer's team's; the requester asked for both.
+        expect(await listAll(REVIEWER)).toEqual(both);
+        expect(await listAll(REQUESTER)).toEqual(both);
+        // Neither the requester, in a current team, nor the owner of a step.
+        expect(await listAll(READER)).toEqual([]);
     });
 
     it("lists a failed AI step for a viewer with reassign (D112)", async () => {

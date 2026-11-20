@@ -19,6 +19,7 @@ import {
     expectOk,
     OTHER_TEAM_ID,
     otherReviewer,
+    REVIEW_TEAM_ID,
     reviewer
 } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
@@ -330,6 +331,112 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         expect(await list("teamInReview", "inReview")).toEqual(["q04"]);
         expect(await list("teamInReview", "rejected")).toEqual(["q03"]);
         expect(await list("teamInReview", "all")).toEqual(["q04", "q03"]);
+    });
+
+    it("lists finished reviews in assignedToMe for every user who owned one of their steps (B9)", async () => {
+        const listReviews = await createStorageContext([
+            {
+                id: "o01",
+                minute: 1,
+                state: "approved",
+                stepState: "approved",
+                ownerId: otherReviewer.id,
+                stepOwnerIds: [reviewer.id, otherReviewer.id]
+            },
+            {
+                id: "o02",
+                minute: 2,
+                state: "rejected",
+                stepState: "rejected",
+                ownerId: otherReviewer.id,
+                stepOwnerIds: [reviewer.id, otherReviewer.id]
+            },
+            {
+                id: "o03",
+                minute: 3,
+                state: "approved",
+                stepState: "approved",
+                ownerId: otherReviewer.id,
+                stepOwnerIds: [otherReviewer.id, otherReviewer.id]
+            },
+            {
+                id: "o04",
+                minute: 4,
+                stepState: "inReview",
+                ownerId: otherReviewer.id,
+                stepOwnerIds: [reviewer.id, otherReviewer.id]
+            }
+        ]);
+        const list = async (state: ReviewListState) => {
+            return listedIds(
+                expectOk(
+                    await listReviews.execute(
+                        createListInput({ scope: "assignedToMe", where: { state } })
+                    )
+                )
+            );
+        };
+
+        expect(await list("approved")).toEqual(["o01"]);
+        expect(await list("rejected")).toEqual(["o02"]);
+        expect(await list("all")).toEqual(["o02", "o01"]);
+        expect(await list("inReview")).toEqual([]);
+    });
+
+    it("lists only the reviews that involve the viewer in all without reassign (B7)", async () => {
+        const listReviews = await createStorageContext([
+            // Requested by the viewer, another team's step.
+            { id: "v01", minute: 1, requester: reviewer, teamIds: [OTHER_TEAM_ID] },
+            // The current step is one of the viewer's teams.
+            { id: "v02", minute: 2, requester: otherReviewer },
+            // The viewer owned the first step; the second is another team's.
+            {
+                id: "v03",
+                minute: 3,
+                requester: otherReviewer,
+                teamIds: [OTHER_TEAM_ID],
+                stepState: "inReview",
+                ownerId: otherReviewer.id,
+                stepOwnerIds: [reviewer.id, otherReviewer.id]
+            },
+            // Not involved.
+            {
+                id: "v04",
+                minute: 4,
+                requester: otherReviewer,
+                teamIds: [OTHER_TEAM_ID],
+                stepState: "inReview",
+                ownerId: otherReviewer.id
+            },
+            // Involved, but not active.
+            {
+                id: "v05",
+                minute: 5,
+                requester: reviewer,
+                isActive: false,
+                state: "cancelled",
+                stepState: null
+            }
+        ]);
+        const list = async (viewerTeamIds: string[], viewerCanReassign: boolean) => {
+            return listedIds(
+                expectOk(
+                    await listReviews.execute(
+                        createListInput({
+                            scope: "all",
+                            where: { state: "all" },
+                            viewerTeamIds,
+                            viewerCanReassign
+                        })
+                    )
+                )
+            );
+        };
+
+        expect(await list([REVIEW_TEAM_ID], false)).toEqual(["v03", "v02", "v01"]);
+        // Without teams the team condition is left out of the query.
+        expect(await list([], false)).toEqual(["v03", "v01"]);
+        expect(await list([REVIEW_TEAM_ID], true)).toEqual(["v04", "v03", "v02", "v01"]);
     });
 
     it("sorts by title both ways and pages through equal titles without a gap (B2 design 2)", async () => {

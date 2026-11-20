@@ -7,6 +7,8 @@ export interface ReviewListMatchParams {
     scope: ReviewListScope;
     viewerUserId: string;
     viewerTeamIds: string[];
+    /** The viewer holds `reassign`: `all` is every review, not only those involving them (B7). */
+    viewerCanReassign: boolean;
     /** Namespace ids the app lists. */
     models: string[];
     where: ReviewListWhere;
