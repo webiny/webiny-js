@@ -581,3 +581,7 @@ Not built:
 
 Side effects to confirm: step-level warnings that mark no form field show only on the step card,
 not in the drawer (B23); the tooltip of a disabled state is mouse-only (B8).
+
+Decided (user, 2026-11-20), B30: the Home review widgets stay as they are, shown for every app the
+user can access even when the app has no workflow; they are then empty. Workflows as a whole show
+only with the licence feature on. No workflow-existence check and no `Compose` change.
