@@ -19,6 +19,7 @@ import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
+import { StepDropIndicator } from "./StepDropIndicator.js";
 
 export interface StepCardProps {
     step: StepCardVm;
@@ -40,8 +41,9 @@ export interface StepCardProps {
  * The item's header holds the number tag, the title, the type tag and the problem tags, with move
  * up, move down and delete as its actions; the expanded body holds the key and value rows, the
  * warning lines, the error and the Edit step button, the only way to open the step from the card.
- * The sortable item props make the row a drop target and the handle the drag source. Must render
- * inside an `Accordion`.
+ * The sortable item props make the row a drop target and the handle the drag source. While a step is
+ * dragged, its row is dimmed and the row under the pointer shows a line on the edge where the step
+ * lands. Must render inside an `Accordion`.
  */
 export const StepCard = (props: StepCardProps) => {
     const { step, index, sortable } = props;
@@ -143,14 +145,25 @@ export const StepCard = (props: StepCardProps) => {
         detailGrid = <div className="grid gap-y-xs">{detailRows}</div>;
     }
 
+    let dropIndicator: React.ReactNode = null;
+    if (sortable.closestEdge !== null) {
+        dropIndicator = <StepDropIndicator edge={sortable.closestEdge} />;
+    }
+    let rowClassName = "relative flex items-start gap-sm";
+    if (sortable.isDragging) {
+        rowClassName = `${rowClassName} opacity-40`;
+    }
+
     return (
         <div
             ref={sortable.ref}
             data-sortable-item=""
             data-step-id={step.id}
             data-testid={`step-card-${step.id}`}
-            className="flex items-start gap-sm"
+            data-dragging={sortable.isDragging ? "true" : undefined}
+            className={rowClassName}
         >
+            {dropIndicator}
             {/* Centred on the item's collapsed header (62px tall), so it stays put when the item opens. */}
             <div data-role="drag-handle" className="flex shrink-0 pt-md-extra">
                 <span ref={sortable.handleRef} className="flex">

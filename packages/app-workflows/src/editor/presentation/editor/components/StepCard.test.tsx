@@ -558,4 +558,37 @@ describe("StepCard", () => {
         const slot = cardOf("step-2").querySelector('[data-role="step-number"]');
         expect(slot?.textContent).toBe("2");
     });
+
+    it("shows no drop indicator and no dimming when nothing is dragged", () => {
+        renderCard(createProps());
+
+        const card = cardOf(STEP.id);
+        expect(card.querySelector('[data-role="drop-indicator"]')).toBeNull();
+        expect(card.getAttribute("data-dragging")).toBeNull();
+    });
+
+    it("shows the drop indicator on the edge where the dragged step lands", () => {
+        renderCard(
+            createProps({ sortable: createItemProps({ isOver: true, closestEdge: "top" }) })
+        );
+
+        const indicators = cardOf(STEP.id).querySelectorAll('[data-role="drop-indicator"]');
+        expect(indicators.length).toBe(1);
+        expect(indicators[0].getAttribute("data-edge")).toBe("top");
+    });
+
+    it("shows the drop indicator on the bottom edge", () => {
+        renderCard(
+            createProps({ sortable: createItemProps({ isOver: true, closestEdge: "bottom" }) })
+        );
+
+        const indicator = cardOf(STEP.id).querySelector('[data-role="drop-indicator"]')!;
+        expect(indicator.getAttribute("data-edge")).toBe("bottom");
+    });
+
+    it("marks the dragged step", () => {
+        renderCard(createProps({ sortable: createItemProps({ isDragging: true }) }));
+
+        expect(cardOf(STEP.id).getAttribute("data-dragging")).toBe("true");
+    });
 });
