@@ -9,7 +9,6 @@ import { createWorkflowUserSummary } from "~/editor/testing/editorFixtures.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import type { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
 import { createAnaExclusion } from "~/settings/testing/exclusionFixtures.js";
-import { createBenExclusion } from "~/settings/testing/exclusionFixtures.js";
 import { createCidExclusion } from "~/settings/testing/exclusionFixtures.js";
 import { EXCLUSIONS_NOW } from "~/settings/testing/exclusionFixtures.js";
 import { ZAGREB } from "~/settings/testing/exclusionFixtures.js";

@@ -2,7 +2,6 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { IReviewUnsavedChanges } from "~/review/content/IReviewUnsavedChanges.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
-import type { StepStateValue } from "~/review/domain/StepState.js";
 
 export type TargetReviewStatus = "loading" | "failed" | "noWorkflow" | "none" | "active";
 

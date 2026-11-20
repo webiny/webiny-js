@@ -11,8 +11,6 @@ import { REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS } from "@webiny/app-workflows/r
 import { REVIEW_WITH_FLAGS_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { STEP_CANDIDATE_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { WORKFLOW_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
-import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
 import { ReviewAppGateway as GatewayAbstraction } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import { WbReviewGateway } from "./WbReviewGateway.js";
 
