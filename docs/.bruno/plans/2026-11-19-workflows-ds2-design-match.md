@@ -589,3 +589,26 @@ only with the licence feature on. No workflow-existence check and no `Compose` c
 Decided (user, 2026-11-20): B9 stays as built; a person reassigned away before the step finished is
 not counted, no new stored field. The place of a step-level warning in the step drawer after B23
 goes to the designer (question C1); until answered it shows on the step card only.
+
+## Test run on dev, 2026-11-20
+
+The workflow scenarios of `webiny-js-testing` were run by intent (its seeded users and 6.5 API do not
+exist on `next`). Results: `.webiny-testing/results/0.0.0/` (local, not tracked). Fixed from it:
+`4dded71d1f` (Website Builder Home widgets always mounted), `7f17415059` (review list URL, Clear
+filters), `72e234360a` and `4642d0a240` (entry list Publish and bulk Publish gates, pages list Move,
+locked form fields). A warning for a routing rule after an unconditional rule was built and dropped: the
+engine takes the first matching rule with a valid target, so a later rule is a fallback.
+
+Open after the run, for the user:
+
+- Take over, reassign and "waiting in team pool" notifications are sent by websocket and e-mail only;
+  the inbox stores only Approved and Rejected.
+- Trashing a revision whose review is rejected or approved deletes the review without a warning.
+- An excluded reviewer can still start and approve a pool step.
+- The same person can own and approve consecutive steps.
+- Cancelled reviews appear in no list scope or state.
+- A non-member gets no explanation why the bar has no Start.
+- The model delete block and the workflow delete refusal appear only after the confirmation.
+- "Done" in the step drawer does not validate; errors appear on Save.
+- Website Builder pages list: Publish is enabled for a page with no review; Headless CMS entry list:
+  Schedule publish is enabled for a draft with no review. Not clicked in the run.
