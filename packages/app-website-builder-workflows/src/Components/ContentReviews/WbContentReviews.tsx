@@ -4,7 +4,6 @@ import type { IReviewContentTypesSource } from "@webiny/app-workflows/review/pre
 import { ReviewContentReviewsMenu } from "@webiny/app-workflows/review/mounting/components/ReviewContentReviewsMenu.js";
 import { ReviewContentReviewsRoute } from "@webiny/app-workflows/review/mounting/components/ReviewContentReviewsRoute.js";
 import { ReviewDashboardWidgets } from "@webiny/app-workflows/review/mounting/components/ReviewDashboardWidgets.js";
-import { usePermissions } from "@webiny/app-website-builder/presentation/security/usePermissions.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { WbReviewFeature } from "~/features/gateway/feature.js";
 import { Routes } from "~/routes.js";
@@ -18,24 +17,11 @@ const CONTENT_TYPES: IReviewContentTypesSource = {
 
 /*
  * Mounts the shared Content Reviews route, menu item and dashboard widgets for the `wb` app.
- * Pages have no content model: no Content model column and no filter (D113, B6). The widgets
- * show only for a user who can read pages (B30).
+ * Pages have no content model: no Content model column and no filter (D113, B6). The widgets are
+ * always mounted: a widget that mounts after the first render is not registered on the dashboard.
  */
 export const WbContentReviews = () => {
     const { rowProvider } = useFeature(WbReviewFeature);
-    const permissions = usePermissions();
-
-    let widgets: React.ReactNode = null;
-    if (permissions.canRead("page")) {
-        widgets = (
-            <ReviewDashboardWidgets
-                prefix="wb"
-                namespaces={NAMESPACES}
-                rowProvider={rowProvider}
-                viewAllRoute={Routes.Pages.WorkflowStateList}
-            />
-        );
-    }
 
     return (
         <>
@@ -52,7 +38,12 @@ export const WbContentReviews = () => {
                 route={Routes.Pages.WorkflowStateList}
                 parent="wb"
             />
-            {widgets}
+            <ReviewDashboardWidgets
+                prefix="wb"
+                namespaces={NAMESPACES}
+                rowProvider={rowProvider}
+                viewAllRoute={Routes.Pages.WorkflowStateList}
+            />
         </>
     );
 };

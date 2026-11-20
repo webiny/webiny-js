@@ -89,41 +89,22 @@ vi.mock("@webiny/app-workflows/review/mounting/components/ReviewDashboardWidgets
     };
 });
 
-const permission = vi.hoisted(() => {
-    return { canReadPages: true };
-});
-
-vi.mock("@webiny/app-website-builder/presentation/security/usePermissions.js", () => {
-    return {
-        usePermissions: () => {
-            return {
-                canRead: (entityId: string) => entityId === "page" && permission.canReadPages
-            };
-        }
-    };
-});
-
-const mount = () => {
-    const container = new Container();
-    const rowProvider: IReviewRowProvider = { getBinding: () => null };
-    container.registerInstance(WbReviewContentAdapter, {} as unknown as IReviewContentAdapter);
-    container.registerInstance(WbReviewRowProvider, rowProvider);
-
-    render(
-        <DiContainerProvider container={container}>
-            <WbContentReviews />
-        </DiContainerProvider>
-    );
-};
-
 describe("WbContentReviews", () => {
     afterEach(() => {
         cleanup();
-        permission.canReadPages = true;
     });
 
     it("mounts the shared route, menu and widgets for the wb app and no content type", () => {
-        mount();
+        const container = new Container();
+        const rowProvider: IReviewRowProvider = { getBinding: () => null };
+        container.registerInstance(WbReviewContentAdapter, {} as unknown as IReviewContentAdapter);
+        container.registerInstance(WbReviewRowProvider, rowProvider);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WbContentReviews />
+            </DiContainerProvider>
+        );
 
         const route = screen.getByTestId("route");
         expect(route.getAttribute("data-route")).toBe(Routes.Pages.WorkflowStateList.name);
@@ -143,13 +124,5 @@ describe("WbContentReviews", () => {
         expect(widgets.getAttribute("data-prefix")).toBe("wb");
         expect(widgets.getAttribute("data-namespaces")).toBe("wb.page");
         expect(widgets.getAttribute("data-route")).toBe(Routes.Pages.WorkflowStateList.name);
-    });
-
-    it("mounts no widgets for a user who cannot read pages (B30)", () => {
-        permission.canReadPages = false;
-        mount();
-
-        expect(screen.getByTestId("route")).toBeTruthy();
-        expect(screen.queryByTestId("widgets")).toBeNull();
     });
 });
