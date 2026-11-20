@@ -181,7 +181,8 @@ describe("HttpResponseBuilder.sse", () => {
     // `connection` is hop-by-hop: the transport decides it, and a server shutting down must be able
     // to answer `close`.
     it("should leave the connection header to the transport", () => {
-        const headers = new HttpResponseBuilder().sse(source()).toResponse().headers!;
+        const stream = source();
+        const headers = new HttpResponseBuilder().sse(stream).toResponse().headers!;
 
         expect(headers["connection"]).toBeUndefined();
     });

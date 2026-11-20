@@ -115,7 +115,8 @@ describe("InFlightRequests", () => {
 
         await expect(first).resolves.toEqual({ body: "done", connection: "close" });
         await allFinished;
-        await expect(get(port)).rejects.toMatchObject({ code: "ECONNREFUSED" });
+        const second = get(port);
+        await expect(second).rejects.toMatchObject({ code: "ECONNREFUSED" });
         expect(received.count).toBe(1);
     });
 });
