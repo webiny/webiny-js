@@ -12,7 +12,7 @@ import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
 /**
  * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` —
  * `x-webiny-authorization` first, then the bearer `Authorization` header, then the `wby-id-token`
- * cookie — into RawAuthToken, then invokes the shared LOAD step (RequestIdentityLoader) which
+ * cookie (private file reads only) — into RawAuthToken, then invokes the shared LOAD step (RequestIdentityLoader) which
  * authenticates it (via the registered identity provider, e.g. the self-hosted JWT IdP) and sets
  * IdentityContext.
  *
@@ -33,7 +33,10 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
 
     async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
         const headers = headersFromIncomingMessage(ctx.event);
-        const authToken = extractAuthToken(headers);
+        const authToken = extractAuthToken(headers, {
+            method: ctx.event.method,
+            path: ctx.event.url
+        });
         this.rawAuthToken.set(authToken);
         await this.identityLoader.establish();
         return this.decoratee.execute(ctx, next);

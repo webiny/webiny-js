@@ -16,14 +16,6 @@ import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
 
-/**
- * Retrieves a scheduled action by its ID
- *
- * Flow:
- * 1. Fetch schedule entry from CMS storage by ID
- * 2. Return null if not found
- * 3. Transform CMS entry to IScheduledAction format
- */
 class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
@@ -37,7 +29,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const { id, namespace } = params;
         const permissions = this.permissionsResolver.forNamespace(namespace);
-        if (!(await permissions.canRead())) {
+        if (!(await permissions.canRead({ namespace }))) {
             return Result.fail(new NotAuthorizedError());
         }
 
@@ -51,7 +43,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const ownRecordsOnly = await permissions.onlyOwnRecords();
+        const ownRecordsOnly = await permissions.onlyOwnRecords({ namespace });
         if (ownRecordsOnly) {
             if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
                 return Result.fail(new NotAuthorizedError());
@@ -59,18 +51,13 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         }
 
         const entry = entryResult.value;
-        /**
-         * Always check if the namespace is correct because entry is loaded directly, not via filtering.
-         */
         if (entry.values.namespace !== namespace) {
             return Result.fail(new ScheduledActionNotFoundError(id));
         }
         const action = ScheduledActionMapper.toAction<T>(entry);
         return Result.ok(action);
     }
-    /**
-     * We always need to fetch both publish and unpublish actions because we don't know the type of the action that is being searched for.
-     */
+
     private async getRecord<T extends GenericRecord>(params: UseCaseAbstraction.Params) {
         const model = await this.modelProvider.get();
         const schedulePublishId = ScheduledActionId.from({

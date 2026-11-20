@@ -44,6 +44,7 @@ const traversalKeyTo = (target: string) => {
 };
 
 const makeAsset = (key: string) => ({
+    getTenant: () => TENANT_ID,
     getKey: () => key,
     getContentType: () => "text/plain"
 });
@@ -97,7 +98,7 @@ describe("local contents reader", () => {
         const reader = LocalContentsReader.create(getStoragePath());
         const asset = makeAsset(bucketKey) as any;
 
-        await expect(reader.read(asset)).rejects.toThrow("outside of the storage directory");
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant files folder");
     });
 });
 

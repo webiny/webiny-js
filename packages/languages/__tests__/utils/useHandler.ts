@@ -25,7 +25,11 @@ const defaultIdentity: IdentityData = {
 
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 
-export const useHandler = () => {
+export interface UseHandlerParams {
+    permissions?: SecurityPermission[];
+}
+
+export const useHandler = (params: UseHandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
@@ -34,7 +38,9 @@ export const useHandler = () => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, { list: defaultPermissions });
+            container.registerInstance(TestPermissions, {
+                list: params.permissions ?? defaultPermissions
+            });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

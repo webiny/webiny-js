@@ -242,7 +242,7 @@ describe("response", () => {
             message,
             output: {
                 message: `Output size exceeds the maximum allowed size.`,
-                size: 240038,
+                size: 240027,
                 max: 232 * 1024
             },
             status: TaskResultStatus.DONE,

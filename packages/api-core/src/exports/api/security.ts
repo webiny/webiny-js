@@ -9,4 +9,6 @@ export { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
 export { ApiToken } from "~/domain/security/ApiToken.js";
 export { IdentityProvider, OidcIdentityProvider, JwtIdentityProvider } from "~/idp/index.js";
 export { Authenticator } from "~/features/security/authentication/Authenticator/abstractions.js";
+export { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdentityTenants/index.js";
+export { LogInUseCase } from "~/features/security/login/index.js";
 export { Authorizer } from "~/features/security/authorization/Authorizer/index.js";

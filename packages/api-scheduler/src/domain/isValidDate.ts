@@ -5,7 +5,10 @@ import { SCHEDULE_MIN_FUTURE_SECONDS } from "~/constants.js";
  * We need to ensure that the date is at least a SCHEDULE_MIN_FUTURE_MINUTES minutes in the future.
  * Otherwise, we consider it as "immediate" and run the action right away.
  */
-export const isValidDate = (input: Date): boolean => {
+export const isValidDate = (input: Date | null | undefined): input is Date => {
+    if (!(input instanceof Date)) {
+        return false;
+    }
     const minDate = new Date(Date.now() + SCHEDULE_MIN_FUTURE_SECONDS * 1000);
 
     return input.getTime() >= minDate.getTime();

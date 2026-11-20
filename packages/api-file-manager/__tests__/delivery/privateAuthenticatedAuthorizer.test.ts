@@ -1,43 +1,66 @@
-import { describe, it, expect } from "vitest";
-import { AnonymousIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { File } from "~/domain/file/types.js";
+import { describe, expect, it } from "vitest";
+import {
+    AnonymousIdentity,
+    AuthenticatedIdentity,
+    type IdentityContext,
+    type Identity
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { FmPermissions } from "~/features/shared/abstractions.js";
 import { PrivateAuthenticatedAuthorizer } from "~/features/assetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
+import type { File } from "~/domain/file/types.js";
 
-const createAuthorizer = (identity: AnonymousIdentity | AuthenticatedIdentity) => {
-    const identityContext = { getIdentity: () => identity } as IdentityContext.Interface;
-    return new PrivateAuthenticatedAuthorizer(identityContext);
+const createAuthorizer = (identity: Identity, canReadFiles: boolean) => {
+    const identityContext = {
+        getIdentity: () => identity
+    } as unknown as IdentityContext.Interface;
+    const permissions = {
+        canRead: async (entity: string) => entity === "file" && canReadFiles
+    } as unknown as FmPermissions.Interface;
+    return new PrivateAuthenticatedAuthorizer(identityContext, permissions);
 };
 
-const privateFile = { accessControl: { type: "private-authenticated" } } as File;
-const publicFile = { accessControl: { type: "public" } } as File;
+const createFile = (accessControl?: File["accessControl"]) => {
+    return { id: "file-1", key: "file-1/image.png", accessControl } as unknown as File;
+};
 
-const admin = new AuthenticatedIdentity({ id: "admin", displayName: "Admin", type: "admin" });
+const loggedIn = () => {
+    return new AuthenticatedIdentity({ id: "user-1", displayName: "User 1", type: "admin" });
+};
+
+const privateFile = () => createFile({ type: "private-authenticated" });
 
 describe("PrivateAuthenticatedAuthorizer", () => {
-    it("refuses a private file to a request without a token", async () => {
-        const anonymous = new AnonymousIdentity();
-        const authorizer = createAuthorizer(anonymous);
-        const authorization = authorizer.authorize(privateFile);
+    it("should refuse anonymous identities for private files", async () => {
+        const authorizer = createAuthorizer(new AnonymousIdentity(), true);
 
-        await expect(authorization).rejects.toMatchObject({
+        await expect(authorizer.authorize(privateFile())).rejects.toMatchObject({
             code: "NOT_AUTHORIZED"
         });
     });
 
-    it("allows a private file to a signed-in identity", async () => {
-        const authorizer = createAuthorizer(admin);
-        const authorization = authorizer.authorize(privateFile);
+    it("should refuse logged-in identities without File Manager read access", async () => {
+        // e.g. the public website API key, or a user from another tenant.
+        const authorizer = createAuthorizer(loggedIn(), false);
 
-        await expect(authorization).resolves.toBeUndefined();
+        await expect(authorizer.authorize(privateFile())).rejects.toMatchObject({
+            code: "NOT_AUTHORIZED"
+        });
     });
 
-    it("allows a public file to a request without a token", async () => {
-        const anonymous = new AnonymousIdentity();
-        const authorizer = createAuthorizer(anonymous);
-        const authorization = authorizer.authorize(publicFile);
+    it("should allow logged-in identities with File Manager read access", async () => {
+        const authorizer = createAuthorizer(loggedIn(), true);
 
-        await expect(authorization).resolves.toBeUndefined();
+        await expect(authorizer.authorize(privateFile())).resolves.toBeUndefined();
+    });
+
+    it.each([
+        ["no access control", undefined],
+        ["public access", { type: "public" }]
+    ])("should allow anyone to read files with %s", async (_, accessControl) => {
+        const authorizer = createAuthorizer(new AnonymousIdentity(), false);
+
+        await expect(
+            authorizer.authorize(createFile(accessControl as File["accessControl"]))
+        ).resolves.toBeUndefined();
     });
 });

@@ -49,6 +49,9 @@ vi.mock("@webiny/app", async importOriginal => ({
         if (feature.name === "AdminUsers/UserEvents") {
             return { revision: mocks.revision };
         }
+        if (feature.name === "AdminUsers/UserForm") {
+            return { presenter: { vm: { saving: false }, reset: vi.fn(), submit: vi.fn() } };
+        }
         return { useCase: { execute: vi.fn() } };
     },
     useRoute: () => ({ route: { params: mocks.params } }),

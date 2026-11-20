@@ -22,7 +22,7 @@ export const websocketsRouteConnect: WebsocketsRouteHandler.Interface = {
                 statusCode: 400,
                 message: "Missing tenant."
             });
-        } else if (!identity) {
+        } else if (!identity?.id) {
             return response.error({
                 statusCode: 401,
                 message: "Missing identity."

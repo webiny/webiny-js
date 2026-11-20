@@ -110,4 +110,32 @@ describe("SecureHeadersDecorator", () => {
         const result = await router.route(req("OPTIONS", "/test"));
         expect(result.headers?.["access-control-allow-origin"]).toBe("*");
     });
+
+    it("should not allow credentials for other websites on private files", async () => {
+        const container = new Container();
+
+        const route: IHttpRoute = {
+            async handle(_r: IHttpRequest): Promise<IHttpResponse> {
+                return { statusCode: 200, headers: {}, body: "ok" };
+            }
+        };
+
+        registerHttpRouteInstance(container, {
+            method: "GET",
+            path: "/private/*",
+            route
+        });
+        container.register(HttpRouterImpl).inSingletonScope();
+        container.registerInstance(RequestContainer, container);
+        container.registerDecorator(SecureHeadersDecorator);
+        const router = container.resolve(HttpRouter);
+
+        for (const method of ["GET", "OPTIONS"]) {
+            const result = await router.route(
+                req(method, "/private/some-file.png", "https://attacker.example")
+            );
+            expect(result.headers?.["access-control-allow-origin"]).toBe("*");
+            expect(result.headers?.["access-control-allow-credentials"]).toBeUndefined();
+        }
+    });
 });

@@ -30,7 +30,36 @@ class GetCurrentTenantUseCase implements UseCaseAbstraction.Interface {
             return Result.fail(result.error);
         }
 
+        // Security: the tenant comes from the caller-chosen `x-tenant` header, so an identity
+        // without access to this tenant only gets its ID and name, not the full entry.
+        if (!(await this.hasAccessToCurrentTenant())) {
+            return Result.ok(this.toPublicTenant(result.value));
+        }
+
         return Result.ok(result.value);
+    }
+
+    private async hasAccessToCurrentTenant(): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
+        }
+
+        // `aacl` is a license flag added to every identity's permissions, not an actual permission.
+        const permissions = await this.identityContext.listPermissions();
+        return permissions.some(permission => permission.name !== "aacl");
+    }
+
+    private toPublicTenant(tenant: Tenant): Tenant {
+        return Tenant.from({
+            id: tenant.id,
+            values: {
+                name: tenant.values.name,
+                description: "",
+                isInstalled: tenant.values.isInstalled,
+                status: tenant.values.status,
+                extensions: {}
+            }
+        });
     }
 }
 

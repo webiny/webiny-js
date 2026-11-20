@@ -30,6 +30,24 @@ const ALLOWED_HEADERS = [
     "x-webiny-debug"
 ];
 
+/**
+ * Private files are authenticated with the `wby-id-token` cookie. Their responses must not be
+ * readable by other websites through a credentialed `fetch`, so they get a wildcard origin without
+ * credentials. `<img src>`, links and plain `fetch` calls are not affected. One leading segment is
+ * allowed for an API Gateway stage (`/default/private/...`).
+ */
+const PRIVATE_FILE_PATH = /^(\/[^/]+)?\/private\//;
+
+const corsOriginHeaders = (request: IHttpRequest): Record<string, string> => {
+    if (PRIVATE_FILE_PATH.test(request.path || "")) {
+        return { "access-control-allow-origin": "*" };
+    }
+    return {
+        "access-control-allow-origin": request.headers["origin"] || "*",
+        "access-control-allow-credentials": "true"
+    };
+};
+
 class SecureHeadersDecoratorImpl implements IHttpRouter {
     private readonly allowedHeaders: string;
 
@@ -52,8 +70,7 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
             ...response,
             headers: {
                 ...response.headers,
-                "access-control-allow-origin": request.headers["origin"] || "*",
-                "access-control-allow-credentials": "true",
+                ...corsOriginHeaders(request),
                 vary: "origin"
             }
         };
@@ -63,8 +80,7 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
         return {
             statusCode: 204,
             headers: {
-                "access-control-allow-origin": request.headers["origin"] || "*",
-                "access-control-allow-credentials": "true",
+                ...corsOriginHeaders(request),
                 "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
                 "access-control-allow-headers": this.allowedHeaders,
                 "access-control-max-age": "86400",

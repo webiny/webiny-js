@@ -10,7 +10,10 @@ import type {
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryAlreadyExistsError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetLatestRevisionByEntryIdStorageOperation } from "~/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 import { CreateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryDataFactory/index.js";
 
 class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -18,7 +21,10 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private eventPublisher: EntryEventPublisher.Interface,
         private repository: CreateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
-        private createEntryDataFactory: CreateEntryDataFactory.Interface
+        private createEntryDataFactory: CreateEntryDataFactory.Interface,
+        private getLatestRevisionByEntryIdStorage: GetLatestRevisionByEntryIdStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -48,6 +54,10 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(EntryNotAuthorizedError.fromEntry(entry));
             }
 
+            if (await this.isTakenEntryId(model, rawInput, entry.entryId, options)) {
+                return Result.fail(new EntryAlreadyExistsError(entry.entryId));
+            }
+
             await this.eventPublisher.publish(new EntryBeforeCreateEvent({ entry, input, model }));
 
             const result = await this.repository.execute(model, entry);
@@ -68,6 +78,31 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
+
+    /**
+     * A caller-provided id must not point at an existing entry: storage writes the new revision
+     * over it, and the caller would take over someone else's entry. Deleted entries count too.
+     * Code running without authorization (imports, internal records that are re-created on
+     * purpose) is left alone, and so are private models unless the caller opts in.
+     */
+    private async isTakenEntryId(
+        model: CmsModel,
+        rawInput: CreateCmsEntryInput,
+        entryId: string,
+        options?: CreateCmsEntryOptionsInput
+    ): Promise<boolean> {
+        if (!rawInput.id || !this.identityContext.isAuthorizationEnabled()) {
+            return false;
+        }
+        if (model.isPrivate && !options?.failIfExists) {
+            return false;
+        }
+        const existing = await this.getLatestRevisionByEntryIdStorage.execute(
+            this.runtimeTenant.assign(model),
+            { id: entryId }
+        );
+        return !!existing;
+    }
 }
 
 export const CreateEntryUseCase = UseCaseAbstraction.createImplementation({
@@ -76,6 +111,9 @@ export const CreateEntryUseCase = UseCaseAbstraction.createImplementation({
         EntryEventPublisher,
         CreateEntryRepository,
         AccessControl,
-        CreateEntryDataFactory
+        CreateEntryDataFactory,
+        GetLatestRevisionByEntryIdStorageOperation,
+        RuntimeTenant,
+        IdentityContext
     ]
 });

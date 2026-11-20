@@ -10,6 +10,7 @@ import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { RecordLockingAppFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { createTestModelPlugins } from "./models";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
@@ -103,7 +104,10 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
-            HeadlessCmsFeature.register(container, { type: "manage" });
+            HeadlessCmsFeature.register(container, {
+                type: "manage",
+                extraPlugins: createTestModelPlugins()
+            });
 
             container.registerInstance(ConnectionRegistry, noopConnectionRegistry);
             container.registerInstance(WebsocketsSendToIdentityUseCase, {

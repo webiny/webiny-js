@@ -1,4 +1,3 @@
-import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { mdbid } from "@webiny/utils";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -7,6 +6,9 @@ import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/featu
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
+import { resolveMultipartUploadDir } from "~/utils/storagePaths.js";
+import { writeMultipartUploadInfo } from "~/utils/multipartUploadInfo.js";
 
 class CreateMultiPartUploadUseCaseImpl
     implements CreateMultiPartUploadUseCaseAbstraction.Interface
@@ -20,15 +22,19 @@ class CreateMultiPartUploadUseCaseImpl
     public async execute(
         params: CreateMultiPartUploadUseCaseAbstraction.Params
     ): Promise<CreateMultiPartUploadResult> {
-        const { file, numberOfParts } = params;
+        const { file, numberOfParts, clientId } = params;
         const storagePath = this.config.storagePath;
         const tenant = this.tenantContext.getTenant();
+        await ensureNewFileId({ storagePath, file, tenantId: tenant.id, clientId });
         const apiUrl = await this.publicUrls.getApiUrl();
 
         const uploadId = mdbid();
 
-        const multipartDir = path.join(storagePath, "tenants", tenant.id, "multipart", uploadId);
+        const multipartDir = resolveMultipartUploadDir(storagePath, tenant.id, uploadId);
         await mkdir(multipartDir, { recursive: true });
+
+        // Security: bind the upload to its file, `CompleteMultiPartUpload` refuses any other key.
+        await writeMultipartUploadInfo(multipartDir, { fileKey: file.key });
 
         const secret = this.config.uploadSecret;
         const expiresAt = Date.now() + 86_400_000; /* 24h */

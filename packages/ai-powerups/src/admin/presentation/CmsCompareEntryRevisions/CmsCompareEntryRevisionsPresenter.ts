@@ -97,8 +97,7 @@ class CmsCompareEntryRevisionsPresenterImpl implements CmsCompareEntryRevisionsP
     }
 }
 
-export const CmsCompareEntryRevisionsPresenterImplementation =
-    CmsCompareEntryRevisionsPresenter.createImplementation({
-        implementation: CmsCompareEntryRevisionsPresenterImpl,
-        dependencies: [RevisionsListPresenter, CompareEntryRevisionsUseCase]
-    });
+export default CmsCompareEntryRevisionsPresenter.createImplementation({
+    implementation: CmsCompareEntryRevisionsPresenterImpl,
+    dependencies: [RevisionsListPresenter, CompareEntryRevisionsUseCase]
+});

@@ -1,13 +1,15 @@
 import { createFeature } from "@webiny/feature/api";
-import { WbGeneratePageContentUseCaseImplementation } from "./WbGeneratePageContentUseCase.js";
+import WbGeneratePageContentUseCase from "./WbGeneratePageContentUseCase.js";
 import { WbGeneratePageContentTask } from "./WbGeneratePageContentTask.js";
 import { WbGeneratePageCapability } from "./capability.js";
+import QueueWbGeneratePageContentUseCase from "./QueueWbGeneratePageContentUseCase.js";
 
 export const WbGeneratePageContentFeature = createFeature({
     name: "AiPowerUps/WbGeneratePageContent",
     register(container) {
         container.register(WbGeneratePageCapability);
-        container.register(WbGeneratePageContentUseCaseImplementation);
+        container.register(WbGeneratePageContentUseCase);
         container.register(WbGeneratePageContentTask);
+        container.register(QueueWbGeneratePageContentUseCase);
     }
 });

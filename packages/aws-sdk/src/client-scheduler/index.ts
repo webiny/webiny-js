@@ -7,7 +7,8 @@ export {
     GetScheduleCommand,
     CreateScheduleCommand,
     UpdateScheduleCommand,
-    DeleteScheduleCommand
+    DeleteScheduleCommand,
+    ResourceNotFoundException
 } from "@aws-sdk/client-scheduler";
 
 export type {

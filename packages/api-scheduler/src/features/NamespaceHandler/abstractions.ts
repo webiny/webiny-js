@@ -1,10 +1,11 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { ScheduledActionType } from "~/shared/abstractions.js";
-import { NamespaceHandlerNotFoundError } from "~/domain/errors.js";
+import { NamespaceHandlerNotFoundError, NotAuthorizedError } from "~/domain/errors.js";
 
 export interface INamespaceHandlerErrors {
     notFound: NamespaceHandlerNotFoundError;
+    notAuthorized: NotAuthorizedError;
 }
 
 type NamespaceHandlerError = INamespaceHandlerErrors[keyof INamespaceHandlerErrors];

@@ -10,6 +10,8 @@ import { SetNewPassword } from "./components/SetNewPassword.js";
 import { PasswordResetCodeSent } from "~/admin/presentation/Cognito/components/PasswordResetCodeSent.js";
 import { ConfirmTotpCode } from "./components/ConfirmTotpCode.js";
 import { SetupTotp } from "./components/SetupTotp.js";
+import { SelectTenant } from "./components/SelectTenant.js";
+import { NoTenantAccess } from "./components/NoTenantAccess.js";
 
 export interface CognitoLoginScreenProps {
     region: string;
@@ -93,6 +95,18 @@ export const CognitoLoginScreen = observer((props: CognitoLoginScreenProps) => {
                             onSubmit={code => presenter.verifyTotpSetup(code)}
                         />
                     )}
+
+                    {vm.authState === "selectTenant" ? (
+                        <SelectTenant
+                            vm={vm.selectTenant}
+                            onSelect={tenantId => presenter.selectTenant(tenantId)}
+                            onSignOut={() => presenter.signOut()}
+                        />
+                    ) : null}
+
+                    {vm.authState === "noTenantAccess" ? (
+                        <NoTenantAccess onSignOut={() => presenter.signOut()} />
+                    ) : null}
 
                     {(vm.authState === "signIn" || vm.authState === "signedOut") && (
                         <SignIn

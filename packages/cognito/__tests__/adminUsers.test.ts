@@ -69,7 +69,8 @@ describe("Admin Users (Cognito)", () => {
         });
 
         // Verify user was created in Cognito
-        const userExistsInCognito = await mockCognitoService.userExists(adminUsers.userA.email);
+        const userExistsInCognito =
+            (await mockCognitoService.getUser(adminUsers.userA.email)) !== null;
         expect(userExistsInCognito).toBe(true);
     });
 
@@ -194,7 +195,8 @@ describe("Admin Users (Cognito)", () => {
         const user = createResult.value!;
 
         // Verify user exists in Cognito
-        let userExistsInCognito = await mockCognitoService.userExists(adminUsers.userA.email);
+        let userExistsInCognito =
+            (await mockCognitoService.getUser(adminUsers.userA.email)) !== null;
         expect(userExistsInCognito).toBe(true);
 
         // Clear any errors from mock
@@ -206,7 +208,7 @@ describe("Admin Users (Cognito)", () => {
         expect(deleteResult.isOk()).toBe(true);
 
         // Verify user was deleted from Cognito
-        userExistsInCognito = await mockCognitoService.userExists(adminUsers.userA.email);
+        userExistsInCognito = (await mockCognitoService.getUser(adminUsers.userA.email)) !== null;
         expect(userExistsInCognito).toBe(false);
     });
 

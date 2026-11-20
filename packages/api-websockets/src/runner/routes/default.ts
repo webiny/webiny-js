@@ -12,7 +12,7 @@ export const websocketsRouteDefault: WebsocketsRouteHandler.Interface = {
             return response.error({
                 message: "Missing tenant."
             });
-        } else if (!identity) {
+        } else if (!identity?.id) {
             return response.error({
                 message: "Missing identity."
             });
