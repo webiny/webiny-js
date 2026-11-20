@@ -84,7 +84,11 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
 
         if (!verifiedPayload) {
             // Default JWK verification
-            verifiedPayload = await verifyJwtUsingJwk(token, jwk);
+            // Security: audience/issuer are enforced only when the provider has them configured.
+            verifiedPayload = await verifyJwtUsingJwk(token, jwk, {
+                issuer: provider.issuer,
+                audience: provider.clientId
+            });
         }
 
         // Call verifyTokenClaims if provided

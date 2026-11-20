@@ -105,16 +105,10 @@ const query = /* GraphQL */ `
     {
         websiteBuilder {
             # Public API
-            getPageByPath(path: "/about-us") {
-                
-            }
-            
-            getPageTemplate(slug: "") {
-                    
-            }
+            getPageByPath(path: "/about-us") {}
+
+            getPageTemplate(slug: "") {}
             # Admin
-            
-            
         }
     }
 `;
