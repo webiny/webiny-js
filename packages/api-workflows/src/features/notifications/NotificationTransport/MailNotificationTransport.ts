@@ -3,9 +3,9 @@ import { NoTransportAvailableError } from "@webiny/api-mailer/domain/MailerServi
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { MAIL_BCC_CHUNK_SIZE } from "~/features/notifications/shared/constants.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
-import { escapeHtml } from "~/features/notifications/shared/escapeHtml.js";
 import { toSingleLine } from "~/domain/notifications/toSingleLine.js";
 import { NotificationTransport } from "./abstractions.js";
+import { renderNotificationMail } from "./renderNotificationMail.js";
 
 /** Exactly one "@" with text on both sides; no whitespace, comma, semicolon or angle bracket. */
 const PLAIN_ADDRESS = /^[^@\s,;<>]+@[^@\s,;<>]+$/;
@@ -44,12 +44,8 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
         }
 
         const subject = toSingleLine(message.title);
-        let text = message.body;
-        let html = `<p>${escapeHtml(message.body).replace(/\n/g, "<br/>")}</p>`;
-        if (message.url !== null) {
-            text = `${message.body}\n\n${message.linkLabel}: ${message.url}`;
-            html += `<p><a href="${escapeHtml(message.url)}">${escapeHtml(message.linkLabel)}</a></p>`;
-        }
+        // Greeting, body, details table, link button and footer; every value escaped.
+        const { text, html } = renderNotificationMail(message);
 
         for (let start = 0; start < recipients.length; start += MAIL_BCC_CHUNK_SIZE) {
             const chunk = recipients.slice(start, start + MAIL_BCC_CHUNK_SIZE);

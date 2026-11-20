@@ -14,8 +14,7 @@ export interface FakeExclusionsPagePresenter extends PagePresenter {
     reload: Mock<PagePresenter["reload"]>;
     retryNames: Mock<PagePresenter["retryNames"]>;
     setTab: Mock<PagePresenter["setTab"]>;
-    setUserFilter: Mock<PagePresenter["setUserFilter"]>;
-    searchUserFilter: Mock<PagePresenter["searchUserFilter"]>;
+    setSearch: Mock<PagePresenter["setSearch"]>;
     openAdd: Mock<PagePresenter["openAdd"]>;
     openEdit: Mock<PagePresenter["openEdit"]>;
     openRemove: Mock<ExclusionsSource["openRemove"]>;
@@ -50,8 +49,7 @@ export const createFakeExclusionsPagePresenter = (
         reload: vi.fn(),
         retryNames: vi.fn(),
         setTab: vi.fn(),
-        setUserFilter: vi.fn(),
-        searchUserFilter: vi.fn(),
+        setSearch: vi.fn(),
         openAdd: vi.fn(),
         openEdit: vi.fn(),
         openRemove: vi.fn(),

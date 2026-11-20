@@ -11,7 +11,7 @@ export const POOL_FAILURE_SECRET = "SECRET-POOL-4711";
  * `container.registerInstance(NotificationRecipientService, stub)`.
  */
 export class StubNotificationRecipients implements NotificationRecipientService.Interface {
-    public pool: NotificationRecipientService.Recipient[] = [];
+    public pool: NotificationRecipientService.PoolRecipient[] = [];
     public mode: "ok" | "fail" | "throw" = "ok";
     public readonly poolCalls: NotificationRecipientService.PoolParams[] = [];
 
@@ -27,7 +27,7 @@ export class StubNotificationRecipients implements NotificationRecipientService.
                 new WorkflowPersistenceError(new Error(`Lookup failed ${POOL_FAILURE_SECRET}.`))
             );
         }
-        return Result.ok(this.pool.map(item => ({ ...item })));
+        return Result.ok(this.pool.map(item => ({ ...item, teamIds: [...item.teamIds] })));
     }
 
     public async listUsers(): NotificationRecipientService.UsersReturn {

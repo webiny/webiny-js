@@ -1,7 +1,7 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { ReviewListScope } from "~/domain/review/ReviewListScope.js";
 import type {
     ReviewData,
-    ReviewListKind,
     ReviewListReadFilter,
     ReviewListMeta,
     ReviewListSort,
@@ -10,10 +10,15 @@ import type {
 import type { ReviewPersistenceError, ReviewValidationError } from "~/domain/review/errors.js";
 
 export interface ListReviewsInput {
-    list: ReviewListKind;
+    scope: ReviewListScope;
     /** The viewer, built by the app wrapper (D132). */
     viewerUserId: string;
     viewerTeamIds: string[];
+    /**
+     * The viewer holds `reassign` ("Reassign and operate"), from the app wrapper: `all` is then
+     * every readable review, else the readable reviews that involve the viewer (B7).
+     */
+    viewerCanReassign: boolean;
     /**
      * What the viewer may read (Q77), built once per call by the app wrapper from the viewer's
      * permissions: the namespaces the app lists and the viewer reads (R91, R94), the own-only
@@ -21,11 +26,14 @@ export interface ListReviewsInput {
      */
     readFilter: ReviewListReadFilter;
     where?: ReviewListWhere | null;
-    /** Default `lastChangedOn_DESC` for `myRequests`, `lastChangedOn_ASC` otherwise (D119). */
+    /** Default per scope and state (`getDefaultReviewListSort`, D119). */
     sort?: ReviewListSort | null;
     /** Default 20; values above 100 are clamped (R92). */
     limit?: number | null;
-    /** `meta.cursor` of the previous call; valid only with the same list, where and sort. */
+    /**
+     * `meta.cursor` of the previous call; valid only with the same scope, where and sort. A cursor
+     * made with another sort fails with `ReviewValidationError`.
+     */
     after?: string | null;
 }
 
@@ -35,7 +43,7 @@ export interface ListReviewsOutput {
 }
 
 export interface IListReviewsUseCaseErrors {
-    /** State filters outside `myRequests`, or an invalid cursor. */
+    /** An invalid cursor, or one made with another sort. */
     validation: ReviewValidationError;
     persistence: ReviewPersistenceError;
 }
@@ -48,10 +56,11 @@ export interface IListReviewsUseCase {
 
 /**
  * One page of a review list (spec 11, D47, D76, R91, R92). Internal (D132): the app wrapper
- * passes the viewer and its read filter, and checks `reassign` for the failed steps list (R95).
- * Read access is part of the query (Q77); each storage page is confirmed with one batch read
+ * passes the viewer, whether it holds `reassign` and its read filter; `all` is open to everyone
+ * (B7). Read access is part of the query (Q77); each storage page is confirmed with one batch read
  * (Q78). Rows the confirm drops are skipped; a call examines at most 200 rows, so a page can be
- * short while `hasMoreItems` is true (A41).
+ * short while `hasMoreItems` is true (A41). A scope and state pair that is empty by definition
+ * (`isEmptyReviewListFilter`) returns an empty page without a query.
  */
 export const ListReviewsUseCase = createAbstraction<IListReviewsUseCase>("ListReviewsUseCase");
 

@@ -15,16 +15,16 @@ const CUSTOM_EDITOR: WorkflowsAccess = {
 };
 
 describe("changeWorkflowsAccessLevel (R333)", () => {
-    it("starts Custom from No access with nothing ticked", () => {
+    it("starts Custom from No access with only Manage workflows ticked", () => {
         const access = changeWorkflowsAccessLevel(NONE, "custom");
 
-        expect(access).toEqual({ level: "custom", editor: false, reassign: false, locked: false });
+        expect(access).toEqual({ level: "custom", editor: true, reassign: false, locked: false });
     });
 
-    it("starts Custom from Full with both ticked (the same access until narrowed)", () => {
+    it("starts Custom from Full with only Manage workflows ticked", () => {
         const access = changeWorkflowsAccessLevel(FULL, "custom");
 
-        expect(access).toEqual({ level: "custom", editor: true, reassign: true, locked: false });
+        expect(access).toEqual({ level: "custom", editor: true, reassign: false, locked: false });
     });
 
     it("drops the flags when Custom becomes Full", () => {

@@ -4,6 +4,7 @@ import type { ReviewStep } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
+import type { StepStateValue } from "~/review/domain/StepState.js";
 import { formatReviewTime } from "../actionDialog/formatReviewTime.js";
 import { getRejectionText } from "../targetReview/getRejectionText.js";
 import { getReviewActions } from "../targetReview/getReviewActions.js";
@@ -20,6 +21,8 @@ import type { ReviewDetailsStatus } from "./abstractions.js";
 import type { ReviewDetailsStepVm } from "./abstractions.js";
 import type { ReviewStepRunPanelVm } from "./abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
+import type { TargetReviewActionVm } from "../targetReview/abstractions.js";
+import type { TargetReviewTag } from "../targetReview/abstractions.js";
 import { getRevisionNumber } from "./getRevisionNumber.js";
 import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { getExpandedStepId } from "./getExpandedStepId.js";
@@ -47,6 +50,8 @@ export interface ReviewDetailsViewModelInput {
 }
 
 const BARE_TIME = /^\d{2}:\d{2}$/;
+const YESTERDAY_TIME = /^Yesterday (\d{2}:\d{2})$/;
+const DATE_TIME = /^(.+), (\d{2}:\d{2})$/;
 
 // The reason of a failed step has its own field and box (`failedReason`), not a quoted comment.
 const getComment = (step: ReviewStep): string | null => {
@@ -81,7 +86,9 @@ const getSkippedName = (entry: ReviewAssignmentEntry): string => {
     return name;
 };
 
-const getCancelledText = (review: Review, now: Date): string => {
+// "This review was cancelled by Nina Cole on Tue 6 Oct 2026, 14:20 CEST." The date comes from
+// the full formatter of the hover texts; an unparsable date drops the "on" part.
+const getCancelledText = (review: Review): string => {
     let who = "Someone";
     if (review.cancelledBy !== null) {
         const name = review.cancelledBy.displayName.trim();
@@ -89,8 +96,23 @@ const getCancelledText = (review: Review, now: Date): string => {
             who = name;
         }
     }
-    const time = formatReviewTime(review.lastChangedOn, now);
-    return `${who} cancelled this review at ${time}. The revision has no review now; a new request starts again from the first step.`;
+    const date = formatReviewTimeFull(review.lastChangedOn);
+    if (date === "") {
+        return `This review was cancelled by ${who}.`;
+    }
+    return `This review was cancelled by ${who} on ${date}.`;
+};
+
+// A step that was not finished when the review was cancelled shows a neutral Cancelled tag.
+const UNFINISHED_STATES: StepStateValue[] = [
+    StepState.Awaiting,
+    StepState.InReview,
+    StepState.Failed
+];
+
+const CANCELLED_STEP_TAG: TargetReviewTag = {
+    label: "Cancelled",
+    variant: "neutral-base-outline"
 };
 
 const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
@@ -112,7 +134,9 @@ const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
     return skipped;
 };
 
-const getFailedReason = (step: ReviewStep): string | null => {
+// "Failed at 10:05: reason", the time in the format of the Times row (DS 2.0). Without a usable
+// time the message reads "Failed: reason".
+const getFailedReason = (step: ReviewStep, now: Date): string | null => {
     if (step.state !== StepState.Failed) {
         return null;
     }
@@ -120,7 +144,12 @@ const getFailedReason = (step: ReviewStep): string | null => {
     if (reason === "") {
         return null;
     }
-    return reason;
+    const failedOn = step.finishedOn ?? step.startedOn ?? step.reachedOn;
+    const time = failedOn === null ? "" : formatReviewTime(failedOn, now);
+    if (time === "") {
+        return `Failed: ${reason}`;
+    }
+    return `Failed at ${time}: ${reason}`;
 };
 
 const getStepVm = (
@@ -128,10 +157,15 @@ const getStepVm = (
     now: Date,
     canViewStepRun: boolean,
     fieldLabels: ReviewFieldLabels,
-    expandedStepId: string | null
+    expandedStepId: string | null,
+    cancelled: boolean
 ): ReviewDetailsStepVm => {
-    const running = isStepRunning(step);
-    const tag = getStepStateTag(step.state, running);
+    let running = isStepRunning(step);
+    let tag = getStepStateTag(step.state, running);
+    if (cancelled && UNFINISHED_STATES.includes(step.state)) {
+        running = false;
+        tag = CANCELLED_STEP_TAG;
+    }
     const reached = step.state !== StepState.Pending;
     let ownerLine: string | null = null;
     if (reached) {
@@ -153,7 +187,7 @@ const getStepVm = (
         comment: getComment(step),
         skipped: getSkipped(step),
         running,
-        failedReason: getFailedReason(step),
+        failedReason: getFailedReason(step, now),
         attempts: getAttempts(step, canViewStepRun),
         issues: getAiIssues(step, fieldLabels)
     };
@@ -161,7 +195,7 @@ const getStepVm = (
 
 /*
  * The render-ready view model of the drawer (R234). Pure. `now` is a parameter so times are
- * deterministic. A cancelled review keeps its header and loses timeline and actions (QBZ-1).
+ * deterministic. A cancelled review keeps its header and keeps its steps read-only and loses actions (QBZ-1).
  */
 export const buildReviewDetailsViewModel = (
     input: ReviewDetailsViewModelInput
@@ -185,11 +219,14 @@ export const buildReviewDetailsViewModel = (
 
     const review = withFlags.review;
     const stateTag = getReviewStateTag(review.state);
-    let stateVariant: ReviewDetailsHeaderVm["stateVariant"] = "neutral-base-outline";
-    if (stateTag) {
-        stateVariant = stateTag.variant;
+    // Only a finished review has a state tag; a cancelled one keeps its own.
+    let headerTag: TargetReviewTag | null = stateTag;
+    if (review.state === ReviewState.Cancelled) {
+        headerTag = {
+            label: REVIEW_STATE_LABELS[review.state],
+            variant: "neutral-base-outline"
+        };
     }
-    const stateLabel = REVIEW_STATE_LABELS[review.state];
     const revision = getRevisionNumber(review.targetRevisionId);
     let contentLabel = review.targetContext.title;
     if (revision !== null) {
@@ -198,52 +235,54 @@ export const buildReviewDetailsViewModel = (
     if (input.contentTypeLabel) {
         contentLabel = `${input.contentTypeLabel} · ${contentLabel}`;
     }
-    // "Today" only when the time is a bare clock time, which follows the viewer's day boundary.
-    let requestedTime = formatReviewTime(review.createdOn, now);
-    if (BARE_TIME.test(requestedTime)) {
-        requestedTime = `Today ${requestedTime}`;
+    // The formatter returns a bare clock time, `Yesterday {time}` or `{date}, {time}` (follows the viewer's day boundary);
+    // the requested line reads them as "today at", "yesterday at" and "on {date} at".
+    let requestedText = formatReviewTime(review.createdOn, now);
+    if (BARE_TIME.test(requestedText)) {
+        requestedText = `today at ${requestedText}`;
+    } else if (YESTERDAY_TIME.test(requestedText)) {
+        requestedText = requestedText.replace(YESTERDAY_TIME, "yesterday at $1");
+    } else if (DATE_TIME.test(requestedText)) {
+        requestedText = requestedText.replace(DATE_TIME, "on $1 at $2");
     }
 
     const header: ReviewDetailsHeaderVm = {
         title: review.title,
-        stateLabel,
-        stateVariant,
+        stateTag: headerTag,
         contentLabel,
         contentUrl: input.contentUrl,
-        requesterLine: `Requester: ${review.createdBy.displayName}`,
-        requestedLine: `Requested: ${requestedTime}`,
+        requesterLine: `Requested by ${review.createdBy.displayName}`,
+        requestedLine: `Requested ${requestedText}`,
         requestedTitle: formatReviewTimeFull(review.createdOn)
     };
 
-    if (review.state === ReviewState.Cancelled) {
-        return {
-            status,
-            header,
-            steps: [],
-            cancelledText: getCancelledText(review, now),
-            actions: [],
-            error: null,
-            openAction,
-            reviewId: review.id,
-            stepRun
-        };
+    // A cancelled review is read-only: no step open by default and no actions.
+    const cancelled = review.state === ReviewState.Cancelled;
+    let expandedStepId: string | null = null;
+    if (!cancelled) {
+        expandedStepId = getExpandedStepId(review.steps);
     }
-
-    const expandedStepId = getExpandedStepId(review.steps);
+    let actions: TargetReviewActionVm[] = [];
+    let cancelledText: string | null = null;
+    if (cancelled) {
+        cancelledText = getCancelledText(review);
+    } else {
+        actions = getReviewActions({
+            flags: withFlags.flags,
+            stepId: review.currentStepId,
+            canRequest: false,
+            requestBlockReason: null
+        });
+    }
 
     return {
         status,
         header,
         steps: review.steps.map(step => {
-            return getStepVm(step, now, canViewStepRun, fieldLabels, expandedStepId);
+            return getStepVm(step, now, canViewStepRun, fieldLabels, expandedStepId, cancelled);
         }),
-        cancelledText: null,
-        actions: getReviewActions({
-            flags: withFlags.flags,
-            stepId: review.currentStepId,
-            canRequest: false,
-            requestBlockReason: null
-        }),
+        cancelledText,
+        actions,
         error: null,
         openAction,
         reviewId: review.id,

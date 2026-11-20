@@ -32,6 +32,7 @@ const params = (overrides: Partial<ModelRowsParams> = {}): ModelRowsParams => {
         draftIsNew: false,
         draftDirty: false,
         draftStepCount: 0,
+        actionsDisabled: false,
         ...overrides
     };
 };

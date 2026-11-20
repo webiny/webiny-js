@@ -10,11 +10,15 @@ import { defaultVariants } from "./constants.js";
 import { useAdminUi } from "~/AdminUiProvider/index.js";
 
 const alertVariants = cva(
-    "flex gap-sm-plus items-start w-full rounded-lg text-md py-sm-extra pl-md pr-sm-plus [&_a]:font-semibold [&_a]:underline",
+    "flex gap-sm-plus items-start w-full rounded-lg [&_a]:font-semibold [&_a]:underline",
     {
         variants: {
             type: { info: "", success: "", warning: "", danger: "" },
-            variant: { strong: "", subtle: "" }
+            variant: { strong: "", subtle: "" },
+            size: {
+                md: "text-md py-sm-extra pl-md pr-sm-plus",
+                sm: "text-sm py-xs-plus pr-xs-plus pl-sm-extra"
+            }
         },
         defaultVariants,
         compoundVariants: [
@@ -87,7 +91,8 @@ const AlertActionBase = (props: ButtonProps) => {
 const AlertAction = makeDecoratable("AlertAction", AlertActionBase);
 
 const AlertBase = (props: AlertProps) => {
-    const { className, type, variant, swatchColor, actions, children, ...rootRestProps } = props;
+    const { className, type, variant, size, swatchColor, actions, children, ...rootRestProps } =
+        props;
     const { compileMarkdown } = useAdminUi();
 
     const backgroundColor = useMemo(() => {
@@ -102,7 +107,7 @@ const AlertBase = (props: AlertProps) => {
         <AlertPropsProvider props={props}>
             <div
                 role="alert"
-                className={cn(alertVariants({ type, variant }), className)}
+                className={cn(alertVariants({ type, variant, size }), className)}
                 style={{ backgroundColor }}
                 {...rootRestProps}
             >

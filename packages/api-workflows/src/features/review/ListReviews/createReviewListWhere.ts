@@ -1,14 +1,12 @@
 import type { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import type { ReviewListReadFilter } from "~/domain/review/types.js";
-import {
-    FAILED_STEP_LIST_TYPES,
-    type ReviewListMatchParams
-} from "~/domain/review/matchesReviewList.js";
+import type { ReviewListMatchParams } from "~/domain/review/matchesReviewList.js";
 
 /**
- * The storage pre-filter of a list (R91, A40) with the viewer's read filter (Q77). Pure. The same
- * conditions run again in code (`matchesReviewList`, `matchesReviewReadFilter`) on the primary
- * row, so this only narrows what is examined.
+ * The storage pre-filter of a list (R91, A40) with the viewer's read filter (Q77): the scope and
+ * the state, ANDed (B2 design 1). Pure. The same conditions run again in code
+ * (`matchesReviewList`, `matchesReviewReadFilter`) on the primary row, so this only narrows what
+ * is examined.
  */
 export const createReviewListWhere = (
     params: ReviewListMatchParams,
@@ -31,10 +29,16 @@ export const createReviewListWhere = (
         where.title_contains = titleContains;
     }
 
-    switch (params.list) {
+    const state = params.where.state ?? "all";
+    switch (params.scope) {
         case "assignedToMe":
-            where.currentStepState = "inReview";
-            where.currentOwnerId = params.viewerUserId;
+            if (state === "inReview" || state === "failed") {
+                where.currentOwnerId = params.viewerUserId;
+            } else {
+                // Finished reviews of any step the viewer owned (B9); the current owner is one of
+                // the step owners, so this covers the open ones too.
+                where.stepOwnerId = params.viewerUserId;
+            }
             break;
         case "pool":
             where.currentStepState = "awaiting";
@@ -42,22 +46,44 @@ export const createReviewListWhere = (
             where.requesterId_not = params.viewerUserId;
             break;
         case "teamInReview":
-            where.currentStepState = "inReview";
+            where.hasCurrentOwner = true;
             where.currentOwnerId_not = params.viewerUserId;
             where.currentCandidateTeamIds_in = [...params.viewerTeamIds];
             break;
         case "myRequests":
             where.requesterId = params.viewerUserId;
-            if (params.where.reviewState) {
-                where.state = params.where.reviewState;
-            }
-            if (params.where.stepState) {
-                where.currentStepState = params.where.stepState;
+            break;
+        case "all":
+            // Everyone but `reassign` holders sees only the reviews that involve them (B7).
+            if (!params.viewerCanReassign) {
+                where.involvedUser = {
+                    userId: params.viewerUserId,
+                    teamIds: [...params.viewerTeamIds]
+                };
             }
             break;
-        case "failedSteps":
+    }
+
+    switch (state) {
+        case "all":
+            break;
+        case "inReview":
+            where.state = "inProgress";
+            // The pool's `awaiting` already rules a failed step out.
+            if (where.currentStepState === undefined) {
+                where.currentStepState_not = "failed";
+            }
+            break;
+        case "failed":
+            // Empty-by-definition pairs (pool × failed) never get here (`isEmptyReviewListFilter`).
+            where.state = "inProgress";
             where.currentStepState = "failed";
-            where.currentStepType_in = [...FAILED_STEP_LIST_TYPES];
+            break;
+        case "approved":
+            where.state = "approved";
+            break;
+        case "rejected":
+            where.state = "rejected";
             break;
     }
     return where;

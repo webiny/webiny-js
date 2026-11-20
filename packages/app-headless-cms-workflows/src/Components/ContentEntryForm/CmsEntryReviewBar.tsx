@@ -1,7 +1,6 @@
 import React from "react";
 import { useMemo } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Separator } from "@webiny/admin-ui";
 import { EditorReviewBar } from "@webiny/app-workflows/review/editor/components/EditorReviewBar.js";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
@@ -23,18 +22,21 @@ export const CmsEntryReviewBar = ContentEntryFormContent.createDecorator(Origina
             return <Original {...props} />;
         }
 
+        // The bar sits in the form's column: the same centring, top padding and width as the
+        // form card (`ContentEntryFormContent`), with the form card moved up to the bar's gap.
         return (
             <>
-                <div className={"max-w-screen p-sm"}>
-                    <EditorReviewBar
-                        session={session}
-                        reviewsRoute={Routes.ContentEntries.ContentReviews}
-                        fieldLabels={fieldLabels}
-                        contentTypeLabel={model.name}
-                    />
+                <div className={"flex justify-center pt-xl"}>
+                    <div style={{ width: props.width }}>
+                        <EditorReviewBar
+                            session={session}
+                            reviewsRoute={Routes.ContentEntries.ContentReviews}
+                            fieldLabels={fieldLabels}
+                            contentTypeLabel={model.name}
+                        />
+                    </div>
                 </div>
-                <Separator />
-                <Original {...props} />
+                <Original {...props} className={"pt-md"} />
             </>
         );
     });

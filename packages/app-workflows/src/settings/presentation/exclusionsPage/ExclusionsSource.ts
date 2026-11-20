@@ -8,6 +8,8 @@ export interface ExclusionUserName {
     // The display name, `Deleted user`, or the raw id while unknown.
     label: string;
     state: "found" | "deleted" | "unknown";
+    // The names of the user's teams, sorted; `[]` when the user has none or is not found.
+    teamNames: string[];
 }
 
 // What a dialog hands back after a successful save (R318).

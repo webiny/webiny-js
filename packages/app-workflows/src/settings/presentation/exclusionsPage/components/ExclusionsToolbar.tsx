@@ -1,17 +1,22 @@
 import React from "react";
+import { Button } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Input } from "@webiny/admin-ui";
 import { SegmentedControl } from "@webiny/admin-ui";
-import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
+import { Separator } from "@webiny/admin-ui";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import type { ExclusionTab } from "~/settings/model/list/ExclusionTab.js";
-import type { ExclusionFilterVm } from "../abstractions.js";
 import type { ExclusionTabVm } from "../abstractions.js";
 import type { ExclusionsPagePresenter } from "../abstractions.js";
-import { EXCLUSIONS_FILTER_ANY_LABEL } from "../exclusionsCopy.js";
-import { EXCLUSIONS_FILTER_LABEL } from "../exclusionsCopy.js";
+import { EXCLUSIONS_ADD_LABEL } from "../exclusionsCopy.js";
+import { EXCLUSIONS_SEARCH_LABEL } from "../exclusionsCopy.js";
 
 export interface ExclusionsToolbarProps {
     tab: ExclusionTab;
     tabs: ExclusionTabVm[];
-    filter: ExclusionFilterVm;
+    search: string;
+    canAdd: boolean;
     presenter: ExclusionsPagePresenter.Interface;
 }
 
@@ -21,10 +26,17 @@ interface ExclusionsTabItem {
 }
 
 /*
- * The user filter (no visible label, the group carries the accessible name; the users in the list, searched on the client, R332) and the Active / Expired /
- * All tabs (R322). Both only forward to the presenter.
+ * Search by name (no visible label; it filters the loaded rows on the client) with Add exclusion at
+ * the right of the same row, and the Active / Expired / All tabs on a row of their own (R322,
+ * R329). Search and tabs only forward to the presenter; Add exclusion shows once a list is loaded.
  */
-export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsToolbarProps) => {
+export const ExclusionsToolbar = ({
+    tab,
+    tabs,
+    search,
+    canAdd,
+    presenter
+}: ExclusionsToolbarProps) => {
     const items: ExclusionsTabItem[] = tabs.map(item => {
         return { label: item.label, value: item.id };
     });
@@ -36,31 +48,50 @@ export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsTo
         }
     };
 
+    let add: React.ReactNode = null;
+    if (canAdd) {
+        add = (
+            <Button
+                variant="primary"
+                text={EXCLUSIONS_ADD_LABEL}
+                icon={<AddIcon />}
+                size="sm"
+                onClick={() => presenter.openAdd()}
+            />
+        );
+    }
+
     return (
-        <div data-testid="exclusions-toolbar" className="flex flex-wrap items-center gap-md">
-            <div
-                role="group"
-                aria-label={EXCLUSIONS_FILTER_LABEL}
-                data-role="user-filter"
-                className="w-2xs shrink-0"
-            >
-                <WorkflowPicker
-                    label=""
-                    placeholder={EXCLUSIONS_FILTER_ANY_LABEL}
-                    anyLabel={EXCLUSIONS_FILTER_ANY_LABEL}
-                    anyAsValue={true}
-                    icon={"person"}
-                    value={filter.value}
-                    selected={filter.selected}
-                    options={filter.options}
-                    disabled={false}
-                    error={null}
-                    onSearch={search => presenter.searchUserFilter(search)}
-                    onChange={id => presenter.setUserFilter(id)}
-                />
+        <div data-testid="exclusions-toolbar" className="flex flex-col gap-sm">
+            <div className="flex items-center gap-sm">
+                <div data-role="name-search" className="flex-1">
+                    <Input
+                        aria-label={EXCLUSIONS_SEARCH_LABEL}
+                        placeholder={EXCLUSIONS_SEARCH_LABEL}
+                        value={search}
+                        onChange={value => presenter.setSearch(value)}
+                        size="md"
+                        variant="ghost"
+                        startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+                    />
+                </div>
+                {add}
             </div>
-            <div className="shrink-0">
-                <SegmentedControl items={items} value={tab} onChange={onTabChange} />
+            {/* The filters band (design `wb-list__filters`): full width, under a full-width
+                separator; the page's own side padding is taken back with a negative margin. */}
+            <div className="-mx-lg flex flex-col">
+                <Separator />
+                <div
+                    data-role="exclusions-filters"
+                    className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center gap-sm"
+                >
+                    <SegmentedControl
+                        items={items}
+                        value={tab}
+                        onChange={onTabChange}
+                        variant={"dimmed"}
+                    />
+                </div>
             </div>
         </div>
     );

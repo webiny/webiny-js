@@ -3,6 +3,7 @@ import {
     REVIEW_CANCEL_REASON_CONTENT_TRASHED
 } from "~/domain/review/getDeleteCancelReason.js";
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { PREVIOUS_REVIEWER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface CancelledMessageParams {
     /** `review.title`. */
@@ -29,7 +30,9 @@ export const buildCancelledMessage = (params: CancelledMessageParams): Notificat
             body: `The content was moved to the trash. You no longer need to review ${stepTitle}.`,
             subject,
             text: `The content was moved to the trash, so this review was cancelled. You don’t need to review ${stepTitle} any more.`,
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: PREVIOUS_REVIEWER_FOOTER
         };
     }
     if (reason === REVIEW_CANCEL_REASON_CONTENT_DELETED) {
@@ -38,7 +41,9 @@ export const buildCancelledMessage = (params: CancelledMessageParams): Notificat
             body: `The content was deleted. You no longer need to review ${stepTitle}.`,
             subject,
             text: `The content was deleted, so this review was cancelled. You don’t need to review ${stepTitle} any more.`,
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: PREVIOUS_REVIEWER_FOOTER
         };
     }
     return {
@@ -46,6 +51,8 @@ export const buildCancelledMessage = (params: CancelledMessageParams): Notificat
         body: `Cancelled by ${canceller}. You no longer need to review ${stepTitle}.`,
         subject,
         text: `${canceller} cancelled this review. You don’t need to review ${stepTitle} any more.`,
-        linkLabel: "Open content"
+        linkLabel: "Open content",
+        link: "content",
+        footer: PREVIOUS_REVIEWER_FOOTER
     };
 };

@@ -11,7 +11,6 @@ export interface ReviewerPickerOptionVm {
     label: string;
     value: string;
     disabled: boolean;
-    initials: string;
     // The member's team names, joined; "" when none.
     teams: string;
     // "Current owner" or "Unavailable[: reason]"; null for a selectable person.

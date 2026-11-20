@@ -18,7 +18,7 @@ import { ZAGREB } from "~/settings/testing/exclusionFixtures.js";
 import { createExclusionsPageSetup } from "~/settings/testing/exclusionsPageSetup.js";
 import type { ExclusionsPageSetup } from "~/settings/testing/exclusionsPageSetup.js";
 
-const EVERYONE = "Everyone in reviewing teams can be assigned automatically.";
+const EVERYONE = "Everyone in the reviewing teams can be assigned automatically.";
 
 const createReadyPage = async (
     exclusions: WorkflowExclusion[],
@@ -82,6 +82,31 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         const { presenter } = await createReadyPage(createThree());
 
         expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-ana", "user-ben"]);
+    });
+
+    it("shows the team names of a looked-up user as the row's sub line", async () => {
+        const setup = createExclusionsPageSetup(createThree());
+        setup.listWorkflowUsers.execute.mockImplementation(async params => {
+            const answered = await answerLookup(params);
+            const users = answered.users.map(user => {
+                if (user.id !== "user-ana") {
+                    return user;
+                }
+                return {
+                    ...user,
+                    teams: [
+                        { id: "t1", name: "Editors" },
+                        { id: "t2", name: "Legal" }
+                    ]
+                };
+            });
+            return { ...answered, users };
+        });
+        await setup.presenter.init({ canManage: true, timeZone: ZAGREB });
+
+        const rows = setup.presenter.vm.rows;
+        expect(rows.find(row => row.userId === "user-ana")?.subLine).toBe("Editors, Legal");
+        expect(rows.find(row => row.userId === "user-ben")?.subLine).toBeNull();
     });
 
     it("shows the expired entries on Expired and every entry on All", async () => {
@@ -162,86 +187,18 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         ]);
     });
 
-    it("applies the user filter after the tab", async () => {
-        const { presenter } = await createReadyPage(createThree());
+    it("filters the rows by the display name, ignoring case, after the tab", async () => {
+        const { presenter } = await createNamedPage(createThree());
 
-        presenter.setUserFilter("user-ana");
+        presenter.setSearch("ANA");
+        expect(presenter.vm.search).toBe("ANA");
         expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-ana"]);
 
         presenter.setTab("expired");
         expect(presenter.vm.rows).toEqual([]);
 
-        presenter.setUserFilter(null);
+        presenter.setSearch("");
         expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-cid"]);
-    });
-
-    it("lists the users in the list as filter options, the raw id under a deleted user (R332)", async () => {
-        const { presenter } = await createNamedPage(createThree());
-
-        expect(presenter.vm.filter).toEqual({
-            value: null,
-            selected: null,
-            options: [
-                {
-                    id: "user-ana",
-                    label: "Ana Kovač",
-                    description: null,
-                    warning: null,
-                    muted: false,
-                    disabled: false,
-                    icon: "person",
-                    note: null
-                },
-                {
-                    id: "user-ben",
-                    label: "Ben Babić",
-                    description: null,
-                    warning: null,
-                    muted: false,
-                    disabled: false,
-                    icon: "person",
-                    note: null
-                },
-                {
-                    id: "user-cid",
-                    label: "Deleted user",
-                    description: "user-cid",
-                    warning: null,
-                    muted: true,
-                    disabled: false,
-                    icon: "person_off",
-                    note: null
-                }
-            ]
-        });
-    });
-
-    it("gives a found user's option no description", async () => {
-        const { presenter } = await createReadyPage(createThree());
-        const ana = createWorkflowUserSummary({ id: "user-ana", displayName: "Ana Kovač" });
-
-        presenter.applySaved({
-            settings: { exclusions: createThree() },
-            change: "edit",
-            user: ana
-        });
-
-        const option = presenter.vm.filter.options.find(item => item.id === "user-ana");
-        expect(option?.label).toBe("Ana Kovač");
-        expect(option?.description).toBeNull();
-    });
-
-    it("narrows the filter options by the search and shows the chosen user", async () => {
-        const { presenter } = await createReadyPage(createThree());
-
-        presenter.searchUserFilter("BEN");
-        expect(presenter.vm.filter.options.map(option => option.id)).toEqual(["user-ben"]);
-
-        presenter.setUserFilter("user-ben");
-        expect(presenter.vm.filter.value).toBe("user-ben");
-        expect(presenter.vm.filter.selected?.id).toBe("user-ben");
-        // Choosing clears the search, so every user is listed again.
-        expect(presenter.vm.filter.options).toHaveLength(3);
     });
 
     it("has no empty state while rows show", async () => {
@@ -255,8 +212,9 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
 
         expect(presenter.vm.empty).toEqual({
             title: "No exclusions",
-            text: EVERYONE,
-            showAdd: true
+            text: "Everyone in the reviewing teams can be assigned automatically.",
+            showAdd: true,
+            showClearSearch: false
         });
     });
 
@@ -268,29 +226,33 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         expect(presenter.vm.empty).toEqual({
             title: "No expired exclusions",
             text: "Exclusions move here after their end date.",
-            showAdd: false
+            showAdd: false,
+            showClearSearch: false
         });
     });
 
-    it("shows `No active exclusions` with Add on an empty Active tab", async () => {
+    it("shows `No exclusions` with Add on an empty Active tab (B27)", async () => {
         const { presenter } = await createReadyPage([createCidExclusion()]);
 
         expect(presenter.vm.empty).toEqual({
-            title: "No active exclusions",
+            title: "No exclusions",
             text: EVERYONE,
-            showAdd: true
+            showAdd: true,
+            showClearSearch: false
         });
     });
 
-    it("shows `No exclusions for this user` without Add when a user filter empties the tab", async () => {
-        const { presenter } = await createReadyPage([createCidExclusion()]);
+    it("shows `No one matches` with Clear search and no text when a search empties the tab", async () => {
+        const { presenter } = await createNamedPage(createThree());
 
-        presenter.setUserFilter("user-cid");
+        presenter.setTab("all");
+        presenter.setSearch("zed");
 
         expect(presenter.vm.empty).toEqual({
-            title: "No exclusions for this user",
-            text: EVERYONE,
-            showAdd: false
+            title: "No one matches \u201czed\u201d",
+            text: null,
+            showAdd: false,
+            showClearSearch: true
         });
     });
 });
@@ -299,7 +261,7 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
     it("mutes a deleted user's row and adds the sub line", () => {
         const row = buildExclusionRowVm(
             createAnaExclusion(),
-            { userId: "user-ana", label: "Deleted user", state: "deleted" },
+            { userId: "user-ana", label: "Deleted user", state: "deleted", teamNames: [] },
             EXCLUSIONS_NOW,
             ZAGREB
         );
@@ -311,10 +273,44 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
         expect(row.removeLabel).toBe("Remove exclusion for Deleted user");
     });
 
+    it("shows the team names of a found user as the sub line, and none without teams", () => {
+        const withTeams = buildExclusionRowVm(
+            createBenExclusion(),
+            {
+                userId: "user-ben",
+                label: "Ben Babić",
+                state: "found",
+                teamNames: ["Editors", "Legal"]
+            },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+        const withoutTeams = buildExclusionRowVm(
+            createBenExclusion(),
+            { userId: "user-ben", label: "Ben Babić", state: "found", teamNames: [] },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+
+        expect(withTeams.subLine).toBe("Editors, Legal");
+        expect(withoutTeams.subLine).toBeNull();
+    });
+
+    it("keeps the deleted note for a deleted user", () => {
+        const row = buildExclusionRowVm(
+            createAnaExclusion(),
+            { userId: "user-ana", label: "Deleted user", state: "deleted", teamNames: ["Legal"] },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+
+        expect(row.subLine).toBe("This user no longer exists");
+    });
+
     it("names a found user", () => {
         const row = buildExclusionRowVm(
             createBenExclusion(),
-            { userId: "user-ben", label: "Ben Babić", state: "found" },
+            { userId: "user-ben", label: "Ben Babić", state: "found", teamNames: [] },
             EXCLUSIONS_NOW,
             ZAGREB
         );

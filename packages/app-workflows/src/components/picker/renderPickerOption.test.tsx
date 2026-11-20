@@ -13,15 +13,16 @@ const renderOption = (option: PickerOption) => {
     return renderWithAdminUi(<>{renderPickerOption(option)}</>);
 };
 
+// The renderer shows the icon the option carries; person and team options carry none (design Picker).
 const ICON_NAMES: PickerOptionIcon[] = [
-    "person",
     "person_off",
-    "group",
     "group_off",
-    "groups",
     "folder",
     "folder_open",
-    "lock"
+    "lock",
+    "person",
+    "group",
+    "groups"
 ];
 
 describe("renderPickerOption (R307)", () => {
@@ -107,18 +108,18 @@ describe("renderPickerOption (R307)", () => {
         expect(row?.textContent).toBe("Ivan HorvatIn the list");
     });
 
-    it("keeps the note next to the icon column for a row marked disabled", () => {
+    it("keeps the note on a person row marked disabled, without an icon", () => {
         renderOption(
             createPickerOption({
                 label: "Ivan Horvat",
                 disabled: true,
-                icon: "person",
+                icon: null,
                 note: "In the list"
             })
         );
 
         expect(screen.getByText("In the list")).toBeTruthy();
         expect(screen.getByText("Ivan Horvat")).toBeTruthy();
-        expect(document.querySelector('[data-picker-icon="person"]')).not.toBeNull();
+        expect(document.querySelector("[data-picker-icon]")).toBeNull();
     });
 });

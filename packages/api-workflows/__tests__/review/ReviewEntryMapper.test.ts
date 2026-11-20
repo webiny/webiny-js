@@ -6,6 +6,7 @@ import {
     type ReviewEntryValues
 } from "~/features/review/shared/ReviewEntryMapper.js";
 import type { ReviewStepRun } from "~/domain/review/types.js";
+import { createReviewTitleSortKey } from "~/features/review/shared/createReviewTitleSortKey.js";
 import { createAiIssue } from "~tests/__helpers/fixtures.js";
 import { createRequestedReview } from "~tests/__helpers/fixtures.js";
 import { NOW } from "~tests/__helpers/fixtures.js";
@@ -54,6 +55,34 @@ describe("ReviewEntryMapper step run data (R139)", () => {
         expect(read.steps[0].taskId).toBe("task-2");
         expect(read.steps[0].runs).toEqual(runs);
         expect(read.steps[1]).toMatchObject({ taskId: null, runs: [] });
+    });
+
+    it("writes the title sort key and never reads it back (B2 design 2)", () => {
+        const data = toSaveData(createRequestedReview());
+        data.title = "  Spring LAUNCH ";
+
+        const values = ReviewEntryMapper.toValues(data);
+        const read = ReviewEntryMapper.fromEntry(toEntry(values));
+        const legacy = ReviewEntryMapper.fromEntry(toEntry({ ...values, titleSortKey: undefined }));
+
+        expect(values.titleSortKey).toBe(Buffer.from("spring launch").toString("hex"));
+        expect(read).not.toHaveProperty("titleSortKey");
+        expect(legacy.title).toBe("  Spring LAUNCH ");
+    });
+
+    it("keeps the title sort key one short term, in code point order", () => {
+        const long = createReviewTitleSortKey("é".repeat(200));
+
+        expect(long).toHaveLength(200);
+        expect(long).toMatch(/^[0-9a-f]+$/);
+        expect(createReviewTitleSortKey(" Ápple ")).toBe(createReviewTitleSortKey("ápple"));
+        expect(createReviewTitleSortKey("alpha") < createReviewTitleSortKey("alpha beta")).toBe(
+            true
+        );
+        expect(createReviewTitleSortKey("alpha beta") < createReviewTitleSortKey("Beta")).toBe(
+            true
+        );
+        expect(createReviewTitleSortKey("zebra") < createReviewTitleSortKey("ápple")).toBe(true);
     });
 
     it("reads steps stored without the fields as no task and no runs (no migration)", () => {
@@ -242,5 +271,37 @@ describe("ReviewEntryMapper cancelledBy (R252, A91)", () => {
         data.cancelledBy.displayName = "Changed after mapping.";
 
         expect(values.cancelledBy?.displayName).toBe("Rita Requester");
+    });
+});
+
+describe("ReviewEntryMapper target context content type name (B2 design 10)", () => {
+    it("maps the content type name both ways", () => {
+        const values = ReviewEntryMapper.toValues(toSaveData(createRequestedReview()));
+
+        expect(values.targetContext?.contentTypeName).toBe("Article");
+        expect(ReviewEntryMapper.fromEntry(toEntry(values)).targetContext.contentTypeName).toBe(
+            "Article"
+        );
+    });
+
+    it("reads an entry stored without the field, with null or with an empty name as null (no migration)", () => {
+        const values = ReviewEntryMapper.toValues(toSaveData(createRequestedReview()));
+        const context = values.targetContext;
+        if (!context) {
+            throw new Error("The mapper wrote no target context.");
+        }
+        const absent: ReviewEntryValues = { ...values, targetContext: { ...context } };
+        delete absent.targetContext?.contentTypeName;
+        const stored = [
+            absent,
+            { ...values, targetContext: { ...context, contentTypeName: null } },
+            { ...values, targetContext: { ...context, contentTypeName: "" } }
+        ];
+
+        for (const item of stored) {
+            expect(ReviewEntryMapper.fromEntry(toEntry(item)).targetContext.contentTypeName).toBe(
+                null
+            );
+        }
     });
 });

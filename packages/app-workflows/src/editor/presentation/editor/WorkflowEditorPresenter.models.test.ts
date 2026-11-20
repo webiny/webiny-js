@@ -71,6 +71,7 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
         expect(listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "arti",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -144,6 +145,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: "c1"
         });
@@ -171,6 +173,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
             app: "cms",
             search: "x",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -241,7 +244,9 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
 
         expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-2" });
         expect(presenter.vm.header?.name).toBe("Press approval");
-        expect(presenter.vm.header?.appliesTo).toBe("Applies to Press · Headless CMS model");
+        expect(presenter.vm.header?.appliesTo).toBe(
+            "Applies to Press (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
+        );
         expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
         expect(presenter.vm.dialog).toBeNull();
     });

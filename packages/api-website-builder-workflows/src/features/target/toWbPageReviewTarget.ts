@@ -1,6 +1,6 @@
 import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
 import type { ReviewTarget } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
-import { WB_PAGE_FOLDER_TYPE } from "~/constants.js";
+import { WB_PAGE_CONTENT_TYPE_NAME, WB_PAGE_FOLDER_TYPE } from "~/constants.js";
 import type { WbPageTargetReader } from "./WbPageTargetReader/index.js";
 
 /** Title and typed `TargetContext` of a page revision (spec 9.3, R66). Pure. */
@@ -17,6 +17,8 @@ export const toWbPageReviewTarget = (target: WbPageTargetReader.Target): ReviewT
                     : null,
             modelId: model.modelId,
             title,
+            // Snapshotted for notifications: pages have one content type.
+            contentTypeName: WB_PAGE_CONTENT_TYPE_NAME,
             author: { id: page.createdBy.id, displayName: page.createdBy.displayName }
         }
     };

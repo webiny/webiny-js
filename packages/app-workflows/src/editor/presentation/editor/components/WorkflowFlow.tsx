@@ -7,6 +7,7 @@ import { Accordion } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
@@ -35,7 +36,9 @@ interface MoveRequest {
 const handledScrollRequests = new WeakSet<ScrollRequestVm>();
 
 /*
- * The step list (design README 3, UI-11): one accordion item per step, then one Add step button.
+ * The step list (design README 3, UI-11): a heading, one accordion item per step, then one Add new
+ * step button and the note that changes apply to new reviews only. A "+" next to each step adds a
+ * step after it.
  * Steps reorder by drag (`SortablePresenter`, one instance per flow) or by the items' up and down
  * actions. A new `scrollRequest` scrolls its item into view (R276).
  */
@@ -106,18 +109,18 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
         setAnnouncement(`Step moved to position ${index + 1} of ${steps.length}.`);
 
         const step = steps[index];
-        let label = "Move down";
+        let role = "move-down";
         if (request.direction === "up") {
-            label = "Move up";
+            role = "move-up";
         }
         const blocked = request.direction === "up" ? !step.canMoveUp : !step.canMoveDown;
         if (blocked) {
-            label = label === "Move up" ? "Move down" : "Move up";
+            role = role === "move-up" ? "move-down" : "move-up";
         }
         const cards = rootRef.current.querySelectorAll("[data-step-id]");
         for (const card of Array.from(cards)) {
             if (card.getAttribute("data-step-id") === request.stepId) {
-                const button = card.querySelector<HTMLElement>(`[aria-label="${label}"]`);
+                const button = card.querySelector<HTMLElement>(`[data-role="${role}"]`);
                 button?.focus();
                 return;
             }
@@ -147,12 +150,19 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
 
     const addStep = (
         <Button
-            variant="primary"
-            text="Add step"
+            variant="secondary"
+            size="sm"
+            text="Add new step"
             icon={<AddIcon />}
             disabled={disabled}
             onClick={() => props.onAddStep(steps.length)}
         />
+    );
+
+    const changesNote = (
+        <Text as="div" size="sm" className="text-center text-neutral-strong">
+            Changes apply to new review requests; reviews already running are not affected.
+        </Text>
     );
 
     if (steps.length === 0) {
@@ -168,7 +178,7 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
             <div
                 ref={rootRef}
                 data-role="flow-column"
-                className="mx-auto flex w-full max-w-2xl flex-col gap-md"
+                className="flex w-full flex-col gap-sm-extra"
             >
                 {error}
                 <EmptyState
@@ -177,34 +187,47 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
                     description={`Add the first step: who or what reviews ${flow.modelName} content before it can be published.`}
                     actions={addStep}
                 />
+                {changesNote}
             </div>
         );
     }
 
     return (
-        <div
-            ref={rootRef}
-            data-role="flow-column"
-            className="mx-auto flex w-full max-w-2xl flex-col gap-md"
-        >
+        <div ref={rootRef} data-role="flow-column" className="flex w-full flex-col gap-sm-extra">
             <div role="status" aria-live="polite" className="sr-only">
                 {announcement}
             </div>
-            <Accordion variant="container">
+            <Text
+                as="div"
+                size="md"
+                role="heading"
+                aria-level={5}
+                className="text-center text-neutral-strong"
+            >
+                Workflow steps
+            </Text>
+            {/* The items take the opposite of the accordion's background: the default "light" gives them
+                the "base" (white) one. `border="accent"` draws their border. */}
+            <Accordion variant="container" border="accent">
                 {steps.map((step, index) => (
                     <StepCard
                         key={step.id}
                         step={step}
                         index={index}
+                        total={steps.length}
                         sortable={sortable.getItemProps(index)}
                         disabled={disabled}
                         onEdit={props.onEditStep}
+                        onAddAfter={afterIndex => props.onAddStep(afterIndex + 1)}
                         onMove={handleMove}
                         onDelete={props.onDeleteStep}
                     />
                 ))}
             </Accordion>
-            <div className="flex">{addStep}</div>
+            <div data-role="flow-footer" className="flex flex-col items-center gap-sm pt-xs">
+                {addStep}
+                {changesNote}
+            </div>
         </div>
     );
 });

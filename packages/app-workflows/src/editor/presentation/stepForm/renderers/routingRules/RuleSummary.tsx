@@ -8,7 +8,12 @@ export interface RuleSummaryProps {
 // The readable summary of a rule (design `ruleSummary`, R313).
 export const RuleSummary = ({ text }: RuleSummaryProps) => {
     return (
-        <Text as={"div"} size={"sm"} data-testid={"rule-summary"}>
+        <Text
+            as={"div"}
+            size={"sm"}
+            data-testid={"rule-summary"}
+            className={"rounded-md bg-neutral-light p-sm"}
+        >
             {text}
         </Text>
     );

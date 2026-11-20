@@ -7,12 +7,9 @@ import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
-import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { StepDrawerBanners } from "./StepDrawerBanners.js";
 import type { StepDrawerBannersProps } from "./StepDrawerBanners.js";
-
-const LEGAL_LINE: StepWarningLine = { text: "Legal has no members.", severity: "warning" };
 
 const createProps = (overrides: Partial<StepDrawerBannersProps> = {}): StepDrawerBannersProps => {
     return {
@@ -20,7 +17,6 @@ const createProps = (overrides: Partial<StepDrawerBannersProps> = {}): StepDrawe
         notice: null,
         topError: null,
         errorTab: null,
-        warnings: [],
         activeTabId: "general",
         onShowErrorTab: vi.fn(),
         ...overrides
@@ -93,48 +89,11 @@ describe("StepDrawerBanners (R302, R309, R312)", () => {
         expect(screen.queryByText(/This step has an error/)).toBeNull();
     });
 
-    it("lists the warnings under the heading Check this step", () => {
-        const warnings: StepWarningLine[] = [
-            { text: "Legal has no members.", severity: "warning" },
-            { text: "Rule 2: The folder no longer exists.", severity: "warning" }
-        ];
-        renderWithAdminUi(<StepDrawerBanners {...createProps({ warnings })} />);
-
-        expect(screen.getByText("Check this step")).toBeTruthy();
-        expect(screen.getByText("Legal has no members.")).toBeTruthy();
-        expect(screen.getByText("Rule 2: The folder no longer exists.")).toBeTruthy();
-        expect(screen.getAllByRole("listitem")).toHaveLength(2);
-    });
-
-    it("marks an error line by severity and renders it as an error message", () => {
-        const warnings: StepWarningLine[] = [
-            { text: "Rule 1: The assigned user was deleted.", severity: "error" },
-            { text: "Rule 2: The folder no longer exists.", severity: "warning" }
-        ];
-        renderWithAdminUi(<StepDrawerBanners {...createProps({ warnings })} />);
-
-        const error = screen.getByText("Rule 1: The assigned user was deleted.");
-        const warning = screen.getByText("Rule 2: The folder no longer exists.");
-        expect(error.closest("li")?.getAttribute("data-severity")).toBe("error");
-        expect(warning.closest("li")?.getAttribute("data-severity")).toBe("warning");
-        // The error line is the admin-ui error message (a div inside the item), the warning is bare text.
-        expect(error.tagName).toBe("DIV");
-        expect(warning.tagName).toBe("LI");
-    });
-
-    it("hides the warnings block on the Test routing tab", () => {
-        const props = createProps({ warnings: [LEGAL_LINE], activeTabId: "testRouting" });
-        renderWithAdminUi(<StepDrawerBanners {...props} />);
+    it("has no Check this step block (B23)", () => {
+        renderWithAdminUi(<StepDrawerBanners {...createProps({ activeTabId: null })} />);
 
         expect(screen.queryByText("Check this step")).toBeNull();
-        expect(screen.queryByText("Legal has no members.")).toBeNull();
-    });
-
-    it("shows the warnings block when the form has no tabs", () => {
-        const props = createProps({ warnings: [LEGAL_LINE], activeTabId: null });
-        renderWithAdminUi(<StepDrawerBanners {...props} />);
-
-        expect(screen.getByText("Check this step")).toBeTruthy();
+        expect(screen.queryByRole("listitem")).toBeNull();
     });
 
     it("shows the notice, the top error and the licence alert", () => {

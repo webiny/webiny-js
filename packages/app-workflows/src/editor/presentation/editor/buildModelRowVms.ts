@@ -8,6 +8,7 @@ export interface ModelRowsParams {
     draftIsNew: boolean;
     draftDirty: boolean;
     draftStepCount: number;
+    actionsDisabled: boolean;
 }
 
 function getSubLine(row: WorkflowModelRow, active: boolean, params: ModelRowsParams): string {
@@ -36,7 +37,8 @@ export const buildModelRowVms = (params: ModelRowsParams): ModelRowVm[] => {
             subLine: getSubLine(row, active, params),
             bound: row.workflow !== null,
             unsaved: active && params.draftDirty,
-            active
+            active,
+            actionsDisabled: params.actionsDisabled
         };
     });
 };

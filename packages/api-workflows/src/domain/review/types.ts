@@ -1,6 +1,7 @@
 import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 import type { WorkflowStep } from "~/domain/workflow/types.js";
 import type { AssignmentDecision, AssignmentSource } from "~/domain/assignment/types.js";
+import type { ReviewListState } from "./ReviewListState.js";
 
 export type ReviewState = "inProgress" | "approved" | "rejected" | "cancelled";
 
@@ -91,6 +92,11 @@ export interface TargetContext {
     folder: TargetContextFolder | null;
     modelId: string;
     title: string;
+    /**
+     * The content type's name when the review was requested ("Article"; "Page" for Website
+     * Builder pages), shown in notifications. `null` for reviews requested before it was kept.
+     */
+    contentTypeName: string | null;
     author: TargetContextAuthor;
 }
 
@@ -108,8 +114,8 @@ export interface ReviewData {
     currentStepId: string | null;
     currentStepState: StepState | null;
     /**
-     * Type of the current step, e.g. "review", "ai" or "automation" (D112): the failed steps list
-     * filters on it. `null` when there is no current step (before the first save, after cancel).
+     * Type of the current step, e.g. "review", "ai" or "automation" (D112). `null` when there is
+     * no current step (before the first save, after cancel).
      */
     currentStepType: string | null;
     /** Only for `user` owners (D74). */
@@ -203,25 +209,22 @@ export interface ReviewWithViewerFlags {
     flags: ReviewViewerFlags;
 }
 
-/** The review lists of every app (spec 11, D47, D94, D112). */
-export type ReviewListKind =
-    | "assignedToMe"
-    | "pool"
-    | "teamInReview"
-    | "myRequests"
-    | "failedSteps";
-
-/** Lists sort by the last review event (D119). */
-export type ReviewListSort = "lastChangedOn_ASC" | "lastChangedOn_DESC";
+/**
+ * Lists sort by the last review event (D119) or by title (B2 design 2). Title sorts compare the
+ * trimmed, lower-cased title.
+ */
+export type ReviewListSort =
+    | "lastChangedOn_ASC"
+    | "lastChangedOn_DESC"
+    | "title_ASC"
+    | "title_DESC";
 
 /** List filters. The namespace filter is the app wrapper's `models` input (R91, R94). */
 export interface ReviewListWhere {
     /** Every word of it appears in the title, case-insensitive. */
     titleContains?: string | null;
-    /** Only `myRequests` (D94); other lists fail with `ReviewValidationError`. */
-    reviewState?: ReviewState | null;
-    /** Only `myRequests` (D94); other lists fail with `ReviewValidationError`. */
-    stepState?: StepState | null;
+    /** Default `all`; applies to every scope (B2 design 1). */
+    state?: ReviewListState | null;
 }
 
 /**

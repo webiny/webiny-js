@@ -14,7 +14,7 @@ import type { ListedModel } from "./abstractions.js";
 import { CmsContentReviewsPresenterFeature } from "./feature.js";
 
 const FAILURE = {
-    title: "Could not load the content types",
+    title: "Could not load the content models",
     description: "Content Reviews will not update live. Reload the page to try again."
 };
 

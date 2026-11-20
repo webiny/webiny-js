@@ -223,6 +223,27 @@ export const WithTabs: Story = {
     }
 };
 
+export const WithHeaderTabs: Story = {
+    name: "With header tabs",
+    args: {
+        ...Default.args,
+        bodyPadding: false,
+        headerSeparator: true,
+        headerExtra: (
+            <Tabs
+                separator={true}
+                spacing={"lg"}
+                tabs={[
+                    <Tabs.Tab key="account" value="account" trigger={"Account"} content={null} />,
+                    <Tabs.Tab key="company" value="company" trigger={"Company"} content={null} />,
+                    <Tabs.Tab key="security" value="security" trigger={"Security"} content={null} />
+                ]}
+            />
+        ),
+        children: <div className={"px-lg"}>The tab list lives in the header, above the body.</div>
+    }
+};
+
 export const DropdownMenuInDrawer: Story = {
     args: {
         ...Default.args,

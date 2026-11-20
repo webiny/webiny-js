@@ -1,7 +1,7 @@
 import type { ReviewStep } from "~/review/domain/types.js";
 import { formatTimeOfDay } from "~/review/presentation/time/formatTimeOfDay.js";
 
-const RESTART_NOTE = "Restarting runs the step again from the beginning.";
+const RESTART_NOTE = "Restarting runs the step again from the start.";
 
 /*
  * The body of the restart dialog (R266, R264): the end of the last attempt (the step's

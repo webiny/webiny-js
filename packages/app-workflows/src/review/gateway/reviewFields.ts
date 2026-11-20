@@ -161,6 +161,10 @@ export const WORKFLOW_FIELDS = /* GraphQL */ `
         description
         type
         config
+        candidateTeams {
+            id
+            name
+        }
     }
 `;
 

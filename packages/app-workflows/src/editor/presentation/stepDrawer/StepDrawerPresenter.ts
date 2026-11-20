@@ -191,7 +191,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             kind: this.kind,
             typeLabel,
             title,
-            subtitle: `${typeLabel} step · the type can't be changed`,
+            subtitle: `${typeLabel} step · the type can’t be changed`,
             footerText: STEP_DRAWER_MESSAGES.footerText,
             doneLabel: STEP_DRAWER_MESSAGES.done,
             readOnly,

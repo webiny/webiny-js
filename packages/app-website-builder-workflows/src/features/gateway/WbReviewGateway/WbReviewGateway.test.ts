@@ -11,8 +11,6 @@ import { REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS } from "@webiny/app-workflows/r
 import { REVIEW_WITH_FLAGS_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { STEP_CANDIDATE_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { WORKFLOW_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
-import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
 import { ReviewAppGateway as GatewayAbstraction } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import { WbReviewGateway } from "./WbReviewGateway.js";
 
@@ -56,6 +54,7 @@ describe("WbReviewGateway", () => {
         expect(request.query).toContain("websiteBuilder");
         expect(request.query).toContain("listWebsiteBuilderPageWorkflows");
         expect(request.query).toContain(WORKFLOW_FIELDS);
+        expect(request.query).toContain("candidateTeams");
     });
 
     it("reads the target review by revision id", async () => {
@@ -146,14 +145,13 @@ describe("WbReviewGateway", () => {
         });
 
         const result = await gateway.listReviews({
-            list: "myRequests",
+            scope: "myRequests",
             where: {
                 modelId: "article",
                 titleContains: "launch",
-                reviewState: ReviewState.Approved,
-                stepState: StepState.Approved
+                state: "approved"
             },
-            sort: "lastChangedOn_DESC",
+            sort: "title_ASC",
             limit: 20,
             after: "cursor-1"
         });
@@ -161,13 +159,12 @@ describe("WbReviewGateway", () => {
         expect(result).toEqual(envelope);
         const request = client.execute.mock.calls[0][0];
         expect(request.variables).toEqual({
-            list: "myRequests",
+            scope: "myRequests",
             where: {
                 titleContains: "launch",
-                reviewState: ReviewState.Approved,
-                stepState: StepState.Approved
+                state: "approved"
             },
-            sort: "lastChangedOn_DESC",
+            sort: "title_ASC",
             limit: 20,
             after: "cursor-1"
         });

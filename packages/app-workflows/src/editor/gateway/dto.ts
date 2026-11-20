@@ -80,12 +80,19 @@ export interface AutomationDefinitionDto {
     models: string[];
     // JSON schema of the settings; `null` when the automation has none.
     settingsSchema: unknown;
+    keySetting: string | null;
+}
+
+export interface WorkflowUserTeamDto {
+    id: string;
+    name: string;
 }
 
 export interface WorkflowUserDto {
     id: string;
     displayName: string;
     teamIds: string[];
+    teams?: WorkflowUserTeamDto[] | null;
 }
 
 export interface WorkflowUserListDto {

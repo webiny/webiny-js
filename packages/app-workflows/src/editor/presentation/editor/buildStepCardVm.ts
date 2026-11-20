@@ -1,5 +1,6 @@
 import { FALLBACK_STEP_COLOUR } from "~/editor/domain/stepColours.js";
 import type { EditorStep } from "~/editor/domain/types.js";
+import type { StepDetailRow } from "~/editor/model/StepDetailRow.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepCardVm } from "./abstractions.js";
@@ -14,6 +15,7 @@ export interface StepCardParams {
     count: number;
     typeLabel: string;
     summary: string;
+    details: StepDetailRow[];
     warnings: StepWarningLine[];
     errors: StepFieldError[];
     // The step's rule ids in order, to number a rule error (R303).
@@ -52,6 +54,7 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
         typeLabel: params.typeLabel,
         type: step.type,
         summary: params.summary,
+        details: params.details,
         description: description,
         readOnly: params.readOnly,
         warnings: omitShownError(params.warnings, shown),

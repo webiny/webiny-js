@@ -38,7 +38,7 @@ export const createFakeExclusionsSource = (
         if (known !== undefined) {
             return known;
         }
-        return { userId, label: userId, state: "unknown" };
+        return { userId, label: userId, state: "unknown", teamNames: [] };
     };
 
     return {

@@ -4,7 +4,7 @@ import { it } from "vitest";
 import { getModelDeleteWorkflowCopy } from "./getModelDeleteWorkflowCopy.js";
 
 describe("getModelDeleteWorkflowCopy (UI-18, QBZ-38)", () => {
-    it("tells someone with Manage workflows to delete the workflow, with the link", () => {
+    it("tells someone with Manage workflows to delete the workflow, in one sentence with the link", () => {
         expect(
             getModelDeleteWorkflowCopy({
                 modelName: "Article",
@@ -12,8 +12,8 @@ describe("getModelDeleteWorkflowCopy (UI-18, QBZ-38)", () => {
                 canManage: true
             })
         ).toEqual({
-            title: "Article has a workflow",
-            body: "Delete the workflow “Article review” first, then delete the model.",
+            title: null,
+            body: "Article has a workflow. Delete the workflow “Article review” first, then delete the model.",
             showLink: true
         });
     });

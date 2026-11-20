@@ -7,6 +7,7 @@ import { Dialog } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
+import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
 import type { ReviewActionDialogPresenter } from "../abstractions.js";
 
 export interface ReviewActionDialogProps {
@@ -21,10 +22,16 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
     const { vm } = presenter;
     const collapsed = vm.conflict !== null || vm.status === "failed";
 
+    let confirmIcon: React.ReactElement | undefined = undefined;
+    if (vm.confirmIcon !== null) {
+        const ConfirmIcon = REVIEW_ACTION_ICONS[vm.confirmIcon];
+        confirmIcon = <ConfirmIcon />;
+    }
+
     let actions = (
         <>
             <Button
-                variant={"tertiary"}
+                variant={"secondary"}
                 text={vm.cancelLabel}
                 onClick={() => presenter.dismiss()}
             />
@@ -32,6 +39,7 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
             <Button
                 variant={vm.confirmVariant}
                 text={vm.confirmLabel}
+                icon={confirmIcon}
                 disabled={!vm.canSubmit}
                 onClick={() => presenter.submit()}
             />
@@ -46,12 +54,12 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
     const errorMessage = vm.fieldError ?? vm.commentError;
     const validation = { isValid: errorMessage === null, message: errorMessage ?? undefined };
 
-    // The reject hint sits beside the live counter (design: hint left, counter right).
+    // The live counter sits at the left under the field, after the reject hint when there is one.
     let note: React.ReactNode = vm.commentNote;
     if (vm.commentCounter !== null) {
         note = (
-            <div className={"flex justify-between"}>
-                <span>{vm.commentNote}</span>
+            <div className={"flex flex-wrap gap-sm"}>
+                {vm.commentNote ? <span>{vm.commentNote}</span> : null}
                 <span>{vm.commentCounter}</span>
             </div>
         );
@@ -66,6 +74,7 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                 }
             }}
             title={vm.title}
+            description={vm.description ?? undefined}
             loading={vm.status === "loading" || vm.submitting}
             actions={actions}
         >
@@ -83,10 +92,15 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                         {vm.dialogError}
                     </Alert>
                 )}
-                {vm.body ? <Text size={"md"}>{vm.body}</Text> : null}
+                {vm.body ? (
+                    <Text size={"md"} className={"text-neutral-strong"}>
+                        {vm.body}
+                    </Text>
+                ) : null}
                 {vm.showComment && (
                     <Textarea
                         label={vm.commentLabel}
+                        description={vm.commentDescription ?? undefined}
                         required={vm.commentRequired}
                         placeholder={vm.commentPlaceholder}
                         note={note}

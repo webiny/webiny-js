@@ -38,6 +38,32 @@ describe("RadioGroupPresenter", () => {
         }
     });
 
+    it("should pass the item `description` through to the `vm`", () => {
+        const presenter = new RadioGroupPresenter();
+        presenter.init({
+            items: [
+                { value: "value-1", label: "Value 1", description: "Described" },
+                { value: "value-2", label: "Value 2" }
+            ]
+        });
+        expect(presenter.vm.items).toEqual([
+            {
+                id: expect.any(String),
+                value: "value-1",
+                label: "Value 1",
+                disabled: false,
+                description: "Described"
+            },
+            {
+                id: expect.any(String),
+                value: "value-2",
+                label: "Value 2",
+                disabled: false,
+                description: undefined
+            }
+        ]);
+    });
+
     it("should call `onValueChange` callback when `changeValue` is called", () => {
         const presenter = new RadioGroupPresenter();
         presenter.init({
