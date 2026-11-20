@@ -13,7 +13,6 @@ import { CmsReviewMoveEntryAction } from "~/Components/CmsEntriesList/CmsReviewM
 import { CmsReviewScheduleEntryAction } from "~/Components/CmsEntriesList/CmsReviewScheduleEntryAction.js";
 import { CmsReviewPublishEntryAction } from "~/Components/CmsEntriesList/CmsReviewPublishEntryAction.js";
 import { CmsReviewBulkPublishAction } from "~/Components/CmsEntriesList/CmsReviewBulkPublishAction.js";
-import { CmsModelWorkflowFeature } from "~/presentation/modelWorkflow/feature.js";
 import { CmsEntryFormFieldLockFeature } from "~/features/formFieldLock/feature.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
@@ -41,7 +40,6 @@ export const CmsWorkflows = () => {
             <RegisterFeature feature={CmsWorkflowEditorMountingFeature} />
             <RegisterFeature feature={CmsEntryReviewFeature} />
             <RegisterFeature feature={CmsReviewTrashFeature} />
-            <RegisterFeature feature={CmsModelWorkflowFeature} />
             <RegisterFeature feature={CmsEntryFormFieldLockFeature} />
             <CmsContentReviews />
             <CmsContentReviewsSidebarItem />

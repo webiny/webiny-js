@@ -1444,3 +1444,13 @@ The footer for the requester is "You get this e-mail because you requested this 
 The Home widget pairs ("For me to review", "Requested by me") show for each app the user can access, also when the app has no workflow; they are then empty. Website Builder's pair needs page read access. No workflow-existence check is made, because dashboard widgets mounted after the first render are not registered (`Compose` in `packages/react-composition`), and `Compose` is not changed. Workflows as a whole show only with the licence feature on.
 
 **Keeps** D199 (per-app lists and widgets). Designer question B30 ("a pair only for an app with at least one workflow") was not built by decision. Decided 2026-11-20 (user).
+
+**D221. A publish can be scheduled only when it could be published now.** (User, 2026-11-20.) A scheduled
+publish of a CMS entry or a page is refused by the API (`Workflows/Review/PublishBlocked`) unless the
+review of that revision is approved or the app has no workflow; a scheduled unpublish is not affected.
+Before, the schedule was accepted, the publish was refused at the due time and the scheduled action
+stayed listed. A decorator on the scheduler's `ScheduleActionUseCase` in each app's workflows package
+does it; the publish hooks and the decorators share `ApprovedReviewPublishRule`. In the admin the
+Schedule item is hidden when a publish would be refused (R226) and a published row keeps it for
+unpublish; the row and bulk Publish of both lists are disabled with the reason. The bound-workflow
+lookup of the lists (`BoundWorkflowPresenter`) and the row rules live in `app-workflows` for both apps.

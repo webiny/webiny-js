@@ -1,18 +1,19 @@
-import { getEditorRules } from "@webiny/app-workflows/review/presentation/targetReview/getEditorRules.js";
-import type { TargetReviewKind } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import type { TargetReviewStatus } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import type { ReviewStateValue } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import type { CmsModelWorkflowPresenter } from "~/presentation/modelWorkflow/abstractions.js";
+import { getEditorRules } from "~/review/presentation/targetReview/getEditorRules.js";
+import type { TargetReviewKind } from "~/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewStatus } from "~/review/presentation/targetReview/abstractions.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
+import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
+import type { BoundWorkflowPresenter } from "~/review/presentation/boundWorkflow/abstractions.js";
 
 export interface RowPublishDisabledReasonParams {
-    workflowStatus: CmsModelWorkflowPresenter.Status;
-    // `meta.system.workflow.reviewState` of the row: `null` for no review or a cancelled one.
+    workflowStatus: BoundWorkflowPresenter.Status;
+    // The row's `system.workflow.reviewState`: `null` for no review.
     reviewState: ReviewStateValue | null;
     // The revision was published before and is not published now.
     isUnpublished: boolean;
 }
 
+// A cancelled review is no review (D75).
 const toReviewKind = (reviewState: ReviewStateValue | null): TargetReviewKind => {
     if (reviewState === ReviewState.InProgress) {
         return "inProgress";
@@ -43,9 +44,10 @@ const toStatus = (params: RowPublishDisabledReasonParams): TargetReviewStatus =>
 };
 
 /*
- * Why a list row may not be published, by the editor's own rules (`getEditorRules`), from what the
- * list already has: the row's review state and whether its model is bound to a workflow. `null`
- * means publishing is allowed. Pure.
+ * Why a content list row may not be published, by the editor's own rules (`getEditorRules`), from
+ * what the list already has: the row's review state and whether its namespace is bound to a
+ * workflow. `null` means publishing is allowed. Shared by the Headless CMS and Website Builder
+ * lists. Pure.
  */
 export const getRowPublishDisabledReason = (
     params: RowPublishDisabledReasonParams

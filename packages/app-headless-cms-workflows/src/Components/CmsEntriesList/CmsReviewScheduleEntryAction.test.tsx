@@ -18,7 +18,7 @@ import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js"
 import type { ReviewStateValue } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import type { ReviewWorkflow } from "@webiny/app-workflows/review/domain/types.js";
 import { GetBoundWorkflowUseCase } from "@webiny/app-workflows/review/useCases/getBoundWorkflow/abstractions.js";
-import { CmsModelWorkflowFeature } from "~/presentation/modelWorkflow/feature.js";
+import { BoundWorkflowFeature } from "@webiny/app-workflows/review/presentation/boundWorkflow/feature.js";
 import { CmsReviewScheduleEntryAction } from "./CmsReviewScheduleEntryAction.js";
 import { MODEL } from "~/testing/models.js";
 
@@ -65,7 +65,7 @@ function renderActions(entry: CmsContentEntry, workflow: ReviewWorkflow | null) 
     const execute = vi.fn<GetBoundWorkflowUseCase.Interface["execute"]>();
     execute.mockResolvedValue(workflow);
     container.registerInstance(GetBoundWorkflowUseCase, { execute });
-    CmsModelWorkflowFeature.register(container);
+    BoundWorkflowFeature.register(container);
 
     render(
         <AdminUiProvider>

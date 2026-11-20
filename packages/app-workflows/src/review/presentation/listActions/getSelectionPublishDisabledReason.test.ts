@@ -1,76 +1,69 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
-import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import type { ReviewStateValue } from "@webiny/app-workflows/review/domain/ReviewState.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
+import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
+import type { ListPublishRow } from "./ListPublishRow.js";
 import { getSelectionPublishDisabledReason } from "./getSelectionPublishDisabledReason.js";
-import { CHECKING } from "~/testing/reviewStates.js";
-import { NEEDS_REVIEW } from "~/testing/reviewStates.js";
 
-function createEntry(id: string, reviewState: ReviewStateValue | null): CmsContentEntry {
-    const workflow = reviewState === null ? null : { reviewState };
+// The editor rules' own texts (`getEditorRules`).
+const CHECKING = "Checking review status…";
+const NEEDS_REVIEW = "Publishing needs an approved review. Request a review first.";
 
-    return {
-        id,
-        entryId: id,
-        meta: { title: id, status: "draft", version: 1, locked: false, system: { workflow } }
-    } as unknown as CmsContentEntry;
+function createRow(reviewState: ReviewStateValue | null): ListPublishRow {
+    return { reviewState, isPublished: false, isUnpublished: false };
 }
 
 describe("getSelectionPublishDisabledReason", () => {
-    it("allows a selection of approved entries of a bound model", () => {
+    it("allows a selection of approved rows of a bound namespace", () => {
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
-                entries: [
-                    createEntry("a", ReviewState.Approved),
-                    createEntry("b", ReviewState.Approved)
-                ],
+                rows: [createRow(ReviewState.Approved), createRow(ReviewState.Approved)],
                 allSelected: false,
                 hasMore: false
             })
         ).toBeNull();
     });
 
-    it("blocks a selection with one entry of a bound model that has no review", () => {
+    it("blocks a selection with one row of a bound namespace that has no review", () => {
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
-                entries: [createEntry("a", ReviewState.Approved), createEntry("b", null)],
+                rows: [createRow(ReviewState.Approved), createRow(null)],
                 allSelected: false,
                 hasMore: false
             })
         ).toBe(NEEDS_REVIEW);
     });
 
-    it("allows any selection of an unbound model, also with every entry selected", () => {
+    it("allows any selection of an unbound namespace, also with every row selected", () => {
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "unbound",
-                entries: [createEntry("a", null)],
+                rows: [createRow(null)],
                 allSelected: true,
                 hasMore: true
             })
         ).toBeNull();
     });
 
-    it("blocks every entry selected on a bound model, the entries not loaded being unknown", () => {
+    it("blocks every row selected on a bound namespace, the rows not loaded being unknown", () => {
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
-                entries: [createEntry("a", ReviewState.Approved)],
+                rows: [createRow(ReviewState.Approved)],
                 allSelected: true,
                 hasMore: true
             })
         ).toBe(NEEDS_REVIEW);
     });
 
-    it("allows every entry selected when all of them are loaded and approved", () => {
+    it("allows every row selected when all of them are loaded and approved", () => {
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
-                entries: [createEntry("a", ReviewState.Approved)],
+                rows: [createRow(ReviewState.Approved)],
                 allSelected: true,
                 hasMore: false
             })
@@ -81,7 +74,7 @@ describe("getSelectionPublishDisabledReason", () => {
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "loading",
-                entries: [createEntry("a", ReviewState.Approved)],
+                rows: [createRow(ReviewState.Approved)],
                 allSelected: false,
                 hasMore: false
             })
@@ -89,12 +82,23 @@ describe("getSelectionPublishDisabledReason", () => {
     });
 
     it("skips a published row, whose row action is Unpublish", () => {
-        const published = createEntry("a", null);
-        published.meta.status = "published";
+        const published: ListPublishRow = { ...createRow(null), isPublished: true };
         expect(
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
-                entries: [published, createEntry("b", ReviewState.Approved)],
+                rows: [published, createRow(ReviewState.Approved)],
+                allSelected: false,
+                hasMore: false
+            })
+        ).toBeNull();
+    });
+
+    it("allows an unpublished row with no review, as the editor does", () => {
+        const unpublished: ListPublishRow = { ...createRow(null), isUnpublished: true };
+        expect(
+            getSelectionPublishDisabledReason({
+                workflowStatus: "bound",
+                rows: [unpublished],
                 allSelected: false,
                 hasMore: false
             })
