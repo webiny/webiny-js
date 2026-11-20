@@ -585,3 +585,7 @@ not in the drawer (B23); the tooltip of a disabled state is mouse-only (B8).
 Decided (user, 2026-11-20), B30: the Home review widgets stay as they are, shown for every app the
 user can access even when the app has no workflow; they are then empty. Workflows as a whole show
 only with the licence feature on. No workflow-existence check and no `Compose` change.
+
+Decided (user, 2026-11-20): B9 stays as built; a person reassigned away before the step finished is
+not counted, no new stored field. The place of a step-level warning in the step drawer after B23
+goes to the designer (question C1); until answered it shows on the step card only.
