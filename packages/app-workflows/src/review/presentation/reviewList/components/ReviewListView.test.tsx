@@ -164,6 +164,23 @@ const rowOf = (title: string): HTMLElement => {
     return screen.getByText(title).closest("tr") as HTMLElement;
 };
 
+const isHighlighted = (title: string): boolean => {
+    return rowOf(title).querySelector("[data-highlighted]") !== null;
+};
+
+const columnHeader = (name: string): HTMLElement => {
+    return screen.getByRole("columnheader", { name: new RegExp(`^${name}`) });
+};
+
+// The table shows the sort arrow, labelled "Sort column", only in the sorted column's header.
+const isSortedBy = (name: string): boolean => {
+    return within(columnHeader(name)).queryByText("Sort column") !== null;
+};
+
+const clickHeader = (name: string): void => {
+    fireEvent.click(within(columnHeader(name)).getByText(name));
+};
+
 const openMenu = (title: string): void => {
     const trigger = within(rowOf(title)).getByRole("button", { name: `Actions for ${title}` });
     fireEvent.keyDown(trigger, { key: "Enter" });
@@ -534,7 +551,7 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("Will change");
-        expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(false);
+        expect(isHighlighted("Will change")).toBe(false);
 
         act(() => {
             activity.notify({
@@ -546,9 +563,9 @@ describe("ReviewListView", () => {
         });
 
         await waitFor(() => {
-            expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(true);
+            expect(isHighlighted("Will change")).toBe(true);
         });
-        expect(rowOf("Stays the same").hasAttribute("data-highlighted")).toBe(false);
+        expect(isHighlighted("Stays the same")).toBe(false);
     });
 
     it("drops a row that left the tab", async () => {
@@ -933,41 +950,91 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("Sortable");
+        expect(isSortedBy("Modified")).toBe(true);
+        expect(isSortedBy("Name")).toBe(false);
 
-        fireEvent.click(screen.getByTitle("Sort by name, A to Z"));
+        clickHeader("Name");
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "title_ASC" })
         );
-        expect(await screen.findByText("Name ↑")).toBeTruthy();
-        expect(screen.getByText("Modified")).toBeTruthy();
+        await waitFor(() => expect(isSortedBy("Name")).toBe(true));
+        expect(isSortedBy("Modified")).toBe(false);
 
-        fireEvent.click(screen.getByTitle("Name, A to Z"));
+        clickHeader("Name");
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "title_DESC" })
         );
-        expect(await screen.findByText("Name ↓")).toBeTruthy();
+        expect(isSortedBy("Name")).toBe(true);
     });
 
     it("toggles the sort from the Modified header", async () => {
         const { listReviews } = renderView({
             results: [
                 page([createReviewListItem({ id: "r1", title: "Sortable" })]),
+                page([createReviewListItem({ id: "r1", title: "Sortable" })]),
                 page([createReviewListItem({ id: "r1", title: "Sortable" })])
             ]
         });
         await screen.findByText("Sortable");
 
-        fireEvent.click(screen.getByTitle("Oldest change first"));
+        clickHeader("Modified");
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "lastChangedOn_DESC" })
         );
-        expect(await screen.findByTitle("Newest change first")).toBeTruthy();
+
+        // Never unsorted: a third click goes back to ascending.
+        clickHeader("Modified");
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sort: "lastChangedOn_ASC" })
+        );
+        expect(isSortedBy("Modified")).toBe(true);
+    });
+
+    it("does not sort from the other headers", async () => {
+        const { listReviews } = renderView({
+            results: [page([createReviewListItem({ id: "r1", title: "Sortable" })])]
+        });
+        await screen.findByText("Sortable");
+
+        clickHeader("Requested by");
+        clickHeader("Workflow");
+
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+    });
+
+    it("hides and shows columns from the table settings, but never Name", async () => {
+        renderView({
+            results: [page([createReviewListItem({ id: "r1", title: "Configurable" })])]
+        });
+        await screen.findByText("Configurable");
+        expect(columnHeader("Requested by")).toBeTruthy();
+
+        const headers = screen.getAllByRole("columnheader");
+        const settings = within(headers[headers.length - 1]).getByRole("button");
+        fireEvent.keyDown(settings, { key: "Enter" });
+
+        const menu = await screen.findByRole("menu");
+        expect(within(menu).queryByText("Name")).toBeNull();
+        expect(within(menu).getByText("Content type")).toBeTruthy();
+        expect(within(menu).getByText("Workflow")).toBeTruthy();
+        expect(within(menu).getByText("Modified")).toBeTruthy();
+
+        fireEvent.click(within(menu).getByRole("checkbox", { name: "Requested by" }));
+        // The open menu hides the rest of the page from roles: close it before reading the headers.
+        fireEvent.keyDown(menu, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+
+        expect(screen.queryByRole("columnheader", { name: /^Requested by/ })).toBeNull();
+        expect(columnHeader("Name")).toBeTruthy();
+        expect(columnHeader("Workflow")).toBeTruthy();
     });
 
     it("renders the step state label of a row", async () => {

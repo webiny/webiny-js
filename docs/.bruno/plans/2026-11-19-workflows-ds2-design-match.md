@@ -422,3 +422,16 @@ uses it; using it as is loses keyboard sorting on the review list.
 
 Decided (user, 2026-11-20): the review list moves onto `DataTable` as it is. Keyboard sorting on
 that list is lost until `DataTable`'s sort header becomes a button; `DataTable` is not changed here.
+
+Step creation, 2026-11-20: the add-after button sits outside each step card, the drawer title has no
+icon, one separator sits between the requester-pick switch and the routing rules, and a rule is a
+plain section with an all-caps label and grouped actions. Still different from the canvas:
+
+- The rule summary is plain text. The canvas puts it in a neutral rounded box; admin-ui has no
+  such box without alert semantics (`Alert` announces itself and compiles markdown, `Card` has no
+  neutral fill).
+- The step drawer's tabs are in its body. Pinning them in the header needs the form to render a
+  tab list and its panels separately.
+- The canvas draws only the People step's Assignment tab. The General and Test routing tabs and
+  the AI and Automation drawers have no design; the Colour field is a radio list.
+- Review list on `DataTable`: hidden columns are not remembered after leaving the page.

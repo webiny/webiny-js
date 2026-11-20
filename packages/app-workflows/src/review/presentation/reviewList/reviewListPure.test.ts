@@ -28,6 +28,8 @@ import { resolveRowBinding } from "./resolveRowBinding.js";
 import { REVIEW_LIST_SCOPES } from "./reviewListScopes.js";
 import { REVIEW_LIST_STATES } from "./reviewListStates.js";
 import { toggleReviewListSort } from "./toggleReviewListSort.js";
+import { toReviewListTableSorting } from "./toReviewListTableSorting.js";
+import { getClickedReviewListSortField } from "./getClickedReviewListSortField.js";
 import { isEmptyReviewListFilter } from "~/review/domain/isEmptyReviewListFilter.js";
 import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
 import type { ReviewListState } from "~/review/domain/ReviewListState.js";
@@ -73,6 +75,33 @@ describe("review list pure functions", () => {
         expect(toggleReviewListSort("title_ASC", "title")).toBe("title_DESC");
         expect(toggleReviewListSort("title_DESC", "title")).toBe("title_ASC");
         expect(toggleReviewListSort("title_DESC", "lastChangedOn")).toBe("lastChangedOn_ASC");
+    });
+
+    it("gives the table exactly one sorted column for the list's sort", () => {
+        expect(toReviewListTableSorting("title_ASC")).toEqual([{ id: "title", desc: false }]);
+        expect(toReviewListTableSorting("title_DESC")).toEqual([{ id: "title", desc: true }]);
+        expect(toReviewListTableSorting("lastChangedOn_ASC")).toEqual([
+            { id: "lastChange", desc: false }
+        ]);
+        expect(toReviewListTableSorting("lastChangedOn_DESC")).toEqual([
+            { id: "lastChange", desc: true }
+        ]);
+    });
+
+    it("reads the clicked sort field from the table's next sorting", () => {
+        const byTitle = [{ id: "title", desc: false }];
+        const byChange = [{ id: "lastChange", desc: true }];
+        // The sorted column clicked again: its direction flips.
+        expect(getClickedReviewListSortField(byTitle, [{ id: "title", desc: true }])).toBe("title");
+        // Another column clicked, alone or added as a second sort.
+        expect(getClickedReviewListSortField(byTitle, byChange)).toBe("lastChangedOn");
+        expect(getClickedReviewListSortField(byTitle, [...byTitle, ...byChange])).toBe(
+            "lastChangedOn"
+        );
+        // A column the list does not sort by.
+        expect(getClickedReviewListSortField(byTitle, [{ id: "requesterName", desc: false }])).toBe(
+            null
+        );
     });
 
     it("knows the scope and state pairs that are empty by definition (B2 design 1)", () => {

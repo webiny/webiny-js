@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
@@ -31,8 +32,8 @@ export interface StepCardProps {
 
 /*
  * One step of the flow as an accordion item: the number, title, type tag and meta line in the
- * header with move up, move down, edit, delete and add after as the item's actions; the key and
- * value rows, the warning lines, the error and an Edit step button in the expanded body. The sortable item props make the item a drop target and the
+ * header with move up, move down, edit and delete as the item's actions; the key and
+ * value rows, the warning lines, the error and an Edit step button in the expanded body. The "+" add after button sits to the right of the card, outside it. The sortable item props make the item a drop target and the
  * accordion's drag handle the drag source. Must render inside an `Accordion`.
  */
 export const StepCard = (props: StepCardProps) => {
@@ -92,12 +93,6 @@ export const StepCard = (props: StepCardProps) => {
                 disabled={disabled}
                 onClick={() => props.onDelete(step.id)}
             />
-            <Accordion.Item.Action
-                aria-label={`Add a step after ${step.title}`}
-                icon={<AddIcon />}
-                disabled={disabled}
-                onClick={() => props.onAddAfter(index)}
-            />
         </span>
     );
 
@@ -139,51 +134,62 @@ export const StepCard = (props: StepCardProps) => {
             data-sortable-item=""
             data-step-id={step.id}
             data-testid={`step-card-${step.id}`}
+            className="flex items-start gap-xs"
         >
-            <Accordion.Item
-                title={title}
-                description={step.summary}
-                colorMark={step.color}
-                icon={
-                    <span data-role="step-number" className="flex w-xl shrink-0 justify-center">
-                        <Text as="span">{step.number}</Text>
-                    </span>
-                }
-                actions={actions}
-                draggable={true}
-                dragHandleRef={sortable.handleRef}
-                open={open}
-                onOpenChange={setOpen}
-            >
-                <div data-role="step-details" className="flex flex-col gap-xs">
-                    {descriptionText}
-                    {detailRows}
-                    {step.warnings.map((line, lineIndex) => (
-                        <Alert
-                            key={`${lineIndex}:${line.text}`}
-                            data-severity={line.severity}
-                            type={line.severity === "error" ? "danger" : "warning"}
-                            variant="subtle"
-                            size="sm"
-                        >
-                            {line.text}
-                        </Alert>
-                    ))}
-                    {step.error !== null ? (
-                        <Alert type="danger" variant="subtle" size="sm">
-                            {step.error}
-                        </Alert>
-                    ) : null}
-                    <div className="flex">
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            text="Edit step"
-                            onClick={() => props.onEdit(step.id)}
-                        />
+            <div className="min-w-0 grow">
+                <Accordion.Item
+                    title={title}
+                    description={step.summary}
+                    colorMark={step.color}
+                    icon={
+                        <span data-role="step-number" className="flex w-xl shrink-0 justify-center">
+                            <Text as="span">{step.number}</Text>
+                        </span>
+                    }
+                    actions={actions}
+                    draggable={true}
+                    dragHandleRef={sortable.handleRef}
+                    open={open}
+                    onOpenChange={setOpen}
+                >
+                    <div data-role="step-details" className="flex flex-col gap-xs">
+                        {descriptionText}
+                        {detailRows}
+                        {step.warnings.map((line, lineIndex) => (
+                            <Alert
+                                key={`${lineIndex}:${line.text}`}
+                                data-severity={line.severity}
+                                type={line.severity === "error" ? "danger" : "warning"}
+                                variant="subtle"
+                                size="sm"
+                            >
+                                {line.text}
+                            </Alert>
+                        ))}
+                        {step.error !== null ? (
+                            <Alert type="danger" variant="subtle" size="sm">
+                                {step.error}
+                            </Alert>
+                        ) : null}
+                        <div className="flex">
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                text="Edit step"
+                                onClick={() => props.onEdit(step.id)}
+                            />
+                        </div>
                     </div>
-                </div>
-            </Accordion.Item>
+                </Accordion.Item>
+            </div>
+            <IconButton
+                aria-label={`Add a step after ${step.title}`}
+                variant="ghost"
+                size="sm"
+                icon={<AddIcon />}
+                disabled={disabled}
+                onClick={() => props.onAddAfter(index)}
+            />
         </div>
     );
 };

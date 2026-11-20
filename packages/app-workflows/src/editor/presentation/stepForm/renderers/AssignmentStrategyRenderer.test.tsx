@@ -204,7 +204,7 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(screen.queryByRole("separator")).toBeNull();
     });
 
-    it("starts the requester-pick section with a divider above the switch", () => {
+    it("starts the requester-pick section without a divider, the rules section owns the divider below it", () => {
         const form = createForm("none");
         renderStepFormField({
             form,
@@ -212,10 +212,7 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
             Renderer: RequesterPickRenderer
         });
 
-        const divider = screen.getByRole("separator");
-        const toggle = screen.getByRole("switch");
-        expect(
-            divider.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING
-        ).toBeTruthy();
+        expect(screen.getByRole("switch")).toBeDefined();
+        expect(screen.queryByRole("separator")).toBeNull();
     });
 });

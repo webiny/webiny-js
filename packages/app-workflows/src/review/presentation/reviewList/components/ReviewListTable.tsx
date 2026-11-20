@@ -1,114 +1,99 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { FormComponentNote } from "@webiny/admin-ui";
-import { Link } from "@webiny/admin-ui";
+import { DataTable } from "@webiny/admin-ui";
 import { Separator } from "@webiny/admin-ui";
-import { Table } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import type { DataTableColumns } from "@webiny/admin-ui";
+import type { DataTableColumnVisibility } from "@webiny/admin-ui";
+import type { OnDataTableSortingChange } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { ReviewListPresenter } from "../abstractions.js";
 import type { ReviewListRowVm } from "../abstractions.js";
-import type { TargetReviewTag } from "~/review/presentation/targetReview/abstractions.js";
-import { WorkflowStatus } from "~/review/presentation/components/WorkflowStatus.js";
+import { getClickedReviewListSortField } from "../getClickedReviewListSortField.js";
+import { toReviewListTableSorting } from "../toReviewListTableSorting.js";
+import { ReviewListContentTypeCell } from "./ReviewListContentTypeCell.js";
+import { ReviewListNameCell } from "./ReviewListNameCell.js";
 import { ReviewListRowActions } from "./ReviewListRowActions.js";
+import { ReviewListWorkflowCell } from "./ReviewListWorkflowCell.js";
 
 export interface ReviewListTableProps {
     presenter: ReviewListPresenter.Interface;
     showContentType: boolean;
 }
 
-interface ReviewListTableRowProps {
-    row: ReviewListRowVm;
-    presenter: ReviewListPresenter.Interface;
-    showContentType: boolean;
+// A row as `DataTable` takes it: the row view model with the `id` the table keys rows by.
+interface ReviewListTableEntry extends ReviewListRowVm {
+    id: string;
 }
-
-const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTableRowProps) => {
-    let title: React.ReactNode = row.title;
-    if (row.contentUrl) {
-        title = (
-            <Link to={row.contentUrl} variant="secondary">
-                {row.title}
-            </Link>
-        );
-    }
-
-    let stepState: TargetReviewTag | null = null;
-    if (row.stepStateLabel) {
-        stepState = { label: row.stepStateLabel, variant: row.stepStateVariant };
-        if (row.stepStateIcon) {
-            stepState.icon = row.stepStateIcon;
-        }
-    }
-
-    let contentType: React.ReactNode = null;
-    if (showContentType) {
-        contentType = (
-            <Table.Cell>
-                <Text as="div">{row.contentTypeLabel ?? ""}</Text>
-                <FormComponentNote className="mt-0" text={row.contentTypeApp} />
-            </Table.Cell>
-        );
-    }
-
-    return (
-        <Table.Row
-            selected={row.highlighted}
-            data-highlighted={row.highlighted ? "" : undefined}
-            data-review-id={row.reviewId}
-        >
-            <Table.Cell>
-                <div className="flex items-center gap-sm">
-                    {row.contentTypeIcon}
-                    {title}
-                </div>
-            </Table.Cell>
-            {contentType}
-            <Table.Cell>
-                <WorkflowStatus
-                    step={row.stepTitle}
-                    stepColor={row.stepColor}
-                    state={stepState}
-                    owner={row.ownerLabel}
-                />
-            </Table.Cell>
-            <Table.Cell>{row.requesterName}</Table.Cell>
-            <Table.Cell>{row.lastChange}</Table.Cell>
-            <Table.Cell>
-                <ReviewListRowActions row={row} presenter={presenter} />
-            </Table.Cell>
-        </Table.Row>
-    );
-};
 
 export const ReviewListTable = createReactiveComponent((props: ReviewListTableProps) => {
     const { presenter, showContentType } = props;
     const vm = presenter.vm;
+    const [columnVisibility, setColumnVisibility] = useState<DataTableColumnVisibility>({});
 
-    let contentTypeHead: React.ReactNode = null;
-    if (showContentType) {
-        contentTypeHead = <Table.Head>Content type</Table.Head>;
-    }
+    const columns = useMemo(() => {
+        const result: DataTableColumns<ReviewListTableEntry> = {
+            title: {
+                header: "Name",
+                cell: row => <ReviewListNameCell row={row} />,
+                enableSorting: true,
+                enableHiding: false,
+                size: 200
+            }
+        };
+        if (showContentType) {
+            result.contentTypeLabel = {
+                header: "Content type",
+                cell: row => <ReviewListContentTypeCell row={row} />,
+                truncate: false
+            };
+        }
+        result.stepTitle = {
+            header: "Workflow",
+            cell: row => <ReviewListWorkflowCell row={row} />,
+            truncate: false,
+            size: 200
+        };
+        result.requesterName = {
+            header: "Requested by",
+            cell: row => row.requesterName
+        };
+        result.lastChange = {
+            header: "Modified",
+            cell: row => row.lastChange,
+            enableSorting: true
+        };
+        result.actions = {
+            header: "",
+            cell: row => <ReviewListRowActions row={row} presenter={presenter} />,
+            enableSorting: false,
+            enableHiding: false,
+            enableResizing: false,
+            truncate: false,
+            size: 64
+        };
+        return result;
+    }, [presenter, showContentType]);
 
-    // One sort at a time: only the active column shows its arrow.
-    let titleSortTitle = "Sort by name, A to Z";
-    let titleLabel = "Name";
-    if (vm.sort === "title_ASC") {
-        titleSortTitle = "Name, A to Z";
-        titleLabel = "Name ↑";
-    } else if (vm.sort === "title_DESC") {
-        titleSortTitle = "Name, Z to A";
-        titleLabel = "Name ↓";
-    }
-    let lastChangeSortTitle = "Sort by modified date, oldest first";
-    let lastChangeLabel = "Modified";
-    if (vm.sort === "lastChangedOn_ASC") {
-        lastChangeSortTitle = "Oldest change first";
-        lastChangeLabel = "Modified ↑";
-    } else if (vm.sort === "lastChangedOn_DESC") {
-        lastChangeSortTitle = "Newest change first";
-        lastChangeLabel = "Modified ↓";
-    }
+    const data = useMemo(() => {
+        return vm.rows.map(row => ({ ...row, id: row.reviewId }));
+    }, [vm.rows]);
+
+    // A changed row stands out the way a selected one does; the list has no row selection.
+    const highlightedRows = useMemo(() => {
+        return data.filter(row => row.highlighted);
+    }, [data]);
+
+    const sorting = useMemo(() => toReviewListTableSorting(vm.sort), [vm.sort]);
+
+    // The list sorts on the server, one column at a time, ascending or descending, never unsorted.
+    const onSortingChange: OnDataTableSortingChange = updater => {
+        const next = typeof updater === "function" ? updater(sorting) : updater;
+        const field = getClickedReviewListSortField(sorting, next);
+        if (field) {
+            void presenter.toggleSort(field);
+        }
+    };
 
     // The same bar as the CMS entry list (app-admin ListView.BottomBar); the API gives no total.
     const shownLabel = vm.rows.length === 1 ? "review" : "reviews";
@@ -129,44 +114,16 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
 
     return (
         <>
-            <Table sticky>
-                <Table.Header sticky>
-                    <Table.Row>
-                        <Table.Head>
-                            <button
-                                type="button"
-                                title={titleSortTitle}
-                                onClick={() => presenter.toggleSort("title")}
-                            >
-                                {titleLabel}
-                            </button>
-                        </Table.Head>
-                        {contentTypeHead}
-                        <Table.Head>Workflow</Table.Head>
-                        <Table.Head>Requested by</Table.Head>
-                        <Table.Head>
-                            <button
-                                type="button"
-                                title={lastChangeSortTitle}
-                                onClick={() => presenter.toggleSort("lastChangedOn")}
-                            >
-                                {lastChangeLabel}
-                            </button>
-                        </Table.Head>
-                        <Table.Head />
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {vm.rows.map(row => (
-                        <ReviewListTableRow
-                            key={row.reviewId}
-                            row={row}
-                            presenter={presenter}
-                            showContentType={showContentType}
-                        />
-                    ))}
-                </Table.Body>
-            </Table>
+            <DataTable
+                columns={columns}
+                data={data}
+                sorting={sorting}
+                onSortingChange={onSortingChange}
+                columnVisibility={columnVisibility}
+                onColumnVisibilityChange={setColumnVisibility}
+                selectedRows={highlightedRows}
+                stickyHeader={true}
+            />
             <div data-role="review-list-footer">
                 <Separator />
                 <div className="h-xl px-md py-sm flex items-center justify-between">

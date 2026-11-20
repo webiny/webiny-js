@@ -1,7 +1,8 @@
 import React from "react";
 import { ButtonGroup } from "@webiny/admin-ui";
-import { Card } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ArrowDownwardIcon } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as ArrowUpwardIcon } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -35,8 +36,8 @@ export interface RuleCardProps {
 }
 
 /*
- * One routing rule (design 4.2, R299, R303, R313): the header with the number and the move and
- * delete buttons, the readable summary, the five fields and the rule's warnings. The card is
+ * One routing rule (design 4.2, R299, R303, R313): a top border, the header with the number and the move and
+ * delete buttons, the readable summary, the five fields and the rule's warnings. The section is
  * controlled: it reports edits and never holds the rule. A rule's errors show under its fields.
  */
 export const RuleCard = (props: RuleCardProps) => {
@@ -80,21 +81,26 @@ export const RuleCard = (props: RuleCardProps) => {
     );
 
     return (
-        <div role={"group"} aria-label={title} data-rule-id={rule.id} className={"w-full"}>
-            <Card title={title} actions={actions} padding={"sm"} size={"sm"}>
-                <div className={"flex flex-col gap-md pb-md"}>
-                    <RuleSummary text={summary} />
-                    <RuleFields
-                        rule={rule}
-                        options={options}
-                        messages={messages}
-                        readOnly={readOnly}
-                        onChange={props.onChange}
-                        onRemoveFolder={props.onRemoveFolder}
-                    />
-                    <RuleWarnings index={index} warnings={warnings} />
+        <section aria-label={title} data-rule-id={rule.id} className={"w-full"}>
+            <Separator decorative={false} />
+            <div className={"flex flex-col gap-md pt-sm pb-md"}>
+                <div className={"flex items-center justify-between gap-md"}>
+                    <Text as={"div"} size={"sm"} className={"font-semibold uppercase"}>
+                        {title}
+                    </Text>
+                    {actions}
                 </div>
-            </Card>
-        </div>
+                <RuleSummary text={summary} />
+                <RuleFields
+                    rule={rule}
+                    options={options}
+                    messages={messages}
+                    readOnly={readOnly}
+                    onChange={props.onChange}
+                    onRemoveFolder={props.onRemoveFolder}
+                />
+                <RuleWarnings index={index} warnings={warnings} />
+            </div>
+        </section>
     );
 };

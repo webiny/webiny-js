@@ -115,10 +115,10 @@ describe("RuleCard: header and buttons (R313)", () => {
         cleanup();
     });
 
-    it("is a group named Rule {n} with the number from its position", () => {
+    it("is a section named Rule {n} with the number from its position", () => {
         renderCard(createProps({ index: 1, total: 3 }));
 
-        expect(screen.getByRole("group", { name: "Rule 2" })).toBeDefined();
+        expect(screen.getByRole("region", { name: "Rule 2" })).toBeDefined();
         expect(screen.getByText("Rule 2")).toBeDefined();
     });
 
@@ -695,7 +695,7 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
     it("renders no read-access warning, no exclusion note and no Unavailable option text (Q50)", () => {
         renderCard(createProps());
 
-        const card = screen.getByRole("group", { name: "Rule 1" });
+        const card = screen.getByRole("region", { name: "Rule 1" });
         expect(within(card).queryByText(/can't read/i)).toBeNull();
         expect(within(card).queryByText(/unavailable/i)).toBeNull();
         expect(within(card).queryByText(/excluded/i)).toBeNull();

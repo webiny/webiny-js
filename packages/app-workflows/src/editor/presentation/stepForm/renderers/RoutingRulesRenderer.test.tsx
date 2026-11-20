@@ -108,7 +108,7 @@ const getCard = (ruleId: string): HTMLElement => {
 };
 
 const getCardOrder = (): string[] => {
-    const cards = screen.getAllByRole("group", { name: /^Rule \d+$/ });
+    const cards = screen.getAllByRole("region", { name: /^Rule \d+$/ });
     return cards.map(card => card.getAttribute("data-rule-id") ?? "");
 };
 
@@ -158,7 +158,7 @@ describe("RoutingRulesRenderer: header and empty note (design 4.2)", () => {
         expect(
             screen.getByText("No routing rules. Every review waits in the team pool.")
         ).toBeDefined();
-        expect(screen.queryAllByRole("group", { name: /^Rule \d+$/ })).toHaveLength(0);
+        expect(screen.queryAllByRole("region", { name: /^Rule \d+$/ })).toHaveLength(0);
     });
 
     it("shows the other empty note for a picking strategy and for an unknown one", () => {

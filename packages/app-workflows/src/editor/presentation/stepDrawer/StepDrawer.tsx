@@ -1,21 +1,15 @@
 import React from "react";
 import { useEffect } from "react";
 import { Drawer } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
-import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
-import { ReactComponent as GroupIcon } from "@webiny/icons/group.svg";
-import { ReactComponent as RateReviewIcon } from "@webiny/icons/rate_review.svg";
 import { StepFormOptionsContext } from "~/editor/presentation/stepForm/StepFormOptionsContext.js";
 import { SwitchAutomationDialog } from "~/editor/presentation/stepForm/components/SwitchAutomationDialog.js";
 import { buildStepFormOptions } from "./buildStepFormOptions.js";
 import type { StepDrawerSource } from "./abstractions.js";
-import type { StepKind } from "./abstractions.js";
 import { StepDrawerPresenterFeature } from "./feature.js";
 import { getActiveTabId } from "./getActiveTabId.js";
 import { StepDrawerBanners } from "./StepDrawerBanners.js";
@@ -26,22 +20,6 @@ export interface StepDrawerProps {
     // `vm.openStepId` of the editor: the drawer opens for it and closes when it is null.
     stepId: string | null;
 }
-
-interface StepTypeTileProps {
-    kind: StepKind;
-}
-
-const KIND_ICONS = {
-    review: <GroupIcon />,
-    automation: <BoltIcon />,
-    ai: <AutoAwesomeIcon />,
-    unknown: <RateReviewIcon />
-};
-
-// The tile of the header: the type's icon.
-const StepTypeTile = ({ kind }: StepTypeTileProps) => {
-    return <Icon icon={KIND_ICONS[kind]} label={kind} size={"lg"} color={"neutral-light"} />;
-};
 
 /*
  * The step drawer (design README 4, R284): 560px, over the editor. An effect opens it for the
@@ -84,7 +62,6 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                 width={"560px"}
                 title={vm.title}
                 description={vm.subtitle}
-                icon={<StepTypeTile kind={vm.kind} />}
                 bodyPadding
                 headerSeparator
                 footerSeparator
