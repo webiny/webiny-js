@@ -223,3 +223,136 @@ filters." (6).
 
 All batches go into this branch and PR #6223 (user, 2026-11-19): no separate PR and no separate
 plan file. B2 and C are detailed in this file before they start.
+
+## Batch B2 design, 2026-11-20
+
+Designed by a read-only architect pass against the code; the claims below carry its `file:line`
+references and are checked again as each lane is built. E-mail (10) is confirmed by the user:
+generic greeting and footer, details table, one batched send.
+
+Reverses or refines: D112 (no Failed steps tab), D94/R91 (state filter on every scope), D119
+(default sort), parts of D155 (team names, review-details link, detail card, model name), D170 and
+D180 (team names for listed users), D116 (model filter is a server parameter).
+
+### 1. Content Reviews list: scope and state
+
+Engine (`api-workflows`), one type per file in `domain/review/`:
+
+- `ReviewListScope = "assignedToMe" | "pool" | "teamInReview" | "myRequests" | "all"` replaces
+  `ReviewListKind`.
+- `ReviewListState = "all" | "inReview" | "failed" | "approved" | "rejected"`.
+- `ReviewListWhere` is `{ titleContains?, state? }`; `reviewState` and `stepState` go.
+
+Scope is "who", state is "where"; each is one pure predicate, combined with AND, used for the
+storage where (`ListReviews/createReviewListWhere.ts`) and the code check
+(`domain/review/matchesReviewList.ts`).
+
+| Scope | Predicate |
+|---|---|
+| assignedToMe | `currentOwnerId = me` |
+| pool | `currentStepState = awaiting`, my teams ∩ `currentCandidateTeamIds`, requester ≠ me |
+| teamInReview | `currentOwnerId` set and ≠ me, my teams ∩ candidates |
+| myRequests | `requester.id = me` |
+| all | none beyond the read filter |
+
+| State | Predicate |
+|---|---|
+| all | none |
+| inReview | `state = inProgress`, `currentStepState ≠ failed` |
+| failed | `state = inProgress`, `currentStepState = failed` |
+| approved | `state = approved` |
+| rejected | `state = rejected` |
+
+Empty by definition, answered without a query (`domain/review/isEmptyReviewListFilter.ts`, mirrored
+in the admin): pool × failed, approved, rejected; assignedToMe × failed; teamInReview × failed.
+
+"All" is built as every review the viewer can read, limited to viewers with `reassign` or full
+access, so All × Failed is today's operators' Failed steps view. Its final meaning is with the
+designer; opening it to everyone is one line in each app wrapper.
+
+Repository: `currentStepState_not` and `currentOwnerId_not: null` on `ReviewRepositoryListWhere`.
+
+GraphQL (breaking, `next` is unreleased): `WorkflowsReviewListScope`, `WorkflowsReviewListState`;
+`listCmsEntryReviews(scope!, where { modelId, titleContains, state }, sort, limit, after)`, same for
+Website Builder; `WorkflowsReviewListKind` is deleted. The app wrappers replace the `failedSteps`
+gate with the `all` gate.
+
+Default sort: oldest change first for assignedToMe, pool, teamInReview and all with state inReview
+or failed; newest first otherwise.
+
+Admin (`app-workflows/src/review/presentation/reviewList/`): two `SegmentedControl`s replace the
+tabs; presenter state `_state`; route params `scope` and `state` replace `tab`, an invalid or
+unavailable value falls back to the default; the Home widgets' "View all" links carry both.
+Default state: In review for the queues, All for Requested by me. A scope switch keeps the state
+unless the pair is empty by definition.
+
+### 2. Sort by name
+
+- A storage-only `titleSortKey` on the review model, `title.trim().toLocaleLowerCase()`, written by
+  `ReviewEntryMapper.toValues` and never mapped out.
+- Sort enum gains `title_ASC | title_DESC`; the cursor becomes `{ sort, value, ids }` and is
+  refused with another sort; the repository gains `titleSortKey_gte` / `_lte`.
+- To verify with a storage test: text `_gte` / `_lte` order equals the sort order on DynamoDB and SQL.
+
+### 3. Filters
+
+- Content Reviews: the content type picker moves into a Popover behind a "Filter" button, CMS only.
+  Admin only.
+- Editor: `listCmsEntryWorkflowModels` gains `hasWorkflow: Boolean`, filtered before paging with
+  the one existing workflow list call. Left panel: All / With workflow / Without workflow, and an
+  item menu with Create workflow or Delete workflow.
+
+### 4. Cancelled review in the drawer
+
+Admin only: `cancelledBy` and `lastChangedOn` already hold who and when. Text "This review was
+cancelled by {name} on {date}."; the steps render read-only below, no footer actions.
+
+### 5. Teams of listed users
+
+Field resolver `WorkflowsListedUser.teams`, same body as `WorkflowsStepCandidate.teams` (per-request
+loader, one team list call per request). The exclusions table and picker join the names with ", ".
+
+### 6. Automation key setting
+
+`IAutomationDefinition.keySetting?: string`, the name of one top-level property of
+`settingsSchema`; passed through as `keySetting: String`. The editor shows that property's title
+and value; the `url` special case goes.
+
+### 7. Team names for the nobody-eligible warning
+
+Field resolver `WorkflowsStep.candidateTeams` for review steps, through the same loader. The dialog
+reads it from the workflow it already holds.
+
+### 8. Pool message with team names
+
+- `listPool` returns each recipient's teams ∩ the step's candidate teams.
+- `ReviewNotifyParams` takes `deliveries: { recipients, message }[]`: one user lookup and one link
+  build per call, one transport send per transport and delivery.
+- The handler groups recipients by team set (pure `groupPoolRecipients.ts`), joins names with
+  `joinTeamNames.ts` ("A", "A and B", "A, B and C"), and sends one delivery per distinct text.
+
+### 9. Review details link
+
+`ReviewTargetLinkService` appends `&reviewId=` when asked; `NotificationMessage.link` is
+`"content" | "reviewDetails"`; the previous-owner Reassigned message and the Failed message use
+"View review details". Admin: one hook in `review/editor/` reads `reviewId` from the location,
+opens the drawer, and removes the param on close.
+
+### 10. E-mail layout
+
+Transport message gains optional `details` (content type, content title, step number and count,
+step title, requester). `contentTypeName` is snapshotted into the target context at request time
+(CMS: model name; Website Builder: "Page"). `MailNotificationTransport` renders greeting, body,
+details table, button and footer, every value escaped; still one send per bcc chunk.
+
+### Build order
+
+Wave 1, in parallel: (A) 1 + 2; (B) 4; (C) 3 editor part; (D) 9, then 8, then 10.
+Wave 2: (E) 5, 6, 7 in `WorkflowsSchemaFactory.ts`; the Filter button of 3.
+
+### Open, with the designer
+
+Meaning and audience of "All"; whether Assigned to me × Approved means "held the final step";
+how empty-by-definition pairs look; default state per scope; wording for several teams in the pool
+message; the e-mail footer for requesters and previous owners; the tag of the step that was current
+when a review was cancelled.
