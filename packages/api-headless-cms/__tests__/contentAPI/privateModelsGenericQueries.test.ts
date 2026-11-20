@@ -151,9 +151,18 @@ describe("Generic manage queries and private models", () => {
             }
         `;
 
-        const [privateResponse] = await handler.invoke({
-            body: { query, variables: { modelId: PRIVATE_MODEL_ID } }
-        });
+        // `Query.cms` is on the main GraphQL API, not on the `/cms/*` endpoints `invoke` calls.
+        const invokeMain = async (variables: Record<string, unknown>) => {
+            const response = await handler.handler({
+                method: "POST",
+                path: "/graphql",
+                headers: { "x-tenant": "root", "content-type": "application/json" },
+                body: { query, variables }
+            });
+            return [response.body as any] as const;
+        };
+
+        const [privateResponse] = await invokeMain({ modelId: PRIVATE_MODEL_ID });
         expect(privateResponse.data.cms.getModel).toEqual({
             data: null,
             error: {
@@ -163,9 +172,7 @@ describe("Generic manage queries and private models", () => {
         });
 
         // Control: regular models are still returned.
-        const [publicResponse] = await handler.invoke({
-            body: { query, variables: { modelId: "category" } }
-        });
+        const [publicResponse] = await invokeMain({ modelId: "category" });
         expect(publicResponse.data.cms.getModel.data.modelId).toBe("category");
     });
 });

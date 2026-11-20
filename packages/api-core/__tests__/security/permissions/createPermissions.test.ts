@@ -35,8 +35,14 @@ function createMockIdentityContext(permissions: SecurityPermission[]): IIdentity
         getPermission: async (name: string) => {
             return permissions.find(p => p.name === name) ?? null;
         },
+        // Matches wildcards like the real IdentityContext: "test.*" covers "test.entry".
         getPermissions: async (name: string) => {
-            return permissions.filter(p => p.name === name);
+            return permissions.filter(p => {
+                return (
+                    p.name === name ||
+                    (p.name.endsWith("*") && name.startsWith(p.name.slice(0, -1)))
+                );
+            });
         },
         getIdentity: () => ({ id: "user-1", displayName: "Test User", type: "test" }),
         listPermissions: async () => permissions,

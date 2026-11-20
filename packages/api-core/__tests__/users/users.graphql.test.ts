@@ -33,8 +33,9 @@ const GET_CURRENT_USER = /* GraphQL */ `
     }
 `;
 
-// The test authenticator treats a request with the `authorization` header as anonymous.
-const anonymous = { authorization: "" };
+/* The test authenticator signs in a request without a token as an admin. A token no
+   authenticator recognises leaves the caller anonymous. */
+const anonymous = { authorization: "unknown-token" };
 
 describe("Users GraphQL", () => {
     const { invoke } = useGqlHandler();

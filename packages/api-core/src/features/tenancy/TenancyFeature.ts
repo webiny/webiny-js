@@ -29,8 +29,9 @@ export const TenancyFeature = createFeature<ITenancyStorageOperations>({
                     return [];
                 }
                 const tenants = await storageOperations.getTenantsByIds(ids);
-                // Storage skips missing tenants and doesn't keep the order, so match by ID.
-                return ids.map(id => tenants.find(tenant => tenant.id === id) as Tenant);
+                /* Storage may skip missing tenants (or leave an empty slot for them) and doesn't
+                   keep the order, so match by ID. */
+                return ids.map(id => tenants.find(tenant => tenant?.id === id) as Tenant);
             })
         );
 

@@ -164,16 +164,17 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
     }
 }
 
-export default CmsGenerateEntryContentUseCase.createImplementation({
-    implementation: CmsGenerateEntryContentUseCaseImpl,
-    dependencies: [
-        AiPromptContextBuilder,
-        ResolveAiCapabilityUseCase,
-        Ai,
-        AiSdkTools,
-        ListTagsUseCase,
-        GetModelUseCase,
-        ModelToAstConverter,
-        AiToolPipelineRunner
-    ]
-});
+export const CmsGenerateEntryContentUseCaseImplementation =
+    CmsGenerateEntryContentUseCase.createImplementation({
+        implementation: CmsGenerateEntryContentUseCaseImpl,
+        dependencies: [
+            AiPromptContextBuilder,
+            ResolveAiCapabilityUseCase,
+            Ai,
+            AiSdkTools,
+            ListTagsUseCase,
+            GetModelUseCase,
+            ModelToAstConverter,
+            AiToolPipelineRunner
+        ]
+    });

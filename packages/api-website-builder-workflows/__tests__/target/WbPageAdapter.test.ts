@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { ROOT_FOLDER } from "@webiny/api-aco/constants.js";
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
@@ -520,6 +521,8 @@ describe("WB page adapter", () => {
         expect(republished.isOk()).toBe(true);
     });
 
+    /* Moves go to the root folder: a move now checks the target folder exists, and these tests
+       run without ACO folders. */
     it("moves a page of an unbound model without looking up reviews", async () => {
         const context = await createUserContext({
             legacyPlugins: [
@@ -537,7 +540,7 @@ describe("WB page adapter", () => {
 
         const moved = await context.container
             .resolve(MovePageUseCase)
-            .execute({ id: page.id, folderId: "folder-2" });
+            .execute({ id: page.id, folderId: ROOT_FOLDER });
 
         expect(moved.isOk()).toBe(true);
     });
@@ -549,11 +552,14 @@ describe("WB page adapter", () => {
         const review = await requestPageReview(context, page);
         const movePage = context.container.resolve(MovePageUseCase);
 
-        await expect(movePage.execute({ id: page.id, folderId: "folder-2" })).rejects.toMatchObject(
-            { code: "Workflows/Review/TargetLocked", data: { action: "move" } }
-        );
+        await expect(
+            movePage.execute({ id: page.id, folderId: ROOT_FOLDER })
+        ).rejects.toMatchObject({
+            code: "Workflows/Review/TargetLocked",
+            data: { action: "move" }
+        });
         await cancelPageReview(context, review);
-        const moved = await movePage.execute({ id: page.id, folderId: "folder-2" });
+        const moved = await movePage.execute({ id: page.id, folderId: ROOT_FOLDER });
 
         expect(moved.isOk()).toBe(true);
     });

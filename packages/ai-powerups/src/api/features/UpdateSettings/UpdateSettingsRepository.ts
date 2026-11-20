@@ -93,11 +93,13 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
     }
 }
 
-export default UpdateSettingsRepository.createImplementation({
-    implementation: UpdateSettingsRepositoryImpl,
-    dependencies: [
-        KeyValueStore,
-        [AiPowerUpsSettingsGroupHandler, { multiple: true }],
-        AiPowerUpsSettingsCache
-    ]
-});
+export const UpdateSettingsRepositoryImplementation = UpdateSettingsRepository.createImplementation(
+    {
+        implementation: UpdateSettingsRepositoryImpl,
+        dependencies: [
+            KeyValueStore,
+            [AiPowerUpsSettingsGroupHandler, { multiple: true }],
+            AiPowerUpsSettingsCache
+        ]
+    }
+);

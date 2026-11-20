@@ -139,13 +139,14 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
     }
 }
 
-export default WbGeneratePageContentUseCase.createImplementation({
-    implementation: WbGeneratePageContentUseCaseImpl,
-    dependencies: [
-        AiPromptContextBuilder,
-        ResolveAiCapabilityUseCase,
-        Ai,
-        AiSdkTools,
-        ListTagsUseCase
-    ]
-});
+export const WbGeneratePageContentUseCaseImplementation =
+    WbGeneratePageContentUseCase.createImplementation({
+        implementation: WbGeneratePageContentUseCaseImpl,
+        dependencies: [
+            AiPromptContextBuilder,
+            ResolveAiCapabilityUseCase,
+            Ai,
+            AiSdkTools,
+            ListTagsUseCase
+        ]
+    });

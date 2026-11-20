@@ -1,4 +1,5 @@
 import { promises as fs } from "node:fs";
+import { Result } from "@webiny/feature/api";
 import path from "node:path";
 import { afterEach } from "vitest";
 import { beforeEach } from "vitest";
@@ -50,7 +51,11 @@ const makeAsset = (key: string) => ({
 });
 
 const makeDeleteHandler = () => {
-    const keyValueStore = { delete: async () => {} } as any;
+    // No stored metadata, so the handler's tenant check on it has nothing to compare.
+    const keyValueStore = {
+        get: async () => Result.fail(new Error("Not found.")),
+        delete: async () => {}
+    } as any;
     const tenantContext = makeTenantContext();
     const config = makeConfig();
     return new DeleteFileFromDiskHandler(tenantContext, keyValueStore, config);

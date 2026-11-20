@@ -21,6 +21,7 @@ import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 import type { Result } from "@webiny/feature/api";
 
 const unwrap = <TValue>(result: Result<TValue, Error>): TValue => {
@@ -52,15 +53,13 @@ export const createFilterOperations = (
 
     /**
      * Saved filters are personal. The filter model is private, so CMS authorization doesn't
-     * apply: only the identity that created a filter may read, update or delete it.
+     * apply: only the identity that created a filter may read, update or delete it. Someone
+     * else's filter is reported as not found, so its existence isn't revealed.
      */
     const getOwnFilterEntry = async (model: CmsModel, id: string) => {
-        const result = await container.resolve(GetEntryByIdUseCase).execute(model, id);
-        const entry = result.isOk() ? result.value : null;
-        if (!entry || entry.createdBy?.id !== identityContext.getIdentity()?.id) {
-            throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
-                id
-            });
+        const entry = unwrap(await container.resolve(GetEntryByIdUseCase).execute(model, id));
+        if (entry.createdBy?.id !== identityContext.getIdentity()?.id) {
+            throw new EntryNotFoundError(id);
         }
         return entry;
     };

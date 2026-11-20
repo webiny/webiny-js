@@ -46,7 +46,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
     }
 }
 
-export default GetSettingsRepository.createImplementation({
+export const GetSettingsRepositoryImplementation = GetSettingsRepository.createImplementation({
     implementation: GetSettingsRepositoryImpl,
     dependencies: [
         KeyValueStore,

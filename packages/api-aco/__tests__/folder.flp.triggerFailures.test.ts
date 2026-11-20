@@ -7,6 +7,7 @@ import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/index.js";
+import { CreateFlpUseCase } from "~/features/flp/CreateFlp/abstractions.js";
 
 class TriggerFailedError extends BaseError {
     override readonly code = "Test/TriggerFailed" as const;
@@ -71,11 +72,22 @@ describe("FLP task trigger failures", () => {
     it("should log a create trigger that returns a failed result", async () => {
         const context = await handler();
         const errors = failTaskTriggers(context.container, "result");
+        // A new folder's FLP record is written directly; the task is only the fallback for a write that fails.
+        const flpWriteError = new Error("FLP storage is down.");
+        context.container.registerInstance(CreateFlpUseCase, {
+            execute: async () => {
+                throw flpWriteError;
+            }
+        });
 
         const folder = await createFolder(context.container, "trigger-fail-create");
 
         expect(folder.id).toBeTruthy();
         expect(errors).toEqual([
+            {
+                data: { error: flpWriteError, folderId: folder.id },
+                message: "Could not create the folder's FLP record, falling back to the task."
+            },
             {
                 data: { error: expect.any(TriggerFailedError), folderId: folder.id },
                 message: "Could not trigger the task that creates the folder's FLP record."

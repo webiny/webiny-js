@@ -60,7 +60,7 @@ class GetSettingsUseCaseImpl implements GetSettingsUseCase.Interface {
     }
 }
 
-export default GetSettingsUseCase.createImplementation({
+export const GetSettingsUseCaseImplementation = GetSettingsUseCase.createImplementation({
     implementation: GetSettingsUseCaseImpl,
     dependencies: [IdentityContext, AiPowerUpsPermissions, GetSettingsRepository]
 });

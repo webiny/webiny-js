@@ -68,7 +68,11 @@ const testEncryption = {
     decrypt: async (encrypted: string) => encrypted.replace(/^encrypted:/, "")
 } as unknown as Encryption.Interface;
 
-/** The test license plus AI Power-Ups with CMS entry generation. */
+/**
+ * The test license plus AI Power-Ups with CMS entry generation. Workflows are off: with them on,
+ * `Extension` also registers the workflow AI schema, which extends types only the workflows
+ * engine adds, and these tests don't register it.
+ */
 const createAiTestLicense = (): DecryptedWcpProjectLicense => {
     const base = createTestWcpLicense();
     return {
@@ -80,7 +84,8 @@ const createAiTestLicense = (): DecryptedWcpProjectLicense => {
                 [PROJECT_PACKAGE_FEATURE_NAME.AI_POWERUPS]: {
                     enabled: true,
                     options: { cms: { entryGeneration: true } }
-                }
+                },
+                [PROJECT_PACKAGE_FEATURE_NAME.APW]: { enabled: false }
             }
         }
     } as DecryptedWcpProjectLicense;

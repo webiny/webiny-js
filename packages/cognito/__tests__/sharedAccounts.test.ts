@@ -342,13 +342,14 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(setPasswordSpy).not.toHaveBeenCalled();
         });
 
-        it("doesn't let an administrator change the person's name or email", async () => {
+        // The email can't be changed at all after creation, so the name is what this covers.
+        it("doesn't let an administrator change the person's name", async () => {
             const { acmeUser } = await createInRootAndAcme();
 
             signInAs("acme-admin");
             inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(acmeUser.id, {
-                email: "someone-else@example.com"
+                firstName: "Someone"
             });
 
             expect(result.isFail()).toBe(true);
@@ -394,7 +395,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             });
         });
 
-        it("refuses an email another user has in one of the person's other tenants", async () => {
+        it("refuses to change the email, here to one another user has", async () => {
             const { rootUser, acmeUser } = await createInRootAndAcme();
 
             // userB exists only in root.
@@ -411,8 +412,9 @@ describe("Admin Users (Cognito): one account across tenants", () => {
                 email: adminUsers.userB.email
             });
 
+            // The email can't be changed after creation.
             expect(result.isFail()).toBe(true);
-            expect(result.error?.code).toBe("AdminUser/EmailTaken");
+            expect(result.error?.code).toBe("AdminUser/Validation");
             expect(updateAttributesSpy).not.toHaveBeenCalled();
 
             // Nothing was written.
@@ -431,7 +433,6 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             signInAs(rootUser.id);
             inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
-                email: "renamed@example.com",
                 firstName: "Renamed"
             });
 

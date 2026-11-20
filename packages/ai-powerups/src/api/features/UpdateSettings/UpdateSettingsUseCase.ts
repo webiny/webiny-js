@@ -39,7 +39,7 @@ class UpdateSettingsUseCaseImpl implements UpdateSettingsUseCase.Interface {
     }
 }
 
-export default UpdateSettingsUseCase.createImplementation({
+export const UpdateSettingsUseCaseImplementation = UpdateSettingsUseCase.createImplementation({
     implementation: UpdateSettingsUseCaseImpl,
     dependencies: [AiPowerUpsPermissions, EventPublisher, UpdateSettingsRepository]
 });

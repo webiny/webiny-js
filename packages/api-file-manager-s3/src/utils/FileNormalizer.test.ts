@@ -19,7 +19,7 @@ describe("file keys", () => {
     ])("should reject key prefix %s", async keyPrefix => {
         await expect(
             new FileNormalizer().normalizeFile({ ...file, keyPrefix })
-        ).rejects.toMatchObject({ code: "INVALID_KEY_PREFIX" });
+        ).rejects.toMatchObject({ code: "FileManager/File/InvalidFileKeyError" });
     });
 
     it("should keep a valid key prefix inside the tenant folder", async () => {
@@ -45,7 +45,7 @@ describe("file keys", () => {
         "abc\\def"
     ])("should reject file id %s", async id => {
         await expect(new FileNormalizer().normalizeFile({ ...file, id })).rejects.toMatchObject({
-            code: "INVALID_FILE_ID"
+            code: "FileManager/File/InvalidFileKeyError"
         });
     });
 
