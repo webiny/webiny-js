@@ -25,8 +25,6 @@ import type {
     IDisconnectConnectionVariables,
     IDisconnectIdentityConnectionsResponse,
     IDisconnectIdentityConnectionsVariables,
-    IDisconnectTenantConnectionsResponse,
-    IDisconnectTenantConnectionsVariables,
     IListConnectionsResponse,
     IListConnectionsVariables
 } from "./graphql/connections";
@@ -34,7 +32,6 @@ import {
     DISCONNECT_ALL_CONNECTIONS,
     DISCONNECT_CONNECTIONS,
     DISCONNECT_IDENTITY_CONNECTIONS,
-    DISCONNECT_TENANT_CONNECTIONS,
     LIST_CONNECTIONS
 } from "./graphql/connections";
 import type { GenericRecord } from "@webiny/api/types";
@@ -141,17 +138,6 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
                 body: {
                     query: DISCONNECT_IDENTITY_CONNECTIONS,
                     variables: { identityId }
-                }
-            });
-        },
-        disconnectTenant: async (tenant: string) => {
-            return invoke<
-                IDisconnectTenantConnectionsResponse,
-                IDisconnectTenantConnectionsVariables
-            >({
-                body: {
-                    query: DISCONNECT_TENANT_CONNECTIONS,
-                    variables: { tenant }
                 }
             });
         },

@@ -13,6 +13,7 @@ import { processThreatScanResult } from "~/assetDelivery/threatDetection/process
 import type { GuardDutyEvent } from "~/assetDelivery/threatDetection/types.js";
 
 const FILE_ID = "6a44f74cceb47b00022d4d84";
+const CURRENT_TENANT = "root";
 
 const createConnection = (connectionId: string, tenant: string): ConnectionRegistry.Data => {
     return {
@@ -45,13 +46,11 @@ function setup() {
     container.registerInstance(IdentityContext, {
         withoutAuthorization: (cb: () => Promise<unknown>) => cb()
     } as unknown as IdentityContext.Interface);
+    // Like the real use case, lists the current tenant's connections only. The handler makes the
+    // file's tenant ("root" in these events) the current one before it calls processThreatScanResult.
     container.registerInstance(WebsocketsListConnectionsUseCase, {
-        async execute(params?: WebsocketsListConnectionsUseCase.Params) {
-            const tenant = params?.where?.tenant;
-            if (!tenant) {
-                return Result.ok(connections);
-            }
-            const listed = connections.filter(c => c.tenant === tenant);
+        async execute() {
+            const listed = connections.filter(c => c.tenant === CURRENT_TENANT);
             return Result.ok(listed);
         }
     });

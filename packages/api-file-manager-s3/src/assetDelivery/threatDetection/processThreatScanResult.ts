@@ -35,10 +35,11 @@ export const processThreatScanResult = async (
 
         const file = fileResult.value;
 
-        // Only the file's own tenant hears about it. Without a tenant, nobody does.
+        // Only the file's own tenant hears about it: the handler made it the current tenant, and the
+        // list is scoped to the current tenant. Without a tenant, nobody does.
         let allConnections: ConnectionRegistry.Data[] = [];
         if (tenant) {
-            const connectionsResult = await listConnections.execute({ where: { tenant } });
+            const connectionsResult = await listConnections.execute();
             if (connectionsResult.isOk()) {
                 allConnections = connectionsResult.value;
             }

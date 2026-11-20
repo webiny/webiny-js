@@ -5,7 +5,6 @@ import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.j
 
 export interface IWebsocketsListConnectionsParamsWhere {
     identityId?: string;
-    tenant?: string;
     connections?: string[];
 }
 
