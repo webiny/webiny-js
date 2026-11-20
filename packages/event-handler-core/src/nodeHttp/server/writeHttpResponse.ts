@@ -19,6 +19,15 @@ export async function writeHttpResponse(
     if (response.cookies && response.cookies.length > 0) {
         headers["set-cookie"] = response.cookies;
     }
+    // A server shutting down has set `connection: close` on the response; a route's own value would
+    // replace it in `writeHead` and keep the client sending requests on a connection about to close.
+    if (res.getHeader("connection") === "close") {
+        for (const name of Object.keys(headers)) {
+            if (name.toLowerCase() === "connection") {
+                delete headers[name];
+            }
+        }
+    }
 
     res.writeHead(response.statusCode, headers);
 

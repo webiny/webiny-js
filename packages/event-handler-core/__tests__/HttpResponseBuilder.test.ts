@@ -176,7 +176,14 @@ describe("HttpResponseBuilder.sse", () => {
         // `x-accel-buffering` nginx-family proxies buffer it. Either one silently defeats streaming.
         expect(headers["cache-control"]).toContain("no-transform");
         expect(headers["x-accel-buffering"]).toBe("no");
-        expect(headers["connection"]).toBe("keep-alive");
+    });
+
+    // `connection` is hop-by-hop: the transport decides it, and a server shutting down must be able
+    // to answer `close`.
+    it("should leave the connection header to the transport", () => {
+        const headers = new HttpResponseBuilder().sse(source()).toResponse().headers!;
+
+        expect(headers["connection"]).toBeUndefined();
     });
 
     /*
