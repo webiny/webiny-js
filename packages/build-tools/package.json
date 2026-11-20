@@ -24,7 +24,7 @@
     "@rsbuild/plugin-type-check": "^1.6.1",
     "@rsdoctor/rspack-plugin": "^1.6.5",
     "@rslib/core": "^1.0.7",
-    "@rspack/core": "^2.3.2",
+    "@rspack/core": "^2.3.3",
     "@swc/plugin-emotion": "^20.0.2",
     "@tailwindcss/postcss": "^4.3.5",
     "chalk": "^6.0.1",
