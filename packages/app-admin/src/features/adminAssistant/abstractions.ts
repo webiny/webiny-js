@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import type { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import type { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
+import type { AssistantClientTools } from "~/features/assistantClientTools/abstractions.js";
 
 /**
  * A message of a saved chat. Opaque on purpose: the admin only reads them to show an opened chat,
@@ -31,17 +32,35 @@ export interface AdminAssistantDecision {
     reason?: string;
 }
 
+/** A tool the screen runs in the browser, as the server is told of it. */
+export interface AdminAssistantClientToolDeclaration {
+    name: string;
+    description: string;
+    inputSchema: Record<string, unknown>;
+}
+
+/** A call the server paused on, for a tool the browser runs: the one `AssistantClientTools` runs. */
+export type AdminAssistantClientToolCall = AssistantClientTools.Call;
+
+/** What the browser reports back for one call: its output, or why it failed. */
+export type AdminAssistantClientToolResult = AssistantClientTools.Result;
+
 /**
- * A question, or the decisions on the calls a run paused on. The server reads the rest of the
- * conversation from the saved chat, so only its id is sent; without one, a question starts a chat.
+ * A question, or what a paused run waits for: decisions on its approvals and results of the calls
+ * the browser ran. The server reads the rest of the conversation from the saved chat, so only its id
+ * is sent; without one, a question starts a chat.
  */
 export interface AdminAssistantRequest {
     chatId?: string;
     prompt?: string;
     /** Approve or reject calls the server paused on. Needs the `chatId` of the paused run. */
     approvals?: AdminAssistantDecision[];
-    /** What the user had on screen when they asked. Sent with questions only. */
+    /** What the user had on screen when they asked. Sent with questions and with results. */
     pageContext?: AssistantPageContext.Data;
+    /** Tools the screen runs in the browser. Sent with every request. */
+    clientTools?: AdminAssistantClientToolDeclaration[];
+    /** Results of the browser calls the run paused on. Needs the `chatId` of the paused run. */
+    toolResults?: AdminAssistantClientToolResult[];
 }
 
 /**
@@ -58,6 +77,8 @@ export type AdminAssistantStreamEvent =
     | { type: "tool-error"; name: string; message: string }
     | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
+    // The run paused on calls the browser runs. Their results resume it.
+    | { type: "client-tools"; calls: AdminAssistantClientToolCall[] }
     // The run was saved, as a new chat or onto the one asked about.
     | { type: "saved"; chat: AiChatsRepository.Summary }
     // The run finished but the server could not save it. `retryable` says whether asking again could.
@@ -87,6 +108,9 @@ export namespace AdminAssistantGateway {
     export type ToolCall = AdminAssistantToolCall;
     export type PendingApproval = AdminAssistantPendingApproval;
     export type Decision = AdminAssistantDecision;
+    export type ClientToolDeclaration = AdminAssistantClientToolDeclaration;
+    export type ClientToolCall = AdminAssistantClientToolCall;
+    export type ClientToolResult = AdminAssistantClientToolResult;
     export type Request = AdminAssistantRequest;
     export type StreamEvent = AdminAssistantStreamEvent;
 }

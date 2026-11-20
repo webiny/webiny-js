@@ -9,6 +9,7 @@ import {
 import { AiPowerUpsSettingsFeature } from "./presentation/AiPowerUpsSettings/index.js";
 import { AiPowerUpsSettingsPage } from "./presentation/AiPowerUpsSettings/AiPowerUpsSettingsPage.js";
 import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
+import { WbAssistant } from "~/admin/presentation/WbAssistant/Extension.js";
 import { CmsContentGeneration } from "~/admin/presentation/CmsContentGeneration/Extension.js";
 import { CmsEntryWizardExtension } from "~/admin/presentation/CmsEntryWizard/Extension.js";
 import { CmsCompareEntryRevisions } from "~/admin/presentation/CmsCompareEntryRevisions/Extension.js";
@@ -69,6 +70,7 @@ export const Extension = () => {
             <AiPowerUpsSettings />
             {/* Website Builder Extension */}
             <WbContentGeneration />
+            <WbAssistant />
             {/* Headless CMS Extension */}
             <CmsContentGeneration />
             {/* CMS Revision Comparison */}

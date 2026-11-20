@@ -1,12 +1,11 @@
 import { makeAutoObservable, computed, toJS, runInAction } from "mobx";
-import { z } from "zod";
-import pick from "lodash/pick.js";
 import { ToolRegistry, ToolPipelineRunner } from "@webiny/app-admin";
 import type { FormModel } from "@webiny/app-admin";
 import type { FileValue } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { GenerateContentPresenter, type CreateElementsFn } from "./abstractions.js";
 import { GeneratePageContentUseCase } from "~/admin/features/generatePageContent/index.js";
 import { AiPromptFormFactory } from "~/admin/presentation/AiPromptFormFactory/abstractions.js";
+import { describeValueTools } from "~/admin/presentation/WbAiContext/describeValueTools.js";
 
 const SUBMIT_TIMEOUT_MS = 300_000;
 
@@ -77,12 +76,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
         this.startTimeout();
 
         try {
-            const tools = this.toolRegistry.getTools().map(tool => ({
-                name: tool.name,
-                description: tool.description,
-                inputSchema: pick(z.toJSONSchema(tool.inputSchema), ["properties", "type"]),
-                outputSchema: pick(z.toJSONSchema(tool.outputSchema), ["properties", "type"])
-            }));
+            const tools = describeValueTools(this.toolRegistry);
 
             const excludedFileIds = this.formFactory.computeExcludedFileIds(this._form);
             const additionalFileIds = data.additionalFiles?.map(f => f.id) ?? null;

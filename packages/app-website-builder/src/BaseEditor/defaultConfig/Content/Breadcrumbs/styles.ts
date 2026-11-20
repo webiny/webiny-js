@@ -5,10 +5,11 @@ export const breadcrumbs = css({
     zIndex: 100,
     flexDirection: "row",
     padding: 0,
+    // At the foot of the canvas column, in the height the canvas leaves for it (`data-affects-preview`).
     position: "absolute",
-    left: "var(--wb-spacing-toolbar)",
+    left: 0,
+    width: "100%",
     bottom: 0,
-    width: "calc(100% - calc(var(--wb-spacing-sidebar) * 2))",
     height: "31px",
     backgroundColor: "var(--color-neutral-dimmed)",
     borderTop: "1px solid var( --color-neutral-dimmed)",

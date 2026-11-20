@@ -637,3 +637,244 @@ describe("AdminAssistantUseCase chats", () => {
         expect(saves).toEqual([]);
     });
 });
+
+describe("AdminAssistantUseCase client tools", () => {
+    const addElements = {
+        name: "addPageElements",
+        description: "Adds elements to the page open in the editor.",
+        inputSchema: { type: "object", properties: { elements: { type: "array" } } }
+    };
+    const question: AdminAssistantParams = {
+        prompt: "add a hero",
+        decisions: [],
+        clientTools: [addElements]
+    };
+    const call = {
+        type: "tool-call",
+        toolCallId: "call-1",
+        toolName: "addPageElements",
+        input: { elements: [] }
+    };
+    const paused: ModelMessage[] = [
+        { role: "user", content: "add a hero" },
+        { role: "assistant", content: [call] } as unknown as ModelMessage
+    ];
+
+    it("offers the screen's tools with no execute and no approval", async () => {
+        const { useCase, requests } = setup();
+
+        await run(useCase, question);
+
+        const tools = requests[0].tools as Record<string, { execute?: unknown }>;
+        expect(tools["addPageElements"]).toBeDefined();
+        expect(tools["addPageElements"].execute).toBeUndefined();
+        const approval = requests[0].toolApproval as (options: {
+            toolCall: { toolName: string };
+        }) => string;
+        expect(approval({ toolCall: { toolName: "addPageElements" } })).toBe("not-applicable");
+    });
+
+    it("never lets a client tool replace a server tool of the same name", async () => {
+        const { useCase, requests } = setup();
+        const shadow = { ...addElements, name: "suggestFollowUps" };
+
+        await run(useCase, { ...question, clientTools: [shadow] });
+
+        const tools = requests[0].tools as Record<string, { execute?: unknown }>;
+        expect(tools["suggestFollowUps"].execute).toBeDefined();
+    });
+
+    it("hands a call to a client tool to the browser, after the run is saved", async () => {
+        const { useCase } = setup(undefined, [call]);
+
+        const events = await run(useCase, question);
+
+        expect(events.map(event => event.type)).toEqual([
+            "start",
+            "tool-call",
+            "client-tools",
+            "saved",
+            "done"
+        ]);
+        expect(events.find(event => event.type === "client-tools")).toEqual({
+            type: "client-tools",
+            calls: [{ toolCallId: "call-1", toolName: "addPageElements", input: { elements: [] } }]
+        });
+    });
+
+    it("resumes a paused run with the browser's results", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        await run(useCase, {
+            chatId: "c1",
+            decisions: [],
+            clientTools: [addElements],
+            toolResults: [
+                { toolCallId: "call-1", toolName: "addPageElements", output: { added: 1 } }
+            ]
+        });
+
+        expect(requests[0].messages).toEqual([
+            ...paused,
+            {
+                role: "tool",
+                content: [
+                    {
+                        type: "tool-result",
+                        toolCallId: "call-1",
+                        toolName: "addPageElements",
+                        output: { type: "json", value: { added: 1 } }
+                    }
+                ]
+            }
+        ]);
+    });
+
+    /*
+     * The SDK reads approval responses only from the last message. Decisions and results in two
+     * messages hid the decisions, so an approved change next to a browser call never ran.
+     */
+    it("answers an approval and a browser call waiting together in one message", async () => {
+        const both: ModelMessage[] = [
+            { role: "user", content: "add a hero and a folder" },
+            {
+                role: "assistant",
+                content: [
+                    {
+                        type: "tool-call",
+                        toolCallId: "call-0",
+                        toolName: "createFolder",
+                        input: { title: "Pages" }
+                    },
+                    { type: "tool-approval-request", approvalId: "a1", toolCallId: "call-0" },
+                    call
+                ]
+            } as unknown as ModelMessage
+        ];
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: both } });
+
+        await run(useCase, {
+            chatId: "c1",
+            decisions: [{ approvalId: "a1", approved: true }],
+            toolResults: [{ toolCallId: "call-1", toolName: "addPageElements", output: {} }]
+        });
+
+        const messages = requests[0].messages as ModelMessage[];
+        expect(messages).toHaveLength(3);
+        expect(messages[2]).toEqual({
+            role: "tool",
+            content: [
+                { type: "tool-approval-response", approvalId: "a1", approved: true },
+                {
+                    type: "tool-result",
+                    toolCallId: "call-1",
+                    toolName: "addPageElements",
+                    output: { type: "json", value: {} }
+                }
+            ]
+        });
+    });
+
+    it("passes a failed call on as an error result the model can correct", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        await run(useCase, {
+            chatId: "c1",
+            decisions: [],
+            toolResults: [
+                { toolCallId: "call-1", toolName: "addPageElements", error: "No such component." }
+            ]
+        });
+
+        const messages = requests[0].messages as ModelMessage[];
+        expect(messages[messages.length - 1]).toMatchObject({
+            role: "tool",
+            content: [{ output: { type: "error-text", value: "No such component." } }]
+        });
+    });
+
+    it("refuses results for a call that is not the one waiting", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        const events = await run(useCase, {
+            chatId: "c1",
+            decisions: [],
+            toolResults: [{ toolCallId: "call-old", toolName: "addPageElements", output: {} }]
+        });
+
+        expect(requests).toHaveLength(0);
+        expect(events.map(event => event.type)).toEqual(["error"]);
+    });
+
+    it("leaves a call the SDK could not parse to the SDK, which answers it", async () => {
+        const { useCase } = setup(undefined, [{ ...call, invalid: true }]);
+
+        const events = await run(useCase, question);
+
+        expect(events.map(event => event.type)).not.toContain("client-tools");
+    });
+
+    it("refuses a result saved under another tool's name than the call it answers", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        const events = await run(useCase, {
+            chatId: "c1",
+            decisions: [],
+            toolResults: [{ toolCallId: "call-1", toolName: "deletePageElements", output: {} }]
+        });
+
+        expect(requests).toHaveLength(0);
+        expect(events.map(event => event.type)).toEqual(["error"]);
+    });
+
+    it("keeps what a call that ran came to when a new question replaces the run", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        await run(useCase, {
+            chatId: "c1",
+            prompt: "never mind",
+            decisions: [],
+            toolResults: [
+                { toolCallId: "call-1", toolName: "addPageElements", output: { added: 1 } }
+            ]
+        });
+
+        const messages = requests[0].messages as ModelMessage[];
+        expect(messages[messages.length - 2]).toEqual({
+            role: "tool",
+            content: [
+                {
+                    type: "tool-result",
+                    toolCallId: "call-1",
+                    toolName: "addPageElements",
+                    output: { type: "json", value: { added: 1 } }
+                }
+            ]
+        });
+    });
+
+    it("answers a waiting call as not run before a new question", async () => {
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: paused } });
+
+        await run(useCase, { chatId: "c1", prompt: "never mind", decisions: [] });
+
+        expect(requests[0].messages).toEqual([
+            ...paused,
+            {
+                role: "tool",
+                content: [
+                    {
+                        type: "tool-result",
+                        toolCallId: "call-1",
+                        toolName: "addPageElements",
+                        output: {
+                            type: "error-text",
+                            value: "Not run: the user asked something else before it ran."
+                        }
+                    }
+                ]
+            },
+            { role: "user", content: "never mind" }
+        ]);
+    });
+});

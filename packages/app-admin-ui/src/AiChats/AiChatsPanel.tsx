@@ -6,6 +6,7 @@ import { IconButton } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { SidePanel } from "@webiny/admin-ui";
 import { AdminAssistantFeature } from "@webiny/app-admin";
+import type { AiChatsPanelProps } from "@webiny/app-admin";
 import { AiChatsPanelFeature } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
@@ -26,7 +27,13 @@ import { ChatHistory } from "./ChatHistory.js";
  * Docked beside the page rather than over it, so the admin stays usable: an answer that names a page
  * can be checked without closing the chat.
  */
-const AiChatsPanelBase = () => {
+const AiChatsPanelBase = ({
+    className = "h-main-content",
+    width,
+    onClose,
+    closeLabel = "Close AI chats",
+    closeIcon
+}: AiChatsPanelProps) => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const { identity } = useIdentity();
@@ -34,14 +41,16 @@ const AiChatsPanelBase = () => {
     const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
     const { vm } = presenter;
 
-    if (!aiEnabled || !vm.isOpen) {
+    // A host that passes `onClose` decides when the panel shows.
+    const isOpen = onClose ? true : vm.isOpen;
+    if (!aiEnabled || !isOpen) {
         return null;
     }
 
     const firstName = identity?.profile?.firstName ?? "";
     const openChatId = assistant.vm.chatId;
     const busy = assistant.vm.busy;
-    const close = () => presenter.close();
+    const close = onClose ?? (() => presenter.close());
     const startNew = () => presenter.startNew();
 
     if (vm.view === "history") {
@@ -65,7 +74,8 @@ const AiChatsPanelBase = () => {
                     ) : null
                 }
                 onClose={close}
-                closeLabel="Close AI chats"
+                closeLabel={closeLabel}
+                closeIcon={closeIcon}
                 headerExtra={
                     hasChats ? (
                         <Input
@@ -78,7 +88,8 @@ const AiChatsPanelBase = () => {
                         />
                     ) : null
                 }
-                className="h-main-content"
+                className={className}
+                width={width}
             >
                 <ChatHistory
                     vm={vm}
@@ -141,8 +152,10 @@ const AiChatsPanelBase = () => {
                 </>
             }
             onClose={close}
-            closeLabel="Close AI chats"
-            className="h-main-content"
+            closeLabel={closeLabel}
+            closeIcon={closeIcon}
+            className={className}
+            width={width}
         >
             <ChatConversation
                 assistant={assistant}

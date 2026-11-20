@@ -1,9 +1,12 @@
+import { WB_GRID_LAYOUTS } from "~/domain/wbGridLayouts.js";
+
 export function buildDomainPrompt(
     components: Array<{ name: string }>,
     tools: unknown,
     availableImageTags: string[]
 ): string {
     const componentNames = components.map(c => `"${c.name}"`).join(" | ");
+    const gridLayouts = WB_GRID_LAYOUTS.map(layout => `\`${layout}\``).join(", ");
     const tagListing =
         availableImageTags.length > 0
             ? availableImageTags.map(t => `\`${t}\``).join(", ")
@@ -73,7 +76,7 @@ Links:
 ${JSON.stringify(components, null, 2)}
 \`\`\`
 
-Grid layout options: \`12\`, \`6-6\`, \`4-4-4\`, \`8-4\`, \`4-8\`, \`3-3-3-3\`
+Grid layout options: ${gridLayouts}
 
 ### Available Tools
 
