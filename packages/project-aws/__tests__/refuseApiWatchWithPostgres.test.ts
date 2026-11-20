@@ -3,7 +3,7 @@ import type { IProjectConfigModel } from "@webiny/project/abstractions/models/in
 import type { ApiBeforeWatch } from "@webiny/project/abstractions/index.js";
 import type { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import type { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
-import { Postgres } from "@webiny/project-extensions-aws/extensions/Postgres.js";
+import { AuroraPostgresCluster as Postgres } from "@webiny/project-extensions-aws/extensions/AuroraPostgresCluster.js";
 import { RefuseApiWatchWithPostgresImpl } from "~/extensions/ProjectAws/RefuseApiWatchWithPostgres.js";
 
 type ExtensionParams = Record<string, unknown>;

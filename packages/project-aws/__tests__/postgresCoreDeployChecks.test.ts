@@ -6,13 +6,11 @@ import type { GetProductionEnvironments } from "@webiny/project/abstractions/ind
 import type { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 import type { CoreStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
 import { Vpc } from "@webiny/project-extensions-aws/extensions/Vpc.js";
-import { Postgres } from "@webiny/project-extensions-aws/extensions/Postgres.js";
-import { RdsProxy } from "@webiny/project-extensions-aws/extensions/RdsProxy.js";
+import { AuroraPostgresCluster as Postgres } from "@webiny/project-extensions-aws/extensions/AuroraPostgresCluster.js";
 import { PulumiOpenSearch } from "@webiny/project-extensions-aws/extensions/PulumiOpenSearch.js";
 import { BlueGreenDeployments } from "@webiny/project-extensions-aws/extensions/BlueGreenDeployments.js";
 import { DatabaseSetup } from "@webiny/project/extensions/index.js";
 import { ValidatePostgresBeforeCoreDeployImpl } from "~/extensions/Postgres/ValidatePostgresBeforeCoreDeploy.js";
-import { EnsurePostgresWithRdsProxyImpl } from "~/extensions/RdsProxy/EnsurePostgresWithRdsProxy.js";
 import { EnsurePostgresSetupUnchangedImpl } from "~/extensions/ProjectAws/EnsurePostgresSetupUnchanged.js";
 
 type ExtensionParams = Record<string, unknown>;
@@ -155,26 +153,6 @@ describe("deploy core with <Infra.Postgres />", () => {
 
         await expect(
             validatePostgres([POSTGRES, VPC_ENABLED, [BlueGreenDeployments, blueGreenDisabled]])
-        ).resolves.toBeUndefined();
-    });
-});
-
-describe("deploy core with <Infra.RdsProxy enabled />", () => {
-    const ensurePostgres = (extensions: Array<[unknown, ExtensionParams]>) =>
-        new EnsurePostgresWithRdsProxyImpl(
-            getProjectConfigService(projectConfigWith(extensions))
-        ).execute();
-
-    it("stops without <Infra.Postgres />, and says to add it", async () => {
-        const result = await failure(ensurePostgres([[RdsProxy, { enabled: true }]]));
-
-        expect(result.reason).toBe("Cannot deploy an RDS Proxy without Postgres.");
-        expect(result.message).toContain("<Infra.Postgres />");
-    });
-
-    it("passes with <Infra.Postgres />", async () => {
-        await expect(
-            ensurePostgres([POSTGRES, [RdsProxy, { enabled: true }]])
         ).resolves.toBeUndefined();
     });
 });

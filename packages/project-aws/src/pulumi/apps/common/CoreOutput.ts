@@ -40,8 +40,8 @@ export interface ICoreOutput {
     opensearchDynamodbTableArn: string | undefined;
     opensearchDynamodbTableName: string | undefined;
     /*
-     * Set with `<Infra.Postgres />`. The password is in the `pgSecretArn` secret, never here.
-     * `pgProxyHost` is set with `<Infra.RdsProxy enabled />` too.
+     * Set with `<Infra.AuroraPostgres />`. The password is in the `pgSecretArn` secret, never here.
+     * `pgProxyHost` is set with `<Infra.AuroraPostgres rdsProxy />` only.
      */
     pgWriterHost: string | undefined;
     pgReaderHost: string | undefined;

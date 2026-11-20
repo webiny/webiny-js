@@ -1,6 +1,6 @@
 export * from "./OpenSearch.js";
-export * from "./Postgres.js";
-export * from "./RdsProxy.js";
+export * from "./AuroraPostgresCluster.js";
+export { AuroraPostgres } from "@webiny/project-extensions-aws/extensions/index.js";
 export { AwsDefaultRegion, AutoInstall } from "@webiny/project-extensions-aws/extensions/index.js";
 export * from "./ProjectAws.js";
 export * from "./ApiLambdaFunction.js";

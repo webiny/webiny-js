@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { postgresParamsSchema } from "~/extensions/Postgres.js";
+import {
+    auroraPostgresClusterParamsSchema,
+    auroraPostgresParamsSchema as postgresParamsSchema
+} from "~/extensions/AuroraPostgresCluster.js";
 import { Vpc } from "~/extensions/Vpc.js";
 
-describe("<Infra.Postgres> params", () => {
+describe("<Infra.AuroraPostgres> params", () => {
     it("accepts no params, so every setting has a default", () => {
         expect(postgresParamsSchema.safeParse({}).success).toBe(true);
     });
@@ -40,15 +43,48 @@ describe("<Infra.Postgres> params", () => {
         );
     });
 
-    it("accepts a whole-number poolSize from 1 to 64, and rejects anything else", () => {
-        expect(postgresParamsSchema.safeParse({ poolSize: 1 }).success).toBe(true);
-        expect(postgresParamsSchema.safeParse({ poolSize: 8 }).success).toBe(true);
-        expect(postgresParamsSchema.safeParse({ poolSize: 64 }).success).toBe(true);
+    it("accepts rdsProxy as a boolean only", () => {
+        expect(postgresParamsSchema.safeParse({ rdsProxy: true }).success).toBe(true);
+        expect(postgresParamsSchema.safeParse({ rdsProxy: false }).success).toBe(true);
+        expect(postgresParamsSchema.safeParse({ rdsProxy: "yes" }).success).toBe(false);
+    });
 
-        expect(postgresParamsSchema.safeParse({ poolSize: 0 }).success).toBe(false);
-        expect(postgresParamsSchema.safeParse({ poolSize: -1 }).success).toBe(false);
-        expect(postgresParamsSchema.safeParse({ poolSize: 65 }).success).toBe(false);
-        expect(postgresParamsSchema.safeParse({ poolSize: 2.5 }).success).toBe(false);
+    it("has no poolSize, which is internal", () => {
+        const result = postgresParamsSchema.safeParse({ poolSize: 4 });
+
+        expect(result.success).toBe(true);
+        expect(result.data).toEqual({});
+    });
+});
+
+describe("the internal Aurora cluster's params", () => {
+    it("are the public ones, with the same checks", () => {
+        expect(
+            auroraPostgresClusterParamsSchema.safeParse({
+                minCapacity: 0.5,
+                maxCapacity: 32,
+                readers: 2,
+                rdsProxy: true
+            }).success
+        ).toBe(true);
+        expect(
+            auroraPostgresClusterParamsSchema.safeParse({ minCapacity: 8, maxCapacity: 4 }).success
+        ).toBe(false);
+        expect(auroraPostgresClusterParamsSchema.safeParse({ maxCapacity: 3.3 }).success).toBe(
+            false
+        );
+    });
+
+    it("accept a whole-number poolSize from 1 to 64, and reject anything else", () => {
+        const schema = auroraPostgresClusterParamsSchema;
+        expect(schema.safeParse({ poolSize: 1 }).success).toBe(true);
+        expect(schema.safeParse({ poolSize: 16 }).success).toBe(true);
+        expect(schema.safeParse({ poolSize: 64 }).success).toBe(true);
+
+        expect(schema.safeParse({ poolSize: 0 }).success).toBe(false);
+        expect(schema.safeParse({ poolSize: -1 }).success).toBe(false);
+        expect(schema.safeParse({ poolSize: 65 }).success).toBe(false);
+        expect(schema.safeParse({ poolSize: 2.5 }).success).toBe(false);
     });
 });
 
