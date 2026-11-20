@@ -2033,7 +2033,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 continue;
             }
             const teamIds = this.references.userTeamIds.get(label.id) ?? [];
-            users.push({ id: label.id, displayName: label.label, teamIds });
+            users.push({ id: label.id, displayName: label.label, teamIds, teams: [] });
         }
         return users;
     }

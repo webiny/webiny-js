@@ -565,6 +565,8 @@ Four lists as tabs (Assigned to me, Pool, Team in review, My requests). Filters:
 
 _Refined by D133: one Content Reviews view per app; see also D112, D113, D119._
 
+_Refined by D190: the four tabs became the scope control and the filters became the state control, which applies in every scope._
+
 ## D95. UI: rule inspector
 
 "Test routing" panel in the review step's assignment section. Inputs: requester user, folder. Output: resulting owner or pool, plus a per-rule trace (matched, not matched, skipped with reason) and the strategy's choice. Evaluates the unsaved step config in the editor, so `inspectRouting` accepts a step config (not only a step id).
@@ -653,6 +655,8 @@ Content Reviews gets a fifth tab, **Failed steps**, shown only to users with Rea
 
 _Refined by D133: per app; the app wrapper shows the tab and runs the query only with `reassign`._
 
+_Reversed by D190: there is no Failed steps tab; Failed is a list state, and All with Failed is this view._
+
 ## D113. "Content type" in lists
 
 Content Reviews, its filters and the dashboard widgets call the model column and filter **Content type**, shown as name plus app (e.g. "Article · Headless CMS", "Pages · Website Builder"; Pages listed first). "Model" stays where an admin works with a specific CMS model (workflow editor, model delete). Adopts the designer's UI-9. Resolves gap A12 from the design review.
@@ -675,6 +679,8 @@ The editor's model list loads 20 models at a time, sorted by name, with "Load mo
 
 _Refined by D133: the editor's model list is a CMS operation; the WB editor has the single item Pages and needs no list._
 
+_Refined by D198: the list query takes `hasWorkflow`, filtered on the server before paging._
+
 ## D117. Editor resolves saved references for display
 
 When the editor loads a workflow, saved user and folder references (rule targets, folder conditions) are resolved by id so a value is never shown empty. A user that no longer exists shows as "Deleted user" with the warning "The assigned user was deleted."; routing already skips such a rule (D46). Folders use the D69 checks: "Restricted folder" when the admin cannot see it, "Deleted folder" with "The folder no longer exists." when it is gone. The user lookup accepts a list of ids and reports which ones do not exist. From design answer QBZ-7.
@@ -694,6 +700,8 @@ Each review keeps a `lastChangedOn` timestamp, updated on every review event: re
 
 _Refined by D133: sorting and paging apply within one app's list._
 
+_Refined by D190 and D191: the default sort depends on scope and state, and the list can also be sorted by title._
+
 ## D120. Step descriptions are shown to users
 
 A step's description is shown to the requester in the Request review steps preview and to everyone with access in Review details, under the step name. The steps preview and Review details queries return it. Placeholders in the editor differ per step type. From design answer QBZ-46.
@@ -701,6 +709,8 @@ A step's description is shown to the requester in the Request review steps previ
 ## D121. Unpublished approved revisions can be republished
 
 An approved revision that was published and later unpublished can be published again without a new review: the approval covers the revision's content, which cannot change after approval. The review bar keeps "Review: Approved" with Publish enabled; the editor tag shows the app's own "Unpublished" status; the read-only reason is the app's usual one for non-draft revisions. Applies to CMS entries and Website Builder pages. Resolves final-check item H1.
+
+_Refined by D192: the bar shows the "Approved" tag, not "Review: Approved"._
 
 ## D122. Unavailable step types are shown disabled
 
@@ -959,6 +969,8 @@ Message texts follow the design copy, simplified where the data is not at hand (
 A message contains only the content title, step titles, display names of people in the review, the clamped comment, the fixed failure reason and (websocket) ids and the namespace, (e-mail) the link; never field values, model names, team names or error text. The e-mail link is the admin host from service discovery (no manifest, no link), the path from the target's app through the `ReviewTargetLink` port (CMS content entry, Website Builder page editor, mirroring the admin routes) and the current tenant's id (the review's own tenant) as the `tenantId` query parameter; the websocket carries no URL.
 
 Covers R189, R195, R200, A62. Refines D44, D107, D126, D133. Decided 2026-10-15 (phase 7 plan R189, R195, R200).
+
+_Reversed in part by D196: team names in the pool message, the e-mail details table, and review details links for Reassigned and Failed. D196 lists the clauses that still hold._
 
 ## D156. Failure handling and latency
 
@@ -1229,3 +1241,117 @@ Decided 2026-10-23 (second review pass of #6071, user decision).
 **Refines** R266 (restart only).
 
 Decided 2026-10-26 (second review pass of #6037 and #6046, user decisions).
+
+## D190. Content Reviews list: scope and state
+The Content Reviews list has two controls instead of five tabs. Scope says whose reviews: Assigned to me, Team pool, Team in review, Requested by me, All. State says where they are: All, In review, Failed, Approved, Rejected. The two combine with AND. In review is an in-progress review whose current step has not failed, Failed is an in-progress review whose current step failed.
+
+There is no Failed steps tab any more. Failed steps are now the state Failed, which works in every scope, so a requester can also filter their own requests by it. State applies in every scope, not only in My requests.
+
+"All" is every review the viewer can read. For now it is offered only to viewers with `reassign` or full access (each app wrapper refuses it for others), so All with Failed is the old operators' Failed steps view. Its final meaning and audience are with the designer. Opening it to everyone is one line in each app wrapper.
+
+Pairs that can never have rows are disabled in the admin and answered by the server without a query: Team pool with Failed, Approved or Rejected (the pool holds only waiting steps), Assigned to me with Failed and Team in review with Failed (a failed step is AI or automation and has no user owner). One pure function, `isEmptyReviewListFilter`, exists in the engine and is mirrored in the admin. A scope switch keeps the state unless the pair is empty by definition, then the scope's default state applies: In review for the work queues, All for Requested by me and All.
+
+Default sort: oldest change first for Team pool at any state and for Assigned to me, Team in review and All at In review or Failed; newest first otherwise. A scope or state change resets the sort, the search and the content type.
+
+The GraphQL change is breaking (`next` is unreleased): `listCmsEntryReviews` and `listWebsiteBuilderPageReviews` take `scope` and `where.state` in place of `list`, `where.reviewState` and `where.stepState`.
+
+**Reverses** D112 (no Failed steps tab). **Refines** D94 (the state filter now applies on every scope, the tabs are controls) and D119 (the default sort). D133 still holds: the lists exist per app.
+
+Decided 2026-11-19 (user answers, Batch B2 items 1 and 2), built 2026-11-20 (`dd24dc8b09`).
+
+## D191. The list can be sorted by name
+The Content Reviews list can be sorted by title as well as by last change (`title_ASC`, `title_DESC`). The review model stores a storage-only `titleSortKey`, written by `ReviewEntryMapper.toValues` and never mapped out of storage. It is the UTF-8 hex of the trimmed, lower-cased title, cut to 200 hex characters.
+
+Hex is used because a storage test showed that OpenSearch range filters (`_gte`, `_lte`) on a text field compare analysed tokens, so a plain lower-cased key did not page in sort order there. A hex string is one token and orders the same on DynamoDB, SQL and OpenSearch. Titles longer than 100 bytes tie after the cut, and the cursor handles a tie like any other.
+
+The list cursor is `{ sort, value, ids }`: the sort it was made with, the sort value of the last row examined and the ids of every row examined at that value. A cursor made with another sort is refused. A review saved before the key existed has none until its next save and drops out of title-sorted pages after the first.
+
+**Refines** D119 (lists sorted only by last change).
+
+Decided 2026-11-19 (user decision), built 2026-11-20 (`dd24dc8b09`).
+
+## D192. The review state tag shows only on a finished review
+The review bar and the details drawer show a review state tag only when the review is finished: "Approved" (success) or "Rejected" (red). There is no "Review:" prefix. While a review is in progress only the step tag shows. A finished review shows no step line, step tag or owner, in both apps.
+
+**Reverses** the earlier tag decisions: the "Review: {state}" tag on every review, and the step line on a rejected review (design review items QBZ-52, Q29 and Q30). **Refines** D121: the bar of an approved, later unpublished revision now shows the "Approved" tag, not "Review: Approved".
+
+Decided 2026-11-19 (design answers 11 and 13), built in `cae90140b2`.
+
+## D193. Cancel review and Reassign are in a "More review actions" menu
+Cancel review and Reassign are not buttons any more. On the review bar they are in a "More review actions" overflow menu next to the buttons. The footer of the Review details drawer mirrors the bar, with the same menu. The steps popover on the bar is removed; the progress text stays next to the bar.
+
+Every other action stays a button. The dialogs, flags and confirmations of the two actions are unchanged, and Cancel review keeps its red confirm.
+
+**Refines** the review bar of phase 8a. Decided 2026-11-19 (design answers 8, 10 and 17), built in `cae90140b2`.
+
+## D194. The Reject confirm is a primary button
+The confirm button of the Reject dialog is `primary`. Cancel review keeps a destructive confirm. The Reject button on the bar and in the drawer footer is unchanged (`secondary`).
+
+**Reverses** the earlier choice that Reject confirms in red (design comparison item C5). Decided 2026-11-19 (user decision), built in `cae90140b2`.
+
+## D195. Website Builder shares the CMS lock texts
+The Website Builder page editor uses the same lock texts as the CMS entry editor again. The per-app texts added in Batch A are removed. The page editor shows no read-only alert for an approved or rejected review in any state; the locks themselves (`allowsEditing`, `allowsPublishing`) are unchanged.
+
+**Refines** D121 (the read-only reason is the app's usual one). Decided 2026-11-19 (design answer 12), built in `cae90140b2`.
+
+## D196. Notifications: team names, review details links, the designed e-mail
+Three changes to what a notification says and links to.
+
+- **Team names in the pool message.** The pool message names the recipient's own teams among the step's candidate teams: "“{title}” is waiting in the Legal and Marketing team pool." (`joinTeamNames`: "A", "A and B", "A, B and C"). Recipients are grouped by their team set and the notifier sends one delivery per distinct text, so the batch is split by team set. Without a team name (a failed lookup, deleted teams) the text says "the team pool".
+- **Review details links.** The Reassigned message to the previous owner and the Failed message link to the content with Review details open: the content URL gets a `reviewId` query parameter, and the admin opens the drawer for it and removes the parameter when the drawer closes. The link kind of a message is `"content"` or `"reviewDetails"`, with the label "Open content" or "View review details". Every other message still links to the content.
+- **E-mail layout.** The e-mail has a generic greeting ("Hi,"), the message, a details table (Content as "{content type} · {title}", Step as "{n} of {count} · {step title}", Requested by), the link as a button and a footer saying why the person got it: one footer each for step reviewers, the requester and the previous owner (the Cancelled and Taken over e-mails use the previous-owner footer). There is still one send per bcc chunk and per delivery, so the greeting is the same for everyone. The content type name is snapshotted into the review's target context when the review is requested (CMS: the model name; Website Builder: "Page"); older reviews have none and the table shows the title alone.
+
+The Rejected in-app text is "{decider}: “{comment}”. Create a new revision to fix it."
+
+**Reverses** these clauses of D155: "no team name", "no detail card in the e-mail", "every link opens the content" and "never ... model names, team names". A message may now also hold a team name of the recipient and, in the e-mail table, the content type name and the requester's name.
+
+**Still holds from D155**: no rule name in the assignment reason; no per-recipient greeting (the greeting is generic); the three cancel texts and the rule that any other cancel reason is never printed; AI and automation deciders are named by their step title, a blank person name reads `A user`, the comment is clamped to 300 characters; a message holds no field values and no error text; the e-mail link is the admin host from service discovery with the path from the target's app and the review's tenant as `tenantId` (no host, no link); the websocket message carries no URL.
+
+**Refines** D156: handlers still never throw; there is now one mail per delivery and bcc chunk instead of one per event.
+
+Decided 2026-11-19 (design answers 33 to 35, user confirmed the e-mail 2026-11-20), built 2026-11-20 (`dd24dc8b09`). Developer guide: `docs/.bruno/workflows/notifications.md`.
+
+## D197. Reviewer exclusions: name search, no info card
+The Reviewer exclusions page has a "Search by name" box instead of the "All users" filter. It filters the loaded rows on the client. The four-point info card is removed. A search with no match shows "No one matches “{query}”" with a Clear search button; the Expired tab shows "No expired exclusions".
+
+**Refines** D178 and D180 (the page and its picker; the page still lives under Settings). Decided 2026-11-19 (design answers 26 and 29), built in `cae90140b2`.
+
+## D198. Workflow editor: model filter and per-model menu
+The editor's left panel keeps listing content models (D116). It gains a Workflow filter, All / With / Without, which is a server parameter: `listCmsEntryWorkflowModels` takes `hasWorkflow: Boolean` and filters before paging, with the one workflow list call it already made. Each model has a menu with one item: Create workflow on a model without a workflow, Delete workflow on a model with one.
+
+Kept by decision, against the canvas: the left panel lists content models, not workflows (design answer 19); steps keep their numbers and the Move up and Move down controls (answer 20, interim, until the designer answers).
+
+**Refines** D116. Decided 2026-11-19 (design answers 19, 20 and 22), built 2026-11-20 (`dd24dc8b09`, `a671eb5466`).
+
+## D199. Navigation stays per app
+Content Reviews and Workflows stay in each app's own menu (CMS, Website Builder), and Reviewer exclusions stays under Settings. The canvas draws one "Publishing workflows" group; it is not built.
+
+**Confirms** D133 and D178. Decided 2026-11-19 (design answers 7 and 36).
+
+## D200. The design canvas is ahead of `admin-ui`; porting is part of the work
+The canvas "Publishing Workflows — Webiny DS 2.0" is a claude.ai artifact. Its design system (`project/ds/webiny/components/bundle.js`) is ahead of `packages/admin-ui`: DS 2.0 does not exist in code. Components the canvas uses and `admin-ui` lacks are ported to `admin-ui` as part of this work: `WorkflowStatus`, `Pagination`, `ButtonGroup`, sortable and selectable `Table`, `Switch variant` and `inline`, `Alert size`, `RadioGroup inline`, `Accordion spacing`, `ProgressBar trailing`, `Toast status`, `Drawer headerExtra` and `footerStart`. The ports are additive and change no defaults. Until a component is ported, workflows uses the existing `admin-ui` components and adds no colours or visuals of its own.
+
+Decided 2026-11-19 (plan `docs/.bruno/plans/2026-11-19-workflows-ds2-design-match.md`, Batch C).
+
+## D201. Team names reach the admin through field resolvers on the per-request loader
+Three places now show team names to people who cannot call the editor's team list:
+
+- `WorkflowsListedUser.teams`: the teams of each listed user. The Reviewer exclusions table shows them under the name and the user picker shows them as the option's second line.
+- `WorkflowsStep.candidateTeams`: the reviewing teams of a review step. The Request review dialog uses it for "Nobody in {teams} other than you can review this step. Ask a workflow manager to add reviewers."
+- Both resolve through `ListReviewCandidateTeamsUseCase` and its per-request loader, so one response costs one team list call however many rows it has. A failed lookup gives `[]`.
+
+Only the id and the name are exposed, as in D158.
+
+**Reverses** D180 ("no team sub-lines") and the "never team names" part of D170 for these fields. **Extends** D158 to workflow steps. Decided 2026-11-19 (design answers 14 and 27), built 2026-11-20.
+
+## D202. An automation names its one key setting
+`IAutomationDefinition.keySetting` is the name of one top-level property of the definition's `settingsSchema`. It goes out as `WorkflowsAutomationDefinition.keySetting`, or null when unset or not a property of the schema (logged once with a fixed message). The workflow editor shows it in an expanded automation step as one row: the property's schema `title` (or the key) and its value, when the value is a string, number or boolean, or a list of those. The editor no longer special-cases `url`.
+
+No automation definition ships in a source package yet, so nothing sets it today.
+
+**Refines** D14 and D35. Decided 2026-11-19 (design answer 25), built 2026-11-20.
+
+## D203. The content model filter sits behind a Filter button
+On the Headless CMS Content Reviews page the content model picker is in a popover behind a "Filter" button, which reads "Filter · 1" while a model is chosen. Website Builder has one content type and shows no button.
+
+**Refines** D113. Decided 2026-11-19 (design answers 5 and 6), built 2026-11-20.

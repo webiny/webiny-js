@@ -56,6 +56,7 @@ describe("CmsReviewGateway", () => {
         expect(request.variables).toBeUndefined();
         expect(request.query).toContain("listCmsEntryWorkflows");
         expect(request.query).toContain(WORKFLOW_FIELDS);
+        expect(request.query).toContain("candidateTeams");
     });
 
     it("reads the target review by model id and revision id", async () => {

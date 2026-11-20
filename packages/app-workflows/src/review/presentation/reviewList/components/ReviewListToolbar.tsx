@@ -4,7 +4,7 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { ReviewListPresenter } from "../abstractions.js";
-import { ReviewContentTypePicker } from "./ReviewContentTypePicker.js";
+import { ReviewContentTypeFilter } from "./ReviewContentTypeFilter.js";
 
 export interface ReviewListToolbarProps {
     presenter: ReviewListPresenter.Interface;
@@ -19,8 +19,8 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     let contentTypeSelect: React.ReactNode = null;
     if (showContentType && contentTypeFilter) {
         contentTypeSelect = (
-            <div data-role="toolbar-filter" className="w-2xs shrink-0">
-                <ReviewContentTypePicker
+            <div data-role="toolbar-filter" className="shrink-0">
+                <ReviewContentTypeFilter
                     options={contentTypeFilter.options}
                     value={vm.contentTypeId}
                     onChange={value => void presenter.setContentType(value)}

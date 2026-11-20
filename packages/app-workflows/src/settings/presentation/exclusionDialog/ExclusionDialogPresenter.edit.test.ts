@@ -18,10 +18,15 @@ import { createFakeExclusionsSource } from "~/settings/testing/fakeExclusionsSou
 import type { FakeExclusionsSource } from "~/settings/testing/fakeExclusionsSource.js";
 import { createExclusion } from "~/settings/testing/settingsFixtures.js";
 
-const ANA_NAME: ExclusionUserName = { userId: "user-ana", label: "Ana Kovač", state: "found" };
+const ANA_NAME: ExclusionUserName = {
+    userId: "user-ana",
+    label: "Ana Kovač",
+    state: "found",
+    teamNames: []
+};
 
 const deletedName = (userId: string): ExclusionUserName => {
-    return { userId, label: "Deleted user", state: "deleted" };
+    return { userId, label: "Deleted user", state: "deleted", teamNames: [] };
 };
 
 interface OpenEditParams {

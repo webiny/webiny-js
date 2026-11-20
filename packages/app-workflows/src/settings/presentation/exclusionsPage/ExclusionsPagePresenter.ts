@@ -35,7 +35,7 @@ const TABS: ExclusionTabVm[] = [
 
 // A user the page has no name for yet: the row shows the raw id (R321).
 const toUnknownName = (userId: string): ExclusionUserName => {
-    return { userId, label: userId, state: "unknown" };
+    return { userId, label: userId, state: "unknown", teamNames: [] };
 };
 
 const isNotAuthorized = (error: unknown): boolean => {
@@ -234,7 +234,12 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         const user = params.user;
         if (user !== null) {
             const names = new Map(this.names);
-            names.set(user.id, { userId: user.id, label: user.displayName, state: "found" });
+            names.set(user.id, {
+                userId: user.id,
+                label: user.displayName,
+                state: "found",
+                teamNames: user.teams.map(team => team.name)
+            });
             this.names = names;
         }
         // After an add the new entry is active, so the Active tab shows it (Q66).

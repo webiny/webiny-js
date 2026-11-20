@@ -128,7 +128,12 @@ const INSPECTION: RoutingInspection = {
     skipped: []
 };
 
-const IVAN: WorkflowUserSummary = { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"] };
+const IVAN: WorkflowUserSummary = {
+    id: "user-1",
+    displayName: "Ivan Horvat",
+    teamIds: ["team-1"],
+    teams: []
+};
 const PARTNERS: AppFolder = { id: "f2", path: "/Partners" };
 
 const createSetup = () => {

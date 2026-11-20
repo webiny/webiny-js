@@ -120,7 +120,8 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
         expect(presenter.getUserName("user-ana")).toEqual({
             userId: "user-ana",
             label: "Ana Kovač",
-            state: "found"
+            state: "found",
+            teamNames: []
         });
     });
 
@@ -147,7 +148,8 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
         expect(presenter.getUserName("user-dan")).toEqual({
             userId: "user-dan",
             label: "Dan Novak",
-            state: "found"
+            state: "found",
+            teamNames: []
         });
         expect(presenter.vm.rows.map(row => row.label)).toEqual(["Dan Novak", "user-ana"]);
     });

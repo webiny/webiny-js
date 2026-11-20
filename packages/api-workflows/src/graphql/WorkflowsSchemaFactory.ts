@@ -12,6 +12,8 @@ import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStep
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
 import { ListWorkflowTeamsUseCase } from "~/features/config/ListWorkflowTeams/index.js";
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
+import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
+import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 
 interface GetSettingsArgs {
@@ -46,6 +48,23 @@ interface StepCandidateTeamsParent {
 
 interface StepCandidateTeamsResolverArgs {
     parent: StepCandidateTeamsParent;
+}
+
+interface ListedUserTeamsParent {
+    teamIds?: string[] | null;
+}
+
+interface ListedUserTeamsResolverArgs {
+    parent: ListedUserTeamsParent;
+}
+
+interface WorkflowStepParent {
+    type?: string | null;
+    config?: unknown;
+}
+
+interface WorkflowStepCandidateTeamsResolverArgs {
+    parent: WorkflowStepParent;
 }
 
 interface ListSearchArgs {
@@ -183,6 +202,8 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         type: String!
         notifications: [WorkflowsStepNotification!]!
         config: JSON
+        "The teams of a review step by name, in the step's order; empty for every other step type."
+        candidateTeams: [WorkflowsTeam!]!
     }
 
     type WorkflowsWorkflow {
@@ -484,6 +505,8 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         models: [String!]!
         "JSON schema of the settings the workflow author fills in when adding the step."
         settingsSchema: JSON
+        "The name of the one top-level setting that identifies what the step does; null when the definition has none."
+        keySetting: String
     }
 
     type WorkflowsAutomationDefinitionListResponse {
@@ -528,6 +551,8 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         id: ID!
         displayName: String!
         teamIds: [String!]!
+        "The user's teams by name, sorted by name (D170); a team that no longer exists is left out."
+        teams: [WorkflowsTeam!]!
     }
 
     type WorkflowsUserListResult {
@@ -654,6 +679,70 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         logger.error(
                             { err: error },
                             "Could not resolve the teams of a step candidate."
+                        );
+                        return [];
+                    }
+                };
+            }
+        });
+
+        // The listed users of one response resolve in the same tick, so the loader reads their
+        // teams once per request. Sorted by name; a failed lookup never fails the list.
+        builder.addResolver({
+            path: "WorkflowsListedUser.teams",
+            dependencies: [ListReviewCandidateTeamsUseCase, Logger],
+            resolver: (
+                listTeams: ListReviewCandidateTeamsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
+                return async ({ parent }: ListedUserTeamsResolverArgs) => {
+                    try {
+                        const result = await listTeams.execute({ teamIds: parent.teamIds ?? [] });
+                        if (result.isFail()) {
+                            // The use case logged the failure.
+                            return [];
+                        }
+                        return [...result.value].sort((a, b) => a.name.localeCompare(b.name));
+                    } catch (error) {
+                        logger.error(
+                            { err: error },
+                            "Could not resolve the teams of a listed user."
+                        );
+                        return [];
+                    }
+                };
+            }
+        });
+
+        // A review step names its teams in its config; every other step type has none. The steps
+        // of one workflow resolve in the same tick, so the loader reads their teams once.
+        builder.addResolver({
+            path: "WorkflowsStep.candidateTeams",
+            dependencies: [ListReviewCandidateTeamsUseCase, Logger],
+            resolver: (
+                listTeams: ListReviewCandidateTeamsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
+                return async ({ parent }: WorkflowStepCandidateTeamsResolverArgs) => {
+                    if (parent.type !== REVIEW_STEP_TYPE) {
+                        return [];
+                    }
+                    const config = parseReviewStepConfig(parent.config);
+                    if (!config) {
+                        return [];
+                    }
+                    try {
+                        const result = await listTeams.execute({ teamIds: config.teams });
+                        if (result.isFail()) {
+                            // The use case logged the failure.
+                            return [];
+                        }
+                        const teams = new Map(result.value.map(team => [team.id, team]));
+                        return config.teams.flatMap(teamId => teams.get(teamId) ?? []);
+                    } catch (error) {
+                        logger.error(
+                            { err: error },
+                            "Could not resolve the teams of a workflow step."
                         );
                         return [];
                     }

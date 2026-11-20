@@ -33,7 +33,8 @@ const createUseCaseFakes = () => {
                 description: "Reads the copy.",
                 type: "review",
                 allowManualPick: true,
-                assignedAutomatically: false
+                assignedAutomatically: false,
+                candidateTeamNames: []
             },
             {
                 id: "tone",
@@ -42,7 +43,8 @@ const createUseCaseFakes = () => {
                 description: null,
                 type: "ai",
                 allowManualPick: false,
-                assignedAutomatically: false
+                assignedAutomatically: false,
+                candidateTeamNames: []
             }
         ]
     });

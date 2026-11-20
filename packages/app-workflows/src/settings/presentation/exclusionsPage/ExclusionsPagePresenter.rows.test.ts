@@ -84,6 +84,31 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-ana", "user-ben"]);
     });
 
+    it("shows the team names of a looked-up user as the row's sub line", async () => {
+        const setup = createExclusionsPageSetup(createThree());
+        setup.listWorkflowUsers.execute.mockImplementation(async params => {
+            const answered = await answerLookup(params);
+            const users = answered.users.map(user => {
+                if (user.id !== "user-ana") {
+                    return user;
+                }
+                return {
+                    ...user,
+                    teams: [
+                        { id: "t1", name: "Editors" },
+                        { id: "t2", name: "Legal" }
+                    ]
+                };
+            });
+            return { ...answered, users };
+        });
+        await setup.presenter.init({ canManage: true, timeZone: ZAGREB });
+
+        const rows = setup.presenter.vm.rows;
+        expect(rows.find(row => row.userId === "user-ana")?.subLine).toBe("Editors, Legal");
+        expect(rows.find(row => row.userId === "user-ben")?.subLine).toBeNull();
+    });
+
     it("shows the expired entries on Expired and every entry on All", async () => {
         const { presenter } = await createReadyPage(createThree());
 
@@ -236,7 +261,7 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
     it("mutes a deleted user's row and adds the sub line", () => {
         const row = buildExclusionRowVm(
             createAnaExclusion(),
-            { userId: "user-ana", label: "Deleted user", state: "deleted" },
+            { userId: "user-ana", label: "Deleted user", state: "deleted", teamNames: [] },
             EXCLUSIONS_NOW,
             ZAGREB
         );
@@ -248,10 +273,44 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
         expect(row.removeLabel).toBe("Remove exclusion for Deleted user");
     });
 
+    it("shows the team names of a found user as the sub line, and none without teams", () => {
+        const withTeams = buildExclusionRowVm(
+            createBenExclusion(),
+            {
+                userId: "user-ben",
+                label: "Ben Babić",
+                state: "found",
+                teamNames: ["Editors", "Legal"]
+            },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+        const withoutTeams = buildExclusionRowVm(
+            createBenExclusion(),
+            { userId: "user-ben", label: "Ben Babić", state: "found", teamNames: [] },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+
+        expect(withTeams.subLine).toBe("Editors, Legal");
+        expect(withoutTeams.subLine).toBeNull();
+    });
+
+    it("keeps the deleted note for a deleted user", () => {
+        const row = buildExclusionRowVm(
+            createAnaExclusion(),
+            { userId: "user-ana", label: "Deleted user", state: "deleted", teamNames: ["Legal"] },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+
+        expect(row.subLine).toBe("This user no longer exists");
+    });
+
     it("names a found user", () => {
         const row = buildExclusionRowVm(
             createBenExclusion(),
-            { userId: "user-ben", label: "Ben Babić", state: "found" },
+            { userId: "user-ben", label: "Ben Babić", state: "found", teamNames: [] },
             EXCLUSIONS_NOW,
             ZAGREB
         );

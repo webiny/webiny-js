@@ -1,5 +1,5 @@
 import { StepTypeId } from "~/editor/domain/StepTypeId.js";
-import type { EditorStep } from "~/editor/domain/types.js";
+import type { AutomationDefinition, EditorStep } from "~/editor/domain/types.js";
 import { getAssignmentSummary } from "./getAssignmentSummary.js";
 import { getReviewTeamNames } from "./getReviewTeamNames.js";
 import { readAiConfig } from "./readAiConfig.js";
@@ -27,16 +27,48 @@ function getReviewDetails(step: EditorStep, context: StepContext): StepDetailRow
     return rows;
 }
 
+function toDisplayValue(value: unknown): string {
+    if (typeof value === "string") {
+        return value;
+    }
+    if (typeof value === "number" || typeof value === "boolean") {
+        return String(value);
+    }
+    return "";
+}
+
+// The definition's key setting as a row: the schema title (or the key) and the stored value.
+function getKeySettingRow(
+    definition: AutomationDefinition | undefined,
+    settings: Record<string, unknown>
+): StepDetailRow | null {
+    if (definition === undefined || definition.keySetting === null) {
+        return null;
+    }
+    const key = definition.keySetting;
+    const stored = settings[key];
+    const value = Array.isArray(stored)
+        ? stored
+              .map(toDisplayValue)
+              .filter(item => item !== "")
+              .join(", ")
+        : toDisplayValue(stored);
+    if (value === "") {
+        return null;
+    }
+    const title = definition.settingsSchema?.properties?.[key]?.title;
+    return { label: typeof title === "string" && title !== "" ? title : key, value };
+}
+
 function getAutomationDetails(step: EditorStep, context: StepContext): StepDetailRow[] {
     const config = readAutomationConfig(step.config);
     const definition = context.automations.find(item => item.id === config.automationId);
     const rows: StepDetailRow[] = [
         { label: "Automation", value: definition ? definition.name : config.automationId }
     ];
-    // Only a step whose settings hold a URL shows one.
-    const settings = config.settings;
-    if (typeof settings.url === "string" && settings.url !== "") {
-        rows.push({ label: "URL", value: settings.url });
+    const keyRow = getKeySettingRow(definition, config.settings);
+    if (keyRow !== null) {
+        rows.push(keyRow);
     }
     return rows;
 }
@@ -66,7 +98,7 @@ function getAiDetails(step: EditorStep, context: StepContext): StepDetailRow[] {
 /*
  * The key and value rows in the expanded body of a step card: People `Reviewing teams` and
  * `Assignment`, AI `Model` and `Tools`, Automation `Automation` and, when its settings hold one,
- * `URL`. A row without a value is left out; a type the editor has no form for has none. Pure.
+ * the definition's key setting under its schema title. A row without a value is left out; a type the editor has no form for has none. Pure.
  */
 export const getStepDetails = (step: EditorStep, context: StepContext): StepDetailRow[] => {
     if (step.type === StepTypeId.Review) {

@@ -120,7 +120,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
-        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
         hidden.unmount();
 
         const noFilter = render(
@@ -130,7 +130,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={null}
             />
         );
-        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
         noFilter.unmount();
 
         render(
@@ -140,7 +140,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
+        expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
     });
 
     it("has no review state or step state select on any scope (B2 design 1)", () => {
@@ -156,7 +156,7 @@ describe("ReviewListToolbar", () => {
                     contentTypeFilter={filter}
                 />
             );
-            expect(screen.getAllByRole("combobox")).toHaveLength(1);
+            expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
             expect(screen.queryByText("Any review state")).toBeNull();
             expect(screen.queryByText("Any step state")).toBeNull();
             view.unmount();
@@ -182,7 +182,7 @@ describe("ReviewListToolbar", () => {
         expect(screen.getByPlaceholderText("Search by title")).toBeTruthy();
     });
 
-    it("renders the content type filter as a picker with the filter icon and no clear button", () => {
+    it("opens the content type picker with a visible label from the Filter button", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
@@ -195,12 +195,44 @@ describe("ReviewListToolbar", () => {
             />
         );
 
+        expect(screen.queryByPlaceholderText("All content types")).toBeNull();
+
+        fireEvent.click(screen.getByRole("button", { name: "Filter" }));
+
+        // The autocomplete also renders the label for screen readers; the span is the visible one.
+        expect(screen.getByText("Content model", { selector: "span" })).toBeTruthy();
         expect(document.querySelector('[data-picker-field-icon="filter_list"]')).not.toBeNull();
         expect(screen.getByPlaceholderText("All content types")).toBeTruthy();
         expect(screen.queryByLabelText("Clear")).toBeNull();
     });
 
-    it("lists the content types with their app and icon and filters them by search", () => {
+    it("shows an active filter on the button and returns to Filter when cleared", () => {
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+
+        const none = render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm({ contentTypeId: null }))}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+        expect(screen.getByRole("button", { name: "Filter" }).textContent).toBe("Filter");
+        none.unmount();
+
+        render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm({ contentTypeId: "article" }))}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+        const button = screen.getByRole("button", { name: "Filter, 1 active" });
+        expect(button.textContent).toBe("Filter · 1");
+    });
+
+    it("lists the content types with their app and icon, filters them by search and closes on pick", () => {
         const filter: IReviewContentTypeFilter = {
             options: [
                 { label: "Article", value: "article", app: "cms", icon: "devices_other" },
@@ -215,6 +247,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
+        fireEvent.click(screen.getByRole("button", { name: "Filter" }));
         const input = screen.getByPlaceholderText("All content types");
 
         fireEvent.focus(input);
@@ -229,6 +262,7 @@ describe("ReviewListToolbar", () => {
         fireEvent.click(screen.getByText("Press release"));
 
         expect(presenter.setContentType).toHaveBeenCalledWith("press");
+        expect(screen.queryByPlaceholderText("All content types")).toBeNull();
     });
 
     it("gives the search input a search icon", () => {

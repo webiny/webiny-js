@@ -12,7 +12,11 @@ describe("mapWorkflowUserList", () => {
                 createWorkflowUserDto({
                     id: "user-1",
                     displayName: "Ivan Horvat",
-                    teamIds: ["team-1", "team-2"]
+                    teamIds: ["team-1", "team-2"],
+                    teams: [
+                        { id: "team-1", name: "Editors" },
+                        { id: "team-2", name: "Legal" }
+                    ]
                 }),
                 createWorkflowUserDto({ id: "user-2", displayName: "Maja Kos", teamIds: [] })
             ],
@@ -21,8 +25,16 @@ describe("mapWorkflowUserList", () => {
 
         expect(mapWorkflowUserList(dto)).toEqual({
             users: [
-                { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1", "team-2"] },
-                { id: "user-2", displayName: "Maja Kos", teamIds: [] }
+                {
+                    id: "user-1",
+                    displayName: "Ivan Horvat",
+                    teamIds: ["team-1", "team-2"],
+                    teams: [
+                        { id: "team-1", name: "Editors" },
+                        { id: "team-2", name: "Legal" }
+                    ]
+                },
+                { id: "user-2", displayName: "Maja Kos", teamIds: [], teams: [] }
             ],
             missingIds: ["user-gone"]
         });

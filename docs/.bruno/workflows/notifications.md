@@ -4,7 +4,7 @@ A developer guide for review notifications: what is sent to whom, how to write a
 
 ## 1. What a notification is and what a transport is
 
-Review events notify their recipients (D44, R181, listed in section 8) through two channels: a `workflows.notification` websocket message, always (the silent `workflows.reviewChanged` of section 8 is separate), and the transports configured on the step where the event happened (D103, R186). The engine ships one transport, e-mail. A transport is a class you register; it receives the recipients and one message per event and delivers it somewhere (an e-mail, a chat webhook, an SMS).
+Review events notify their recipients (D44, R181, listed in section 8) through two channels: a `workflows.notification` websocket message, always (the silent `workflows.reviewChanged` of section 8 is separate), and the transports configured on the step where the event happened (D103, R186). The engine ships one transport, e-mail. A transport is a class you register; it receives the recipients and one message per delivery (usually one per event, see section 3) and delivers it somewhere (an e-mail, a chat webhook, an SMS).
 
 The websocket message is not a transport and cannot be switched off (D96). Notifications are sent only when `advancedPublishingWorkflow` is on (R199): `ReviewNotificationsFeature` is registered by `WorkflowsFeature` inside that gate, together with the e-mail transport and the transports operation.
 
@@ -29,18 +29,22 @@ The editor reads `id`, `title` and `description` through the shared `listNotific
 
 `users` is a non-empty array of `{ id, email, displayName }` exactly as the user store holds them. The engine does not clean or validate addresses (R194), so a transport decides what it can use. An external identity provider user can have its identity id as `email`. The e-mail transport keeps an address only if it has exactly one `@` with text on both sides and no whitespace, comma, semicolon or angle bracket, and sends an address that several users share once (R193).
 
-`message` is `{ title, body, url, linkLabel }`:
+`message` is `{ title, body, url, linkLabel, footer?, details? }`:
 
 - `title`: the subject line.
 - `body`: plain text with `\n` line breaks.
-- `url`: the admin link to the content (admin host from service discovery, the app's path and a `tenantId` query parameter holding the review's own tenant id), or `null` when there is no admin host, no link adapter for the app or no current tenant (R195).
-- `linkLabel`: the text for the link (`Open content`).
+- `url`: the admin link to the content (admin host from service discovery, the app's path and a `tenantId` query parameter holding the review's own tenant id), or `null` when there is no admin host, no link adapter for the app or no current tenant (R195). For the Reassigned message to the previous owner and the Failed message it also carries `reviewId`, and the admin opens the content with the Review details drawer open (D196).
+- `linkLabel`: the text for the link: `Open content`, or `View review details` when the link carries `reviewId`.
+- `footer` (optional): one line saying why the recipient gets the message. There is one for step reviewers, one for the requester and one for the previous owner.
+- `details` (optional): `{ contentType, contentTitle, stepNumber, stepCount, stepTitle, requester }`, the facts the e-mail shows in its table. `contentType` is the content type name snapshotted on the review when it was requested (the CMS model name, "Page" for Website Builder) and is `null` for a review requested before that. A transport written before `footer` and `details` existed can ignore both.
 
-There is no HTML: a transport that sends HTML escapes it itself. One `send` call per event and per transport carries every recipient (R197), and the text is the same for every recipient, so there is no per-recipient greeting (D44). Send blind (bcc) when the channel shows recipients to each other.
+There is no HTML: a transport that sends HTML escapes it itself. One `send` call per delivery and per transport carries every recipient of that delivery (R197). Most events have one delivery. A pool step has one per distinct text, because the text names the recipient's own teams (D196). The text is the same for every recipient of a delivery, so the greeting is generic and there is no per-recipient greeting (D44, D155, D196). Send blind (bcc) when the channel shows recipients to each other.
+
+The e-mail transport renders (`renderNotificationMail`) a greeting ("Hi,"), the body, the details table (Content, Step, Requested by), the link as a button and the footer. Every value in the HTML is escaped, and parts the message does not carry are left out.
 
 ## 4. Escaping and user text
 
-Titles, step titles, display names and the rejection comment are user text (R146 mirror, R200). Escape everything you put in markup (the engine's `escapeHtml` and `toSingleLine` in `domain/notifications/` are internal helpers: copy the idea, do not import a private path), keep header values on one line (the e-mail transport collapses CR, LF and whitespace runs in the subject, R193) and never build a URL from message text: use `message.url`.
+Titles, step titles, team names, display names and the rejection comment are user text (R146 mirror, R200). Escape everything you put in markup (the engine's `escapeHtml` and `toSingleLine` in `domain/notifications/` are internal helpers: copy the idea, do not import a private path), keep header values on one line (the e-mail transport collapses CR, LF and whitespace runs in the subject, R193) and never build a URL from message text: use `message.url`.
 
 ## 5. Failure handling: `send` never throws
 
@@ -136,18 +140,18 @@ The events and recipients of the D44 table as built (R181, R183), one handler pe
 
 | Event | Recipients |
 |---|---|
-| Step reached, pool | The members of the step's candidate teams who may read the content and are not excluded, never the requester |
+| Step reached, pool | The members of the step's candidate teams who may read the content and are not excluded, never the requester. Grouped by the candidate teams they are in; each group gets its own message naming those teams (D196) |
 | Step reached, owner is a user (routing, pick) | The owner |
-| Reassign | The new owner and the old owner, two messages |
+| Reassign | The new owner and the old owner, two messages; the old owner's links to the review details (D196) |
 | Take over | The previous owner, unless the taker opted out with `notifyPreviousOwner` (D111, R185) |
-| Approved, rejected, failed | The requester |
+| Approved, rejected, failed | The requester; the failed message links to the review details (D196) |
 | Cancelled | The owner of the step the review was on, if a user |
 
 No `workflows.notification` is sent for requested, an intermediate approve, a pool start or a restart (the silent change message below covers them). AI and automation owners are never notified as owners (D58).
 
 A person is never told about their own action (R184), but only a `user` actor's: an AI or automation actor carries the requester's id, so it never hides the requester's own notice, and a failed step always notifies the requester. A transport sees none of this: it receives the already-built message.
 
-The texts (R189) name AI and automation deciders by their step title (D107, D126). The only free text in a message is the content title, the step title, a display name, the rejection comment (at most 300 characters) and a fixed failure reason (R200). A message has no field values, no model names and no team or rule names (A62).
+The texts (R189) name AI and automation deciders by their step title (D107, D126). The only free text in a message is the content title, the step title, a display name, the rejection comment (at most 300 characters) and a fixed failure reason (R200). A message has no field values, no rule names and no error text (A62). It names teams only in the pool message, and only the recipient's own teams among the step's candidate teams ("the Legal and Marketing team pool"; "the team pool" when no name is known). The e-mail table adds the content type name and the requester's name (D196).
 
 The websocket message is the action `workflows.notification`, with the data keys of `WorkflowNotificationWebsocketData` (`domain/notifications/types.ts`): `event`, `reviewId`, `stepId`, `namespace`, `targetId`, `targetRevisionId`, `title` and `body`. It goes only to the recipient's connections in the review's own tenant, ten recipients at a time (R188, D149).
 
@@ -155,4 +159,4 @@ The websocket message is the action `workflows.notification`, with the data keys
 
 ## 9. Related
 
-Spec 12; decisions D44, D60, D96, D103, D111, D129, D149-D156 and D160; `automations.md` and `ai-tools.md` for the other two extension points. `api.md` and `infrastructure.md` describe where notifications sit in the engine.
+Spec 12; decisions D44, D60, D96, D103, D111, D129, D149-D156, D160 and D196; `automations.md` and `ai-tools.md` for the other two extension points. `api.md` and `infrastructure.md` describe where notifications sit in the engine.

@@ -62,7 +62,7 @@ describe("getStepDetails", () => {
         ]);
     });
 
-    it("lists the automation, and the URL only when the settings hold one", () => {
+    it("lists the automation, and the key setting only when the settings hold one", () => {
         const plain = createAutomationStep({
             config: { automationId: "send-webhook", settings: {} }
         });
@@ -77,5 +77,58 @@ describe("getStepDetails", () => {
             { label: "Automation", value: "Send webhook" },
             { label: "URL", value: "https://hooks.example/x" }
         ]);
+    });
+
+    it("labels the key setting with its schema title, falling back to the key name", () => {
+        const step = createAutomationStep({
+            config: { automationId: "send-webhook", settings: { timeout: 30, mode: "fast" } }
+        });
+        const titled = createWebhookAutomation({ keySetting: "timeout" });
+        const untitled = createWebhookAutomation({ keySetting: "mode" });
+
+        expect(getStepDetails(step, context({ automations: [titled] }))).toEqual([
+            { label: "Automation", value: "Send webhook" },
+            { label: "Timeout (seconds)", value: "30" }
+        ]);
+        expect(getStepDetails(step, context({ automations: [untitled] }))).toEqual([
+            { label: "Automation", value: "Send webhook" },
+            { label: "mode", value: "fast" }
+        ]);
+    });
+
+    it("shows booleans and arrays of scalars, and no row for other values", () => {
+        const make = (value: unknown) => {
+            return getStepDetails(
+                createAutomationStep({
+                    config: { automationId: "send-webhook", settings: { flag: value } }
+                }),
+                context({ automations: [createWebhookAutomation({ keySetting: "flag" })] })
+            );
+        };
+
+        expect(make(false)).toEqual([
+            { label: "Automation", value: "Send webhook" },
+            { label: "flag", value: "false" }
+        ]);
+        expect(make(["a", 2, true])).toEqual([
+            { label: "Automation", value: "Send webhook" },
+            { label: "flag", value: "a, 2, true" }
+        ]);
+        expect(make({ nested: 1 })).toEqual([{ label: "Automation", value: "Send webhook" }]);
+        expect(make(undefined)).toEqual([{ label: "Automation", value: "Send webhook" }]);
+        expect(make("")).toEqual([{ label: "Automation", value: "Send webhook" }]);
+    });
+
+    it("shows no key row when the definition has no key setting", () => {
+        const step = createAutomationStep({
+            config: { automationId: "send-webhook", settings: { url: "https://hooks.example/x" } }
+        });
+
+        expect(
+            getStepDetails(
+                step,
+                context({ automations: [createWebhookAutomation({ keySetting: null })] })
+            )
+        ).toEqual([{ label: "Automation", value: "Send webhook" }]);
     });
 });

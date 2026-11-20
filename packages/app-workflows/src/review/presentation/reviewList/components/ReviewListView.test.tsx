@@ -885,7 +885,7 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("With type");
         expect(screen.getByText("Content type")).toBeTruthy();
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
+        expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
         expect(first.listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
@@ -898,7 +898,7 @@ describe("ReviewListView", () => {
         await screen.findByText("No type");
 
         expect(screen.queryByText("Content type")).toBeNull();
-        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
     });
 
     it("has no separate review state or step state select on Requested by me", async () => {

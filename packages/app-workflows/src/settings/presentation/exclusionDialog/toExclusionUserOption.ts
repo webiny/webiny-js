@@ -15,7 +15,7 @@ export const toExclusionUserOption = (user: WorkflowUserSummary, inList: boolean
     return {
         id: user.id,
         label: user.displayName,
-        description: null,
+        description: user.teams.length > 0 ? user.teams.map(team => team.name).join(", ") : null,
         warning: null,
         muted: false,
         disabled: inList,

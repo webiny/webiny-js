@@ -20,6 +20,19 @@ describe("toExclusionUserOption (R324, Q64)", () => {
         });
     });
 
+    it("describes a user with the names of the teams, joined with commas", () => {
+        const member = createWorkflowUserSummary({
+            id: "user-ivan",
+            displayName: "Ivan Horvat",
+            teams: [
+                { id: "team-1", name: "Editors" },
+                { id: "team-2", name: "Legal" }
+            ]
+        });
+
+        expect(toExclusionUserOption(member, false).description).toBe("Editors, Legal");
+    });
+
     it("disables a user who is already in the list, with the note Already excluded", () => {
         const option = toExclusionUserOption(ivan, true);
 

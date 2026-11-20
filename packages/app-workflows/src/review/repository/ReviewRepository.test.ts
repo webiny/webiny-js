@@ -64,7 +64,8 @@ describe("ReviewRepository", () => {
                             description: null,
                             type: "review",
                             allowManualPick: true,
-                            assignedAutomatically: false
+                            assignedAutomatically: false,
+                            candidateTeamNames: []
                         }
                     ]
                 }

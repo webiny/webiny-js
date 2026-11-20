@@ -26,8 +26,6 @@ import type { RequestReviewPresenter } from "../abstractions.js";
 
 const PICK_HINT =
     "Picks are checked again when the step is reached. If the person is no longer eligible, a reviewer is assigned automatically.";
-const NOBODY_NOTE =
-    "Nobody other than you can review this step. Ask a workflow manager to add reviewers.";
 
 const PICK_BLOCK = "ml-lg flex flex-col gap-sm";
 
@@ -215,7 +213,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                                     )}
                                                     {step.noCandidates && (
                                                         <Alert type={"warning"} variant={"subtle"}>
-                                                            <Text>{NOBODY_NOTE}</Text>
+                                                            <Text>{step.noCandidatesNote}</Text>
                                                         </Alert>
                                                     )}
                                                     <FormComponentNote

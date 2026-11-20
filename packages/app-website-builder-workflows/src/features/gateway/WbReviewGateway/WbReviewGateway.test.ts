@@ -56,6 +56,7 @@ describe("WbReviewGateway", () => {
         expect(request.query).toContain("websiteBuilder");
         expect(request.query).toContain("listWebsiteBuilderPageWorkflows");
         expect(request.query).toContain(WORKFLOW_FIELDS);
+        expect(request.query).toContain("candidateTeams");
     });
 
     it("reads the target review by revision id", async () => {

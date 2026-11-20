@@ -50,7 +50,7 @@ export const ReviewContentTypePicker = (props: ReviewContentTypePickerProps) => 
             icon={"filter_list"}
             disabled={false}
             error={null}
-            label={""}
+            label={"Content model"}
             size={"md"}
         />
     );
