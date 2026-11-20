@@ -62,9 +62,9 @@ export class InFlightRequests {
             res.setHeader("connection", "close");
         }
         /*
-         * A streamed response may have its headers out already, and an SSE response sets
-         * `connection: keep-alive` itself, so the header above can be missing. The connection is
-         * closed anyway; a request the client sends on it before it sees the close is reset unread.
+         * A streamed response may have its headers out already, so the header above can be
+         * missing. The connection is closed anyway; a request the client sends on it before it sees
+         * the close is reset unread.
          */
         res.once("finish", () => {
             res.req.socket.end();

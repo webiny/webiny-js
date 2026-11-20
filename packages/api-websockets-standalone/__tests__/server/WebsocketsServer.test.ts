@@ -389,7 +389,7 @@ describe("WebsocketsServer", () => {
             const outcome = await attemptUpgrade(port, "/ws?token=expired&tenant=root");
 
             expect(outcome).toBe(401);
-            expect(authenticateSpy).toHaveBeenCalledWith("expired");
+            expect(authenticateSpy).toHaveBeenCalledWith("expired", "root");
             expect(registry.register).not.toHaveBeenCalled();
         });
 
