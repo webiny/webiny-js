@@ -77,6 +77,7 @@ export const ReviewListRowActions = ({ row, presenter }: ReviewListRowActionsPro
                 trigger={
                     <IconButton
                         variant="ghost"
+                        size="sm"
                         aria-label={`Actions for ${row.title}`}
                         title={`Actions for ${row.title}`}
                         icon={<MoreVerticalIcon />}

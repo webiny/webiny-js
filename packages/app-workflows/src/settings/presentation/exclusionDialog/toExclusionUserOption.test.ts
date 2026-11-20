@@ -15,7 +15,7 @@ describe("toExclusionUserOption (R324, Q64)", () => {
             warning: null,
             muted: false,
             disabled: false,
-            icon: "person",
+            icon: null,
             note: null
         });
     });

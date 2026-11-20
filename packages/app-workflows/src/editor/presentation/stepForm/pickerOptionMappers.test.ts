@@ -15,11 +15,11 @@ const TEAM_NAMES = new Map([
 ]);
 
 describe("toUserPickerOption (R307)", () => {
-    it("is the display name with the person icon and no sub line when no team name is known", () => {
+    it("is the display name with no icon and no sub line when no team name is known", () => {
         const user = createWorkflowUserSummary({ id: "user-1", displayName: "Ivan Horvat" });
 
         expect(toUserPickerOption(user)).toEqual(
-            createPickerOption({ id: "user-1", label: "Ivan Horvat", icon: "person" })
+            createPickerOption({ id: "user-1", label: "Ivan Horvat", icon: null })
         );
     });
 
@@ -53,16 +53,16 @@ describe("toFolderPickerOption (R292, R307)", () => {
 });
 
 describe("toReferencePickerOption (R298, D117)", () => {
-    it("shows a found user, team and folder by name with the icon of its kind", () => {
+    it("shows a found user and team by name without an icon, a found folder with its icon", () => {
         const user = createReferenceLabel({ id: "user-1", label: "Ivan Horvat" });
         const team = createReferenceLabel({ id: "team-1", label: "Marketing" });
         const folder = createReferenceLabel({ id: "folder-1", label: "/Campaigns" });
 
         expect(toReferencePickerOption(user, "user")).toEqual(
-            createPickerOption({ id: "user-1", label: "Ivan Horvat", icon: "person" })
+            createPickerOption({ id: "user-1", label: "Ivan Horvat", icon: null })
         );
         expect(toReferencePickerOption(team, "team")).toEqual(
-            createPickerOption({ id: "team-1", label: "Marketing", icon: "group" })
+            createPickerOption({ id: "team-1", label: "Marketing", icon: null })
         );
         expect(toReferencePickerOption(folder, "folder")).toEqual(
             createPickerOption({ id: "folder-1", label: "/Campaigns", icon: "folder" })

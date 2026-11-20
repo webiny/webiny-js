@@ -77,9 +77,21 @@ export const ExclusionsToolbar = ({
                 </div>
                 {add}
             </div>
-            <Separator />
-            <div className="shrink-0">
-                <SegmentedControl items={items} value={tab} onChange={onTabChange} />
+            {/* The filters band (design `wb-list__filters`): full width, under a full-width
+                separator; the page's own side padding is taken back with a negative margin. */}
+            <div className="-mx-lg flex flex-col">
+                <Separator />
+                <div
+                    data-role="exclusions-filters"
+                    className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center gap-sm"
+                >
+                    <SegmentedControl
+                        items={items}
+                        value={tab}
+                        onChange={onTabChange}
+                        variant={"dimmed"}
+                    />
+                </div>
             </div>
         </div>
     );

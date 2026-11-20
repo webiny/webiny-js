@@ -85,7 +85,11 @@ export const RuleCard = (props: RuleCardProps) => {
             <Separator decorative={false} />
             <div className={"flex flex-col gap-md pt-sm pb-md"}>
                 <div className={"flex items-center justify-between gap-md"}>
-                    <Text as={"div"} size={"sm"} className={"font-semibold uppercase"}>
+                    <Text
+                        as={"div"}
+                        size={"sm"}
+                        className={"font-semibold uppercase text-neutral-primary"}
+                    >
                         {title}
                     </Text>
                     {actions}

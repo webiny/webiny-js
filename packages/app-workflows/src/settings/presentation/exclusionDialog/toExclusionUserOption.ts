@@ -19,7 +19,7 @@ export const toExclusionUserOption = (user: WorkflowUserSummary, inList: boolean
         warning: null,
         muted: false,
         disabled: inList,
-        icon: "person",
+        icon: null,
         note
     };
 };

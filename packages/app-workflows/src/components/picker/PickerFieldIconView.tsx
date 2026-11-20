@@ -5,9 +5,9 @@ import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as SmartToyIcon } from "@webiny/icons/smart_toy.svg";
-import type { PickerFieldIcon } from "./PickerFieldIcon.js";
+import type { ShownPickerFieldIcon } from "./ShownPickerFieldIcon.js";
 
-const ICONS: Record<PickerFieldIcon, React.ReactElement> = {
+const ICONS: Record<ShownPickerFieldIcon, React.ReactElement> = {
     search: <SearchIcon />,
     person: <PersonIcon />,
     folder: <FolderIcon />,
@@ -16,7 +16,7 @@ const ICONS: Record<PickerFieldIcon, React.ReactElement> = {
 };
 
 export interface PickerFieldIconViewProps {
-    name: PickerFieldIcon;
+    name: ShownPickerFieldIcon;
 }
 
 /*

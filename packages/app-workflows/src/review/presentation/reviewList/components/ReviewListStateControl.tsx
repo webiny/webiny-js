@@ -36,6 +36,7 @@ export const ReviewListStateControl = createReactiveComponent(
                     value={vm.state}
                     onChange={onChange}
                     aria-labelledby={labelId}
+                    variant={"dimmed"}
                 />
             </div>
         );

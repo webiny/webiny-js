@@ -104,7 +104,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
                 warning: null,
                 muted: false,
                 disabled: true,
-                icon: "person",
+                icon: null,
                 note: "Already excluded"
             },
             {
@@ -114,7 +114,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
                 warning: null,
                 muted: false,
                 disabled: false,
-                icon: "person",
+                icon: null,
                 note: null
             }
         ]);

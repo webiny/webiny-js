@@ -120,7 +120,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                     label="User"
                     required={true}
                     placeholder="Search people"
-                    icon={"search"}
+                    icon={"none"}
                     size="md"
                     value={vm.user.value}
                     selected={vm.user.selected}
@@ -134,6 +134,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                 <Textarea
                     label="Reason"
                     rows={2}
+                    size="md"
                     className="min-h-0"
                     maxLength={REASON_MAX_LENGTH}
                     placeholder="e.g. On leave"

@@ -36,6 +36,7 @@ export const ReviewListScopeControl = createReactiveComponent(
                     value={vm.scope}
                     onChange={onChange}
                     aria-labelledby={labelId}
+                    variant={"dimmed"}
                 />
             </div>
         );

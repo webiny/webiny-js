@@ -189,11 +189,11 @@ describe("StepDrawerPresenter: People step", () => {
 
         const { teams } = presenter.formOptions;
         expect(teams.selected).toEqual([
-            createPickerOption({ id: "team-1", label: "Legal", icon: "group" }),
+            createPickerOption({ id: "team-1", label: "Legal", icon: null }),
             createPickerOption({
                 id: "team-2",
                 label: "Editors",
-                icon: "group",
+                icon: null,
                 warning: "This team has no members"
             })
         ]);
@@ -212,7 +212,7 @@ describe("StepDrawerPresenter: People step", () => {
             createPickerOption({
                 id: "team-2",
                 label: "Editors",
-                icon: "group",
+                icon: null,
                 warning: "This team has no members"
             })
         ]);

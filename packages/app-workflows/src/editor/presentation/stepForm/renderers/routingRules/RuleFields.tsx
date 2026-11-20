@@ -105,6 +105,7 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 onChange={handleTeamChange}
                 disabled={readOnly}
                 error={messages.requesterTeam}
+                icon={"none"}
             />
         );
     }
@@ -144,6 +145,7 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 onChange={handleTargetChange}
                 disabled={readOnly}
                 error={messages.target}
+                icon={"none"}
             />
         );
     }
@@ -162,6 +164,7 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 teamNames={teamNames}
                 disabled={readOnly}
                 error={messages.requesterUser}
+                icon={"none"}
                 onChange={handleUserChange}
             />
             {teamPicker}

@@ -38,7 +38,7 @@ function toPoolOption(teamId: string, teamNames: ReadonlyMap<string, string>): P
         warning: null,
         muted: false,
         disabled: false,
-        icon: "groups",
+        icon: null,
         note: null
     };
 }

@@ -100,14 +100,16 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
             contentLink = <Link to={vm.header.contentUrl}>{vm.header.contentLabel}</Link>;
         }
         description = (
-            <span className={"flex flex-wrap items-center gap-x-md gap-y-xs"}>
-                <Text as={"span"} size={"sm"}>
-                    {"Content: "}
-                    {contentLink}
-                </Text>
-                <Text as={"span"} size={"sm"}>
-                    {vm.header.requesterLine}
-                </Text>
+            <span className={"flex flex-col gap-xs"}>
+                <span className={"flex flex-wrap items-center gap-x-md gap-y-xs"}>
+                    <Text as={"span"} size={"sm"}>
+                        {"Content: "}
+                        {contentLink}
+                    </Text>
+                    <Text as={"span"} size={"sm"}>
+                        {vm.header.requesterLine}
+                    </Text>
+                </span>
                 <Text as={"span"} size={"sm"} title={vm.header.requestedTitle}>
                     {vm.header.requestedLine}
                 </Text>

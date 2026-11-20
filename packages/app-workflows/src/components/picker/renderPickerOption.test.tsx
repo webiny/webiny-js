@@ -13,10 +13,17 @@ const renderOption = (option: PickerOption) => {
     return renderWithAdminUi(<>{renderPickerOption(option)}</>);
 };
 
-const ICON_NAMES: PickerOptionIcon[] = ["person_off", "group_off", "folder", "folder_open", "lock"];
-
-// Person and team rows are name and team line only, as in the design Picker.
-const PLAIN_ICON_NAMES: PickerOptionIcon[] = ["person", "group", "groups"];
+// The renderer shows the icon the option carries; person and team options carry none (design Picker).
+const ICON_NAMES: PickerOptionIcon[] = [
+    "person_off",
+    "group_off",
+    "folder",
+    "folder_open",
+    "lock",
+    "person",
+    "group",
+    "groups"
+];
 
 describe("renderPickerOption (R307)", () => {
     it("shows the label, the sub line and the warning", () => {
@@ -47,15 +54,6 @@ describe("renderPickerOption (R307)", () => {
             const icons = document.querySelectorAll("[data-picker-icon]");
             expect(icons).toHaveLength(1);
             expect(icons[0].getAttribute("data-picker-icon")).toBe(name);
-        });
-    }
-
-    for (const name of PLAIN_ICON_NAMES) {
-        it(`shows no ${name} icon on a person or team row`, () => {
-            renderOption(createPickerOption({ label: "Row", icon: name }));
-
-            expect(screen.getByText("Row")).toBeTruthy();
-            expect(document.querySelector("[data-picker-icon]")).toBeNull();
         });
     }
 
@@ -110,12 +108,12 @@ describe("renderPickerOption (R307)", () => {
         expect(row?.textContent).toBe("Ivan HorvatIn the list");
     });
 
-    it("keeps the note on a person row marked disabled, without a person icon", () => {
+    it("keeps the note on a person row marked disabled, without an icon", () => {
         renderOption(
             createPickerOption({
                 label: "Ivan Horvat",
                 disabled: true,
-                icon: "person",
+                icon: null,
                 note: "In the list"
             })
         );

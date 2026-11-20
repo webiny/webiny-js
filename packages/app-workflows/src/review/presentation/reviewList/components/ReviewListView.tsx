@@ -154,7 +154,7 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
             {/* One filters row under the search: the review state at the start, the scope at the end. */}
             <div
                 data-role="review-list-filters"
-                className="px-lg py-sm-plus flex flex-wrap items-center justify-between gap-sm"
+                className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center justify-between gap-sm"
             >
                 <ReviewListStateControl presenter={presenter} />
                 <ReviewListScopeControl presenter={presenter} />

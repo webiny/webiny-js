@@ -142,7 +142,6 @@ describe("ReassignDialogPresenter", () => {
                 label: "Luka Perić",
                 value: "user-2",
                 disabled: true,
-                initials: "LP",
                 teams: "",
                 note: "Current owner"
             },
@@ -150,7 +149,6 @@ describe("ReassignDialogPresenter", () => {
                 label: "Ivan Horvat",
                 value: "user-3",
                 disabled: false,
-                initials: "IH",
                 teams: "",
                 note: null
             },
@@ -158,7 +156,6 @@ describe("ReassignDialogPresenter", () => {
                 label: "Petra Novak",
                 value: "user-4",
                 disabled: true,
-                initials: "PN",
                 teams: "",
                 note: "Unavailable"
             }
