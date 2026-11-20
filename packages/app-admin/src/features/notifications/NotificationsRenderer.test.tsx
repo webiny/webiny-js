@@ -1,5 +1,6 @@
 import React from "react";
 import { afterEach } from "vitest";
+import type { Mock } from "vitest";
 import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
@@ -13,13 +14,13 @@ import type { INotification } from "./abstractions.js";
 
 interface RendererMocks {
     toast: {
-        showToast: ReturnType<typeof vi.fn>;
-        showSuccessToast: ReturnType<typeof vi.fn>;
-        showWarningToast: ReturnType<typeof vi.fn>;
+        showToast: Mock;
+        showSuccessToast: Mock;
+        showWarningToast: Mock;
     };
     presenter: {
         vm: { notifications: INotification[] };
-        markShown: ReturnType<typeof vi.fn>;
+        markShown: Mock;
     };
 }
 

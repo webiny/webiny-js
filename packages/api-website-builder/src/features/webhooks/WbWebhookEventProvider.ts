@@ -83,6 +83,54 @@ class WbWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
                 entityLabel: "Redirects",
                 eventName: WebhookEvent.WbRedirectDeleted,
                 label: "Deleted"
+            },
+            {
+                app: "wb",
+                appLabel: "Website Builder",
+                entity: "layout",
+                entityLabel: "Layouts",
+                eventName: WebhookEvent.WbLayoutCreated,
+                label: "Created"
+            },
+            {
+                app: "wb",
+                appLabel: "Website Builder",
+                entity: "layout",
+                entityLabel: "Layouts",
+                eventName: WebhookEvent.WbLayoutUpdated,
+                label: "Updated"
+            },
+            {
+                app: "wb",
+                appLabel: "Website Builder",
+                entity: "layout",
+                entityLabel: "Layouts",
+                eventName: WebhookEvent.WbLayoutPublished,
+                label: "Published"
+            },
+            {
+                app: "wb",
+                appLabel: "Website Builder",
+                entity: "layout",
+                entityLabel: "Layouts",
+                eventName: WebhookEvent.WbLayoutUnpublished,
+                label: "Unpublished"
+            },
+            {
+                app: "wb",
+                appLabel: "Website Builder",
+                entity: "layout",
+                entityLabel: "Layouts",
+                eventName: WebhookEvent.WbLayoutDeleted,
+                label: "Deleted"
+            },
+            {
+                app: "wb",
+                appLabel: "Website Builder",
+                entity: "globalComponent",
+                entityLabel: "Global Components",
+                eventName: WebhookEvent.WbGlobalComponentSaved,
+                label: "Saved"
             }
         ];
     }

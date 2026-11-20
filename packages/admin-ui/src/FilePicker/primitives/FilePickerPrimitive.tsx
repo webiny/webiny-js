@@ -97,6 +97,7 @@ interface FilePickerPrimitiveProps
 }
 
 const BaseFilePickerPrimitive = ({
+    id,
     className,
     containerStyle,
     description,
@@ -131,6 +132,7 @@ const BaseFilePickerPrimitive = ({
                         <div className={"mb-xs"}>
                             {typeof label === "string" ? (
                                 <FilePickerLabel
+                                    htmlFor={id}
                                     label={label}
                                     className={"m-0"}
                                     disabled={disabled}
@@ -161,6 +163,7 @@ const BaseFilePickerPrimitive = ({
                 />
             ) : (
                 <Trigger
+                    id={id}
                     disabled={disabled}
                     onSelectItem={onSelectItem}
                     renderTrigger={renderTrigger}

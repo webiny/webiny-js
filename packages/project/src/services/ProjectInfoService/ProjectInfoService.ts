@@ -1,13 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import {
-    ProjectInfoService,
-    GetIsCiService,
-    GetNpmVersionService,
-    GetNpxVersionService,
-    GetPulumiVersionService,
-    GetYarnVersionService,
-    GetProjectVersionService
-} from "~/abstractions/index.js";
+import { ProjectInfoService } from "~/abstractions/index.js";
+import { GetIsCiService } from "~/abstractions/index.js";
+import { GetNpmVersionService } from "~/abstractions/index.js";
+import { GetNpxVersionService } from "~/abstractions/index.js";
+import { GetYarnVersionService } from "~/abstractions/index.js";
+import { GetProjectVersionService } from "~/abstractions/index.js";
 import { IProjectInfoServiceResult } from "~/abstractions/services/ProjectInfoService/ProjectInfoService.js";
 
 export class DefaultProjectInfoService implements ProjectInfoService.Interface {
@@ -15,7 +12,6 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
         private getIsCi: GetIsCiService.Interface,
         private getNpmVersion: GetNpmVersionService.Interface,
         private getNpxVersion: GetNpxVersionService.Interface,
-        private getPulumiVersion: GetPulumiVersionService.Interface,
         private getYarnVersion: GetYarnVersionService.Interface,
         private getProjectVersion: GetProjectVersionService.Interface
     ) {}
@@ -34,7 +30,6 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
         const npmVersion = this.getNpmVersion.execute();
         const npxVersion = this.getNpxVersion.execute();
         const yarnVersion = this.getYarnVersion.execute();
-        const [pulumiVersion, pulumiAwsVersion] = this.getPulumiVersion.execute();
 
         return {
             webiny: {
@@ -55,12 +50,7 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
                 yarn: yarnVersion,
                 isCI: isCI
             },
-            pulumi: {
-                "@pulumi/pulumi": pulumiVersion,
-                "@pulumi/aws": pulumiAwsVersion,
-                secretsProvider: process.env.PULUMI_SECRETS_PROVIDER || "",
-                usingPassword: !!process.env.PULUMI_CONFIG_PASSPHRASE
-            }
+            sections: []
         } as IProjectInfoServiceResult;
     }
 }
@@ -72,7 +62,6 @@ export const projectInfoService = createImplementation({
         GetIsCiService,
         GetNpmVersionService,
         GetNpxVersionService,
-        GetPulumiVersionService,
         GetYarnVersionService,
         GetProjectVersionService
     ]

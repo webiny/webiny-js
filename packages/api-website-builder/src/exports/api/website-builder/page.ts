@@ -37,6 +37,7 @@ export {
 export { GetPageByIdUseCase } from "~/features/pages/GetPageById/abstractions.js";
 export { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/abstractions.js";
 export { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/abstractions.js";
+export { GetLatestPageByPathUseCase } from "~/features/pages/GetLatestPageByPath/abstractions.js";
 export { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/abstractions.js";
 export { ListPagesUseCase } from "~/features/pages/ListPages/abstractions.js";
 export { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/abstractions.js";
@@ -60,3 +61,4 @@ export {
     PageAfterUpdateEventHandler,
     PageBeforeUpdateEventHandler
 } from "~/features/pages/UpdatePage/abstractions.js";
+export { ComposePageUseCase } from "~/features/pages/ComposePage/abstractions.js";

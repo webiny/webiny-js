@@ -8,13 +8,13 @@
   "main": "./src/index.js",
   "dependencies": {
     "@webiny/stdlib": "^0.0.21",
-    "chalk": "^6.0.0",
+    "chalk": "^6.0.1",
     "find-up": "^8.0.0",
-    "fs-extra": "^11.4.0",
+    "fs-extra": "^11.4.1",
     "load-json-file": "^7.0.1",
     "write-json-file": "^7.0.0"
   },
   "devDependencies": {
-    "type-fest": "^5.8.0"
+    "type-fest": "^5.10.0"
   }
 }

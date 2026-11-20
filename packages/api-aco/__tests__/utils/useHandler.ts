@@ -8,7 +8,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/a
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -20,6 +20,8 @@ import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import type { AcoContext } from "~/types";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface SentWebsocketMessage {
     identityId: string;
@@ -55,16 +57,6 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
-            rootContainer.registerInstance(WebsocketsSendToIdentityUseCase, {
-                execute: async (identity, data) => {
-                    websocketMessages.push({
-                        identityId: identity.id,
-                        action: data.action,
-                        data: data.data
-                    });
-                    return Result.ok();
-                }
-            });
         }
 
         const container = rootContainer.createChildContainer();
@@ -72,7 +64,23 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
         const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        const logger = new NullLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
+        /*
+         * In the request container: api-core registers a no-op send there, which would shadow a
+         * recorder registered in the root.
+         */
+        container.registerInstance(WebsocketsSendToIdentityUseCase, {
+            execute: async (identity, data) => {
+                websocketMessages.push({
+                    identityId: identity.id,
+                    action: data.action,
+                    data: data.data
+                });
+                return Result.ok();
+            }
+        });
         processLegacyPlugins(container, apiAcoStorage.plugins);
         processLegacyPlugins(container, cmsStorage.plugins);
         HeadlessCmsFeature.register(container, { type: "manage" });

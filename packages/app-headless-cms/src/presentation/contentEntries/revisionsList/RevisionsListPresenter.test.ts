@@ -2,6 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import type { CmsContentEntry, CmsContentEntryRevision, CmsModel } from "~/types.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
@@ -83,10 +84,10 @@ function createEntryDto(entryId: string, version: number): CmsContentEntry {
 
 interface TestSetup {
     presenter: Abstraction.Interface;
-    listRevisions: { execute: ReturnType<typeof vi.fn> };
-    createRevisionFrom: { execute: ReturnType<typeof vi.fn> };
-    deleteEntryRevision: { execute: ReturnType<typeof vi.fn> };
-    confirmation: { confirm: ReturnType<typeof vi.fn> };
+    listRevisions: { execute: Mock };
+    createRevisionFrom: { execute: Mock };
+    deleteEntryRevision: { execute: Mock };
+    confirmation: { confirm: Mock };
 }
 
 const FULL_ACCESS: Identity.Permission[] = [{ name: "cms.*" }];

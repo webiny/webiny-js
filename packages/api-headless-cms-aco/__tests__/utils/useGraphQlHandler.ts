@@ -29,9 +29,11 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -87,6 +89,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 params.testProjectLicense ?? createTestWcpLicense()
             );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, apiAcoStorage.plugins);
             processLegacyPlugins(container, cmsStorage.plugins);

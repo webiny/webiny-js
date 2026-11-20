@@ -39,9 +39,12 @@ type SelectTriggerProps = SelectPrimitives.SelectValueProps &
         endIcon?: React.ReactElement;
         onValueReset: () => void;
         disabled?: boolean;
+        /** Lands on the trigger — the `combobox` a label names — not on the value inside it. */
+        id?: string;
     };
 
 const Trigger = ({
+    id,
     hasValue,
     size,
     variant,
@@ -83,6 +86,7 @@ const Trigger = ({
 
     return (
         <SelectTrigger
+            id={id}
             size={size}
             variant={variant}
             invalid={invalid}
@@ -189,6 +193,10 @@ interface SelectPrimitiveProps {
      */
     displayResetAction?: boolean;
     /**
+     * The trigger's id — what a `<label htmlFor>` points at.
+     */
+    id?: string;
+    /**
      * Indicates if the field is disabled.
      */
     disabled?: boolean;
@@ -240,13 +248,14 @@ interface SelectPrimitiveProps {
 
 const SelectPrimitive = (props: SelectPrimitiveProps) => {
     const { vm, changeValue, resetValue } = useSelect(props);
-    const { size, variant, startIcon, endIcon, invalid, disabled, ...selectRootProps } = props;
+    const { id, size, variant, startIcon, endIcon, invalid, disabled, ...selectRootProps } = props;
 
     return (
         <SelectPrimitiveRenderer
             selectRootProps={{ ...selectRootProps, ...vm.selectRoot, disabled }}
             selectTriggerProps={{
                 ...vm.selectTrigger,
+                id,
                 size,
                 variant,
                 startIcon,

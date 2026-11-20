@@ -26,14 +26,21 @@ const BASE_TABLE_NAME = "webiny_aco_flp";
 export interface StorageOperationsConfig {
     knex: Knex;
     tableNamePrefix?: string;
+    /**
+     * The schema was set up before the API took traffic (see `SqlSchemaConfig` in
+     * `@webiny/api-core-sql`): the table is never checked for or created at runtime.
+     */
+    schemaManaged?: boolean;
 }
 
 export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
     private readonly knex: Knex;
     private readonly tableName: string;
+    private readonly schemaManaged: boolean;
 
-    constructor({ knex, tableNamePrefix }: StorageOperationsConfig) {
+    constructor({ knex, tableNamePrefix, schemaManaged }: StorageOperationsConfig) {
         this.knex = knex;
+        this.schemaManaged = schemaManaged === true;
         this.tableName = tableNamePrefix
             ? `${tableNamePrefix}_${BASE_TABLE_NAME}`
             : BASE_TABLE_NAME;
@@ -170,9 +177,9 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         try {
             await this.ensureTable();
 
-            const updatedItems: FolderLevelPermission[] = [];
-
-            await this.knex.transaction(async trx => {
+            // Built inside the callback: a transaction that loses its connection runs it again.
+            return await this.knex.transaction(async trx => {
+                const updatedItems: FolderLevelPermission[] = [];
                 for (const { original, data: inputData } of items) {
                     const data = {
                         ...original,
@@ -186,9 +193,8 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
 
                     updatedItems.push(data);
                 }
+                return updatedItems;
             });
-
-            return updatedItems;
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not batch update folder level permissions.",
@@ -199,6 +205,15 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     }
 
     private async ensureTable(): Promise<void> {
+        // Set up before the API took traffic, so don't check for it on every call.
+        if (this.schemaManaged) {
+            return;
+        }
+        await this.setupSchema();
+    }
+
+    /* Creates the table if missing, whatever the mode (deploy-time schema setup). */
+    public async setupSchema(): Promise<void> {
         const exists = await this.knex.schema.hasTable(this.tableName);
         if (exists) {
             return;

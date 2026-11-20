@@ -1,9 +1,9 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the standalone hosting-type package. `webiny/extensions` exposes the
-// AWS namespaces, which don't include server-only extensions like `Infra.Postgres`.
-import { Infra } from "@webiny/project-standalone";
+import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
+import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
+import { AcoPg } from "@webiny/api-aco-pg/project";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
@@ -22,11 +22,31 @@ export const Extensions = () => {
                 database={process.env.WEBINY_PG_DATABASE || "webiny"}
             />
 
+            {/* Content on Postgres: the CMS storage (entries in a jsonb table with a typed search
+                table), and folder-level permissions in a folder catalog. */}
+            <HeadlessCmsPg />
+            <AcoPg />
+
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves
                 against the project root, so uploads persist across rebuilds. */}
             <Infra.FileStorage
                 path={process.env.WEBINY_LOCAL_STORAGE_PATH || "./.webiny/storage"}
                 uploadSecret={process.env.WEBINY_UPLOAD_SECRET || "dev-only-insecure-upload-secret"}
+            />
+
+            {/* Encryption and the hashing pepper are always on in a standalone API, which refuses to
+                start without WEBINY_ENCRYPTION_PASSPHRASE and WEBINY_HASHING_PEPPER. The values below
+                are dev defaults for `webiny watch` / `webiny serve`; a deployed API reads both from
+                its environment. Keep them stable: changing them makes encrypted data unreadable and
+                stops existing passwords from verifying. */}
+            <Infra.Crypto.Encryption
+                passphrase={
+                    process.env.WEBINY_ENCRYPTION_PASSPHRASE ||
+                    "dev-only-insecure-encryption-passphrase"
+                }
+            />
+            <Infra.Crypto.Hashing
+                pepper={process.env.WEBINY_HASHING_PEPPER || "dev-only-insecure-hashing-pepper"}
             />
 
             {/* The API's public origin. AWS derives this from stack output; the server has none, so it

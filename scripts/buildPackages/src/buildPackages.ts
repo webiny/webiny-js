@@ -10,6 +10,7 @@ import { execa } from "execa";
 // @ts-expect-error
 import notifier from "toasted-notifier";
 
+import os from "os";
 import path from "path";
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
@@ -63,8 +64,10 @@ interface BuildContext {
     [key: string]: boolean;
 }
 
-const buildInParallel =
-    !process.env.CI || process.env.RUNNER_NAME?.startsWith("webiny-build-packages") === true;
+// Packages within a batch are built side by side, one per CPU. Starting the whole batch at
+// once (up to ~25 packages, each with a 4 GB heap limit) would exhaust the memory of a
+// standard 4-CPU / 16 GB CI runner.
+const concurrency = os.availableParallelism();
 
 export const buildPackages = async () => {
     const options = argv as BuildOptions;
@@ -89,7 +92,7 @@ export const buildPackages = async () => {
     reporter.info({
         projectFolder,
         runner: process.env.RUNNER_NAME || "N/A",
-        parallel: buildInParallel,
+        concurrency,
         ...hardware,
         tscVersion: tscVersion.stdout?.trim() ?? ""
     });
@@ -323,7 +326,7 @@ export const buildPackages = async () => {
                     // erase the other's frame, so every redraw appends another copy of the
                     // package list.
                     return task.newListr(subtasks, {
-                        concurrent: buildInParallel,
+                        concurrent: concurrency,
                         exitOnError: false,
                         collectErrors: true,
                         rendererOptions: { showErrorMessage: false }

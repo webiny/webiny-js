@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { observable, runInAction } from "mobx";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
@@ -13,6 +14,7 @@ import { LocalStorage } from "@webiny/app/features/localStorage";
 import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
 import { FilesListCache } from "../../features/shared/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
 import { FileModelProvider } from "../../features/fileModel/abstractions.js";
 import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
@@ -79,7 +81,8 @@ function createMockListPresenter(): ListPresenter.Interface<FmFile> {
             loadMore: vi.fn().mockResolvedValue(undefined),
             refresh: vi.fn().mockResolvedValue(undefined)
         },
-        init: vi.fn()
+        init: vi.fn(),
+        dispose: vi.fn()
     };
 }
 
@@ -269,6 +272,7 @@ function createContainer(mocks: Mocks) {
     container.registerInstance(FilesListCache, mocks.cache);
     container.registerInstance(GetDescendantFoldersUseCase, mocks.getDescendantFoldersUseCase);
     container.registerInstance(FileModelProvider, mocks.fileModelProvider);
+    container.registerInstance(FoldersContext, { type: "FmFile" });
 
     // Register the real FileListPresenter implementation.
     container.register(FileManagerPresenter).inSingletonScope();
@@ -298,9 +302,31 @@ describe("FileListPresenter", () => {
         presenter.init();
 
         expect(mocks.listPresenter.init).toHaveBeenCalledTimes(1);
-        const config = (mocks.listPresenter.init as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        const config = (mocks.listPresenter.init as Mock).mock.calls[0][0];
         expect(config.dataSource).toBeDefined();
         expect(config.initialSort).toEqual({ field: "createdOn", direction: "DESC" });
+    });
+
+    it("tells the assistant the files, folders and open file, until disposed", () => {
+        presenter.init();
+
+        const init = mocks.listPresenter.init as Mock;
+        const config: ListPresenter.Config<FmFile> = init.mock.calls[0][0];
+        const assistant = config.assistant!;
+        expect(assistant.view()).toBe("Files in File Manager");
+        expect(assistant.rowTitle({ name: "hero.png" } as FmFile)).toBe("hero.png");
+        expect(assistant.details?.()).toEqual({
+            folderType: "FmFile",
+            currentFolder: null,
+            visibleFolders: []
+        });
+
+        mocks.fileDetailsPresenter.vm.file = { id: "file-1" } as FmFile;
+        presenter.actions.showFileDetails("file-1");
+        expect(assistant.details?.()).toMatchObject({ openFileId: "file-1" });
+
+        presenter.dispose();
+        expect(mocks.listPresenter.dispose).toHaveBeenCalledTimes(1);
     });
 
     it("should forward ListPresenter.vm data as vm.list", () => {
@@ -382,7 +408,7 @@ describe("FileListPresenter", () => {
     it("should restore viewMode from localStorage on construction", () => {
         // Pre-seed localStorage with "grid" before creating the presenter.
         const seededMocks = createMocks();
-        (seededMocks.localStorage.get as ReturnType<typeof vi.fn>).mockReturnValue("grid");
+        (seededMocks.localStorage.get as Mock).mockReturnValue("grid");
 
         const container = createContainer(seededMocks);
         const seededPresenter: IFileManagerPresenter = container.resolve(Abstraction);
@@ -415,7 +441,7 @@ describe("FileListPresenter", () => {
         await presenter.actions.upload([file1, file2]);
 
         expect(mocks.fileUploader.uploadMany).toHaveBeenCalledTimes(1);
-        const args = (mocks.fileUploader.uploadMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        const args = (mocks.fileUploader.uploadMany as Mock).mock.calls[0][0];
         expect(args).toHaveLength(2);
         expect(args[0].data.name).toBe("test.txt");
         expect(args[0].data.type).toBe("text/plain");
@@ -438,7 +464,7 @@ describe("FileListPresenter", () => {
 
         await presenter.actions.upload([file]);
 
-        const args = (mocks.fileUploader.uploadMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        const args = (mocks.fileUploader.uploadMany as Mock).mock.calls[0][0];
         expect(args[0].data.tags).toEqual(["scope:website-builder"]);
     });
 

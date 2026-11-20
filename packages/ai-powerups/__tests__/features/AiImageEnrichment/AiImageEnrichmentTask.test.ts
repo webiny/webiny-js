@@ -3,7 +3,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { AiImageEnrichmentTask } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
 import { FILE_ENRICHMENT_FAILED_WEBSOCKET_ACTION } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
 import { ApplyImageEnrichmentUseCase } from "~/api/features/AiImageEnrichment/abstractions.js";
@@ -52,6 +52,7 @@ interface IRunOptions {
     prepareFailure?: Error;
     aiFailure?: Error;
     sendFailure?: Error;
+    anonymous?: boolean;
 }
 
 const prepareResult = (options: IRunOptions) => {
@@ -78,7 +79,12 @@ const run = async (options: IRunOptions) => {
     container.registerInstance(Ai, { generateText } as any);
 
     container.registerInstance(IdentityContext, {
-        getIdentity: () => ({ id: "uploader-1" })
+        getIdentity: () => {
+            if (options.anonymous) {
+                return { id: "anonymous", isAnonymous: () => true };
+            }
+            return { id: "uploader-1", isAnonymous: () => false };
+        }
     } as any);
 
     const send = vi.fn();
@@ -170,6 +176,13 @@ describe("AiImageEnrichmentTask failure notifications", () => {
         const pdf = await run({ prepareFailure: new EnrichmentNotAnImageError("application/pdf") });
 
         expect([...off.sent, ...pdf.sent]).toEqual([]);
+    });
+
+    it("tells nobody when no one is signed in", async () => {
+        const { calls, sent } = await run({ aiFailure: new Error("Overloaded"), anonymous: true });
+
+        expect(calls.map(call => call.kind)).toEqual(["error"]);
+        expect(sent).toEqual([]);
     });
 
     it("still fails with the real error when the notification cannot be sent", async () => {

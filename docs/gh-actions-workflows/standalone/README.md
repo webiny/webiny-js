@@ -44,6 +44,13 @@ the API image built and tested in one environment runs unchanged in the others:
 - `WEBINY_ADMIN_URL` (optional) — the public Admin URL, handed to websites by the starter-kit configs.
 - `WEBINY_LOCAL_STORAGE_PATH` (required) — where uploaded files live, on a persistent volume.
 - `WEBINY_UPLOAD_SECRET` (required) — signs upload tokens.
+- `WEBINY_SELF_HOSTED_AUTH_SECRET` (required) — signs login tokens.
+- `WEBINY_ENCRYPTION_PASSPHRASE` (required) and `WEBINY_ENCRYPTION_SALT` (optional) — the encryption
+  key. A standalone API always encrypts.
+- `WEBINY_HASHING_PEPPER` (required) — folded into every password and API-key hash.
+
+Keep the passphrase, salt and pepper stable and backed up. Changing the passphrase or salt makes
+encrypted data unreadable; changing the pepper stops every existing password from verifying.
 - Database — SQLite: `WEBINY_SQL_FILENAME` (on a persistent volume), **or** Postgres: `WEBINY_PG_HOST`,
   `WEBINY_PG_PORT`, `WEBINY_PG_USER`, `WEBINY_PG_PASSWORD`, `WEBINY_PG_DATABASE`.
 - `WEBINY_PROJECT_ID`, `WEBINY_PROJECT_API_KEY` — WCP license.
@@ -52,11 +59,9 @@ the API image built and tested in one environment runs unchanged in the others:
   it, a message reaches only the browsers connected to the process that sent it. One process needs
   nothing.
 
-The API refuses to start, and names the variables, when a required one is missing or blank.
-
-**Still baked at build time:** the self-hosted auth signing secret (`WEBINY_SELF_HOSTED_AUTH_SECRET`
-when the image is built), the encryption passphrase and the hashing pepper. Build with the values for
-the environment the image goes to.
+The API refuses to start, and names the variables, when a required one is missing or blank. No
+secret is baked into the image: the values in `webiny.config.tsx` are only used by `webiny watch` and
+`webiny serve`.
 
 ## Deploying (the last step)
 

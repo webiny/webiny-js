@@ -55,11 +55,12 @@ The following steps show how to do it.
 
 1. `yarn verdaccio:start`
 2. `npm config set registry http://localhost:4873`
-3. `yarn release --type=verdaccio`
+3. `npm login --auth-type=legacy --registry http://localhost:4873` (first time only, see step 3)
+4. `yarn release --type=verdaccio`
 
 Once the release is done:
 
-4. `npx create-webiny-project@local-npm my-test-project --tag local-npm --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'`
+5. `npx create-webiny-project@local-npm my-test-project --tag local-npm --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'`
 
 #### 1. Start Verdaccio
 
@@ -96,6 +97,15 @@ worry about it right now, this will be revisited in step 4.
 > allows having multiple versions of yarn2, for different projects.
 
 #### 3. Release
+
+Verdaccio only lets a registered user publish, and `.verdaccio.yaml` allows a single registration (`max_users: 1`). The
+first time, register that user (any username and password; the first login creates it):
+
+```bash
+npm login --auth-type=legacy --registry http://localhost:4873
+```
+
+The user is stored in the `htpasswd` file in the project root. Delete that file to register a different one.
 
 Commit (no need to push it if you don't want to) all of the code changes, and execute the following command:
 

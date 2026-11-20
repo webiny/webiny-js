@@ -10,6 +10,8 @@ import { OnPageRestoredHandler } from "./handlers/OnPageRestoredHandler.js";
 import { OnRedirectCreatedHandler } from "./handlers/OnRedirectCreatedHandler.js";
 import { OnRedirectUpdatedHandler } from "./handlers/OnRedirectUpdatedHandler.js";
 import { OnRedirectDeletedHandler } from "./handlers/OnRedirectDeletedHandler.js";
+import { NotifyLayoutChangesFeature } from "./notifyLayoutChanges/feature.js";
+import { NotifyGlobalComponentChangesFeature } from "./notifyGlobalComponentChanges/feature.js";
 
 export const WbWebhooksFeature = createFeature({
     name: "WebsiteBuilder/Webhooks",
@@ -25,5 +27,7 @@ export const WbWebhooksFeature = createFeature({
         container.register(OnRedirectCreatedHandler);
         container.register(OnRedirectUpdatedHandler);
         container.register(OnRedirectDeletedHandler);
+        NotifyLayoutChangesFeature.register(container);
+        NotifyGlobalComponentChangesFeature.register(container);
     }
 });

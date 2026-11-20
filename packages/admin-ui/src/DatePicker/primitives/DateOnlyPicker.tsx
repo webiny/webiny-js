@@ -21,6 +21,7 @@ const DateOnlyPicker = ({
     className,
     presets,
     displayFormat,
+    "aria-labelledby": labelledBy,
     minDate,
     maxDate
 }: DateOnlyPickerProps) => {
@@ -56,6 +57,7 @@ const DateOnlyPicker = ({
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick a date"}
                     disabled={disabled}

@@ -1,4 +1,5 @@
-import { BeforeDeploy, LoggerService } from "@webiny/project/abstractions/index.js";
+import { BeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { LoggerService } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class EnsureAwsCredentialsBeforeDeployImpl implements BeforeDeploy.Interface {

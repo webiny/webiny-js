@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 /** The props a picker spreads on the element that wraps the admin-ui picker. */
 export interface PickerFocusRestoreProps {
-    ref: React.RefObject<HTMLDivElement>;
+    ref: React.RefObject<HTMLDivElement | null>;
     onFocusCapture(): void;
     onBlurCapture(event: React.FocusEvent<HTMLDivElement>): void;
 }

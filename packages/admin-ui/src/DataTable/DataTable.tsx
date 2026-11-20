@@ -5,6 +5,7 @@ import type {
     ColumnDef,
     ColumnSort,
     ColumnVisibilityState,
+    ExpandedState,
     OnChangeFn,
     Row,
     RowData,
@@ -16,13 +17,17 @@ import {
     columnSizingFeature,
     columnVisibilityFeature,
     createCoreRowModel,
+    createExpandedRowModel,
     createSortedRowModel,
     flexRender,
+    rowExpandingFeature,
     rowSelectionFeature,
     rowSortingFeature,
     tableFeatures,
     useTable
 } from "@tanstack/react-table";
+import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { IconButton } from "~/Button/index.js";
 import { CheckboxPrimitive } from "~/Checkbox/index.js";
 import { Skeleton } from "~/Skeleton/index.js";
 import { Table } from "~/Table/index.js";
@@ -33,8 +38,10 @@ const features = tableFeatures({
     columnResizingFeature,
     columnSizingFeature,
     columnVisibilityFeature,
+    rowExpandingFeature,
     rowSelectionFeature,
     rowSortingFeature,
+    expandedRowModel: createExpandedRowModel(),
     sortedRowModel: createSortedRowModel(),
     coreRowModel: createCoreRowModel()
 });
@@ -104,6 +111,13 @@ type DataTableColumnVisibility = ColumnVisibilityState;
 
 type OnDataTableColumnVisibilityChange = OnChangeFn<DataTableColumnVisibility>;
 
+/**
+ * Which rows show their sub-rows: `true` for every row, or a map of row ids (the `id` of each entry).
+ */
+type DataTableExpanded = ExpandedState;
+
+type OnDataTableExpandedChange = OnChangeFn<DataTableExpanded>;
+
 interface DataTableProps<TEntry extends RowData> {
     /**
      * Show or hide borders.
@@ -129,6 +143,24 @@ interface DataTableProps<TEntry extends RowData> {
      * Data to display into DataTable body.
      */
     data: TEntry[];
+    /**
+     * Returns the sub-rows listed under a row, e.g. the versions of an entry. A row with sub-rows
+     * gets a toggle in its first column that shows and hides them. Each entry, sub-rows included,
+     * must have a unique `id`.
+     */
+    getSubRows?: (row: TEntry) => TEntry[] | undefined;
+    /**
+     * Which rows show their sub-rows. Leave it out to let the DataTable keep track of it.
+     */
+    expanded?: DataTableExpanded;
+    /**
+     * Callback that receives the expanded state when a row's toggle is clicked.
+     */
+    onExpandedChange?: OnDataTableExpandedChange;
+    /**
+     * Which rows show their sub-rows at first, when `expanded` isn't passed. Defaults to none.
+     */
+    initialExpanded?: DataTableExpanded;
     /**
      * Callback that is called to determine if the row is selectable.
      */
@@ -169,6 +201,7 @@ interface DataTableProps<TEntry extends RowData> {
 
 interface DefineColumnsOptions<TEntry extends RowData> {
     canSelectAllRows: boolean;
+    expandable: boolean;
     onSelectRow?: DataTableProps<TEntry>["onSelectRow"];
     onToggleRow: DataTableProps<TEntry>["onToggleRow"];
     loading: DataTableProps<TEntry>["loading"];
@@ -178,7 +211,7 @@ const defineColumns = <T extends RowData>(
     columns: DataTableProps<T>["columns"],
     options: DefineColumnsOptions<T>
 ): ColumnDef<Features, T>[] => {
-    const { canSelectAllRows, onSelectRow, onToggleRow, loading } = options;
+    const { canSelectAllRows, expandable, onSelectRow, onToggleRow, loading } = options;
 
     return useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
@@ -225,6 +258,10 @@ const defineColumns = <T extends RowData>(
                 enableHiding
             };
         });
+
+        if (expandable && defaults[0]) {
+            defaults[0] = withExpandToggle(defaults[0]);
+        }
 
         let columnsDefs = defaults;
         const firstColumn = defaults[0];
@@ -290,7 +327,97 @@ const defineColumns = <T extends RowData>(
 
             return column;
         });
-    }, [columns, onSelectRow, onToggleRow, loading]);
+    }, [columns, expandable, onSelectRow, onToggleRow, loading]);
+};
+
+/**
+ * Puts a row's expand toggle before the first column's content, indented by the row's depth, so a
+ * sub-row's content lines up under its parent's. A row without sub-rows keeps the toggle's space.
+ */
+const withExpandToggle = <T extends RowData>(
+    column: ColumnDef<Features, T>
+): ColumnDef<Features, T> => {
+    return {
+        ...column,
+        cell: props => {
+            if (!props) {
+                return null;
+            }
+
+            const { row } = props;
+            const isExpanded = row.getIsExpanded();
+
+            return (
+                <div className={"flex items-center gap-xs min-w-0"}>
+                    {Array.from({ length: row.depth }, (_, index) => (
+                        <span key={index} className={"size-md shrink-0"} aria-hidden={true} />
+                    ))}
+                    {row.getCanExpand() ? (
+                        <IconButton
+                            variant={"ghost"}
+                            size={"xs"}
+                            className={"shrink-0"}
+                            icon={
+                                <KeyboardArrowDownIcon
+                                    className={cn("transition-transform", {
+                                        "-rotate-90": !isExpanded
+                                    })}
+                                />
+                            }
+                            aria-label={isExpanded ? "Collapse row" : "Expand row"}
+                            aria-expanded={isExpanded}
+                            onClick={e => {
+                                e.stopPropagation();
+                                row.toggleExpanded();
+                            }}
+                        />
+                    ) : (
+                        <span className={"size-md shrink-0"} aria-hidden={true} />
+                    )}
+                    <div className={"min-w-0 flex-1 truncate"}>
+                        {column.cell ? React.createElement(column.cell as any, props) : null}
+                    </div>
+                </div>
+            );
+        }
+    };
+};
+
+type GetRowId<T> = (row: T, index: number, parentId?: string) => string;
+
+/**
+ * TanStack's own row ids: the index, joined to the parent's id for a sub-row ("0", "0.1").
+ */
+const indexRowId = <T,>(_: T, index: number, parentId?: string) => {
+    return parentId ? `${parentId}.${index}` : String(index);
+};
+
+const entryRowId = <T extends DataTableDefaultData>(row: T) => row.id;
+
+/**
+ * Every row by the id the table gives it, sub-rows included, to map the selection state back to entries.
+ */
+const getRowsById = <T,>(
+    data: T[],
+    getRowId: GetRowId<T>,
+    getSubRows?: (row: T) => T[] | undefined
+): Map<string, T> => {
+    const rows = new Map<string, T>();
+
+    const visit = (items: T[], parentId?: string) => {
+        items.forEach((item, index) => {
+            const id = getRowId(item, index, parentId);
+            rows.set(id, item);
+            const subRows = getSubRows?.(item);
+            if (subRows?.length) {
+                visit(subRows, id);
+            }
+        });
+    };
+
+    visit(data);
+
+    return rows;
 };
 
 const typedMemo: <T>(component: T) => T = memo;
@@ -298,6 +425,8 @@ const typedMemo: <T>(component: T) => T = memo;
 interface TableCellProps<T extends RowData> {
     cell: Cell<Features, T, unknown>;
     getColumnWidth: (column: Column<Features, T>) => number;
+    // Not rendered: it makes the memoized cell re-render its toggle when the row is expanded or collapsed.
+    expanded?: boolean;
 }
 
 const TableCell = <T extends RowData>({ cell, getColumnWidth }: TableCellProps<T>) => {
@@ -314,15 +443,28 @@ const MemoTableCell = typedMemo(TableCell);
 
 interface TableRowProps<T extends RowData> {
     selected: boolean;
+    expanded: boolean;
+    depth: number;
     cells: Cell<Features, T, unknown>[];
     getColumnWidth: (column: Column<Features, T>) => number;
 }
 
-const TableRow = <T extends RowData>({ selected, cells, getColumnWidth }: TableRowProps<T>) => {
+const TableRow = <T extends RowData>({
+    selected,
+    expanded,
+    depth,
+    cells,
+    getColumnWidth
+}: TableRowProps<T>) => {
     return (
-        <Table.Row selected={selected}>
+        <Table.Row selected={selected} data-depth={depth}>
             {cells.map(cell => (
-                <MemoTableCell<T> key={cell.id} cell={cell} getColumnWidth={getColumnWidth} />
+                <MemoTableCell<T>
+                    key={cell.id}
+                    cell={cell}
+                    getColumnWidth={getColumnWidth}
+                    expanded={expanded}
+                />
             ))}
         </Table.Row>
     );
@@ -341,10 +483,14 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
     columnVisibility,
     columns: initialColumns,
     data: initialData,
+    expanded,
+    getSubRows: initialGetSubRows,
+    initialExpanded,
     initialSorting,
     isRowSelectable,
     loading,
     onColumnVisibilityChange,
+    onExpandedChange,
     onSelectRow,
     onSortingChange,
     onToggleRow,
@@ -356,6 +502,11 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
     const [tableWidth, setTableWidth] = useState(1);
 
     const data = loading ? emptyArray : initialData;
+    // The loading skeleton rows have no sub-rows.
+    const getSubRows = loading ? undefined : initialGetSubRows;
+    const expandable = !!getSubRows;
+    // Expanded rows are tracked by entry id, so it survives new data; a flat table keeps index ids.
+    const getRowId: GetRowId<T> = expandable ? entryRowId : indexRowId;
 
     useEffect(() => {
         const updateElementWidth = () => {
@@ -374,12 +525,20 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
         };
     }, [tableRef.current]);
 
+    const rowsById = useMemo(() => {
+        return getRowsById<T>(data, getRowId, getSubRows);
+    }, [data, getRowId, getSubRows]);
+
     const rowSelection = useMemo(() => {
-        return selectedRows.reduce<RowSelectionState>((acc, item) => {
-            const recordIndex = data.findIndex(rec => rec.id === item.id);
-            return { ...acc, [recordIndex]: true };
-        }, {});
-    }, [selectedRows, data]);
+        const selectedIds = new Set(selectedRows.map(item => item.id));
+        const selection: RowSelectionState = {};
+        for (const [rowId, row] of rowsById) {
+            if (selectedIds.has(row.id)) {
+                selection[rowId] = true;
+            }
+        }
+        return selection;
+    }, [selectedRows, rowsById]);
 
     const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => {
         const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
@@ -400,10 +559,12 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
 
         // If the difference is only 1 item, and `onToggleRow` is available, execute that.
         if (toggledRows.length === 1 && typeof onToggleRow === "function") {
-            onToggleRow(data[parseInt(toggledRows[0])]);
+            onToggleRow(rowsById.get(toggledRows[0]) as T);
             return;
         } else if (typeof onSelectRow === "function") {
-            const selection = Object.keys(newSelection).map(key => data[parseInt(key)]);
+            const selection = Object.keys(newSelection)
+                .map(key => rowsById.get(key))
+                .filter((row): row is T => !!row);
             onSelectRow(selection);
         }
     };
@@ -417,6 +578,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
 
     const columns = defineColumns(initialColumns, {
         canSelectAllRows,
+        expandable,
         onSelectRow,
         onToggleRow,
         loading
@@ -427,6 +589,11 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
         columnResizeMode: "onChange",
         columns,
         data,
+        getSubRows,
+        getRowId: expandable ? (row, index, parent) => getRowId(row, index, parent?.id) : undefined,
+        enableExpanding: expandable,
+        // Keep what the user expanded or collapsed when the data changes (e.g. after a row action).
+        autoResetExpanded: false,
         enableColumnResizing: true,
         enableHiding: !!onColumnVisibilityChange,
         enableRowSelection: isRowSelectable,
@@ -434,14 +601,22 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
         enableSortingRemoval: false,
         manualSorting: true,
         onColumnVisibilityChange,
+        // An `onExpandedChange` key, even `undefined`, makes the table leave the expanded state to it.
+        ...(onExpandedChange ? { onExpandedChange } : {}),
         onRowSelectionChange,
         onSortingChange,
+        initialState: {
+            expanded: initialExpanded ?? {}
+        },
         state: {
             columnVisibility,
             rowSelection,
-            sorting: tableSorting
+            sorting: tableSorting,
+            ...(expanded === undefined ? {} : { expanded })
         }
     });
+
+    const expandedState = table.state.expanded;
 
     const getColumnWidth = useCallback(
         (column: Column<Features, T>): number => {
@@ -480,7 +655,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
      */
     const tableRows = useMemo(() => {
         return table.getRowModel().rows;
-    }, [table, data, columns]);
+    }, [table, data, columns, expandedState]);
 
     return (
         <div ref={tableRef}>
@@ -548,6 +723,8 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                 key={id}
                                 cells={row.getVisibleCells()}
                                 selected={row.getIsSelected()}
+                                expanded={row.getIsExpanded()}
+                                depth={row.depth}
                                 getColumnWidth={getColumnWidth}
                             />
                         );
@@ -572,5 +749,7 @@ export {
     type DataTableColumnSort,
     type OnDataTableSortingChange,
     type DataTableColumnVisibility,
-    type OnDataTableColumnVisibilityChange
+    type OnDataTableColumnVisibilityChange,
+    type DataTableExpanded,
+    type OnDataTableExpandedChange
 };

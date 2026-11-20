@@ -32,7 +32,6 @@ export interface ILicense {
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
     canUseAbTesting: () => boolean;
-    canUseRemoteComponents: () => boolean;
     canUseAiPowerups: () => boolean;
     canUseCollaboration: () => boolean;
     canUseComments: () => boolean;
@@ -124,7 +123,6 @@ export interface ProjectPackageFeatures {
             fileManager?: { imageEnrichment?: boolean };
             lexicalGeneration?: boolean;
             adminAssistant?: boolean;
-            remoteComponents?: boolean;
             cms?: {
                 entryGeneration?: boolean;
                 entryComparison?: boolean;

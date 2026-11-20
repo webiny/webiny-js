@@ -20,6 +20,8 @@ export type EditorState = {
         editor: EditorViewportData["boxes"];
     };
     viewport: EditorViewportData["viewport"];
+    // The page root and the global components, in the order the frontend layout renders them.
+    layout: PreviewViewportData["layout"];
     selectedElement: string | null;
     highlightedElement: string | null;
     components: Record<string, ComponentManifest>;
@@ -27,6 +29,12 @@ export type EditorState = {
     isReadOnly: boolean;
     showOverlays: boolean;
     breakpoint?: string;
+    /**
+     * Data the preview (the app in the iframe) sent to the editor by key (`preview.data`
+     * message: `{ key, value }`), e.g. catalogues only the app can load. Renderers read it with
+     * `useSelectFromEditor(state => state.previewData[key])`.
+     */
+    previewData: Record<string, unknown>;
     [key: string]: any;
 };
 
@@ -53,6 +61,7 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     preview: {},
                     editor: {}
                 },
+                layout: [],
                 viewport: {
                     top: 0,
                     left: 0,
@@ -66,7 +75,8 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     breakpoints: []
                 },
                 components: {},
-                componentGroups: {}
+                componentGroups: {},
+                previewData: {}
             },
             false
         );

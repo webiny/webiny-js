@@ -27,7 +27,7 @@
     "typescript": "^7.0.2"
   },
   "peerDependencies": {
-    "react": "18.3.1"
+    "react": "19.3.1"
   },
   "publishConfig": {
     "access": "public"

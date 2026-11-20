@@ -14,8 +14,10 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async execute(page: Page) {
         const result = await this.gateway.execute(page.id);
-        this.cache.addItems([Page.create(result)]);
+        const duplicate = Page.create(result);
+        this.cache.addItems([duplicate]);
         await this.meta.increaseTotalCount();
+        return duplicate;
     }
 }
 

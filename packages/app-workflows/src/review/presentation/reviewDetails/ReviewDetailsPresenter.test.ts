@@ -1,4 +1,5 @@
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -46,8 +47,8 @@ const createDeferred = <T>(): Deferred<T> => {
 interface Setup extends ReviewUseCaseFakes {
     presenter: ReturnType<typeof ReviewDetailsPresenterFeature.resolve>["presenter"];
     activity: FakeReviewActivity;
-    onClose: ReturnType<typeof vi.fn>;
-    onChanged: ReturnType<typeof vi.fn>;
+    onClose: Mock;
+    onChanged: Mock;
     params: () => ReviewDetailsInitParams;
 }
 

@@ -1,6 +1,8 @@
 import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
-import { CoreStackOutputService, ApiStackOutputService } from "../../../abstractions/index.js";
-import type { IApiStackOutputPasswordPolicy } from "../../../abstractions/index.js";
+import {
+    CoreStackOutputService,
+    ApiStackOutputService
+} from "@webiny/project-extensions-aws/abstractions/index.js";
 
 interface ISetAdminEnvVarsDi {
     projectSdkParamsService: ProjectSdkParamsService.Interface;
@@ -46,7 +48,7 @@ export class SetAdminEnvVars {
             apiUrl: string;
             cognitoUserPoolId: string;
             cognitoAppClientId: string;
-            cognitoUserPoolPasswordPolicy: IApiStackOutputPasswordPolicy;
+            cognitoUserPoolPasswordPolicy: ApiStackOutputService.PasswordPolicy;
             websocketApiUrl: string;
         }>();
 

@@ -18,6 +18,8 @@ export type ComponentProps<TInputs = unknown> = {
     styles: CssProperties;
     element: DocumentElement;
     breakpoint: string;
+    /** The theme's breakpoint names, widest first (`desktop`, `tablet`, `mobile`). */
+    breakpoints: string[];
 };
 
 /**

@@ -39,6 +39,15 @@ jobs:
             exit 1
           fi
 
+          HEAD_REPO=$(gh api "/repos/${{ github.repository }}/pulls/${{
+          github.event.issue.number }}" -q ".head.repo.full_name // empty")
+
+          if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then
+            echo "::error::/vitest does not run on pull requests from forks (head repository: ${HEAD_REPO:-deleted})."
+            gh api --silent -X POST "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" -f body="/vitest does not run on pull requests from forks."
+            exit 1
+          fi
+
           gh api --silent -X POST "/repos/${{ github.repository
           }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
           content=eyes
@@ -66,7 +75,7 @@ jobs:
 
             | SQL | ⏳ Queued |
 
-            | PGlite | ⏳ Queued |
+            | pg | ⏳ Queued |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -131,7 +140,7 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -213,14 +222,22 @@ jobs:
         run: >-
           STATUS="🔄 Running"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| No storage | $STATUS |"
 
-          sed -i "s@^| No storage |.*@| No storage | $STATUS |@"
-          /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| No storage \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for No storage could not be
+          written after 5 attempts."
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -283,14 +300,22 @@ jobs:
             STATUS="❌ $PASSED/$TOTAL passed"
           fi
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| No storage | $STATUS |"
 
-          sed -i "s@^| No storage |.*@| No storage | $STATUS |@"
-          /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| No storage \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for No storage could not be
+          written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -401,13 +426,22 @@ jobs:
         run: >-
           STATUS="🔄 Running"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| DDB | $STATUS |"
 
-          sed -i "s@^| DDB |.*@| DDB | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -470,13 +504,22 @@ jobs:
             STATUS="❌ $PASSED/$TOTAL passed"
           fi
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| DDB | $STATUS |"
 
-          sed -i "s@^| DDB |.*@| DDB | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -581,13 +624,22 @@ jobs:
         run: >-
           STATUS="🔄 Running"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| DDB+OS | $STATUS |"
 
-          sed -i "s@^| DDB+OS |.*@| DDB+OS | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -650,13 +702,22 @@ jobs:
             STATUS="❌ $PASSED/$TOTAL passed"
           fi
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| DDB+OS | $STATUS |"
 
-          sed -i "s@^| DDB+OS |.*@| DDB+OS | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -791,13 +852,22 @@ jobs:
         run: >-
           STATUS="🔄 Running"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| SQL | $STATUS |"
 
-          sed -i "s@^| SQL |.*@| SQL | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| SQL \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for SQL could not be written
+          after 5 attempts."
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -860,13 +930,22 @@ jobs:
             STATUS="❌ $PASSED/$TOTAL passed"
           fi
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| SQL | $STATUS |"
 
-          sed -i "s@^| SQL |.*@| SQL | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| SQL \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for SQL could not be written
+          after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -944,12 +1023,12 @@ jobs:
     permissions:
       contents: read
       actions: write
-  vitest-pglite-constants:
+  vitest-pg-constants:
     needs:
       - baseBranch
       - build
       - checkComment
-    name: Vitest (PGlite) - Constants
+    name: Vitest (pg) - Constants
     permissions:
       contents: read
       actions: write
@@ -963,7 +1042,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Mark "PGlite" as running
+      - name: Mark "pg" as running
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -971,13 +1050,22 @@ jobs:
         run: >-
           STATUS="🔄 Running"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| pg | $STATUS |"
 
-          sed -i "s@^| PGlite |.*@| PGlite | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| pg \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for pg could not be written
+          after 5 attempts."
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -991,16 +1079,16 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["sql"]')" >> "$GITHUB_OUTPUT"
+          '["pg,sql"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  vitest-pglite-result:
+  vitest-pg-result:
     needs:
-      - vitest-pglite-run
+      - vitest-pg-run
       - checkComment
-    name: Vitest (PGlite) - Report status
+    name: Vitest (pg) - Report status
     permissions:
       contents: read
       actions: write
@@ -1010,16 +1098,16 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - name: Report "PGlite" result
+      - name: Report "pg" result
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          RESULT: ${{ needs.vitest-pglite-run.result }}
+          RESULT: ${{ needs.vitest-pg-run.result }}
         run: >-
           mapfile -t CONCS < <(gh api --paginate "repos/${{ github.repository
           }}/actions/runs/${{ github.run_id }}/jobs" --jq '.jobs[] |
-          select(.name | startswith("PGlite / ")) | .conclusion')
+          select(.name | startswith("pg / ")) | .conclusion')
 
           TOTAL=${#CONCS[@]}
 
@@ -1040,23 +1128,32 @@ jobs:
             STATUS="❌ $PASSED/$TOTAL passed"
           fi
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/vitest-comment.txt
+          row="| pg | $STATUS |"
 
-          sed -i "s@^| PGlite |.*@| PGlite | $STATUS |@" /tmp/vitest-comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/vitest-comment.txt || { echo "Could not read the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sed -i -E "s@^\| pg \|.*@$row@" /tmp/vitest-comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/vitest-comment.txt > /dev/null || { echo "Could not write the status comment (attempt $attempt of 5)."; sleep 3; continue; }
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/vitest-comment.txt
+          echo "::warning::The status comment row for pg could not be written
+          after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  vitest-pglite-run:
+  vitest-pg-run:
     needs:
       - baseBranch
       - constants
-      - vitest-pglite-constants
-    name: PGlite / ${{ matrix.testCommand.title }}
+      - vitest-pg-constants
+    name: pg / ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
       matrix:
@@ -1065,15 +1162,14 @@ jobs:
         node:
           - 24
         testCommand: >-
-          ${{
-          fromJSON(needs.vitest-pglite-constants.outputs.vitest-test-commands)
+          ${{ fromJSON(needs.vitest-pg-constants.outputs.vitest-test-commands)
           }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      WEBINY_STORAGE: sql
+      WEBINY_STORAGE: pg,sql
       WEBINY_SQL_CLIENT: pglite
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -1138,7 +1234,12 @@ jobs:
       - vitest-ddb-run
       - vitest-ddb-os-run
       - vitest-sql-run
-      - vitest-pglite-run
+      - vitest-pg-run
+      - vitest-result
+      - vitest-ddb-result
+      - vitest-ddb-os-result
+      - vitest-sql-result
+      - vitest-pg-result
     if: always() && needs.checkComment.result == 'success'
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1154,7 +1255,7 @@ jobs:
       R_DDB: ${{ needs.vitest-ddb-run.result }}
       R_DDB_OS: ${{ needs.vitest-ddb-os-run.result }}
       R_SQL: ${{ needs.vitest-sql-run.result }}
-      R_PGLITE: ${{ needs.vitest-pglite-run.result }}
+      R_PG: ${{ needs.vitest-pg-run.result }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1200,7 +1301,7 @@ jobs:
 
           add_failed "SQL / " "SQL"
 
-          add_failed "PGlite / " "PGlite"
+          add_failed "pg / " "pg"
 
 
           S_NONE=$(status_for "No storage / " "$R_NONE")
@@ -1211,7 +1312,7 @@ jobs:
 
           S_SQL=$(status_for "SQL / " "$R_SQL")
 
-          S_PGLITE=$(status_for "PGlite / " "$R_PGLITE")
+          S_PG=$(status_for "pg / " "$R_PG")
 
 
           render_table() {
@@ -1221,7 +1322,7 @@ jobs:
             echo "| DDB | $S_DDB |"
             echo "| DDB+OS | $S_DDB_OS |"
             echo "| SQL | $S_SQL |"
-            echo "| PGlite | $S_PGLITE |"
+            echo "| pg | $S_PG |"
             if [ -s /tmp/failed.txt ]; then
               echo ""
               echo "<details><summary>❌ Failed packages</summary>"

@@ -2,12 +2,16 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { makeAutoObservable } from "mobx";
 import { ListPresenterFeature } from "@webiny/app-admin/presentation/listPresenter/index.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { AssistantPageContext } from "@webiny/app-admin/features/assistantPageContext/abstractions.js";
+import { AssistantPageContext as AssistantPageContextImpl } from "@webiny/app-admin/features/assistantPageContext/AssistantPageContext.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { ContentEntriesCacheProvider } from "~/features/contentEntry/ContentEntriesCacheProvider.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
@@ -124,13 +128,13 @@ class MockFolderTreePresenter implements FolderTreePresenter.Interface {
 
 interface TestSetup {
     presenter: IContentEntriesPresenter;
-    listEntriesGateway: { execute: ReturnType<typeof vi.fn> };
-    moveEntryGateway: { execute: ReturnType<typeof vi.fn> };
-    deleteEntryGateway: { execute: ReturnType<typeof vi.fn> };
-    duplicateEntryGateway: { execute: ReturnType<typeof vi.fn> };
-    getDescendantFolders: ReturnType<typeof vi.fn>;
+    listEntriesGateway: { execute: Mock };
+    moveEntryGateway: { execute: Mock };
+    deleteEntryGateway: { execute: Mock };
+    duplicateEntryGateway: { execute: Mock };
+    getDescendantFolders: Mock;
     foldersPresenter: MockFolderTreePresenter;
-    publishEntryGateway: { execute: ReturnType<typeof vi.fn> };
+    publishEntryGateway: { execute: Mock };
     container: Container;
 }
 
@@ -182,6 +186,9 @@ function setup(): TestSetup {
     container.registerInstance(PublishEntryGateway, publishEntryGateway);
     container.registerInstance(UnpublishEntryGateway, { execute: vi.fn() });
     container.registerInstance(UpdateRevisionDescriptionGateway, { execute: vi.fn() });
+
+    container.registerInstance(FoldersContext, { type: "cms:testModel" });
+    container.register(AssistantPageContextImpl).inSingletonScope();
 
     container.register(ContentEntriesPresenter).inSingletonScope();
     const presenter = container.resolve(Abstraction);
@@ -252,6 +259,64 @@ describe("ContentEntriesPresenter", () => {
             await initPresenter(t, { data: [] });
 
             expect(t.presenter.vm.model).toStrictEqual(MODEL);
+        });
+    });
+
+    describe("assistant page context", () => {
+        const current = () => t.container.resolve(AssistantPageContext).get();
+
+        it("tells the assistant the model and folder type once initialised", async () => {
+            expect(current()).toBeNull();
+
+            await initPresenter(t, { data: [] });
+
+            expect(current()).toEqual({
+                view: 'Entries of the "Test Model" content model in Headless CMS',
+                details: {
+                    items: "entries",
+                    totalCount: 0,
+                    visibleRows: [],
+                    modelId: "testModel",
+                    modelName: "Test Model",
+                    folderType: "cms:testModel",
+                    currentFolder: null,
+                    visibleFolders: []
+                }
+            });
+        });
+
+        it("follows the open folder and the open entry", async () => {
+            await initPresenter(t, { data: [] });
+
+            t.foldersPresenter.selectFolder("folder-1");
+            t.presenter.selectEntry("entry-1#0002");
+
+            expect(current()?.details).toMatchObject({
+                currentFolder: { id: "folder-1", title: "Home" },
+                openEntryId: "entry-1"
+            });
+        });
+
+        it("stays under a context set over it while the list changes", async () => {
+            await initPresenter(t, { data: [] });
+            const drawer = { view: "Entry revisions", details: {} };
+            t.container.resolve(AssistantPageContext).set(drawer);
+
+            t.foldersPresenter.selectFolder("folder-1");
+
+            expect(current()).toEqual(drawer);
+        });
+
+        it("takes its context back on dispose, leaving one set before it", async () => {
+            const pageContext = t.container.resolve(AssistantPageContext);
+            const page = { view: "Dashboard", details: {} };
+            pageContext.set(page);
+
+            await initPresenter(t, { data: [] });
+            expect(current()?.view).toContain("Test Model");
+
+            t.presenter.dispose();
+            expect(current()).toEqual(page);
         });
     });
 

@@ -1,7 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { Container } from "@webiny/di";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
-import { LoggerFeature } from "~/features/logger/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
@@ -12,6 +11,7 @@ import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 import { PublicUrlsFeature } from "~/features/publicUrls/feature.js";
+import { CdnCacheFeature } from "~/features/cdnCache/feature.js";
 import { DebuggerFeature } from "~/features/debugger/feature.js";
 import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { HasherFeature } from "~/features/hashing/feature.js";
@@ -23,6 +23,8 @@ import { AiFeature } from "~/features/ai/feature.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { HttpClientFeature } from "~/features/httpClient/feature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
+import { NullSendToIdentityUseCase } from "~/features/websockets/index.js";
+import { NotifyRecordChangeFeature } from "~/features/websockets/index.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 import { RequestContextFeature } from "~/features/requestContext/index.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
@@ -46,10 +48,10 @@ export const ApiCoreFeature = createFeature({
         DateFormatterFeature.register(container);
         HttpClientFeature.register(container);
         AiFeature.register(container);
-        LoggerFeature.register(container);
         EventPublisherFeature.register(container);
         BuildParamsFeature.register(container);
         PublicUrlsFeature.register(container);
+        CdnCacheFeature.register(container);
         DebuggerFeature.register(container);
         EncryptionFeature.register(container);
         HasherFeature.register(container);
@@ -62,6 +64,8 @@ export const ApiCoreFeature = createFeature({
         IdpAuthenticatorFeature.register(container);
         RequestContextFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
+        container.register(NullSendToIdentityUseCase);
+        NotifyRecordChangeFeature.register(container);
         WebhookProviderFeature.register(container);
 
         // Core API GraphQL schema: a base factory (root types + scalars) plus one

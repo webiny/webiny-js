@@ -2,14 +2,17 @@ import { UpdatePageGateway as GatewayAbstraction } from "./abstractions.js";
 import type { PageDto } from "./PageDto.js";
 import type { PageGqlDto } from "./PageGqlDto.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
-import { getPageGraphQLFields } from "~/features/pages/shared/pageGraphQLFields.js";
+import {
+    getPageGraphQLFields,
+    PAGE_LAYOUT_GRAPHQL_FIELDS
+} from "~/features/pages/shared/pageGraphQLFields.js";
 
 const UPDATE_PAGE = /* GraphQL */ `
     mutation UpdatePage($id: ID!, $data: WbPageUpdateInput!) {
         websiteBuilder {
             updatePage(id: $id, data: $data) {
                 data {
-                    ${getPageGraphQLFields(["properties", "metadata", "bindings", "elements", "extensions"]).join("\n")}
+                    ${getPageGraphQLFields(["properties", "metadata", "bindings", "elements", "extensions", PAGE_LAYOUT_GRAPHQL_FIELDS]).join("\n")}
                 }
                 error {
                     code

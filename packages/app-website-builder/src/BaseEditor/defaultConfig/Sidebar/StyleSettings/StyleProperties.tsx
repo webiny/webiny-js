@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { StyleAccordion } from "./StyleAccordion.js";
-import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
+import { useEditedElement } from "~/BaseEditor/hooks/useEditedElement.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { ElementPreview } from "~/BaseEditor/defaultConfig/Sidebar/ElementPreview.js";
 import { Background } from "./Groups/Background.js";
@@ -12,7 +12,7 @@ import { StyleSettings } from "@webiny/website-builder-sdk";
 import { Layout } from "./Groups/Layout.js";
 
 export const StyleProperties = () => {
-    const [element] = useActiveElement();
+    const element = useEditedElement();
     if (!element) {
         return null;
     }

@@ -1,11 +1,11 @@
 import React from "react";
 import { Grid } from "@webiny/admin-ui";
-import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
+import { useEditedElement } from "~/BaseEditor/hooks/useEditedElement.js";
 import { ElementInputs } from "./ElementInputs.js";
 import { ElementPreview } from "../ElementPreview.js";
 
 export const ElementSettings = () => {
-    const [element] = useActiveElement();
+    const element = useEditedElement();
 
     if (!element) {
         return null;

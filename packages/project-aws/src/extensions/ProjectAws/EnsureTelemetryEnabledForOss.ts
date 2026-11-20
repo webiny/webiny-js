@@ -1,10 +1,8 @@
-import {
-    BeforeDeploy,
-    IsCi,
-    IsTelemetryEnabled,
-    IsWcpEnabled,
-    IsWebinyJsRepo
-} from "@webiny/project/abstractions/index.js";
+import { BeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { IsCi } from "@webiny/project/abstractions/index.js";
+import { IsTelemetryEnabled } from "@webiny/project/abstractions/index.js";
+import { IsWcpEnabled } from "@webiny/project/abstractions/index.js";
+import { IsWebinyJsRepo } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {

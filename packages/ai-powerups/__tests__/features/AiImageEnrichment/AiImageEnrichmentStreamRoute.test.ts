@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { HttpRouteHandler, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
@@ -65,9 +66,9 @@ function errorBody(response: IHttpResponse) {
 describe("AiImageEnrichmentStreamRoute", () => {
     let container: Container;
     let route: HttpRouteHandler.Interface;
-    let prepare: { execute: ReturnType<typeof vi.fn> };
-    let apply: { execute: ReturnType<typeof vi.fn> };
-    let ai: { streamText: ReturnType<typeof vi.fn> };
+    let prepare: { execute: Mock };
+    let apply: { execute: Mock };
+    let ai: { streamText: Mock };
 
     beforeEach(() => {
         prepare = { execute: vi.fn().mockResolvedValue(Result.ok(prepared)) };

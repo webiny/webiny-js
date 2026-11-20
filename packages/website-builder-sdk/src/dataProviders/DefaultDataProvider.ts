@@ -1,8 +1,16 @@
-import type { IDataProvider, ListPagesOptions, ListPagesResult, PublicPage } from "~/types.js";
+import type {
+    GetLayoutParams,
+    IDataProvider,
+    ListPagesOptions,
+    ListPagesResult,
+    PublicLayout,
+    PublicPage
+} from "~/types.js";
 import type { ActiveExperiment, VariantContent } from "~/experiments/types.js";
 import type { ApiClient } from "~/dataProviders/ApiClient.js";
 import { GET_PAGE_BY_PATH } from "./GET_PAGE_BY_PATH.js";
 import { GET_PAGE_BY_ID } from "./GET_PAGE_BY_ID.js";
+import { GET_LAYOUT_BY_SLUG } from "./GET_LAYOUT_BY_SLUG.js";
 import { LIST_PUBLISHED_PAGES } from "./LIST_PUBLISHED_PAGES.js";
 import { GET_PAGE_EXPERIMENT } from "./GET_PAGE_EXPERIMENT.js";
 import { GET_VARIANT_CONTENT } from "./GET_VARIANT_CONTENT.js";
@@ -45,6 +53,23 @@ export class DefaultDataProvider implements IDataProvider {
         this.checkForErrors("getPageById", result.websiteBuilder.getPageById);
 
         return result.websiteBuilder.getPageById.data;
+    }
+
+    public async getLayoutBySlug(params: GetLayoutParams): Promise<PublicLayout | null> {
+        const result = await this.config.apiClient.query({
+            query: GET_LAYOUT_BY_SLUG,
+            variables: {
+                slug: params.slug,
+                language: params.language ?? null
+            }
+        });
+
+        this.checkForErrors(
+            `getLayoutBySlug:${params.slug}`,
+            result.websiteBuilder.getLayoutBySlug
+        );
+
+        return result.websiteBuilder.getLayoutBySlug.data ?? null;
     }
 
     public async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {

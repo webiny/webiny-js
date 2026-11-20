@@ -1,8 +1,6 @@
-import {
-    ApiBeforeDeploy,
-    GetAppStackOutput,
-    ProjectSdkParamsService
-} from "@webiny/project/abstractions/index.js";
+import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class EnsureCoreDeployedBeforeApiDeployImpl implements ApiBeforeDeploy.Interface {

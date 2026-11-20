@@ -16,7 +16,8 @@ const MonthPicker = ({
     invalid,
     onOpenChange,
     className,
-    displayFormat
+    displayFormat,
+    "aria-labelledby": labelledBy
 }: MonthPickerProps) => {
     const parsed = value ? parseMonthValue(value) : undefined;
     const [open, setOpen] = useState(false);
@@ -44,6 +45,7 @@ const MonthPicker = ({
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick a month"}
                     disabled={disabled}

@@ -2,6 +2,8 @@
 export { SelfHostedAuth } from "./SelfHostedAuth.js";
 
 export { SelfHostedAuthApiFeature } from "./api/SelfHostedAuthApiFeature.js";
+export { SelfHostedAuthConfig } from "./api/domain/SelfHostedAuthConfig.js";
+export { SIGNING_SECRET_ENV_VAR } from "./shared/envVars.js";
 
 // Storage seams — one abstraction per operation, implemented by database packages (`-sql`, …).
 export * from "./api/storage/credentials/index.js";
@@ -25,4 +27,3 @@ export { ResetPasswordWithCodeUseCase } from "./api/features/ResetPasswordWithCo
 
 // Reset-code seams — override to change the code format or how the code is delivered.
 export { PasswordResetCodeGenerator } from "./api/domain/crypto/PasswordResetCodeGenerator.js";
-export { PasswordResetMailer } from "./api/domain/mail/PasswordResetMailer.js";

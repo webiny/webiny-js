@@ -1,6 +1,5 @@
 import type { NormalJob } from "github-actions-wac";
-import { createCheckoutPrSteps } from "../steps/index.js";
-import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { createJob } from "../jobs/index.js";
 import { ACTION } from "../utils/index.js";
@@ -8,7 +7,6 @@ import { VALKEY_SERVICE } from "../utils/index.js";
 import { VALKEY_TEST_URL } from "../utils/index.js";
 import {
     DIR_STANDALONE_PROJECT,
-    DIR_WEBINY_JS,
     PATH_STANDALONE_PROJECT,
     STANDALONE_ADMIN_PORT,
     STANDALONE_ADMIN_URL,
@@ -16,16 +14,11 @@ import {
     STANDALONE_API_URL,
     STANDALONE_BUILD_DIR
 } from "./constants.js";
-import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createReportStatusJob } from "./reportStatus.js";
-import {
-    AI_E2E_JOB_IF,
-    AI_E2E_LICENSE_ENV,
-    IS_AI_E2E_RUN,
-    aiE2eCommentRow,
-    createAiE2eSteps
-} from "./aiE2e.js";
+import type { PrFeature } from "./prFeature.js";
+import { AI_E2E_LICENSE_ENV } from "./aiE2e.js";
+import { createAiE2eSteps } from "./aiE2e.js";
 import { createInstallationTestSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import { createPublishToVerdaccioSteps, createRestoreVerdaccioSteps } from "./verdaccio.js";
@@ -39,28 +32,47 @@ const STORAGE_DISPLAY_NAME: Record<StandaloneStorageOps, string> = {
     postgres: "Postgres"
 };
 
-// The label used both for the job name and for this variant's row in the PR status comment. The
-// job seds on exactly this string, so deriving both from one place keeps them from drifting.
-export const standaloneVariantLabel = (storageOps: StandaloneStorageOps, apiProcesses = 1) => {
-    const storage = STORAGE_DISPLAY_NAME[storageOps];
+/*
+ * The label used both for the job name and for this variant's row in the PR status comment. The
+ * job seds on exactly this string, so deriving both from one place keeps them from drifting.
+ * A WCP variant is a project connected to WCP, with the full license.
+ */
+export const standaloneVariantLabel = ({
+    storageOps,
+    wcp,
+    apiProcesses = 1
+}: Pick<StandaloneVariant, "storageOps" | "wcp" | "apiProcesses">) => {
+    const details = [STORAGE_DISPLAY_NAME[storageOps]];
     if (apiProcesses > 1) {
-        return `Standalone (${storage}, ${apiProcesses} API processes)`;
+        details.push(`${apiProcesses} API processes`);
     }
-    return `Standalone (${storage})`;
+    if (wcp) {
+        details.push("WCP");
+    }
+    return `Standalone (${details.join(", ")})`;
 };
 
-// The same for a WCP variant: a project connected to WCP, which these jobs always are, with the
-// full license.
-export const wcpVariantLabel = (storageOps: StandaloneStorageOps) =>
-    `Standalone (${STORAGE_DISPLAY_NAME[storageOps]}, WCP)`;
+// A variant's id in job keys and artifact names, e.g. `postgres`, `postgres-wcp-2-processes`.
+export const standaloneVariantId = (
+    storageOps: StandaloneStorageOps,
+    { wcp = false, apiProcesses = 1 }: { wcp?: boolean; apiProcesses?: number } = {}
+) => {
+    let id: string = storageOps;
+    if (wcp) {
+        id = `${id}-wcp`;
+    }
+    if (apiProcesses > 1) {
+        id = `${id}-${apiProcesses}-processes`;
+    }
+    return id;
+};
 
-export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps) =>
-    aiE2eCommentRow(wcpVariantLabel(storageOps));
-
-// A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
-// open - hence "-" in that column, unlike the AWS rows.
-export const standaloneVariantCommentRow = (storageOps: StandaloneStorageOps, apiProcesses = 1) =>
-    `| ${standaloneVariantLabel(storageOps, apiProcesses)} | 🔄 Running... | - |`;
+/*
+ * A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
+ * open - hence "-" in that column, unlike the AWS rows.
+ */
+export const standaloneVariantCommentRow = (variant: StandaloneVariant) =>
+    `| ${standaloneVariantLabel(variant)} | 🔄 Running... | - |`;
 
 // Matches the defaults in the standalone/postgres template's .env.example, so the scaffolded project
 // connects to the service container without any extra configuration.
@@ -93,6 +105,10 @@ interface StandaloneProjectParams {
     workingDirectory: string;
     // Build with a WCP license and run with it. The regular variants stay unlicensed.
     wcp?: boolean;
+    // Configure the bug reporter only when this expression holds. Unset, it always is.
+    bugReporterIf?: string;
+    // Add the E2E API route only when this expression holds. Unset, it always is added.
+    apiRouteIf?: string;
 }
 
 /*
@@ -187,7 +203,7 @@ const createNginxConfig = (apiProcesses: number) => {
  */
 const createBuildStandaloneProjectSteps = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, wcp }: StandaloneProjectParams
+    { workingDirectory, wcp, bugReporterIf, apiRouteIf }: StandaloneProjectParams
 ): NonNullable<NormalJob["steps"]> => [
     {
         name: "Disable Webiny telemetry",
@@ -197,9 +213,11 @@ const createBuildStandaloneProjectSteps = (
         name: "Create a new standalone Webiny project",
         run: `npx create-webiny-project@local-npm ${DIR_STANDALONE_PROJECT} --tag local-npm --no-interactive --hosting-type standalone --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
     },
-    ...createConfigureBugReporterSteps({
+    ...createConfigureTestProjectSteps({
         workingDirectory,
-        projectPath: PATH_STANDALONE_PROJECT
+        projectPath: PATH_STANDALONE_PROJECT,
+        bugReporterIf,
+        apiRouteIf
     }),
     {
         name: "Print CLI version",
@@ -315,7 +333,10 @@ const createStartStandaloneProjectSteps = (
          * processes share this one folder, as they would share a volume.
          */
         WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
-        WEBINY_UPLOAD_SECRET: "e2e-upload-secret"
+        WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
+        WEBINY_SELF_HOSTED_AUTH_SECRET: "e2e-signing-secret",
+        WEBINY_ENCRYPTION_PASSPHRASE: "e2e-encryption-passphrase",
+        WEBINY_HASHING_PEPPER: "e2e-hashing-pepper"
     };
     if (wcp) {
         Object.assign(apiEnv, AI_E2E_LICENSE_ENV);
@@ -455,6 +476,7 @@ const createProjectTestSteps = (
     return createUnlicensedE2eSteps({
         workingDirectory,
         adminUrl: STANDALONE_ADMIN_URL,
+        apiUrl: STANDALONE_API_URL,
         artifactName: `e2e-test-results-standalone-${storageOps}`
     });
 };
@@ -499,9 +521,10 @@ export const createStandaloneProjectParts = (
 
 export interface StandaloneVariant {
     storageOps: StandaloneStorageOps;
-    // Build with a WCP license and run the whole `e2e/` suite. Only for the people in
-    // AI_E2E_USERS. Without it the project is unlicensed and runs the tests that need neither a
-    // license nor a model.
+    /*
+     * Build with a WCP license and run the whole `e2e/` suite. Without it the project is
+     * unlicensed and runs the tests that need neither a license nor a model.
+     */
     wcp: boolean;
     // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
     shards: number;
@@ -512,59 +535,118 @@ export interface StandaloneVariant {
     apiProcesses?: number;
 }
 
+type JobStep = NonNullable<NormalJob["steps"]>[number];
+
+// What differs between the workflows that run a standalone variant as build, shards and report.
+export interface StandaloneVariantJobsContext {
+    // Where webiny-js is checked out.
+    workingDirectory: string;
+    // Prefix of the variant's job keys, e.g. `e2e-standalone` gives `e2e-standalone-sqlite-build`.
+    jobKeyPrefix: string;
+    // Jobs the build job waits for. One of them must have published the packages to Verdaccio and
+    // uploaded its storage (createUploadVerdaccioStorageSteps).
+    buildNeeds: [string, ...string[]];
+    // Jobs the shard jobs wait for, besides the variant's build job.
+    testsNeeds: string[];
+    /*
+     * Steps that put the code under test in `workingDirectory` and restore the yarn cache, run at
+     * the start of the build and shard jobs. `/e2e` checks out the PR head here; `push` has the
+     * pushed commit checked out already.
+     */
+    setupSteps: readonly [JobStep, ...JobStep[]];
+    // Add a job that writes the shards' result into the PR status comment. `push` has no PR.
+    report: boolean;
+    // See createInstallationTestSteps.
+    savePlaywrightCache?: boolean;
+    /*
+     * The feature the variant needs from the PR's code. The build runs only when the PR has it, so
+     * the shards are skipped with it otherwise, and the report job writes "Not supported" into the
+     * variant's row instead of a failure. Unset, the variant always runs.
+     */
+    feature?: PrFeature;
+    // Configure the bug reporter only when the PR's code has it. Unset, it always is configured.
+    bugReporter?: PrFeature;
+    /*
+     * Add the E2E API route only when the PR's code builds `<Api.Route>` on standalone. Unset, it
+     * always is added.
+     */
+    apiRoute?: PrFeature;
+}
+
 /**
- * The `/e2e` command's jobs for one standalone variant:
+ * The jobs for one standalone variant, the same in `/e2e` and `push`:
  * - build: scaffolds and builds the project once from the packages in Verdaccio, and uploads the
  *   API and Admin build folders.
  * - tests: one job per shard. Each starts its own API and Admin from those folders, on its own empty
  *   database, runs the installation test to create the admin user, then its slice of the suite.
- * - report status: writes the shards' combined result into the status comment (createReportStatusJob).
+ * - report status (`/e2e` only): writes the shards' combined result into the status comment
+ *   (createReportStatusJob).
  *
- * A WCP variant is a set of jobs of its own rather than a license on the regular ones, so `/e2e`
- * still covers an unlicensed project for everyone, the AI users included. Its status comment row
- * (wcpVariantCommentRow) only appears on the runs it takes part in.
+ * A WCP variant is a set of jobs of its own rather than a license on the regular ones, so both
+ * workflows cover a licensed and an unlicensed project.
  */
-export const createStandaloneVariantJobs = ({
-    storageOps,
-    wcp,
-    shards,
-    apiProcesses = 1
-}: StandaloneVariant) => {
-    let label = standaloneVariantLabel(storageOps, apiProcesses);
-    let id: string = storageOps;
-    if (wcp) {
-        label = wcpVariantLabel(storageOps);
-        id = `${storageOps}-wcp`;
-    }
-    if (apiProcesses > 1) {
-        id = `${id}-${apiProcesses}-processes`;
-    }
+export const createStandaloneVariantJobs = (
+    { storageOps, wcp, shards, apiProcesses = 1 }: StandaloneVariant,
+    {
+        workingDirectory,
+        jobKeyPrefix,
+        buildNeeds,
+        testsNeeds,
+        setupSteps,
+        report,
+        savePlaywrightCache,
+        feature,
+        bugReporter,
+        apiRoute
+    }: StandaloneVariantJobsContext
+) => {
+    const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
+    const id = standaloneVariantId(storageOps, { wcp, apiProcesses });
     // The build needs only the database; Valkey is for the running processes.
     const buildServices = createServices(storageOps);
     const services = createServices(storageOps, apiProcesses);
     const jobKeys = {
-        build: `e2e-standalone-${id}-build`,
-        tests: `e2e-standalone-${id}`,
-        report: `e2e-standalone-${id}-report`
+        build: `${jobKeyPrefix}-${id}-build`,
+        tests: `${jobKeyPrefix}-${id}`,
+        report: `${jobKeyPrefix}-${id}-report`
     };
+    // Dependencies only: the e2e runner and Verdaccio are all these jobs need from the checkout.
+    const installSteps = [
+        {
+            name: "Install dependencies",
+            "working-directory": workingDirectory,
+            run: "yarn --immutable"
+        }
+    ];
     const buildArchive = `standalone-build-${id}.tzst`;
     const buildArtifactName = `standalone-build-${id}`;
     const shard = `\${{ matrix.shard }}/${shards}`;
+    // The jobs whose outputs the build's `if` reads have to be among its `needs`.
+    const buildJobNeeds: [string, ...string[]] = [...buildNeeds];
+    if (feature && !buildJobNeeds.includes(feature.needs)) {
+        buildJobNeeds.push(feature.needs);
+    }
+    if (bugReporter && !buildJobNeeds.includes(bugReporter.needs)) {
+        buildJobNeeds.push(bugReporter.needs);
+    }
+    if (apiRoute && !buildJobNeeds.includes(apiRoute.needs)) {
+        buildJobNeeds.push(apiRoute.needs);
+    }
 
     const buildJob = createJob({
-        needs: ["baseBranch", "publish", "checkComment"],
+        needs: buildJobNeeds,
         name: `E2E - ${label} - Build`,
-        ...(wcp ? { if: AI_E2E_JOB_IF } : {}),
-        checkout: { path: DIR_WEBINY_JS },
+        checkout: { path: workingDirectory },
         services: buildServices,
         steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-            ...yarnCacheSteps,
+            ...setupSteps,
             ...installSteps,
-            ...createRestoreVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createRestoreVerdaccioSteps({ workingDirectory }),
             ...createBuildStandaloneProjectSteps(storageOps, {
-                workingDirectory: DIR_WEBINY_JS,
-                wcp
+                workingDirectory,
+                wcp,
+                bugReporterIf: bugReporter?.has,
+                apiRouteIf: apiRoute?.has
             }),
             {
                 name: "Compress API and Admin builds",
@@ -585,19 +667,22 @@ export const createStandaloneVariantJobs = ({
         ]
     });
 
+    if (feature) {
+        buildJob.if = feature.has;
+    }
+
     const testsJob = createJob({
-        needs: ["baseBranch", jobKeys.build],
+        needs: [jobKeys.build, ...testsNeeds],
         name: `E2E - ${label} / shard \${{ matrix.shard }}`,
         strategy: {
             // Every shard reports, so one failure doesn't hide the others.
             "fail-fast": false,
             matrix: { shard: Array.from({ length: shards }, (_, i) => i + 1) }
         },
-        checkout: { path: DIR_WEBINY_JS },
+        checkout: { path: workingDirectory },
         ...(services ? { services } : {}),
         steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-            ...yarnCacheSteps,
+            ...setupSteps,
             ...installSteps,
             {
                 name: "Download API and Admin builds",
@@ -610,19 +695,21 @@ export const createStandaloneVariantJobs = ({
             },
             ...createStartStandaloneProjectSteps(storageOps, { wcp, apiProcesses }),
             ...createInstallationTestSteps({
-                workingDirectory: DIR_WEBINY_JS,
+                workingDirectory,
                 adminUrl: STANDALONE_ADMIN_URL,
-                artifactName: `e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`
+                artifactName: `e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
+                savePlaywrightCache
             }),
             ...(wcp
                 ? createAiE2eSteps({
-                      workingDirectory: DIR_WEBINY_JS,
+                      workingDirectory,
                       artifactName: `ai-e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
                       shard
                   })
                 : createUnlicensedE2eSteps({
-                      workingDirectory: DIR_WEBINY_JS,
+                      workingDirectory,
                       adminUrl: STANDALONE_ADMIN_URL,
+                      apiUrl: STANDALONE_API_URL,
                       artifactName: `e2e-test-results-standalone-${id}-shard-\${{ matrix.shard }}`,
                       shard
                   })),
@@ -630,17 +717,17 @@ export const createStandaloneVariantJobs = ({
         ]
     });
 
-    const reportJob = createReportStatusJob({
-        label,
-        buildJobKey: jobKeys.build,
-        testsJobKey: jobKeys.tests,
-        // Not for people outside AI_E2E_USERS: the WCP rows don't exist in their comment.
-        ...(wcp ? { if: IS_AI_E2E_RUN } : {})
-    });
-
-    return {
+    const jobs: Record<string, NormalJob> = {
         [jobKeys.build]: buildJob,
-        [jobKeys.tests]: testsJob,
-        [jobKeys.report]: reportJob
+        [jobKeys.tests]: testsJob
     };
+    if (report) {
+        jobs[jobKeys.report] = createReportStatusJob({
+            label,
+            buildJobKey: jobKeys.build,
+            testsJobKey: jobKeys.tests,
+            feature
+        });
+    }
+    return jobs;
 };

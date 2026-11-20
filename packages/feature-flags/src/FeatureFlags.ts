@@ -18,14 +18,14 @@ export type KnownFeatureFlag =
     | "aiPowerups.fileManager.imageEnrichment"
     | "aiPowerups.lexicalGeneration"
     | "aiPowerups.adminAssistant"
-    | "aiPowerups.remoteComponents"
     | "aiPowerups.cms.entryGeneration"
     | "aiPowerups.cms.entryComparison"
     | "aiPowerups.cms.entryTranslation"
     | "abTesting"
     | "collaboration"
     | "collaboration.comments"
-    | "collaboration.activityLog";
+    | "collaboration.activityLog"
+    | "webhooks";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
 
@@ -120,7 +120,6 @@ export class FeatureFlags {
                       },
                       lexicalGeneration: this.isEnabled("aiPowerups.lexicalGeneration"),
                       adminAssistant: this.isEnabled("aiPowerups.adminAssistant"),
-                      remoteComponents: this.isEnabled("aiPowerups.remoteComponents"),
                       cms: {
                           entryGeneration: this.isEnabled("aiPowerups.cms.entryGeneration"),
                           entryComparison: this.isEnabled("aiPowerups.cms.entryComparison"),
@@ -134,7 +133,10 @@ export class FeatureFlags {
                       comments: this.isEnabled("collaboration.comments"),
                       activityLog: this.isEnabled("collaboration.activityLog")
                   }
-                : false
+                : false,
+            // Opt-out, not opt-in: `isEnabled` would turn an unset flag into `false` here, and the
+            // license decorators rebuild from `toDto()`.
+            webhooks: !this.isExplicitlyDisabled("webhooks")
         };
     }
 }

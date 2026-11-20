@@ -1,5 +1,6 @@
 import { BaseError, Result } from "@webiny/feature/api";
 import type { MailerService } from "@webiny/api-mailer";
+import { NoTransportAvailableError } from "@webiny/api-mailer/domain/MailerService/errors.js";
 
 export type SentMail = Parameters<MailerService.Interface["sendMail"]>[0];
 
@@ -21,10 +22,15 @@ export class RecordingMailer implements MailerService.Interface {
     public failOn: number[] = [];
     public throwOn: number[] = [];
     public failureMessage = "SMTP refused.";
+    /** False stands for an installation without any mail transport: every send fails as it would. */
+    public configured = true;
 
     public async sendMail<T = any>(data: SentMail): MailerService.Return<T> {
         const index = this.sent.length;
         this.sent.push(data);
+        if (!this.configured) {
+            return Result.fail(new NoTransportAvailableError());
+        }
         if (this.throwOn.includes(index)) {
             throw Object.assign(new Error(this.failureMessage), { code: "ECONNRESET" });
         }
@@ -32,5 +38,9 @@ export class RecordingMailer implements MailerService.Interface {
             return Result.fail(new SmtpFailure(this.failureMessage) as never);
         }
         return Result.ok({ result: null, error: null });
+    }
+
+    public async isConfigured(): Promise<boolean> {
+        return this.configured;
     }
 }

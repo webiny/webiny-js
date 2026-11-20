@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { FilesListCache } from "../shared/abstractions.js";
@@ -39,7 +40,7 @@ function createFiles(count: number): FmFile[] {
     return Array.from({ length: count }, (_, i) => createFile(i));
 }
 
-type MockGateway = IListFilesGateway & { execute: ReturnType<typeof vi.fn> };
+type MockGateway = IListFilesGateway & { execute: Mock };
 
 function createMockGateway(
     files: FmFile[] = createFiles(3),

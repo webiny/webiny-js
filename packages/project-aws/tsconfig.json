@@ -5,6 +5,7 @@
     { "path": "../aws-sdk" },
     { "path": "../cli-core" },
     { "path": "../project" },
+    { "path": "../project-extensions-aws" },
     { "path": "../pulumi" },
     { "path": "../pulumi-sdk" },
     { "path": "../utils" }
@@ -22,6 +23,8 @@
       "@webiny/cli-core": ["../cli-core/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
+      "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],
+      "@webiny/project-extensions-aws": ["../project-extensions-aws/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],

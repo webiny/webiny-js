@@ -8,17 +8,17 @@
   "main": "./src/index.js",
   "dependencies": {
     "@octokit/rest": "^22.0.1",
-    "chalk": "^6.0.0",
-    "execa": "^10.0.1",
+    "chalk": "^6.0.1",
+    "execa": "^10.2.1",
     "load-json-file": "^7.0.1",
-    "p-retry": "^8.0.0",
+    "p-retry": "^8.0.1",
     "semver": "^7.8.5",
     "write-json-file": "^7.0.0",
-    "yargs": "^18.1.0"
+    "yargs": "^18.2.0"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.35",
-    "type-fest": "^5.8.0",
-    "vitest": "^4.1.11"
+    "type-fest": "^5.10.0",
+    "vitest": "^5.0.5"
   }
 }

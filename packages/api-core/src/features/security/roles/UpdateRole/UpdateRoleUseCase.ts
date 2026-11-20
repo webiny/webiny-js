@@ -7,6 +7,7 @@ import { updateRoleValidation } from "./schema.js";
 import { RoleBeforeUpdateEvent, RoleAfterUpdateEvent } from "./events.js";
 import type { Role, UpdateRoleInput } from "../shared/types.js";
 import { descriptionOnUpdate } from "../../shared/description.js";
+import { definedOnly } from "../../shared/definedOnly.js";
 import {
     NotAuthorizedError,
     CannotUpdatePluginRolesError,
@@ -57,7 +58,7 @@ class UpdateRoleUseCaseImpl implements UseCase.Interface {
         const { description, ...rest } = validation.data;
 
         const changes: UpdateRoleInput = {
-            ...rest,
+            ...definedOnly(rest),
             ...descriptionOnUpdate(description)
         };
 

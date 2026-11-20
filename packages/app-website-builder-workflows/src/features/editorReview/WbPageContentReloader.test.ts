@@ -1,4 +1,5 @@
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -38,7 +39,7 @@ const NEW_METADATA = { seo: { title: "Home SEO" } };
 const NEW_EXTENSIONS = { tracking: { enabled: true } };
 
 interface FakeGetPage {
-    execute: ReturnType<typeof vi.fn>;
+    execute: Mock;
 }
 
 function createPage(overrides: Partial<Parameters<typeof Page.create>[0]> = {}): Page {

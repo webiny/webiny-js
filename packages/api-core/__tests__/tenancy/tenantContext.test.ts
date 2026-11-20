@@ -125,3 +125,43 @@ describe("TenantContext with no tenant set", () => {
         expect(tenantContext.getTenant()).toBeNull();
     });
 });
+
+describe("TenantContext switches inside a callback", () => {
+    let tenantContext: TenantContext.Interface;
+
+    beforeEach(() => {
+        const container = new Container();
+        TenancyFeature.register(container, new MockTenancyStorageOperations());
+        tenantContext = container.resolve(TenantContext);
+        tenantContext.setTenant(createTenant("root", null));
+    });
+
+    it("refuses setTenant() inside a withTenant() callback", async () => {
+        await expect(
+            tenantContext.withTenant(createTenant("sub", "root"), async () => {
+                tenantContext.setTenant(createTenant("other", "root"));
+            })
+        ).rejects.toThrow("TenantContext.setTenant() was called inside a withTenant()");
+        expect(tenantContext.getTenant().id).toBe("root");
+    });
+
+    it("keeps a nested switch in one Promise.all branch out of the other branch", async () => {
+        const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const [nested, sibling] = await tenantContext.withTenant(
+            createTenant("sub", "root"),
+            async () => {
+                return Promise.all([
+                    tenantContext.withTenant(createTenant("nested", "root"), async () => {
+                        await wait(20);
+                        return tenantContext.getTenant().id;
+                    }),
+                    wait(5).then(() => tenantContext.getTenant().id)
+                ]);
+            }
+        );
+
+        expect(nested).toBe("nested");
+        expect(sibling).toBe("sub");
+    });
+});

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
@@ -49,10 +50,10 @@ const SIGN_HEADERS: WebhookSignPayload.Headers = {
 
 describe("SendWebhookTask", () => {
     let container: Container;
-    let deliverMock: ReturnType<typeof vi.fn>;
-    let getWebhookMock: ReturnType<typeof vi.fn>;
-    let getDeliveryMock: ReturnType<typeof vi.fn>;
-    let updateDeliveryMock: ReturnType<typeof vi.fn>;
+    let deliverMock: Mock;
+    let getWebhookMock: Mock;
+    let getDeliveryMock: Mock;
+    let updateDeliveryMock: Mock;
 
     beforeEach(() => {
         container = new Container();

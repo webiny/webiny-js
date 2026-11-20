@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { FilesListCache } from "../shared/abstractions.js";
@@ -35,7 +36,7 @@ function createFile(overrides: Partial<FmFile> = {}): FmFile {
     };
 }
 
-type MockGateway = IDeleteFileGateway & { execute: ReturnType<typeof vi.fn> };
+type MockGateway = IDeleteFileGateway & { execute: Mock };
 
 function createMockGateway(): MockGateway {
     const execute = vi.fn<(params: DeleteFileGatewayParams) => Promise<boolean>>();

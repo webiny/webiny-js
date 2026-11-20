@@ -1,12 +1,13 @@
-import { type AppName, type IStackOutput } from "@webiny/project";
+import { type AppName } from "@webiny/project";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 import { getAwsProjectSdk } from "./getAwsProjectSdk.js";
 
 /**
- * AWS-aware equivalent of `@webiny/project`'s `getStackOutput` helper: reads an app's stack output
- * via the aws-aware SDK. The base `getStackOutput` uses `getProjectSdk()`, which lacks the pulumi
- * services now that they live in project-aws → "No registration found for GetAppStackOutput".
+ * Reads an app's stack output through a project SDK that has the AWS Pulumi services registered.
  */
-export const getStackOutput = async <TOutput extends IStackOutput = IStackOutput>(
+export const getStackOutput = async <
+    TOutput extends GetAppStackOutput.StackOutput = GetAppStackOutput.StackOutput
+>(
     appName: AppName
 ): Promise<TOutput | null> => {
     const sdk = await getAwsProjectSdk();

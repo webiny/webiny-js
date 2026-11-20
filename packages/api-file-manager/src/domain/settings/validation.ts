@@ -28,13 +28,16 @@ const uploadMaxFileSizeValidation = zod
 export const updateSettingsValidation = zod.object({
     uploadMinFileSize: uploadMinFileSizeValidation,
     uploadMaxFileSize: uploadMaxFileSizeValidation,
-    // An empty value is replaced with the default in UpdateSettingsUseCase.
+    /*
+     * Omitted stays omitted, so a partial update keeps the stored prefix. An empty value is kept
+     * as empty: UpdateSettingsUseCase stores it as "no custom prefix".
+     */
     srcPrefix: zod
         .string()
         .optional()
         .transform(value => {
             if (!value) {
-                return "";
+                return value;
             }
             return value.endsWith("/") ? value : value + "/";
         })

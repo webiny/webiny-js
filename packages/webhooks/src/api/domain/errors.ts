@@ -66,6 +66,26 @@ export class WebhookPersistenceError extends BaseError<WebhookPersistenceErrorDa
     }
 }
 
+interface WebhookDeliveryNotQueuedErrorData {
+    deliveryId: string;
+    // False when the delivery could not be marked failed either, so it is still stored as pending.
+    markedFailed: boolean;
+}
+
+export class WebhookDeliveryNotQueuedError extends BaseError<WebhookDeliveryNotQueuedErrorData> {
+    override readonly code = "WEBHOOK_DELIVERY_NOT_QUEUED" as const;
+
+    constructor(params: { message: string; deliveryId: string; markedFailed: boolean }) {
+        super({
+            message: `Could not queue the webhook delivery: ${params.message}`,
+            data: {
+                deliveryId: params.deliveryId,
+                markedFailed: params.markedFailed
+            }
+        });
+    }
+}
+
 export class WebhookModelNotFoundError extends BaseError {
     override readonly code = "WEBHOOK_MODEL_NOT_FOUND" as const;
 

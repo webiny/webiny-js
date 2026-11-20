@@ -61,6 +61,8 @@ import {
     GET_PUBLISHED_CONTENT_ENTRY_QUERY,
     SEARCH_CONTENT_ENTRIES_QUERY
 } from "./graphql/contentEntry";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface GraphQLHandlerParams {
     permissions?: PermissionsArg[];
@@ -135,6 +137,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 
             // Process legacy RegisterExtensionPlugins to register StorageOperationsFactory

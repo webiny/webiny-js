@@ -7,6 +7,8 @@ import { Container } from "@webiny/di";
 import { EventDispatcher } from "@webiny/event-handler-core";
 import { SchedulerSingleton } from "~/scheduler/abstractions/SchedulerSingleton.js";
 import { startSchedulerServer } from "~/scheduler/schedulerServer.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createMockLogger } from "./createMockLogger.js";
 
 const createServer = () => {
     const scheduler = {
@@ -18,6 +20,8 @@ const createServer = () => {
     const container = new Container();
     container.registerInstance(SchedulerSingleton, scheduler as any);
     container.registerInstance(EventDispatcher, { dispatch } as any);
+    const logger = createMockLogger();
+    container.registerInstance(Logger, logger);
     return { container, scheduler, dispatch };
 };
 
@@ -30,7 +34,6 @@ describe("startSchedulerServer", () => {
     // Every minute, so actions scheduled or moved in another process reach this one's timers.
     it("recovers at boot and then every minute", async () => {
         vi.useFakeTimers();
-        vi.spyOn(console, "log").mockImplementation(() => {});
         const { container, scheduler, dispatch } = createServer();
 
         await startSchedulerServer(container);
@@ -44,7 +47,6 @@ describe("startSchedulerServer", () => {
 
     it("does not start a run while the previous one is still going", async () => {
         vi.useFakeTimers();
-        vi.spyOn(console, "log").mockImplementation(() => {});
         const { container, dispatch } = createServer();
         dispatch.mockImplementationOnce(() => new Promise(() => {}));
 
@@ -56,7 +58,6 @@ describe("startSchedulerServer", () => {
 
     it("stops the timers and recovery, then waits for running actions", async () => {
         vi.useFakeTimers();
-        vi.spyOn(console, "log").mockImplementation(() => {});
         const { container, scheduler, dispatch } = createServer();
         const stop = await startSchedulerServer(container);
         await vi.advanceTimersByTimeAsync(0);

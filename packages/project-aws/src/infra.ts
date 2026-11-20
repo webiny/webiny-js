@@ -1,25 +1,22 @@
 import {
     AdminAfterBuild,
-    AdminAfterDeploy,
     AdminBeforeBuild,
-    AdminBeforeDeploy,
     AdminBeforeWatch,
-    AdminStackOutputValue,
     ApiAfterBuild,
-    ApiAfterDeploy,
     ApiBeforeBuild,
-    ApiBeforeDeploy,
     ApiBeforeWatch,
-    ApiStackOutputValue,
     CoreAfterBuild,
-    CoreAfterDeploy,
     CoreBeforeBuild,
-    CoreBeforeDeploy,
     CoreBeforeWatch,
-    CoreStackOutputValue,
-    ProductionEnvironments,
-    PulumiResourceNamePrefix
+    ProductionEnvironments
 } from "@webiny/project/extensions/index.js";
+import { AdminAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AdminBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { PulumiResourceNamePrefix } from "@webiny/project-extensions-aws/extensions/index.js";
 
 import { CorePulumi, ApiPulumi, AdminPulumi } from "./pulumi/extensions/index.js";
 
@@ -34,9 +31,18 @@ import {
 } from "./pulumi/extensions/index.js";
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
-import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
+import { Postgres } from "./extensions/Postgres.js";
+import { RdsProxy } from "./extensions/RdsProxy.js";
+import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AwsDefaultRegion } from "@webiny/project-extensions-aws/extensions/AwsDefaultRegion.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar, ApiMaxBundleSize, Encryption, Hashing } from "@webiny/project/extensions/index.js";
+import { EnvVar } from "@webiny/project/extensions/index.js";
+import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,
@@ -67,6 +73,9 @@ export const Infra = {
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     Vpc,
+    Postgres,
+    // Alias of Infra.Core.RdsProxy (prefer Infra.Core.RdsProxy going forward).
+    RdsProxy,
     BlueGreenDeployments,
     // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
     OpenSearch,
@@ -111,7 +120,8 @@ export const Infra = {
         CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
         LambdaFunction: ApiLambdaFunction,
-        MaxBundleSize: ApiMaxBundleSize
+        MaxBundleSize: ApiMaxBundleSize,
+        WebFunction: ApiWebFunction
     },
     Core: {
         BeforeBuild: CoreBeforeBuild,
@@ -123,6 +133,7 @@ export const Infra = {
         StackOutputValue: CoreStackOutputValue,
         DynamoDb,
         OpenSearch,
+        RdsProxy,
         S3Bucket
     }
 };

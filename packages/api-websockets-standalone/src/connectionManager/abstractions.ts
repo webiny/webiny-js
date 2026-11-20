@@ -23,7 +23,6 @@ export interface IWebsocketsConnectionManagerMetadata {
 export interface IWebsocketsConnectionManager<TSocket> {
     add(params: IWebsocketsConnectionManagerAddParams<TSocket>): Promise<void>;
     remove(connectionId: string): Promise<void>;
-    groupByOwner(connectionIds: string[]): Promise<Map<string, string[]>>;
     getSocket(connectionId: string): TSocket | undefined;
     getMetadata(connectionId: string): IWebsocketsConnectionManagerMetadata | undefined;
     updateLastSeen(connectionId: string): Promise<void>;
@@ -31,6 +30,12 @@ export interface IWebsocketsConnectionManager<TSocket> {
     getActiveConnectionIds(): string[];
 }
 
+/**
+ * The server's websocket connections, as the code outside any request sees them (the upgrade
+ * acceptor, the heartbeat, the message bus): a root singleton. It holds the live sockets in memory
+ * (`WebsocketsLiveSockets`), and changes the connections' rows, which are a storage, by dispatching
+ * an event that runs in a fresh request container.
+ */
 export const WebsocketsConnectionManager = createAbstraction<IWebsocketsConnectionManager<unknown>>(
     "WebsocketsConnectionManager"
 );

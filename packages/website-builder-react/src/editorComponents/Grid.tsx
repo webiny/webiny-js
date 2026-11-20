@@ -23,7 +23,7 @@ type GridProps = ComponentProps<{
     reverseWhenStacked?: boolean;
 }>;
 
-export const GridComponent = ({ inputs, styles, breakpoint }: GridProps) => {
+export const GridComponent = ({ inputs, styles, breakpoint, breakpoints }: GridProps) => {
     const { gridLayout = "12", columns, columnGap, stackAtBreakpoint, reverseWhenStacked } = inputs;
     const rowConfig = gridLayout.split("-").map(size => parseInt(size));
     const rows: Column[][] = [];
@@ -36,7 +36,9 @@ export const GridComponent = ({ inputs, styles, breakpoint }: GridProps) => {
     // Number of pixels we need to subtract from each cell to ensure they fit in the grid with column gap
     const cellWidthReduction = columnGap ? columnGap - columnGap / rowConfig.length : 0;
 
-    const stackColumns = breakpoint === stackAtBreakpoint;
+    // Stack at the chosen breakpoint and every narrower one.
+    const stackFrom = stackAtBreakpoint ? breakpoints.indexOf(stackAtBreakpoint) : -1;
+    const stackColumns = stackFrom !== -1 && breakpoints.indexOf(breakpoint) >= stackFrom;
 
     if (stackColumns) {
         styles.flexDirection = reverseWhenStacked ? "column-reverse" : "column";

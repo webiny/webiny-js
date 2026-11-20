@@ -1,6 +1,7 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
+import { TaskCatalogFlpFeature } from "@webiny/api-aco/flpTaskCatalog/index.js";
 import { FolderLevelPermissionsStorageOperations } from "./FolderLevelPermissionsStorageOperations.js";
 
 export const AcoDdbFeature = createFeature({
@@ -13,5 +14,8 @@ export const AcoDdbFeature = createFeature({
                 documentClient: db.client
             });
         });
+
+        // Folder-level permissions on this storage use the task-maintained FLP catalog.
+        TaskCatalogFlpFeature.register(container);
     }
 });

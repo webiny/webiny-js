@@ -2,7 +2,7 @@ import {
     TaskDefinition,
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { compressJson } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { CmsGenerateEntryContentUseCase } from "~/api/features/CmsGenerateEntryContent/index.js";
 import type { GenerateEntryContentTelemetry } from "~/api/features/CmsGenerateEntryContent/abstractions.js";

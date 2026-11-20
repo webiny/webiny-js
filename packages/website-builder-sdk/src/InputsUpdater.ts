@@ -21,6 +21,8 @@ export class InputsUpdater implements IBindingsUpdater {
     }
 
     applyToDocument(document: Document) {
+        // An element can be stored without bindings (e.g., a layout's main content area).
+        document.bindings[this.elementId] ??= {};
         document.bindings[this.elementId].inputs = structuredClone(this.bindings.inputs);
 
         if (this.bindings.overrides) {

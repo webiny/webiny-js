@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import {
     ListTagsUseCase as UseCaseAbstraction,
@@ -23,7 +24,7 @@ function createTags(count: number): FmTag[] {
     }));
 }
 
-type MockGateway = IListTagsGateway & { execute: ReturnType<typeof vi.fn> };
+type MockGateway = IListTagsGateway & { execute: Mock };
 
 function createMockGateway(tags: FmTag[] = createTags(3)): MockGateway {
     const execute = vi.fn<(params: ListTagsGatewayParams) => Promise<ListTagsGatewayResult>>();

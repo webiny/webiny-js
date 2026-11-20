@@ -170,6 +170,24 @@ export class InputsBindingsProcessor {
             return keys.reduce((acc, key) => (acc ? acc[key] : undefined), obj);
         };
 
+        // The id of a leaf's binding: metadata is stored under it, so it is kept. A breakpoint override keeps
+        // its own id, and a new one takes the id the breakpoint resolved to before (the binding the sidebar
+        // showed, and stored metadata under), even without a base binding.
+        const getBindingId = (
+            node: InputAstNode,
+            flatKey: string,
+            originalEntry?: { id?: string }
+        ) => {
+            if (!node.input?.responsive || this.isBaseBreakpoint(breakpoint)) {
+                return originalEntry?.id;
+            }
+            return (
+                this.rawBindings.overrides?.[breakpoint]?.inputs?.[flatKey]?.id ??
+                valueResolver.getInheritedBindingId(flatKey, breakpoint) ??
+                originalEntry?.id
+            );
+        };
+
         // Recursively traverses the AST nodes, comparing new input values with original bindings.
         // Collects changed values into 'rebuilt' and generates operations for new elements.
         const compareAndCollect = (nodes: InputAstNode[], prefix: string[]) => {
@@ -254,7 +272,7 @@ export class InputsBindingsProcessor {
                         const createdId = newElement.element.id;
 
                         // Assign or generate a stable unique id for the binding
-                        const existingId = originalEntry?.id;
+                        const existingId = getBindingId(node, flatKey, originalEntry);
                         const idToUse = existingId ?? generateElementId();
 
                         // Build binding for the new element id(s)
@@ -310,7 +328,7 @@ export class InputsBindingsProcessor {
                             node.input?.responsive && !this.isBaseBreakpoint(breakpoint);
 
                         // Assign or generate a stable unique id for the binding
-                        const existingId = originalEntry?.id;
+                        const existingId = getBindingId(node, flatKey, originalEntry);
                         const idToUse = existingId ?? generateElementId();
 
                         // Merge existing original entry data with updated static value

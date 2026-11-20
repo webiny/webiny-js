@@ -1,9 +1,9 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the standalone flavour package (webiny/extensions currently exposes
-// the AWS namespaces, which don't include server-only extensions like Infra.Sqlite).
-import { Infra } from "@webiny/project-standalone";
+import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
+import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
+import { AcoPg } from "@webiny/api-aco-pg/project";
 
 /**
  * Standalone-only extensions, rendered by webiny.config.tsx when WEBINY_HOSTING_TYPE === "standalone".
@@ -12,9 +12,23 @@ import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 export const StandaloneExtensions = () => {
     return (
         <>
-            {/* SQL database. Relative paths resolve against the project root (not the disposable app
+            {/* SQL database, picked by WEBINY_DB:
+                - unset: SQLite file (default)
+                - "pglite": PGlite (Postgres compiled to WebAssembly), which `webiny watch` starts next to
+                  the api, nothing to install
+                - "postgres": a Postgres server you run, configured with WEBINY_PG_*
+                Relative paths resolve against the project root (not the disposable app
                 workspace), so data persists across builds/watch restarts. */}
-            {process.env.WEBINY_DB === "postgres" ? (
+            {process.env.WEBINY_DB === "pglite" ? (
+                <Infra.Pglite
+                    dataDir={process.env.WEBINY_PGLITE_DIR || "./.webiny/postgres"}
+                    // Unset: the first free port from 54320. Passed only when set, as an
+                    // undefined prop reaches the extension as null and fails validation.
+                    {...(process.env.WEBINY_PGLITE_PORT
+                        ? { port: Number(process.env.WEBINY_PGLITE_PORT) }
+                        : {})}
+                />
+            ) : process.env.WEBINY_DB === "postgres" ? (
                 <Infra.Postgres
                     host={process.env.WEBINY_PG_HOST || "localhost"}
                     port={Number(process.env.WEBINY_PG_PORT) || 5432}
@@ -27,6 +41,15 @@ export const StandaloneExtensions = () => {
                     filename={process.env.WEBINY_SQL_FILENAME || "./.webiny/server.sqlite"}
                 />
             )}
+
+            {/* On Postgres (and PGlite), content needs the Postgres CMS storage and the folder
+                catalog; SQLite has its own CMS built in. */}
+            {process.env.WEBINY_DB === "pglite" || process.env.WEBINY_DB === "postgres" ? (
+                <>
+                    <HeadlessCmsPg />
+                    <AcoPg />
+                </>
+            ) : null}
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves like
                 the SQLite file — against the project root — so uploads persist across rebuilds. */}
@@ -52,7 +75,18 @@ export const StandaloneExtensions = () => {
                 url={process.env.WEBINY_ADMIN_WS_API_URL || "ws://localhost:3002"}
             />
 
-            {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
+            {/* Encryption and the hashing pepper are always on in a standalone API, which refuses to
+                start without WEBINY_ENCRYPTION_PASSPHRASE and WEBINY_HASHING_PEPPER. These set them
+                for `webiny watch` / `webiny serve`; a deployed API reads both from its environment.
+                Same dev values as the AWS config. */}
+            <Infra.Crypto.Encryption
+                passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE || "my-passphrase"}
+            />
+            <Infra.Crypto.Hashing
+                pepper={process.env.WEBINY_HASHING_PEPPER || "my-hashing-pepper"}
+            />
+
+            {/* Auth: built-in self-hosted IdP (login screen + JWT). */}
             <SelfHostedAuth
                 signingSecret={
                     process.env.WEBINY_SELF_HOSTED_AUTH_SECRET || "dev-only-insecure-secret"

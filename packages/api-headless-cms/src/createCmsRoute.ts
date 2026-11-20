@@ -8,6 +8,8 @@ import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
+import { checkEndpointAccess } from "~/graphql/checkEndpointAccess.js";
 
 const CMS_PATHS: Record<ApiEndpoint, string> = {
     manage: "/cms/manage",
@@ -27,6 +29,31 @@ export function createCmsRoute(type: ApiEndpoint) {
         constructor(public container: Container) {}
 
         async handle(request: IHttpRequest): Promise<IHttpResponse> {
+            /*
+             * The request runs as this endpoint: the schema, reference fields and validation read
+             * HeadlessCmsEndpointConfig. The feature registers a default for the whole request;
+             * the last instance registered wins.
+             */
+            this.container.registerInstance(HeadlessCmsEndpointConfig, { type });
+
+            try {
+                await checkEndpointAccess(this.container, type);
+            } catch (ex) {
+                return {
+                    statusCode: 401,
+                    headers: { "Content-Type": "application/json" },
+                    body: {
+                        data: null,
+                        error: {
+                            message: ex.message || "Not authorized!",
+                            code: ex.code || "SECURITY_NOT_AUTHORIZED",
+                            data: ex.data || null,
+                            stack: null
+                        }
+                    }
+                };
+            }
+
             const result = await this.container
                 .resolve(CmsSchemaExecutor)
                 .execute(type, request.body);

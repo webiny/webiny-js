@@ -4,7 +4,7 @@ import { zodSrcPath } from "../defineExtension/zodTypes/zodSrcPath.js";
 
 export const ProjectDecorator = defineExtension({
     type: "Project/Decorator",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     multiple: true,
     description: "Decorate an existing implementation with additional functionality.",
     paramsSchema: ({ project }) => {

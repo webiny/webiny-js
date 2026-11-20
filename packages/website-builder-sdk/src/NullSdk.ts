@@ -1,8 +1,12 @@
 import type { IContentSdk, ListPagesResult, PublicRedirect, ResolvedComponent } from "./types.js";
-import type { PublicPage } from "./types.js";
+import type { PublicLayout, PublicPage } from "./types.js";
 
 export class NullSdk implements IContentSdk {
     async getPage(): Promise<PublicPage | null> {
+        return null;
+    }
+
+    async getLayout(): Promise<PublicLayout | null> {
         return null;
     }
 

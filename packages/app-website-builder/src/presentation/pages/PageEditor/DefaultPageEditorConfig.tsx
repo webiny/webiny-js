@@ -9,6 +9,7 @@ import { SettingsButton } from "./TopBar/SettingsButton.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { InternalPageEditorConfig } from "./PageEditorConfig.js";
 import { TopBarOptionsMenu } from "~/BaseEditor/config/TopBar/Layout.js";
+import { PageGlobalComponentSaveBar } from "./GlobalComponents/PageGlobalComponentSaveBar.js";
 
 const { Ui } = InternalPageEditorConfig;
 
@@ -39,6 +40,17 @@ export const DefaultPageEditorConfig = () => {
             </HasPermission>
             <HasPermission entity={"page"} action={"edit"}>
                 <Ui.TopBar.Element group={"left"} name={"autoSave"} element={<PageAutoSave />} />
+                {/* Globals are not autosaved with the page: their settings get their own save. */}
+                <Ui.Sidebar.Element
+                    name={"globalComponentSave"}
+                    group={"element"}
+                    before={"elementSettings"}
+                    element={
+                        <Ui.OnActiveElement>
+                            <PageGlobalComponentSaveBar />
+                        </Ui.OnActiveElement>
+                    }
+                />
             </HasPermission>
         </InternalPageEditorConfig>
     );

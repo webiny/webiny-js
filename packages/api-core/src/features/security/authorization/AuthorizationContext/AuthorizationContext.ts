@@ -1,10 +1,8 @@
-import { AsyncLocalStorage } from "async_hooks";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { AuthorizationContext as Abstraction, PermissionTransformer } from "./abstractions.js";
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Identity } from "~/features/security/IdentityContext/index.js";
-
-const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();
 
 /** Tenant key used when no tenant is set yet (before the tenant is resolved). */
 const NO_TENANT = "";
@@ -20,6 +18,11 @@ type PermissionsByTenant = Map<string, Promise<SecurityPermission[]>>;
  */
 export class AuthorizationContext implements Abstraction.Interface {
     private permissionsByIdentity = new WeakMap<Identity, PermissionsByTenant>();
+    /*
+     * `withoutAuthorization()` and `withAuthorization()` switch authorization on or off for their
+     * callback's async call chain only.
+     */
+    private readonly authorizationEnabledOverrides = new AsyncLocalStorage<boolean>();
 
     constructor(
         private getAuthorizers: () => Authorizer.Interface[],
@@ -52,16 +55,16 @@ export class AuthorizationContext implements Abstraction.Interface {
     }
 
     isAuthorizationEnabled(): boolean {
-        const override = authorizationEnabledStorage.getStore();
+        const override = this.authorizationEnabledOverrides.getStore();
         return override ?? true;
     }
 
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T> {
-        return authorizationEnabledStorage.run(false, cb);
+        return this.authorizationEnabledOverrides.run(false, cb);
     }
 
     withAuthorization<T>(cb: () => Promise<T>): Promise<T> {
-        return authorizationEnabledStorage.run(true, cb);
+        return this.authorizationEnabledOverrides.run(true, cb);
     }
 
     clearPermissionsCache(): void {

@@ -18,14 +18,6 @@
 export const CLI_PASSWORD_RESET_BUILD_PARAM = "SelfHostedAuthCliPasswordReset";
 
 /**
- * Build param carrying the HS256 secret used to sign and verify both login tokens and CLI reset
- * tokens. Named here because four places have to agree on it (the config that emits it,
- * `TokenIssuer` and `CliResetTokenVerifier` that read it at runtime, and the CLI that reads it
- * back out of the config), and a silent disagreement shows up only as a refused token.
- */
-export const SIGNING_SECRET_BUILD_PARAM = "SelfHostedAuthSigningSecret";
-
-/**
  * Build param carrying the login token lifetime in seconds, written by
  * `<SelfHostedAuth tokenExpiresIn={...} />` and read by `TokenIssuer`. Absent means the default
  * (12 hours). Named here for the same reason as the two above: a typo on either side is silent,

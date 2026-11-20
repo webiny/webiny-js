@@ -39,18 +39,22 @@ const RangeSliderPrimitiveRenderer = ({
     textValues,
     showTooltip,
     values,
+    "aria-labelledby": labelledBy,
     ...sliderProps
 }: RangeSliderPrimitiveVm) => {
     return (
         <div className={"flex h-md w-full"}>
             <SliderRoot {...sliderProps} value={values}>
                 <SliderTrack />
+                {/* Both ends are named by the field's label. */}
                 <SliderThumb
+                    aria-labelledby={labelledBy}
                     showTooltip={showTooltip}
                     tooltipSide={tooltipSide}
                     textValue={textValues[0]}
                 />
                 <SliderThumb
+                    aria-labelledby={labelledBy}
                     showTooltip={showTooltip}
                     tooltipSide={tooltipSide}
                     textValue={textValues[1]}

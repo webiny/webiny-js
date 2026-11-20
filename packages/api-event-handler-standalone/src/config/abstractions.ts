@@ -12,6 +12,16 @@ export interface IStandaloneConfig {
         /** `WEBINY_UPLOAD_SECRET`. Required. */
         readonly uploadSecret: string;
     };
+    readonly encryption: {
+        /** `WEBINY_ENCRYPTION_PASSPHRASE`. Required: standalone always encrypts. */
+        readonly passphrase: string;
+        /** `WEBINY_ENCRYPTION_SALT`. Optional. */
+        readonly salt: string;
+    };
+    readonly hashing: {
+        /** `WEBINY_HASHING_PEPPER`. Required: standalone always peppers its hashes. */
+        readonly pepper: string;
+    };
     /**
      * `WEBINY_REDIS_URL`. Optional. When set, websocket messages travel between API processes
      * through this Redis or Valkey server; required when more than one API process runs.

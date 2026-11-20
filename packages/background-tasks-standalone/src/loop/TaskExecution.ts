@@ -1,8 +1,9 @@
 import type { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
-import type { IterationSlots } from "./IterationSlots.js";
+import type { ConcurrencySlots } from "@webiny/utils/ConcurrencySlots.js";
 import { nextStep } from "./nextStep.js";
 import type { IIterationResult } from "./nextStep.js";
 
@@ -12,8 +13,9 @@ const MAX_TASK_DURATION_MS = 86_400_000;
 interface ITaskExecutionParams {
     event: IBackgroundTaskEvent;
     dispatcher: EventDispatcher.Interface;
-    slots: IterationSlots;
+    slots: ConcurrencySlots;
     shutdown: ShutdownSignal.Interface;
+    logger: Logger.Interface;
 }
 
 /**
@@ -34,7 +36,7 @@ export class TaskExecution {
     }
 
     public async run(): Promise<void> {
-        const { dispatcher, slots, shutdown } = this.params;
+        const { dispatcher, slots, shutdown, logger } = this.params;
         const taskId = this.params.event.webinyTaskId;
         const timer = new ProcessTimer(MAX_TASK_DURATION_MS);
         let event = this.params.event;
@@ -55,7 +57,7 @@ export class TaskExecution {
             try {
                 result = await iteration;
             } catch (error) {
-                console.error(`Background task "${taskId}" failed:`, error);
+                logger.error({ error, taskId }, "[background-tasks] task failed");
                 return;
             } finally {
                 this.iteration = undefined;
@@ -67,9 +69,9 @@ export class TaskExecution {
                 return;
             }
             if (step.kind === "unexpected") {
-                console.error(
-                    `Background task "${taskId}" stopped with status "${step.status}":`,
-                    result
+                logger.error(
+                    { taskId, status: step.status, result },
+                    "[background-tasks] task stopped with an unexpected status"
                 );
                 return;
             }
@@ -83,7 +85,7 @@ export class TaskExecution {
             }
         }
 
-        console.error(`Background task "${taskId}" exceeded the maximum duration.`);
+        logger.error({ taskId }, "[background-tasks] task exceeded the maximum duration");
     }
 
     /** The iteration being dispatched right now, if there is one. */

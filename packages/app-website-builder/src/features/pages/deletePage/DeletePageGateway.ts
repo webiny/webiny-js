@@ -3,9 +3,9 @@ import { DeletePageGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 
 const DELETE_PAGE = /* GraphQL */ `
-    mutation DeletePage($id: ID!) {
+    mutation DeletePage($id: ID!, $permanently: Boolean) {
         websiteBuilder {
-            deletePage(id: $id) {
+            deletePage(id: $id, permanently: $permanently) {
                 data
                 error {
                     code

@@ -5,7 +5,7 @@ import { useTags } from "./useTags.js";
 import { InputPrimitive, type InputPrimitiveProps } from "~/Input/index.js";
 import { Tag } from "~/Tag/index.js";
 import { IconButton } from "~/Button/index.js";
-import type { Icon } from "~/Icon/index.js";
+import type { IconElement } from "~/Icon/index.js";
 
 interface TagsPrimitiveProps extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -51,7 +51,7 @@ interface TagsPrimitiveProps extends Omit<
     /**
      * Icon to be displayed at the start of the input field.
      */
-    startIcon?: React.ReactElement<typeof Icon> | React.ReactElement;
+    startIcon?: IconElement;
     /**
      * Variant of the input field.
      * Refer to `InputPrimitiveProps["variant"]` for possible values.

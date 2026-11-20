@@ -30,6 +30,9 @@ const CloneElement = createCommand<{ id: string }>("CLONE_ELEMENT");
 
 const DeleteElement = createCommand<{
     id: string;
+    // Where the delete came from: "keyboard" for the Delete and Backspace keys on the canvas.
+    // Lets a command handler that refuses the delete stay quiet for a key press.
+    source?: "keyboard";
 }>("DELETE_ELEMENT");
 
 const SelectElement = createCommand<{ id: string }>("SELECT_ELEMENT");

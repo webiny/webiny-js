@@ -5,7 +5,10 @@ import {
 import type { IGetPageGraphQLFieldSelection } from "./abstractions.js";
 import type { PageGatewayDto } from "./PageGatewayDto.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
-import { getPageGraphQLFields } from "~/features/pages/shared/pageGraphQLFields.js";
+import {
+    getPageGraphQLFields,
+    PAGE_LAYOUT_GRAPHQL_FIELDS
+} from "~/features/pages/shared/pageGraphQLFields.js";
 
 type GetPageResponse = {
     websiteBuilder: {
@@ -26,17 +29,27 @@ class GetPageGatewayImpl implements GatewayAbstraction.Interface {
             throw new Error("Page `id` is mandatory");
         }
 
-        const extraFields = ["properties", "metadata", "bindings", "elements", "extensions"];
+        const extraFields = [
+            "properties",
+            "metadata",
+            "bindings",
+            "elements",
+            "extensions",
+            PAGE_LAYOUT_GRAPHQL_FIELDS
+        ];
         for (const selection of this.fieldSelections) {
             extraFields.push(...selection.getSelection());
         }
 
         const fields = getPageGraphQLFields(extraFields);
 
+        // The page as stored: its own elements, and its overrides of global components and of its layout's
+        // elements. The page editor composes them with the global components' records and the layout.
+
         const query = /* GraphQL */ `
             query GetPage($id: ID!) {
                 websiteBuilder {
-                    getPageById(id: $id) {
+                    getPageById(id: $id, raw: true) {
                         data {
                             ${fields.join("\n")}
                         }

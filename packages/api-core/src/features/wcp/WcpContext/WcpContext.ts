@@ -177,10 +177,6 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAbTesting();
     }
 
-    canUseRemoteComponents(): boolean {
-        return this.license.canUseRemoteComponents();
-    }
-
     canUseCollaboration(): boolean {
         return this.license.canUseCollaboration();
     }

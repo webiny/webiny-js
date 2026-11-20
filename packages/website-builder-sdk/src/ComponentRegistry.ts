@@ -1,4 +1,4 @@
-import type { Component } from "~/types.js";
+import type { Component, ComponentManifest } from "~/types.js";
 import { functionConverter } from "~/FunctionConverter.js";
 
 type Registration = { name: string; component: Component };
@@ -47,6 +47,14 @@ export class ComponentRegistry {
 
     public get(name: string) {
         return this.registry.get(name);
+    }
+
+    public getManifests(): Record<string, ComponentManifest> {
+        const manifests: Record<string, ComponentManifest> = {};
+        this.registry.forEach((component, name) => {
+            manifests[name] = component.manifest;
+        });
+        return manifests;
     }
 
     /** subscribe to *all* registrations */

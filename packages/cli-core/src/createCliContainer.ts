@@ -23,14 +23,12 @@ import {
     disableTelemetryCommand,
     enableTelemetryCommand,
     extensionCommand,
-    infoCommand,
     isCi,
     linkProjectCommand,
     loginCommand,
     logLevelGlobalOption,
     logoutCommand,
     missingFilesInBuildGracefulErrorHandler,
-    openCommand,
     showLogsGlobalOption,
     stackTraceGlobalOption,
     syncDepsCommand,
@@ -69,9 +67,7 @@ export const createCliContainer = async (
     container.register(extensionCommand).inSingletonScope();
     container.register(syncDepsCommand).inSingletonScope();
     container.register(verifyDepsCommand).inSingletonScope();
-    container.register(infoCommand).inSingletonScope();
     container.register(isCi).inSingletonScope();
-    container.register(openCommand).inSingletonScope();
     UpgradeCommandFeature.register(container);
 
     container.register(linkProjectCommand).inSingletonScope();

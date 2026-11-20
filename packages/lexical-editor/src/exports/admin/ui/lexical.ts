@@ -10,6 +10,8 @@ export { useFontColorPicker } from "~/hooks/index.js";
 export { useTextAlignmentAction } from "~/hooks/index.js";
 export { useTypographyAction } from "~/hooks/index.js";
 export { useIsMounted } from "~/hooks/index.js";
+// toolbar actions: `FontColorAction.ColorPicker` replaces the font colour picker
+export { FontColorAction } from "~/components/ToolbarActions/FontColorAction.js";
 // UI elements
 export { Divider } from "~/ui/Divider.js";
 export { DropDownItem } from "~/ui/DropDown.js";

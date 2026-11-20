@@ -22,13 +22,13 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/project-aws": "0.0.0",
+    "@webiny/project-extensions": "0.0.0",
     "jsonwebtoken": "^9.0.3",
-    "mobx": "^7.0.3",
-    "mobx-react-lite": "^5.0.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "zod": "4.4.3"
+    "mobx": "^7.1.4",
+    "mobx-react-lite": "^5.1.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",

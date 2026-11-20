@@ -1,26 +1,23 @@
-import React, { useCallback } from "react";
+import React from "react";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
-import { useDocumentEditor } from "~/DocumentEditor/index.js";
-import { Commands } from "~/BaseEditor/index.js";
+import { useElementSidebar } from "../ElementSidebar/useElementSidebar.js";
 
-export const DeleteElementAction = () => {
-    const [element] = useActiveElement();
-    const editor = useDocumentEditor();
+export const DeleteElementAction = createReactiveComponent(() => {
+    const presenter = useElementSidebar();
+    const { element } = presenter.vm;
 
-    const onClick = useCallback(() => {
-        if (element) {
-            editor.executeCommand(Commands.DeleteElement, { id: element.id });
-        }
-    }, [element?.id]);
+    if (element && !element.actions.delete) {
+        return null;
+    }
 
     return (
         <DropdownMenu.Item
             className={"text-destructive-primary [&_svg]:fill-destructive"}
             icon={<DeleteIcon />}
             text={"Delete"}
-            onClick={onClick}
+            onClick={() => presenter.deleteElement()}
         />
     );
-};
+});

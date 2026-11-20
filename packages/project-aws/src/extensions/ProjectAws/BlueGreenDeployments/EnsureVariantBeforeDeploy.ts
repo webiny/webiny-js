@@ -1,4 +1,5 @@
-import { BeforeDeploy, ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { BeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 
 class PrintDeploymentInfoAfterDeployImpl implements BeforeDeploy.Interface {
     constructor(private projectSdkParamsService: ProjectSdkParamsService.Interface) {}

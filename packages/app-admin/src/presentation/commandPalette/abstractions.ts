@@ -34,6 +34,11 @@ export interface ICommand {
      * `entersMode: "adminAssistant"` and the palette looks the mode up by name instead of hardcoding it.
      */
     entersAiMode?: boolean;
+    /*
+     * Needs the admin assistant, which is licensed separately. The palette leaves the command out
+     * while the license is missing.
+     */
+    requiresAssistant?: boolean;
 }
 
 export const Command = createAbstraction<ICommand>("Command");
@@ -54,6 +59,8 @@ export interface CommandItemVm {
     hasDetailView: boolean;
     /** Selecting this switches the palette into AI mode. Lets a caller hide it when AI is off. */
     entersAiMode: boolean;
+    /** Needs the admin assistant. Lets a caller hide it when the assistant is not licensed. */
+    requiresAssistant: boolean;
 }
 
 export interface ActiveCommandVm {

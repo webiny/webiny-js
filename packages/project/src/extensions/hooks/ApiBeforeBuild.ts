@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const ApiBeforeBuild = defineExtension({
     type: "Api/BeforeBuild",
-    tags: { runtimeContext: "project", application: "api" },
+    tags: { runtimeContext: "project", application: "api", hosting: "all" },
     description: "Add custom logic to be executed before the API build process.",
     multiple: true,
     paramsSchema: ({ project }) => {

@@ -53,7 +53,9 @@ export const SingleEntryLayout = observer(({ presenter, modelName }: SingleEntry
                     </div>
                 </SimpleFormHeader>
                 <SimpleFormContent
-                    className={"border-sm border-t-none border-neutral-dimmed-darker rounded-b-3xl"}
+                    className={
+                        "border-sm border-t-none border-neutral-dimmed-darker rounded-b-lg-plus"
+                    }
                 >
                     {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
                     <FormView name="SingleEntryForm" form={vm.form} />

@@ -5,6 +5,7 @@ import {
     ComponentManifestToAstConverter,
     type InputAstNode
 } from "@webiny/website-builder-sdk";
+import { $getEditableElement } from "./$getEditableElement.js";
 
 /**
  * Build a content-entry decorator around a plain BindingsResolver,
@@ -26,7 +27,7 @@ function resolveElement(
     elementId: string,
     depth: number
 ): ResolvedElementInputs {
-    const element = document.elements[elementId];
+    const element = $getEditableElement(document, elementId);
     if (!element) {
         return {};
     }

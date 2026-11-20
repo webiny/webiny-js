@@ -2,7 +2,27 @@ import { makeObservable, autorun, observable } from "mobx";
 import type { GenericRecord } from "@webiny/app/types.js";
 import { EditorHistory } from "./EditorHistory.js";
 import { type IState, type MutableState, State } from "./State.js";
-import { jsonPatch, type JsonPatchOperation } from "@webiny/website-builder-sdk";
+import {
+    type GlobalDocument,
+    GlobalElementId,
+    jsonPatch,
+    type JsonPatchOperation
+} from "@webiny/website-builder-sdk";
+
+/**
+ * The instances of global components (`$global:{name}` and everything inside them) are saved on their own,
+ * not with the document, so they are kept out of the history: undo and redo never change them. Their
+ * placements are elements of the document like any other, so placing, moving and removing a global can be
+ * undone.
+ */
+const withoutGlobals = (state: GenericRecord) => {
+    if (!state.elements) {
+        return state;
+    }
+
+    const { page } = GlobalElementId.splitDocument(state as GlobalDocument);
+    return { ...state, elements: page.elements, bindings: page.bindings };
+};
 
 export type StateChangeEvent<TState> = {
     reason: "undo" | "redo" | "update";
@@ -23,7 +43,7 @@ export class StateWithHistory<
 
     constructor(initialState: TState) {
         this.history = new EditorHistory({
-            snapshots: [initialState],
+            snapshots: [withoutGlobals(initialState)],
             observeKeys: ["elements", "bindings"]
         });
 
@@ -42,7 +62,7 @@ export class StateWithHistory<
             const diff = jsonPatch.compare(previousState, newState);
             this.previousState = undefined;
 
-            this.history.trackState(newState);
+            this.history.trackState(withoutGlobals(newState));
 
             if (diff.length) {
                 this.executeStateListeners({
@@ -88,7 +108,7 @@ export class StateWithHistory<
         const snapshot = this.history.goToOlderSnapshot();
 
         this.state.setState(state => {
-            return Object.assign({}, state, snapshot.getState());
+            return Object.assign({}, state, this.withCurrentGlobals(snapshot.getState()));
         });
 
         this.executeStateListeners({
@@ -103,7 +123,7 @@ export class StateWithHistory<
         this.timeTravel = false;
         const snapshot = this.history.goToNewerSnapshot();
         this.state.setState(state => {
-            return Object.assign({}, state, snapshot.getState());
+            return Object.assign({}, state, this.withCurrentGlobals(snapshot.getState()));
         });
 
         this.executeStateListeners({
@@ -112,6 +132,23 @@ export class StateWithHistory<
             state: this.state.toJson()
         });
         this.timeTravel = true;
+    }
+
+    // A restored snapshot has no global instances: they're kept as they are now.
+    private withCurrentGlobals(snapshotState: GenericRecord) {
+        const current = this.state.toJson() as unknown as GlobalDocument;
+        if (!current.elements) {
+            return snapshotState;
+        }
+
+        const snapshot = snapshotState as GlobalDocument;
+        const { globals } = GlobalElementId.splitDocument(current);
+
+        return {
+            ...snapshotState,
+            elements: { ...snapshot.elements, ...globals.elements },
+            bindings: { ...snapshot.bindings, ...globals.bindings }
+        };
     }
 
     onStateChange(listener: StateChangeListener<TState>): () => void {

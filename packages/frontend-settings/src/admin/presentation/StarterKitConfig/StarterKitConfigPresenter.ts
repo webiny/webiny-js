@@ -4,7 +4,7 @@ import { GetFrontendSettingsUseCase } from "~/admin/features/getSettings/abstrac
 import { UpdateFrontendSettingsUseCase } from "~/admin/features/updateSettings/abstractions.js";
 import { CACHE_KEY } from "~/admin/features/settingsCache.js";
 import { settingsCache } from "~/admin/features/settingsCache.js";
-import { isValidFrontendDomain } from "~/shared/isValidFrontendDomain.js";
+import { FrontendDomain } from "~/shared/FrontendDomain.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 import type { IStarterKit } from "~/shared/types.js";
 
@@ -66,7 +66,7 @@ class StarterKitConfigPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     private get domainError(): string | null {
-        if (isValidFrontendDomain(this.domain)) {
+        if (FrontendDomain.from(this.domain).isValid()) {
             return null;
         }
         return "Enter an http:// or https:// URL.";

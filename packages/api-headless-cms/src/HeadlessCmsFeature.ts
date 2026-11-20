@@ -21,6 +21,7 @@ import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
+import { ModelStorageSyncFeature } from "~/features/modelStorageSync/index.js";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
@@ -88,8 +89,6 @@ export interface HeadlessCmsConfig {
 export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
     name: "HeadlessCms",
     register(container, config) {
-        const { type } = config;
-
         // Pre-register the CMS SDK namespace schema (Query.cms / Mutation.cms) so it is
         // available when GraphQLSchemaComposer is constructed (before context enhancement).
         // All these implementations have zero DI dependencies and are safe to register early.
@@ -128,6 +127,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         CmsWhereMapperFeature.register(container);
         CmsSortMapperFeature.register(container);
         CmsWebhooksFeature.register(container);
+        ModelStorageSyncFeature.register(container);
 
         // ============================================================================
         // Synchronous per-request wiring (moved out of HeadlessCmsInitializer.init).
@@ -260,11 +260,11 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         container.registerInstance(CmsGraphQLSchemaFactory, {
             execute: () => createBaseSchemaPlugins(cmsContext)
         });
-        if (type === "manage") {
-            container.registerInstance(CmsGraphQLSchemaFactory, {
-                execute: () => [exportPlugin]
-            });
-        }
+        // Export/import belongs to the manage schema only; the endpoint is known per request.
+        container.registerInstance(CmsGraphQLSchemaFactory, {
+            execute: () =>
+                container.resolve(HeadlessCmsEndpointConfig).type === "manage" ? [exportPlugin] : []
+        });
 
         container.registerInstance(EntryToStorageTransform, (model, entry) => {
             return entryToStorageTransform(cmsContext, model, entry);
@@ -280,6 +280,9 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
             });
         });
 
-        container.register(createCmsRoute(config.type));
+        // Every endpoint is served; each route runs its request as its own endpoint type.
+        container.register(createCmsRoute("manage"));
+        container.register(createCmsRoute("read"));
+        container.register(createCmsRoute("preview"));
     }
 });

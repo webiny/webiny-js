@@ -15,6 +15,7 @@ import {
     ElementFactory,
     InputsBindingsProcessor
 } from "@webiny/website-builder-sdk";
+import { $getEditableElement } from "./$getEditableElement.js";
 
 const STOP_SYMBOL: Stop = Symbol.for("wb.handler.stop") as unknown as Stop;
 const CONTINUE_SYMBOL: Continue = Symbol.for("wb.handler.continue") as unknown as Continue;
@@ -77,7 +78,7 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
 
     const document = editor.getDocumentState().read();
     const components = editor.getEditorState().read().components;
-    const element = document.elements[elementId];
+    const element = $getEditableElement(document, elementId);
     if (!element) {
         return ancestorUpdates;
     }
@@ -182,7 +183,7 @@ function fireDescendantChange(params: {
     let currentParentId = element.parent?.id;
 
     while (currentParentId) {
-        const parentEl = document.elements[currentParentId];
+        const parentEl = $getEditableElement(document, currentParentId);
         if (!parentEl) {
             break;
         }
@@ -281,7 +282,7 @@ function createGetElement(
     elementFactory: ElementFactory
 ): (id: string) => OnChangeElementContext | undefined {
     return (id: string) => {
-        const el = document.elements[id];
+        const el = $getEditableElement(document, id);
         if (!el) {
             return undefined;
         }

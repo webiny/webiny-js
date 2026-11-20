@@ -59,6 +59,18 @@ export const createTestConfig = async ({
         ...vitestConfig,
         css: false,
         plugins: [],
+        server: {
+            deps: {
+                /*
+                 * react-virtualized 10 ships an ES module build that imports
+                 * `dom-helpers/scrollbarSize`, a directory, and dom-helpers 5 has no `exports` map.
+                 * Node's ESM loader rejects directory imports (ERR_UNSUPPORTED_DIR_IMPORT), so any
+                 * test reaching admin-ui failed to load. Inlining lets Vite resolve it, as the
+                 * bundlers do for the app itself.
+                 */
+                inline: ["react-virtualized"]
+            }
+        },
         resolve: {
             tsconfigPaths: true
         }

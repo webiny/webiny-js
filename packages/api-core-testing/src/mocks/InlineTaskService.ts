@@ -8,6 +8,7 @@ import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { InlineTaskError } from "./InlineTaskError.js";
 
 /** A task that keeps asking to continue is broken; stop it instead of hanging the test. */
 const MAX_RUNS = 100;
@@ -31,7 +32,10 @@ class InlineTaskServiceImpl implements TaskService.Interface {
             .resolveAll(TaskDefinition)
             .find(candidate => candidate.id === params.definition);
         if (!definition) {
-            throw new Error(`No task definition "${params.definition}" is registered.`);
+            const error = new InlineTaskError(
+                `No task definition "${params.definition}" is registered.`
+            );
+            return Result.fail(error);
         }
 
         const handler = this.container.resolveImplementation(definition.handler);
@@ -44,9 +48,10 @@ class InlineTaskServiceImpl implements TaskService.Interface {
                 break;
             }
             if (run === MAX_RUNS) {
-                throw new Error(
+                const error = new InlineTaskError(
                     `Task "${definition.id}" was still continuing after ${MAX_RUNS} runs.`
                 );
+                return Result.fail(error);
             }
             input = (result as { input: I }).input;
         }
@@ -61,8 +66,11 @@ class InlineTaskServiceImpl implements TaskService.Interface {
         }) as never;
     }
 
-    async abort(): Promise<never> {
-        throw new Error("Inline tasks finish inside trigger(), so there is nothing to abort.");
+    async abort() {
+        const error = new InlineTaskError(
+            "Inline tasks finish inside trigger(), so there is nothing to abort."
+        );
+        return Result.fail(error);
     }
 
     async fetchServiceInfo() {

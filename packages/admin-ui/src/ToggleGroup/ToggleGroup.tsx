@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { ToggleGroupPrimitiveProps } from "./primitives/index.js";
 import { ToggleGroupPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -24,10 +24,13 @@ const DecoratableToggleGroup = ({
 }: ToggleGroupProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The control can't be a `<label for>` target, so it names itself after the label. */
+    const labelId = useMemo(() => `${generateId()}-label`, []);
 
     return (
         <div className="w-full">
             <FormComponentLabel
+                labelId={labelId}
                 text={label}
                 hint={hint}
                 required={required}
@@ -45,7 +48,7 @@ const DecoratableToggleGroup = ({
                 disabled={disabled}
                 className="mt-none mb-xs-plus"
             />
-            <ToggleGroupPrimitive {...props} disabled={disabled} />
+            <ToggleGroupPrimitive aria-labelledby={labelId} {...props} disabled={disabled} />
             <FormComponentNote text={note} disabled={disabled} />
         </div>
     );

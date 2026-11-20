@@ -59,8 +59,12 @@ describe("tasks - definitions crud", () => {
 
         const definitions = context.container.resolve(ListTaskDefinitionsUseCase).execute();
 
-        expect(definitions).toHaveLength(4);
+        expect(definitions).toHaveLength(5);
         expect(definitions).toMatchObject([
+            {
+                id: "cmsModelStorageSync",
+                title: "Headless CMS - Sync a model's storage"
+            },
             {
                 id: "testingRun",
                 title: "Test Step Function Permissions"

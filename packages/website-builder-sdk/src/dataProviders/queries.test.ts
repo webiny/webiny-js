@@ -3,19 +3,31 @@ import { GET_PAGE_BY_PATH } from "./GET_PAGE_BY_PATH.js";
 import { GET_PAGE_BY_ID } from "./GET_PAGE_BY_ID.js";
 
 /**
- * Extracts the fields selected inside the `data { ... }` block of a single-page query.
- * The block is flat (all scalars), so matching up to the first closing brace is enough.
+ * Extracts the top-level fields selected inside the `data { ... }` block of a single-page query.
+ * A field with its own selection set (e.g. `layout { ... }`) is listed by its name.
  */
 const getDataSelection = (query: string): string[] => {
-    const match = query.match(/data\s*\{([^}]*)\}/);
-    if (!match) {
+    const start = query.search(/data\s*\{/);
+    if (start === -1) {
         throw new Error("Query has no `data` selection set.");
     }
 
-    return match[1]
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean);
+    const fields: string[] = [];
+    let depth = 0;
+    for (const token of query.slice(start).split(/\s+/).filter(Boolean)) {
+        if (token === "{") {
+            depth++;
+        } else if (token === "}") {
+            depth--;
+            if (depth === 0) {
+                break;
+            }
+        } else if (depth === 1 && token !== "data") {
+            fields.push(token);
+        }
+    }
+
+    return fields;
 };
 
 describe("single-page queries", () => {
@@ -42,7 +54,8 @@ describe("single-page queries", () => {
             "elements",
             "bindings",
             "extensions",
-            "languagePaths"
+            "languagePaths",
+            "layout"
         ]);
     });
 });

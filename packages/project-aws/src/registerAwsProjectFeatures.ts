@@ -1,58 +1,47 @@
 import { Container } from "@webiny/di";
 
 // Features
-import {
-    deployApp,
-    destroyApp,
-    exportStack,
-    getAppOutput,
-    getAppStackOutput,
-    getPulumiResourceNamePrefix,
-    refreshApp,
-    runPulumiCommand
-} from "@webiny/project/features/index.js";
+import { deployApp } from "~/features/DeployApp/DeployApp.js";
+import { destroyApp } from "~/features/DestroyApp/DestroyApp.js";
+import { exportStack } from "~/features/ExportStack/ExportStack.js";
+import { getAppOutput } from "~/features/GetAppOutput/GetAppOutput.js";
+import { getAppStackOutput } from "~/features/GetAppStackOutput/GetAppStackOutput.js";
+import { getPulumiResourceNamePrefix } from "~/features/GetPulumiResourceNamePrefix/GetPulumiResourceNamePrefix.js";
+import { refreshApp } from "~/features/RefreshApp/RefreshApp.js";
+import { runPulumiCommand } from "~/features/RunPulumiCommand/RunPulumiCommand.js";
 
 // Services
-import {
-    watchedLambdaFunctionsService,
-    isRemotePulumiBackendService,
-    listAppLambdaFunctionsService,
-    listDeployedEnvironmentsService,
-    pulumiGetConfigPassphraseService,
-    pulumiGetSecretsProviderService,
-    pulumiExportService,
-    pulumiImportService,
-    pulumiGetStackOutputService,
-    pulumiLoginService,
-    pulumiSelectStackService
-} from "@webiny/project/services/index.js";
+import { watchedLambdaFunctionsService } from "~/services/WatchedLambdaFunctionsService/WatchedLambdaFunctionsService.js";
+import { isRemotePulumiBackendService } from "~/services/IsRemotePulumiBackendService/IsRemotePulumiBackendService.js";
+import { listAppLambdaFunctionsService } from "~/services/ListAppLambdaFunctionsService/ListAppLambdaFunctionsService.js";
+import { listDeployedEnvironmentsService } from "~/services/ListDeployedEnvironmentsService/ListDeployedEnvironmentsService.js";
+import { pulumiGetConfigPassphraseService } from "~/services/PulumiGetConfigPassphraseService/PulumiGetConfigPassphraseService.js";
+import { pulumiGetSecretsProviderService } from "~/services/PulumiGetSecretsProviderService/PulumiGetSecretsProviderService.js";
+import { pulumiExportService } from "~/services/PulumiExportService/PulumiExportService.js";
+import { pulumiImportService } from "~/services/PulumiImportService/PulumiImportService.js";
+import { pulumiGetStackOutputService } from "~/services/PulumiGetStackOutputService/PulumiGetStackOutputService.js";
+import { pulumiLoginService } from "~/services/PulumiLoginService/PulumiLoginService.js";
+import { pulumiSelectStackService } from "~/services/PulumiSelectStackService/PulumiSelectStackService.js";
 
-// GetPulumiService implementation lives here since it directly imports @webiny/pulumi-sdk
 import { getPulumiService } from "./services/GetPulumiService/GetPulumiService.js";
+import { getPulumiVersionService } from "~/services/GetPulumiVersionService/GetPulumiVersionService.js";
+import { stackOutputCacheService } from "~/services/StackOutputCacheService/StackOutputCacheService.js";
+import { awsPulumiInitHostingSdkService } from "~/services/AwsPulumiInitHostingSdkService/AwsPulumiInitHostingSdkService.js";
+import { awsDeployInitHostingSdkService } from "~/services/AwsDeployInitHostingSdkService/AwsDeployInitHostingSdkService.js";
+import { projectInfoWithPulumi } from "~/decorators/ProjectInfoWithPulumi.js";
 
 // Hooks
-import {
-    beforeDeploy,
-    afterDeploy,
-    coreBeforeBuild,
-    coreAfterBuild,
-    coreBeforeWatch,
-    coreBeforeDeploy,
-    coreAfterDeploy,
-    apiBeforeDeploy,
-    apiAfterDeploy,
-    adminBeforeDeploy,
-    adminAfterDeploy
-} from "@webiny/project/features/hooks/index.js";
-
-// Decorators
-import {
-    deployAppWithWatchedLambdaReplacement,
-    deployAppClearWatchedLambdaFunctions,
-    deployAppRefreshStackOutputCache,
-    deployAppWithHooks,
-    getPulumiServiceWithDownloadInfo
-} from "@webiny/project/decorators/index.js";
+import { beforeDeploy } from "~/features/hooks/BeforeDeploy/BeforeDeploy.js";
+import { afterDeploy } from "~/features/hooks/AfterDeploy/AfterDeploy.js";
+import { coreBeforeBuild } from "@webiny/project/features/hooks/index.js";
+import { coreAfterBuild } from "@webiny/project/features/hooks/index.js";
+import { coreBeforeWatch } from "@webiny/project/features/hooks/index.js";
+import { coreBeforeDeploy } from "~/features/hooks/CoreBeforeDeploy/CoreBeforeDeploy.js";
+import { coreAfterDeploy } from "~/features/hooks/CoreAfterDeploy/CoreAfterDeploy.js";
+import { apiBeforeDeploy } from "~/features/hooks/ApiBeforeDeploy/ApiBeforeDeploy.js";
+import { apiAfterDeploy } from "~/features/hooks/ApiAfterDeploy/ApiAfterDeploy.js";
+import { adminBeforeDeploy } from "~/features/hooks/AdminBeforeDeploy/AdminBeforeDeploy.js";
+import { adminAfterDeploy } from "~/features/hooks/AdminAfterDeploy/AdminAfterDeploy.js";
 
 import { awsWatch } from "./features/Watch/AwsWatch.js";
 import { BuildProjectWorkspace } from "./extensions/ProjectAws/BuildProjectWorkspace.js";
@@ -77,6 +66,8 @@ export const registerAwsPulumiServices = (container: Container): void => {
     container.register(pulumiGetStackOutputService).inSingletonScope();
     container.register(pulumiLoginService).inSingletonScope();
     container.register(pulumiSelectStackService).inSingletonScope();
+    container.register(stackOutputCacheService).inSingletonScope();
+    container.register(awsPulumiInitHostingSdkService).inSingletonScope();
 
     // Deploy/Pulumi features.
     container.register(deployApp).inSingletonScope();
@@ -110,12 +101,12 @@ export const registerAwsProjectFeatures = (container: Container): void => {
     container.registerComposite(adminBeforeDeploy);
     container.registerComposite(adminAfterDeploy);
 
-    // Deploy decorators (registered before InitProjectSdkService adds watchWithHooks etc.).
-    container.registerDecorator(deployAppWithWatchedLambdaReplacement);
-    container.registerDecorator(deployAppClearWatchedLambdaFunctions);
-    container.registerDecorator(deployAppRefreshStackOutputCache);
-    container.registerDecorator(deployAppWithHooks);
-    container.registerDecorator(getPulumiServiceWithDownloadInfo);
+    // Deploy hooks from the config and the deploy decorators, registered once the config is loaded.
+    container.register(awsDeployInitHostingSdkService).inSingletonScope();
+
+    // `webiny about`: the Pulumi section and the version lookup it uses.
+    container.register(getPulumiVersionService).inSingletonScope();
+    container.registerDecorator(projectInfoWithPulumi);
 
     // Watch decorator that adds Lambda hot-reload.
     container.registerDecorator(awsWatch);

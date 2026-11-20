@@ -24,6 +24,21 @@ export const Routes = {
             }
         })
     },
+    Layouts: {
+        List: new Route({
+            name: "WebsiteBuilder/Layouts/List",
+            path: "/website-builder/layouts"
+        }),
+        Editor: new Route({
+            name: "WebsiteBuilder/Layouts/Editor",
+            path: "/website-builder/layouts/editor/:id",
+            params: zod => {
+                return {
+                    id: zod.string()
+                };
+            }
+        })
+    },
     Redirects: {
         List: new Route({
             name: "WebsiteBuilder/Redirects/List",

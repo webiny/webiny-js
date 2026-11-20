@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { makeDecoratable, withStaticProps } from "~/utils.js";
+import { makeDecoratable, withStaticProps, generateId } from "~/utils.js";
 import {
     FilePickerDescription,
     FilePickerLabel,
@@ -34,6 +34,8 @@ const BaseFilePicker = ({
 }: FilePickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The label names the trigger button, wherever the label is drawn. */
+    const id = useMemo(() => generateId(props.id), [props.id]);
 
     const onBlur = useCallback(
         async (e: React.FocusEvent<HTMLInputElement>) => {
@@ -53,6 +55,7 @@ const BaseFilePicker = ({
             {type !== "area" && (
                 <>
                     <FilePickerLabel
+                        htmlFor={id}
                         label={label}
                         hint={hint}
                         required={required}
@@ -64,6 +67,7 @@ const BaseFilePicker = ({
             )}
             <FilePickerPrimitive
                 {...props}
+                id={id}
                 label={label}
                 description={description}
                 disabled={disabled}

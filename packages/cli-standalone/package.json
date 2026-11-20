@@ -21,13 +21,13 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-standalone": "0.0.0",
     "@webiny/system-requirements": "0.0.0",
-    "chalk": "^6.0.0",
-    "tsx": "4.23.12"
+    "chalk": "^6.0.1",
+    "tsx": "4.23.15"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"

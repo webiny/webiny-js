@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { CreateFileFeature } from "~/features/file/CreateFile/feature.js";
+import { StoreFileFeature } from "~/features/file/StoreFile/feature.js";
 import { CreateFilesInBatchFeature } from "~/features/file/CreateFilesInBatch/feature.js";
 import { DeleteFileFeature } from "~/features/file/DeleteFile/feature.js";
 import { GetFileFeature } from "~/features/file/GetFile/feature.js";
@@ -7,6 +8,7 @@ import { ListFilesFeature } from "~/features/file/ListFiles/feature.js";
 import { ListTagsFeature } from "~/features/file/ListTags/feature.js";
 import { UpdateFileFeature } from "~/features/file/UpdateFile/feature.js";
 import { SettingsInstallerFeature } from "~/features/settings/SettingsInstaller/feature.js";
+import { DefaultSrcPrefixFeature } from "~/features/settings/DefaultSrcPrefix/feature.js";
 import { GetSettingsFeature } from "~/features/settings/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/feature.js";
 import { ListImagesByTagToolFeature } from "~/features/file/ListImagesByTagTool/feature.js";
@@ -18,6 +20,7 @@ export const FileManagerFeature = createFeature({
     name: "FileManager",
     register(container) {
         CreateFileFeature.register(container);
+        StoreFileFeature.register(container);
         CreateFilesInBatchFeature.register(container);
         UpdateFileFeature.register(container);
         DeleteFileFeature.register(container);
@@ -25,6 +28,7 @@ export const FileManagerFeature = createFeature({
         ListFilesFeature.register(container);
         ListTagsFeature.register(container);
         SettingsInstallerFeature.register(container);
+        DefaultSrcPrefixFeature.register(container);
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
         ListImagesByTagToolFeature.register(container);

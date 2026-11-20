@@ -3,33 +3,16 @@ import os from "node:os";
 import nodePath from "node:path";
 import type { Knex } from "knex";
 import { vi } from "vitest";
-import { createRegisterBuildParamPlugin } from "@webiny/handler";
-import { BuildParam } from "@webiny/api-core/features/buildParams/abstractions.js";
+import { createSqliteStorage } from "@webiny/api-storage-sqlite";
 import { createSqlApiHandler } from "~/createWebinyApiHandler.js";
 import type { CreateSqlApiHandlerConfig } from "~/createWebinyApiHandler.js";
 
 declare global {
     /**
-     * Set by the SQL storage test presets (@webiny/api-headless-cms-sql): SQLite in memory, or PGlite
-     * when WEBINY_SQL_CLIENT=pglite.
+     * Set by the SQL storage test preset (@webiny/api-headless-cms-sql): SQLite in memory.
      */
     var __testKnex: Knex;
 }
-
-class SigningSecretBuildParam implements BuildParam.Interface {
-    key = "SelfHostedAuthSigningSecret";
-    value = "test-signing-secret";
-}
-
-const SigningSecret = BuildParam.createImplementation({
-    implementation: SigningSecretBuildParam,
-    dependencies: []
-});
-
-// Mirrors what `<SelfHostedAuth signingSecret>` generates into `extensions.ts`.
-const signingSecret = createRegisterBuildParamPlugin(ctx => {
-    ctx.container.register(SigningSecret);
-});
 
 export interface GraphQLResult {
     statusCode: number;
@@ -39,11 +22,22 @@ export interface GraphQLResult {
 }
 
 /**
- * Boots the full standalone SQL server on a random local port and returns a function that sends one
- * GraphQL request to it, plus a `close` to shut it down.
+ * Boots the full standalone SQL server, on the SQLite storage, on a random local port and returns a
+ * function that sends one GraphQL request to it, plus a `close` to shut it down.
  */
+export interface CreateServerOptions {
+    /**
+     * Leave the timers faked after start, so a test fires the server's timers (the websocket
+     * heartbeat, the recoveries) with `vi.advanceTimersByTimeAsync`. The test restores real timers.
+     */
+    keepFakeTimers?: boolean;
+}
+
 export const createServer = async (
-    extensions: CreateSqlApiHandlerConfig["extensions"] = () => []
+    extensions: CreateSqlApiHandlerConfig["extensions"] = () => [],
+    /** Env overrides, applied after the defaults below, e.g. a blank value to test a missing one. */
+    env: Record<string, string> = {},
+    options: CreateServerOptions = {}
 ) => {
     /**
      * On start, the server arms in-process timers (the scheduler's recovery run and the periodic
@@ -52,19 +46,29 @@ export const createServer = async (
      */
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
 
-    // What `<Infra.ApiUrl>` and `<Infra.FileStorage>` put in the env of `webiny watch`. The server
-    // reads them at startup and refuses to boot without them.
+    /*
+     * What `<Infra.ApiUrl>`, `<Infra.FileStorage>`, `<Infra.Crypto.*>` and `<SelfHostedAuth>` put
+     * in the env of `webiny watch`. The server reads them at startup and refuses to boot without them.
+     */
     vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
     const tmpDir = os.tmpdir();
     const storagePath = nodePath.join(tmpDir, "webiny-standalone-sql-tests");
     vi.stubEnv("WEBINY_LOCAL_STORAGE_PATH", storagePath);
     vi.stubEnv("WEBINY_UPLOAD_SECRET", "test-upload-secret");
+    vi.stubEnv("WEBINY_SELF_HOSTED_AUTH_SECRET", "test-signing-secret");
+    vi.stubEnv("WEBINY_ENCRYPTION_PASSPHRASE", "test-encryption-passphrase");
+    vi.stubEnv("WEBINY_HASHING_PEPPER", "test-hashing-pepper");
+    for (const [name, value] of Object.entries(env)) {
+        vi.stubEnv(name, value);
+    }
 
     const server = await createSqlApiHandler({
-        extensions: () => [signingSecret, extensions()],
-        knex: globalThis.__testKnex
+        extensions,
+        storage: createSqliteStorage({ knex: globalThis.__testKnex })
     }).finally(() => {
-        vi.useRealTimers();
+        if (!options.keepFakeTimers) {
+            vi.useRealTimers();
+        }
     });
 
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -99,5 +103,5 @@ export const createServer = async (
         await new Promise<void>(resolve => server.close(() => resolve()));
     };
 
-    return { graphql, close };
+    return { graphql, close, port, knex: globalThis.__testKnex };
 };

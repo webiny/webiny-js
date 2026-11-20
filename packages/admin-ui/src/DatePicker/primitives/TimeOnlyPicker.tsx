@@ -3,6 +3,7 @@ import type { TimeOnlyPickerProps } from "../utils/types.js";
 import { TimePicker } from "./components/TimePicker.js";
 
 const TimeOnlyPicker = ({
+    "aria-labelledby": labelledBy,
     value,
     onChange,
     disabled,
@@ -13,6 +14,7 @@ const TimeOnlyPicker = ({
 }: TimeOnlyPickerProps) => {
     return (
         <TimePicker
+            aria-labelledby={labelledBy}
             value={value}
             onChange={onChange}
             disabled={disabled}

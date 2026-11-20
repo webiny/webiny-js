@@ -1,4 +1,4 @@
-import type { IStackOutput } from "@webiny/project";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 
 export type GenericRecord<K extends PropertyKey = PropertyKey, V = any> = Record<K, V>;
 
@@ -79,7 +79,7 @@ export interface IResolvedDomain {
 
 export type IResolvedDomains = IResolvedDomain[];
 
-export interface IBlueGreenStackOutput extends IStackOutput {
+export interface IBlueGreenStackOutput extends GetAppStackOutput.StackOutput {
     distributionDomain: string;
     distributionUrl: string;
     environments?: IResolvedDomains;

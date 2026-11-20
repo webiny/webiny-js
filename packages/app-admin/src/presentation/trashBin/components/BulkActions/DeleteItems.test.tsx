@@ -1,5 +1,6 @@
 import React from "react";
 import { afterEach } from "vitest";
+import type { Mock } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -16,8 +17,8 @@ interface TestItem {
 }
 
 interface TestReport {
-    success: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
+    success: Mock;
+    error: Mock;
 }
 
 const mocks = vi.hoisted(() => ({

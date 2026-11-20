@@ -5,7 +5,7 @@ import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/event-handler-core";
 import type { IScheduledActionEvent } from "@webiny/event-handler-core";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
-import { BreeSchedulerService } from "@webiny/api-scheduler-standalone";
+import { TimerSchedulerService } from "@webiny/api-scheduler-standalone";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 import { ScheduledActionRecoverEventType } from "./ScheduledActionRecoverEventType.js";
 import { SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER } from "./ScheduledActionRecoverEventType.js";
@@ -13,11 +13,11 @@ import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEvent
 import { RecoverScheduledActionsHandler } from "./RecoverScheduledActionsHandler.js";
 import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
 import { RunScheduledActionOnceDecorator } from "./RunScheduledActionOnceDecorator.js";
-import { consoleLogger } from "~/logger/consoleLogger.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 /**
- * ROOT wiring for the standalone (Bree, in-process) scheduler. Unlike AWS (per-request EventBridge
- * binding), the server holds ONE long-lived Bree instance for all tenants, started once at boot —
+ * ROOT wiring for the standalone (in-process timers) scheduler. Unlike AWS (per-request EventBridge
+ * binding), the server holds ONE long-lived scheduler for all tenants, started once at boot —
  * the counterpart of the WebSockets connection manager. Registered as `SchedulerService` so
  * per-request create/update/delete (during GraphQL mutations) manipulate that single live timer set.
  *
@@ -26,9 +26,10 @@ import { consoleLogger } from "~/logger/consoleLogger.js";
  */
 export function registerSchedulerServer(rootContainer: Container): void {
     const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
 
-    const service = new BreeSchedulerService({
-        logger: consoleLogger,
+    const service = new TimerSchedulerService({
+        logger,
         runAction: async (id, namespace, tenant) => {
             /*
              * `scheduleFor` is the time it fired. The event type needs one to recognise the event,
@@ -42,23 +43,17 @@ export function registerSchedulerServer(rootContainer: Container): void {
                     scheduleFor: new Date().toISOString()
                 }
             };
-            try {
-                await dispatcher.dispatch(event);
-            } catch (err) {
-                consoleLogger.error(
-                    { error: err, id, tenant },
-                    "[scheduler] scheduled action failed"
-                );
-            }
+            // A failure is logged by the scheduler, which runs the action.
+            await dispatcher.dispatch(event);
         }
     });
 
-    // Register the ONE Bree instance under TWO tokens — two views of the same object:
+    // Register the ONE scheduler instance under TWO tokens — two views of the same object:
     //
     //   - SchedulerService: the hosting-agnostic contract (create/update/delete/exists) that AWS
     //     implements too. This is what per-request GraphQL mutations resolve to schedule/reschedule.
-    //   - SchedulerSingleton: typed as the CONCRETE BreeSchedulerService, so it also exposes the
-    //     methods that aren't on that contract — start() and recover(). Those are Bree-only: AWS's
+    //   - SchedulerSingleton: typed as the CONCRETE TimerSchedulerService, so it also exposes the
+    //     methods that aren't on that contract — start() and recover(). Those are standalone-only: AWS's
     //     EventBridge is managed infra (nothing to start) and persists its own schedules (nothing to
     //     recover), so they don't belong on the shared interface. The boot step + recover handler
     //     resolve this token precisely because they need start()/recover().
@@ -84,6 +79,7 @@ const RECOVER_EVERY_MS = 60_000;
 
 async function recoverPendingSchedules(
     dispatcher: EventDispatcher.Interface,
+    logger: Logger.Interface,
     atBoot: boolean
 ): Promise<void> {
     const event: IScheduledActionRecoverEvent = {
@@ -93,19 +89,19 @@ async function recoverPendingSchedules(
     try {
         const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
         if (atBoot) {
-            consoleLogger.info(
+            logger.info(
                 { recovered: result.recovered },
                 "[scheduler] boot recovery re-armed pending actions"
             );
         }
         if (result.failedTenants.length > 0) {
-            consoleLogger.error(
+            logger.error(
                 { tenants: result.failedTenants },
                 "[scheduler] recovery failed for some tenants"
             );
         }
     } catch (err) {
-        consoleLogger.error({ error: err }, "[scheduler] recovery failed");
+        logger.error({ error: err }, "[scheduler] recovery failed");
     }
 }
 
@@ -129,6 +125,7 @@ export async function startSchedulerServer(
     await scheduler.start();
 
     const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
     let recovering = false;
     const recover = async (atBoot: boolean) => {
         if (recovering) {
@@ -136,7 +133,7 @@ export async function startSchedulerServer(
         }
         recovering = true;
         try {
-            await recoverPendingSchedules(dispatcher, atBoot);
+            await recoverPendingSchedules(dispatcher, logger, atBoot);
         } finally {
             recovering = false;
         }

@@ -8,7 +8,7 @@ import { Commands } from "~/BaseEditor/index.js";
 import { NavigatorEmptyState } from "./NavigatorEmptyState.js";
 import { Placeholder } from "./Placeholder.js";
 import { ElementActions } from "./ElementActions.js";
-import { flattenElements, getElementNodeData } from "./navigatorUtils.js";
+import { flattenElements, getElementNodeData, getGlobalNodeIndexes } from "./navigatorUtils.js";
 
 export const Navigator = observer(() => {
     const editor = useDocumentEditor();
@@ -21,24 +21,34 @@ export const Navigator = observer(() => {
 
     const components = useSelectFromEditor(state => state.components);
 
-    const elementNodes = getElementNodeData({ components, elements, bindings });
+    const layout = useSelectFromEditor(state => state.layout);
+    const globalIndexes = getGlobalNodeIndexes(layout);
+
+    const elementNodes = getElementNodeData({
+        components,
+        elements,
+        bindings,
+        globalIndexes,
+        layout,
+        pageLayout: document.layout
+    });
 
     const activeAncestors = useMemo(() => {
         if (!activeElement) {
             return [];
         }
         const ancestors: string[] = [activeElement.id];
-        let parent = elementNodes[activeElement.id].parent;
-        while (parent) {
-            ancestors.push(parent.id);
-            parent = elementNodes[parent.id].parent;
+        let parentId = elementNodes[activeElement.id]?.nodeParentId;
+        while (parentId && !ancestors.includes(parentId)) {
+            ancestors.push(parentId);
+            parentId = elementNodes[parentId]?.nodeParentId;
         }
         return ancestors.reverse();
     }, [elementNodes, activeElement]);
 
     const nodes = useMemo(() => {
         return flattenElements(elementNodes, activeElement?.id).sort((a, b) => {
-            return a.data!.parent.index - b.data!.parent.index;
+            return elementNodes[a.id].order! - elementNodes[b.id].order!;
         });
     }, [elementNodes, activeElement]);
 
@@ -94,7 +104,14 @@ export const Navigator = observer(() => {
                         return;
                     }
                     const parent = dragSource.data.parent;
-                    const sameLevelNodes = newTree.filter(n => n.parentId === dragSource.parentId);
+                    // Only the elements of the same slot count: the layout's elements, and globals
+                    // placed by the frontend's layout, are listed with them, but aren't in it.
+                    const sameLevelNodes = newTree.filter(
+                        n =>
+                            n.parentId === dragSource.parentId &&
+                            n.data?.parent.id === parent.id &&
+                            n.data?.parent.slot === parent.slot
+                    );
                     const newIndex = sameLevelNodes.findIndex(n => n.id === dragSource.id);
                     editor.executeCommand(Commands.MoveElement, {
                         elementId: dragSource.id,

@@ -1,3 +1,4 @@
+import { startsWithQuery } from "~/features/OpenSearchQueryBuilderOperator/operators/startsWithQuery.js";
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "~/testing/index.js";
 import { OpenSearchBoolQueryConfig } from "~/types.js";
@@ -33,20 +34,26 @@ describe("startsWith operator", () => {
         const expected: OpenSearchBoolQueryConfig = {
             must_not: [],
             must: [],
-            filter: [
-                {
-                    match_phrase_prefix: {
-                        name: "John"
-                    }
-                },
-                {
-                    match_phrase_prefix: {
-                        name: "Doe"
-                    }
-                }
-            ],
+            filter: [startsWithQuery("name", "John"), startsWithQuery("name", "Doe")],
             should: []
         };
         expect(query).toEqual(expected);
+    });
+
+    it("should match a prefix of the whole value, with a fallback for long values", () => {
+        expect(startsWithQuery("name", "John")).toEqual({
+            bool: {
+                should: [
+                    { prefix: { "name.keyword": { value: "John", case_insensitive: true } } },
+                    {
+                        bool: {
+                            must: [{ match_phrase_prefix: { name: "John" } }],
+                            must_not: [{ exists: { field: "name.keyword" } }]
+                        }
+                    }
+                ],
+                minimum_should_match: 1
+            }
+        });
     });
 });

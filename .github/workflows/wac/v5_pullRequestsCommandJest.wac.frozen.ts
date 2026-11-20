@@ -8,7 +8,7 @@ import {
 } from "./steps";
 import {
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     listPackagesWithJestTests,
     NODE_OPTIONS,
     NODE_VERSION
@@ -154,7 +154,7 @@ export const v5_PullRequestsCommandJest = createWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,

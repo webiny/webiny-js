@@ -20,7 +20,8 @@ const DateRangePicker = ({
     weekStartsOn,
     onOpenChange,
     className,
-    displayFormat
+    displayFormat,
+    "aria-labelledby": labelledBy
 }: DateRangePickerProps) => {
     const [open, setOpen] = useState(false);
 
@@ -47,13 +48,17 @@ const DateRangePicker = ({
     };
 
     const selected: DateRange | undefined = value?.from
-        ? { from: parseDateValue(value.from), to: value.to ? parseDateValue(value.to) : undefined }
+        ? {
+              from: parseDateValue(value.from),
+              to: value.to ? parseDateValue(value.to) : undefined
+          }
         : undefined;
 
     return (
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick a date range"}
                     disabled={disabled}

@@ -4,7 +4,7 @@ description: >
   Admin-side architecture patterns for Webiny extensions. Use this skill when building
   frontend features with headless features (UseCase/Repository/Gateway), presentation
   features (Presenter/ViewModel/hooks/components), MobX-based presenters, RegisterFeature,
-  and Admin BuildParams. Covers the admin/ directory structure for both features/ and
+  value objects for domain values, and Admin BuildParams. Covers the admin/ directory structure for both features/ and
   presentation/ layers.
 ---
 
@@ -34,6 +34,7 @@ Detect which context you're in by checking the file path: `extensions/` → exte
 ```
 admin/
 ├── Extension.tsx         # Admin entry point (React component)
+├── domain/               # Value objects for admin-only domain values (one class per file)
 ├── features/             # Headless features (business logic, no UI)
 │   └── EnableThing/
 │       ├── abstractions.ts
@@ -554,6 +555,50 @@ export default MyPresenter.createImplementation({
 
 > BuildParam _declarations_ (`<Admin.BuildParam>`) live in the top-level extension component — see the **webiny-full-stack-architect** skill.
 
+## Domain Values (Value Objects)
+
+**RULE:** a domain value with rules — an element id with a reserved prefix, a language with a fallback, a slot path, a key derived from other values — is a **value object** class, not a helper function (`isGlobalId(id)`, `toSlotKey(name)`, `getLanguageLabel(x)`) and not a rule repeated inline (`id.startsWith("$global:")`, `language ?? "default"`) in presenters, hooks or components.
+
+```ts
+// WRONG — the rule lives in helpers and is re-typed wherever it's needed
+export const GLOBAL_PREFIX = "$global:";
+export const isGlobalElementId = (id: string) => id.startsWith(GLOBAL_PREFIX);
+export const toGlobalElementId = (name: string) => `${GLOBAL_PREFIX}${name}`;
+
+// CORRECT — domain/GlobalElementId.ts
+export class GlobalElementId {
+  private static readonly PREFIX = "$global:";
+
+  private constructor(private readonly id: string) {}
+
+  static fromComponentName(name: string): GlobalElementId {
+    return new GlobalElementId(`${GlobalElementId.PREFIX}${name}`);
+  }
+
+  static is(id: string): boolean {
+    return id.startsWith(GlobalElementId.PREFIX);
+  }
+
+  get componentName(): string {
+    return this.id.slice(GlobalElementId.PREFIX.length);
+  }
+
+  toString(): string {
+    return this.id;
+  }
+}
+```
+
+**Rules:**
+
+- Private constructor, named static factories (`from...`), named constants as `static readonly` members, query methods for every question callers ask, `toString()` for the raw value.
+- Value objects are plain classes: no DI, no MobX, no React, no I/O. Presenters, use cases and mappers create and use them; components receive raw values from the view model.
+- Gateways and GraphQL send and receive raw values. Convert to a value object in the repository/mapper or use case, and back with `toString()` at the gateway.
+- An admin-only value lives in `admin/domain/`. A value the API also uses lives in `shared/` as one value object for both sides (see **webiny-full-stack-architect**) — never a second copy of the rule on the admin side.
+- Full shape and examples: **webiny-api-architect** → "Value Objects for Domain Values".
+
+---
+
 ## Core APIs
 
 ### `createAbstraction<T>(name: string)`
@@ -637,6 +682,7 @@ export const MyComponent = createReactiveComponent(({ presenter }: Props) => { .
 5. **Scoping** — use cases = transient (default), repositories/gateways = singleton (`.inSingletonScope()`).
 6. **`useFeature` is the bridge** — presentation hooks call `useFeature(SomeFeature)` to get resolved exports, then wrap them for React consumption.
 7. **Import extensions** — always use `.js` extensions in import paths (ESM).
+8. **Value objects, not helpers** — a domain value with rules is a value object class (`admin/domain/`, or `shared/` when the API uses it too); its rules live only there.
 
 ## Related Skills
 

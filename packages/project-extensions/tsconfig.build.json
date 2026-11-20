@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../project/tsconfig.build.json" },
+    { "path": "../project-extensions-aws/tsconfig.build.json" },
+    { "path": "../project-extensions-standalone/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
+      "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],
+      "@webiny/project-extensions-aws": ["../project-extensions-aws/src"],
+      "@webiny/project-extensions-standalone/*": ["../project-extensions-standalone/src/*"],
+      "@webiny/project-extensions-standalone": ["../project-extensions-standalone/src"]
+    }
+  }
+}

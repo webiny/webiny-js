@@ -1,38 +1,26 @@
 import { type Container } from "@webiny/di";
 import { createProjectSdkContainer } from "./createProjectSdkContainer.js";
-import {
-    BuildApp,
-    DeployApp,
-    DestroyApp,
-    ExportStack,
-    GetApp,
-    GetAppOutput,
-    GetAppStackOutput,
-    GetFeatureFlags,
-    GetProductionEnvironments,
-    GetProject,
-    GetProjectIdService,
-    GetProjectInstallationIdService,
-    SetProjectIdService,
-    GetProjectConfig,
-    GetProjectInfo,
-    GetPulumiResourceNamePrefix,
-    InstallExtension,
-    IsCi,
-    IsTelemetryEnabled,
-    LocalStorageService,
-    LoggerService,
-    type ProjectSdkParamsService,
-    RefreshApp,
-    RunPulumiCommand,
-    ValidateProjectConfig,
-    ListDeployedEnvironmentsService,
-    Watch,
-    Serve,
-    WcpService,
-    GetProjectVersionService
-} from "~/abstractions/index.js";
-import { type AppName } from "~/abstractions/types.js";
+import { BuildApp } from "~/abstractions/index.js";
+import { GetApp } from "~/abstractions/index.js";
+import { GetFeatureFlags } from "~/abstractions/index.js";
+import { GetProductionEnvironments } from "~/abstractions/index.js";
+import { GetProject } from "~/abstractions/index.js";
+import { GetProjectIdService } from "~/abstractions/index.js";
+import { GetProjectInstallationIdService } from "~/abstractions/index.js";
+import { SetProjectIdService } from "~/abstractions/index.js";
+import { GetProjectConfig } from "~/abstractions/index.js";
+import { GetProjectInfo } from "~/abstractions/index.js";
+import { InstallExtension } from "~/abstractions/index.js";
+import { IsCi } from "~/abstractions/index.js";
+import { IsTelemetryEnabled } from "~/abstractions/index.js";
+import { LocalStorageService } from "~/abstractions/index.js";
+import { LoggerService } from "~/abstractions/index.js";
+import { type ProjectSdkParamsService } from "~/abstractions/index.js";
+import { ValidateProjectConfig } from "~/abstractions/index.js";
+import { Watch } from "~/abstractions/index.js";
+import { Serve } from "~/abstractions/index.js";
+import { WcpService } from "~/abstractions/index.js";
+import { GetProjectVersionService } from "~/abstractions/index.js";
 import {
     isValidRegionName,
     isValidVariantName,
@@ -121,45 +109,8 @@ export class ProjectSdk {
         return this.container.resolve(GetApp).execute(appName);
     }
 
-    // Here we have two stack output methods. Both do the same thing, but one is returning
-    // raw Pulumi output, while the other is returning a JSON, which is far more suitable
-    // in multiple places throughout the codebase (like Pulumi code, deploy hooks, ...).
-    // TODO: we could probably merge these two methods into one, and have an option to return
-    // TODO: raw or JSON output. For now, just writing it here.
-    async getAppOutput(params: GetAppOutput.Params) {
-        return this.container.resolve(GetAppOutput).execute(params);
-    }
-
-    async getAppStackOutput<
-        TOutput extends GetAppStackOutput.StackOutput = GetAppStackOutput.StackOutput
-    >(appName: AppName) {
-        return this.container.resolve(GetAppStackOutput).execute<TOutput>(appName);
-    }
-
-    async getAppStackExport<TExport extends ExportStack.StackExport = ExportStack.StackExport>(
-        params: ExportStack.Params
-    ) {
-        return this.container.resolve(ExportStack).execute<TExport>(params);
-    }
-
     buildApp(params: BuildApp.Params) {
         return this.container.resolve(BuildApp).execute(params);
-    }
-
-    deployApp(params: DeployApp.Params) {
-        return this.container.resolve(DeployApp).execute(params);
-    }
-
-    destroyApp(params: DestroyApp.Params) {
-        return this.container.resolve(DestroyApp).execute(params);
-    }
-
-    refreshApp(params: RefreshApp.Params) {
-        return this.container.resolve(RefreshApp).execute(params);
-    }
-
-    runPulumiCommand(params: RunPulumiCommand.Params) {
-        return this.container.resolve(RunPulumiCommand).execute(params);
     }
 
     watch(params: Watch.Params) {
@@ -178,16 +129,8 @@ export class ProjectSdk {
         return this.container.resolve(LocalStorageService);
     }
 
-    getPulumiResourceNamePrefix() {
-        return this.container.resolve(GetPulumiResourceNamePrefix).execute();
-    }
-
     getProductionEnvironments() {
         return this.container.resolve(GetProductionEnvironments).execute();
-    }
-
-    listDeployedEnvironments() {
-        return this.container.resolve(ListDeployedEnvironmentsService).execute();
     }
 
     installExtension(source: string) {

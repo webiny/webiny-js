@@ -16,3 +16,4 @@ export * from "./$updateElementInputs.js";
 export * from "./$previewElementInputs.js";
 export * from "./$cloneElement.js";
 export * from "./executeOnChange.js";
+export * from "./$getEditableElement.js";

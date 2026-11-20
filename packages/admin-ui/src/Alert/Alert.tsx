@@ -67,7 +67,7 @@ export interface AlertProps
     showCloseButton?: boolean;
     icon?: React.ReactElement | null;
     onClose?: () => void;
-    actions?: React.ReactElement<typeof AlertAction>;
+    actions?: React.ReactElement;
     swatchColor?: string;
     swatchColorIcon?: boolean;
 }

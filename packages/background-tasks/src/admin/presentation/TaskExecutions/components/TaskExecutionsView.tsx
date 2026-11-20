@@ -60,6 +60,7 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     const { vm } = presenter;

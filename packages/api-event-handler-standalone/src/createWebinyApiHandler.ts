@@ -6,7 +6,7 @@
  * RequestIdentityLoader / RequestTenantLoader). The per-request feature stack is the transport-agnostic
  * `registerApiRequestStack` from `@webiny/api-event-handler-core` — the SAME stack the AWS handler uses.
  * The realtime transport hook installs the server WebSockets transport (vs AWS's API Gateway Management
- * API) with a SINGLE-PROCESS, in-process implementation. Background tasks and the Bree scheduler are
+ * API) with a SINGLE-PROCESS, in-process implementation. Background tasks and the scheduler are
  * ROOT-container singletons (below) — mirroring how the AWS handler registers background tasks at root,
  * and the WebSockets connection manager — rather than per-request transports; the scheduler fires timers
  * in-process (vs AWS's EventBridge). The storage variant (and identity provider) is injected via
@@ -19,13 +19,15 @@ import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
-import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
-import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
 import {
-    ServerConnectionManager,
-    NodeWsAdapter,
+    WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
     WebsocketsConnectionManager,
     attachWebsocketsServer
@@ -42,16 +44,17 @@ import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
-import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
-import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
-import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import { mkdirSync } from "node:fs";
 import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
-import { consoleLogger } from "~/logger/consoleLogger.js";
+import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
+import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
+import { createLogger, readBuildParams } from "@webiny/api-event-handler-core";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -59,11 +62,16 @@ export interface CreateWebinyApiHandlerConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * Register ALL root-container storage for this deployment (the DB feature + CMS storage ops +
-     * registries) AND the identity provider. Unlike the AWS base, the server base bakes in no DB or
-     * IdP assumption — the variant supplies the complete storage + auth wiring.
+     * Register the storage for this deployment AND the identity provider in the root container.
+     * Unlike the AWS base, the server base bakes in no DB or IdP assumption — the variant supplies
+     * the complete storage + auth wiring. A storage that registers per request puts only its
+     * connection and a `RequestStorage` in the root (see `registerApiRequestStack`). `buildParams`
+     * are the build params the project was built with (requests register their own copy).
      */
-    registerRootStorage: (container: Container) => void | Promise<void>;
+    registerRootStorage: (
+        container: Container,
+        params: { buildParams: BuildParams.Interface }
+    ) => void | Promise<void>;
 }
 
 /*
@@ -79,13 +87,76 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     let stopWebsockets: (() => Promise<void>) | undefined;
     let closeMessageBus: (() => Promise<void>) | undefined;
 
-    // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
-    // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+    /*
+     * Deployment-specific settings (public URLs, file storage, secrets) come from env, read once here
+     * so a missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+     */
     const standaloneConfig = readStandaloneConfig(process.env);
+
+    // One per process, to stdout. The root singletons below log through it, and so does every request.
+    const logger = createLogger();
+
+    /*
+     * What every request's container gets (`child`). Also in the root as `ApiRequestRegistration`,
+     * for work outside a request that needs a container a request would have: the SQL schema setup
+     * builds one on its own connection.
+     */
+    const registerRequest = async (container: Container): Promise<void> => {
+        // The transport-agnostic per-request stack. The realtime hook installs the server
+        // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
+        // shared connection manager + adapter from the root. Scheduler is NOT a per-request
+        // transport here — it's a root singleton wired in `root` + `onServer` (see below).
+        await registerApiRequestStack(container, {
+            extensions: config.extensions,
+            // Why hooks (and not just registering the transports ourselves): `.register()` calls
+            // are otherwise order-independent — you can register Features in any order, because
+            // they only REGISTER, they don't RESOLVE during registration (resolution happens
+            // later, in Initializers / SchemaFactories). The one thing that makes order matter is
+            // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
+            // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
+            // our transport MUST be registered AFTER that Feature. These hooks are the seams
+            // `registerApiRequestStack` provides for exactly that — each runs right after its Null
+            // default, so the override is guaranteed without the caller knowing the internal order.
+            transports: {
+                /*
+                 * Public URLs and crypto secrets: no deploy step to discover them from, so they
+                 * come from env (StandaloneConfig, registered on the root).
+                 */
+                hostingConfig: requestContainer => {
+                    ConfigPublicUrlsFeature.register(requestContainer);
+                    StandaloneCryptoConfigFeature.register(requestContainer);
+                },
+                // Server WebSockets transport; resolves the shared connection manager + adapter
+                // from the root (registered as singletons in `root`).
+                realtime: requestContainer => {
+                    WebsocketsStandaloneFeature.register(requestContainer);
+                },
+                // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
+                // delivery Lambda), the single-process server stores files on disk and serves them
+                // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
+                // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
+                fileManager: requestContainer => {
+                    FileManagerStandaloneFeature.register(
+                        requestContainer,
+                        standaloneConfig.fileStorage
+                    );
+                }
+            }
+        });
+    };
 
     return createServerHandler({
         root: async rootContainer => {
+            /*
+             * Secrets come from env only. A build that bakes one (the shared <Infra.Crypto.*> from
+             * @webiny/project) is refused here, before the server accepts a request.
+             */
+            const extensions = config.extensions();
+            const buildParams = await readBuildParams(extensions);
+            assertNoBakedSecrets(buildParams);
+
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
+            rootContainer.registerInstance(Logger, logger);
 
             // Names this process in shared storage: task claims and websocket connections.
             rootContainer.register(RandomProcessOwner).inSingletonScope();
@@ -108,16 +179,18 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Preview-as. Mirrors the AWS handler.
             rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
 
+            rootContainer.registerInstance(ApiRequestRegistration, { register: registerRequest });
+
             // ── Storage + identity provider (variant-supplied) ─────────
-            await config.registerRootStorage(rootContainer);
+            await config.registerRootStorage(rootContainer, { buildParams });
 
             // ── WebSockets transport (root) ────────────────────────────
-            // Live-socket registry + adapter live in the root as singletons: the connection manager
-            // is shared between the upgrade acceptor (attachWebsocketsServer, below) and the
-            // per-request ServerWebsocketsTransport that sends to those live sockets. The persistent
-            // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
-            rootContainer.register(ServerConnectionManager).inSingletonScope();
-            rootContainer.register(NodeWsAdapter).inSingletonScope();
+            // The live sockets, the connection manager and the adapter live in the root as
+            // singletons, shared between the upgrade acceptor (attachWebsocketsServer, below) and the
+            // per-request ServerWebsocketsTransport that sends to those live sockets. The connections'
+            // rows (ConnectionRegistry) are a storage, so they live in request containers: the
+            // manager changes them by dispatching an event, which runs in a fresh one.
+            WebsocketsServerRootFeature.register(rootContainer);
 
             /*
              * How a send reaches a socket another API process holds. Without a Redis URL there is
@@ -126,7 +199,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             if (standaloneConfig.redisUrl) {
                 WebsocketsRedisFeature.register(rootContainer, {
                     url: standaloneConfig.redisUrl,
-                    logger: consoleLogger
+                    logger
                 });
             } else {
                 rootContainer.register(InProcessMessageBus).inSingletonScope();
@@ -150,7 +223,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             BackgroundTasksStandaloneFeature.register(rootContainer);
 
             // ── Scheduler (root) ───────────────────────────────────────
-            // The Bree scheduler is a single long-lived instance for ALL tenants, started once at boot
+            // The scheduler is a single long-lived instance for ALL tenants, started once at boot
             // (onServer, below) — the counterpart of the WebSockets connection manager, NOT a per-request
             // transport. Registered here as SchedulerService (per-request create/update/delete during
             // mutations manipulate this one live timer set) plus the run/recover event handlers. When a
@@ -165,44 +238,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         child: async container => {
-            // The transport-agnostic per-request stack. The realtime hook installs the server
-            // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
-            // shared connection manager + adapter from the root. Scheduler is NOT a per-request
-            // transport here — it's a root singleton wired in `root` + `onServer` (see above).
-            await registerApiRequestStack(container, {
-                extensions: config.extensions,
-                // Why hooks (and not just registering the transports ourselves): `.register()` calls
-                // are otherwise order-independent — you can register Features in any order, because
-                // they only REGISTER, they don't RESOLVE during registration (resolution happens
-                // later, in Initializers / SchemaFactories). The one thing that makes order matter is
-                // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
-                // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
-                // our transport MUST be registered AFTER that Feature. These hooks are the seams
-                // `registerApiRequestStack` provides for exactly that — each runs right after its Null
-                // default, so the override is guaranteed without the caller knowing the internal order.
-                transports: {
-                    // Public URLs: no deploy step to discover them from, so they come from
-                    // `WEBINY_API_URL` / `WEBINY_ADMIN_URL` (StandaloneConfig, registered on the root).
-                    publicUrls: requestContainer => {
-                        ConfigPublicUrlsFeature.register(requestContainer);
-                    },
-                    // Server WebSockets transport; resolves the shared connection manager + adapter
-                    // from the root (registered as singletons above).
-                    realtime: requestContainer => {
-                        WebsocketsStandaloneFeature.register(requestContainer);
-                    },
-                    // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
-                    // delivery Lambda), the single-process server stores files on disk and serves them
-                    // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
-                    // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
-                    fileManager: requestContainer => {
-                        FileManagerStandaloneFeature.register(
-                            requestContainer,
-                            standaloneConfig.fileStorage
-                        );
-                    }
-                }
-            });
+            await registerRequest(container);
         },
 
         onServer: async (server, rootContainer) => {
@@ -230,11 +266,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             const handleBusMessage = createBusMessageHandler({
                 connectionManager,
                 adapter,
-                logger: consoleLogger
+                logger
             });
             await messageBus.subscribe(processOwner.id, handleBusMessage);
             closeMessageBus = () => messageBus.close();
-            consoleLogger.info(
+            logger.info(
                 { messageBus: standaloneConfig.redisUrl ? "redis" : "in-process" },
                 "[websockets] using message bus"
             );
@@ -255,21 +291,21 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             stopTaskRecovery = startTaskRecovery(rootContainer);
         },
 
-        onShutdown: async rootContainer => {
+        onShutdown: async (rootContainer, { requestsFinished }) => {
             /*
              * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
              * Then wait for what is running: tasks hand themselves back, so another process picks
              * them up at its next sweep, and scheduled actions already running get to finish.
              * Websockets close at the same time, with 1012 so clients reconnect to a process that
              * is up, and their connections leave the registry; that takes about a second. The
-             * message bus closes last, once tasks and scheduled actions are done: what they still
-             * send to browsers on other processes goes through it.
+             * message bus closes last, once tasks, scheduled actions and HTTP requests in flight
+             * are done: what they still send to browsers on other processes goes through it.
              */
             stopTaskRecovery?.();
             const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
             const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
             const websockets = stopWebsockets?.();
-            const workDone = Promise.allSettled([tasks, scheduledActions]);
+            const workDone = Promise.allSettled([tasks, scheduledActions, requestsFinished]);
             const messageBus = workDone.then(() => closeMessageBus?.());
 
             // One failing part must not cut the others short; the first failure is reported after.

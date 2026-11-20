@@ -39,6 +39,7 @@ export {
     GetFileUseCase
 } from "@webiny/api-file-manager/features/file/GetFile/abstractions.js";
 export { GetFileByUrlUseCase } from "@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.js";
+export { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/abstractions.js";
 export {
     ListFilesRepository,
     ListFilesUseCase
@@ -47,3 +48,6 @@ export {
     ListTagsRepository,
     ListTagsUseCase
 } from "@webiny/api-file-manager/features/file/ListTags/abstractions.js";
+export { StoreFileUseCase } from "@webiny/api-file-manager/features/file/StoreFile/abstractions.js";
+export { StoreFileInput } from "@webiny/api-file-manager/domain/file/StoreFileInput.js";
+export type { StoreFileInputOptions } from "@webiny/api-file-manager/domain/file/StoreFileInput.js";

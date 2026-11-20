@@ -75,7 +75,13 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
         <>
             {instances.map((resolvedElement, index) => {
                 const { component: Component, inputs, styles, manifest } = resolvedElement;
-                const props = { inputs, styles, element, breakpoint: viewport.breakpoint };
+                const props = {
+                    inputs,
+                    styles,
+                    element,
+                    breakpoint: viewport.breakpoint,
+                    breakpoints: viewport.breakpoints.map(bp => bp.name)
+                };
                 const autoApplyStyles = manifest.autoApplyStyles !== false;
 
                 const userElement = <Component key={element.id} {...props} />;

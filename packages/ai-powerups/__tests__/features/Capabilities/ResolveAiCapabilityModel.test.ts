@@ -9,6 +9,7 @@ import {
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
 import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabilityDisabledError.js";
 import { AiModelNotAvailableError } from "~/api/features/Capabilities/AiModelNotAvailableError.js";
+import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/AiCapabilityNotConfiguredError.js";
 import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/feature.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
 import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
@@ -292,5 +293,6 @@ describe("ResolveAiCapabilityUseCase with a model (R169)", () => {
         expect(result.error.message).toBe(
             'No model is configured for the "standard" role. Pick one under Settings → AI Power-Ups → Model roles.'
         );
+        expect(result.error).toBeInstanceOf(AiCapabilityNotConfiguredError);
     });
 });

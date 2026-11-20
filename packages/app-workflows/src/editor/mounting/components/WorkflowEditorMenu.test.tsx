@@ -41,7 +41,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
 interface CapturedMenu {
     name: string;
     parent: string | null;
-    element: React.ReactElement | undefined;
+    element: React.ReactElement<Record<string, unknown>> | undefined;
     pinnable: boolean | undefined;
 }
 
@@ -59,7 +59,10 @@ const Probe = () => {
         return {
             name: menu.name,
             parent: menu.parent ?? null,
-            element: menu.element,
+            // A guard, not a cast: only an element whose props can be read is kept.
+            element: React.isValidElement<Record<string, unknown>>(menu.element)
+                ? menu.element
+                : undefined,
             pinnable: menu.pinnable
         };
     });

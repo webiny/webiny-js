@@ -36,6 +36,7 @@ export {
 export { GetPageByIdUseCase } from "@webiny/api-website-builder/features/pages/GetPageById/abstractions.js";
 export { GetDeletedPageByIdUseCase } from "@webiny/api-website-builder/features/pages/GetDeletedPageById/abstractions.js";
 export { GetPageByPathUseCase } from "@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js";
+export { GetLatestPageByPathUseCase } from "@webiny/api-website-builder/features/pages/GetLatestPageByPath/abstractions.js";
 export { GetPageRevisionsUseCase } from "@webiny/api-website-builder/features/pages/GetPageRevisions/abstractions.js";
 export { ListPagesUseCase } from "@webiny/api-website-builder/features/pages/ListPages/abstractions.js";
 export { ListDeletedPagesUseCase } from "@webiny/api-website-builder/features/pages/ListDeletedPages/abstractions.js";
@@ -59,3 +60,4 @@ export {
     PageAfterUpdateEventHandler,
     PageBeforeUpdateEventHandler
 } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
+export { ComposePageUseCase } from "@webiny/api-website-builder/features/pages/ComposePage/abstractions.js";

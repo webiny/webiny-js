@@ -13,3 +13,6 @@ export const Layout = makeDecoratable("Layout", ({ children, ...props }: LayoutP
 });
 
 export const LayoutRenderer = makeDecoratable("LayoutRenderer", createVoidComponent<LayoutProps>());
+
+/** The decoratable admin frame (header, navigation, content), for extensions that replace it. */
+export const LayoutComponent = LayoutRenderer;

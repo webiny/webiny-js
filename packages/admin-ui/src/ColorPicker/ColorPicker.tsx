@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { ColorPickerPrimitiveProps } from "./primitives/index.js";
 import { ColorPickerPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -24,10 +24,13 @@ const DecoratableIconPicker = ({
 }: ColorPickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The control can't be a `<label for>` target, so it names itself after the label. */
+    const labelId = useMemo(() => `${generateId()}-label`, []);
 
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                labelId={labelId}
                 text={label}
                 hint={hint}
                 required={required}
@@ -35,7 +38,12 @@ const DecoratableIconPicker = ({
                 invalid={invalid}
             />
             <FormComponentDescription text={description} disabled={disabled} />
-            <ColorPickerPrimitive {...props} disabled={disabled} invalid={invalid} />
+            <ColorPickerPrimitive
+                aria-labelledby={labelId}
+                {...props}
+                disabled={disabled}
+                invalid={invalid}
+            />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}

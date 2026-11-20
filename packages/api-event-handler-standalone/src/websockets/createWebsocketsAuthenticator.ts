@@ -4,12 +4,35 @@ import {
     registerApiRequestStack,
     type RegisterApiRequestStackConfig
 } from "@webiny/api-event-handler-core";
-import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
+import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js";
+import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
+import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { CanAccessCurrentTenantUseCase } from "@webiny/api-core/features/security/CanAccessCurrentTenant/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { WebsocketsConnectionAuthenticator } from "@webiny/api-websockets-standalone";
+
+/*
+ * An `AuthenticationError` refuses the handshake rather than failing it. That includes more than bad
+ * tokens: `AuthenticationError.from` wraps every error an authenticator throws, a failed key lookup
+ * as well, so the reason is logged here, where it would otherwise be lost.
+ */
+const refuseOnAuthenticationError = (logger: Logger.Interface) => {
+    return (error: unknown): false => {
+        if (!(error instanceof AuthenticationError)) {
+            throw error;
+        }
+        logger.warn({ code: error.code, error: error.message }, "[websockets] handshake refused");
+        return false;
+    };
+};
 
 /**
  * Builds the `authenticate` callback the server WebSocket upgrade acceptor uses to turn a
- * connection's `?token` JWT into an identity.
+ * connection's `?token` JWT into an identity in the connection's `?tenant`.
  *
  * Each new WebSocket connection (the HTTP upgrade handshake) is authenticated from its `?token` JWT
  * so the connection is registered under the real identity — targeted server→client sends need this,
@@ -17,10 +40,11 @@ import type { WebsocketsConnectionAuthenticator } from "@webiny/api-websockets-s
  * lives in the per-request stack (registered by ApiCoreFeature, not registerRootStorage), so we can't
  * resolve it from the root container. Instead we spin up a short-lived request-scoped child container,
  * the same way createHandler does for each HTTP request, and resolve it there. We only need the core
- * stack, not the transports, because this is just the token→identity step the HTTP stack already runs
- * via RequestIdentityLoader — and that step doesn't depend on the tenant (the HTTP stack resolves
- * identity before tenant), so there's no request or tenant state to set up. Connections are rare (one
- * per admin session), so a fresh child per connection is cheap enough.
+ * stack, not the transports. Like an HTTP transport, it only extracts the raw tenant id and token and
+ * leaves the rest to the shared request loaders, tenant first, because an API key is looked up in the
+ * current tenant. The identity must then be able to access that tenant: the client names the tenant,
+ * so a valid token alone would let a user of one tenant receive another tenant's messages.
+ * Connections are rare (one per admin session), so a fresh child per connection is cheap enough.
  *
  * This is also why the WebSocket server takes `authenticate` as a plain callback instead of resolving
  * auth itself: AuthenticationContext isn't reachable from the root container (it's per-request), so
@@ -31,14 +55,37 @@ export function createWebsocketsAuthenticator(
     rootContainer: Container,
     extensions: RegisterApiRequestStackConfig["extensions"]
 ): WebsocketsConnectionAuthenticator {
-    return async token => {
+    return async (token, tenantId) => {
         const child = rootContainer.createChildContainer();
         child.registerInstance(RequestContainer, child);
         await registerApiRequestStack(child, { extensions });
-        const identity = await child.resolve(AuthenticationContext).authenticate(token);
-        if (!identity?.id) {
+
+        child.resolve(RawTenantId).set(tenantId);
+        child.resolve(RawAuthToken).set(token);
+
+        await child.resolve(RequestTenantLoader).establish();
+        // An unknown tenant is left unset rather than reported.
+        if (!child.resolve(TenantContext).getTenant()) {
             return null;
         }
+
+        const refuse = refuseOnAuthenticationError(child.resolve(Logger));
+        const authenticated = await child
+            .resolve(RequestIdentityLoader)
+            .establish()
+            .then(() => true)
+            .catch(refuse);
+        if (!authenticated) {
+            return null;
+        }
+
+        // False for the anonymous identity, which is what a token no authenticator recognises gives.
+        const canAccessTenant = await child.resolve(CanAccessCurrentTenantUseCase).execute();
+        if (!canAccessTenant) {
+            return null;
+        }
+
+        const identity = child.resolve(IdentityContext).getIdentity();
         return {
             id: identity.id,
             displayName: identity.displayName,

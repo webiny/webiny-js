@@ -1,29 +1,69 @@
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
+import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { resolvePglite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { type ResolvedPglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 export type ServerDbDriver = "sqlite" | "postgres";
 
 /**
- * Resolve the standalone database driver from the DB infra extension declared in webiny.config.tsx
- * (`<Infra.Sqlite>` / `<Infra.Postgres>`). Exactly one must be configured — fail loud otherwise.
+ * The api's database. The driver picks the storage too: SQLite runs the SQLite storage
+ * (`@webiny/api-storage-sqlite`), Postgres and PGlite the Postgres storage (`@webiny/api-storage-pg`).
+ */
+export interface StandaloneDatabase {
+    driver: ServerDbDriver;
+    /** Set for `<Infra.Pglite>`: the database `watch` / `serve` start for the api. */
+    pglite?: ResolvedPglite;
+}
+
+/**
+ * Resolve the standalone database from the DB infra extension declared in webiny.config.tsx
+ * (`<Infra.Sqlite>`, `<Infra.Postgres>` or `<Infra.Pglite>`). Exactly one must be configured
+ * — fail loud otherwise.
  *
  * Queried without tags: the Infra.* extensions are project-level, not tagged to a specific app, so an
  * app-scoped config query would filter them out.
  */
-export const getStandaloneDbDriver = async (
+export const getStandaloneDatabase = async (
     getProjectConfigService: GetProjectConfigService.Interface
-): Promise<ServerDbDriver> => {
+): Promise<StandaloneDatabase> => {
     const projectConfig = await getProjectConfigService.execute();
 
-    const hasSqlite = projectConfig.extensionsByType("Infra/Sqlite").length > 0;
-    const hasPostgres = projectConfig.extensionsByType("Infra/Postgres").length > 0;
+    const sqlite = projectConfig.extensionsByType(Sqlite);
+    const postgres = projectConfig.extensionsByType(Postgres);
+    const pglite = projectConfig.extensionsByType(Pglite);
 
-    if (hasSqlite === hasPostgres) {
+    const configured = [
+        sqlite.length > 0 ? "<Infra.Sqlite>" : null,
+        postgres.length > 0 ? "<Infra.Postgres>" : null,
+        pglite.length > 0 ? "<Infra.Pglite>" : null
+    ].filter(Boolean);
+
+    if (configured.length === 0) {
         throw new Error(
-            hasSqlite
-                ? "Both <Infra.Sqlite> and <Infra.Postgres> are configured in webiny.config. Configure exactly one."
-                : 'No database configured. Add <Infra.Sqlite filename="..." /> or <Infra.Postgres ... /> to webiny.config.'
+            'No database configured. Add <Infra.Pglite />, <Infra.Postgres ... /> or <Infra.Sqlite filename="..." /> to webiny.config.'
+        );
+    }
+    if (configured.length > 1) {
+        throw new Error(
+            `${configured.join(" and ")} are configured in webiny.config. Configure exactly one database.`
         );
     }
 
-    return hasPostgres ? "postgres" : "sqlite";
+    if (pglite.length > 0) {
+        return { driver: "postgres", pglite: resolvePglite(pglite[0].params) };
+    }
+    if (postgres.length > 0) {
+        return { driver: "postgres" };
+    }
+    return { driver: "sqlite" };
+};
+
+/** The driver alone: which SQL client the api connects with. */
+export const getStandaloneDbDriver = async (
+    getProjectConfigService: GetProjectConfigService.Interface
+): Promise<ServerDbDriver> => {
+    const { driver } = await getStandaloneDatabase(getProjectConfigService);
+    return driver;
 };

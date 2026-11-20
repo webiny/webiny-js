@@ -71,7 +71,7 @@ export async function spawnApiServer(
     // The database is driver-agnostic here: the DB infra extension in webiny.config (<Infra.Sqlite> /
     // <Infra.Postgres>) emits its own connection env — an absolute WEBINY_SQL_FILENAME, or the
     // WEBINY_PG_* set — which is forwarded via the runtime allowlist above. The connection factory the
-    // api build wired in (createSqliteConnection / createPostgresConnection) validates that env at boot
+    // api build wired in (createSqliteConnection / createPgConnection) validates that env at boot
     // and fails loud if the database is missing or misconfigured, so there's no driver-specific check
     // in the runner.
     const args = watch ? ["--watch-path", buildDir.toString(), runnerPath] : [runnerPath];

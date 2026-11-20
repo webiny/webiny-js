@@ -36,11 +36,6 @@ class RecordAuditLogUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<IAuditLog | null, UseCaseAbstraction.Error>> {
         const { audit, message, content, entityId } = input;
 
-        if (!this.identityContext.getIdentity()?.id) {
-            this.logger.debug("No identity, skipping audit log creation.");
-            return Result.ok(null);
-        }
-
         const payload: AuditLogPayload = {
             message,
             app: audit.app.app,

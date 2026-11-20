@@ -15,6 +15,7 @@ export * from "~/dateExpression.js";
 export * from "./cacheKey.js";
 export * from "./getObjectProperties.js";
 export * from "./middleware.js";
+export * from "./ConcurrencySlots.js";
 export type { GenericRecord } from "./GenericRecord.js";
 
 import type { AsyncProcessor, NextAsyncProcessor } from "~/compose.js";

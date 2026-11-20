@@ -1,46 +1,114 @@
+import type { NormalJob } from "github-actions-wac";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
-import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
-import type { AwsVariant, StandaloneVariant } from "./e2e/index.js";
+import { AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS } from "./utils/index.js";
+import { nodeScriptPath } from "./utils/index.js";
 import {
     createPublishToVerdaccioSteps,
     createUploadVerdaccioStorageSteps,
     createAwsJobs,
     createStandaloneVariantJobs,
     standaloneVariantCommentRow,
-    wcpVariantCommentRow,
     DIR_WEBINY_JS,
     globalBuildCacheSteps,
     installBuildSteps,
     runBuildCacheDownloadSteps,
     runBuildCacheUploadSteps,
-    yarnCacheSteps
+    yarnCacheSteps,
+    AWS_VARIANTS,
+    SERVER_VARIANTS,
+    WCP_VARIANTS,
+    createPrFeature,
+    createFinalStatusCommentJob,
+    type AwsVariantJobsContext,
+    type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
 // Every variant is three jobs: build (or deploy), a matrix of test shards, and a status report.
-// These lists drive both the PR status comment and the job list, so the two cannot drift apart.
-// Raise `shards` when a variant's tests get slow. Each standalone shard costs a runner and about
-// two minutes of setup; an AWS shard about one, since it tests the already deployed project.
+// The variant lists (e2e/variants.ts) drive both the PR status comment and the job list, so the two
+// cannot drift apart.
 
-// Unlicensed projects deployed to AWS. They run the tests that need neither a license nor a model.
-const AWS_VARIANTS: AwsVariant[] = [
-    { dbSetup: "ddb", shards: 1 },
-    { dbSetup: "ddb-os", shards: 1 }
-];
+/*
+ * What the `baseBranch` job checks the PR's code for (see "Check what the PR's code supports"): each
+ * feature's name, which is also its job output, and a path the feature can't work without.
+ */
+const PR_FEATURE_PATHS = {
+    standalone: "packages/create-webiny-project/_templates/standalone",
+    /*
+     * Also gates the bug-report-ai extension step. The extension came in with the bug reporter
+     * (#5746) and is pulled from S3, so nothing in the PR's tree says whether it fits the branch;
+     * this script stands in for "the branch has the bug reporter".
+     */
+    "bug-reporter": nodeScriptPath("configureBugReporter"),
+    /*
+     * Gates adding the E2E API route. The script came in with the fix that makes `<Api.Route>` build
+     * on standalone, and so did e2e/tests/apiRoute.e2e.ts, so a branch without it has neither.
+     */
+    "api-route": nodeScriptPath("configureApiRoute")
+};
 
-// Unlicensed standalone projects, running the same tests as the AWS variants.
-const SERVER_VARIANTS: StandaloneVariant[] = [
-    { storageOps: "sqlite", wcp: false, shards: 1 },
-    { storageOps: "postgres", wcp: false, shards: 1 },
-    // The same project with two API processes behind nginx, sharing Postgres, Valkey and storage.
-    { storageOps: "postgres", wcp: false, shards: 1, apiProcesses: 2 }
-];
+const STANDALONE = createPrFeature("baseBranch", "standalone");
+const BUG_REPORTER = createPrFeature("baseBranch", "bug-reporter");
+const API_ROUTE = createPrFeature("baseBranch", "api-route");
 
-// The same backends again, connected to WCP, each running the full `e2e/` suite. Only for the people
-// in AI_E2E_USERS (e2e/aiE2e.ts).
-const WCP_VARIANTS: StandaloneVariant[] = [
-    { storageOps: "sqlite", wcp: true, shards: 3 },
-    { storageOps: "postgres", wcp: true, shards: 3 }
+const PR_FEATURE_OUTPUTS: Record<string, string> = {};
+const PR_FEATURE_CHECKS: string[] = [];
+for (const [name, path] of Object.entries(PR_FEATURE_PATHS)) {
+    PR_FEATURE_OUTPUTS[name] = `\${{ steps.features.outputs.${name} }}`;
+    // A plain assignment, so `set -e` stops the step when `has_path` fails.
+    PR_FEATURE_CHECKS.push(
+        `found=$(has_path ${path})`,
+        `echo "${name}: $found"`,
+        `echo "${name}=$found" >> $GITHUB_OUTPUT`
+    );
+}
+
+const AWS_VARIANT_JOBS_CONTEXT: AwsVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2e-aws",
+    deployNeeds: ["baseBranch", "publish", "checkComment"],
+    // The checkout path comes from the base branch.
+    testsNeeds: ["baseBranch"],
+    setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
+    report: true,
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE
+};
+
+const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2e-standalone",
+    buildNeeds: ["baseBranch", "publish", "checkComment"],
+    // The checkout path comes from the base branch.
+    testsNeeds: ["baseBranch"],
+    setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
+    report: true,
+    feature: STANDALONE,
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE
+};
+
+// Every variant's build (or deploy), test and report jobs.
+const VARIANT_JOBS: Record<string, NormalJob> = {
+    ...AWS_VARIANTS.reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createAwsJobs(variant, AWS_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    ),
+    ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    )
+};
+
+const REPORT_JOB_KEYS = Object.keys(VARIANT_JOBS).filter(key => key.endsWith("-report")) as [
+    string,
+    ...string[]
 ];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
@@ -53,11 +121,9 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         "| --- | --- | --- |",
         "| DDB | 🔄 Deploying... | - |",
         "| DDB+OS | 🔄 Deploying... | - |",
-        ...SERVER_VARIANTS.map(variant => {
-            return standaloneVariantCommentRow(variant.storageOps, variant.apiProcesses);
-        }),
-        // Must stay last, see aiE2eCommentRow.
-        ...WCP_VARIANTS.map(variant => wcpVariantCommentRow(variant.storageOps))
+        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].map(variant => {
+            return standaloneVariantCommentRow(variant);
+        })
     ].join("\n"),
     captureCommentId: true,
     workflow: {
@@ -69,11 +135,13 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     jobs: {
         baseBranch: createJob({
             needs: "checkComment",
-            name: "Get base branch",
-            permissions: { "pull-requests": "read" },
+            name: "Get base branch, PR head and PR features",
+            // `contents` for the feature checks, which read the PR's tree.
+            permissions: { "pull-requests": "read", contents: "read" },
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
-                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
+                ...PR_FEATURE_OUTPUTS
             },
             steps: [
                 {
@@ -92,6 +160,36 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     id: "pr-sha",
                     env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    /*
+                     * A slash command always runs this workflow as it is on `next`, but the jobs
+                     * build the PR's code. A PR into an older release branch can lack what newer
+                     * jobs and steps need, and they would fail before running a single test. Each
+                     * check names a path the feature can't work without; a 404 means the PR's code
+                     * predates it. Any other error fails the job, so a flaky API call can't quietly
+                     * switch half of the run off.
+                     */
+                    name: "Check what the PR's code supports",
+                    id: "features",
+                    env: {
+                        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+                        PR_SHA: "${{ steps.pr-sha.outputs.pr-sha }}"
+                    },
+                    run: [
+                        "set -euo pipefail",
+                        "has_path() {",
+                        '  if gh api "repos/${{ github.repository }}/contents/$1?ref=$PR_SHA" --silent 2> /tmp/gh-api-error.txt; then',
+                        "    echo true",
+                        '  elif grep -q "HTTP 404" /tmp/gh-api-error.txt; then',
+                        "    echo false",
+                        "  else",
+                        "    cat /tmp/gh-api-error.txt >&2",
+                        "    return 1",
+                        "  fi",
+                        "}",
+                        ...PR_FEATURE_CHECKS
+                    ].join("\n")
                 }
             ]
         }),
@@ -114,7 +212,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
@@ -137,10 +235,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
             ]
         }),
-        ...AWS_VARIANTS.reduce((jobs, variant) => ({ ...jobs, ...createAwsJobs(variant) }), {}),
-        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
-            (jobs, variant) => ({ ...jobs, ...createStandaloneVariantJobs(variant) }),
-            {}
-        )
+        ...VARIANT_JOBS,
+        "e2e-final-status-comment": createFinalStatusCommentJob({ reportJobKeys: REPORT_JOB_KEYS })
     }
 });

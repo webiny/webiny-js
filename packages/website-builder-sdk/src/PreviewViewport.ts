@@ -1,5 +1,6 @@
 import type { ElementBoxData, ElementSlotBoxData } from "~/types.js";
 import { viewportManager } from "./ViewportManager.js";
+import { GlobalElementId } from "./globalElements.js";
 
 export class PreviewViewport {
     getBoxes() {
@@ -62,6 +63,23 @@ export class PreviewViewport {
         });
 
         return { ...elementBoxes, ...slotBoxes };
+    }
+
+    /**
+     * The page root and the global components in document order. Unlike boxes, this doesn't depend
+     * on what is on screen: a global that renders nothing (a closed dialog) still has its place.
+     */
+    getLayout() {
+        const layout: string[] = [];
+
+        document.querySelectorAll("[data-element-id]").forEach(element => {
+            const id = element.getAttribute("data-element-id");
+            if (id && (id === "root" || GlobalElementId.isGlobal(id))) {
+                layout.push(id);
+            }
+        });
+
+        return layout;
     }
 
     getViewport() {

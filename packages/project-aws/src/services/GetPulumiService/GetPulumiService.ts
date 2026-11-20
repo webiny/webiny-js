@@ -1,9 +1,7 @@
 import { createImplementation } from "@webiny/di";
-import {
-    GetProjectService,
-    GetPulumiService,
-    ProjectSdkParamsService
-} from "@webiny/project/abstractions/index.js";
+import { GetProjectService } from "@webiny/project/abstractions/index.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { GetPulumiService } from "~/abstractions/services/GetPulumiService.js";
 import {
     serializeProjectSdkContext,
     WBY_PROJECT_SDK_CONTEXT

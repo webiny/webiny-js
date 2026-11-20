@@ -1,5 +1,6 @@
 export * from "./constants.js";
 export * from "./createPathResolver.js";
+export * from "./ensureNamedImport.js";
 export * from "./getRandomColorForString.js";
 export * from "./getStackName.js";
 export * from "./ExtensionSrcResolver.js";
@@ -12,3 +13,4 @@ export * from "./toImportSpecifier.js";
 export * from "./trace/index.js";
 export * from "./projectSdkContext.js";
 export * from "./registerExtension.js";
+export * from "./registerSrcExtensions.js";

@@ -1,7 +1,6 @@
 import { createImplementation } from "@webiny/feature/api";
 import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
-import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
@@ -9,15 +8,14 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly appName = "FileManager";
     readonly dependsOn = [];
 
-    constructor(
-        private updateSettings: UpdateSettingsUseCase.Interface,
-        private keyValueStore: KeyValueStore.Interface
-    ) {}
+    constructor(private keyValueStore: KeyValueStore.Interface) {}
 
     async install(): Promise<void> {
-        // An empty srcPrefix makes UpdateSettingsUseCase fill in the default from the API's
-        // public URL, so every install picks up the current one.
-        await this.updateSettings.execute({ srcPrefix: "" });
+        /*
+         * Nothing to write. Settings that were never saved read as the defaults, and the file
+         * delivery URL defaults to the API's current public URL on every read (DefaultSrcPrefix),
+         * so writing it here would only freeze today's URL into the tenant's settings.
+         */
     }
 
     async uninstall(): Promise<void> {
@@ -28,5 +26,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, KeyValueStore]
+    dependencies: [KeyValueStore]
 });

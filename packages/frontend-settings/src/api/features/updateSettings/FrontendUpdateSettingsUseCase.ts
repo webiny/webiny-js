@@ -5,7 +5,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { FrontendPermissions } from "~/api/features/permissions/abstractions.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { InvalidFrontendDomainError } from "~/api/domain/errors.js";
-import { isValidFrontendDomain } from "~/shared/isValidFrontendDomain.js";
+import { FrontendDomain } from "~/shared/FrontendDomain.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 
 class FrontendUpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -25,8 +25,9 @@ class FrontendUpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface 
             return Result.fail(new NotAuthorizedError());
         }
 
-        if (!isValidFrontendDomain(data.domain)) {
-            return Result.fail(new InvalidFrontendDomainError(data.domain));
+        const domain = FrontendDomain.from(data.domain);
+        if (!domain.isValid()) {
+            return Result.fail(new InvalidFrontendDomainError(domain.toString()));
         }
 
         const success = await this.repository.execute(data);

@@ -58,6 +58,7 @@ my-extension/
 │   ├── MyExtension.tsx           # Top-level component (registers Api + Admin)
 │   ├── shared/                   # Shared between API and Admin
 │   │   ├── constants.ts          # Model IDs, permission names, etc.
+│   │   ├── ThingLanguage.ts      # Value objects for domain values both sides use
 │   │   └── types.ts              # Shared types
 │   ├── api/                      # API-side code → see webiny-api-architect skill
 │   │   ├── Extension.ts
@@ -137,6 +138,41 @@ export class MyEntity {
 }
 ```
 
+### RULE — Shared domain values are value objects
+
+When API and Admin both work with the same domain value (an id derived from other values, a language with a fallback, a key, a slug), its rules live in **one value object in `shared/`**, imported by both sides. Never a helper function, and never the same rule written once in `api/` and again in `admin/`.
+
+```ts
+// WRONG — the rule written twice, as loose helpers
+// api/utils.ts
+export const toStoredLanguage = (language?: string) => language || "default";
+// admin/features/saveThing/SaveThingUseCase.ts
+const language = page.language ?? "default";
+
+// CORRECT — src/shared/ThingLanguage.ts, used by both sides
+export class ThingLanguage {
+  static readonly DEFAULT = "default";
+
+  private constructor(private readonly code: string) {}
+
+  static from(language: unknown): ThingLanguage {
+    return typeof language === "string" && language.length > 0
+      ? new ThingLanguage(language)
+      : new ThingLanguage(ThingLanguage.DEFAULT);
+  }
+
+  isDefault(): boolean {
+    return this.code === ThingLanguage.DEFAULT;
+  }
+
+  toString(): string {
+    return this.code;
+  }
+}
+```
+
+A shared value object must not import from `api/` or `admin/`, or anything that only runs on one side (no `node:crypto` for browser code, no DI). A value only one side uses lives in that side's `domain/`. Full rules and shape: **webiny-api-architect** → "Value Objects for Domain Values".
+
 ## Build Parameters
 
 Build parameters pass configuration from `webiny.config.tsx` (build time) into both the API runtime and the Admin app. **A deployed API must NEVER use `process.env` to read configuration.**
@@ -183,7 +219,7 @@ export const MyExtension = ({ apiEndpoint, dashboardUrl }: MyExtensionProps) => 
 ## Checklist
 
 1. Create top-level component that uses `<Api.Extension>` and `<Admin.Extension>` — never mount admin/api code directly
-2. Put shared domain models and constants in `shared/`
+2. Put shared domain models and constants in `shared/`; a domain value both sides use is one value object there, not helper functions
 3. Declare `<Api.BuildParam>` / `<Admin.BuildParam>` in the top-level component, not in `webiny.config.tsx`
 4. API entry point uses `createFeature` with `register(container)` — see **webiny-api-architect**
 5. Admin entry point is a React component with `<RegisterFeature>` — see **webiny-admin-architect**
@@ -193,7 +229,7 @@ export const MyExtension = ({ apiEndpoint, dashboardUrl }: MyExtensionProps) => 
 
 ```
 Entry point:            <Api.Extension src={...} /> + <Admin.Extension src={...} />
-Shared code:            shared/ directory for domain models, constants, types
+Shared code:            shared/ directory for domain models, value objects, constants, types
 API architecture:       → see webiny-api-architect skill
 Admin architecture:     → see webiny-admin-architect skill
 DI pattern:             → see webiny-dependency-injection skill

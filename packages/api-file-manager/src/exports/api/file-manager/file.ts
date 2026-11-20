@@ -42,7 +42,12 @@ export {
 export { GetFileRepository, GetFileUseCase } from "~/features/file/GetFile/abstractions.js";
 
 export { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
+export { GetFileContentsByIdUseCase } from "~/features/file/GetFileContentsById/abstractions.js";
 
 export { ListFilesRepository, ListFilesUseCase } from "~/features/file/ListFiles/abstractions.js";
 
 export { ListTagsRepository, ListTagsUseCase } from "~/features/file/ListTags/abstractions.js";
+
+export { StoreFileUseCase } from "~/features/file/StoreFile/abstractions.js";
+export { StoreFileInput } from "~/domain/file/StoreFileInput.js";
+export type { StoreFileInputOptions } from "~/domain/file/StoreFileInput.js";

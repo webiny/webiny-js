@@ -17,6 +17,8 @@ import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { BuildParam } from "@webiny/api-core/features/buildParams/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -72,6 +74,8 @@ export const useHandler = (params?: UseHandlerParams) => {
 
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });

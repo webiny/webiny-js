@@ -185,7 +185,7 @@ describe("reserveDevProxyPorts", () => {
 
             // `<Admin.WebsocketsUrl>` beats the API URL when a project sets it, and pinning it to a
             // port is the obvious thing to write, so leaving this unset sends the socket elsewhere.
-            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api/ws");
         });
 
         it("gives the api an absolute one, since it hands out URLs to clients", async () => {
@@ -212,7 +212,7 @@ describe("reserveDevProxyPorts", () => {
             await prepareAndPoint();
 
             expect(process.env.WEBINY_ADMIN_API_URL).toBe("/api");
-            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api/ws");
         });
 
         it("leaves every URL alone when only the ports are reserved", async () => {

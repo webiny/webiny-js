@@ -2,6 +2,7 @@ import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
 import { createServer } from "./createServer.js";
+import { admin, INSTALL, LOGIN } from "./installAndLogIn.js";
 
 const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
@@ -12,34 +13,6 @@ const IS_INSTALLED = /* GraphQL */ `
                     code
                     message
                 }
-            }
-        }
-    }
-`;
-
-const INSTALL = /* GraphQL */ `
-    mutation Install($installationInput: JSON!) {
-        system {
-            installSystem(installationInput: $installationInput) {
-                data
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-const LOGIN = /* GraphQL */ `
-    mutation Login($email: String!, $password: String!) {
-        selfHostedAuthLogin(email: $email, password: $password) {
-            data {
-                token
-            }
-            error {
-                code
-                message
             }
         }
     }
@@ -62,13 +35,6 @@ const GET_CURRENT_USER = /* GraphQL */ `
         }
     }
 `;
-
-const admin = {
-    firstName: "Test",
-    lastName: "Admin",
-    email: "test-admin@example.com",
-    password: "test-admin-password"
-};
 
 /**
  * Installs the system through the full standalone SQL server, the same way the admin app's

@@ -7,9 +7,11 @@ import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterG
 import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
 import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature.js";
 import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
+import { ApiRequestHeadersFeature } from "@webiny/app/features/apiRequestHeaders/feature.js";
 import { ApiStreamClientFeature } from "@webiny/app/features/apiStreamClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
+import { RecordChangesFeature } from "@webiny/app/features/recordChanges/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
 import { BannersFeature } from "~/features/banners/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
@@ -54,6 +56,7 @@ export function createRootContainer() {
     RouterFeature.register(container);
 
     EventPublisherFeature.register(container);
+    RecordChangesFeature.register(container);
 
     NotificationsFeature.register(container);
 
@@ -66,6 +69,10 @@ export function createRootContainer() {
     // Registered before TenancyFeature / AuthenticationContextFeature, which decorate it to add the
     // tenant and auth headers.
     ApiStreamClientFeature.register(container);
+
+    // Extensions' extra API request headers. Before TenancyFeature, so the tenant and auth headers
+    // wrap it and win over a provider's header of the same name.
+    ApiRequestHeadersFeature.register(container);
 
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
 

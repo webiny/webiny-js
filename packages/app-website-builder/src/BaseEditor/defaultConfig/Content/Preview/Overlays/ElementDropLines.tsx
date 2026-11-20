@@ -6,9 +6,10 @@ import { useProximityDropzone } from "../useProximityDropzone.js";
 import type { Box } from "../Box.js";
 import { useElementComponentManifest } from "~/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest.js";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
-import { findMatchingAstNode } from "@webiny/website-builder-sdk";
+import { findMatchingAstNode, LayoutContentArea } from "@webiny/website-builder-sdk";
 import type { SlotInput } from "@webiny/website-builder-sdk";
 import { DevToolsSection } from "@webiny/app-admin";
+import { useDocumentEditor } from "~/DocumentEditor/index.js";
 
 interface ElementDropZonesProps {
     editorBox: Box;
@@ -17,6 +18,7 @@ interface ElementDropZonesProps {
 }
 
 export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDropZonesProps) => {
+    const editor = useDocumentEditor();
     const componentManifest = useElementComponentManifest(previewBox.parentId);
     const draggingItem = useDragLayer(monitor => monitor.getItem());
     const isDragging = draggingItem && draggingItem.id === previewBox.id;
@@ -36,9 +38,25 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
             return true;
         }
 
+        // Nothing can be dropped next to an element that isn't one of the document's own elements, in a
+        // slot of another: a global component's instance has no parent, and a layout's elements belong
+        // to the layout. The element itself must be checked, because the layout's root is also "root".
+        const parentSlot = editorBox.parentSlot;
+        const document = editor.getDocumentState().read();
+        if (
+            !parentSlot ||
+            !document.elements[previewBox.id] ||
+            !document.elements[previewBox.parentId]
+        ) {
+            return false;
+        }
+
         const manifest = componentManifestRef.current;
         const inputsAst = ComponentManifestToAstConverter.convert(manifest?.inputs ?? []);
-        const targetNode = findMatchingAstNode(editorBox.parentSlot, inputsAst);
+        const targetNode = findMatchingAstNode(
+            LayoutContentArea.slotInputPath(previewBox.parentId, parentSlot),
+            inputsAst
+        );
 
         if (!targetNode) {
             return false;
@@ -53,7 +71,7 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
         }
 
         return true;
-    }, [editorBox.parentSlot]);
+    }, [editor, editorBox.parentSlot, previewBox.parentId]);
 
     const { proximity } = useProximityDropzone({
         id: previewBox.id,
@@ -72,8 +90,11 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
         }
 
         const inputsAst = ComponentManifestToAstConverter.convert(componentManifest?.inputs ?? []);
-        return findMatchingAstNode(proximity?.box.parentSlot, inputsAst);
-    }, [proximity?.box.parentSlot]);
+        return findMatchingAstNode(
+            LayoutContentArea.slotInputPath(proximity.box.parentId, proximity.box.parentSlot),
+            inputsAst
+        );
+    }, [proximity?.box.parentId, proximity?.box.parentSlot]);
 
     // Figure out if we are allowed to drop the current item into the dropzone.
     let canAcceptComponent = !!targetInputNode;

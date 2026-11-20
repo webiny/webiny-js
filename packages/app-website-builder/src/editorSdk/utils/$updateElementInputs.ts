@@ -7,6 +7,7 @@ import {
     InputsBindingsProcessor
 } from "@webiny/website-builder-sdk";
 import { executeOnChange, applyAncestorUpdates } from "./executeOnChange.js";
+import { $getEditableElement } from "./$getEditableElement.js";
 
 /**
  * Programmatically update an element's inputs using a callback-based API.
@@ -22,7 +23,7 @@ export function $updateElementInputs(
     const editorState = editor.getEditorState().read();
     const components = editorState.components;
 
-    const element = document.elements[elementId];
+    const element = $getEditableElement(document, elementId);
     if (!element) {
         return;
     }

@@ -6,10 +6,8 @@ import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import {
-    ConnectionRegistry,
-    WebsocketsSendToIdentityUseCase
-} from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { RecordLockingAppFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -47,6 +45,8 @@ import {
     UNLOCK_ENTRY_REQUEST_MUTATION,
     UPDATE_ENTRY_LOCK_MUTATION
 } from "./graphql/recordLocking";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export const defaultIdentity: IdentityData = {
     id: "id-12345678",
@@ -99,6 +99,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 createTestWcpLicense({ recordLocking: true })
             );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });

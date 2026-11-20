@@ -235,6 +235,33 @@ export const WithSorting: Story<Entry> = {
     }
 };
 
+// An entry with versions listed under it as sub-rows.
+interface EntryWithVersions extends Entry {
+    versions?: EntryWithVersions[];
+}
+
+export const WithSubRows: Story<EntryWithVersions> = {
+    args: {
+        columns,
+        data: [
+            {
+                ...data[0],
+                versions: [
+                    { ...data[0], id: "entry-1-de", name: "Erste Schritte", status: "Draft" },
+                    { ...data[0], id: "entry-1-hr", name: "Prvi koraci", status: "Published" }
+                ]
+            },
+            data[1],
+            {
+                ...data[2],
+                versions: [{ ...data[2], id: "entry-3-de", name: "API-Referenz" }]
+            }
+        ],
+        getSubRows: row => row.versions,
+        initialExpanded: { "entry-1": true }
+    }
+};
+
 // Add a Documentation story
 export const Documentation: Story<Entry> = {
     args: {

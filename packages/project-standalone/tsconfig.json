@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../cli-core" }, { "path": "../project" }],
+  "references": [
+    { "path": "../cli-core" },
+    { "path": "../project" },
+    { "path": "../project-extensions-aws" },
+    { "path": "../project-extensions-standalone" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -12,7 +17,11 @@
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"]
+      "@webiny/project": ["../project/src"],
+      "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],
+      "@webiny/project-extensions-aws": ["../project-extensions-aws/src"],
+      "@webiny/project-extensions-standalone/*": ["../project-extensions-standalone/src/*"],
+      "@webiny/project-extensions-standalone": ["../project-extensions-standalone/src"]
     }
   }
 }

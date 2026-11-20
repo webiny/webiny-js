@@ -9,6 +9,8 @@ import { FileModelProvider } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
 
+const TAG_PREFIX_FILTERS = ["tags_startsWith", "tags_not_startsWith"];
+
 class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private getUniqueFieldValues: GetUniqueFieldValuesUseCase.Interface,
@@ -19,13 +21,31 @@ class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
     async execute(input: ListTagsInput): Promise<Result<TagItem[], RepositoryAbstraction.Error>> {
         const fileModel = await this.fileModelProvider.get();
 
+        /*
+         * Prefix conditions on the tags themselves select tags, not files: "tags not starting with
+         * scope:" lists every other tag, including those of files that also have a scoped tag.
+         * Other conditions (e.g. createdBy) still select the files whose tags are listed. Without
+         * them the storage lists the tags of all files, which it can answer from maintained counts.
+         */
+        const filesWhere: Record<string, any> = {};
+        const tagFilters: { key: string; prefix: string }[] = [];
+        for (const [key, value] of Object.entries(input.where || {})) {
+            if (TAG_PREFIX_FILTERS.includes(key)) {
+                if (value !== undefined && value !== null && value !== "") {
+                    tagFilters.push({ key, prefix: String(value).toLowerCase() });
+                }
+                continue;
+            }
+            filesWhere[key] = value;
+        }
+
         const result = await this.getUniqueFieldValues.execute(fileModel, {
             fieldId: "tags",
             // TODO fix with proper types
             // @ts-expect-error
             where: this.cmsWhereMapper.map({
                 input: {
-                    ...(input.where || {}),
+                    ...filesWhere,
                     latest: true
                 },
                 fields: fileModel.fields
@@ -38,6 +58,13 @@ class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
 
         // Map to TagItem format
         const tags: TagItem[] = result.value
+            .filter(uv =>
+                tagFilters.every(({ key, prefix }) => {
+                    // Case-insensitive, as the startsWith filter.
+                    const starts = String(uv.value).toLowerCase().startsWith(prefix);
+                    return key === "tags_startsWith" ? starts : !starts;
+                })
+            )
             .map(uv => ({
                 tag: uv.value as string,
                 count: uv.count

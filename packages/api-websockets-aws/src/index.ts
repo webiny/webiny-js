@@ -3,8 +3,8 @@ import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
 import { WebSocketLambdaHandler } from "~/WebSocketLambdaHandler.js";
 
 export { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
-export { WebsocketsConnectionRegistry } from "~/WebsocketsConnectionRegistry.js";
-export { WebsocketsDdbFeature } from "~/WebsocketsDdbFeature.js";
+// The DynamoDB connection registry is at `@webiny/api-websockets-aws/ddb/index.js`, so loading the
+// transport loads no DynamoDB code.
 
 export const WebsocketsAwsFeature = createFeature({
     name: "WebsocketsAws",

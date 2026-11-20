@@ -33,9 +33,8 @@ export const createJob = (params: CreateJobParams): NormalJob => {
     // Security: granting write here doesn't open anything to outsiders. The `checkCommandStep`
     // write/admin gate + the universal `needs: checkComment` dependency mean non-collaborators'
     // `/e2e` (etc.) skips all jobs - these scopes only apply when a real collaborator triggers a
-    // command. The pre-existing pwn-request risk on fork PRs (a maintainer running `/e2e` runs
-    // the PR's untrusted code with secrets) is unchanged by this; a same-repo/label safeguard
-    // could be added separately.
+    // command. A command on a PR from a fork is refused by the same step, so a fork's code never
+    // runs with these scopes or the secrets.
     const permissions: Record<string, string> = {
         contents: "read",
         actions: "write"

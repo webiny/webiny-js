@@ -140,7 +140,7 @@ const BirthdayPicker = ({
     });
     /** The steps picked since the card opened. */
     const picked = useRef<Set<Step>>(new Set());
-    const closeTimer = useRef<ReturnType<typeof setTimeout>>();
+    const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const escapeScrollLock = useEscapeScrollLock<HTMLDivElement>();
 
     const saved = useMemo(() => parseBirthdayValue(value), [value]);

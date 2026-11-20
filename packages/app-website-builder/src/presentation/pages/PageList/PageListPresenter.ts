@@ -3,6 +3,8 @@ import type { IReactionDisposer } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { sortFolders } from "@webiny/app-aco";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
+import { describeFoldersForAssistant } from "@webiny/app-aco/presentation/folderTree/describeFoldersForAssistant.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { Page } from "~/domain/Page/Page.js";
@@ -32,7 +34,8 @@ class PageListPresenterImpl implements Abstraction.Interface {
         private movePageUseCase: MovePageUseCase.Interface,
         private duplicatePageUseCase: DuplicatePageUseCase.Interface,
         private pageListCache: PageListCache.Interface,
-        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
+        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface,
+        private foldersContext: FoldersContext.Interface
     ) {
         makeAutoObservable<
             PageListPresenterImpl,
@@ -46,6 +49,7 @@ class PageListPresenterImpl implements Abstraction.Interface {
             | "duplicatePageUseCase"
             | "pageListCache"
             | "getDescendantFoldersUseCase"
+            | "foldersContext"
         >(this, {
             _disposeReaction: false,
             confirmation: false,
@@ -57,6 +61,7 @@ class PageListPresenterImpl implements Abstraction.Interface {
             duplicatePageUseCase: false,
             pageListCache: false,
             getDescendantFoldersUseCase: false,
+            foldersContext: false,
             vm: computed
         });
     }
@@ -113,7 +118,20 @@ class PageListPresenterImpl implements Abstraction.Interface {
             initialFilters: { folderId: initialFolderId },
             initialSearch: config.initialSearch,
             limit: 50,
-            itemLabel: { singular: "page", plural: "pages" }
+            itemLabel: { singular: "page", plural: "pages" },
+            assistant: {
+                view: () => "Pages in Website Builder",
+                rowTitle: page => page.properties.title ?? "",
+                details: () => {
+                    const { currentFolderId, currentFolderTitle } = this._foldersPresenter.vm;
+                    return describeFoldersForAssistant({
+                        type: this.foldersContext.type,
+                        currentFolderId,
+                        currentFolderTitle,
+                        childFolders: this.vm.childFolders
+                    });
+                }
+            }
         });
 
         if (initialFolderId !== "root") {
@@ -161,6 +179,7 @@ class PageListPresenterImpl implements Abstraction.Interface {
             this._disposeReaction();
             this._disposeReaction = null;
         }
+        this._listPresenter.dispose();
     }
 }
 
@@ -177,6 +196,7 @@ export const PageListPresenter = Abstraction.createImplementation({
         MovePageUseCase,
         DuplicatePageUseCase,
         PageListCache,
-        GetDescendantFoldersUseCase
+        GetDescendantFoldersUseCase,
+        FoldersContext
     ]
 });

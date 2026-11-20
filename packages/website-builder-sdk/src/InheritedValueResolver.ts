@@ -31,4 +31,21 @@ export class InheritedValueResolver {
         }
         return undefined;
     }
+
+    /**
+     * The id of the binding a breakpoint resolves to before its own override: the nearest wider breakpoint's
+     * binding with an id. Bindings are merged breakpoint over breakpoint, so that id wins even where the
+     * binding holds no value (the editor stores metadata under it).
+     */
+    getInheritedBindingId(key: string, breakpoint: string): string | undefined {
+        const currentIndex = this.breakpoints.indexOf(breakpoint);
+        for (let i = currentIndex - 1; i >= 0; i--) {
+            const id = (this.getBindings(this.breakpoints[i])?.[key] as { id?: string } | undefined)
+                ?.id;
+            if (id !== undefined) {
+                return id;
+            }
+        }
+        return undefined;
+    }
 }

@@ -8,6 +8,7 @@ import {
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstraction.Interface {
     private readonly metadataReader: MetadataReader.Interface;
@@ -32,7 +33,7 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
         const storagePath = this.config.storagePath;
 
         try {
-            const filePath = `${storagePath}/${metadata.bucketKey}`;
+            const filePath = resolveStoragePath(storagePath, metadata.bucketKey);
             const buffer = await fs.readFile(filePath);
             return Result.ok({ buffer, contentType: metadata.contentType });
         } catch (error) {

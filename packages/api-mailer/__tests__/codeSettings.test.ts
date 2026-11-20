@@ -20,7 +20,7 @@ describe("CodeMailerSettings", () => {
         const codeSettings = context.container.resolve(CodeMailerSettings);
 
         expect(codeSettings.get("Mailer/SmtpTransport")).toBeNull();
-        expect(codeSettings.get("Mailer/DummyTransport")).toBeNull();
+        expect(codeSettings.get("Acme/SesTransport")).toBeNull();
         expect(codeSettings.get("nonexistent")).toBeNull();
     });
 
@@ -41,7 +41,7 @@ describe("CodeMailerSettings", () => {
         const context = await handle();
         const codeSettings = context.container.resolve(CodeMailerSettings);
 
-        expect(codeSettings.get("Mailer/DummyTransport")).toBeNull();
+        expect(codeSettings.get("Acme/SesTransport")).toBeNull();
         expect(codeSettings.get("nonexistent")).toBeNull();
     });
 });

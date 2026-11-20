@@ -1,4 +1,6 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
+import pick from "lodash/pick.js";
 import { createPulumiApp, isResourceOfType, type PulumiApp } from "@webiny/pulumi";
 import {
     ApiBackgroundTask,
@@ -11,26 +13,44 @@ import {
     CoreOutput,
     VpcConfig
 } from "~/pulumi/apps/index.js";
+import { ApiGraphqlWeb } from "~/pulumi/apps/index.js";
+import type { GraphqlWebVpc } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
-    getDistributionUrl,
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/pulumi/utils/index.js";
 import { getEnvVariableAwsRegion } from "~/pulumi/env/awsRegion.js";
 // import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { applyAwsResourceTags, getAwsAccountId } from "~/pulumi/apps/awsUtils.js";
-import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js";
+import {
+    addServiceManifestTableItems,
+    type WithServiceManifest
+} from "~/pulumi/utils/withServiceManifest.js";
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
+import { isWebFunctionEnabled } from "~/pulumi/apps/extensions/isWebFunctionEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
+import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
+import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgres.js";
+import {
+    ApiSchemaSetup,
+    getPostgresLambdaEnvFromCore,
+    getPostgresWebFunctionEnv,
+    getSchemaSetupServiceManifests
+} from "./ApiSchemaSetup.js";
+import { createApiServiceManifests } from "./apiServiceManifests.js";
+import { addDynamoDbOutputs, getDynamoDbLambdaEnv } from "./apiDynamoDb.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import {
+    ApiPulumi,
+    SetApiCustomDomains
+} from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/DefaultSetApiCustomDomains.js";
-import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
+import { ApiCustomDomains as apiCustomDomainsExt } from "@webiny/project-extensions-aws/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
@@ -46,6 +66,8 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
+            const postgresConfig = getPostgresConfigFromExtension(projectConfig);
+            const usesPostgres = Boolean(postgresConfig);
 
             let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
@@ -169,18 +191,19 @@ export const createApiPulumiApp = () => {
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules.
-            app.addModule(VpcConfig, {
-                enabled: isVpcEnabled(vpcExtensionsConfig, isProduction)
+            const vpcEnabled = isVpcEnabled(vpcExtensionsConfig, isProduction);
+            const vpcConfig = app.addModule(VpcConfig, {
+                enabled: vpcEnabled
             });
 
             // Shared by the buffered `graphql` function and its response-streaming twin: both run the
             // same code bundle, so they must see the same environment.
+            const dynamoDbEnv = getDynamoDbLambdaEnv(core, usesPostgres);
             const graphqlEnv = {
                 COGNITO_REGION: getEnvVariableAwsRegion(),
                 COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                DB_TABLE: core.primaryDynamodbTableName,
-                DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+                ...dynamoDbEnv,
                 OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
                 // Not required. Useful for testing purposes / ephemeral environments.
@@ -193,7 +216,11 @@ export const createApiPulumiApp = () => {
                 S3_BUCKET: core.fileManagerBucketId,
                 EVENT_BUS: core.eventBusArn,
                 // TODO: move to okta plugin
-                OKTA_ISSUER: process.env["OKTA_ISSUER"]
+                OKTA_ISSUER: process.env["OKTA_ISSUER"],
+
+                // With `<Infra.Postgres />`: the database the API runs on. The background-task,
+                // fm-download and schema-setup functions copy this function's env.
+                ...(usesPostgres ? getPostgresLambdaEnvFromCore(core) : {})
             };
 
             const graphql = app.addModule(ApiGraphql, { env: graphqlEnv });
@@ -203,66 +230,72 @@ export const createApiPulumiApp = () => {
             // ApiCloudfront, which resolves this module to wire the `/stream/*` origin and behavior.
             const graphqlStream = app.addModule(ApiGraphqlStream, { env: graphqlEnv });
 
+            // On unless the project sets `<Infra.Api.WebFunction enabled={false} />`. With it, the API's
+            // HTTP routes go to the web function and there is no HTTP API Gateway; without it, the
+            // previous setup. Added before ApiCloudfront, which routes to whichever exists.
+            const webFunctionEnabled = isWebFunctionEnabled(projectConfig);
+            let graphqlWeb: ApiGraphqlWeb | undefined;
+            if (webFunctionEnabled) {
+                let graphqlWebVpc: GraphqlWebVpc | null = null;
+                const useExistingVpc =
+                    typeof vpcExtensionsConfig === "object" && vpcExtensionsConfig.useExistingVpc;
+                if (useExistingVpc) {
+                    // Same subnets and security groups the enterprise handler above gives the
+                    // regular Lambdas.
+                    graphqlWebVpc = useExistingVpc.lambdaFunctionsVpcConfig;
+                } else if (vpcEnabled) {
+                    const functionVpcConfig = vpcConfig.functionVpcConfig;
+                    // `pulumi.output` unwraps the nested inputs into a plain `string[]` output.
+                    const subnetIds = pulumi.output(functionVpcConfig.subnetIds);
+                    const securityGroupIds = pulumi.output(functionVpcConfig.securityGroupIds);
+                    graphqlWebVpc = { subnetIds, securityGroupIds };
+                }
+
+                graphqlWeb = app.addModule(ApiGraphqlWeb, {
+                    namePrefix: pulumiResourceNamePrefix ?? "",
+                    vpc: graphqlWebVpc,
+                    // With `<Infra.Postgres />`, a bigger pool than the plain Lambdas' 1.
+                    env: getPostgresWebFunctionEnv(postgresConfig)
+                });
+                app.addOutputs({
+                    graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
+                    graphqlWebEndpointDomain: graphqlWeb.endpoint.output.domainName,
+                    // Read by `webiny watch` to publish its forwarder revision.
+                    graphqlWebEndpointName: graphqlWeb.endpoint.output.endpointName,
+                    graphqlWebCodeBucket: graphqlWeb.codeBucket.output.id
+                });
+            }
+
             const websocket = app.addModule(ApiWebsocket);
 
             const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName
-                }
+                env: pick(dynamoDbEnv, ["DB_TABLE", "DB_TABLE_AUDIT_LOGS"]),
+                functionUrl: webFunctionEnabled
             });
 
-            const apiGateway = app.addModule(ApiGateway, {
-                "graphql-post": {
-                    path: "/graphql",
-                    method: "POST",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "graphql-options": {
-                    path: "/graphql",
-                    method: "OPTIONS",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "files-any": {
-                    path: "/files/{path+}",
-                    method: "ANY",
-                    function: fileManager.functions.download.output.arn
-                },
-                "private-any": {
-                    path: "/private/{path+}",
-                    method: "ANY",
-                    function: fileManager.functions.download.output.arn
-                },
-                "cms-post": {
-                    path: "/cms/{key+}",
-                    method: "POST",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "cms-options": {
-                    path: "/cms/{key+}",
-                    method: "OPTIONS",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "redirects-get": {
-                    path: "/wb/redirects",
-                    method: "GET",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "redirects-options": {
-                    path: "/wb/redirects",
-                    method: "OPTIONS",
-                    function: graphql.functions.graphql.output.arn
-                },
-                "files-catch-all": {
-                    path: "/{path+}",
-                    method: "ANY",
-                    function: fileManager.functions.download.output.arn
-                }
-            });
+            let apiGateway: ApiGateway | undefined;
+            if (!webFunctionEnabled) {
+                apiGateway = createApiGateway(app, graphql, fileManager);
+            }
 
             const cloudfront = app.addModule(ApiCloudfront);
+
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
+
+            // With `<Infra.Postgres />`, every deploy sets the database up and stores the service
+            // manifests: the core's (from its stack output), then the api's own: `api` and
+            // `scheduler` (see below) and any an extension adds with `addServiceManifest`.
+            const schemaSetup = usesPostgres
+                ? app.addModule(ApiSchemaSetup, {
+                      postgres: core,
+                      serviceManifests: pulumi
+                          .all([core.serviceManifests, app.getServiceManifests()])
+                          .apply(([coreManifests, apiManifests]) =>
+                              getSchemaSetupServiceManifests(coreManifests, apiManifests)
+                          )
+                  })
+                : null;
 
             const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
             if (apiCustomDomains) {
@@ -282,8 +315,6 @@ export const createApiPulumiApp = () => {
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
-                dynamoDbTable: core.primaryDynamodbTableName,
-                auditLogsDynamoDbTable: core.auditLogsDynamodbTableName,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
                 graphqlLambdaRoleName: graphql.role.output.name,
@@ -296,6 +327,15 @@ export const createApiPulumiApp = () => {
                 websocketApiUrl: websocket.websocketApiUrl,
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
+
+            // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+            addDynamoDbOutputs(app, core, usesPostgres);
+
+            if (schemaSetup) {
+                app.addOutputs({
+                    schemaSetupLambdaArn: schemaSetup.functions.schemaSetup.output.arn
+                });
+            }
 
             // Only add `dynamoDbOpensearchTable` output if using search engine (ES/OS).
             if (searchEngineParams) {
@@ -332,41 +372,83 @@ export const createApiPulumiApp = () => {
                 fileManager,
                 graphql,
                 graphqlStream,
+                graphqlWeb,
                 apiGateway,
                 websocket,
                 cloudfront,
                 backgroundTask,
-                scheduler
+                scheduler,
+                schemaSetup
             };
         }
     });
 
-    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp), async manifests => {
+        // With Postgres, the schema-setup invocation stores them (see `ApiSchemaSetup` above).
+        if (await projectUsesPostgres()) {
+            return;
+        }
+        addServiceManifestTableItems(baseApp, manifests);
+    });
 
     app.addHandler(() => {
-        app.addServiceManifest({
-            name: "api",
-            manifest: {
-                // Read by the API through `PublicUrls.getApiUrl()`.
-                url: getDistributionUrl(baseApp.resources.cloudfront),
-                bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
-                cloudfront: {
-                    distributionId: baseApp.resources.cloudfront.output.id,
-                    domain: baseApp.resources.cloudfront.output.domainName.apply(
-                        v => `https://${v}`
-                    )
-                }
-            }
-        });
-
-        app.addServiceManifest({
-            name: "scheduler",
-            manifest: {
-                lambdaArn: baseApp.resources.graphql.functions.graphql.output.arn,
-                roleArn: baseApp.resources.scheduler.invokeRole.output.arn
-            }
-        });
+        for (const manifest of createApiServiceManifests(baseApp.resources)) {
+            app.addServiceManifest(manifest);
+        }
     });
 
     return app;
 };
+
+/**
+ * The HTTP API Gateway, used only with `<Infra.Api.WebFunction enabled={false} />`.
+ */
+function createApiGateway(app: PulumiApp, graphql: ApiGraphql, fileManager: ApiFileManager) {
+    return app.addModule(ApiGateway, {
+        "graphql-post": {
+            path: "/graphql",
+            method: "POST",
+            function: graphql.functions.graphql.output.arn
+        },
+        "graphql-options": {
+            path: "/graphql",
+            method: "OPTIONS",
+            function: graphql.functions.graphql.output.arn
+        },
+        "files-any": {
+            path: "/files/{path+}",
+            method: "ANY",
+            function: fileManager.functions.download.output.arn
+        },
+        "private-any": {
+            path: "/private/{path+}",
+            method: "ANY",
+            function: fileManager.functions.download.output.arn
+        },
+        "cms-post": {
+            path: "/cms/{key+}",
+            method: "POST",
+            function: graphql.functions.graphql.output.arn
+        },
+        "cms-options": {
+            path: "/cms/{key+}",
+            method: "OPTIONS",
+            function: graphql.functions.graphql.output.arn
+        },
+        "redirects-get": {
+            path: "/wb/redirects",
+            method: "GET",
+            function: graphql.functions.graphql.output.arn
+        },
+        "redirects-options": {
+            path: "/wb/redirects",
+            method: "OPTIONS",
+            function: graphql.functions.graphql.output.arn
+        },
+        "files-catch-all": {
+            path: "/{path+}",
+            method: "ANY",
+            function: fileManager.functions.download.output.arn
+        }
+    });
+}

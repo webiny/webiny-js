@@ -5,7 +5,8 @@ const { green, red } = chalk;
 export interface BuildInfo {
     projectFolder: string;
     runner: string;
-    parallel: boolean;
+    /** How many packages of a batch are built at the same time. */
+    concurrency: number;
     cpuCount: number;
     cpuName: string;
     totalMemory: number;
@@ -110,9 +111,9 @@ class TextReporter implements BuildReporter {
 
     info(info: BuildInfo) {
         console.log(
-            `Runner: ${green(info.runner)}; Build packages: ${
-                info.parallel ? green("in parallel") : green("in series")
-            }; Hardware: ${green(info.cpuCount)} CPUs (${info.cpuName}); Total Memory: ${green(
+            `Runner: ${green(info.runner)}; Build packages: ${green(
+                info.concurrency
+            )} at a time; Hardware: ${green(info.cpuCount)} CPUs (${info.cpuName}); Total Memory: ${green(
                 toMB(info.totalMemory)
             )}; Free Memory: ${green(toMB(info.freeMemory))}.`
         );

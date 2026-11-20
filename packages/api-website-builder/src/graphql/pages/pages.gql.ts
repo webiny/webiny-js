@@ -8,6 +8,7 @@ import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
+import { GetLatestPageByPathUseCase } from "~/features/pages/GetLatestPageByPath/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
@@ -28,6 +29,7 @@ import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 import { GetPageLanguagePathsUseCase } from "~/features/pages/GetPageLanguagePaths/index.js";
 import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";
+import { ComposePageUseCase } from "~/features/pages/ComposePage/index.js";
 
 export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
     builder.addTypeDefs(pagesTypeDefs);
@@ -46,8 +48,8 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbQuery.getPageByPath",
-        dependencies: [GetPageByPathUseCase],
-        resolver(getPageByPath) {
+        dependencies: [GetPageByPathUseCase, ComposePageUseCase],
+        resolver(getPageByPath, composePage) {
             return ({ args, context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
@@ -58,25 +60,48 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                         throw new NotFoundError(`Page ${args.path} was not found!`);
                     }
 
-                    const page = result.value;
+                    const page = await composePage.execute(result.value);
+                    // `version`, `metadata` and `extensions` are queried by the website builder SDK.
                     return {
                         id: page.id,
                         entryId: page.entryId,
                         version: page.version,
                         properties: page.properties,
                         metadata: page.metadata,
+                        extensions: page.extensions,
                         bindings: page.bindings,
                         elements: page.elements,
-                        extensions: page.extensions
+                        layout: page.layout
                     };
                 });
         }
     });
 
     builder.addResolver({
+        path: "WbQuery.getLatestPageByPath",
+        dependencies: [GetLatestPageByPathUseCase, ComposePageUseCase],
+        resolver(getLatestPageByPath, composePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+
+                    const result = await getLatestPageByPath.execute(args.path);
+
+                    if (result.isFail()) {
+                        // Keeps the code: not found, not authorized and persistence errors stay apart.
+                        throw result.error;
+                    }
+
+                    // The whole page, as `getPageById` returns it, so callers can read its `status`.
+                    return composePage.execute(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
         path: "WbQuery.getPageById",
-        dependencies: [GetPageByIdUseCase],
-        resolver(getPageById) {
+        dependencies: [GetPageByIdUseCase, ComposePageUseCase],
+        resolver(getPageById, composePage) {
             return ({ args, context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
@@ -86,7 +111,8 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                         throw new NotFoundError(`Page with id "${args.id}" was not found!`);
                     }
 
-                    return result.value;
+                    // Raw: the page as stored (the editor's form), with its layout as published.
+                    return composePage.execute(result.value, { raw: args.raw === true });
                 });
         }
     });
@@ -238,6 +264,7 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                         throw result.error;
                     }
 
+                    // The page as stored: the editor works on the stored form.
                     return result.value;
                 });
         }
@@ -340,6 +367,7 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                         throw result.error;
                     }
 
+                    // The page as stored, like the editor reads it (`getPageById(raw: true)`).
                     return result.value;
                 });
         }
@@ -360,6 +388,7 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                         throw result.error;
                     }
 
+                    // The page as stored, like the editor reads it (`getPageById(raw: true)`).
                     return result.value;
                 });
         }

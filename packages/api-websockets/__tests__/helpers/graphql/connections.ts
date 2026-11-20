@@ -4,7 +4,6 @@ import type { IWebsocketsResponseError } from "~/runner";
 export interface IListConnectionsVariables {
     where?: {
         identityId?: string;
-        tenant?: string;
     };
 }
 
@@ -66,49 +65,6 @@ export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
     mutation DisconnectIdentityConnections($identityId: String!) {
         websockets {
             disconnectIdentity(identityId: $identityId) {
-                data {
-                    connectionId
-                    endpoint
-                    identity {
-                        id
-                        type
-                        displayName
-                    }
-                    connectedOn
-                    tenant
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-/**
- * Disconnect all connections for a given tenant
- */
-export interface IDisconnectTenantConnectionsVariables {
-    tenant: string;
-}
-
-export interface IDisconnectTenantConnectionsResponse {
-    data: {
-        websockets: {
-            disconnectTenant: {
-                data?: IWebsocketsConnectionRegistryData[];
-                error?: IWebsocketsResponseError;
-            };
-        };
-    };
-}
-
-export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
-    mutation DisconnectIdentityConnections($tenant: String!) {
-        websockets {
-            disconnectTenant(tenant: $tenant) {
                 data {
                     connectionId
                     endpoint

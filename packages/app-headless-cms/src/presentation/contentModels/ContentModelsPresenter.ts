@@ -1,4 +1,3 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { CmsModel } from "~/types.js";
 import { ListModelsUseCase } from "~/features/model/listModels/abstractions.js";
@@ -10,8 +9,6 @@ import { ContentModelsPresenter as Abstraction } from "./abstractions.js";
 import { ContentModelsDataSource } from "./ContentModelsDataSource.js";
 
 class ContentModelsPresenterImpl implements Abstraction.Interface {
-    private loading = true;
-
     constructor(
         private listPresenter: ListPresenter.Interface<CmsModel>,
         private listModelsUseCase: ListModelsUseCase.Interface,
@@ -19,37 +16,7 @@ class ContentModelsPresenterImpl implements Abstraction.Interface {
         private cancelDeleteModelUseCase: CancelDeleteModelUseCase.Interface,
         private exportModelsUseCase: ExportModelsUseCase.Interface,
         private cache: ModelsCache.Interface
-    ) {
-        makeAutoObservable<
-            ContentModelsPresenterImpl,
-            | "listModelsUseCase"
-            | "deleteModelUseCase"
-            | "cancelDeleteModelUseCase"
-            | "exportModelsUseCase"
-            | "cache"
-        >(this, {
-            listModelsUseCase: false,
-            deleteModelUseCase: false,
-            cancelDeleteModelUseCase: false,
-            exportModelsUseCase: false,
-            cache: false,
-            vm: computed
-        });
-    }
-
-    get vm(): Abstraction.ViewModel {
-        const models = this.cache.getItems().filter(model => {
-            if (!model.tags || model.tags.length === 0) {
-                return true;
-            }
-            return !model.tags.includes("$hidden:true");
-        });
-
-        return {
-            loading: this.loading,
-            models
-        };
-    }
+    ) {}
 
     get list(): ListPresenter.Interface<CmsModel> {
         return this.listPresenter;
@@ -61,12 +28,18 @@ class ContentModelsPresenterImpl implements Abstraction.Interface {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "savedOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "model", plural: "models" },
+            assistant: {
+                view: () => "Content models in Headless CMS",
+                rowTitle: model => model.name,
+                rowId: model => model.modelId
+            }
         });
+    }
 
-        runInAction(() => {
-            this.loading = false;
-        });
+    dispose(): void {
+        this.listPresenter.dispose();
     }
 
     async deleteModel(modelId: string, confirmation: string) {

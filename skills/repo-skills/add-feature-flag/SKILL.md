@@ -218,7 +218,7 @@ myFeature: z.union([
 
 A WCP license is required for any feature flag to work. Without a license, all flags return `false`.
 
-**Flags NOT in `LICENSE_CHECKS`** (like `remoteComponents`): a license must exist, but the license doesn't explicitly govern this flag. Config decides. Do NOT add a flag to `LICENSE_CHECKS` until the WCP backend supports it.
+**Flags NOT in `LICENSE_CHECKS`** (such as a flag a project or extension declares for itself): a license must exist, but the license doesn't explicitly govern this flag. Config decides. Do NOT add a flag to `LICENSE_CHECKS` until the WCP backend supports it.
 
 **Flags IN `LICENSE_CHECKS`**: the license explicitly gates the feature. If the license blocks it, the flag is `false` regardless of config. If the license allows it, config can still disable it.
 

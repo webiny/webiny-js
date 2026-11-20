@@ -54,7 +54,12 @@ export const SettingsButton = () => {
 
     return (
         <div className={"flex gap-x-sm"}>
-            <IconButton variant="ghost" icon={<SettingsIcon />} onClick={openOverlay} />
+            <IconButton
+                variant="ghost"
+                icon={<SettingsIcon />}
+                onClick={openOverlay}
+                aria-label={"Page settings"}
+            />
             <PageSettingsDrawer
                 presenter={presenter}
                 open={isOverlayOpen}

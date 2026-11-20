@@ -64,7 +64,7 @@ export const PlaygroundPage = observer(() => {
 
 interface ActiveTabContentProps {
     presenter: PlaygroundPresenter.Interface;
-    splitRef: React.RefObject<HTMLDivElement>;
+    splitRef: React.RefObject<HTMLDivElement | null>;
     editorPct: number;
     onDividerMouseDown: (ev: React.MouseEvent) => void;
 }

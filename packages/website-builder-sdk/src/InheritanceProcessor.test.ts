@@ -9,6 +9,7 @@ const inputsAst: InputAstNode[] = [
         type: "text",
         list: false,
         path: "rowGap",
+        renderer: { name: "", settings: {} },
         children: [],
         input: { type: "text", responsive: true, name: "rowGap" }
     },
@@ -17,6 +18,7 @@ const inputsAst: InputAstNode[] = [
         type: "text",
         list: false,
         path: "title",
+        renderer: { name: "", settings: {} },
         children: [],
         input: { type: "text", responsive: false, name: "title" }
     }

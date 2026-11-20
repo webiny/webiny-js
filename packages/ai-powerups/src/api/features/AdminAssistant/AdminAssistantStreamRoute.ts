@@ -5,7 +5,7 @@ import type { AdminAssistantEvent } from "./events.js";
 import { parseChatBody } from "./parseChatBody.js";
 
 const BAD_REQUEST_MESSAGE =
-    "Provide either a non-empty `prompt` string or a `messages` array of model messages.";
+    "Provide a non-empty `prompt`, or a `chatId` with the `approvals` for its paused run.";
 
 /**
  * Frame the feature's events as SSE records. The wire format comes from `event-handler-core`; which

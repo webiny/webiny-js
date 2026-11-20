@@ -1,6 +1,8 @@
 import { Result } from "@webiny/sdk";
 import { contentSdk as wbContentSdk, registerComponentGroup } from "@webiny/website-builder-sdk";
 import type {
+    GetLayoutParams,
+    PublicLayout,
     PublicPage,
     PublicRedirect,
     ListPagesOptions,
@@ -21,6 +23,14 @@ export class WbSdk {
         await resolveContentEntries(page);
 
         return Result.ok(page);
+    }
+
+    /**
+     * The published layout with the slug, in its version in `language` (or else the source layout), composed
+     * with that language's global components. `null` when no such layout is published.
+     */
+    getLayout(params: GetLayoutParams): Promise<Result<PublicLayout | null, Error>> {
+        return wbContentSdk.getLayout(params).then(layout => Result.ok(layout));
     }
 
     listPages(options?: ListPagesOptions): Promise<Result<ListPagesResult, Error>> {

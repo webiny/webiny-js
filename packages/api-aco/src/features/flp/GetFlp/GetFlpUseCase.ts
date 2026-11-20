@@ -1,14 +1,16 @@
-import type { GetFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type { AcoFolderLevelPermissionsCrud, FolderLevelPermission } from "~/flp/flp.types.js";
+import { GetFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { FolderPermissionsRepository } from "~/features/flp/FolderPermissionsRepository/index.js";
+import type { FolderLevelPermission } from "~/flp/flp.types.js";
 
-export class GetFlpUseCase implements UseCaseAbstraction.Interface {
-    private readonly get: AcoFolderLevelPermissionsCrud["get"];
-
-    constructor(get: AcoFolderLevelPermissionsCrud["get"]) {
-        this.get = get;
-    }
+class GetFlpUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: FolderPermissionsRepository.Interface) {}
 
     async execute(id: string): Promise<FolderLevelPermission | null> {
-        return this.get(id);
+        return this.repository.get(id);
     }
 }
+
+export const GetFlpUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetFlpUseCaseImpl,
+    dependencies: [FolderPermissionsRepository]
+});

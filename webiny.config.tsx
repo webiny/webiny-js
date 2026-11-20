@@ -1,5 +1,8 @@
 import React from "react";
-import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
+import { Admin } from "webiny/extensions";
+import { Api } from "webiny/extensions";
+import { Cli } from "webiny/extensions";
+import { Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
@@ -18,7 +21,6 @@ const isStandalone = process.env.WEBINY_HOSTING_TYPE === "standalone";
 export const FeatureFlags = () => (
     <Project.FeatureFlags
         features={{
-            remoteComponents: true,
             fileManager: {
                 threatDetection: false
             },
@@ -60,21 +62,11 @@ export const Extensions = () => {
             <MyFeature />
 
             {/* Infra (flavour-agnostic) 👇 */}
-            <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
-            {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
-            <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
-            <Infra.Api.MaxBundleSize size={6291456} />
+            {/* Infra.Crypto.Encryption / Infra.Crypto.Hashing take hosting-specific values (the standalone
+                API reads its secrets from env at startup): see webiny.config.aws.tsx and
+                webiny.config.standalone.tsx. */}
 
             {/* Api 👇 */}
-            <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
-            {/* Written with `:orderId` on purpose: API Gateway needs `{orderId}` and the router
-                needs `:orderId`, and the extension converts for each. Either spelling should work. */}
-            <Api.Route
-                method={"GET"}
-                path={"/my-api-echo/:orderId"}
-                src={"/extensions/MyApiEchoRoute.ts"}
-            />
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered
@@ -100,16 +92,6 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
-            {process.env.WEBINY_CLI_AUTO_INSTALL && (
-                <Project.AutoInstall
-                    adminUser={{
-                        firstName: "Ad",
-                        lastName: "Min",
-                        email: "admin@webiny.com",
-                        password: "12345678"
-                    }}
-                />
-            )}
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />

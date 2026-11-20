@@ -1,4 +1,4 @@
-import { generateElementId } from "@webiny/website-builder-sdk";
+import { LayoutContentArea, generateElementId } from "@webiny/website-builder-sdk";
 import type {
     Document,
     DocumentElement,
@@ -94,6 +94,12 @@ export function $cloneElement(editor: Editor, id: string): string | undefined {
     const element = $getElementById(document, id);
 
     if (!element || !element.parent) {
+        return undefined;
+    }
+
+    // A layout holds exactly one page content. A global's instance has no parent, so it's never cloned
+    // (its placements are, like any other element).
+    if (LayoutContentArea.anyWithin(document, id)) {
         return undefined;
     }
 

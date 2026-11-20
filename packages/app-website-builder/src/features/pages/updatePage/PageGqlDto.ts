@@ -1,3 +1,4 @@
+import type { PageLayout } from "@webiny/website-builder-sdk";
 import type { WbStatus } from "~/constants.js";
 import type { WbIdentity, WbLocation } from "~/types.js";
 
@@ -11,6 +12,7 @@ export interface PageGqlDto {
     bindings: Record<string, any>;
     elements: Record<string, any>;
     extensions: Record<string, any>;
+    layout?: PageLayout | null;
     createdBy: WbIdentity;
     createdOn: string;
     savedBy: WbIdentity;

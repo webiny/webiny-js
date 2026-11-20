@@ -7,8 +7,8 @@ export const createSetupVerdaccioSteps = ({ workingDirectory = "" } = {}) => {
              * Only pm2 is added. Verdaccio is a devDependency of this repository, so its version
              * comes from `yarn.lock`. `yarn add pm2 verdaccio` used to replace it with the latest
              * release, which pulled in Verdaccio 7 (2026-10-25) as soon as `npmMinimalAgeGate`
-             * (3 days) let it through. Verdaccio 7 rejects the dummy auth token CI writes into
-             * `.npmrc`, so every publish failed with E401 from 2026-10-28 on.
+             * (3 days) let it through. Verdaccio 7 rejected the dummy auth token CI used to write
+             * into `.npmrc`; createVerdaccioAuthSteps now registers a real user instead.
              */
             run: "yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml"
         },

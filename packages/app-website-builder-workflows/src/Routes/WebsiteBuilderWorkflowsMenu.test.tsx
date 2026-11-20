@@ -62,7 +62,7 @@ interface CapturedRoute {
 interface CapturedMenu {
     name: string;
     parent: string | null;
-    element: React.ReactElement | undefined;
+    element: React.ReactElement<Record<string, unknown>> | undefined;
 }
 
 interface Captured {
@@ -79,7 +79,14 @@ const Probe = () => {
         return { name: item.route.name, element: item.element };
     });
     captured.menus = adminConfig.menus.map(menu => {
-        return { name: menu.name, parent: menu.parent ?? null, element: menu.element };
+        return {
+            name: menu.name,
+            parent: menu.parent ?? null,
+            // A guard, not a cast: only an element whose props can be read is kept.
+            element: React.isValidElement<Record<string, unknown>>(menu.element)
+                ? menu.element
+                : undefined
+        };
     });
     const routeNames = captured.routes.map(item => item.name);
     const menuNames = captured.menus.map(item => `${item.name}:${item.parent ?? ""}`);

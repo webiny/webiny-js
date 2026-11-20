@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 import type { IWebsocketsConnectionRegistry } from "~/registry";
 import type { IWebsocketsConnectionRegistryData } from "~/registry";
-import type { IWebsocketsIdentity } from "~/types.js";
+import type { IWebsocketsIdentity } from "@webiny/api-core/features/websockets/index.js";
 import { useHandler } from "~tests/helpers/useHandler";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
@@ -175,7 +175,7 @@ describe("crud graphql", () => {
         expect(identity3Result2.data.websockets.listConnections.data).toHaveLength(6);
     });
 
-    it("should list all connections for a specific tenant", async () => {
+    it("should list only the current tenant's connections", async () => {
         const { listConnections } = useGraphQLHandler();
         await insertConnections(registry, 5);
         await insertConnections(registry, 5, {
@@ -184,40 +184,37 @@ describe("crud graphql", () => {
         });
 
         const [resultAll] = await listConnections();
-        expect(resultAll.data.websockets.listConnections.data).toHaveLength(10);
-
-        const [resultRoot] = await listConnections({
-            where: {
-                tenant: "root"
-            }
-        });
-        expect(resultRoot.data.websockets.listConnections.data).toHaveLength(5);
-
-        const [resultDev] = await listConnections({
-            where: {
-                tenant: "dev"
-            }
-        });
-
-        expect(resultDev.data.websockets.listConnections.data).toHaveLength(5);
+        const listed = resultAll.data.websockets.listConnections.data;
+        expect(listed).toHaveLength(5);
+        expect(listed.every(c => c.tenant === "root")).toBe(true);
     });
 
-    it("should list all connections for specific tenant", async () => {
+    it("should not list another tenant's connections of the same identity", async () => {
         const { listConnections } = useGraphQLHandler();
         await insertConnections(registry, 5);
+        await insertConnections(registry, 5, {
+            suffix: `dev`,
+            tenant: "dev"
+        });
 
-        const [resultRoot] = await listConnections({
+        const [identityResult] = await listConnections({
             where: {
-                tenant: "root"
+                identityId: "id-1"
             }
         });
-        expect(resultRoot.data.websockets.listConnections.data).toHaveLength(5);
+        expect(identityResult.data.websockets.listConnections.data).toEqual([
+            expect.objectContaining({ connectionId: "connection-1", tenant: "root" })
+        ]);
     });
 
-    it("should disconnect a specific identity connection", async () => {
+    it("should disconnect a specific identity connection in the current tenant only", async () => {
         const { listConnections, disconnectIdentity } = useGraphQLHandler();
 
         const connections = await insertConnections(registry, 5);
+        await insertConnections(registry, 5, {
+            suffix: "dev",
+            tenant: "dev"
+        });
 
         const [resultBeforeDisconnect] = await listConnections();
         expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
@@ -236,106 +233,54 @@ describe("crud graphql", () => {
 
         const [resultAfterDisconnect] = await listConnections();
         expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(4);
+
+        const devConnections = await registry.listViaTenant("dev");
+        expect(devConnections).toHaveLength(5);
     });
 
-    it("should disconnect a specific tenant connection", async () => {
-        const { listConnections, disconnectTenant } = useGraphQLHandler();
+    it("should not disconnect another tenant's connections", async () => {
+        const { disconnect } = useGraphQLHandler();
+
+        await insertConnections(registry, 5);
+        const devConnections = await insertConnections(registry, 5, {
+            suffix: "dev",
+            tenant: "dev"
+        });
+
+        const devConnectionIds = devConnections.map(c => c.connectionId);
+        const [connectionsResult] = await disconnect(devConnectionIds);
+        expect(connectionsResult).toEqual({
+            data: {
+                websockets: {
+                    disconnect: {
+                        data: [],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const devConnectionsAfter = await registry.listViaTenant("dev");
+        expect(devConnectionsAfter).toHaveLength(5);
+        const rootConnectionsAfter = await registry.listViaTenant("root");
+        expect(rootConnectionsAfter).toHaveLength(5);
+    });
+
+    it("should disconnect all connections of the current tenant", async () => {
+        const { listConnections, disconnectAll } = useGraphQLHandler();
 
         const connections = await insertConnections(registry, 5);
         await insertConnections(registry, 5, {
             suffix: "dev",
             tenant: "dev"
         });
-
-        const [resultBeforeDisconnect] = await listConnections();
-        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(10);
-
-        const [result] = await disconnectTenant("root");
-        expect(result).toEqual({
-            data: {
-                websockets: {
-                    disconnectTenant: {
-                        data: expect.arrayContaining(connections),
-                        error: null
-                    }
-                }
-            }
-        });
-
-        const [resultAfterDisconnect] = await listConnections();
-
-        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(5);
-    });
-
-    it("should disconnect specific tenant combination", async () => {
-        const { listConnections, disconnectTenant } = useGraphQLHandler();
-
-        const rootEnConnections = await insertConnections(registry, 5);
-        const devEnConnections = await insertConnections(registry, 5, {
-            suffix: "dev-en",
-            tenant: "dev"
-        });
         await insertConnections(registry, 5, {
-            suffix: "dev-hr",
-            tenant: "dev"
+            suffix: "webiny",
+            tenant: "webiny"
         });
 
         const [resultBeforeDisconnect] = await listConnections();
-        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(15);
-
-        const [result] = await disconnectTenant("dev");
-        expect(result).toEqual({
-            data: {
-                websockets: {
-                    disconnectTenant: {
-                        data: expect.arrayContaining(devEnConnections),
-                        error: null
-                    }
-                }
-            }
-        });
-
-        const [resultAfterDisconnect] = await listConnections();
-        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(5);
-
-        const [resultRoot] = await disconnectTenant("root");
-        expect(resultRoot).toEqual({
-            data: {
-                websockets: {
-                    disconnectTenant: {
-                        data: expect.arrayContaining(rootEnConnections),
-                        error: null
-                    }
-                }
-            }
-        });
-
-        const [resultAfterRootDisconnect] = await listConnections();
-        expect(resultAfterRootDisconnect.data.websockets.listConnections.data).toHaveLength(0);
-    });
-
-    it("should disconnect all connections", async () => {
-        const { listConnections, disconnectAll } = useGraphQLHandler();
-
-        const connections = [
-            ...(await insertConnections(registry, 5)),
-            ...(await insertConnections(registry, 5, {
-                suffix: "dev",
-                tenant: "dev"
-            })),
-            ...(await insertConnections(registry, 5, {
-                suffix: "webiny",
-                tenant: "webiny"
-            })),
-
-            ...(await insertConnections(registry, 5, {
-                suffix: "webiny-en",
-                tenant: "webiny"
-            }))
-        ];
-
-        const [resultBeforeDisconnect] = await listConnections();
-        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(20);
+        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
 
         const [result] = await disconnectAll();
         expect(result).toEqual({
@@ -348,9 +293,15 @@ describe("crud graphql", () => {
                 }
             }
         });
+        expect(result.data.websockets.disconnectAll.data).toHaveLength(5);
 
         const [resultAfterDisconnect] = await listConnections();
         expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(0);
+
+        const devConnections = await registry.listViaTenant("dev");
+        expect(devConnections).toHaveLength(5);
+        const webinyConnections = await registry.listViaTenant("webiny");
+        expect(webinyConnections).toHaveLength(5);
     });
 
     it("should disconnect specific connections", async () => {
@@ -378,7 +329,7 @@ describe("crud graphql", () => {
     });
 
     it("should not allow unauthorized access", async () => {
-        const { listConnections, disconnect, disconnectAll, disconnectIdentity, disconnectTenant } =
+        const { listConnections, disconnect, disconnectAll, disconnectIdentity } =
             useGraphQLHandler({
                 permissions: []
             });
@@ -403,22 +354,6 @@ describe("crud graphql", () => {
             data: {
                 websockets: {
                     disconnect: {
-                        data: null,
-                        error: {
-                            code: "NOT_AUTHORIZED",
-                            message: "Not authorized!",
-                            data: null
-                        }
-                    }
-                }
-            }
-        });
-
-        const [disconnectTenantResult] = await disconnectTenant("root");
-        expect(disconnectTenantResult).toMatchObject({
-            data: {
-                websockets: {
-                    disconnectTenant: {
                         data: null,
                         error: {
                             code: "NOT_AUTHORIZED",

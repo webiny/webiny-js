@@ -1,20 +1,15 @@
 import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
-import type { Context } from "@webiny/aws-sdk/types/index.js";
-import { awsLambdaStreamTransport } from "./AwsLambdaStreamTransport.js";
+import { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform.js";
+import type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamHandlerPlatform.js";
 import { getAwsLambdaGlobal, isAwsLambdaStreamingRuntime } from "./streaming/awslambda.js";
-import type { IRawResponseStream } from "./streaming/awslambda.js";
 
 export interface CreateStreamLambdaHandlerOptions {
     root: HandlerSetup;
     child?: HandlerSetup;
 }
 
-export type StreamLambdaHandler = (
-    event: any,
-    responseStream: IRawResponseStream,
-    context?: Context
-) => Promise<void>;
+export type StreamLambdaHandler = (...invocation: AwsLambdaStreamInvocation) => Promise<void>;
 
 /**
  * Response-streaming counterpart to {@link createLambdaHandler}. The returned handler is wrapped in
@@ -36,11 +31,11 @@ export function createStreamLambdaHandler(
     const app = HandlerApp.init({
         root: options.root,
         child: options.child,
-        transport: awsLambdaStreamTransport
+        platform: AwsLambdaStreamHandlerPlatform
     });
 
-    const handler: StreamLambdaHandler = async (event, responseStream, context) => {
-        await app.handle(event, responseStream, context);
+    const handler: StreamLambdaHandler = async (...invocation) => {
+        await app.handle(...invocation);
     };
 
     if (!isAwsLambdaStreamingRuntime()) {

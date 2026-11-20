@@ -25,8 +25,6 @@ import type {
     IDisconnectConnectionVariables,
     IDisconnectIdentityConnectionsResponse,
     IDisconnectIdentityConnectionsVariables,
-    IDisconnectTenantConnectionsResponse,
-    IDisconnectTenantConnectionsVariables,
     IListConnectionsResponse,
     IListConnectionsVariables
 } from "./graphql/connections";
@@ -34,10 +32,11 @@ import {
     DISCONNECT_ALL_CONNECTIONS,
     DISCONNECT_CONNECTIONS,
     DISCONNECT_IDENTITY_CONNECTIONS,
-    DISCONNECT_TENANT_CONNECTIONS,
     LIST_CONNECTIONS
 } from "./graphql/connections";
 import type { GenericRecord } from "@webiny/api/types";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface UseGraphQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -84,6 +83,8 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });
@@ -137,17 +138,6 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
                 body: {
                     query: DISCONNECT_IDENTITY_CONNECTIONS,
                     variables: { identityId }
-                }
-            });
-        },
-        disconnectTenant: async (tenant: string) => {
-            return invoke<
-                IDisconnectTenantConnectionsResponse,
-                IDisconnectTenantConnectionsVariables
-            >({
-                body: {
-                    query: DISCONNECT_TENANT_CONNECTIONS,
-                    variables: { tenant }
                 }
             });
         },

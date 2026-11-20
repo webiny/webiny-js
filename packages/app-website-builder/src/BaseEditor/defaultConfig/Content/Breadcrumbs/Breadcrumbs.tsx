@@ -30,11 +30,12 @@ export const Breadcrumbs = () => {
                     label: component.label
                 });
 
-                if (element.parent?.id === "root") {
+                // A global component has no parent: the frontend layout places it.
+                if (!element.parent || element.parent.id === "root") {
                     break;
                 }
 
-                element = document.elements[element.parent!.id];
+                element = document.elements[element.parent.id];
             }
 
             return items.reverse();

@@ -9,6 +9,10 @@
 # path to a directory with all packages
 storage: ./.verdaccio
 
+# Loopback only (also Verdaccio's default). `localhost`, not 127.0.0.1, so it binds to the same
+# address clients resolve for http://localhost:4873, whether that is IPv4 or IPv6.
+listen: localhost:4873
+
 # path to a directory with plugins to include
 plugins: ./plugins
 
@@ -20,25 +24,53 @@ web:
 auth:
   htpasswd:
     file: ./htpasswd
-    # Maximum amount of users allowed to register, defaults to "+inf".
-    # You can set this to -1 to disable registration.
-    #max_users: 1000
+    # Only one user can register: the one that publishes (CI registers `webiny-bot`, see
+    # .github/workflows/wac/steps/createVerdaccioAuthSteps.ts). Nobody can register a second
+    # user to publish with.
+    max_users: 1
 
 # a list of other known repositories we can talk to
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
 
+# Anyone can install; only the registered user can publish. The first matching block wins.
 packages:
+  # External @webiny packages that are not in this repository: install them from npm.
+  "@webiny/di":
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+  "@webiny/stdlib":
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+  "@webiny/wts-client":
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+  # Packages built from this repository: never fall back to npm, so a package missing from the
+  # local release fails the install instead of silently testing a published version.
+  "@webiny/*":
+    access: $all
+    publish: $authenticated
+
+  "create-webiny-project":
+    access: $all
+    publish: $authenticated
+
   "@*/*":
     # scoped packages
     access: $all
-    publish: $all
+    publish: $authenticated
     proxy: npmjs
 
   "**":
     access: $all
-    publish: $all
+    publish: $authenticated
     proxy: npmjs
 
 # You can specify HTTP/1.1 server keep alive timeout in seconds for incomming connections.

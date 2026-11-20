@@ -111,16 +111,23 @@ describe("content client state", () => {
             if (body.query.includes("getPageById")) {
                 const id: string = body.variables.id;
                 requestedPageIds[tenant] = [...(requestedPageIds[tenant] ?? []), id];
-                const page = { id, properties: { id, path: "/", title: `Draft of ${tenant}` } };
+                const page = {
+                    id,
+                    properties: { id, path: "/", title: `Draft of ${tenant}` }
+                };
                 return {
                     json: async () => ({
-                        data: { websiteBuilder: { getPageById: { data: page, error: null } } }
+                        data: {
+                            websiteBuilder: { getPageById: { data: page, error: null } }
+                        }
                     })
                 };
             }
 
             return {
-                json: async () => ({ data: { component: { label: componentLabels[tenant] } } })
+                json: async () => ({
+                    data: { component: { label: componentLabels[tenant] } }
+                })
             };
         });
 
@@ -155,8 +162,14 @@ describe("content client state", () => {
         const [resultA, resultB] = await Promise.all([render(clientA), render(clientB)]);
 
         expect(requestedTenants.sort()).toEqual(["tenant-a", "tenant-b"]);
-        expect(resultA).toEqual({ label: "Hero from tenant A", entry: { id: "entry-a" } });
-        expect(resultB).toEqual({ label: "Hero from tenant B", entry: { id: "entry-b" } });
+        expect(resultA).toEqual({
+            label: "Hero from tenant A",
+            entry: { id: "entry-a" }
+        });
+        expect(resultB).toEqual({
+            label: "Hero from tenant B",
+            entry: { id: "entry-b" }
+        });
 
         // Nothing reached the singleton's state.
         expect(componentRegistry.get(name)).toBeUndefined();
@@ -300,7 +313,9 @@ describe("content client state", () => {
                 ...configFor(tenant),
                 preview: true,
                 headersProvider: async () =>
-                    new Headers({ "X-Preview-Params": `wb.type=page&wb.path=/&wb.id=${pageId}` })
+                    new Headers({
+                        "X-Preview-Params": `wb.type=page&wb.path=/&wb.id=${pageId}`
+                    })
             });
         };
         const clientA = previewClient("tenant-a", "draft-a");
@@ -309,17 +324,44 @@ describe("content client state", () => {
         const [pageA, pageB] = await Promise.all([clientA.getPage("/"), clientB.getPage("/")]);
 
         expect(clientA.isPreviewing()).toBe(true);
-        expect(requestedPageIds).toEqual({ "tenant-a": ["draft-a"], "tenant-b": ["draft-b"] });
+        expect(requestedPageIds).toEqual({
+            "tenant-a": ["draft-a"],
+            "tenant-b": ["draft-b"]
+        });
         expect(pageA?.properties.title).toBe("Draft of tenant-a");
         expect(pageB?.properties.title).toBe("Draft of tenant-b");
+    });
+
+    it("re-initializes when only a function in the config changed", async () => {
+        const sdk = new ContentSdk();
+        const config = (pageId: string): ContentSDKConfig => ({
+            ...configFor("tenant-a"),
+            preview: true,
+            headersProvider: async () =>
+                new Headers({
+                    "X-Preview-Params": `wb.type=page&wb.path=/&wb.id=${pageId}`
+                })
+        });
+
+        sdk.init(config("first"));
+        await sdk.getPage("/");
+        sdk.init(config("second"));
+        await sdk.getPage("/");
+
+        expect(requestedPageIds).toEqual({ "tenant-a": ["first", "second"] });
     });
 
     it("falls back to the global headers provider for preview, as before", async () => {
         setHeadersProvider(
             async () =>
-                new Headers({ "X-Preview-Params": "wb.type=page&wb.path=/&wb.id=draft-global" })
+                new Headers({
+                    "X-Preview-Params": "wb.type=page&wb.path=/&wb.id=draft-global"
+                })
         );
-        const client = createContentClient({ ...configFor("tenant-b"), preview: true });
+        const client = createContentClient({
+            ...configFor("tenant-b"),
+            preview: true
+        });
 
         const page = await client.getPage("/");
 

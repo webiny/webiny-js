@@ -17,6 +17,7 @@ export const RolesView = createReactiveComponent(() => {
 
     useEffect(() => {
         presenter.init();
+        return () => presenter.dispose();
     }, [presenter]);
 
     return (

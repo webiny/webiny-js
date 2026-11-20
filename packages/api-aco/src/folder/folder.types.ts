@@ -67,7 +67,8 @@ export interface UpdateFolderParams {
     title?: string;
     slug?: string;
     permissions?: FolderPermission[];
-    parentId?: string;
+    /** null moves the folder to the root. */
+    parentId?: string | null;
 }
 
 export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {

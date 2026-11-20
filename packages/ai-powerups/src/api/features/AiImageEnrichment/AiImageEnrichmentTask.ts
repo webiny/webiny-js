@@ -4,7 +4,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { EnrichmentCapabilityDisabledError } from "./errors.js";
@@ -102,7 +102,7 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
         const identity = this.identityContext.getIdentity();
 
         // A notification is a courtesy; failing to send one must not replace the real error.
-        if (identity?.id) {
+        if (!identity.isAnonymous()) {
             try {
                 await this.sendToIdentity.execute(
                     { id: identity.id },

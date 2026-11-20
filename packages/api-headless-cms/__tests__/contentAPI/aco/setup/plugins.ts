@@ -16,6 +16,8 @@ import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { CmsEndpointAccessDecorator } from "~tests/testHelpers/handlers/CmsEndpointAccessDecorator";
 import { defaultIdentity } from "~tests/testHelpers/helpers";
 import { processLegacyPlugins } from "~tests/testHelpers/bridgeLegacyPlugins";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateHandlerCoreParams {
     permissions?: PermissionsArg[];
@@ -48,6 +50,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 
             await processLegacyPlugins(container, cmsStorage.plugins);

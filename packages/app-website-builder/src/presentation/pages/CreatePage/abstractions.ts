@@ -61,7 +61,8 @@ export interface IPageTypeOption {
 }
 
 export interface ICreatePageVm {
-    form: IFormVM;
+    /** `null` until `init()` builds it. */
+    form: IFormVM | null;
     pageTypes: IPageTypeOption[];
     selectedPageType: string;
     loading: boolean;

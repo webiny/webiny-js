@@ -81,9 +81,11 @@ describe("DuplicatePage", () => {
         const item = pagesCache.getItem(page => page.id === "page-1#0001");
         expect(item?.id).toEqual("page-1#0001");
 
-        await duplicatePage.execute({
+        const duplicate = await duplicatePage.execute({
             id: "page-1#0001"
         });
+
+        expect(duplicate.id).toEqual("page-1-duplicated#0001");
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");

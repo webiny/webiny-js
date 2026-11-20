@@ -20,7 +20,10 @@ type DateTimePickerInternalProps = (DateTimeLocalPickerProps | DateTimeTzPickerP
     withTimezone: boolean;
 };
 
-const timezoneOptions = UTC_TIMEZONES.map(tz => ({ value: tz.value, label: tz.label }));
+const timezoneOptions = UTC_TIMEZONES.map(tz => ({
+    value: tz.value,
+    label: tz.label
+}));
 
 const DateTimePicker = ({
     value,
@@ -36,7 +39,8 @@ const DateTimePicker = ({
     withTimezone,
     displayFormat,
     minDate,
-    maxDate
+    maxDate,
+    "aria-labelledby": labelledBy
 }: DateTimePickerInternalProps) => {
     const [open, setOpen] = useState(false);
 
@@ -113,6 +117,7 @@ const DateTimePicker = ({
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick date & time"}
                     disabled={disabled}

@@ -11,10 +11,16 @@ interface FormComponentLabelProps extends React.HTMLAttributes<HTMLDivElement> {
     disabled?: boolean;
     hint?: React.ReactNode;
     htmlFor?: string;
+    /**
+     * The `<label>`'s own id — for a control that can't be a label's `htmlFor` target
+     * (a radio group, a slider thumb), which names itself with `aria-labelledby` instead.
+     */
+    labelId?: string;
 }
 
 const DecoratableFormComponentLabel = ({
     htmlFor,
+    labelId,
     text,
     required,
     disabled,
@@ -34,6 +40,7 @@ const DecoratableFormComponentLabel = ({
             return React.cloneElement(text as React.ReactElement<LabelProps>, {
                 ...textProps,
                 htmlFor: textProps.htmlFor ?? htmlFor,
+                id: textProps.id ?? labelId,
                 required: textProps.required ?? required,
                 disabled: textProps.disabled ?? disabled,
                 hint: textProps.hint ?? hint,
@@ -44,6 +51,7 @@ const DecoratableFormComponentLabel = ({
         return (
             <Label
                 htmlFor={htmlFor}
+                id={labelId}
                 text={text}
                 required={required}
                 disabled={disabled}
@@ -51,7 +59,7 @@ const DecoratableFormComponentLabel = ({
                 invalid={invalid}
             />
         );
-    }, [text, required, disabled, hint, invalid, htmlFor]);
+    }, [text, required, disabled, hint, invalid, htmlFor, labelId]);
 
     if (!renderLabel) {
         return null;

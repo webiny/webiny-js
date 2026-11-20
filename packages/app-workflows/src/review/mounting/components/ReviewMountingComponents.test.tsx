@@ -6,7 +6,6 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
-import { within } from "@testing-library/react";
 import { Route } from "@webiny/app/features/router/Route.js";
 import type { IReviewContentTypesSource } from "~/review/presentation/reviewList/IReviewContentTypesSource.js";
 import type { ReviewContentTypeOption } from "~/review/presentation/reviewList/IReviewContentTypeFilter.js";
@@ -146,7 +145,8 @@ describe("ReviewContentReviewsRoute", () => {
         expect(screen.getByTestId("route").getAttribute("data-name")).toBe(
             "Cms/ContentEntries/WorkflowStateList"
         );
-        expect(within(screen.getByTestId("helmet")).getByText("Content Reviews")).toBeTruthy();
+        // React 19 hoists a rendered <title> into document.head, out of the mocked Helmet.
+        expect(document.head.querySelector("title")?.textContent).toBe("Content Reviews");
         const breadcrumb = screen.getByTestId("breadcrumb");
         expect(breadcrumb.getAttribute("data-name")).toBe("cms.content-reviews");
         expect(breadcrumb.getAttribute("data-label")).toBe("Content Reviews");

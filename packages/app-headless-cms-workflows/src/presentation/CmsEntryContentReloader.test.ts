@@ -1,4 +1,5 @@
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -17,7 +18,7 @@ interface FormState {
 
 describe("CmsEntryContentReloader", () => {
     let state: FormState;
-    let loadRevision: ReturnType<typeof vi.fn>;
+    let loadRevision: Mock;
     let reloader: CmsEntryContentReloader;
 
     beforeEach(() => {

@@ -37,6 +37,8 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
     private saving = false;
     private showForm = false;
     private form: IFormModel;
+    /** Bumped by every select, createNew and deselect, so a lookup that resolves after any of them stops there. */
+    private selectRun = 0;
 
     constructor(
         private listPresenter: ListPresenter.Interface<ModelGroupDto>,
@@ -60,6 +62,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             | "deleteModelGroupUseCase"
             | "cache"
             | "stringFormatter"
+            | "selectRun"
         >(this, {
             formModelFactory: false,
             listModelGroupsUseCase: false,
@@ -69,6 +72,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             deleteModelGroupUseCase: false,
             cache: false,
             stringFormatter: false,
+            selectRun: false,
             vm: computed
         });
     }
@@ -98,11 +102,33 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            limit: 1000
+            limit: 1000,
+            itemLabel: { singular: "group", plural: "groups" },
+            assistant: {
+                view: () => "Content model groups in Headless CMS",
+                rowTitle: group => group.name,
+                details: () => this.describeForAssistant()
+            }
         });
     }
 
+    dispose(): void {
+        this.deselect();
+        this.listPresenter.dispose();
+    }
+
+    private describeForAssistant(): Record<string, unknown> {
+        if (this.selectedGroup) {
+            return { openGroupId: this.selectedGroup.id };
+        }
+        if (this.showForm) {
+            return { editing: "a new group, not saved yet" };
+        }
+        return {};
+    }
+
     async selectGroup(id: string): Promise<void> {
+        const run = ++this.selectRun;
         runInAction(() => {
             this.loading = true;
             this.showForm = true;
@@ -110,6 +136,9 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
 
         try {
             const group = await this.getRoleUseCase.execute(id);
+            if (run !== this.selectRun) {
+                return;
+            }
             const isPluginGroup = group.plugin ?? false;
             const canModify = !isPluginGroup;
 
@@ -124,13 +153,17 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
                 });
             });
         } finally {
-            runInAction(() => {
-                this.loading = false;
-            });
+            if (run === this.selectRun) {
+                runInAction(() => {
+                    this.loading = false;
+                });
+            }
         }
     }
 
     createNew(): void {
+        this.selectRun++;
+        this.loading = false;
         this.selectedGroup = null;
         this.form = this.buildForm(true, true);
         this.form.setData({ icon: "fas/star", description: "" });
@@ -138,6 +171,8 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
     }
 
     deselect(): void {
+        this.selectRun++;
+        this.loading = false;
         this.selectedGroup = null;
         this.showForm = false;
     }

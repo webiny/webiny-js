@@ -11,6 +11,11 @@ export const GET_PAGE_BY_ID = /* GraphQL*/ `
                     bindings
                     extensions
                     languagePaths
+                    layout {
+                        id
+                        elements
+                        bindings
+                    }
                 }
                 error {
                     code

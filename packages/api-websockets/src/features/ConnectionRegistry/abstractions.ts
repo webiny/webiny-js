@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IWebsocketsIdentity } from "~/types.js";
+import type { IWebsocketsIdentity } from "@webiny/api-core/features/websockets/index.js";
 
 export interface IWebsocketsConnectionRegistryData {
     connectionId: string;

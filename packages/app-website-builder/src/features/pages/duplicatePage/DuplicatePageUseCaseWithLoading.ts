@@ -9,7 +9,7 @@ class DuplicatePageUseCaseWithLoadingImpl implements UseCaseAbstraction.Interfac
     ) {}
 
     async execute(params: UseCaseAbstraction.Params) {
-        await this.loadingRepository.runCallBack(
+        return await this.loadingRepository.runCallBack(
             this.decoratee.execute(params),
             loadingActions.duplicate
         );

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { DatePickerPrimitiveProps } from "./primitives/index.js";
 import { DatePickerPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -39,10 +39,13 @@ const DecoratableDatePicker = ({
 }: DatePickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The trigger is a `role=button` div, so it names itself after the label: `aria-labelledby`, not `htmlFor`. */
+    const labelId = useMemo(() => `${generateId()}-label`, []);
 
     return (
         <div className="w-full">
             <FormComponentLabel
+                labelId={labelId}
                 text={label}
                 hint={hint}
                 required={required}
@@ -52,6 +55,7 @@ const DecoratableDatePicker = ({
             <FormComponentDescription text={description} disabled={disabled} />
             <DatePickerPrimitive
                 {...(props as DatePickerPrimitiveProps)}
+                aria-labelledby={labelId}
                 disabled={disabled}
                 invalid={invalid}
             />

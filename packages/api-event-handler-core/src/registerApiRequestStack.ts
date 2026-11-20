@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
 import { registerBuildParams, registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
-import { ApiCoreFeature } from "@webiny/api-core";
+import { ApiCoreFeature, RequestStorage } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
@@ -12,7 +12,6 @@ import { MailerFeature } from "@webiny/api-mailer";
 import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
 import { DashboardAppFeature } from "@webiny/api-dashboard";
-import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
@@ -39,14 +38,15 @@ export interface RegisterApiRequestStackConfig {
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
      * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
      * capability. AWS supplies AWS adapters (API Gateway Management API / EventBridge / S3); the
-     * standalone server supplies in-process adapters (server WebSockets / Bree / local disk).
+     * standalone server supplies in-process adapters (server WebSockets / in-process scheduler / local disk).
      */
     transports?: {
         /**
-         * Public API/Admin URLs, run right after `ApiCoreFeature`. Overrides the NullPublicUrls,
-         * otherwise every `PublicUrls` lookup returns an unknown URL.
+         * Hosting-specific replacements for api-core defaults, run right after `ApiCoreFeature`:
+         * `PublicUrls` (default: every URL unknown), `CdnCache` (default: nothing to invalidate), and
+         * `EncryptionConfig` / `HashingConfig` (default: read from build params).
          */
-        publicUrls?: TransportRegistrar;
+        hostingConfig?: TransportRegistrar;
         /**
          * Real-time (WebSockets) transport, run right after `WebsocketsFeature`. Overrides the
          * NullWebsocketsTransport, otherwise every server→client send() is a silent no-op.
@@ -74,7 +74,8 @@ export interface RegisterApiRequestStackConfig {
  * Transport- and storage-specific pieces are injected via the hooks in {@link RegisterApiRequestStackConfig}
  * at their exact interleave points. The caller is responsible for the ROOT-container transport wiring
  * (HTTP/event transport, auth/tenant loaders, identity provider, DB + storage) before dispatch reaches
- * this per-request stack.
+ * this per-request stack. That includes the `Logger`: api-core registers none, so a root without one
+ * fails the first time anything that logs is built.
  *
  * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
  * lists + caches the per-request model set; the GraphQL engine must be registered last.
@@ -90,6 +91,15 @@ export async function registerApiRequestStack(
     // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await WcpLicenseLoader.load();
 
+    // ── Storage (before ANY feature) ───────────────────────────
+    // Every storage that registers per request put a `RequestStorage` in the root; each registers
+    // its storages here, in this request's container. First, because `ApiCoreFeature` resolves the
+    // core storage while it registers. A storage that keeps its storages in the root (the DynamoDB
+    // variants) registers none, and this does nothing.
+    for (const storage of container.resolveAll(RequestStorage)) {
+        await storage.register(container);
+    }
+
     // ── Build params (before ANY feature) ──────────────────────
     // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,
     // Workflows, ...), and FeatureFlags is a BuildParam. Registered with the rest of the extensions
@@ -101,7 +111,7 @@ export async function registerApiRequestStack(
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-    await config.transports?.publicUrls?.(container);
+    await config.transports?.hostingConfig?.(container);
 
     // ── CMS ────────────────────────────────────────────────────
     HeadlessCmsFeature.register(container, { type: "manage" });
@@ -128,7 +138,6 @@ export async function registerApiRequestStack(
     RecordLockingAppFeature.register(container, {});
     AuditLogsFeature.register(container, {});
     DashboardAppFeature.register(container);
-    WebhooksFeature.register(container);
     BackgroundTasksFeature.register(container);
 
     // ── Workflows ──────────────────────────────────────────────

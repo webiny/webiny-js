@@ -7,3 +7,6 @@
 export const PALETTE_HOTKEY_ZINDEX = 90;
 
 export const NAVIGATION_GROUP = "Navigation";
+
+/** The `category` of the assistant's commands, which the palette lists first. */
+export const ASSISTANT_GROUP = "Assistant";
