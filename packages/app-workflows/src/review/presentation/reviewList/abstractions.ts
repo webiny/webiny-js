@@ -6,7 +6,6 @@ import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
 import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import type { ReviewActionKind } from "~/review/presentation/actionDialog/ReviewActionKind.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
-import type { TargetReviewTagIcon } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
@@ -39,6 +38,8 @@ export interface ReviewListStateVm {
     label: string;
     // Empty by definition for the chosen scope (`isEmptyReviewListFilter`): shown, not chosen.
     disabled: boolean;
+    // The tooltip of a disabled state (B8); `null` when the state is enabled.
+    disabledReason: string | null;
 }
 
 // The column a list sorts by; the table toggles the direction of the active one.
@@ -69,7 +70,6 @@ export interface ReviewListRowVm {
     stepColor: string | null;
     stepStateLabel: string | null;
     stepStateVariant: TargetReviewTagVariant;
-    stepStateIcon: TargetReviewTagIcon | null;
     ownerLabel: string | null;
     requesterName: string;
     lastChange: string;
@@ -95,7 +95,7 @@ export interface ReviewListDialogVm {
 
 export interface IReviewListViewModel {
     scope: ReviewListScope;
-    // The scopes this viewer may open (All only with `reassign` or full access, R259).
+    // The scopes the viewer may open: every scope (designer answer B7).
     scopes: ReviewListScopeVm[];
     state: ReviewListState;
     states: ReviewListStateVm[];
@@ -126,6 +126,8 @@ export interface IReviewListPresenter {
     toggleSort(field: ReviewListSortField): Promise<void>;
     loadMore(): Promise<void>;
     refresh(): Promise<void>;
+    // Loads the first page again, keeping the scope, state, search, filter and sort (B13).
+    reload(): Promise<void>;
     showNewReviews(): Promise<void>;
     clearFilters(): Promise<void>;
     openRowAction(

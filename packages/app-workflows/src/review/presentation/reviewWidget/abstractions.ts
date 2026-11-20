@@ -1,6 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
-import type { TargetReviewTagIcon } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
@@ -29,7 +28,6 @@ export interface ReviewWidgetRowVm {
     app: string;
     stateLabel: string;
     stateVariant: TargetReviewTagVariant;
-    stateIcon?: TargetReviewTagIcon;
     lastChange: string;
     contentUrl: string | null;
 }

@@ -42,9 +42,13 @@ const FILTERED_EMPTY_WITH_CONTENT_TYPE: ReviewListEmptyVm = {
     description: "Try another title, content model or state, or clear the filters."
 };
 
-const NO_TEAM_EMPTY: ReviewListEmptyVm = {
-    title: "You’re not in a reviewing team",
-    description: "Steps appear here once you’re added to a team that reviews content."
+const NO_TEAM_EMPTY_TITLE = "You’re not in a reviewing team";
+
+const getNoTeamEmpty = (appLabel: string): ReviewListEmptyVm => {
+    return {
+        title: NO_TEAM_EMPTY_TITLE,
+        description: `Ask a workflow manager to add you to a team that reviews ${appLabel} content.`
+    };
 };
 
 export interface ReviewListEmptyParams {
@@ -54,10 +58,12 @@ export interface ReviewListEmptyParams {
     hasFilters: boolean;
     hasTeams: boolean;
     showContentType: boolean;
+    // The app the list or widget shows, e.g. "Headless CMS"; the no-team text names it (B17).
+    appLabel: string;
 }
 
 /*
- * Empty-state copy of README 8, QBZ-72, QBZ-73 and B2 design 1: a scope's own text at state In
+ * Empty-state copy of README 8, QBZ-72, QBZ-73, B2 design 1 and B17: a scope's own text at state In
  * review or All, the failed-steps text at state Failed, the filtered text otherwise. A viewer with
  * no teams gets the no-team text on the two team scopes; the client cannot tell which teams review
  * content, so a member of only non-reviewing teams still sees the normal text.
@@ -74,7 +80,7 @@ export const getReviewListEmpty = (params: ReviewListEmptyParams): ReviewListEmp
         return FAILED_EMPTY;
     }
     if (!params.hasTeams && (scope === "pool" || scope === "teamInReview")) {
-        return NO_TEAM_EMPTY;
+        return getNoTeamEmpty(params.appLabel);
     }
     return SCOPE_EMPTY[scope];
 };

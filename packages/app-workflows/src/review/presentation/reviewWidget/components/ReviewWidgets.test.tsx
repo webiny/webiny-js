@@ -119,7 +119,7 @@ describe("review dashboard widgets", () => {
         );
     });
 
-    it("renders the step dot, the step line with the app and the Failed tag with its icon", async () => {
+    it("renders the step dot, the step line with the app and a text-only Failed tag", async () => {
         const item = createReviewListItem({
             id: "r1",
             title: "Spring launch",
@@ -141,8 +141,8 @@ describe("review dashboard widgets", () => {
         expect(within(row).getByText("Legal sign-off · Type Article (Headless CMS)")).toBeTruthy();
         expect(row.querySelector("[style*='background-color']")).not.toBeNull();
         expect(within(row).getByText("Failed")).toBeTruthy();
-        // The row's only icon is the one inside the Failed tag.
-        expect(row.querySelectorAll("svg")).toHaveLength(1);
+        // The Failed tag is text only: the row has no icon.
+        expect(row.querySelectorAll("svg")).toHaveLength(0);
     });
 
     it("renders no step dot for a row without a current step", async () => {
@@ -228,6 +228,11 @@ describe("review dashboard widgets", () => {
         fireEvent.click(screen.getByRole("radio", { name: "Team pool" }));
 
         expect(await screen.findByText("You’re not in a reviewing team")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Ask a workflow manager to add you to a team that reviews Headless CMS content."
+            )
+        ).toBeTruthy();
     });
 
     it("renders My requests with its empty state and View all to My requests", async () => {

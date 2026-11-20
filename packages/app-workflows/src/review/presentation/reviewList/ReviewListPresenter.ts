@@ -3,10 +3,10 @@ import { IdentityContext } from "@webiny/app-admin/features/security/IdentityCon
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { isEmptyReviewListFilter } from "~/review/domain/isEmptyReviewListFilter.js";
 import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import { REVIEW_LIST_SCOPES } from "./reviewListScopes.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
 import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
-import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
@@ -31,10 +31,8 @@ import { getListReviewStateLabel } from "./getListReviewStateLabel.js";
 import { getListRowActions } from "./getListRowActions.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
 import { getReviewListStates } from "./getReviewListStates.js";
-import { getVisibleReviewListScopes } from "./getVisibleReviewListScopes.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
-import { isReviewListScopeAvailable } from "./isReviewListScopeAvailable.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 import { toggleReviewListSort } from "./toggleReviewListSort.js";
 
@@ -124,8 +122,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         const hasFilters = this._search.trim() !== "" || this._contentTypeId !== null;
         const isFiltered = hasFilters || this._state !== getDefaultReviewListState(this._scope);
         const hasTeams = this.identityContext.getIdentity().teams.length > 0;
-        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
-        const scopes = getVisibleReviewListScopes(permissions);
 
         let empty: ReviewListEmptyVm | null = null;
         if (this._status === "ready" && this._entries.length === 0 && this._heldIds.length === 0) {
@@ -134,7 +130,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
                 state: this._state,
                 hasFilters,
                 hasTeams,
-                showContentType: this.showContentType
+                showContentType: this.showContentType,
+                appLabel: this.app ? WIDGET_APP_LABELS[this.app] : ""
             });
         }
 
@@ -145,7 +142,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         return {
             scope: this._scope,
-            scopes,
+            scopes: REVIEW_LIST_SCOPES,
             state: this._state,
             states: getReviewListStates(this._scope),
             rows,
@@ -169,14 +166,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.app = params.app;
         this.rowProvider = params.rowProvider;
         this.showContentType = params.showContentType;
-        // A scope the viewer may not open (`?scope=all` without `reassign`) falls back to the
-        // default scope, so the server's refusal is never provoked (R259). A missing state, or one
-        // empty by definition for the scope, falls back to the scope's default state.
-        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
-        let scope: ReviewListScope = params.initialScope ?? "assignedToMe";
-        if (!isReviewListScopeAvailable(scope, permissions)) {
-            scope = "assignedToMe";
-        }
+        // Every scope is open to every viewer (designer answer B7); the server decides what it
+        // lists. A missing state, or one empty by definition for the scope, falls back to the
+        // scope's default state.
+        const scope: ReviewListScope = params.initialScope ?? "assignedToMe";
         let state = params.initialState ?? getDefaultReviewListState(scope);
         if (isEmptyReviewListFilter(scope, state)) {
             state = getDefaultReviewListState(scope);
@@ -208,21 +201,13 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
-        if (!isReviewListScopeAvailable(scope, permissions)) {
-            return;
-        }
-
-        // The state is kept unless the pair is empty by definition (B2 design 1).
+        // The state is kept unless the pair is empty by definition (B2 design 1). The search and
+        // the content model filter are kept; paging and the sort reset to the scope's (B11).
         this._scope = scope;
         if (isEmptyReviewListFilter(scope, this._state)) {
             this._state = getDefaultReviewListState(scope);
         }
         this._sort = getDefaultReviewListSort(scope, this._state);
-        this.cancelSearchTimer();
-        this._search = "";
-        this._searchDraft = "";
-        this._contentTypeId = null;
 
         const token = this.beginLoad(false);
         const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
@@ -353,6 +338,27 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._state = getDefaultReviewListState(this._scope);
         this._sort = getDefaultReviewListSort(this._scope, this._state);
 
+        const token = this.beginLoad(false);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
+        try {
+            const listed = await this.listReviewsUseCase.execute(request);
+            if (token === this.loadToken) {
+                this.applyFirstPage(listed, false);
+            }
+        } catch {
+            if (token === this.loadToken) {
+                this.applyLoadFailure();
+            }
+        }
+    }
+
+    async reload(): Promise<void> {
+        const app = this.app;
+        if (!app) {
+            return;
+        }
+
+        // The toolbar's Refresh (B13): the first page again with every choice kept.
         const token = this.beginLoad(false);
         const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
@@ -723,7 +729,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             stepColor: row.stepColor,
             stepStateLabel: stepStateTag.label,
             stepStateVariant: stepStateTag.variant,
-            stepStateIcon: stepStateTag.icon ?? null,
             ownerLabel: getListOwnerLabel(row.owner, row.stepTitle, row.stepState),
             requesterName: row.requester.displayName,
             lastChange: formatLastChange(row.lastChangedOn, now),

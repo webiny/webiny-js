@@ -17,6 +17,7 @@ import { useAdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
+import { WbPermissions } from "@webiny/app-website-builder/features/permissions/abstractions.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
 import { WbContentReviews } from "./WbContentReviews.js";
@@ -77,6 +78,9 @@ describe("WbContentReviews under the real admin and router configs", () => {
         container.registerInstance(WbReviewRowProvider, {
             getBinding: () => null
         } as IReviewRowProvider);
+        container.registerInstance(WbPermissions, {
+            canRead: () => true
+        } as unknown as WbPermissions.Interface);
 
         render(
             <DiContainerProvider container={container}>

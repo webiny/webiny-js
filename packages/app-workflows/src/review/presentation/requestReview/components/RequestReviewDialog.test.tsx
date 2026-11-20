@@ -189,13 +189,13 @@ describe("RequestReviewDialog", () => {
         ).toBeTruthy();
     });
 
-    it("shows both radios and the pick hint in every mode", async () => {
+    it("shows both radios and the pick hint only under Choose a person", async () => {
         renderDialog();
         await screen.findByText("Editorial check");
 
         const hint =
             "Picks are checked again when the step is reached. If the person is no longer eligible, a reviewer is assigned automatically.";
-        expect(screen.getByText(hint)).toBeTruthy();
+        expect(screen.queryByText(hint)).toBeNull();
         const group = screen
             .getByRole("radio", { name: "Automatic" })
             .closest("[role='radiogroup']");
@@ -256,9 +256,7 @@ describe("RequestReviewDialog", () => {
             )
         ).toBeTruthy();
         expect(screen.queryByText("Reviewer")).toBeNull();
-        const note = screen.getByText(/^Nobody other than you/);
-        const hint = screen.getByText(/^Picks are checked again/);
-        expect(note.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(screen.queryByText(/^Picks are checked again/)).toBeNull();
         const choose = screen.getByRole("radio", { name: "Choose a person" });
         expect(choose.hasAttribute("disabled")).toBe(true);
     });

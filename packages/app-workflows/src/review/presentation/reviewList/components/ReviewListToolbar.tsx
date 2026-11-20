@@ -1,5 +1,6 @@
 import React from "react";
-import { Icon, Input } from "@webiny/admin-ui";
+import { Icon, IconButton, Input } from "@webiny/admin-ui";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
@@ -16,6 +17,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     const { presenter, showContentType, contentTypeFilter } = props;
     const vm = presenter.vm;
 
+    // The content model filter exists only where the list has content models (Headless CMS, B6).
     let contentTypeSelect: React.ReactNode = null;
     if (showContentType && contentTypeFilter) {
         contentTypeSelect = (
@@ -39,6 +41,16 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
                     startIcon={<Icon icon={<SearchIcon />} label="Search" />}
                     size={"md"}
                     variant={"ghost"}
+                />
+            </div>
+            <div data-role="toolbar-refresh" className="shrink-0">
+                <IconButton
+                    variant={"ghost"}
+                    size={"md"}
+                    icon={<RefreshIcon />}
+                    aria-label={"Refresh"}
+                    title={"Refresh"}
+                    onClick={() => void presenter.reload()}
                 />
             </div>
             {contentTypeSelect}

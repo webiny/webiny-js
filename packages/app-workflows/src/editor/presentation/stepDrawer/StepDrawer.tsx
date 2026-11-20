@@ -1,18 +1,23 @@
 import React from "react";
 import { useEffect } from "react";
+import { useMemo } from "react";
 import { Drawer } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin";
+import { useLayoutRenderers } from "@webiny/app-admin";
+import type { LayoutRenderers } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { StepFormOptionsContext } from "~/editor/presentation/stepForm/StepFormOptionsContext.js";
 import { SwitchAutomationDialog } from "~/editor/presentation/stepForm/components/SwitchAutomationDialog.js";
+import { STEP_FORM_RENDERER } from "~/editor/presentation/stepForm/stepFormRendererNames.js";
 import { buildStepFormOptions } from "./buildStepFormOptions.js";
 import type { StepDrawerSource } from "./abstractions.js";
 import { StepDrawerPresenterFeature } from "./feature.js";
 import { getActiveTabId } from "./getActiveTabId.js";
 import { StepDrawerBanners } from "./StepDrawerBanners.js";
+import { StepDrawerTabsRenderer } from "./StepDrawerTabsRenderer.js";
 
 export interface StepDrawerProps {
     // The editor presenter (R284).
@@ -30,6 +35,11 @@ export interface StepDrawerProps {
 export const StepDrawer = createReactiveComponent(function StepDrawer(props: StepDrawerProps) {
     const { source, stepId } = props;
     const { presenter } = useFeature(StepDrawerPresenterFeature);
+    const defaultLayoutRenderers = useLayoutRenderers();
+    // The form's tabs show their field error counts (B23); every other layout keeps its renderer.
+    const layoutRenderers = useMemo((): LayoutRenderers => {
+        return { ...defaultLayoutRenderers, [STEP_FORM_RENDERER.stepTabs]: StepDrawerTabsRenderer };
+    }, [defaultLayoutRenderers]);
 
     useEffect(() => {
         if (stepId === null) {
@@ -85,11 +95,16 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                         notice={vm.notice}
                         topError={vm.topError}
                         errorTab={vm.errorTab}
-                        warnings={vm.warnings}
                         activeTabId={activeTabId}
                         onShowErrorTab={() => presenter.showErrorTab()}
                     />
-                    {vm.form && <FormView name={"Workflow step"} form={vm.form} />}
+                    {vm.form && (
+                        <FormView
+                            name={"Workflow step"}
+                            form={vm.form}
+                            layoutRenderers={layoutRenderers}
+                        />
+                    )}
                 </div>
                 {vm.switchConfirmation && (
                     <SwitchAutomationDialog

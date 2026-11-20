@@ -9,7 +9,7 @@ export interface ReviewListScopeControlProps {
     presenter: ReviewListPresenter.Interface;
 }
 
-// Whose reviews the list shows (`vm.scopes`): All only with `reassign` or full access (R259).
+// Whose reviews the list shows (`vm.scopes`): every scope is open to every viewer (designer answer B7).
 export const ReviewListScopeControl = createReactiveComponent(
     ({ presenter }: ReviewListScopeControlProps) => {
         const labelId = useId();

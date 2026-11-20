@@ -207,11 +207,13 @@ describe("StepDrawer with the real People form (R234, R293, R300)", () => {
         activateTab(/Assignment/);
 
         expect(screen.getByText("Rule 1")).toBeTruthy();
-        // The rule has a field error, so only the step's warnings banner shows its warning, not the rule card.
-        expect(screen.getAllByText("Rule 1: The folder no longer exists.")).toHaveLength(1);
+        // The rule has a field error, which replaces its warning on the card; no Check this step
+        // block repeats the warning (B23), and the tab counts the error.
+        expect(screen.queryByText("Rule 1: The folder no longer exists.")).toBeNull();
         expect(
             screen.getByText("The target team is not one of the step's reviewing teams.")
         ).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "Assignment, 1 error" })).toBeTruthy();
     });
 
     it("keeps a rule's target error when its folder is edited and clears it when the target is", () => {

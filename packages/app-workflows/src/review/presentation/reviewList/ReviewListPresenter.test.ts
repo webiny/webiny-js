@@ -164,7 +164,6 @@ describe("ReviewListPresenter", () => {
         expect(row.contentTypeLabel).toBe("Type article");
         expect(row.contentTypeApp).toBe("Headless CMS");
         expect(row.stepColor).toBe("#FA5723");
-        expect(row.stepStateIcon).toBe("rate_review");
         expect(row.contentUrl).toBe("/cms/content-entries/article?id=e1#0002");
         expect(row.highlighted).toBe(false);
     });
@@ -196,7 +195,7 @@ describe("ReviewListPresenter", () => {
         expect(unbound.actions).toEqual([]);
     });
 
-    it("resets sort, search and content type on a scope switch and keeps the state (B2 design 1)", async () => {
+    it("keeps search, content type and state on a scope switch and resets the sort (B2 design 1, B11)", async () => {
         const { presenter, listReviews, params } = setup();
         listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
@@ -218,21 +217,58 @@ describe("ReviewListPresenter", () => {
         expect(listReviews.execute).toHaveBeenLastCalledWith({
             app: "cms",
             scope: "myRequests",
-            where: { state: "approved" },
+            where: { titleContains: "budget", modelId: "article", state: "approved" },
             sort: "lastChangedOn_DESC",
             limit: REVIEW_LIST_PAGE_SIZE,
             after: null
         });
-        expect(presenter.vm.search).toBe("");
-        expect(presenter.vm.contentTypeId).toBeNull();
+        expect(presenter.vm.search).toBe("  budget  ");
+        expect(presenter.vm.contentTypeId).toBe("article");
         expect(presenter.vm.state).toBe("approved");
 
-        // Team pool × Approved is empty by definition: the state falls back to In review.
+        // Team pool × Approved is empty by definition: the state falls back to In review, and the
+        // sort to the pool's oldest first.
         await presenter.setScope("pool");
         expect(presenter.vm.state).toBe("inReview");
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ scope: "pool", where: { state: "inReview" } })
+            expect.objectContaining({
+                scope: "pool",
+                where: { titleContains: "budget", modelId: "article", state: "inReview" },
+                sort: "lastChangedOn_ASC"
+            })
         );
+        expect(presenter.vm.search).toBe("  budget  ");
+        expect(presenter.vm.contentTypeId).toBe("article");
+    });
+
+    it("reloads the first page and keeps scope, state, search, content type and sort (B13)", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.execute.mockResolvedValue(page([]));
+        await presenter.init({ ...params, initialScope: "myRequests" });
+        await presenter.setSearch("budget");
+        await presenter.setContentType("article");
+        await presenter.setState("approved");
+        await presenter.toggleSort("title");
+        listReviews.execute.mockClear();
+        listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+
+        await presenter.reload();
+
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
+            scope: "myRequests",
+            where: { titleContains: "budget", modelId: "article", state: "approved" },
+            sort: "title_ASC",
+            limit: REVIEW_LIST_PAGE_SIZE,
+            after: null
+        });
+        expect(presenter.vm.rows.map(row => row.reviewId)).toEqual(["r1"]);
+        expect(presenter.vm.scope).toBe("myRequests");
+        expect(presenter.vm.state).toBe("approved");
+        expect(presenter.vm.search).toBe("budget");
+        expect(presenter.vm.contentTypeId).toBe("article");
+        expect(presenter.vm.sort).toBe("title_ASC");
     });
 
     it("sets the state, refuses a state empty by definition and disables those options", async () => {
@@ -447,7 +483,8 @@ describe("ReviewListPresenter", () => {
         await presenter.setScope("pool");
         expect(presenter.vm.empty).toEqual({
             title: "You’re not in a reviewing team",
-            description: "Steps appear here once you’re added to a team that reviews content."
+            description:
+                "Ask a workflow manager to add you to a team that reviews Headless CMS content."
         });
 
         await presenter.setScope("teamInReview");
@@ -971,13 +1008,8 @@ describe("ReviewListPresenter", () => {
         expect(second.vm.rows.map(row => row.reviewId)).toEqual(["c"]);
     });
 
-    describe("All scope and Failed state (QBZ-29, QBZ-69, R259, B2 design 1)", () => {
+    describe("All scope and Failed state (QBZ-29, QBZ-69, B7, B2 design 1)", () => {
         const SCOPE_LABELS = ["Assigned to me", "Team pool", "Team in review", "Requested by me"];
-
-        interface PermissionCase {
-            permissions: IPermission[];
-            all: boolean;
-        }
 
         const createFailedItem = (id: string) => {
             return createReviewListItem({
@@ -990,48 +1022,38 @@ describe("ReviewListPresenter", () => {
             });
         };
 
-        it("lists four scopes without reassign and five with it, over several roles, workflows.* and *", async () => {
-            const cases: PermissionCase[] = [
-                { permissions: [], all: false },
-                { permissions: [{ name: "workflows", editor: true }], all: false },
-                { permissions: [{ name: "workflows", reassign: true }], all: true },
-                { permissions: [{ name: "workflows.*" }], all: true },
-                { permissions: [{ name: "*" }], all: true },
-                {
-                    permissions: [
-                        { name: "workflows", editor: true },
-                        { name: "workflows", reassign: true }
-                    ],
-                    all: true
-                }
+        it("lists five scopes for every viewer, over several roles, workflows.* and *", async () => {
+            const cases: IPermission[][] = [
+                [],
+                [{ name: "workflows", editor: true }],
+                [{ name: "workflows", reassign: true }],
+                [{ name: "workflows.*" }],
+                [{ name: "*" }]
             ];
 
-            for (const current of cases) {
-                const { presenter, listReviews, params } = setup(1, current.permissions);
+            for (const permissions of cases) {
+                const { presenter, listReviews, params } = setup(1, permissions);
                 listReviews.execute.mockResolvedValue(page([]));
                 await presenter.init(params);
 
                 const labels = presenter.vm.scopes.map(scope => scope.label);
-                if (current.all) {
-                    expect(labels).toEqual([...SCOPE_LABELS, "All"]);
-                } else {
-                    expect(labels).toEqual(SCOPE_LABELS);
-                }
+                expect(labels).toEqual([...SCOPE_LABELS, "All"]);
             }
         });
 
-        it("starts on the default scope when the route asks for All without permission", async () => {
+        it("starts on All when the route asks for it without permission (B7)", async () => {
             const { presenter, listReviews, params } = setup();
             listReviews.execute.mockResolvedValue(page([]));
 
             await presenter.init({ ...params, initialScope: "all", initialState: "failed" });
 
-            expect(presenter.vm.scope).toBe("assignedToMe");
+            expect(presenter.vm.scope).toBe("all");
+            expect(presenter.vm.state).toBe("failed");
             expect(listReviews.execute).toHaveBeenCalledTimes(1);
             expect(listReviews.execute).toHaveBeenCalledWith({
                 app: "cms",
-                scope: "assignedToMe",
-                where: { state: "inReview" },
+                scope: "all",
+                where: { state: "failed" },
                 sort: "lastChangedOn_ASC",
                 limit: REVIEW_LIST_PAGE_SIZE,
                 after: null
@@ -1062,7 +1084,7 @@ describe("ReviewListPresenter", () => {
             });
         });
 
-        it("refuses to switch to All without permission and sends no request", async () => {
+        it("switches to All without permission and sends a request", async () => {
             const { presenter, listReviews, params } = setup(1, [
                 { name: "workflows", editor: true }
             ]);
@@ -1071,8 +1093,8 @@ describe("ReviewListPresenter", () => {
 
             await presenter.setScope("all");
 
-            expect(presenter.vm.scope).toBe("assignedToMe");
-            expect(listReviews.execute).toHaveBeenCalledTimes(1);
+            expect(presenter.vm.scope).toBe("all");
+            expect(listReviews.execute).toHaveBeenCalledTimes(2);
         });
 
         it("switches to All with permission, keeps the state and sends the search and the content type", async () => {
@@ -1211,7 +1233,7 @@ describe("ReviewListPresenter", () => {
             expect(listReviews.execute).toHaveBeenCalledTimes(1);
         });
 
-        it("resets the draft on a tab switch and clears the timer on dispose", async () => {
+        it("keeps the draft on a tab switch and clears the timer on dispose", async () => {
             const { presenter, listReviews, params } = setup();
             listReviews.execute.mockResolvedValue(page([]));
             await presenter.init(params);
@@ -1219,9 +1241,9 @@ describe("ReviewListPresenter", () => {
 
             presenter.setSearchDraft("pending");
             await presenter.setScope("pool");
-            expect(presenter.vm.searchDraft).toBe("");
+            expect(presenter.vm.searchDraft).toBe("pending");
             await vi.advanceTimersByTimeAsync(1000);
-            expect(presenter.vm.search).toBe("");
+            expect(presenter.vm.search).toBe("pending");
 
             presenter.setSearchDraft("again");
             presenter.dispose();
@@ -1234,7 +1256,7 @@ describe("ReviewListPresenter", () => {
             });
             expect(searches).not.toContain("again");
             expect(presenter.vm.search).toBe("");
-            expect(listReviews.execute).toHaveBeenCalledTimes(3);
+            expect(listReviews.execute).toHaveBeenCalledTimes(4);
         });
     });
 

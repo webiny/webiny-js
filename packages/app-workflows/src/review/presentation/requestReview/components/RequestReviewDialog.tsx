@@ -217,10 +217,12 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                                             <Text>{step.noCandidatesNote}</Text>
                                                         </Alert>
                                                     )}
-                                                    <FormComponentNote
-                                                        className={"mt-0"}
-                                                        text={PICK_HINT}
-                                                    />
+                                                    {step.mode === "pick" && (
+                                                        <FormComponentNote
+                                                            className={"mt-0"}
+                                                            text={PICK_HINT}
+                                                        />
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

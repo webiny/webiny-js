@@ -301,7 +301,6 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             stepColor: row.stepColor,
             contentType: resolved.contentTypeLabel || null,
             app: this.app ? WIDGET_APP_LABELS[this.app] : "",
-            stateIcon: stateTag.icon,
             stateLabel,
             stateVariant: stateTag.variant,
             lastChange: formatLastChange(row.lastChangedOn, now),

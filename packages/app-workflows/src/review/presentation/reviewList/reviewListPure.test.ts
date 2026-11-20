@@ -4,7 +4,6 @@ import { it } from "vitest";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
-import type { WorkflowsPermissionSet } from "~/review/domain/types.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import type { ReviewListItemOverrides } from "~/review/testing/createReviewListItem.js";
@@ -18,10 +17,9 @@ import { getDefaultReviewListState } from "./getDefaultReviewListState.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
 import type { ReviewListEmptyParams } from "./getReviewListEmpty.js";
 import { getReviewListStates } from "./getReviewListStates.js";
-import { getVisibleReviewListScopes } from "./getVisibleReviewListScopes.js";
+import { getDisabledReviewListStateReason } from "./getDisabledReviewListStateReason.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
-import { isReviewListScopeAvailable } from "./isReviewListScopeAvailable.js";
 import { parseReviewListScope } from "./parseReviewListScope.js";
 import { parseReviewListState } from "./parseReviewListState.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
@@ -36,10 +34,6 @@ import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 
 const row = (overrides: ReviewListItemOverrides = {}) => {
     return toReviewListRow(createReviewListItem(overrides));
-};
-
-const permissions = (overrides: Partial<WorkflowsPermissionSet> = {}): WorkflowsPermissionSet => {
-    return { fullAccess: false, editor: false, reassign: false, ...overrides };
 };
 
 describe("review list pure functions", () => {
@@ -123,7 +117,30 @@ describe("review list pure functions", () => {
                     .filter(item => item.disabled)
                     .map(item => `${scope}×${item.value}`)
             ).toEqual(empty.filter(pair => pair.startsWith(`${scope}×`)));
+            for (const state of getReviewListStates(scope)) {
+                expect(state.disabledReason !== null).toBe(state.disabled);
+            }
         }
+    });
+
+    it("explains every disabled scope and state pair (B8)", () => {
+        expect(getDisabledReviewListStateReason("pool", "approved")).toBe(
+            "Team pool only holds open reviews."
+        );
+        expect(getDisabledReviewListStateReason("pool", "rejected")).toBe(
+            "Team pool only holds open reviews."
+        );
+        expect(getDisabledReviewListStateReason("pool", "failed")).toBe(
+            "Team pool only holds steps waiting for a person, never failed ones."
+        );
+        expect(getDisabledReviewListStateReason("assignedToMe", "failed")).toBe(
+            "Failed steps are AI or automation steps, which no person owns."
+        );
+        expect(getDisabledReviewListStateReason("teamInReview", "failed")).toBe(
+            "Failed steps are AI or automation steps, which no person owns."
+        );
+        expect(getDisabledReviewListStateReason("pool", "inReview")).toBeNull();
+        expect(getDisabledReviewListStateReason("myRequests", "failed")).toBeNull();
     });
 
     it("defaults the queues to In review and Requested by me and All to All", () => {
@@ -242,6 +259,7 @@ describe("review list pure functions", () => {
                 hasFilters: false,
                 hasTeams: true,
                 showContentType: true,
+                appLabel: "Headless CMS",
                 ...overrides
             });
         };
@@ -278,10 +296,14 @@ describe("review list pure functions", () => {
 
         const noTeam = {
             title: "You’re not in a reviewing team",
-            description: "Steps appear here once you’re added to a team that reviews content."
+            description:
+                "Ask a workflow manager to add you to a team that reviews Headless CMS content."
         };
         expect(empty({ scope: "pool", hasTeams: false })).toEqual(noTeam);
         expect(empty({ scope: "teamInReview", hasTeams: false })).toEqual(noTeam);
+        expect(
+            empty({ scope: "pool", hasTeams: false, appLabel: "Website Builder" }).description
+        ).toBe("Ask a workflow manager to add you to a team that reviews Website Builder content.");
         expect(empty({ hasTeams: false }).title).toBe("Nothing assigned to you");
         expect(empty({ scope: "pool", hasTeams: false, hasFilters: true })).toEqual(filtered);
     });
@@ -293,7 +315,8 @@ describe("review list pure functions", () => {
                 state: "inReview",
                 hasFilters: true,
                 hasTeams: true,
-                showContentType: false
+                showContentType: false,
+                appLabel: "Website Builder"
             })
         ).toEqual({
             title: "No reviews match these filters",
@@ -313,7 +336,8 @@ describe("review list pure functions", () => {
                     state: "failed",
                     hasFilters: false,
                     hasTeams: false,
-                    showContentType: true
+                    showContentType: true,
+                    appLabel: "Headless CMS"
                 })
             ).toEqual(failed);
         }
@@ -343,24 +367,14 @@ describe("review list pure functions", () => {
         expect(parseReviewListState(null)).toBeNull();
     });
 
-    it("opens All only with reassign or full access and every other scope to everyone (R259)", () => {
-        const none = permissions();
-        expect(isReviewListScopeAvailable("all", none)).toBe(false);
-        expect(isReviewListScopeAvailable("all", permissions({ editor: true }))).toBe(false);
-        expect(isReviewListScopeAvailable("all", permissions({ reassign: true }))).toBe(true);
-        expect(isReviewListScopeAvailable("all", permissions({ fullAccess: true }))).toBe(true);
-        for (const scope of ["assignedToMe", "pool", "teamInReview", "myRequests"] as const) {
-            expect(isReviewListScopeAvailable(scope, none)).toBe(true);
-        }
-        expect(getVisibleReviewListScopes(none).map(scope => scope.value)).toEqual([
+    it("lists every scope, All last, as every scope is open to every viewer (B7)", () => {
+        expect(REVIEW_LIST_SCOPES.map(scope => scope.value)).toEqual([
             "assignedToMe",
             "pool",
             "teamInReview",
-            "myRequests"
+            "myRequests",
+            "all"
         ]);
-        expect(
-            getVisibleReviewListScopes(permissions({ reassign: true })).map(scope => scope.value)
-        ).toEqual(["assignedToMe", "pool", "teamInReview", "myRequests", "all"]);
     });
 
     it("detects a changed row by step, state, owner, review state and last change", () => {

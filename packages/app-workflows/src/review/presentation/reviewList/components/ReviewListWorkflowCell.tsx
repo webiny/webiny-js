@@ -11,9 +11,6 @@ export const ReviewListWorkflowCell = ({ row }: ReviewListWorkflowCellProps) => 
     let stepState: TargetReviewTag | null = null;
     if (row.stepStateLabel) {
         stepState = { label: row.stepStateLabel, variant: row.stepStateVariant };
-        if (row.stepStateIcon) {
-            stepState.icon = row.stepStateIcon;
-        }
     }
 
     return (

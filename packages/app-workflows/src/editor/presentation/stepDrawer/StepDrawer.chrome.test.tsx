@@ -225,45 +225,52 @@ describe("StepDrawer chrome (R302, R309, R312)", () => {
         expect(screen.getByText("This step has an error on the Assignment tab.")).toBeTruthy();
     });
 
-    it("shows the Check this step block on General and Assignment and hides it on Test routing", () => {
-        const { open } = createSetup(createPeopleStep(), source => {
+    it("has no Check this step block, with or without tabs (B23)", () => {
+        const people = createSetup(createPeopleStep(), source => {
             source.setWarnings([LEGAL_LINE]);
         });
         act(() => {
-            open("step-1");
+            people.open("step-1");
         });
-
-        expect(screen.getByText("Check this step")).toBeTruthy();
-        expect(screen.getByText("Legal has no members.")).toBeTruthy();
-
-        activateTab(/Test routing/);
         expect(screen.queryByText("Check this step")).toBeNull();
+        expect(screen.queryByText("Legal has no members.")).toBeNull();
 
-        activateTab(/Assignment/);
-        expect(screen.getByText("Check this step")).toBeTruthy();
-    });
-
-    it("shows no block for a step without warnings", () => {
-        const { open } = createSetup(createPeopleStep());
-
-        act(() => {
-            open("step-1");
-        });
-
-        expect(screen.queryByText("Check this step")).toBeNull();
-    });
-
-    it("shows the block for a step without tabs", () => {
-        const { open } = createSetup(createAutomationStep({ id: "step-1" }), source => {
+        cleanup();
+        const automation = createSetup(createAutomationStep({ id: "step-1" }), source => {
             source.setWarnings([WEBHOOK_LINE]);
         });
+        act(() => {
+            automation.open("step-1");
+        });
+        expect(screen.queryByText("Check this step")).toBeNull();
+    });
 
+    it("counts the field errors on the tab that holds them (B23)", () => {
+        const { open } = createSetup(createPeopleStep(), source => {
+            source.errors = [RULE_ERROR];
+        });
         act(() => {
             open("step-1");
         });
 
-        expect(screen.getByText("Check this step")).toBeTruthy();
-        expect(screen.getByText("The automation “Send webhook” no longer exists.")).toBeTruthy();
+        const assignment = screen.getByRole("tab", { name: "Assignment, 1 error" });
+        const count = assignment.querySelector("[data-role='step-tab-error-count']");
+        expect(count?.getAttribute("aria-hidden")).toBe("true");
+        expect(count?.textContent).toBe("1");
+        expect(screen.getByRole("tab", { name: "General" })).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "Test routing" })).toBeTruthy();
+    });
+
+    it("counts every field error of a tab (B23)", () => {
+        const { open } = createSetup(createPeopleStep(), source => {
+            source.errors = [TITLE_ERROR, { ...TITLE_ERROR, field: "config.teams" }];
+        });
+        act(() => {
+            open("step-1");
+        });
+
+        expect(screen.getByRole("tab", { name: "General, 2 errors" })).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "Assignment" })).toBeTruthy();
     });
 
     it("shows the teams-off notice and no tabs for a read-only People step", () => {

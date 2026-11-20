@@ -104,7 +104,8 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             state: viewAllState,
             hasFilters: false,
             hasTeams: vm.hasTeams,
-            showContentType: false
+            showContentType: false,
+            appLabel: WIDGET_APP_LABELS[app]
         });
         body = (
             <EmptyState

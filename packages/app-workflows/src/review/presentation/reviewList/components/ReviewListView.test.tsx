@@ -85,12 +85,13 @@ interface RenderOptions {
     initialState?: ReviewListState;
     permissions?: IPermission[];
     loading?: boolean;
+    teams?: ITeam[];
 }
 
 const renderView = (options: RenderOptions = {}) => {
     const container = new Container();
     container.register(ReviewActivity).inSingletonScope();
-    const teams: ITeam[] = [{ id: "team-1", slug: "team-1", name: "Team 1" }];
+    const teams: ITeam[] = options.teams ?? [{ id: "team-1", slug: "team-1", name: "Team 1" }];
     const identityContext = createWorkflowsIdentityContext({
         teams,
         permissions: options.permissions
@@ -686,7 +687,8 @@ describe("ReviewListView", () => {
             "Assigned to me",
             "Team pool",
             "Team in review",
-            "Requested by me"
+            "Requested by me",
+            "All"
         ]);
         expect(radioLabels(stateControl())).toEqual([
             "All",
@@ -699,25 +701,12 @@ describe("ReviewListView", () => {
         expect(inReview.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("renders All as the fifth scope for a viewer with reassign (QBZ-29)", async () => {
-        renderView({ permissions: REASSIGN });
-        await screen.findByText("Nothing assigned to you");
-
-        expect(radioLabels(scopeControl())).toEqual([
-            "Assigned to me",
-            "Team pool",
-            "Team in review",
-            "Requested by me",
-            "All"
-        ]);
-    });
-
-    it("has no All scope for a viewer with the editor permission only", async () => {
+    it("renders All as the fifth scope for a viewer with the editor permission only (B7)", async () => {
         renderView({ permissions: [{ name: "workflows", editor: true }] });
         await screen.findByText("Nothing assigned to you");
 
-        expect(radioLabels(scopeControl())).not.toContain("All");
-        expect(radioLabels(scopeControl())).toHaveLength(4);
+        expect(radioLabels(scopeControl())).toHaveLength(5);
+        expect(radioLabels(scopeControl())).toContain("All");
     });
 
     it("disables the states empty by definition for the scope, without hiding them", async () => {
@@ -729,6 +718,36 @@ describe("ReviewListView", () => {
             .filter(radio => radio.hasAttribute("disabled"))
             .map(radio => radio.textContent);
         expect(disabled).toEqual(["Failed", "Approved", "Rejected"]);
+    });
+
+    it("tells a viewer in no team to ask a workflow manager, with no action (B17)", async () => {
+        renderView({ initialScope: "pool", teams: [] });
+
+        expect(await screen.findByText("You’re not in a reviewing team")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Ask a workflow manager to add you to a team that reviews Headless CMS content."
+            )
+        ).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    });
+
+    it("explains a disabled state in a tooltip on hover (B8)", async () => {
+        renderView({ initialScope: "pool" });
+        await screen.findByText("Your team pools are empty");
+
+        const approved = within(stateControl()).getByRole("radio", { name: "Approved" });
+        const label = approved.querySelector(
+            "[data-role='review-list-state-disabled']"
+        ) as HTMLElement;
+        fireEvent.pointerMove(label);
+        fireEvent.focus(label);
+
+        expect(
+            (await screen.findAllByText("Team pool only holds open reviews.")).length
+        ).toBeGreaterThan(0);
+        const inReview = within(stateControl()).getByRole("radio", { name: "In review" });
+        expect(inReview.querySelector("[data-role='review-list-state-disabled']")).toBeNull();
     });
 
     it("switches the state and keeps the scope", async () => {
@@ -772,20 +791,19 @@ describe("ReviewListView", () => {
         expect(all.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("falls back to the default scope when the route asks for All without permission", async () => {
+    it("opens All when the route asks for it without permission (B7)", async () => {
         const { listReviews } = renderView({ initialScope: "all", initialState: "failed" });
 
-        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
-        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(1));
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ scope: "assignedToMe", where: { state: "inReview" } })
+            expect.objectContaining({ scope: "all", where: { state: "failed" } })
         );
-        expect(within(scopeControl()).queryByRole("radio", { name: "All" })).toBeNull();
+        const all = within(scopeControl()).getByRole("radio", { name: "All" });
+        expect(all.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("switches to All from the scope control and shows its empty state", async () => {
+    it("switches to All from the scope control without permission and shows its empty state", async () => {
         const { listReviews } = renderView({
-            permissions: REASSIGN,
             results: [page([]), page([])]
         });
         await screen.findByText("Nothing assigned to you");
@@ -894,7 +912,7 @@ describe("ReviewListView", () => {
         expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
     });
 
-    it("shows the Content type column and filter only when the app asks for them (D113)", async () => {
+    it("shows the Content model column and filter only when the app asks for them (D113)", async () => {
         const first = renderView({
             showContentType: true,
             contentTypeFilter: {
@@ -903,12 +921,12 @@ describe("ReviewListView", () => {
             results: [page([createReviewListItem({ id: "r1", title: "With type" })])]
         });
         await screen.findByText("With type");
-        expect(screen.getByText("Content type")).toBeTruthy();
+        expect(screen.getByText("Content model")).toBeTruthy();
         expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
         expect(first.listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
-    it("orders the columns as in the design, with a one-line Content type cell", async () => {
+    it("orders the columns as in the design, with a one-line Content model cell", async () => {
         renderView({
             showContentType: true,
             contentTypeFilter: {
@@ -919,7 +937,7 @@ describe("ReviewListView", () => {
         await screen.findByText("Ordered");
 
         const headers = screen.getAllByRole("columnheader").map(header => header.textContent ?? "");
-        const positions = ["Name", "Content type", "Requested by", "Modified", "Workflow"].map(
+        const positions = ["Name", "Content model", "Requested by", "Modified", "Workflow"].map(
             name => headers.findIndex(text => text.startsWith(name))
         );
         expect(positions.every(position => position >= 0)).toBe(true);
@@ -927,7 +945,7 @@ describe("ReviewListView", () => {
         expect(within(rowOf("Ordered")).queryByText("Headless CMS")).toBeNull();
     });
 
-    it("has neither Content type column nor filter without them (Website Builder)", async () => {
+    it("has neither Content model column nor filter without them (Website Builder)", async () => {
         renderView({
             showContentType: false,
             contentTypeFilter: null,
@@ -935,7 +953,7 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("No type");
 
-        expect(screen.queryByText("Content type")).toBeNull();
+        expect(screen.queryByText("Content model")).toBeNull();
         expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
     });
 
@@ -1042,7 +1060,7 @@ describe("ReviewListView", () => {
 
         const menu = await screen.findByRole("menu");
         expect(within(menu).queryByText("Name")).toBeNull();
-        expect(within(menu).getByText("Content type")).toBeTruthy();
+        expect(within(menu).getByText("Content model")).toBeTruthy();
         expect(within(menu).getByText("Workflow")).toBeTruthy();
         expect(within(menu).getByText("Modified")).toBeTruthy();
 

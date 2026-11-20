@@ -31,7 +31,7 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
     const vm = presenter.vm;
     const [columnVisibility, setColumnVisibility] = useState<DataTableColumnVisibility>({});
 
-    // Design order: Name, Content type, Requested by, Modified, Workflow. The resizable columns share
+    // Design order: Name, Content model, Requested by, Modified, Workflow. The resizable columns share
     // the width by their `size`; Workflow keeps a fixed width that fits its two tags. `DataTable`
     // puts the sort arrow at the end of the header, so a narrow Modified keeps it near the label.
     const columns = useMemo(() => {
@@ -46,7 +46,7 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
         };
         if (showContentType) {
             result.contentTypeLabel = {
-                header: "Content type",
+                header: "Content model",
                 cell: row => <ReviewListContentTypeCell row={row} />,
                 size: 160
             };

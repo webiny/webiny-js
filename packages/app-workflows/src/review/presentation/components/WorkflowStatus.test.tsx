@@ -24,6 +24,8 @@ describe("WorkflowStatus", () => {
         expect(container.querySelector("[style*='background']")).not.toBeNull();
 
         const state = screen.getByText("Awaiting");
+        // The state tag is text only, even when the state has an icon.
+        expect(container.querySelector("svg")).toBeNull();
         expect(
             stepTag.compareDocumentPosition(state) & Node.DOCUMENT_POSITION_FOLLOWING
         ).toBeTruthy();

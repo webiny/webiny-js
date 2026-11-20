@@ -4,18 +4,24 @@ import { SegmentedControl } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { ReviewListPresenter } from "../abstractions.js";
 import { parseReviewListState } from "../parseReviewListState.js";
+import { ReviewListStateLabel } from "./ReviewListStateLabel.js";
 
 export interface ReviewListStateControlProps {
     presenter: ReviewListPresenter.Interface;
 }
 
-// Where the listed reviews are (`vm.states`); a state empty by definition for the scope is disabled.
+// Where the listed reviews are (`vm.states`); a state empty by definition for the scope is disabled
+// and says why in a tooltip (B8).
 export const ReviewListStateControl = createReactiveComponent(
     ({ presenter }: ReviewListStateControlProps) => {
         const labelId = useId();
         const vm = presenter.vm;
         const items = vm.states.map(state => {
-            return { label: state.label, value: state.value, disabled: state.disabled };
+            return {
+                label: <ReviewListStateLabel state={state} />,
+                value: state.value,
+                disabled: state.disabled
+            };
         });
 
         const onChange = (value: string) => {

@@ -52,6 +52,7 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
         toggleSort: vi.fn(),
         loadMore: vi.fn(),
         refresh: vi.fn(),
+        reload: vi.fn(),
         showNewReviews: vi.fn(),
         clearFilters: vi.fn(),
         openRowAction: vi.fn(),
@@ -178,7 +179,7 @@ describe("ReviewListToolbar", () => {
 
         const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
         const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
-        expect(cells).toEqual(["toolbar-search", "toolbar-filter"]);
+        expect(cells).toEqual(["toolbar-search", "toolbar-refresh", "toolbar-filter"]);
         expect(screen.getByPlaceholderText("Search...")).toBeTruthy();
     });
 
@@ -195,18 +196,18 @@ describe("ReviewListToolbar", () => {
             />
         );
 
-        expect(screen.queryByPlaceholderText("All content types")).toBeNull();
+        expect(screen.queryByPlaceholderText("All content models")).toBeNull();
 
         fireEvent.click(screen.getByRole("button", { name: "Filter" }));
 
         // The autocomplete also renders the label for screen readers; the span is the visible one.
         expect(screen.getByText("Content model", { selector: "span" })).toBeTruthy();
         expect(document.querySelector('[data-picker-field-icon="filter_list"]')).not.toBeNull();
-        expect(screen.getByPlaceholderText("All content types")).toBeTruthy();
+        expect(screen.getByPlaceholderText("All content models")).toBeTruthy();
         expect(screen.queryByLabelText("Clear")).toBeNull();
     });
 
-    it("shows an active filter on the button and returns to Filter when cleared", () => {
+    it("renders Filter as an icon button that names an active filter (B13)", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
@@ -218,7 +219,9 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
-        expect(screen.getByRole("button", { name: "Filter" }).textContent).toBe("Filter");
+        const idle = screen.getByRole("button", { name: "Filter" });
+        expect(idle.textContent).toBe("");
+        expect(idle.querySelector("svg")).not.toBeNull();
         none.unmount();
 
         render(
@@ -229,7 +232,28 @@ describe("ReviewListToolbar", () => {
             />
         );
         const button = screen.getByRole("button", { name: "Filter, 1 active" });
-        expect(button.textContent).toBe("Filter · 1");
+        expect(button.textContent).toBe("");
+    });
+
+    it("reloads the list from the Refresh icon button, with or without the filter (B13)", () => {
+        const presenter = createPresenter(createVm());
+        render(
+            <ReviewListToolbar
+                presenter={presenter}
+                showContentType={false}
+                contentTypeFilter={null}
+            />
+        );
+
+        const refresh = screen.getByRole("button", { name: "Refresh" });
+        expect(refresh.textContent).toBe("");
+        expect(refresh.querySelector("svg")).not.toBeNull();
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
+
+        fireEvent.click(refresh);
+
+        expect(presenter.reload).toHaveBeenCalledTimes(1);
+        expect(presenter.refresh).not.toHaveBeenCalled();
     });
 
     it("lists the content types with their app and icon, filters them by search and closes on pick", () => {
@@ -248,7 +272,7 @@ describe("ReviewListToolbar", () => {
             />
         );
         fireEvent.click(screen.getByRole("button", { name: "Filter" }));
-        const input = screen.getByPlaceholderText("All content types");
+        const input = screen.getByPlaceholderText("All content models");
 
         fireEvent.focus(input);
         fireEvent.click(input);
@@ -262,7 +286,7 @@ describe("ReviewListToolbar", () => {
         fireEvent.click(screen.getByText("Press release"));
 
         expect(presenter.setContentType).toHaveBeenCalledWith("press");
-        expect(screen.queryByPlaceholderText("All content types")).toBeNull();
+        expect(screen.queryByPlaceholderText("All content models")).toBeNull();
     });
 
     it("gives the search input a search icon", () => {

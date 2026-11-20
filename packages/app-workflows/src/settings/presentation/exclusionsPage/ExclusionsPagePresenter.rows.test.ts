@@ -18,7 +18,7 @@ import { ZAGREB } from "~/settings/testing/exclusionFixtures.js";
 import { createExclusionsPageSetup } from "~/settings/testing/exclusionsPageSetup.js";
 import type { ExclusionsPageSetup } from "~/settings/testing/exclusionsPageSetup.js";
 
-const EVERYONE = "Everyone in reviewing teams can be assigned automatically.";
+const EVERYONE = "Everyone in the reviewing teams can be assigned automatically.";
 
 const createReadyPage = async (
     exclusions: WorkflowExclusion[],
@@ -231,11 +231,11 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         });
     });
 
-    it("shows `No active exclusions` with Add on an empty Active tab", async () => {
+    it("shows `No exclusions` with Add on an empty Active tab (B27)", async () => {
         const { presenter } = await createReadyPage([createCidExclusion()]);
 
         expect(presenter.vm.empty).toEqual({
-            title: "No active exclusions",
+            title: "No exclusions",
             text: EVERYONE,
             showAdd: true,
             showClearSearch: false
