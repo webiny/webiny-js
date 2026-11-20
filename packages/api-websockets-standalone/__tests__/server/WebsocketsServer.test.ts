@@ -451,7 +451,7 @@ describe("WebsocketsServer", () => {
             await closeClient(client);
         });
 
-        // The container's adapter must be the one holding the sockets, or sends would reach none.
+        // An adapter registered in the container in place of NodeWsAdapter must take upgrades too.
         it("takes upgrades through the adapter it is given", async () => {
             const handleUpgrade = vi.spyOn(adapter, "handleUpgrade");
 
