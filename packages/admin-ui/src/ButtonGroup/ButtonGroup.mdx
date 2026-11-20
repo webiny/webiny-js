@@ -1,0 +1,41 @@
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
+
+import * as ButtonGroupStories from "./ButtonGroup.stories";
+
+<Meta of={ButtonGroupStories} />
+
+# ButtonGroup
+
+The ButtonGroup component lays out related buttons in a row and exposes them to assistive technology as one labelled group (`role="group"`). It is layout only and does not modify its children.
+
+## Usage
+
+<Canvas of={ButtonGroupStories.Default} />
+
+<Controls of={ButtonGroupStories.Default} />
+
+```tsx
+import React from "react";
+import { ButtonGroup, Button } from "@webiny/admin-ui";
+
+const ButtonGroupExample = () => {
+  return (
+    <ButtonGroup label="Actions">
+      <Button variant="secondary" text="Cancel" />
+      <Button variant="primary" text="Save" />
+    </ButtonGroup>
+  );
+};
+
+export default ButtonGroupExample;
+```
+
+## Examples
+
+### Ghost Icon Buttons
+
+<Canvas of={ButtonGroupStories.GhostIconButtons} />
+
+### Aligned End
+
+<Canvas of={ButtonGroupStories.AlignedEnd} />

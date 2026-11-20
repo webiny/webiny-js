@@ -121,6 +121,35 @@ export const FullExample: Story = {
     }
 };
 
+export const Horizontal: Story = {
+    args: {
+        orientation: "horizontal",
+        items: [
+            { label: "Value 1", value: "value-1" },
+            { label: "Value 2", value: "value-2" },
+            { label: "Value 3", value: "value-3" }
+        ]
+    }
+};
+
+export const WithDescriptions: Story = {
+    args: {
+        items: [
+            {
+                label: "Value 1",
+                value: "value-1",
+                description: "Description of the first value"
+            },
+            {
+                label: "Value 2",
+                value: "value-2",
+                description: "Description of the second value"
+            },
+            { label: "Value 3", value: "value-3" }
+        ]
+    }
+};
+
 export const Documentation: Story = {
     render: args => {
         const [value, setValue] = useState("");
