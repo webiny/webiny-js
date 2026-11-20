@@ -365,3 +365,57 @@ Wave 1 is built (items 1, 2, 3 editor part, 4, 8, 9, 10). Choices made while bui
 with the designer: Team pool always sorts oldest first; the default state of All is All; a scope or
 state change resets the sort, the search and the content type; state Failed is not limited to AI
 and automation steps; the Cancelled and Taken over e-mails use the previous-owner footer.
+
+## Batch C design, 2026-11-20: admin-ui additions
+
+Designed by a read-only architect pass over the canvas library (`bundle.js`) and `packages/admin-ui`;
+visual values then taken from the canvas `bundle.css` and `tokens.css`. Of the fifteen gaps, six
+need something new in admin-ui. All six are additive: no default changes and no markup change for
+existing usages.
+
+### Add to admin-ui
+
+| Addition | Detail, with the value from the canvas CSS |
+|---|---|
+| `Tag` variant `warning-light` | Background warning-subtle (the canvas uses its lightest warning tone), hover warning-muted; same pattern as `success-light`. |
+| `Alert` prop `size`, `"md"` (default) or `"sm"` | `sm`: padding xs-plus on top, right and bottom, sm-extra on the left; small text; 16px icon. |
+| `Switch` prop `variant`, `"default"` or `"branded"` | `branded`: checked track is primary (the default stays secondary), focus ring to match. |
+| `RadioGroup`: forward `orientation`; item `description` | Horizontal: a wrapping row with a large column gap. Description: 12px / 16px, muted, under the label. |
+| `Drawer` prop `headerExtra` | A slot under the title and description, above the body; with it the body has no top border. |
+| New `ButtonGroup` | `role="group"` with a label. Props `label`, `variant` (`default` or `ghost`), `kind` (`icon`), `size`, `align`. Gap: ghost none; default xs for small sizes, sm for medium and large; icon groups xs. |
+
+### Not ported, and what the workflows UI does instead
+
+- `WorkflowStatus`: built in `app-workflows` from two `Tag`s (step with swatch, 100px wide and
+  truncated; state), since its statuses are workflow terms.
+- `Table` sort and selection: the review list uses `DataTable`, which already sorts and has column
+  visibility. Selection is dropped (answer 4).
+- `Pagination`: Load more stays (answer 3).
+- `Accordion spacing`: `variant="container"` already has that gap.
+- `ProgressBar trailing`: `valuePosition="end"` with `getValueLabel`.
+- `Switch inline`: `SwitchPrimitive` with a label is that layout.
+- `Drawer footerStart`: the existing `info` prop.
+- `Toast status`: the existing icon slot and `show*` helpers; per-event icons wait on answer 32.
+- Muted text: the class `text-neutral-strong`, which is the canvas token (neutral-700).
+- `DateInput`: `DatePicker` with a placeholder.
+- `neutral-outline`: admin-ui's `neutral-base-outline` (same fill and border in the canvas CSS).
+- `ListView`: needs the app-admin list presenter; the review list keeps its own view.
+  `SplitView` and `SimpleForm` from app-admin are used for the workflow editor layout.
+
+### Lanes
+
+A. admin-ui controls: `Switch` variant; `RadioGroup` orientation and item description.
+B. admin-ui display: `Tag` `warning-light`; `Alert` `size`.
+C. admin-ui structure: `ButtonGroup`; `Drawer` `headerExtra`.
+D. app-workflows, after A to C: `WorkflowStatus` and the review list on `DataTable`; the progress
+   label; Awaiting tag `warning-light`; the Rejected step tag in red, as the review tag; small
+   alerts; `ButtonGroup` on rule actions; inline radios in the request dialog and described
+   strategy radios; the branded requester-pick switch; the editor on `SplitView`; muted text.
+   The step drawer's tabs in `headerExtra` need the form's tab list rendered outside the body and
+   are done last.
+
+### Open
+
+`DataTable`'s sort header is a clickable `div` with no keyboard access and no `aria-sort`. The
+review list's own header is a button today. Fixing `DataTable` changes markup for every list that
+uses it; using it as is loses keyboard sorting on the review list.
