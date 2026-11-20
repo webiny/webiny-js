@@ -7,9 +7,9 @@ import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.j
 
 /*
  * Lists the current tenant's connections only, whatever the filter. Every caller (GraphQL queries
- * and mutations, sends to an identity, disconnects) acts on what this returns, so a filter naming
- * another tenant, another tenant's connection ids, or an identity also connected elsewhere never
- * reaches outside the tenant. An admin who manages another tenant sends the request to that tenant.
+ * and mutations, sends to an identity, disconnects) acts on what this returns, so another tenant's
+ * connection ids, or an identity also connected elsewhere, never reach outside the tenant. An admin
+ * who manages another tenant sends the request to that tenant.
  */
 class ListConnectionsUseCaseImpl implements WebsocketsListConnectionsUseCase.Interface {
     public constructor(
@@ -29,10 +29,6 @@ class ListConnectionsUseCaseImpl implements WebsocketsListConnectionsUseCase.Int
             }
 
             const where = params?.where || {};
-            if (where.tenant && where.tenant !== tenant) {
-                return Result.ok([]);
-            }
-
             if (where.identityId) {
                 connections = await this.registry.listViaIdentity(where.identityId);
             } else if (where.connections) {

@@ -106,7 +106,7 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/ListConnections/abstractions.ts`
-- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Returns the current tenant's connections only, whatever the filter (a `tenant` other than the current one gives an empty list). For another tenant, call it inside `TenantContext.withTenant()`. Filters out stale connections (>3 hours). For every tenant at once, use `ConnectionRegistry.listAll()`.
+- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Returns the current tenant's connections only, whatever the filter. For another tenant, call it inside `TenantContext.withTenant()`. Filters out stale connections (>3 hours).
 
 ### WebsocketsSendToIdentityUseCase
 
