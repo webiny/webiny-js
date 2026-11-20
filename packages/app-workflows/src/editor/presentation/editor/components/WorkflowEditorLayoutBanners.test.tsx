@@ -6,6 +6,7 @@ import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import type { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
@@ -30,6 +31,7 @@ const HEADER = createWorkflowHeaderVm({ dirty: true, canSave: true });
 const renderLayout = (overrides: Partial<WorkflowEditorPresenter.ViewModel> = {}) => {
     const presenter = createFakeEditorViewPresenter(createEditorViewModel(overrides));
     const container = new Container();
+    LocalStorageFeature.register(container, { prefix: "test" });
     container.registerInstance(SortablePresenter, createFakeSortable());
     renderWithContainer(
         <WorkflowEditorLayout presenter={presenter} app={app} drawer={null} />,

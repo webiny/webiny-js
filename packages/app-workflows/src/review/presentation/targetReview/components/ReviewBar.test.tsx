@@ -412,7 +412,8 @@ describe("ReviewBar", () => {
 
         const row = container.querySelector("[data-role='review-bar-progress']") as HTMLElement;
         expect(row.previousElementSibling?.getAttribute("role")).toBe("none");
-        expect(within(row).getByRole("progressbar")).toBeTruthy();
+        const bar = within(row).getByRole("progressbar", { name: "Review progress" });
+        expect(bar.getAttribute("aria-valuetext")).toBe("1 of 3 steps approved");
         const details = within(row).getByRole("button", { name: /Review details/ });
         expect(details.querySelector("svg")).not.toBeNull();
         expect(within(row).getByText("1 of 3 steps approved")).toBeTruthy();

@@ -41,8 +41,8 @@ export type TargetReviewTagVariant =
     | "destructive-light"
     | "neutral-light"
     | "warning"
-    | "neutral-base-outline"
-    | "neutral-dark";
+    | "warning-light"
+    | "neutral-base-outline";
 
 // The state tile of the bar (README 6): the Material icon name that names it.
 export type TargetReviewTile =

@@ -200,6 +200,7 @@ describe("RequestReviewDialog", () => {
             .getByRole("radio", { name: "Automatic" })
             .closest("[role='radiogroup']");
         expect(group?.querySelectorAll("[role='radio']")).toHaveLength(2);
+        expect(group?.getAttribute("aria-orientation")).toBe("horizontal");
         expect(screen.queryByText("Reviewer")).toBeNull();
 
         fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));

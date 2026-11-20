@@ -9,6 +9,7 @@ import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import type { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
@@ -69,6 +70,7 @@ const renderLayout = (overrides: Partial<WorkflowEditorPresenter.ViewModel> = {}
         createEditorViewModel({ detail: "workflow", header: HEADER, ...overrides })
     );
     const container = new Container();
+    LocalStorageFeature.register(container, { prefix: "test" });
     container.registerInstance(SortablePresenter, createFakeSortable());
     renderWithContainer(
         <WorkflowEditorLayout

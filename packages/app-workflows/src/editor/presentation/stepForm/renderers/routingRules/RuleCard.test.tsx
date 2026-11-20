@@ -122,6 +122,16 @@ describe("RuleCard: header and buttons (R313)", () => {
         expect(screen.getByText("Rule 2")).toBeDefined();
     });
 
+    it("groups its three buttons as the rule actions", () => {
+        renderCard(createProps({ index: 1, total: 3 }));
+
+        const group = screen.getByRole("group", { name: "Rule actions" });
+        const names = within(group)
+            .getAllByRole("button")
+            .map(button => button.getAttribute("aria-label"));
+        expect(names).toEqual(["Move rule up", "Move rule down", "Delete rule"]);
+    });
+
     it("calls the move and delete callbacks from its three buttons", () => {
         const props = createProps({ index: 1, total: 3 });
         renderCard(props);

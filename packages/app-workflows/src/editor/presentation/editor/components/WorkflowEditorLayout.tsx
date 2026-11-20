@@ -1,6 +1,9 @@
 import React from "react";
 import { Separator } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
+import { LeftPanel } from "@webiny/app-admin";
+import { RightPanel } from "@webiny/app-admin";
+import { SplitView } from "@webiny/app-admin";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { EditorDetailLoading } from "./EditorDetailLoading.js";
 import { EditorHeader } from "./EditorHeader.js";
@@ -23,6 +26,11 @@ export interface WorkflowEditorLayoutProps {
     // The step drawer, mounted once beside the editor (`WorkflowEditorView` passes `<StepDrawer source={presenter} stepId={vm.openStepId} />`, R284: the drawer opens and closes its own presenter from `stepId` and calls `source.closeStep()` when it closes itself).
     drawer: React.ReactNode;
 }
+
+// The panel layout is saved per page in local storage, so the editor keeps its own namespace.
+const SPLIT_VIEW_NAMESPACE = "workflowEditor";
+// The model panel opens at the admin sidebar's expanded width (`--spacing-sidebar-expanded`).
+const MODEL_PANEL_WIDTH = "256px";
 
 /*
  * The presentational editor: the page states, the model panel and the open workflow's header. It
@@ -141,24 +149,29 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
 
     return (
         <div data-testid="workflow-editor" className="flex h-main-content">
-            <div className="w-sidebar-expanded shrink-0 overflow-y-auto">
-                <ModelPanel
-                    panel={vm.panel}
-                    renderIcon={modelId => app.renderModelIcon(modelId)}
-                    onSearch={search => presenter.setSearch(search)}
-                    onFilter={filter => presenter.setWorkflowFilter(filter)}
-                    onCreateWorkflow={modelId => presenter.createWorkflowForModel(modelId)}
-                    onDeleteWorkflow={modelId => presenter.requestDeleteWorkflowForModel(modelId)}
-                    onSelect={modelId => presenter.selectModel(modelId)}
-                    onLoadMore={() => presenter.loadMore()}
-                    onRetry={() => presenter.retryModels()}
-                />
-            </div>
-            <Separator orientation="vertical" />
-            <div className="flex flex-col grow min-w-0 overflow-hidden">
-                {inWorkflow ? null : banners}
-                {content}
-            </div>
+            <SplitView namespace={SPLIT_VIEW_NAMESPACE}>
+                <LeftPanel defaultSize={MODEL_PANEL_WIDTH}>
+                    <ModelPanel
+                        panel={vm.panel}
+                        renderIcon={modelId => app.renderModelIcon(modelId)}
+                        onSearch={search => presenter.setSearch(search)}
+                        onFilter={filter => presenter.setWorkflowFilter(filter)}
+                        onCreateWorkflow={modelId => presenter.createWorkflowForModel(modelId)}
+                        onDeleteWorkflow={modelId =>
+                            presenter.requestDeleteWorkflowForModel(modelId)
+                        }
+                        onSelect={modelId => presenter.selectModel(modelId)}
+                        onLoadMore={() => presenter.loadMore()}
+                        onRetry={() => presenter.retryModels()}
+                    />
+                </LeftPanel>
+                <RightPanel>
+                    <div className="flex flex-col h-full min-w-0 overflow-hidden">
+                        {inWorkflow ? null : banners}
+                        {content}
+                    </div>
+                </RightPanel>
+            </SplitView>
             {drawer}
             {picker}
             <WorkflowEditorDialogs

@@ -419,3 +419,6 @@ D. app-workflows, after A to C: `WorkflowStatus` and the review list on `DataTab
 `DataTable`'s sort header is a clickable `div` with no keyboard access and no `aria-sort`. The
 review list's own header is a button today. Fixing `DataTable` changes markup for every list that
 uses it; using it as is loses keyboard sorting on the review list.
+
+Decided (user, 2026-11-20): the review list moves onto `DataTable` as it is. Keyboard sorting on
+that list is lost until `DataTable`'s sort header becomes a button; `DataTable` is not changed here.

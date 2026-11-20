@@ -92,7 +92,11 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                         {vm.dialogError}
                     </Alert>
                 )}
-                {vm.body ? <Text size={"md"}>{vm.body}</Text> : null}
+                {vm.body ? (
+                    <Text size={"md"} className={"text-neutral-strong"}>
+                        {vm.body}
+                    </Text>
+                ) : null}
                 {vm.showComment && (
                     <Textarea
                         label={vm.commentLabel}

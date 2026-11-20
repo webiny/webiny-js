@@ -4,12 +4,12 @@ import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Separator } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
-import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { ReviewListPresenter } from "../abstractions.js";
 import type { ReviewListRowVm } from "../abstractions.js";
-import { REVIEW_TAG_ICONS } from "~/review/presentation/targetReview/components/reviewBarAppearance.js";
+import type { TargetReviewTag } from "~/review/presentation/targetReview/abstractions.js";
+import { WorkflowStatus } from "~/review/presentation/components/WorkflowStatus.js";
 import { ReviewListRowActions } from "./ReviewListRowActions.js";
 
 export interface ReviewListTableProps {
@@ -33,32 +33,12 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
         );
     }
 
-    let stepState: React.ReactNode = null;
+    let stepState: TargetReviewTag | null = null;
     if (row.stepStateLabel) {
-        let icon: React.ReactElement | undefined = undefined;
+        stepState = { label: row.stepStateLabel, variant: row.stepStateVariant };
         if (row.stepStateIcon) {
-            const StateIcon = REVIEW_TAG_ICONS[row.stepStateIcon];
-            icon = <StateIcon />;
+            stepState.icon = row.stepStateIcon;
         }
-        stepState = <Tag variant={row.stepStateVariant} content={row.stepStateLabel} icon={icon} />;
-    }
-
-    let step: React.ReactNode = null;
-    if (row.stepTitle !== null) {
-        let swatchColor: string | undefined = undefined;
-        if (row.stepColor !== null) {
-            swatchColor = row.stepColor;
-        }
-        step = (
-            <Tag
-                content={
-                    <Text data-role="current-step-text" size="sm">
-                        {row.stepTitle}
-                    </Text>
-                }
-                swatchColor={swatchColor}
-            />
-        );
     }
 
     let contentType: React.ReactNode = null;
@@ -84,9 +64,14 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
                 </div>
             </Table.Cell>
             {contentType}
-            <Table.Cell>{step}</Table.Cell>
-            <Table.Cell>{stepState}</Table.Cell>
-            <Table.Cell>{row.ownerLabel ?? ""}</Table.Cell>
+            <Table.Cell>
+                <WorkflowStatus
+                    step={row.stepTitle}
+                    stepColor={row.stepColor}
+                    state={stepState}
+                    owner={row.ownerLabel}
+                />
+            </Table.Cell>
             <Table.Cell>{row.requesterName}</Table.Cell>
             <Table.Cell>{row.lastChange}</Table.Cell>
             <Table.Cell>
@@ -106,23 +91,23 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
     }
 
     // One sort at a time: only the active column shows its arrow.
-    let titleSortTitle = "Sort by title, A to Z";
-    let titleLabel = "Title";
+    let titleSortTitle = "Sort by name, A to Z";
+    let titleLabel = "Name";
     if (vm.sort === "title_ASC") {
-        titleSortTitle = "Title, A to Z";
-        titleLabel = "Title ↑";
+        titleSortTitle = "Name, A to Z";
+        titleLabel = "Name ↑";
     } else if (vm.sort === "title_DESC") {
-        titleSortTitle = "Title, Z to A";
-        titleLabel = "Title ↓";
+        titleSortTitle = "Name, Z to A";
+        titleLabel = "Name ↓";
     }
-    let lastChangeSortTitle = "Sort by last change, oldest first";
-    let lastChangeLabel = "Last change";
+    let lastChangeSortTitle = "Sort by modified date, oldest first";
+    let lastChangeLabel = "Modified";
     if (vm.sort === "lastChangedOn_ASC") {
         lastChangeSortTitle = "Oldest change first";
-        lastChangeLabel = "Last change ↑";
+        lastChangeLabel = "Modified ↑";
     } else if (vm.sort === "lastChangedOn_DESC") {
         lastChangeSortTitle = "Newest change first";
-        lastChangeLabel = "Last change ↓";
+        lastChangeLabel = "Modified ↓";
     }
 
     // The same bar as the CMS entry list (app-admin ListView.BottomBar); the API gives no total.
@@ -157,10 +142,8 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
                             </button>
                         </Table.Head>
                         {contentTypeHead}
-                        <Table.Head>Current step</Table.Head>
-                        <Table.Head>Step state</Table.Head>
-                        <Table.Head>Owner</Table.Head>
-                        <Table.Head>Requester</Table.Head>
+                        <Table.Head>Workflow</Table.Head>
+                        <Table.Head>Requested by</Table.Head>
                         <Table.Head>
                             <button
                                 type="button"

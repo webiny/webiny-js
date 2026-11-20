@@ -1,4 +1,5 @@
 import React from "react";
+import { ButtonGroup } from "@webiny/admin-ui";
 import { Card } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { ReactComponent as ArrowDownwardIcon } from "@webiny/icons/arrow_downward.svg";
@@ -50,7 +51,7 @@ export const RuleCard = (props: RuleCardProps) => {
     }
 
     const actions = (
-        <div className={"flex items-center gap-xxs"}>
+        <ButtonGroup label={"Rule actions"} variant={"ghost"} kind={"icon"} size={"sm"}>
             <IconButton
                 aria-label={ASSIGNMENT_FORM_MESSAGES.moveRuleUp}
                 variant={"ghost"}
@@ -75,7 +76,7 @@ export const RuleCard = (props: RuleCardProps) => {
                 disabled={readOnly}
                 onClick={props.onDelete}
             />
-        </div>
+        </ButtonGroup>
     );
 
     return (

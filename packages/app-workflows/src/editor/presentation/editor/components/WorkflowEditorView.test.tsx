@@ -5,6 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
@@ -66,6 +67,7 @@ const createSetup = (
     const dispose = vi.fn();
     const presenter = { ...fake, init, dispose };
     const container = new Container();
+    LocalStorageFeature.register(container, { prefix: "test" });
     container.registerInstance(
         WorkflowEditorPresenter,
         presenter as unknown as WorkflowEditorPresenter.Interface

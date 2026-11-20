@@ -188,6 +188,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                             {step.allowManualPick && (
                                                 <div className={PICK_BLOCK}>
                                                     <RadioGroup
+                                                        orientation={"horizontal"}
                                                         items={[
                                                             {
                                                                 label: "Automatic",

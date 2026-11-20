@@ -17,7 +17,7 @@ export const RequesterPickRenderer = createFieldRenderer<"workflowRequesterPick"
                 onChange={value => field.onChange(value)}
                 label={field.label}
                 note={field.note}
-                labelPosition={"end"}
+                variant={"branded"}
                 disabled={field.disabled}
                 validation={field.validation}
             />

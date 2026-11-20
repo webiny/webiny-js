@@ -179,14 +179,23 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(screen.getByRole("switch").getAttribute("aria-checked")).toBe("true");
     });
 
-    it("wraps a long strategy description inside the drawer", () => {
+    it("shows each strategy's description as the radio item description, under its name", () => {
         renderStrategy(createForm("none"));
 
         const description = screen.getByText("Takes turns across eligible team members.");
-        const card = description.parentElement as HTMLElement;
-        expect(description.classList.contains("break-words")).toBe(true);
-        expect(card.classList.contains("whitespace-normal")).toBe(true);
-        expect(card.classList.contains("min-w-0")).toBe(true);
+        const name = screen.getByText("Round-robin");
+        expect(description.previousElementSibling).toBe(name.closest("label"));
+    });
+
+    it("uses the branded switch for the requester pick", () => {
+        const form = createForm("none");
+        renderStepFormField({
+            form,
+            name: "assignment.allowManualPick",
+            Renderer: RequesterPickRenderer
+        });
+
+        expect(screen.getByRole("switch").className).toContain("data-[state=checked]:bg-primary");
     });
 
     it("starts the Strategy section without a divider, as the first section of its tab", () => {

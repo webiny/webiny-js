@@ -62,7 +62,11 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
         (inlineLock && !!vm.lockText);
 
     const lockText = vm.lockText ? (
-        <Text data-role={"review-bar-lock-text"} size={"sm"} className={"min-w-0 break-words"}>
+        <Text
+            data-role={"review-bar-lock-text"}
+            size={"sm"}
+            className={"min-w-0 break-words text-neutral-strong"}
+        >
             {vm.lockText}
         </Text>
     ) : null;
@@ -125,7 +129,9 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                         />
                                     )}
                                     {vm.ownerName ? (
-                                        <Text size={"sm"}>{`Owner: ${vm.ownerName}`}</Text>
+                                        <Text size={"sm"} className={"text-neutral-strong"}>
+                                            {`Owner: ${vm.ownerName}`}
+                                        </Text>
                                     ) : null}
                                     {inlineLock ? lockText : null}
                                 </div>

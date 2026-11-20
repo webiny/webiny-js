@@ -804,7 +804,9 @@ describe("ReviewListView", () => {
 
         const row = within(rowOf("Spring campaign"));
         expect(row.getByText("Failed")).toBeTruthy();
-        expect(row.getAllByText("AI tone check")).toHaveLength(2);
+        expect(row.getByText("AI tone check")).toBeTruthy();
+        // The owner is no longer a column: it is in the hover text of the workflow status.
+        expect(row.getByTitle("AI tone check · AI tone check")).toBeTruthy();
         expect(row.queryByRole("button", { name: "Restart" })).toBeNull();
 
         openMenu("Spring campaign");
@@ -922,7 +924,7 @@ describe("ReviewListView", () => {
         );
     });
 
-    it("sorts by title from the Title header, one sort at a time (B2 design 2)", async () => {
+    it("sorts by title from the Name header, one sort at a time (B2 design 2)", async () => {
         const { listReviews } = renderView({
             results: [
                 page([createReviewListItem({ id: "r1", title: "Sortable" })]),
@@ -932,25 +934,25 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("Sortable");
 
-        fireEvent.click(screen.getByTitle("Sort by title, A to Z"));
+        fireEvent.click(screen.getByTitle("Sort by name, A to Z"));
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "title_ASC" })
         );
-        expect(await screen.findByText("Title ↑")).toBeTruthy();
-        expect(screen.getByText("Last change")).toBeTruthy();
+        expect(await screen.findByText("Name ↑")).toBeTruthy();
+        expect(screen.getByText("Modified")).toBeTruthy();
 
-        fireEvent.click(screen.getByTitle("Title, A to Z"));
+        fireEvent.click(screen.getByTitle("Name, A to Z"));
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "title_DESC" })
         );
-        expect(await screen.findByText("Title ↓")).toBeTruthy();
+        expect(await screen.findByText("Name ↓")).toBeTruthy();
     });
 
-    it("toggles the sort from the Last change header", async () => {
+    it("toggles the sort from the Modified header", async () => {
         const { listReviews } = renderView({
             results: [
                 page([createReviewListItem({ id: "r1", title: "Sortable" })]),

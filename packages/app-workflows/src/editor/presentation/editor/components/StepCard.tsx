@@ -164,13 +164,14 @@ export const StepCard = (props: StepCardProps) => {
                             data-severity={line.severity}
                             type={line.severity === "error" ? "danger" : "warning"}
                             variant="subtle"
+                            size="sm"
                         >
-                            <Text as="span">{line.text}</Text>
+                            {line.text}
                         </Alert>
                     ))}
                     {step.error !== null ? (
-                        <Alert type="danger" variant="subtle">
-                            <Text as="span">{step.error}</Text>
+                        <Alert type="danger" variant="subtle" size="sm">
+                            {step.error}
                         </Alert>
                     ) : null}
                     <div className="flex">
