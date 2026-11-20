@@ -10,6 +10,7 @@ import { screen } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { AdminUiProvider } from "@webiny/admin-ui";
 import { DiContainerProvider } from "@webiny/app";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
@@ -21,6 +22,7 @@ import { StepState } from "~/review/domain/StepState.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import type { IReviewRowProvider } from "../abstractions.js";
+import type { ReviewListRouteParams } from "../abstractions.js";
 import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
 import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewListPresenterFeature } from "../feature.js";
@@ -86,6 +88,12 @@ interface RenderOptions {
     permissions?: IPermission[];
     loading?: boolean;
     teams?: ITeam[];
+    onRouteChange?: (params: ReviewListRouteParams) => void;
+}
+
+interface RerenderOptions {
+    initialScope?: ReviewListScope;
+    initialState?: ReviewListState;
 }
 
 const renderView = (options: RenderOptions = {}) => {
@@ -121,21 +129,30 @@ const renderView = (options: RenderOptions = {}) => {
         }
         listReviews.execute.mockResolvedValueOnce(result);
     });
-    renderWithAdminUi(
-        <DiContainerProvider container={container}>
-            <ReviewListView
-                app={"cms"}
-                rowProvider={rowProvider}
-                namespaces={["cms.article", "other.app"]}
-                showContentType={options.showContentType ?? true}
-                contentTypeFilter={options.contentTypeFilter ?? null}
-                initialScope={options.initialScope}
-                initialState={options.initialState}
-            />
-        </DiContainerProvider>
-    );
+    const namespaces = ["cms.article", "other.app"];
+    const element = (route: RerenderOptions) => {
+        return (
+            <DiContainerProvider container={container}>
+                <ReviewListView
+                    app={"cms"}
+                    rowProvider={rowProvider}
+                    namespaces={namespaces}
+                    showContentType={options.showContentType ?? true}
+                    contentTypeFilter={options.contentTypeFilter ?? null}
+                    initialScope={route.initialScope}
+                    initialState={route.initialState}
+                    onRouteChange={options.onRouteChange}
+                />
+            </DiContainerProvider>
+        );
+    };
+    const rendered = renderWithAdminUi(element(options));
+    // The route changed: the page renders the view again with the new values.
+    const rerenderRoute = (route: RerenderOptions) => {
+        rendered.rerender(<AdminUiProvider>{element(route)}</AdminUiProvider>);
+    };
 
-    return { activity, listReviews, fakes };
+    return { activity, listReviews, fakes, rerenderRoute };
 };
 
 // The review a row's dialog or drawer reads: one current step, every action allowed.
@@ -814,6 +831,116 @@ describe("ReviewListView", () => {
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ scope: "all", where: { state: "inReview" } })
         );
+    });
+
+    it("writes a scope and state change to the route and keeps the list when the route comes back", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        const { listReviews, rerenderRoute } = renderView({ onRouteChange });
+        await screen.findByText("Nothing assigned to you");
+        expect(onRouteChange).not.toHaveBeenCalled();
+
+        fireEvent.change(screen.getByPlaceholderText("Search..."), {
+            target: { value: "budget" }
+        });
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "Requested by me" }));
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "myRequests", state: "inReview" });
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+
+        rerenderRoute({ initialScope: "myRequests", initialState: "inReview" });
+        fireEvent.click(within(stateControl()).getByRole("radio", { name: "Approved" }));
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "myRequests", state: "approved" });
+        rerenderRoute({ initialScope: "myRequests", initialState: "approved" });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(4));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { titleContains: "budget", state: "approved" }
+            })
+        );
+        expect(screen.getByPlaceholderText<HTMLInputElement>("Search...").value).toBe("budget");
+        expect(onRouteChange).toHaveBeenCalledTimes(2);
+    });
+
+    it("writes the state a scope change falls back to", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        renderView({ initialScope: "myRequests", initialState: "approved", onRouteChange });
+        await screen.findByText("No reviews match these filters");
+
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "Team pool" }));
+
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "pool", state: "inReview" });
+    });
+
+    it("writes the fallback of a route pair that is empty by definition", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        renderView({ initialScope: "pool", initialState: "failed", onRouteChange });
+        await screen.findByText("Your team pools are empty");
+
+        expect(onRouteChange).toHaveBeenCalledWith({ scope: "pool", state: "inReview" });
+    });
+
+    it("applies a route changed from outside and keeps the search", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        const { listReviews, rerenderRoute } = renderView({ onRouteChange });
+        await screen.findByText("Nothing assigned to you");
+        fireEvent.change(screen.getByPlaceholderText("Search..."), {
+            target: { value: "budget" }
+        });
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+
+        rerenderRoute({ initialScope: "all", initialState: "failed" });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "all",
+                where: { titleContains: "budget", state: "failed" }
+            })
+        );
+        const all = within(scopeControl()).getByRole("radio", { name: "All" });
+        expect(all.getAttribute("aria-checked")).toBe("true");
+        expect(onRouteChange).not.toHaveBeenCalled();
+    });
+
+    it("writes the default state to the route when Clear filters resets it", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        renderView({
+            initialScope: "myRequests",
+            initialState: "rejected",
+            onRouteChange,
+            results: [page([]), page([])]
+        });
+        await screen.findByText("No reviews match these filters");
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "myRequests", state: "all" });
+    });
+
+    it("shows the scope's empty text without Clear filters when nothing is filtered", async () => {
+        renderView({ initialScope: "myRequests", initialState: "inReview" });
+        expect(await screen.findByText("You haven’t requested any reviews")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    });
+
+    it("shows Clear filters only beside the filtered text", async () => {
+        const { listReviews } = renderView({ results: [page([]), page([]), page([])] });
+        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+
+        fireEvent.click(within(stateControl()).getByRole("radio", { name: "All" }));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+
+        fireEvent.change(screen.getByPlaceholderText("Search..."), {
+            target: { value: "budget" }
+        });
+        expect(await screen.findByText("No reviews match these filters")).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Clear filters" })).toBeTruthy();
     });
 
     it("lists a failed step with its tag, the step title as owner and a Restart menu item (QBZ-29, QBZ-79)", async () => {

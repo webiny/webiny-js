@@ -1,6 +1,7 @@
 import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
 import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import type { ReviewListEmptyVm } from "./abstractions.js";
+import { isFilteredReviewList } from "./isFilteredReviewList.js";
 
 const SCOPE_EMPTY: Record<ReviewListScope, ReviewListEmptyVm> = {
     assignedToMe: {
@@ -70,7 +71,7 @@ export interface ReviewListEmptyParams {
  */
 export const getReviewListEmpty = (params: ReviewListEmptyParams): ReviewListEmptyVm => {
     const { scope, state } = params;
-    if (params.hasFilters || state === "approved" || state === "rejected") {
+    if (isFilteredReviewList(params.hasFilters, state)) {
         if (params.showContentType) {
             return FILTERED_EMPTY_WITH_CONTENT_TYPE;
         }

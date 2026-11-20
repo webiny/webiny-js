@@ -337,6 +337,72 @@ describe("ReviewListPresenter", () => {
         expect(presenter.vm.isFiltered).toBe(false);
     });
 
+    it("applies a route change once, keeping the search and the content model filter (B11)", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.execute.mockResolvedValue(page([]));
+        await presenter.init(params);
+        await presenter.setSearch("budget");
+        await presenter.setContentType("article");
+        listReviews.execute.mockClear();
+
+        await presenter.applyRoute({ scope: "myRequests", state: "approved" });
+
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
+            scope: "myRequests",
+            where: { titleContains: "budget", modelId: "article", state: "approved" },
+            sort: "lastChangedOn_DESC",
+            limit: REVIEW_LIST_PAGE_SIZE,
+            after: null
+        });
+        expect(presenter.vm.search).toBe("budget");
+        expect(presenter.vm.contentTypeId).toBe("article");
+    });
+
+    it("ignores a route change to the scope and state already shown, after its fallbacks", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.execute.mockResolvedValue(page([]));
+        await presenter.init({ ...params, initialScope: "pool" });
+        await presenter.setSearch("budget");
+        listReviews.execute.mockClear();
+
+        await presenter.applyRoute({ scope: "pool", state: "inReview" });
+        // Team pool × Approved falls back to In review: the list already shows it.
+        await presenter.applyRoute({ scope: "pool", state: "approved" });
+
+        expect(listReviews.execute).not.toHaveBeenCalled();
+        expect(presenter.vm.search).toBe("budget");
+        expect(presenter.vm.state).toBe("inReview");
+    });
+
+    it("applies no route change before init", async () => {
+        const { presenter, listReviews } = setup();
+
+        await presenter.applyRoute({ scope: "pool", state: null });
+
+        expect(listReviews.execute).not.toHaveBeenCalled();
+    });
+
+    it("is not filtered at a scope's own state without a search or content model", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.execute.mockResolvedValue(page([]));
+        await presenter.init(params);
+        expect(presenter.vm.isFiltered).toBe(false);
+
+        // All, kept from Requested by me, is not a filter on Assigned to me either.
+        await presenter.setState("all");
+        expect(presenter.vm.isFiltered).toBe(false);
+        expect(presenter.vm.empty?.title).toBe("Nothing assigned to you");
+
+        await presenter.setState("rejected");
+        expect(presenter.vm.isFiltered).toBe(true);
+
+        await presenter.setState("inReview");
+        await presenter.setContentType("article");
+        expect(presenter.vm.isFiltered).toBe(true);
+    });
+
     it("toggles the sort direction and reloads in that order", async () => {
         const { presenter, listReviews, params } = setup();
         listReviews.execute.mockResolvedValue(page([]));

@@ -44,6 +44,7 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
     return {
         vm,
         init: vi.fn(),
+        applyRoute: vi.fn(),
         setScope: vi.fn(),
         setState: vi.fn(),
         setSearchDraft: vi.fn(),

@@ -20,8 +20,10 @@ import { getReviewListStates } from "./getReviewListStates.js";
 import { getDisabledReviewListStateReason } from "./getDisabledReviewListStateReason.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
+import { isFilteredReviewList } from "./isFilteredReviewList.js";
 import { parseReviewListScope } from "./parseReviewListScope.js";
 import { parseReviewListState } from "./parseReviewListState.js";
+import { resolveReviewListRoute } from "./resolveReviewListRoute.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 import { REVIEW_LIST_SCOPES } from "./reviewListScopes.js";
 import { REVIEW_LIST_STATES } from "./reviewListStates.js";
@@ -447,6 +449,34 @@ describe("review list pure functions", () => {
             contentUrl: null,
             contentTypeLabel: null,
             contentTypeIcon: null
+        });
+    });
+
+    it("counts a search, a content model, Approved and Rejected as filters, not a scope's own state", () => {
+        expect(isFilteredReviewList(false, "inReview")).toBe(false);
+        expect(isFilteredReviewList(false, "all")).toBe(false);
+        expect(isFilteredReviewList(false, "failed")).toBe(false);
+        expect(isFilteredReviewList(false, "approved")).toBe(true);
+        expect(isFilteredReviewList(false, "rejected")).toBe(true);
+        expect(isFilteredReviewList(true, "inReview")).toBe(true);
+    });
+
+    it("resolves the route's scope and state with the defaults and the empty-by-definition fallback", () => {
+        expect(resolveReviewListRoute({ scope: null, state: null })).toEqual({
+            scope: "assignedToMe",
+            state: "inReview"
+        });
+        expect(resolveReviewListRoute({ scope: "myRequests", state: null })).toEqual({
+            scope: "myRequests",
+            state: "all"
+        });
+        expect(resolveReviewListRoute({ scope: "pool", state: "approved" })).toEqual({
+            scope: "pool",
+            state: "inReview"
+        });
+        expect(resolveReviewListRoute({ scope: "all", state: "failed" })).toEqual({
+            scope: "all",
+            state: "failed"
         });
     });
 });

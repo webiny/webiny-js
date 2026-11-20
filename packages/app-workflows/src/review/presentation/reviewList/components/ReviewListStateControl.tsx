@@ -8,12 +8,14 @@ import { ReviewListStateLabel } from "./ReviewListStateLabel.js";
 
 export interface ReviewListStateControlProps {
     presenter: ReviewListPresenter.Interface;
+    // Called once the presenter took the choice; the page writes it to the URL.
+    onChanged?: () => void;
 }
 
 // Where the listed reviews are (`vm.states`); a state empty by definition for the scope is disabled
 // and says why in a tooltip (B8).
 export const ReviewListStateControl = createReactiveComponent(
-    ({ presenter }: ReviewListStateControlProps) => {
+    ({ presenter, onChanged }: ReviewListStateControlProps) => {
         const labelId = useId();
         const vm = presenter.vm;
         const items = vm.states.map(state => {
@@ -29,7 +31,9 @@ export const ReviewListStateControl = createReactiveComponent(
             if (!state) {
                 return;
             }
-            void presenter.setState(state);
+            const pending = presenter.setState(state);
+            onChanged?.();
+            void pending;
         };
 
         return (

@@ -10,6 +10,7 @@ import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { IReviewRowProvider } from "../abstractions.js";
+import type { ReviewListRouteParams } from "../abstractions.js";
 import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
 import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewListPresenterFeature } from "../feature.js";
@@ -30,6 +31,12 @@ export interface ReviewListViewProps {
     // From the route; the presenter falls back to the defaults for a missing or invalid value.
     initialScope?: ReviewListScope | null;
     initialState?: ReviewListState | null;
+    /*
+     * Writes the scope and state the list shows to the route, after a choice in the controls,
+     * "Clear filters" or a fallback of the route's own values. A route change that comes back
+     * with the shown values does not reload the list.
+     */
+    onRouteChange?: (params: ReviewListRouteParams) => void;
 }
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4, 5];
@@ -54,12 +61,34 @@ const ReviewListSkeleton = () => {
 };
 
 export const ReviewListView = createReactiveComponent((props: ReviewListViewProps) => {
-    const { app, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
+    const { app, rowProvider, namespaces, showContentType, contentTypeFilter, onRouteChange } =
+        props;
     const initialScope = props.initialScope ?? null;
     const initialState = props.initialState ?? null;
     const { presenter } = useFeature(ReviewListPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
+    // Writes the shown scope and state to the route when they differ from it.
+    const writeRoute = () => {
+        if (!onRouteChange) {
+            return;
+        }
+        const { scope, state } = presenter.vm;
+        if (scope === initialScope && state === initialState) {
+            return;
+        }
+        onRouteChange({ scope, state });
+    };
+
+    // A route that names a scope or state shows the values really applied after a fallback.
+    const writeRouteFallback = () => {
+        if (initialScope === null && initialState === null) {
+            return;
+        }
+        writeRoute();
+    };
+
+    // The route's values are read when the list opens; later route changes go to `applyRoute`.
     useEffect(() => {
         void presenter.init({
             app,
@@ -72,7 +101,15 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
         return () => {
             presenter.dispose();
         };
-    }, [presenter, app, rowProvider, namespacesKey, initialScope, initialState, showContentType]);
+    }, [presenter, app, rowProvider, namespacesKey, showContentType]);
+
+    // A route changed from outside (a link, back or forward) or by `writeRoute`; the presenter
+    // ignores the values it already shows, so the search and the content model filter stay. On
+    // mount it runs after `init` and only writes a fallback back to the route.
+    useEffect(() => {
+        void presenter.applyRoute({ scope: initialScope, state: initialState });
+        writeRouteFallback();
+    }, [presenter, initialScope, initialState]);
 
     const vm = presenter.vm;
 
@@ -124,7 +161,11 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                 description={vm.empty.description}
                 actionLabel={actionLabel}
                 actionVariant="primary"
-                onAction={() => presenter.clearFilters()}
+                onAction={() => {
+                    const pending = presenter.clearFilters();
+                    writeRoute();
+                    void pending;
+                }}
             />
         );
     } else if (vm.rows.length > 0) {
@@ -156,8 +197,8 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                 data-role="review-list-filters"
                 className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center justify-between gap-sm"
             >
-                <ReviewListStateControl presenter={presenter} />
-                <ReviewListScopeControl presenter={presenter} />
+                <ReviewListStateControl presenter={presenter} onChanged={writeRoute} />
+                <ReviewListScopeControl presenter={presenter} onChanged={writeRoute} />
             </div>
             <Separator />
             {notices}

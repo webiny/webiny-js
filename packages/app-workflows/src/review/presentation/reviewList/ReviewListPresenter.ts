@@ -20,12 +20,14 @@ import type { IReviewRowProvider } from "./abstractions.js";
 import type { ReviewListDialogVm } from "./abstractions.js";
 import type { ReviewListEmptyVm } from "./abstractions.js";
 import type { ReviewListInitParams } from "./abstractions.js";
+import type { ReviewListRouteParams } from "./abstractions.js";
 import type { ReviewListRowVm } from "./abstractions.js";
 import type { ReviewListSortField } from "./abstractions.js";
 import type { ReviewListStatus } from "./abstractions.js";
 import { formatLastChange } from "./formatLastChange.js";
 import { getDefaultReviewListSort } from "./getDefaultReviewListSort.js";
 import { getDefaultReviewListState } from "./getDefaultReviewListState.js";
+import { isFilteredReviewList } from "./isFilteredReviewList.js";
 import { getListOwnerLabel } from "./getListOwnerLabel.js";
 import { getListReviewStateLabel } from "./getListReviewStateLabel.js";
 import { getListRowActions } from "./getListRowActions.js";
@@ -33,6 +35,7 @@ import { getReviewListEmpty } from "./getReviewListEmpty.js";
 import { getReviewListStates } from "./getReviewListStates.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
+import { resolveReviewListRoute } from "./resolveReviewListRoute.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 import { toggleReviewListSort } from "./toggleReviewListSort.js";
 
@@ -120,7 +123,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         const now = new Date();
         const rows = this._entries.map(entry => this.toRowVm(entry, now));
         const hasFilters = this._search.trim() !== "" || this._contentTypeId !== null;
-        const isFiltered = hasFilters || this._state !== getDefaultReviewListState(this._scope);
+        // The same test as the empty copy: "Clear filters" shows only beside the filtered text.
+        const isFiltered = isFilteredReviewList(hasFilters, this._state);
         const hasTeams = this.identityContext.getIdentity().teams.length > 0;
 
         let empty: ReviewListEmptyVm | null = null;
@@ -166,14 +170,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.app = params.app;
         this.rowProvider = params.rowProvider;
         this.showContentType = params.showContentType;
-        // Every scope is open to every viewer (designer answer B7); the server decides what it
-        // lists. A missing state, or one empty by definition for the scope, falls back to the
-        // scope's default state.
-        const scope: ReviewListScope = params.initialScope ?? "assignedToMe";
-        let state = params.initialState ?? getDefaultReviewListState(scope);
-        if (isEmptyReviewListFilter(scope, state)) {
-            state = getDefaultReviewListState(scope);
-        }
+        const { scope, state } = resolveReviewListRoute({
+            scope: params.initialScope,
+            state: params.initialState
+        });
         this._scope = scope;
         this._state = state;
         this._sort = getDefaultReviewListSort(scope, state);
@@ -183,6 +183,36 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         const token = this.beginLoad(false);
         const request = this.createParams(params.app, REVIEW_LIST_PAGE_SIZE, null);
+        try {
+            const listed = await this.listReviewsUseCase.execute(request);
+            if (token === this.loadToken) {
+                this.applyFirstPage(listed, false);
+            }
+        } catch {
+            if (token === this.loadToken) {
+                this.applyLoadFailure();
+            }
+        }
+    }
+
+    async applyRoute(params: ReviewListRouteParams): Promise<void> {
+        const app = this.app;
+        if (!app) {
+            return;
+        }
+
+        const { scope, state } = resolveReviewListRoute(params);
+        if (scope === this._scope && state === this._state) {
+            return;
+        }
+
+        // The search and the content model filter are kept, as on a scope switch (B11).
+        this._scope = scope;
+        this._state = state;
+        this._sort = getDefaultReviewListSort(scope, state);
+
+        const token = this.beginLoad(false);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
             const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {

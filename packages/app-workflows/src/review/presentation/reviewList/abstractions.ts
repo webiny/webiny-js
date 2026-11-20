@@ -61,6 +61,12 @@ export interface ReviewListInitParams {
     showContentType: boolean;
 }
 
+// The scope and state of the route's `?scope=` and `?state=`; `null` for a missing or invalid value.
+export interface ReviewListRouteParams {
+    scope: ReviewListScope | null;
+    state: ReviewListState | null;
+}
+
 export interface ReviewListRowVm {
     reviewId: string;
     namespace: string;
@@ -117,6 +123,12 @@ export interface IReviewListViewModel {
 export interface IReviewListPresenter {
     readonly vm: IReviewListViewModel;
     init(params: ReviewListInitParams): Promise<void>;
+    /*
+     * Applies a scope and state the route changed to from outside (a link, back or forward), with
+     * the fallbacks of `init`; the search and the content model filter are kept (B11). Nothing
+     * happens when they are the ones already shown.
+     */
+    applyRoute(params: ReviewListRouteParams): Promise<void>;
     setScope(scope: ReviewListScope): Promise<void>;
     setState(state: ReviewListState): Promise<void>;
     setSearchDraft(search: string): void;
