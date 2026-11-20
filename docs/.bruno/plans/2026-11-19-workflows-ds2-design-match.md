@@ -561,3 +561,23 @@ Notifications
 34. Pool message for several teams: wording ("Legal, Editors and 2 more"?).
 35. E-mail footer for requesters and previous owners; the Cancelled and Taken over e-mails use the previous-owner footer today.
 36. Review details of a cancelled review: which tag does the step that was current at cancel time get?
+
+## Designer answers, batch 2 (B1–B36), 2026-11-20
+
+Answers are in the canvas file `project/notes/answers.md` under "Batch 2". Built: B1, B4, B5, B6, B7,
+B8, B9, B11, B13, B17, B23, B27, B31, B34, B35 (commits `8bcd3cdf8f`, `6cab619db9`, `ef77704892`).
+B36 was already right. No change needed: B2, B3, B10, B12, B14, B15, B16, B18, B19, B21, B24, B25,
+B26, B28, B29, B32, B33. B20 (dark title) is the design system's `EditableTitle`, left. B22 (General,
+Test routing, AI and Automation forms, empty rules state) stays open with the designer.
+
+Not built:
+
+- B30, "a widget pair only for an app with at least one workflow": dashboard widgets mounted after
+  the first render are not registered (`Compose` in `packages/react-composition`). The access part
+  is built (Website Builder needs page read access). Needs a decision: fix `Compose`, or keep the
+  pair registered and render nothing.
+- B9 counts only the last owner of each step; a person reassigned away before the step finished is
+  not counted. Counting them needs a new stored field and a backfill.
+
+Side effects to confirm: step-level warnings that mark no form field show only on the step card,
+not in the drawer (B23); the tooltip of a disabled state is mouse-only (B8).
