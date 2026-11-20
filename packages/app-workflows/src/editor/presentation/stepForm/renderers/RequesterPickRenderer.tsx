@@ -4,8 +4,8 @@ import { createFieldRenderer } from "@webiny/app-admin/features/formModel/create
 import "../stepFormRendererNames.js";
 
 /*
- * Let the requester pick a reviewer (R296, D21): the switch leads and the hint is the switch's own
- * note.
+ * Let the requester pick a reviewer (R296, D21): label, then the hint as the switch's own
+ * description, then the switch (design order).
  */
 export const RequesterPickRenderer = createFieldRenderer<"workflowRequesterPick">(({ field }) => {
     return (
@@ -14,7 +14,7 @@ export const RequesterPickRenderer = createFieldRenderer<"workflowRequesterPick"
                 checked={!!field.value}
                 onChange={value => field.onChange(value)}
                 label={field.label}
-                note={field.note}
+                description={field.note}
                 variant={"branded"}
                 disabled={field.disabled}
                 validation={field.validation}

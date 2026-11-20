@@ -86,7 +86,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
     const actions = (
         <>
             <Button
-                variant="tertiary"
+                variant="secondary"
                 text="Cancel"
                 disabled={vm.saving}
                 onClick={() => presenter.cancel()}
@@ -121,6 +121,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                     required={true}
                     placeholder="Search people"
                     icon={"search"}
+                    size="md"
                     value={vm.user.value}
                     selected={vm.user.selected}
                     options={vm.user.options}
@@ -133,9 +134,10 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                 <Textarea
                     label="Reason"
                     rows={2}
+                    className="min-h-0"
                     maxLength={REASON_MAX_LENGTH}
                     placeholder="e.g. On leave"
-                    note={REASON_HINT}
+                    description={REASON_HINT}
                     value={vm.reason}
                     disabled={vm.saving}
                     onChange={(value: string) => presenter.setReason(value)}
@@ -145,6 +147,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                         <div className="w-3xs shrink-0">
                             <DatePicker
                                 type="date"
+                                size="md"
                                 label="Until"
                                 value={vm.date ?? undefined}
                                 minDate={vm.minDate}
@@ -155,7 +158,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                         </div>
                         <Button
                             variant="ghost"
-                            size="sm"
+                            size="md"
                             text="Clear"
                             disabled={vm.saving || !vm.showClear}
                             onClick={() => presenter.clearDate()}

@@ -1,17 +1,11 @@
 import React from "react";
-import { FormComponentNote } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
 import type { ReviewListRowVm } from "../abstractions.js";
 
 export interface ReviewListContentTypeCellProps {
     row: ReviewListRowVm;
 }
 
+// One line, the type name only, so rows keep the compact height; the app shows in the Filter picker.
 export const ReviewListContentTypeCell = ({ row }: ReviewListContentTypeCellProps) => {
-    return (
-        <div>
-            <Text as="div">{row.contentTypeLabel ?? ""}</Text>
-            <FormComponentNote className="mt-0" text={row.contentTypeApp} />
-        </div>
-    );
+    return <>{row.contentTypeLabel ?? ""}</>;
 };

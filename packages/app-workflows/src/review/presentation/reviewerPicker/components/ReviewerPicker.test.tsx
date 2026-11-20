@@ -86,7 +86,7 @@ describe("ReviewerPicker", () => {
         await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(2));
     });
 
-    it("offers each person with initials and teams, the disabled one with its note", async () => {
+    it("offers each person with teams and no avatar, the disabled one with its note", async () => {
         const presenter = createPresenter();
         await presenter.init({
             load: vi.fn().mockResolvedValue(CANDIDATES),
@@ -100,7 +100,7 @@ describe("ReviewerPicker", () => {
         fireEvent.keyDown(input, { key: "ArrowDown" });
 
         expect(await screen.findByText("Ivan Horvat")).toBeTruthy();
-        expect(screen.getByText("IH")).toBeTruthy();
+        expect(screen.queryByText("IH")).toBeNull();
         expect(screen.getByText("Marketing")).toBeTruthy();
         expect(screen.getByText("Petra Novak")).toBeTruthy();
         expect(screen.getByText("Unavailable")).toBeTruthy();

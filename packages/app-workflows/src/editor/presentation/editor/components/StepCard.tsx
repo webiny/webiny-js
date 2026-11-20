@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
+import { ButtonGroup } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -13,13 +14,17 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as ArrowDownwardIcon } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as ArrowUpwardIcon } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { ReactComponent as DragIndicatorIcon } from "@webiny/icons/drag_indicator.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
+import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
 
 export interface StepCardProps {
     step: StepCardVm;
     index: number;
+    // How many steps the flow has, for the drag handle's label.
+    total: number;
     sortable: SortablePresenter.ItemProps;
     // A save is in flight: move and delete do nothing (Task 10).
     disabled?: boolean;
@@ -31,10 +36,12 @@ export interface StepCardProps {
 }
 
 /*
- * One step of the flow as an accordion item: the number, title, type tag and meta line in the
- * header with move up, move down, edit and delete as the item's actions; the key and
- * value rows, the warning lines, the error and an Edit step button in the expanded body. The "+" add after button sits to the right of the card, outside it. The sortable item props make the item a drop target and the
- * accordion's drag handle the drag source. Must render inside an `Accordion`.
+ * One step of the flow as a row: the drag handle, the accordion item and the "+" add after button.
+ * The item's header holds the number tag, the title, the type tag and the problem tags, with move
+ * up, move down and delete as its actions; the expanded body holds the key and value rows, the
+ * warning lines, the error and the Edit step button, the only way to open the step from the card.
+ * The sortable item props make the row a drop target and the handle the drag source. Must render
+ * inside an `Accordion`.
  */
 export const StepCard = (props: StepCardProps) => {
     const { step, index, sortable } = props;
@@ -49,11 +56,16 @@ export const StepCard = (props: StepCardProps) => {
     if (step.error !== null) {
         problemTag = <Tag variant="destructive" content="Error" />;
     } else if (step.warnings.length > 0) {
-        problemTag = <Tag variant="warning" content="Warning" />;
+        const warningCount = step.warnings.length;
+        const warningText = warningCount === 1 ? "1 warning" : `${warningCount} warnings`;
+        problemTag = <Tag variant="warning-light" icon={<WarningIcon />} content={warningText} />;
     }
 
     const title = (
         <span data-role="step-title-row" className="flex items-center gap-xs min-w-0">
+            <span data-role="step-number" className="flex shrink-0">
+                <Tag variant="neutral-base-outline" content={String(step.number)} />
+            </span>
             {/* A plain span keeps the accordion title's semibold weight (`Text` resets it). */}
             <span className="truncate">{step.title}</span>
             <Tag
@@ -68,30 +80,29 @@ export const StepCard = (props: StepCardProps) => {
 
     // The accordion trigger toggles on Enter and Space from any descendant, so the actions keep those keys.
     const actions = (
-        <span className="flex items-center gap-xs" onKeyDown={event => event.stopPropagation()}>
-            <Accordion.Item.Action
-                aria-label="Move up"
-                icon={<ArrowUpwardIcon />}
-                disabled={disabled || !step.canMoveUp}
-                onClick={() => props.onMove(index, index - 1)}
-            />
-            <Accordion.Item.Action
-                aria-label="Move down"
-                icon={<ArrowDownwardIcon />}
-                disabled={disabled || !step.canMoveDown}
-                onClick={() => props.onMove(index, index + 1)}
-            />
-            <Accordion.Item.Action
-                aria-label="Edit step"
-                icon={<EditIcon />}
-                onClick={() => props.onEdit(step.id)}
-            />
-            <Accordion.Item.Action
-                aria-label="Delete step"
-                icon={<DeleteIcon />}
-                disabled={disabled}
-                onClick={() => props.onDelete(step.id)}
-            />
+        <span className="flex items-center" onKeyDown={event => event.stopPropagation()}>
+            <ButtonGroup variant="ghost" kind="icon" size="sm" label={`Actions for ${step.title}`}>
+                <Accordion.Item.Action
+                    aria-label={`Move ${step.title} up`}
+                    data-role="move-up"
+                    icon={<ArrowUpwardIcon />}
+                    disabled={disabled || !step.canMoveUp}
+                    onClick={() => props.onMove(index, index - 1)}
+                />
+                <Accordion.Item.Action
+                    aria-label={`Move ${step.title} down`}
+                    data-role="move-down"
+                    icon={<ArrowDownwardIcon />}
+                    disabled={disabled || !step.canMoveDown}
+                    onClick={() => props.onMove(index, index + 1)}
+                />
+                <Accordion.Item.Action
+                    aria-label={`Delete ${step.title}`}
+                    icon={<DeleteIcon />}
+                    disabled={disabled}
+                    onClick={() => props.onDelete(step.id)}
+                />
+            </ButtonGroup>
         </span>
     );
 
@@ -116,16 +127,21 @@ export const StepCard = (props: StepCardProps) => {
             </Text>
         );
     }
+    // Two aligned columns: a fixed-width muted label and the value (design: 112px label column).
     const detailRows = step.details.map(row => (
-        <div key={row.label} data-role="step-detail-row" className="flex gap-sm">
-            <Text as="span" size="md" className="shrink-0">
+        <div key={row.label} data-role="step-detail-row" className="flex gap-md">
+            <Text as="span" size="sm" className="w-28 shrink-0 text-neutral-strong">
                 {row.label}
             </Text>
-            <Text as="span" size="md">
+            <Text as="span" size="sm" className="min-w-0">
                 {row.value}
             </Text>
         </div>
     ));
+    let detailGrid: React.ReactNode = null;
+    if (detailRows.length > 0) {
+        detailGrid = <div className="grid gap-y-xs">{detailRows}</div>;
+    }
 
     return (
         <div
@@ -135,25 +151,28 @@ export const StepCard = (props: StepCardProps) => {
             data-testid={`step-card-${step.id}`}
             className="flex items-start gap-sm"
         >
+            {/* Centred on the item's collapsed header (62px tall), so it stays put when the item opens. */}
+            <div data-role="drag-handle" className="flex shrink-0 pt-md-extra">
+                <span ref={sortable.handleRef} className="flex">
+                    <IconButton
+                        aria-label={`Drag to reorder ${step.title} (step ${step.number} of ${props.total})`}
+                        variant="ghost"
+                        size="sm"
+                        icon={<DragIndicatorIcon />}
+                    />
+                </span>
+            </div>
             <div className="min-w-0 grow">
                 <Accordion.Item
                     title={title}
-                    description={step.summary}
                     colorMark={step.color}
-                    icon={
-                        <span data-role="step-number" className="flex w-xl shrink-0 justify-center">
-                            <Text as="span">{step.number}</Text>
-                        </span>
-                    }
                     actions={actions}
-                    draggable={true}
-                    dragHandleRef={sortable.handleRef}
                     open={open}
                     onOpenChange={setOpen}
                 >
-                    <div data-role="step-details" className="flex flex-col gap-xs">
+                    <div data-role="step-details" className="flex flex-col gap-sm">
                         {descriptionText}
-                        {detailRows}
+                        {detailGrid}
                         {step.warnings.map((line, lineIndex) => (
                             <Alert
                                 key={`${lineIndex}:${line.text}`}
@@ -175,6 +194,7 @@ export const StepCard = (props: StepCardProps) => {
                                 variant="secondary"
                                 size="sm"
                                 text="Edit step"
+                                icon={<EditIcon />}
                                 onClick={() => props.onEdit(step.id)}
                             />
                         </div>

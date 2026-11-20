@@ -158,13 +158,16 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         });
 
         expect(screen.getByText("Let the requester pick a reviewer")).toBeDefined();
-        expect(
-            screen.getByText(
-                "The requester can choose a reviewer when they request a review. Picks are checked again when the step is reached."
-            )
-        ).toBeDefined();
+        const hint = screen.getByText(
+            "The requester can choose a reviewer when they request a review. Picks are checked again when the step is reached."
+        );
+        expect(hint).toBeDefined();
 
         const toggle = screen.getByRole("switch");
+        // The hint sits under the label and above the switch (design order).
+        expect(
+            hint.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
         expect(toggle.getAttribute("aria-checked")).toBe("false");
 
         fireEvent.click(toggle);

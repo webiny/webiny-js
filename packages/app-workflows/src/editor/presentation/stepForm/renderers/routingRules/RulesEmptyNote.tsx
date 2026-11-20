@@ -28,7 +28,7 @@ export const RulesEmptyNote = ({ strategy, disabled, onAdd }: RulesEmptyNoteProp
         <div className={"flex flex-col items-start gap-sm"}>
             <Text size={"sm"}>{text}</Text>
             <Button
-                variant={"tertiary"}
+                variant={"secondary"}
                 size={"sm"}
                 text={ASSIGNMENT_FORM_MESSAGES.addRule}
                 icon={<AddIcon />}

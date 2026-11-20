@@ -117,7 +117,11 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                     className={"flex flex-wrap items-center gap-sm-plus"}
                                 >
                                     {vm.stepMeta !== null && vm.stepColor !== null ? (
-                                        <Tag content={vm.stepMeta} swatchColor={vm.stepColor} />
+                                        <Tag
+                                            variant={"neutral-light"}
+                                            content={vm.stepMeta}
+                                            swatchColor={vm.stepColor}
+                                        />
                                     ) : null}
                                     {vm.stepMeta !== null && vm.stepColor === null ? (
                                         <Text size={"sm"}>{vm.stepMeta}</Text>

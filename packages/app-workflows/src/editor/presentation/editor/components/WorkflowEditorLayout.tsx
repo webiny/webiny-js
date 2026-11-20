@@ -100,13 +100,14 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
         /*
          * One bordered card built from the SimpleForm parts (header, content, footer). `SimpleForm`
          * itself cannot bound its inner column's height, so the card's column is laid out here: the
-         * header stays put and only the steps scroll. The empty footer closes the card's border.
+         * card hugs its content, the header stays put and only the steps scroll once they are taller
+         * than the page. The empty footer closes the card's border.
          */
         content = (
             <div data-role="editor-page" className="flex min-h-0 grow flex-col p-lg">
                 <div
                     data-role="editor-card"
-                    className="mx-auto flex min-h-0 w-full max-w-4xl grow flex-col"
+                    className="mx-auto flex min-h-0 w-full max-w-4xl flex-col"
                 >
                     <EditorHeader
                         header={header}

@@ -1,32 +1,17 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import type { ExclusionsEmptyVm } from "~/settings/model/list/ExclusionsEmptyVm.js";
-import { EXCLUSIONS_ADD_LABEL } from "../exclusionsCopy.js";
 import { EXCLUSIONS_CLEAR_SEARCH_LABEL } from "../exclusionsCopy.js";
 
 export interface ExclusionsEmptyProps {
     empty: ExclusionsEmptyVm;
-    onAdd(): void;
     onClearSearch(): void;
 }
 
-// The empty states of R322: Add exclusion or Clear search when the VM says so.
-export const ExclusionsEmpty = ({ empty, onAdd, onClearSearch }: ExclusionsEmptyProps) => {
+// The empty states of R322: Clear search when the VM says so; Add exclusion is the toolbar's only.
+export const ExclusionsEmpty = ({ empty, onClearSearch }: ExclusionsEmptyProps) => {
     let actions: React.ReactNode = null;
-    if (empty.showAdd) {
-        actions = (
-            <Button
-                variant="primary"
-                text={EXCLUSIONS_ADD_LABEL}
-                icon={<AddIcon />}
-                size="sm"
-                onClick={() => onAdd()}
-            />
-        );
-    }
-
     if (empty.showClearSearch) {
         actions = (
             <Button

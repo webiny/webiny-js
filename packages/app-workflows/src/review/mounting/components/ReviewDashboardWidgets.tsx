@@ -87,7 +87,8 @@ const MY_REQUESTS_PREVIEW_ROWS: ReviewWidgetRowVm[] = [
     }
 ];
 
-// The two dashboard widgets of one app (R231): For me to review, and My requests.
+// The two dashboard widgets of one app (R231): For me to review, and My requests. The dashboard
+// has only a left and a right column, so the pair sits side by side: For me left, My requests right.
 export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
     const { prefix, namespaces, rowProvider, viewAllRoute } = props;
     const router = useRouter();
@@ -108,7 +109,7 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
                 title="For me to review"
                 description="Reviews waiting on you or your teams."
                 group={GROUPS[prefix]}
-                column="right"
+                column="left"
                 preview={
                     <ReviewWidgetPreview
                         title="For me to review"

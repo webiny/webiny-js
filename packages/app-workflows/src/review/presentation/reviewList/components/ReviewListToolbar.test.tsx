@@ -80,7 +80,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={null}
             />
         );
-        const input = screen.getByPlaceholderText("Search by title");
+        const input = screen.getByPlaceholderText("Search...");
 
         fireEvent.change(input, { target: { value: "bud" } });
         fireEvent.change(input, { target: { value: "budget" } });
@@ -103,7 +103,7 @@ describe("ReviewListToolbar", () => {
             />
         );
 
-        const input = screen.getByPlaceholderText("Search by title") as HTMLInputElement;
+        const input = screen.getByPlaceholderText("Search...") as HTMLInputElement;
 
         expect(input.value).toBe("typing");
     });
@@ -179,7 +179,7 @@ describe("ReviewListToolbar", () => {
         const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
         const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
         expect(cells).toEqual(["toolbar-search", "toolbar-filter"]);
-        expect(screen.getByPlaceholderText("Search by title")).toBeTruthy();
+        expect(screen.getByPlaceholderText("Search...")).toBeTruthy();
     });
 
     it("opens the content type picker with a visible label from the Filter button", () => {
@@ -275,7 +275,7 @@ describe("ReviewListToolbar", () => {
         );
 
         expect(
-            screen.getByPlaceholderText("Search by title").parentElement?.querySelector("svg")
+            screen.getByPlaceholderText("Search...").parentElement?.querySelector("svg")
         ).not.toBeNull();
     });
 });

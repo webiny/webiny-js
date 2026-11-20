@@ -126,6 +126,8 @@ describe("WorkflowEditorLayout flow", () => {
         });
 
         const card = screen.getByTestId("step-card-s2");
+        // The Edit step button sits in the item's body: open the item first.
+        fireEvent.click(within(card).getByText("Legal sign-off"));
         fireEvent.click(within(card).getByRole("button", { name: "Edit step" }));
 
         expect(presenter.openStep).toHaveBeenCalledWith("s2");
@@ -140,11 +142,11 @@ describe("WorkflowEditorLayout flow", () => {
         expect(presenter.openTypePicker).toHaveBeenCalledWith(STEPS.length);
 
         const first = screen.getByTestId("step-card-s1");
-        fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
+        fireEvent.click(within(first).getByRole("button", { name: "Move Editorial check down" }));
         expect(presenter.moveStep).toHaveBeenCalledWith(0, 1);
 
         const second = screen.getByTestId("step-card-s2");
-        fireEvent.click(within(second).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(second).getByRole("button", { name: "Delete Legal sign-off" }));
         expect(presenter.requestDeleteStep).toHaveBeenCalledWith("s2");
     });
 
@@ -157,9 +159,9 @@ describe("WorkflowEditorLayout flow", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "Add new step" }));
         const first = screen.getByTestId("step-card-s1");
-        fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
+        fireEvent.click(within(first).getByRole("button", { name: "Move Editorial check down" }));
         const second = screen.getByTestId("step-card-s2");
-        fireEvent.click(within(second).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(second).getByRole("button", { name: "Delete Legal sign-off" }));
 
         expect(presenter.openTypePicker).not.toHaveBeenCalled();
         expect(presenter.moveStep).not.toHaveBeenCalled();

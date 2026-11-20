@@ -31,6 +31,9 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
     const vm = presenter.vm;
     const [columnVisibility, setColumnVisibility] = useState<DataTableColumnVisibility>({});
 
+    // Design order: Name, Content type, Requested by, Modified, Workflow. The resizable columns share
+    // the width by their `size`; Workflow keeps a fixed width that fits its two tags. `DataTable`
+    // puts the sort arrow at the end of the header, so a narrow Modified keeps it near the label.
     const columns = useMemo(() => {
         const result: DataTableColumns<ReviewListTableEntry> = {
             title: {
@@ -38,30 +41,33 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
                 cell: row => <ReviewListNameCell row={row} />,
                 enableSorting: true,
                 enableHiding: false,
-                size: 200
+                size: 400
             }
         };
         if (showContentType) {
             result.contentTypeLabel = {
                 header: "Content type",
                 cell: row => <ReviewListContentTypeCell row={row} />,
-                truncate: false
+                size: 160
             };
         }
-        result.stepTitle = {
-            header: "Workflow",
-            cell: row => <ReviewListWorkflowCell row={row} />,
-            truncate: false,
-            size: 200
-        };
         result.requesterName = {
             header: "Requested by",
-            cell: row => row.requesterName
+            cell: row => row.requesterName,
+            size: 160
         };
         result.lastChange = {
             header: "Modified",
             cell: row => row.lastChange,
-            enableSorting: true
+            enableSorting: true,
+            size: 110
+        };
+        result.stepTitle = {
+            header: "Workflow",
+            cell: row => <ReviewListWorkflowCell row={row} />,
+            truncate: false,
+            enableResizing: false,
+            size: 224
         };
         result.actions = {
             header: "",

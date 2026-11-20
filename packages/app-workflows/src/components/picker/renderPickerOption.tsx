@@ -5,7 +5,12 @@ import { FormComponentNote } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
 import type { PickerOption } from "./PickerOption.js";
+import type { PickerOptionIcon } from "./PickerOptionIcon.js";
 import { PickerOptionIconView } from "./PickerOptionIconView.js";
+
+// A person or team row shows only the name and the grey team line (design Picker); a deleted
+// person or team, muted, keeps its icon (D117).
+const PLAIN_ROW_ICONS: PickerOptionIcon[] = ["person", "group", "groups"];
 
 /*
  * One option row of the list: the icon column, the label (muted for a muted option), the sub line,
@@ -43,10 +48,14 @@ export const renderPickerOption = (option: PickerOption): React.ReactNode => {
     );
 
     let row: React.ReactNode = content;
-    if (option.icon !== null) {
+    let rowIcon: PickerOptionIcon | null = option.icon;
+    if (rowIcon !== null && !option.muted && PLAIN_ROW_ICONS.includes(rowIcon)) {
+        rowIcon = null;
+    }
+    if (rowIcon !== null) {
         row = (
             <div className={"flex items-start gap-sm"}>
-                <PickerOptionIconView name={option.icon} muted={option.muted} />
+                <PickerOptionIconView name={rowIcon} muted={option.muted} />
                 {content}
             </div>
         );

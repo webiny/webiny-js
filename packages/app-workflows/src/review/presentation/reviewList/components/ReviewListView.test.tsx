@@ -908,6 +908,25 @@ describe("ReviewListView", () => {
         expect(first.listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
+    it("orders the columns as in the design, with a one-line Content type cell", async () => {
+        renderView({
+            showContentType: true,
+            contentTypeFilter: {
+                options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+            },
+            results: [page([createReviewListItem({ id: "r1", title: "Ordered" })])]
+        });
+        await screen.findByText("Ordered");
+
+        const headers = screen.getAllByRole("columnheader").map(header => header.textContent ?? "");
+        const positions = ["Name", "Content type", "Requested by", "Modified", "Workflow"].map(
+            name => headers.findIndex(text => text.startsWith(name))
+        );
+        expect(positions.every(position => position >= 0)).toBe(true);
+        expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+        expect(within(rowOf("Ordered")).queryByText("Headless CMS")).toBeNull();
+    });
+
     it("has neither Content type column nor filter without them (Website Builder)", async () => {
         renderView({
             showContentType: false,

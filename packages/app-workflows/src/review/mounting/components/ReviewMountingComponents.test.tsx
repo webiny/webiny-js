@@ -262,7 +262,7 @@ describe("ReviewContentReviewsMenu", () => {
 });
 
 describe("ReviewDashboardWidgets", () => {
-    it("registers the two widgets named per prefix in the right column (R231)", () => {
+    it("registers the two widgets named per prefix side by side, For me left (R231)", () => {
         render(
             <ReviewDashboardWidgets
                 prefix="cms"
@@ -278,7 +278,7 @@ describe("ReviewDashboardWidgets", () => {
             "workflows.cms.requested"
         ]);
         expect(widgets.map(widget => widget.getAttribute("data-column"))).toEqual([
-            "right",
+            "left",
             "right"
         ]);
         expect(screen.getByTestId("for-me").getAttribute("data-namespaces")).toBe("cms.article");

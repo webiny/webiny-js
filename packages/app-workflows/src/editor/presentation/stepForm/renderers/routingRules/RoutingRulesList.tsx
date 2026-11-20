@@ -163,7 +163,7 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
                     <FormComponentDescription text={ASSIGNMENT_FORM_MESSAGES.rulesHint} />
                 </div>
                 <Button
-                    variant={"tertiary"}
+                    variant={"secondary"}
                     size={"sm"}
                     text={ASSIGNMENT_FORM_MESSAGES.addRule}
                     icon={<AddIcon />}

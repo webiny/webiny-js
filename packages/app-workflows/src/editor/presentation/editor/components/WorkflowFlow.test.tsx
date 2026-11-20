@@ -97,7 +97,7 @@ describe("WorkflowFlow", () => {
         expect(emptyColumn!.contains(screen.getByTestId("no-steps"))).toBe(true);
     });
 
-    it("renders one item per step in order, with its title, type tag and meta line", () => {
+    it("renders one item per step in order, with its title and type tag, without a meta line", () => {
         renderFlow(createProps(), createFakeSortable());
 
         const cards = screen.getAllByTestId(/^step-card-/);
@@ -106,8 +106,19 @@ describe("WorkflowFlow", () => {
         cards.forEach((card, index) => {
             expect(within(card).getByText(titles[index])).toBeTruthy();
             expect(within(card).getByText("People")).toBeTruthy();
-            expect(within(card).getByText(`${titles[index]} summary`)).toBeTruthy();
+            expect(within(card).queryByText(`${titles[index]} summary`)).toBeNull();
         });
+    });
+
+    it("labels every drag handle with the step's position in the flow", () => {
+        renderFlow(createProps(), createFakeSortable());
+
+        const card = screen.getByTestId("step-card-s2");
+        expect(
+            within(card).getByRole("button", {
+                name: "Drag to reorder Legal sign-off (step 2 of 3)"
+            })
+        ).toBeTruthy();
     });
 
     it("has one Add new step button after the last item that appends a step", () => {
@@ -196,9 +207,11 @@ describe("WorkflowFlow", () => {
         renderFlow(props, createFakeSortable());
 
         const card = screen.getByTestId("step-card-s2");
+        // The Edit step button sits in the item's body: open the item first.
+        fireEvent.click(within(card).getByText("Legal sign-off"));
         fireEvent.click(within(card).getByRole("button", { name: "Edit step" }));
-        fireEvent.click(within(card).getByRole("button", { name: "Move down" }));
-        fireEvent.click(within(card).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Move .+ down$/ }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Delete / }));
 
         expect(props.onEditStep).toHaveBeenCalledWith("s2");
         expect(props.onMoveStep).toHaveBeenCalledWith(1, 2);
@@ -262,8 +275,8 @@ describe("WorkflowFlow", () => {
         const card = screen.getByTestId("step-card-s2");
         fireEvent.click(within(card).getByRole("button", { name: /^Add a step after/ }));
         expect(props.onAddStep).not.toHaveBeenCalled();
-        fireEvent.click(within(card).getByRole("button", { name: "Move down" }));
-        fireEvent.click(within(card).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Move .+ down$/ }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Delete / }));
         expect(props.onMoveStep).not.toHaveBeenCalled();
         expect(props.onDeleteStep).not.toHaveBeenCalled();
     });
@@ -385,7 +398,7 @@ describe("WorkflowFlow", () => {
         const view = renderMovable(container, STEPS, props);
 
         const button = within(screen.getByTestId("step-card-s1")).getByRole("button", {
-            name: "Move down"
+            name: /^Move .+ down$/
         });
         button.focus();
         fireEvent.click(button);
@@ -399,7 +412,7 @@ describe("WorkflowFlow", () => {
         view.rerender(rerenderMovable(container, moved, props));
 
         const expected = within(screen.getByTestId("step-card-s1")).getByRole("button", {
-            name: "Move down"
+            name: /^Move .+ down$/
         });
         expect(document.activeElement).toBe(expected);
     });
@@ -410,7 +423,7 @@ describe("WorkflowFlow", () => {
         const view = renderMovable(container, STEPS, props);
 
         const button = within(screen.getByTestId("step-card-s2")).getByRole("button", {
-            name: "Move down"
+            name: /^Move .+ down$/
         });
         fireEvent.click(button);
 
@@ -420,7 +433,7 @@ describe("WorkflowFlow", () => {
         view.rerender(rerenderMovable(container, moved, props));
 
         const expected = within(screen.getByTestId("step-card-s2")).getByRole("button", {
-            name: "Move up"
+            name: /^Move .+ up$/
         });
         expect(document.activeElement).toBe(expected);
     });
@@ -435,7 +448,9 @@ describe("WorkflowFlow", () => {
         expect(region.textContent).toBe("");
 
         fireEvent.click(
-            within(screen.getByTestId("step-card-s1")).getByRole("button", { name: "Move down" })
+            within(screen.getByTestId("step-card-s1")).getByRole("button", {
+                name: /^Move .+ down$/
+            })
         );
         const moved = [STEPS[1], STEPS[0], STEPS[2]];
         view.rerender(rerenderMovable(container, moved, props));

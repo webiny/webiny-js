@@ -2,9 +2,7 @@ import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { AutoComplete } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import type { ReviewerPickerPresenter } from "../abstractions.js";
 import { renderReviewerOption } from "./renderReviewerOption.js";
 
@@ -17,6 +15,7 @@ export interface ReviewerPickerProps {
 }
 
 // The reviewer picker over `AutoComplete` (R209): client-side search, disabled people, retry in the list.
+// The small field without a leading icon, as in the design Picker.
 export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     props: ReviewerPickerProps
 ) {
@@ -55,7 +54,7 @@ export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
                 required={showLabel ? true : undefined}
                 note={hint}
                 placeholder={"Search people"}
-                startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+                size={"md"}
                 displayResetAction={vm.value !== null}
                 options={options}
                 value={vm.value ?? undefined}

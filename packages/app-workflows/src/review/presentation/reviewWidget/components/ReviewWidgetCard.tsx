@@ -38,8 +38,8 @@ const SEGMENTS = [
 
 const SKELETON_ROWS = [0, 1, 2];
 
-// The shared card of both widgets: an admin-ui Widget with the segment in its header, the rows or a
-// state in its body and "View all" in its footer.
+// The shared card of both widgets: a flat, outlined admin-ui Widget with the segment in its header,
+// the rows or a state in its padded body and "View all" in its footer.
 export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCardProps) => {
     const { kind, title, icon, app, namespaces, rowProvider, viewAllUrl } = props;
     const { presenter } = useFeature(ReviewWidgetPresenterFeature);
@@ -129,12 +129,10 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             <Widget
                 variant="base"
                 outline
-                elevation="sm"
                 title={title}
                 description={WIDGET_APP_LABELS[app]}
                 icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
                 padding="sm"
-                bodyPadding={false}
                 headerActions={segment}
                 footerEndActions={
                     <Widget.Action

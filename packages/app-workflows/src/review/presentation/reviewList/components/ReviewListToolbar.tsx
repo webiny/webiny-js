@@ -35,7 +35,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
                 <Input
                     value={vm.searchDraft}
                     onChange={value => presenter.setSearchDraft(value)}
-                    placeholder="Search by title"
+                    placeholder="Search..."
                     startIcon={<Icon icon={<SearchIcon />} label="Search" />}
                     size={"md"}
                     variant={"ghost"}

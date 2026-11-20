@@ -154,7 +154,9 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                         </div>
                     )}
                     {vm.steps.length > 0 && (
-                        <Accordion variant={"container"}>
+                        // `background` is the surface the accordion sits on: on the white drawer
+                        // body its items take the light background, so each step is a light card.
+                        <Accordion variant={"container"} background={"base"}>
                             {vm.steps.map(step => (
                                 <ReviewStepItem
                                     key={step.stepId}

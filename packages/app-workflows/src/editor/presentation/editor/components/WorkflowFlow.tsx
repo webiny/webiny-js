@@ -109,18 +109,18 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
         setAnnouncement(`Step moved to position ${index + 1} of ${steps.length}.`);
 
         const step = steps[index];
-        let label = "Move down";
+        let role = "move-down";
         if (request.direction === "up") {
-            label = "Move up";
+            role = "move-up";
         }
         const blocked = request.direction === "up" ? !step.canMoveUp : !step.canMoveDown;
         if (blocked) {
-            label = label === "Move up" ? "Move down" : "Move up";
+            role = role === "move-up" ? "move-down" : "move-up";
         }
         const cards = rootRef.current.querySelectorAll("[data-step-id]");
         for (const card of Array.from(cards)) {
             if (card.getAttribute("data-step-id") === request.stepId) {
-                const button = card.querySelector<HTMLElement>(`[aria-label="${label}"]`);
+                const button = card.querySelector<HTMLElement>(`[data-role="${role}"]`);
                 button?.focus();
                 return;
             }
@@ -214,6 +214,7 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
                         key={step.id}
                         step={step}
                         index={index}
+                        total={steps.length}
                         sortable={sortable.getItemProps(index)}
                         disabled={disabled}
                         onEdit={props.onEditStep}

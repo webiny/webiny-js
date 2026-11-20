@@ -2,10 +2,8 @@ import React from "react";
 import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { Separator } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
-import { ReactComponent as ContentReviewsIcon } from "@webiny/icons/flowchart.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
@@ -125,6 +123,7 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                 title={vm.empty.title}
                 description={vm.empty.description}
                 actionLabel={actionLabel}
+                actionVariant="primary"
                 onAction={() => presenter.clearFilters()}
             />
         );
@@ -136,24 +135,12 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
 
     return (
         <div>
-            {/* The same header as the CMS entry list (app-admin ListView.Header). */}
+            {/* The header of the CMS entry list (app-admin ListView.Header), without the title icon. */}
             <div className="flex flex-col gap-md">
                 <div className="pt-md px-lg">
-                    <div className="flex gap-sm items-center">
-                        <Icon
-                            icon={<ContentReviewsIcon />}
-                            label="Content Reviews"
-                            size="md"
-                            color="neutral-strong"
-                        />
-                        <Heading level={4} as="h1">
-                            Content Reviews
-                        </Heading>
-                    </div>
-                </div>
-                <div className="px-lg flex flex-wrap items-center gap-sm">
-                    <ReviewListScopeControl presenter={presenter} />
-                    <ReviewListStateControl presenter={presenter} />
+                    <Heading level={4} as="h1">
+                        Content Reviews
+                    </Heading>
                 </div>
                 <div className="px-md pb-sm">
                     <ReviewListToolbar
@@ -162,6 +149,15 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                         contentTypeFilter={contentTypeFilter}
                     />
                 </div>
+            </div>
+            <Separator />
+            {/* One filters row under the search: the review state at the start, the scope at the end. */}
+            <div
+                data-role="review-list-filters"
+                className="px-lg py-sm-plus flex flex-wrap items-center justify-between gap-sm"
+            >
+                <ReviewListStateControl presenter={presenter} />
+                <ReviewListScopeControl presenter={presenter} />
             </div>
             <Separator />
             {notices}

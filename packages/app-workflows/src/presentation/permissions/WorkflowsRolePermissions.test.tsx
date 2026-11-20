@@ -102,38 +102,28 @@ describe("WorkflowsRolePermissions (R333)", () => {
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     });
 
-    it("writes { name: workflows } for Custom from No access, with nothing ticked and the same-as-No-access note", () => {
+    it("writes { name: workflows, editor: true } for Custom from No access, with only Manage workflows ticked", () => {
         const onChange = renderGroup([]);
 
         fireEvent.click(screen.getByRole("radio", { name: "Custom" }));
 
-        expect(getLastValue(onChange)).toEqual([{ name: "workflows" }]);
+        expect(getLastValue(onChange)).toEqual([{ name: "workflows", editor: true }]);
         const editor = screen.getByRole("checkbox", { name: "Manage workflows" });
         const reassign = screen.getByRole("checkbox", { name: "Reassign and operate" });
-        expect(isChecked(editor)).toBe(false);
+        expect(isChecked(editor)).toBe(true);
         expect(isChecked(reassign)).toBe(false);
-        expect(
-            screen.getByText("With nothing selected, this role has the same access as No access.")
-        ).toBeDefined();
     });
 
-    it("starts Custom from Full with both boxes ticked and the same-as-Full note", () => {
+    it("starts Custom from Full with only Manage workflows ticked", () => {
         const onChange = renderGroup([{ name: "workflows.*" }]);
 
         fireEvent.click(screen.getByRole("radio", { name: "Custom" }));
 
-        expect(getLastValue(onChange)).toEqual([
-            { name: "workflows", editor: true, reassign: true }
-        ]);
+        expect(getLastValue(onChange)).toEqual([{ name: "workflows", editor: true }]);
         const editor = screen.getByRole("checkbox", { name: "Manage workflows" });
         const reassign = screen.getByRole("checkbox", { name: "Reassign and operate" });
         expect(isChecked(editor)).toBe(true);
-        expect(isChecked(reassign)).toBe(true);
-        expect(
-            screen.getByText(
-                "Same as Full access today. Full access also gets workflow permissions added in later versions; Custom doesn't."
-            )
-        ).toBeDefined();
+        expect(isChecked(reassign)).toBe(false);
     });
 
     it("ticks Manage workflows and shows no level note with one box ticked", () => {
@@ -215,9 +205,7 @@ describe("WorkflowsRolePermissions (R333)", () => {
 
         fireEvent.click(screen.getByRole("radio", { name: "Custom" }));
 
-        expect(getLastValue(onChange)).toEqual([
-            { name: "workflows", editor: true, reassign: true }
-        ]);
+        expect(getLastValue(onChange)).toEqual([{ name: "workflows", editor: true }]);
     });
 
     it("does not write when the active Custom level is clicked again", () => {

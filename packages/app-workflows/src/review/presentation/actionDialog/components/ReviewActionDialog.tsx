@@ -54,12 +54,12 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
     const errorMessage = vm.fieldError ?? vm.commentError;
     const validation = { isValid: errorMessage === null, message: errorMessage ?? undefined };
 
-    // The reject hint sits beside the live counter (design: hint left, counter right).
+    // The live counter sits at the left under the field, after the reject hint when there is one.
     let note: React.ReactNode = vm.commentNote;
     if (vm.commentCounter !== null) {
         note = (
-            <div className={"flex justify-between"}>
-                <span>{vm.commentNote}</span>
+            <div className={"flex flex-wrap gap-sm"}>
+                {vm.commentNote ? <span>{vm.commentNote}</span> : null}
                 <span>{vm.commentCounter}</span>
             </div>
         );

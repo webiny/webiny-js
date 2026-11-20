@@ -6,6 +6,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { createExclusionRowVm } from "~/settings/testing/createExclusionRowVm.js";
@@ -173,8 +174,8 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(screen.queryByTestId("exclusions-empty")).toBeNull();
     });
 
-    it("shows the empty state with its icon, texts and Add exclusion", () => {
-        const { presenter, result } = renderPage(
+    it("shows the empty state with its icon and texts, and no Add button of its own", () => {
+        const { result } = renderPage(
             createExclusionsPageViewModel({
                 empty: {
                     title: "No exclusions",
@@ -195,10 +196,9 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(screen.queryByTestId("exclusions-table")).toBeNull();
         expect(result.container.querySelector('[data-testid="exclusions-toolbar"]')).not.toBeNull();
 
-        const buttons = queryAddButtons();
-        expect(buttons).toHaveLength(2);
-        fireEvent.click(buttons[1]);
-        expect(presenter.openAdd).toHaveBeenCalledTimes(1);
+        // The toolbar button is the only add action.
+        expect(queryAddButtons()).toHaveLength(1);
+        expect(within(empty).queryByRole("button")).toBeNull();
     });
 
     it("shows the Expired empty state with the history icon and no button", () => {

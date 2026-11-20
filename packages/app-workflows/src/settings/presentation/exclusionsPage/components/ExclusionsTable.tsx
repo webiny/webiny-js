@@ -152,7 +152,7 @@ const ExclusionRow = ({ row, presenter }: ExclusionRowProps) => {
 export const ExclusionsTable = ({ rows, presenter }: ExclusionsTableProps) => {
     return (
         <div data-testid="exclusions-table">
-            <Table bordered>
+            <Table>
                 <Table.Header>
                     <Table.Row>
                         <Table.Head>{EXCLUSIONS_COLUMN_USER}</Table.Head>
