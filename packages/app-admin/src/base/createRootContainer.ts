@@ -14,6 +14,7 @@ import { NotificationsFeature } from "~/features/notifications/feature.js";
 import { BannersFeature } from "~/features/banners/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
+import { ThemeFeature } from "~/features/theme/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { TelemetryFeature } from "~/features/telemetry/feature.js";
 import { ErrorOverlayNetworkErrorHandler } from "~/errors/ErrorOverlayNetworkErrorHandler.js";
@@ -67,6 +68,8 @@ export function createRootContainer() {
     ApiStreamClientFeature.register(container);
 
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
+
+    ThemeFeature.register(container);
 
     TenancyFeature.register(container);
 

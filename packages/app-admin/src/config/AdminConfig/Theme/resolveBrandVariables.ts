@@ -1,5 +1,7 @@
 import parseColor, { type Instance as TcColorInstance } from "tinycolor2";
-import type { ColorPalette, ColorShade, ThemeColorConfig } from "./types.js";
+import type { ColorPalette } from "./types.js";
+import type { ColorShade } from "./types.js";
+import type { ThemeColorConfig } from "./types.js";
 
 /**
  * The ramp derived from a single brand color: one step of lightness per 100 shades, centred on

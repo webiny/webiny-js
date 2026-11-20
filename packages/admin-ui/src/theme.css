@@ -378,7 +378,7 @@
  * Light is the built-in default theme (the `@theme` values above). Dark themes are no longer
  * static `[data-theme]` blocks — they are registered at runtime as individual files (see the
  * admin themes extension) and applied as inline CSS variables on `<html>` by
- * `@webiny/app-admin`'s applyTheme (the shared dark mapping lives in
+ * `@webiny/app-admin`'s `ThemeModeApplier` (the shared dark mapping lives in
  * `@webiny/admin-ui` `themes/darkThemeBase.ts`).
  *
  * The page background follows the neutral surface for every theme: in light it is white, and a

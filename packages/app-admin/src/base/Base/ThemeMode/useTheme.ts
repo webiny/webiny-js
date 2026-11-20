@@ -1,61 +1,75 @@
-import { useCallback, useMemo } from "react";
-import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
+import { useState } from "react";
+import { autorun } from "mobx";
+import { useFeature } from "@webiny/app";
 import { useAdminConfig } from "~/config/AdminConfig.js";
 import { lightTheme } from "~/config/AdminConfig/Theme/lightTheme.js";
 import type { Theme } from "~/config/AdminConfig/Theme/types.js";
-import { applyTheme } from "./applyTheme.js";
-import { readCachedThemeId } from "./bootstrapTheme.js";
-import { useBrandVariables } from "./useBrandVariables.js";
+import { ThemeFeature } from "~/features/theme/feature.js";
+import type { ThemeSelection } from "~/features/theme/abstractions.js";
 
-export const THEME_KEY = "webiny/theme";
-/**
- * The selected theme's CSS variables are cached here so the applier can re-apply them
- * immediately on load, without waiting for the theme registry (extension) to populate.
- */
-export const THEME_VARIABLES_KEY = "webiny/theme-variables";
-export const DEFAULT_THEME = lightTheme.id;
+export type ColorScheme = "light" | "dark";
 
 export interface UseTheme {
-    /** The selected theme id (from local storage, or "light" by default). */
+    /** The selected theme id, or "light" when none has been selected. */
     theme: string;
-    /** Persist the selection and apply it immediately. */
+    /** Selects and stores a theme. `ThemeModeApplier` applies it. */
     setTheme: (id: string) => void;
     /** All selectable themes: the built-in Light theme plus the ones registered via the extension. */
     themes: Theme[];
+    /** The active theme's variables, without brand colors. */
+    variables: Record<string, string>;
+    /** "dark" when the active theme sets `--color-scheme: dark`, as `darkThemeBase` does. */
+    colorScheme: ColorScheme;
 }
 
+// One object, so `ThemeModeApplier`'s effect doesn't re-run on every render.
+const NO_VARIABLES: Record<string, string> = {};
+
+interface StoredSelection {
+    id: string | undefined;
+    variables: Record<string, string> | undefined;
+}
+
+const readSelection = (selection: ThemeSelection.Interface): StoredSelection => {
+    return { id: selection.getThemeId(), variables: selection.getStoredVariables() };
+};
+
 /**
- * Reads the registered themes (built-in Light + any registered via
- * `<AdminConfig.Theme.Register>`) and the selected theme id from local storage. Selection is
- * persisted under `webiny/theme`; with nothing stored, Light is used. `setTheme` persists and
- * applies immediately, while `ThemeModeApplier` applies on load and reactively.
+ * The selectable themes (built-in Light plus any registered via `<AdminConfig.Theme.Register>`)
+ * and the theme selected in this browser.
+ *
+ * A registered theme's own variables win over the stored copy. The stored copy covers the first
+ * renders after a reload, before the extension that registers the theme has rendered.
  */
 export const useTheme = (): UseTheme => {
     const { themes: registeredThemes } = useAdminConfig();
-    const storedTheme = useLocalStorageValue<string>(THEME_KEY);
-    const { set } = useLocalStorage();
-    const brandVariables = useBrandVariables();
+    const { selection } = useFeature(ThemeFeature);
+    const [stored, setStored] = useState(() => readSelection(selection));
+
+    useEffect(() => {
+        return autorun(() => {
+            const next = readSelection(selection);
+            setStored(next);
+        });
+    }, [selection]);
 
     const themes = useMemo<Theme[]>(() => [lightTheme, ...registeredThemes], [registeredThemes]);
 
-    // The service prefix is unresolved on the first render after a reload, so fall back to a
-    // prefix-tolerant raw read. Without it the id reads as "light" and the registry can
-    // never resolve the real theme, leaving the cached variables in charge permanently.
-    const bootstrappedTheme = useMemo(() => readCachedThemeId(), []);
-    const theme = storedTheme || bootstrappedTheme || DEFAULT_THEME;
+    const theme = stored.id ?? lightTheme.id;
+    const registered = themes.find(t => t.id === theme);
+    const variables = registered?.variables ?? stored.variables ?? NO_VARIABLES;
+    const colorScheme: ColorScheme = variables["--color-scheme"] === "dark" ? "dark" : "light";
 
     const setTheme = useCallback(
         (id: string) => {
             const next = themes.find(t => t.id === id) ?? lightTheme;
-            set(THEME_KEY, id);
-            // Cache the theme's own variables so a page reload can apply them without waiting
-            // for the theme registry to re-populate. Brand colors are not cached — they come
-            // from the admin config, which is available on the first render after a reload.
-            set(THEME_VARIABLES_KEY, next.variables);
-            applyTheme({ ...next.variables, ...brandVariables });
+            selection.select(next);
         },
-        [set, themes, brandVariables]
+        [selection, themes]
     );
 
-    return { theme, setTheme, themes };
+    return { theme, setTheme, themes, variables, colorScheme };
 };

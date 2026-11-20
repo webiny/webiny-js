@@ -1,6 +1,11 @@
 import React from "react";
-import { ConnectToProperties, Property, useIdGenerator } from "@webiny/react-properties";
-import type { Theme as ThemeDefinition, ThemeColorConfig } from "./Theme/types.js";
+import { ConnectToProperties } from "@webiny/react-properties";
+import { Property } from "@webiny/react-properties";
+import { useIdGenerator } from "@webiny/react-properties";
+import type { ThemeColorConfig } from "./Theme/types.js";
+import { Register } from "./Theme/Register.js";
+
+export type { ThemeRegisterProps } from "./Theme/Register.js";
 
 export type ThemeColorProps = ThemeColorConfig;
 
@@ -15,13 +20,16 @@ export type ThemeColorProps = ThemeColorConfig;
  */
 export const Color = React.memo(({ palette, color, shade }: ThemeColorProps) => {
     const getId = useIdGenerator("ThemeColor");
+    /*
+     * `0` is a valid shade, hence the explicit undefined check: a truthiness check would give
+     * shade 0 the same id as the whole-ramp entry.
+     */
+    const shadeKey = shade === undefined ? "all" : String(shade);
 
     return (
         <ConnectToProperties name={"AdminConfig"}>
             <Property
-                // `0` is a valid shade, hence the explicit undefined check: a truthiness check
-                // would give shade 0 the same id as the whole-ramp entry.
-                id={getId(palette, shade === undefined ? "all" : String(shade))}
+                id={getId(palette, shadeKey)}
                 name={"brandColors"}
                 array={true}
                 value={{ palette, color, shade }}
@@ -31,35 +39,6 @@ export const Color = React.memo(({ palette, color, shade }: ThemeColorProps) => 
 });
 
 Color.displayName = "Theme.Color";
-
-export interface ThemeRegisterProps {
-    theme: ThemeDefinition;
-}
-
-/**
- * Registers a selectable theme into the admin config. Use it from an admin extension:
- * `<AdminConfig.Public><AdminConfig.Theme.Register theme={dracula} /></AdminConfig.Public>`.
- * Registered themes appear in the sidebar theme switcher; the built-in "light" theme is
- * always available and does not need to be registered.
- *
- * `Theme.Color` and `Theme.Register` are two layers of the same mechanism: both register config
- * data that `ThemeModeApplier` composes into a single set of inline CSS variables on `<html>`.
- * `Theme.Color` contributes a project's brand palette (`--color-<palette>-<shade>`), applied on
- * top of the active theme so branding survives a theme switch. `Theme.Register` contributes a
- * whole theme's worth of tokens (the neutral ramp plus the semantic aliases in `darkThemeBase`),
- * which the user chooses between at runtime.
- */
-export const Register = React.memo(({ theme }: ThemeRegisterProps) => {
-    const getId = useIdGenerator("Theme");
-
-    return (
-        <ConnectToProperties name={"AdminConfig"}>
-            <Property id={getId(theme.id)} name={"themes"} array={true} value={theme} />
-        </ConnectToProperties>
-    );
-});
-
-Register.displayName = "Theme.Register";
 
 export interface ThemeProps {
     children: React.ReactNode;

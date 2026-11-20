@@ -15,6 +15,10 @@ export { createReactiveComponent } from "@webiny/app-admin";
 export { RegisterFeature } from "@webiny/app-admin/components/RegisterFeature.js";
 export { BuildParam, BuildParams } from "@webiny/app-admin/features/buildParams/index.js";
 export { useBuildParams } from "@webiny/app-admin/presentation/buildParams/useBuildParams.js";
+export { useTheme } from "@webiny/app-admin/base/Base/ThemeMode/useTheme.js";
+export type { UseTheme } from "@webiny/app-admin/base/Base/ThemeMode/useTheme.js";
+export { useColorScheme } from "@webiny/app-admin/base/Base/ThemeMode/useColorScheme.js";
+export type { ColorScheme } from "@webiny/app-admin/base/Base/ThemeMode/useColorScheme.js";
 export {
     Tool,
     ToolPipelineRunner,
