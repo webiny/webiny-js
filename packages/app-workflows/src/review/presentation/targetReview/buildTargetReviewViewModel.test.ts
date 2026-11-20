@@ -136,7 +136,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.message).toBe("Luka Perić is reviewing this step.");
         expect(vm.stepMeta).toBe("Step 2 of 2: Legal sign-off");
         expect(vm.ownerName).toBe("Luka Perić");
-        expect(vm.stateTag).toEqual({ label: "In review", variant: "warning-light" });
+        expect(vm.stateTag).toBeNull();
         expect(vm.stepStateTag).toEqual({
             label: "In review",
             variant: "accent-light",

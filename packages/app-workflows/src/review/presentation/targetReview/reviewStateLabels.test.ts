@@ -26,11 +26,8 @@ describe("REVIEW_STATE_LABELS", () => {
         });
     });
 
-    it("tags a review in progress as In review and has no tag for a cancelled one", () => {
-        expect(getReviewStateTag(ReviewState.InProgress)).toEqual({
-            label: "In review",
-            variant: "warning-light"
-        });
+    it("has no state tag while the review is in progress or cancelled", () => {
+        expect(getReviewStateTag(ReviewState.InProgress)).toBeNull();
         expect(getReviewStateTag(ReviewState.Cancelled)).toBeNull();
     });
 });

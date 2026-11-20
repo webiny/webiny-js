@@ -94,10 +94,7 @@ const ALL_STEP_STATES = [
 
 describe("tags", () => {
     it("tags the review state (QBZ-52)", () => {
-        expect(getReviewStateTag(ReviewState.InProgress)).toEqual({
-            label: "In review",
-            variant: "warning-light"
-        });
+        expect(getReviewStateTag(ReviewState.InProgress)).toBeNull();
         expect(getReviewStateTag(ReviewState.Cancelled)).toBeNull();
         expect(getReviewStateTag(ReviewState.Approved)).toEqual({
             label: "Approved",

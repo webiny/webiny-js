@@ -219,7 +219,7 @@ export const buildReviewDetailsViewModel = (
 
     const review = withFlags.review;
     const stateTag = getReviewStateTag(review.state);
-    // A cancelled review keeps its own tag.
+    // Only a finished review has a state tag; a cancelled one keeps its own.
     let headerTag: TargetReviewTag | null = stateTag;
     if (review.state === ReviewState.Cancelled) {
         headerTag = {

@@ -203,7 +203,7 @@ describe("buildReviewDetailsViewModel", () => {
 
         expect(header).toEqual({
             title: "Spring campaign review",
-            stateTag: { label: "In review", variant: "warning-light" },
+            stateTag: null,
             contentLabel: "Spring campaign (#3)",
             contentUrl: null,
             requesterLine: "Requested by Maja Kos",
