@@ -435,3 +435,71 @@ plain section with an all-caps label and grouped actions. Still different from t
 - The canvas draws only the People step's Assignment tab. The General and Test routing tabs and
   the AI and Automation drawers have no design; the Colour field is a radio list.
 - Review list on `DataTable`: hidden columns are not remembered after leaving the page.
+
+## Visual pass, 2026-11-20
+
+Until now the design was compared as markup. The artboards are now rendered locally and compared
+with screenshots of the dev admin at the same viewport, one agent per group of screens. Screenshots:
+session scratchpad `shots/{reviews,bar,settings,editor}/`. The canvas also gained step reordering
+in `Workflow-Editor` (drag handle left of each card, number tag, Move up / Move down / Delete
+grouped in the header), which settles answer 20.
+
+Every fix below uses admin-ui components and props only. A recurring cause: the design uses the
+small control size (32px fields and buttons, 48px table rows), the live screens the default size.
+
+### V1. Review bar and Review details
+
+- The bar sits inside the form column, as wide as the form card and lined up with it, not in a
+  full-width band; no drop shadow.
+- The step line is a neutral pill with the colour square (bar and Website Builder strip).
+- Review details: each step is a rounded neutral card with its rows as white sub-cards; row labels
+  regular weight; step titles in the normal text colour.
+- Reject counter left-aligned; small buttons and fields.
+
+### V2. Content Reviews list, Home widgets, pickers
+
+- Toolbar: the search row first; under it one neutral band with the state control at the left and
+  the scope control at the right.
+- Column order: Name, Content type, Requested by, Modified, Workflow. Workflow is a compact last
+  column; the sort arrow sits next to its label.
+- Content type is one line, so rows are the compact height. Title without the icon, design size.
+  Search placeholder "Search...". "Clear filters" is a primary button.
+- Home widgets: flat card without shadow, regular-weight row titles, inset colour bar. The pair
+  per app side by side if the dashboard grid allows it.
+- Pickers: small field height; the same option row (no avatar, no person icon) in every picker.
+
+### V3. Reviewer exclusions and role permissions
+
+- Page title at the design size; "Add exclusion" in the toolbar row at the right; borderless
+  search; the segmented control on its own neutral band; table without an outer box.
+- The team line under the user name in the table.
+- Dialog: Reason helper text under the label, two-row field, filled neutral Cancel, small fields.
+- No "Add exclusion" button inside the empty state.
+- Role permissions: choosing Custom ticks only "Manage workflows".
+
+### V4. Workflow editor and step drawer
+
+- Step card header as the new artboard: drag handle outside at the left, number tag, grouped
+  Move up / Move down / Delete, no edit button and no summary line. Card hugs its content.
+- Title in the normal text colour, level with the description.
+- Expanded step: label and value in two aligned columns, small text, muted label; "Edit step"
+  with its pencil icon.
+- Drawer: label, then description, then the switch; rule label strong; "Routing rules" strong;
+  "Add rule" a filled neutral button; selects without the leading search icon; the summary line in
+  a neutral box (needs a component: see below).
+
+### Needs a decision or the designer
+
+- Step drawer: the live "Check this step" panel above the tabs repeats the inline field errors;
+  the design shows only inline errors.
+- Role permissions: card with the access control in its header and always open (answer 30, open).
+- Toasts: the design's white card against the base admin's dark toast.
+- General tab: the Colour field as a ten-row radio list; no design.
+- A neutral box without alert semantics does not exist in admin-ui (rule summary).
+
+### To check
+
+- Model delete: the "a workflow blocks this" alert was not reached; it appears only after the
+  delete is attempted and refused. Verify from code and a test, not by deleting.
+- Escape did not close dialogs or the Filter popover for two agents, who suspect the automation
+  tool; dialogs open with a focus ring on the close button.
