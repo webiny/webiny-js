@@ -46,9 +46,26 @@ export class PulumiCommand implements CliCommandFactory.Interface<IPulumiCommand
                         command
                     });
 
-                    pulumiProcess.stdin?.pipe(this.stdioService.getStdin());
                     pulumiProcess.stdout?.pipe(this.stdioService.getStdout());
                     pulumiProcess.stderr?.pipe(this.stdioService.getStderr());
+
+                    // Forward our stdin to Pulumi, for commands that read a value from it
+                    // (`config set <key>` with no value). Stop reading once Pulumi exits,
+                    // or an open terminal keeps the CLI running.
+                    const stdin = this.stdioService.getStdin();
+                    const pulumiStdin = pulumiProcess.stdin;
+                    if (pulumiStdin) {
+                        stdin.pipe(pulumiStdin);
+                    }
+
+                    try {
+                        await pulumiProcess;
+                    } finally {
+                        if (pulumiStdin) {
+                            stdin.unpipe(pulumiStdin);
+                        }
+                        stdin.pause();
+                    }
                 } catch (error) {
                     throw ManuallyReportedError.from(error);
                 }
