@@ -15,6 +15,7 @@ import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 import { pointAppsAtDevProxy } from "@webiny/project-standalone/serve/devProxy/index.js";
 import { reserveDevProxyPorts } from "@webiny/project-standalone/serve/devProxy/index.js";
+import { warnIfAdminApiUrlNeedsProxy } from "./warnIfAdminApiUrlNeedsProxy.js";
 
 interface IStandaloneWatchCommandParams {
     _: string[];
@@ -111,7 +112,9 @@ export class StandaloneWatchCommand implements CliCommandFactory.Interface<IStan
                 // each app's workspace is prepared and its config re-rendered, so that is where these
                 // URLs get picked up.
                 if (devProxyUrls) {
-                    pointAppsAtDevProxy(devProxyUrls);
+                    pointAppsAtDevProxy();
+                } else if (apps.includes("admin")) {
+                    warnIfAdminApiUrlNeedsProxy(ui);
                 }
 
                 const projectSdk = await this.getProjectSdkService.execute();
