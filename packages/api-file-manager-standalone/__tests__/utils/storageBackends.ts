@@ -31,12 +31,13 @@ export interface TestStorageBackend {
 }
 
 let diskConfig: FileManagerStandaloneConfig.Interface;
+let diskPath: string;
 
 const diskBackend: TestStorageBackend = {
     name: "disk",
     async setup() {
-        const path = await setupStorage();
-        diskConfig = { storage: { type: "disk", path }, uploadSecret: SECRET };
+        diskPath = await setupStorage();
+        diskConfig = { storage: { type: "disk", path: diskPath }, uploadSecret: SECRET };
     },
     async cleanup() {
         await cleanupStorage();
@@ -45,11 +46,12 @@ const diskBackend: TestStorageBackend = {
         return diskConfig;
     },
     storage() {
-        return new DiskObjectStorage(diskConfig);
+        return new DiskObjectStorage({ type: "disk", path: diskPath });
     }
 };
 
 let s3Config: FileManagerStandaloneConfig.Interface;
+let s3StorageConfig: FileManagerStandaloneConfig.S3Storage;
 
 const readTestCredentials = (): FileManagerStandaloneConfig.S3Storage["credentials"] => {
     const accessKeyId = process.env.WEBINY_TEST_S3_ACCESS_KEY_ID;
@@ -64,30 +66,28 @@ const createS3Backend = (endpoint: string): TestStorageBackend => {
     return {
         name: "s3",
         async setup() {
-            s3Config = {
-                storage: {
-                    type: "s3",
-                    bucket: process.env.WEBINY_TEST_S3_BUCKET || "webiny-test",
-                    region: process.env.WEBINY_TEST_S3_REGION || "us-east-1",
-                    endpoint,
-                    forcePathStyle: true,
-                    prefix: `test-${randomUUID()}/`,
-                    credentials: readTestCredentials()
-                },
-                uploadSecret: SECRET
+            s3StorageConfig = {
+                type: "s3",
+                bucket: process.env.WEBINY_TEST_S3_BUCKET || "webiny-test",
+                region: process.env.WEBINY_TEST_S3_REGION || "us-east-1",
+                endpoint,
+                forcePathStyle: true,
+                prefix: `test-${randomUUID()}/`,
+                credentials: readTestCredentials()
             };
+            s3Config = { storage: s3StorageConfig, uploadSecret: SECRET };
         },
         async cleanup() {
-            const storage = new S3ObjectStorage(s3Config);
+            const storage = new S3ObjectStorage(s3StorageConfig);
             await storage.deletePrefix("tenants/");
             const inAMinute = new Date(Date.now() + 60_000);
-            await storage.abortMultipartUploadsStartedBefore(inAMinute);
+            await storage.abortMultipartUploads({ prefix: "tenants/", startedBefore: inAMinute });
         },
         config() {
             return s3Config;
         },
         storage() {
-            return new S3ObjectStorage(s3Config);
+            return new S3ObjectStorage(s3StorageConfig);
         }
     };
 };

@@ -5,7 +5,9 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { invokeHttpRoute } from "@webiny/event-handler-core";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadFileUseCase } from "~/features/UploadFile/UploadFileUseCase.js";
 import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
+import { UploadPartUseCase } from "~/features/UploadPart/UploadPartUseCase.js";
 import { CreateMultiPartUploadUseCase } from "~/features/CreateMultiPartUpload/CreateMultiPartUploadUseCase.js";
 import { CompleteMultiPartUploadUseCase } from "~/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
@@ -35,7 +37,7 @@ describe.each(storageBackends)("upload + read round trip: $name", backend => {
 
     it("should upload a file via route then read it back via use case", async () => {
         const storage = backend.storage();
-        const route = new UploadSingleFileRoute(backend.config(), storage);
+        const route = new UploadSingleFileRoute(new UploadFileUseCase(backend.config(), storage));
         const fileKey = "roundtrip/test.txt";
         const request = makeUploadRequest({
             storageKey: `tenants/${TENANT_ID}/files/${fileKey}`,
@@ -80,7 +82,7 @@ describe.each(storageBackends)("upload + read round trip: $name", backend => {
         } as any);
 
         // Each part goes to the URL the use case handed out, as the SDK sends it.
-        const partRoute = new UploadPartRoute(backend.config(), storage);
+        const partRoute = new UploadPartRoute(new UploadPartUseCase(backend.config(), storage));
         for (const part of upload.parts) {
             const url = new URL(part.url);
             const query = Object.fromEntries(url.searchParams.entries());

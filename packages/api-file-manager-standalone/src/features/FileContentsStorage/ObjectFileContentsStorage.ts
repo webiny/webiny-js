@@ -4,11 +4,15 @@ import { FileContentsStorage } from "@webiny/api-file-manager/features/file/File
 import { FileAlreadyExistsError } from "@webiny/api-file-manager/domain/file/errors.js";
 import { FilePersistenceError } from "@webiny/api-file-manager/domain/file/errors.js";
 import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
-import { getTenantFilesPrefix } from "~/utils/getTenantFilesPrefix.js";
-import { isKeyInsidePrefix } from "~/utils/isKeyInsidePrefix.js";
+import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 const toPersistenceError = (error: unknown) => {
-    return new FilePersistenceError(error instanceof Error ? error : new Error(String(error)));
+    if (error instanceof Error) {
+        return new FilePersistenceError(error);
+    }
+    const message = String(error);
+    const wrapped = new Error(message);
+    return new FilePersistenceError(wrapped);
 };
 
 class ObjectFileContentsStorageImpl implements FileContentsStorage.Interface {
@@ -28,7 +32,8 @@ class ObjectFileContentsStorageImpl implements FileContentsStorage.Interface {
             }
             return Result.ok();
         } catch (error) {
-            return Result.fail(toPersistenceError(error));
+            const persistenceError = toPersistenceError(error);
+            return Result.fail(persistenceError);
         }
     }
 
@@ -38,19 +43,15 @@ class ObjectFileContentsStorageImpl implements FileContentsStorage.Interface {
             await this.objectStorage.delete(objectKey);
             return Result.ok();
         } catch (error) {
-            return Result.fail(toPersistenceError(error));
+            const persistenceError = toPersistenceError(error);
+            return Result.fail(persistenceError);
         }
     }
 
     /* The key must stay inside the current tenant's files: anything else is refused. */
     private toObjectKey(key: string): string {
         const tenant = this.tenantContext.getTenant();
-        const prefix = getTenantFilesPrefix(tenant.id);
-        const objectKey = `${prefix}${key}`;
-        if (!isKeyInsidePrefix(objectKey, prefix)) {
-            throw new Error("Refusing to access a key outside of the tenant's files.");
-        }
-        return objectKey;
+        return toTenantFileKey(tenant.id, key);
     }
 }
 

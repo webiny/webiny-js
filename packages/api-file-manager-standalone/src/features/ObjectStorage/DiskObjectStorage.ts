@@ -1,4 +1,5 @@
 import path from "node:path";
+import { link } from "node:fs/promises";
 import { mkdir } from "node:fs/promises";
 import { open } from "node:fs/promises";
 import { readFile } from "node:fs/promises";
@@ -8,66 +9,83 @@ import { rm } from "node:fs/promises";
 import { rmdir } from "node:fs/promises";
 import { stat } from "node:fs/promises";
 import { writeFile } from "node:fs/promises";
-import type { FileHandle } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { mdbid } from "@webiny/utils";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { isValidObjectKey } from "~/utils/isValidObjectKey.js";
 import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
+import { DiskStorageConfig } from "./abstractions.js";
 import { ObjectStorage } from "./abstractions.js";
 
-// Multipart uploads in progress: `multipart/<uploadId>/key` holds the target key, `part-<n>` the parts.
+/*
+ * Multipart uploads in progress: `multipart/<uploadId>/key` holds the target key and is written when
+ * the upload starts, `part-<n>` the parts.
+ */
 const MULTIPART_FOLDER = "multipart";
 const TARGET_KEY_FILE = "key";
 const PART_FILE_PREFIX = "part-";
 const UPLOAD_ID_PATTERN = /^[a-z0-9]+$/i;
 
+const errorCode = (error: unknown): string | undefined => {
+    if (error instanceof Error && "code" in error && typeof error.code === "string") {
+        return error.code;
+    }
+    return undefined;
+};
+
 const isMissing = (error: unknown): boolean => {
-    return (error as NodeJS.ErrnoException)?.code === "ENOENT";
+    return errorCode(error) === "ENOENT";
+};
+
+/* A path next to `filePath`, for writing a file before it is moved or linked into place. */
+const temporaryPathFor = (filePath: string): string => {
+    const suffix = mdbid();
+    return `${filePath}.${suffix}.uploading`;
+};
+
+const ensureParentFolder = async (filePath: string): Promise<void> => {
+    const folderPath = path.dirname(filePath);
+    await mkdir(folderPath, { recursive: true });
 };
 
 class DiskObjectStorageImpl implements ObjectStorage.Interface {
     private readonly root: string;
 
-    public constructor(config: FileManagerStandaloneConfig.Interface) {
-        if (config.storage.type !== "disk") {
-            throw new Error(`DiskObjectStorage needs disk storage, got "${config.storage.type}".`);
-        }
-        this.root = config.storage.path;
+    public constructor(config: DiskStorageConfig.Interface) {
+        this.root = config.path;
     }
 
     public async put(key: string, body: Buffer): Promise<void> {
         const filePath = this.resolveKey(key);
-        await mkdir(path.dirname(filePath), { recursive: true });
+        await ensureParentFolder(filePath);
         await writeFile(filePath, body);
     }
 
     public async putIfAbsent(key: string, body: Buffer): Promise<boolean> {
         const filePath = this.resolveKey(key);
-        await mkdir(path.dirname(filePath), { recursive: true });
+        await ensureParentFolder(filePath);
 
-        let handle: FileHandle;
+        /*
+         * Written in full to a temporary file and then hard-linked to the key, so a reader never
+         * sees half a file, and the link fails with EEXIST when the key is taken.
+         */
+        const temporaryPath = temporaryPathFor(filePath);
         try {
-            // "wx" fails with EEXIST instead of overwriting a file that's already there.
-            handle = await open(filePath, "wx");
+            const handle = await open(temporaryPath, "wx");
+            try {
+                await handle.writeFile(body);
+            } finally {
+                await handle.close();
+            }
+            await link(temporaryPath, filePath);
+            return true;
         } catch (error) {
-            if ((error as NodeJS.ErrnoException)?.code === "EEXIST") {
+            if (errorCode(error) === "EEXIST") {
                 return false;
             }
             throw error;
+        } finally {
+            await rm(temporaryPath, { force: true });
         }
-
-        // From here on the file is this call's: the exclusive open created it.
-        try {
-            await handle.writeFile(body);
-        } catch (error) {
-            // Partial bytes would block storing the key again.
-            await handle.close().catch(() => undefined);
-            await rm(filePath, { force: true }).catch(() => undefined);
-            throw error;
-        }
-        await handle.close();
-        return true;
     }
 
     public async get(key: string): Promise<Buffer | null> {
@@ -88,7 +106,9 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
 
         // Remove the file's folder (`<id>/`) when nothing else is in it.
         const folderPath = path.dirname(filePath);
-        if (path.resolve(folderPath) !== path.resolve(this.root)) {
+        const resolvedFolderPath = path.resolve(folderPath);
+        const resolvedRoot = path.resolve(this.root);
+        if (resolvedFolderPath !== resolvedRoot) {
             await rmdir(folderPath).catch(() => undefined);
         }
     }
@@ -97,7 +117,8 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         if (!prefix.endsWith("/")) {
             throw new Error(`A prefix must end with "/": "${prefix}".`);
         }
-        const folderPath = this.resolveKey(prefix.slice(0, -1));
+        const folderKey = prefix.slice(0, -1);
+        const folderPath = this.resolveKey(folderKey);
         await rm(folderPath, { recursive: true, force: true });
     }
 
@@ -106,7 +127,8 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         const uploadId = mdbid();
         const uploadPath = this.resolveUploadPath(uploadId);
         await mkdir(uploadPath, { recursive: true });
-        await writeFile(path.join(uploadPath, TARGET_KEY_FILE), key);
+        const keyPath = path.join(uploadPath, TARGET_KEY_FILE);
+        await writeFile(keyPath, key);
         return uploadId;
     }
 
@@ -114,10 +136,8 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         const { key, uploadId, partNumber, body } = params;
         await this.assertUploadTarget(key, uploadId);
 
-        const partPath = path.join(
-            this.resolveUploadPath(uploadId),
-            `${PART_FILE_PREFIX}${partNumber}`
-        );
+        const uploadPath = this.resolveUploadPath(uploadId);
+        const partPath = path.join(uploadPath, `${PART_FILE_PREFIX}${partNumber}`);
         await writeFile(partPath, body);
         return createHash("md5").update(body).digest("hex");
     }
@@ -138,16 +158,17 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
 
         // Written next to the target and renamed into place, so a reader never sees half a file.
         const filePath = this.resolveKey(key);
-        const temporaryPath = `${filePath}.${uploadId}.uploading`;
-        await mkdir(path.dirname(filePath), { recursive: true });
+        const temporaryPath = temporaryPathFor(filePath);
+        await ensureParentFolder(filePath);
         const handle = await open(temporaryPath, "w");
         try {
             for (const partNumber of partNumbers) {
                 const partPath = path.join(uploadPath, `${PART_FILE_PREFIX}${partNumber}`);
                 // oxlint-disable-next-line no-await-in-loop -- parts are appended in order.
                 const part = await readFile(partPath);
+                // `appendFile` writes the whole part; one `write` call may write less.
                 // oxlint-disable-next-line no-await-in-loop -- parts are appended in order.
-                await handle.write(part);
+                await handle.appendFile(part);
             }
         } catch (error) {
             await handle.close().catch(() => undefined);
@@ -159,7 +180,10 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         await rm(uploadPath, { recursive: true, force: true });
     }
 
-    public async abortMultipartUploadsStartedBefore(startedBefore: Date): Promise<number> {
+    public async abortMultipartUploads(
+        params: ObjectStorage.AbortMultipartUploadsParams
+    ): Promise<number> {
+        const { prefix, startedBefore } = params;
         const uploadsPath = resolveStoragePath(this.root, MULTIPART_FOLDER);
         let uploadIds: string[];
         try {
@@ -177,10 +201,20 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
                 continue;
             }
             const uploadPath = path.join(uploadsPath, uploadId);
+            const keyPath = path.join(uploadPath, TARGET_KEY_FILE);
             try {
+                /*
+                 * When the upload started: the key file is written then and never again, while the
+                 * folder changes with every part, as S3 counts it too.
+                 */
                 // oxlint-disable-next-line no-await-in-loop -- one folder at a time is enough here.
-                const stats = await stat(uploadPath);
+                const stats = await stat(keyPath);
                 if (stats.mtimeMs >= startedBefore.getTime()) {
+                    continue;
+                }
+                // oxlint-disable-next-line no-await-in-loop -- one folder at a time is enough here.
+                const targetKey = await readFile(keyPath, "utf8");
+                if (!targetKey.startsWith(prefix)) {
                     continue;
                 }
                 // oxlint-disable-next-line no-await-in-loop -- one folder at a time is enough here.
@@ -213,7 +247,8 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
     /* An upload is only ever completed into, or given parts for, the key it was started for. */
     private async assertUploadTarget(key: string, uploadId: string): Promise<void> {
         this.resolveKey(key);
-        const keyPath = path.join(this.resolveUploadPath(uploadId), TARGET_KEY_FILE);
+        const uploadPath = this.resolveUploadPath(uploadId);
+        const keyPath = path.join(uploadPath, TARGET_KEY_FILE);
         let targetKey: string;
         try {
             targetKey = await readFile(keyPath, "utf8");
@@ -231,5 +266,5 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
 
 export const DiskObjectStorage = ObjectStorage.createImplementation({
     implementation: DiskObjectStorageImpl,
-    dependencies: [FileManagerStandaloneConfig]
+    dependencies: [DiskStorageConfig]
 });

@@ -6,6 +6,8 @@ import { StandaloneGraphQLSchema } from "~/graphql/StandaloneGraphQLSchema.js";
 import { FileManagerStandaloneConfigFeature } from "~/features/FileManagerStandaloneConfig/feature.js";
 import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
 import { UploadPartRouteFeature } from "~/routes/UploadPartRoute/feature.js";
+import { UploadFileFeature } from "~/features/UploadFile/feature.js";
+import { UploadPartFeature } from "~/features/UploadPart/feature.js";
 import { CleanupStaleMultipartUploadsFeature } from "~/features/CleanupStaleMultipartUploads/feature.js";
 import { DeleteFileFromStorageFeature } from "~/features/DeleteFileFromStorage/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
@@ -28,10 +30,12 @@ export const FileManagerStandaloneFeature = createFeature({
         // Where the files are kept: a folder on disk or an S3-compatible bucket.
         ObjectStorageFeature.register(container, config);
 
-        // In-process asset-delivery implementations (LocalAssetResolver/OutputStrategy/SharpTransform)
-        // override the null delivery registered by AssetDeliveryFeature in FileManagerAppFeature — the
-        // same seam FileManagerS3Feature uses with createS3AssetDeliveryFeature. Without this the domain
-        // AssetDeliveryRoute resolves the null impls and serves nothing.
+        /*
+         * In-process asset-delivery implementations (LocalAssetResolver/OutputStrategy/SharpTransform)
+         * override the null delivery registered by AssetDeliveryFeature in FileManagerAppFeature — the
+         * same seam FileManagerS3Feature uses with createS3AssetDeliveryFeature. Without this the domain
+         * AssetDeliveryRoute resolves the null impls and serves nothing.
+         */
         createLocalAssetDeliveryFeature().register(container);
 
         // Metadata reader (FileManager/Upload/MetadataReader) — the generic domain impl backed by the
@@ -39,10 +43,12 @@ export const FileManagerStandaloneFeature = createFeature({
         // cases; without it createFile fails with "No registration found for FileManager/Upload/MetadataReader".
         ReadFileMetadataFeature.register(container);
 
-        // Metadata writer — the generic domain WriteMetadataAfterCreate/BatchCreate event handlers write
-        // the asset metadata (id/tenant/size/contentType/bucketKey) to the GlobalKeyValueStore on file
-        // create. Asset delivery (LocalAssetResolver) reads that metadata to locate the file in storage;
-        // without it every delivered file 404s ("asset not found"). Mirrors S3's WriteFileMetadataFeature.
+        /*
+         * Metadata writer — the generic domain WriteMetadataAfterCreate/BatchCreate event handlers write
+         * the asset metadata (id/tenant/size/contentType/bucketKey) to the GlobalKeyValueStore on file
+         * create. Asset delivery (LocalAssetResolver) reads that metadata to locate the file in storage;
+         * without it every delivered file 404s ("asset not found"). Mirrors S3's WriteFileMetadataFeature.
+         */
         WriteFileMetadataFeature.register(container);
 
         FlushCacheFeature.register(container);
@@ -55,6 +61,8 @@ export const FileManagerStandaloneFeature = createFeature({
         CreateMultiPartUploadFeature.register(container);
         CompleteMultiPartUploadFeature.register(container);
         CleanupStaleMultipartUploadsFeature.register(container);
+        UploadFileFeature.register(container);
+        UploadPartFeature.register(container);
         UploadSingleFileRouteFeature.register(container);
         UploadPartRouteFeature.register(container);
 

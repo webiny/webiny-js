@@ -7,6 +7,17 @@ function read(env: Env, name: string): string {
     return env[name]?.trim() ?? "";
 }
 
+/* An absolute http(s) URL with a host name, so the first S3 call doesn't fail on it instead. */
+function isHttpUrl(value: string): boolean {
+    let url: URL;
+    try {
+        url = new URL(value);
+    } catch {
+        return false;
+    }
+    return (url.protocol === "http:" || url.protocol === "https:") && url.hostname !== "";
+}
+
 /*
  * The prefix as the storage uses it: empty, or ending in exactly one `/`. A leading `/` would make
  * an object key that starts with an empty segment.
@@ -50,7 +61,7 @@ export function readFileStorageConfig(
     }
 
     const endpoint = read(env, "WEBINY_S3_ENDPOINT");
-    if (endpoint && !/^https?:\/\//.test(endpoint)) {
+    if (endpoint && !isHttpUrl(endpoint)) {
         problems.push(`WEBINY_S3_ENDPOINT is not an http(s) URL: "${endpoint}".`);
     }
 

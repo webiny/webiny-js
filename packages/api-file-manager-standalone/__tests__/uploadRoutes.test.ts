@@ -7,7 +7,9 @@ import { invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadFileUseCase } from "~/features/UploadFile/UploadFileUseCase.js";
 import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
+import { UploadPartUseCase } from "~/features/UploadPart/UploadPartUseCase.js";
 import type { UploadTokenPayload } from "~/types.js";
 import { makeUploadRequest } from "./utils/helpers.js";
 import { SECRET } from "./utils/helpers.js";
@@ -52,7 +54,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
     describe("single file upload route", () => {
         it("should store the uploaded file", async () => {
             const storage = backend.storage();
-            const route = new UploadSingleFileRoute(backend.config(), storage);
+            const route = new UploadSingleFileRoute(
+                new UploadFileUseCase(backend.config(), storage)
+            );
             const storageKey = `tenants/${TENANT_ID}/files/abc123/test.txt`;
             const request = makeUploadRequest({
                 storageKey,
@@ -68,7 +72,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
         });
 
         it("should reject upload with expired token", async () => {
-            const route = new UploadSingleFileRoute(backend.config(), backend.storage());
+            const route = new UploadSingleFileRoute(
+                new UploadFileUseCase(backend.config(), backend.storage())
+            );
             const request = makeUploadRequest({
                 storageKey: `tenants/${TENANT_ID}/files/abc/file.txt`,
                 fileContent: Buffer.from("data"),
@@ -83,7 +89,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
         });
 
         it("should reject file exceeding max size", async () => {
-            const route = new UploadSingleFileRoute(backend.config(), backend.storage());
+            const route = new UploadSingleFileRoute(
+                new UploadFileUseCase(backend.config(), backend.storage())
+            );
             const request = makeUploadRequest({
                 storageKey: `tenants/${TENANT_ID}/files/abc/big.txt`,
                 fileContent: Buffer.from("this is too large"),
@@ -98,7 +106,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
         });
 
         it("should reject request with missing file", async () => {
-            const route = new UploadSingleFileRoute(backend.config(), backend.storage());
+            const route = new UploadSingleFileRoute(
+                new UploadFileUseCase(backend.config(), backend.storage())
+            );
             const storageKey = `tenants/${TENANT_ID}/files/abc/missing.txt`;
             const boundary = "----TestBoundary123";
             const token = createUploadToken(
@@ -131,7 +141,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
         });
 
         it("should reject token/key mismatch", async () => {
-            const route = new UploadSingleFileRoute(backend.config(), backend.storage());
+            const route = new UploadSingleFileRoute(
+                new UploadFileUseCase(backend.config(), backend.storage())
+            );
             const request = makeUploadRequest({
                 storageKey: `tenants/${TENANT_ID}/files/abc/file.txt`,
                 fileContent: Buffer.from("data"),
@@ -147,7 +159,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
 
         it("should reject a token issued for one part of a multipart upload", async () => {
             const storageKey = `tenants/${TENANT_ID}/files/abc/file.txt`;
-            const route = new UploadSingleFileRoute(backend.config(), backend.storage());
+            const route = new UploadSingleFileRoute(
+                new UploadFileUseCase(backend.config(), backend.storage())
+            );
             const request = makeUploadRequest({
                 storageKey,
                 fileContent: Buffer.from("data"),
@@ -167,7 +181,7 @@ describe.each(storageBackends)("upload routes: $name", backend => {
             const storage = backend.storage();
             const key = `tenants/${TENANT_ID}/files/abc/big.bin`;
             const uploadId = await storage.createMultipartUpload(key);
-            const route = new UploadPartRoute(backend.config(), storage);
+            const route = new UploadPartRoute(new UploadPartUseCase(backend.config(), storage));
             const request = makePartRequest(
                 { key, multipart: { uploadId, partNumber: 1 } },
                 { uploadId, partNumber: "1" },
@@ -184,7 +198,7 @@ describe.each(storageBackends)("upload routes: $name", backend => {
             const storage = backend.storage();
             const key = `tenants/${TENANT_ID}/files/abc/big.bin`;
             const uploadId = await storage.createMultipartUpload(key);
-            const route = new UploadPartRoute(backend.config(), storage);
+            const route = new UploadPartRoute(new UploadPartUseCase(backend.config(), storage));
             const request = makePartRequest(
                 { key, multipart: { uploadId, partNumber: 1 } },
                 { uploadId, partNumber: "2" },
@@ -198,7 +212,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
         });
 
         it("should reject a token issued for a single file upload", async () => {
-            const route = new UploadPartRoute(backend.config(), backend.storage());
+            const route = new UploadPartRoute(
+                new UploadPartUseCase(backend.config(), backend.storage())
+            );
             const request = makePartRequest(
                 {},
                 { uploadId: "u1", partNumber: "1" },
@@ -212,7 +228,9 @@ describe.each(storageBackends)("upload routes: $name", backend => {
         });
 
         it("should reject a key outside the tenant's files", async () => {
-            const route = new UploadPartRoute(backend.config(), backend.storage());
+            const route = new UploadPartRoute(
+                new UploadPartUseCase(backend.config(), backend.storage())
+            );
             const request = makePartRequest(
                 {
                     key: `tenants/${TENANT_ID}/files/../../other/files/x.bin`,

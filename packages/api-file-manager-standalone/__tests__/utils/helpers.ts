@@ -1,4 +1,6 @@
 import { promises as fs } from "node:fs";
+import { vi } from "vitest";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import path from "node:path";
 import os from "node:os";
 import { createUploadToken } from "~/utils/uploadToken.js";
@@ -30,7 +32,20 @@ export const makeConfig = (): FileManagerStandaloneConfig.Interface => ({
 });
 
 export const makeDiskStorage = (): ObjectStorage.Interface => {
-    return new DiskObjectStorage(makeConfig());
+    return new DiskObjectStorage({ type: "disk", path: storagePath });
+};
+
+export const makeLogger = (): Logger.Interface => {
+    const noop = () => undefined;
+    return {
+        trace: noop,
+        debug: noop,
+        info: noop,
+        warn: vi.fn(),
+        error: vi.fn(),
+        fatal: noop,
+        log: noop
+    };
 };
 
 export const makeTenantContext = (): TenantContext.Interface => ({

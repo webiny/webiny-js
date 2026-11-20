@@ -1,10 +1,17 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 
 export interface IObjectStorageUploadPartParams {
     key: string;
     uploadId: string;
     partNumber: number;
     body: Buffer;
+}
+
+export interface IObjectStorageAbortMultipartUploadsParams {
+    /** Only uploads of keys under this prefix, which ends in `/`. */
+    prefix: string;
+    startedBefore: Date;
 }
 
 /**
@@ -32,8 +39,8 @@ export interface IObjectStorage {
      * upload was not started for `key`.
      */
     completeMultipartUpload(key: string, uploadId: string): Promise<void>;
-    /** Abandons multipart uploads started before `startedBefore`. Returns how many it abandoned. */
-    abortMultipartUploadsStartedBefore(startedBefore: Date): Promise<number>;
+    /** Abandons multipart uploads started before a moment. Returns how many it abandoned. */
+    abortMultipartUploads(params: IObjectStorageAbortMultipartUploadsParams): Promise<number>;
 }
 
 export const ObjectStorage = createAbstraction<IObjectStorage>("FileManagerServer/ObjectStorage");
@@ -41,4 +48,23 @@ export const ObjectStorage = createAbstraction<IObjectStorage>("FileManagerServe
 export namespace ObjectStorage {
     export type Interface = IObjectStorage;
     export type UploadPartParams = IObjectStorageUploadPartParams;
+    export type AbortMultipartUploadsParams = IObjectStorageAbortMultipartUploadsParams;
+}
+
+/** The folder `DiskObjectStorage` keeps files in. */
+export const DiskStorageConfig = createAbstraction<FileManagerStandaloneConfig.DiskStorage>(
+    "FileManagerServer/DiskStorageConfig"
+);
+
+export namespace DiskStorageConfig {
+    export type Interface = FileManagerStandaloneConfig.DiskStorage;
+}
+
+/** The bucket `S3ObjectStorage` keeps files in. */
+export const S3StorageConfig = createAbstraction<FileManagerStandaloneConfig.S3Storage>(
+    "FileManagerServer/S3StorageConfig"
+);
+
+export namespace S3StorageConfig {
+    export type Interface = FileManagerStandaloneConfig.S3Storage;
 }

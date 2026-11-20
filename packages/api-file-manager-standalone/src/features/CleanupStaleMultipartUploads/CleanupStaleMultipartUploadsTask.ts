@@ -3,6 +3,7 @@ import {
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { TENANTS_KEY_PREFIX } from "~/utils/tenantsKeyPrefix.js";
 
 export interface CleanupStaleMultipartUploadsInput {
     /* Reserved for future use. */
@@ -23,8 +24,13 @@ class CleanupStaleMultipartUploadsTaskHandlerImpl implements TaskHandler.Interfa
             return controller.response.aborted();
         }
 
-        const startedBefore = new Date(Date.now() - STALE_THRESHOLD_MS);
-        await this.objectStorage.abortMultipartUploadsStartedBefore(startedBefore);
+        const staleSince = Date.now() - STALE_THRESHOLD_MS;
+        const startedBefore = new Date(staleSince);
+        // Only uploads of files: in a bucket shared with something else, theirs are left alone.
+        await this.objectStorage.abortMultipartUploads({
+            prefix: TENANTS_KEY_PREFIX,
+            startedBefore
+        });
 
         return controller.response.done();
     }

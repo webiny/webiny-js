@@ -117,7 +117,8 @@ export const FileStorage = defineExtension({
         const pathParam = storagePathParam as string;
         let storagePath = pathParam;
         if (!nodePath.isAbsolute(pathParam)) {
-            storagePath = nodePath.join(process.cwd(), pathParam);
+            const projectRoot = process.cwd();
+            storagePath = nodePath.join(projectRoot, pathParam);
         }
 
         return (

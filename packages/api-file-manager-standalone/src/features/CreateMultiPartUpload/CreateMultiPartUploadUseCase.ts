@@ -4,8 +4,7 @@ import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/featu
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
-import { getTenantFilesPrefix } from "~/utils/getTenantFilesPrefix.js";
-import { isKeyInsidePrefix } from "~/utils/isKeyInsidePrefix.js";
+import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 
 class CreateMultiPartUploadUseCaseImpl
@@ -25,11 +24,7 @@ class CreateMultiPartUploadUseCaseImpl
         const tenant = this.tenantContext.getTenant();
         const apiUrl = await this.publicUrls.getApiUrl();
 
-        const filesPrefix = getTenantFilesPrefix(tenant.id);
-        const key = `${filesPrefix}${file.key}`;
-        if (!isKeyInsidePrefix(key, filesPrefix)) {
-            throw new Error("Invalid file key.");
-        }
+        const key = toTenantFileKey(tenant.id, file.key);
 
         const uploadId = await this.objectStorage.createMultipartUpload(key);
 

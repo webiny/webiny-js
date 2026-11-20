@@ -1,22 +1,13 @@
 import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
-import { verifyUploadToken } from "~/utils/uploadToken.js";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
-import { getTenantFilesPrefix } from "~/utils/getTenantFilesPrefix.js";
-import { isKeyInsidePrefix } from "~/utils/isKeyInsidePrefix.js";
+import { UploadFileUseCase } from "~/features/UploadFile/abstractions.js";
 import { toBuffer } from "../utils.js";
 import { parseMultipart } from "../utils.js";
 import { getBoundary } from "../utils.js";
 
 class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
-    public constructor(
-        private readonly config: FileManagerStandaloneConfig.Interface,
-        private readonly objectStorage: ObjectStorage.Interface
-    ) {}
+    public constructor(private readonly uploadFile: UploadFileUseCase.Interface) {}
 
     public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
-        const secret = this.config.uploadSecret;
-
         const contentType =
             request.headers["content-type"] ?? request.headers["Content-Type"] ?? "";
         const boundary = getBoundary(contentType);
@@ -26,7 +17,8 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
                 .json({ error: "Expected multipart/form-data with a boundary." });
         }
 
-        const { fields, files } = parseMultipart(toBuffer(request.body), boundary);
+        const body = toBuffer(request.body);
+        const { fields, files } = parseMultipart(body, boundary);
         const key = fields.find(field => field.name === "key")?.value;
         const token = fields.find(field => field.name === "token")?.value;
         const file = files[0];
@@ -39,35 +31,10 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
             return response.status(400).json({ error: "No file in request." });
         }
 
-        let payload;
-        try {
-            payload = verifyUploadToken(token, secret);
-        } catch (err) {
-            return response
-                .status(400)
-                .json({ error: err instanceof Error ? err.message : "Invalid token." });
+        const result = await this.uploadFile.execute({ key, token, contents: file.data });
+        if (result.isFail()) {
+            return response.status(400).json({ error: result.error.message });
         }
-
-        if (payload.key !== key || payload.multipart) {
-            return response.status(400).json({ error: "Token key mismatch." });
-        }
-
-        const fileSize = file.data.length;
-        if (payload.uploadMaxFileSize > 0 && fileSize > payload.uploadMaxFileSize) {
-            return response.status(400).json({ error: "File exceeds maximum allowed size." });
-        }
-
-        if (payload.uploadMinFileSize > 0 && fileSize < payload.uploadMinFileSize) {
-            return response.status(400).json({ error: "File is below minimum allowed size." });
-        }
-
-        // The signed key must stay inside the files of the tenant the token was issued for.
-        const filesPrefix = getTenantFilesPrefix(payload.tenantId);
-        if (!isKeyInsidePrefix(key, filesPrefix)) {
-            return response.status(400).json({ error: "Invalid path." });
-        }
-
-        await this.objectStorage.put(key, file.data);
 
         return response.status(204);
     }
@@ -75,7 +42,7 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
 
 export const UploadSingleFileRoute = HttpRouteHandler.createImplementation({
     implementation: UploadSingleFileRouteImpl,
-    dependencies: [FileManagerStandaloneConfig, ObjectStorage]
+    dependencies: [UploadFileUseCase]
 });
 
 class UploadSingleFileRouteDefinitionImpl implements HttpRouteDefinition.Interface {

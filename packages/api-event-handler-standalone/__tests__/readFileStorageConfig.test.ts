@@ -70,6 +70,20 @@ describe("readFileStorageConfig", () => {
         expect(problems).toEqual(["Set WEBINY_LOCAL_STORAGE_PATH or WEBINY_S3_BUCKET, not both."]);
     });
 
+    it.each(["https://", "http://:9000", "r2.example.com", "ftp://r2.example.com"])(
+        "refuses the endpoint %j",
+        endpoint => {
+            const { storage, problems } = read({
+                WEBINY_S3_BUCKET: "uploads",
+                WEBINY_S3_REGION: "auto",
+                WEBINY_S3_ENDPOINT: endpoint
+            });
+
+            expect(storage).toBeUndefined();
+            expect(problems).toEqual([`WEBINY_S3_ENDPOINT is not an http(s) URL: "${endpoint}".`]);
+        }
+    );
+
     it("names every problem with the S3 settings", () => {
         const { storage, problems } = read({
             WEBINY_S3_BUCKET: "uploads",

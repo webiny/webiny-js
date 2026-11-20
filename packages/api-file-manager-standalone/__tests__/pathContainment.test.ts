@@ -11,11 +11,13 @@ import { DeleteFileFromStorageHandler } from "~/features/DeleteFileFromStorage/D
 import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFileContentsByIdUseCase.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadFileUseCase } from "~/features/UploadFile/UploadFileUseCase.js";
 import type { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import { cleanupStorage } from "./utils/helpers.js";
 import { getStoragePath } from "./utils/helpers.js";
 import { makeConfig } from "./utils/helpers.js";
 import { makeDiskStorage } from "./utils/helpers.js";
+import { makeLogger } from "./utils/helpers.js";
 import { makeTenantContext } from "./utils/helpers.js";
 import { makeUploadRequest } from "./utils/helpers.js";
 import { setupStorage } from "./utils/helpers.js";
@@ -52,7 +54,12 @@ const makeAsset = (key: string) => ({
 const makeDeleteHandler = () => {
     const keyValueStore = { delete: async () => {} } as any;
     const tenantContext = makeTenantContext();
-    return new DeleteFileFromStorageHandler(tenantContext, keyValueStore, makeDiskStorage());
+    return new DeleteFileFromStorageHandler(
+        tenantContext,
+        keyValueStore,
+        makeDiskStorage(),
+        makeLogger()
+    );
 };
 
 const readKeptFile = () => {
@@ -172,7 +179,9 @@ describe("single file upload route", () => {
         const fileContent = Buffer.from("planted");
         const request = makeUploadRequest({ storageKey, fileContent, filename: "x.txt" });
 
-        const route = new UploadSingleFileRoute(makeConfig(), makeDiskStorage());
+        const route = new UploadSingleFileRoute(
+            new UploadFileUseCase(makeConfig(), makeDiskStorage())
+        );
         const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);

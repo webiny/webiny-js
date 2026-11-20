@@ -118,11 +118,22 @@ describe.each(storageBackends)("object storage: $name", backend => {
         await storage.uploadPart({ key: KEY, uploadId, partNumber: 1, body: Buffer.from("x") });
 
         const anHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-        const keptCount = await storage.abortMultipartUploadsStartedBefore(anHourAgo);
+        const keptCount = await storage.abortMultipartUploads({
+            prefix: "tenants/",
+            startedBefore: anHourAgo
+        });
         const inAMinute = new Date(Date.now() + 60_000);
-        const abortedCount = await storage.abortMultipartUploadsStartedBefore(inAMinute);
+        const otherPrefixCount = await storage.abortMultipartUploads({
+            prefix: "other/",
+            startedBefore: inAMinute
+        });
+        const abortedCount = await storage.abortMultipartUploads({
+            prefix: "tenants/",
+            startedBefore: inAMinute
+        });
 
         expect(keptCount).toBe(0);
+        expect(otherPrefixCount).toBe(0);
         expect(abortedCount).toBe(1);
         await expect(storage.completeMultipartUpload(KEY, uploadId)).rejects.toThrow();
     });

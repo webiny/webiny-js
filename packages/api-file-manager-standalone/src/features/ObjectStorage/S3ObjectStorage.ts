@@ -13,22 +13,48 @@ import { UploadPartCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { createS3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import type { CompletedPart } from "@webiny/aws-sdk/client-s3/index.js";
 import type { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { isValidObjectKey } from "~/utils/isValidObjectKey.js";
 import { ObjectStorage } from "./abstractions.js";
+import { S3StorageConfig } from "./abstractions.js";
 
-// Objects removed at once by `deletePrefix`. One request each: not every S3-compatible service
-// takes DeleteObjects.
+/*
+ * Objects removed at once by `deletePrefix`. One request each: not every S3-compatible service
+ * takes DeleteObjects.
+ */
 const DELETE_CONCURRENCY = 10;
 
-const isNotFound = (error: unknown): boolean => {
-    const name = (error as { name?: string })?.name;
-    const status = (error as { $metadata?: { httpStatusCode?: number } })?.$metadata
-        ?.httpStatusCode;
-    return name === "NoSuchKey" || name === "NotFound" || status === 404;
+interface IS3ErrorShape {
+    name?: string;
+    $metadata?: { httpStatusCode?: number };
+}
+
+const toS3Error = (error: unknown): IS3ErrorShape => {
+    if (error && typeof error === "object") {
+        return error;
+    }
+    return {};
 };
 
-const createClient = (storage: FileManagerStandaloneConfig.S3Storage): S3Client => {
+const isNotFound = (error: unknown): boolean => {
+    const s3Error = toS3Error(error);
+    const status = s3Error.$metadata?.httpStatusCode;
+    return s3Error.name === "NoSuchKey" || s3Error.name === "NotFound" || status === 404;
+};
+
+/* The key is taken: AWS answers 412, some S3-compatible services 409 while another write runs. */
+const isTaken = (error: unknown): boolean => {
+    const status = toS3Error(error).$metadata?.httpStatusCode;
+    return status === 412 || status === 409;
+};
+
+/* The service does not take `If-None-Match` on a write. */
+const isConditionalWriteUnsupported = (error: unknown): boolean => {
+    const s3Error = toS3Error(error);
+    const status = s3Error.$metadata?.httpStatusCode;
+    return s3Error.name === "NotImplemented" || status === 501;
+};
+
+const createClient = (storage: S3StorageConfig.Interface): S3Client => {
     return createS3Client({
         region: storage.region,
         endpoint: storage.endpoint,
@@ -48,31 +74,47 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
     private readonly bucket: string;
     private readonly prefix: string;
 
-    public constructor(config: FileManagerStandaloneConfig.Interface) {
-        if (config.storage.type !== "s3") {
-            throw new Error(`S3ObjectStorage needs S3 storage, got "${config.storage.type}".`);
-        }
-        this.client = createClient(config.storage);
-        this.bucket = config.storage.bucket;
-        this.prefix = config.storage.prefix;
+    public constructor(config: S3StorageConfig.Interface) {
+        this.client = createClient(config);
+        this.bucket = config.bucket;
+        this.prefix = config.prefix;
     }
 
     public async put(key: string, body: Buffer): Promise<void> {
+        const objectKey = this.toObjectKey(key);
         const command = new PutObjectCommand({
             Bucket: this.bucket,
-            Key: this.toObjectKey(key),
+            Key: objectKey,
             Body: body
         });
         await this.client.send(command);
     }
 
     public async putIfAbsent(key: string, body: Buffer): Promise<boolean> {
+        const objectKey = this.toObjectKey(key);
+        const command = new PutObjectCommand({
+            Bucket: this.bucket,
+            Key: objectKey,
+            Body: body,
+            IfNoneMatch: "*"
+        });
+        try {
+            await this.client.send(command);
+            return true;
+        } catch (error) {
+            if (isTaken(error)) {
+                return false;
+            }
+            if (!isConditionalWriteUnsupported(error)) {
+                throw error;
+            }
+        }
+
         /*
-         * A check and then a write, not a conditional write (`If-None-Match`): not every
-         * S3-compatible service supports one. Two writers racing on one key can both succeed;
-         * file keys carry the file's ID, so they don't.
+         * A service without conditional writes: a check and then a write. Two writers racing on
+         * one key can both succeed there; file keys carry the file's ID, so they don't.
          */
-        const exists = await this.exists(key);
+        const exists = await this.exists(objectKey);
         if (exists) {
             return false;
         }
@@ -81,9 +123,10 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
     }
 
     public async get(key: string): Promise<Buffer | null> {
+        const objectKey = this.toObjectKey(key);
         const command = new GetObjectCommand({
             Bucket: this.bucket,
-            Key: this.toObjectKey(key)
+            Key: objectKey
         });
         try {
             const result = await this.client.send(command);
@@ -101,9 +144,10 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
     }
 
     public async delete(key: string): Promise<void> {
+        const objectKey = this.toObjectKey(key);
         const command = new DeleteObjectCommand({
             Bucket: this.bucket,
-            Key: this.toObjectKey(key)
+            Key: objectKey
         });
         await this.client.send(command);
     }
@@ -112,7 +156,8 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
         if (!prefix.endsWith("/")) {
             throw new Error(`A prefix must end with "/": "${prefix}".`);
         }
-        const objectPrefix = this.toObjectKey(prefix.slice(0, -1)) + "/";
+        const folderKey = prefix.slice(0, -1);
+        const objectPrefix = `${this.toObjectKey(folderKey)}/`;
 
         let continuationToken: string | undefined;
         do {
@@ -127,27 +172,25 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
                 .map(object => object.Key)
                 .filter((objectKey): objectKey is string => !!objectKey);
 
+            const deleteObject = async (objectKey: string) => {
+                const deleteCommand = new DeleteObjectCommand({
+                    Bucket: this.bucket,
+                    Key: objectKey
+                });
+                await this.client.send(deleteCommand);
+            };
             // oxlint-disable-next-line no-await-in-loop -- one page at a time.
-            await pMap(
-                objectKeys,
-                async objectKey => {
-                    const deleteCommand = new DeleteObjectCommand({
-                        Bucket: this.bucket,
-                        Key: objectKey
-                    });
-                    await this.client.send(deleteCommand);
-                },
-                { concurrency: DELETE_CONCURRENCY }
-            );
+            await pMap(objectKeys, deleteObject, { concurrency: DELETE_CONCURRENCY });
 
             continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
         } while (continuationToken);
     }
 
     public async createMultipartUpload(key: string): Promise<string> {
+        const objectKey = this.toObjectKey(key);
         const command = new CreateMultipartUploadCommand({
             Bucket: this.bucket,
-            Key: this.toObjectKey(key)
+            Key: objectKey
         });
         const result = await this.client.send(command);
         if (!result.UploadId) {
@@ -157,9 +200,10 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
     }
 
     public async uploadPart(params: ObjectStorage.UploadPartParams): Promise<string> {
+        const objectKey = this.toObjectKey(params.key);
         const command = new UploadPartCommand({
             Bucket: this.bucket,
-            Key: this.toObjectKey(params.key),
+            Key: objectKey,
             UploadId: params.uploadId,
             PartNumber: params.partNumber,
             Body: params.body
@@ -203,15 +247,17 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
         await this.client.send(completeCommand);
     }
 
-    public async abortMultipartUploadsStartedBefore(startedBefore: Date): Promise<number> {
+    public async abortMultipartUploads(
+        params: ObjectStorage.AbortMultipartUploadsParams
+    ): Promise<number> {
+        const startedBefore = params.startedBefore.getTime();
         let aborted = 0;
         let keyMarker: string | undefined;
         let uploadIdMarker: string | undefined;
         do {
-            // Only uploads of this project's files, in case the bucket is shared.
             const listCommand = new ListMultipartUploadsCommand({
                 Bucket: this.bucket,
-                Prefix: `${this.prefix}tenants/`,
+                Prefix: `${this.prefix}${params.prefix}`,
                 KeyMarker: keyMarker,
                 UploadIdMarker: uploadIdMarker
             });
@@ -222,7 +268,7 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
                 if (!upload.Key || !upload.UploadId || !upload.Initiated) {
                     continue;
                 }
-                if (upload.Initiated.getTime() >= startedBefore.getTime()) {
+                if (upload.Initiated.getTime() >= startedBefore) {
                     continue;
                 }
                 const abortCommand = new AbortMultipartUploadCommand({
@@ -242,10 +288,10 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
         return aborted;
     }
 
-    private async exists(key: string): Promise<boolean> {
+    private async exists(objectKey: string): Promise<boolean> {
         const command = new HeadObjectCommand({
             Bucket: this.bucket,
-            Key: this.toObjectKey(key)
+            Key: objectKey
         });
         try {
             await this.client.send(command);
@@ -268,5 +314,5 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
 
 export const S3ObjectStorage = ObjectStorage.createImplementation({
     implementation: S3ObjectStorageImpl,
-    dependencies: [FileManagerStandaloneConfig]
+    dependencies: [S3StorageConfig]
 });

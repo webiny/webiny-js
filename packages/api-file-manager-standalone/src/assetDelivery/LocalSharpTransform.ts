@@ -1,4 +1,5 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import {
     contentTypeForFormat,
@@ -36,19 +37,22 @@ export class LocalSharpTransform implements IAssetTypeHandler {
     private readonly imageQuality: Record<ImageFormat, number>;
     private readonly identityContext: IdentityContext.Interface;
     private readonly getFile: GetFileUseCase.Interface;
+    private readonly logger: Logger.Interface;
     private transformer?: SharpTransformer;
 
     constructor(
         objectStorage: ObjectStorage.Interface,
         config: ILocalAssetDeliveryConfig,
         identityContext: IdentityContext.Interface,
-        getFile: GetFileUseCase.Interface
+        getFile: GetFileUseCase.Interface,
+        logger: Logger.Interface
     ) {
         this.objectStorage = objectStorage;
         this.imageResizeWidths = config.imageResizeWidths;
         this.imageQuality = { ...DEFAULT_IMAGE_QUALITY, ...(config.imageQuality ?? {}) };
         this.identityContext = identityContext;
         this.getFile = getFile;
+        this.logger = logger;
     }
 
     private async getTransformer(): Promise<SharpTransformer> {
@@ -111,17 +115,17 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             const newAsset = asset.withProps({ size: cachedBuffer.length, contentType });
             newAsset.setContentsReader(CallableContentsReader.create(() => cachedBuffer));
 
-            console.log(`Return a previously transformed asset`, {
-                key: transformedAssetKey,
-                size: newAsset.getSize()
-            });
+            this.logger.debug(
+                { key: transformedAssetKey, size: newAsset.getSize() },
+                "Return a previously transformed asset."
+            );
 
             return newAsset;
         }
 
         const optimizedImage = await this.optimizeAsset(asset, framing);
 
-        console.log(`Transform the asset`, options);
+        this.logger.debug({ options }, "Transform the asset.");
         const baseBuffer = await optimizedImage.getContents();
         const transformer = await this.getTransformer();
         const { buffer: transformedBuffer, contentType: outputContentType } =
@@ -143,29 +147,35 @@ export class LocalSharpTransform implements IAssetTypeHandler {
         const transformedContents = await newAsset.getContents();
         await this.objectStorage.put(transformedAssetKey, transformedContents);
 
-        console.log(`Return the transformed asset`, {
-            key: transformedAssetKey,
-            size: newAsset.getSize(),
-            contentType: newAsset.getContentType()
-        });
+        this.logger.debug(
+            {
+                key: transformedAssetKey,
+                size: newAsset.getSize(),
+                contentType: newAsset.getContentType()
+            },
+            "Return the transformed asset."
+        );
 
         return newAsset;
     }
 
     private async optimizeAsset(asset: Asset, framing: Framing) {
-        console.log("Optimize asset", {
-            id: asset.getId(),
-            key: asset.getKey(),
-            size: asset.getSize(),
-            type: asset.getContentType()
-        });
+        this.logger.debug(
+            {
+                id: asset.getId(),
+                key: asset.getKey(),
+                size: asset.getSize(),
+                type: asset.getContentType()
+            },
+            "Optimize asset."
+        );
 
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
 
         const cachedBuffer = await this.objectStorage.get(optimizedAssetKey);
         if (cachedBuffer) {
-            console.log("Return a previously optimized asset", optimizedAssetKey);
+            this.logger.debug({ key: optimizedAssetKey }, "Return a previously optimized asset.");
 
             const newAsset = asset.withProps({ size: cachedBuffer.length });
             newAsset.setContentsReader(CallableContentsReader.create(() => cachedBuffer));
@@ -173,7 +183,8 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             return newAsset;
         }
 
-        console.log("Create an optimized version of the original asset", asset.getKey());
+        const originalKey = asset.getKey();
+        this.logger.debug({ key: originalKey }, "Create an optimized version of the asset.");
         let buffer = await asset.getContents();
 
         const transformer = await this.getTransformer();
@@ -188,20 +199,22 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             contentType === "image/jpg";
 
         if (!canOptimize && !cropped) {
-            console.log(`No optimizations defined for ${contentType}`);
+            this.logger.debug({ contentType }, "No optimizations defined for the content type.");
             return asset;
         }
 
         let finalBuffer = buffer;
         if (canOptimize) {
-            const pipeline =
-                contentType === "image/png"
-                    ? await transformer.optimizePng(buffer)
-                    : await transformer.optimizeJpeg(buffer);
+            let pipeline;
+            if (contentType === "image/png") {
+                pipeline = await transformer.optimizePng(buffer);
+            } else {
+                pipeline = await transformer.optimizeJpeg(buffer);
+            }
             finalBuffer = await pipeline.toBuffer();
         }
 
-        console.log("Optimized asset size", finalBuffer.length);
+        this.logger.debug({ size: finalBuffer.length }, "Optimized asset size.");
 
         const newAsset = asset.withProps({ size: finalBuffer.length });
         newAsset.setContentsReader(CallableContentsReader.create(() => finalBuffer));
@@ -219,5 +232,5 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
 export const LocalSharpTransformImpl = ImageAssetTypeHandler.createImplementation({
     implementation: LocalSharpTransform,
-    dependencies: [ObjectStorage, LocalAssetDeliveryConfig, IdentityContext, GetFileUseCase]
+    dependencies: [ObjectStorage, LocalAssetDeliveryConfig, IdentityContext, GetFileUseCase, Logger]
 });

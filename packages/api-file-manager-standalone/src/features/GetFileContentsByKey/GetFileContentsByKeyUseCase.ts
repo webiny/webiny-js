@@ -7,8 +7,7 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
-import { getTenantFilesPrefix } from "~/utils/getTenantFilesPrefix.js";
-import { isKeyInsidePrefix } from "~/utils/isKeyInsidePrefix.js";
+import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
     jpg: "image/jpeg",
@@ -57,14 +56,10 @@ class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCaseAbst
         key: string
     ): Promise<Result<FileContents, GetFileContentsByKeyUseCaseAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        const filesPrefix = getTenantFilesPrefix(tenant.id);
-        const objectKey = `${filesPrefix}${key}`;
 
         try {
             // A key outside the tenant's files is refused, not looked up.
-            if (!isKeyInsidePrefix(objectKey, filesPrefix)) {
-                throw new Error("Refusing to access a key outside of the tenant's files.");
-            }
+            const objectKey = toTenantFileKey(tenant.id, key);
             const buffer = await this.objectStorage.get(objectKey);
             if (!buffer) {
                 return Result.fail(new FileNotFoundError(key));
