@@ -16,7 +16,13 @@ const { Ui } = PageEditorConfig;
 export const WbAssistant = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isEnabled("aiPowerups.adminAssistant")) {
+    /*
+     * Building pages is AI page generation, licensed on its own. Without it the editor has no
+     * assistant panel and offers no page tools; the assistant stays in the command palette.
+     */
+    const assistant = featureFlags.isEnabled("aiPowerups.adminAssistant");
+    const pageGeneration = featureFlags.isEnabled("aiPowerups.websiteBuilder.pageGeneration");
+    if (!assistant || !pageGeneration) {
         return null;
     }
 

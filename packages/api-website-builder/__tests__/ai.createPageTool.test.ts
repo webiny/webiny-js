@@ -1,10 +1,19 @@
 import { describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
+import { Container as DiContainer } from "@webiny/di";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
+import { WbAiToolsFeature } from "~/features/ai/feature.js";
+import { CreatePageTool } from "~/features/ai/CreatePageTool.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { useHandler } from "./utils/useHandler.js";
 
+/*
+ * The test handler runs with AI page generation off, so `WbAiToolsFeature` registers nothing. The
+ * tool is registered here; its gate has a test of its own below.
+ */
 const getHandler = (container: Container, name: string) => {
+    container.register(CreatePageTool);
     const tool = container
         .resolveAll(AiSdkToolDefinition)
         .find(candidate => candidate.name === name);
@@ -15,6 +24,22 @@ const getHandler = (container: Container, name: string) => {
 
     return { tool, handler: container.resolveImplementation(tool.handler) };
 };
+
+const toolNamesWith = (enabledFlags: string[]) => {
+    const container = new DiContainer();
+    container.registerInstance(FeatureFlags, {
+        get: () => ({ isEnabled: (name: string) => enabledFlags.includes(name) })
+    } as unknown as FeatureFlags.Interface);
+    WbAiToolsFeature.register(container);
+    return container.resolveAll(AiSdkToolDefinition).map(tool => tool.name);
+};
+
+describe("createPage tool registration", () => {
+    it("is registered only with AI page generation licensed", () => {
+        expect(toolNamesWith(["aiPowerups.websiteBuilder.pageGeneration"])).toEqual(["createPage"]);
+        expect(toolNamesWith(["aiPowerups", "aiPowerups.adminAssistant"])).toEqual([]);
+    });
+});
 
 describe("createPage tool", () => {
     it("needs approval", async () => {

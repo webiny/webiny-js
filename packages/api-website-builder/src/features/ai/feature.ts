@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { CreatePageTool } from "./CreatePageTool.js";
 
 /**
@@ -8,6 +9,19 @@ import { CreatePageTool } from "./CreatePageTool.js";
 export const WbAiToolsFeature = createFeature({
     name: "Wb/AiTools",
     register(container) {
+        /*
+         * AI page generation is licensed on its own (project config && live WCP license). With it
+         * off, no AI caller is offered `createPage`, and the editor offers no page tools either.
+         */
+        const enabled = container
+            .resolve(FeatureFlags)
+            .get()
+            .isEnabled("aiPowerups.websiteBuilder.pageGeneration");
+
+        if (!enabled) {
+            return;
+        }
+
         container.register(CreatePageTool);
     }
 });
