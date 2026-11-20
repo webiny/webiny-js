@@ -27,7 +27,8 @@ describe("getSelectionPublishDisabledReason", () => {
                     createEntry("a", ReviewState.Approved),
                     createEntry("b", ReviewState.Approved)
                 ],
-                allSelected: false
+                allSelected: false,
+                hasMore: false
             })
         ).toBeNull();
     });
@@ -37,7 +38,8 @@ describe("getSelectionPublishDisabledReason", () => {
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
                 entries: [createEntry("a", ReviewState.Approved), createEntry("b", null)],
-                allSelected: false
+                allSelected: false,
+                hasMore: false
             })
         ).toBe(NEEDS_REVIEW);
     });
@@ -47,7 +49,8 @@ describe("getSelectionPublishDisabledReason", () => {
             getSelectionPublishDisabledReason({
                 workflowStatus: "unbound",
                 entries: [createEntry("a", null)],
-                allSelected: true
+                allSelected: true,
+                hasMore: true
             })
         ).toBeNull();
     });
@@ -57,9 +60,21 @@ describe("getSelectionPublishDisabledReason", () => {
             getSelectionPublishDisabledReason({
                 workflowStatus: "bound",
                 entries: [createEntry("a", ReviewState.Approved)],
-                allSelected: true
+                allSelected: true,
+                hasMore: true
             })
         ).toBe(NEEDS_REVIEW);
+    });
+
+    it("allows every entry selected when all of them are loaded and approved", () => {
+        expect(
+            getSelectionPublishDisabledReason({
+                workflowStatus: "bound",
+                entries: [createEntry("a", ReviewState.Approved)],
+                allSelected: true,
+                hasMore: false
+            })
+        ).toBeNull();
     });
 
     it("blocks while the binding is loading", () => {
@@ -67,8 +82,22 @@ describe("getSelectionPublishDisabledReason", () => {
             getSelectionPublishDisabledReason({
                 workflowStatus: "loading",
                 entries: [createEntry("a", ReviewState.Approved)],
-                allSelected: false
+                allSelected: false,
+                hasMore: false
             })
         ).toBe(CHECKING);
+    });
+
+    it("skips a published row, whose row action is Unpublish", () => {
+        const published = createEntry("a", null);
+        published.meta.status = "published";
+        expect(
+            getSelectionPublishDisabledReason({
+                workflowStatus: "bound",
+                entries: [published, createEntry("b", ReviewState.Approved)],
+                allSelected: false,
+                hasMore: false
+            })
+        ).toBeNull();
     });
 });

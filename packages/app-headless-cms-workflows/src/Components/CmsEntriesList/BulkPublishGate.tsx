@@ -33,14 +33,15 @@ export const BulkPublishGate = createReactiveComponent((props: BulkPublishGatePr
         return <>{props.children}</>;
     }
 
-    const { rows, selection } = listPresenter.list.vm;
+    const { rows, selection, pagination } = listPresenter.list.vm;
     const entries = rows.filter(row => {
         return selection.selectedIds.has(row.id);
     });
     const reason = getSelectionPublishDisabledReason({
         workflowStatus: presenter.vm.status,
         entries,
-        allSelected: selection.allSelected
+        allSelected: selection.allSelected,
+        hasMore: pagination.hasMore
     });
 
     if (reason === null) {

@@ -9,19 +9,22 @@ export interface SelectionPublishDisabledReasonParams {
     entries: CmsContentEntry[];
     // Every entry of the list is selected, also the ones not loaded yet.
     allSelected: boolean;
+    // The list has entries that are not loaded yet.
+    hasMore: boolean;
 }
 
 /*
  * Why the bulk "Publish" may not run: the first reason a selected row may not be published (the
- * row rule). With every entry selected, the entries not loaded yet are unknown, so a model that is
- * not known to be unbound blocks it as an entry with no review would. `null` means it may run. Pure.
+ * row rule). A published row is skipped: its row action is "Unpublish". With every entry selected
+ * while some are not loaded yet, those are unknown, so a model that is not known to be unbound
+ * blocks it as an entry with no review would. `null` means it may run. Pure.
  */
 export const getSelectionPublishDisabledReason = (
     params: SelectionPublishDisabledReasonParams
 ): string | null => {
-    const { workflowStatus, entries, allSelected } = params;
+    const { workflowStatus, entries, allSelected, hasMore } = params;
 
-    if (allSelected && workflowStatus !== "unbound") {
+    if (allSelected && hasMore && workflowStatus !== "unbound") {
         return getRowPublishDisabledReason({
             workflowStatus,
             reviewState: null,
@@ -31,6 +34,9 @@ export const getSelectionPublishDisabledReason = (
 
     for (const entry of entries) {
         const meta: ICmsEntryMetaWithReview = entry.meta;
+        if (meta.status === "published") {
+            continue;
+        }
         const reason = getRowPublishDisabledReason({
             workflowStatus,
             reviewState: meta.system?.workflow?.reviewState ?? null,

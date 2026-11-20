@@ -25,15 +25,21 @@ interface FakeSelection {
     allSelected: boolean;
 }
 
+interface FakePagination {
+    hasMore: boolean;
+}
+
 interface FakeListState {
     rows: CmsContentEntry[];
     selection: FakeSelection;
+    pagination: FakePagination;
 }
 
 const list = vi.hoisted(() => {
     const state: FakeListState = {
         rows: [],
-        selection: { selectedIds: new Set<string>(), allSelected: false }
+        selection: { selectedIds: new Set<string>(), allSelected: false },
+        pagination: { hasMore: false }
     };
     return state;
 });
