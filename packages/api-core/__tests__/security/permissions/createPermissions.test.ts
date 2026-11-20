@@ -18,6 +18,11 @@ const schema = {
             permission: "test.entry",
             scopes: ["full", "own"],
             actions: [{ name: "rwd" }, { name: "pw" }]
+        },
+        {
+            id: "settings",
+            permission: "test.settings",
+            scopes: ["full"]
         }
     ]
 } as const;
@@ -193,6 +198,27 @@ describe("createPermissions", () => {
 
         test("canDelete returns false", async () => {
             expect(await permissions.canDelete("entry")).toBe(false);
+        });
+    });
+
+    describe("entity without rwd actions", () => {
+        test("a wildcard restricted by rwd does not grant it", async () => {
+            const permissions = resolvePermissions(
+                createMockIdentityContext([{ name: "test.*", rwd: "r" }])
+            );
+            expect(await permissions.canAccess("settings")).toBe(false);
+        });
+
+        test("an unrestricted wildcard grants it", async () => {
+            const permissions = resolvePermissions(createMockIdentityContext([{ name: "test.*" }]));
+            expect(await permissions.canAccess("settings")).toBe(true);
+        });
+
+        test("its own permission grants it", async () => {
+            const permissions = resolvePermissions(
+                createMockIdentityContext([{ name: "test.settings" }])
+            );
+            expect(await permissions.canAccess("settings")).toBe(true);
         });
     });
 

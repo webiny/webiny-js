@@ -58,6 +58,13 @@ export const UserForm = createReactiveComponent(({ teams }: UserFormProps) => {
     const { newUserForm } = userForm;
     const isLinking = isNewUser && newUserForm.vm.mode === "link";
 
+    let submitLabel = t`Update user`;
+    if (isLinking) {
+        submitLabel = t`Link existing user`;
+    } else if (isNewUser) {
+        submitLabel = t`Create user`;
+    }
+
     const emailValidators = useMemo(() => {
         const validators = [validation.create("required,email")];
         if (!isNewUser) {
@@ -261,13 +268,7 @@ export const UserForm = createReactiveComponent(({ teams }: UserFormProps) => {
                         />
                         <Button
                             variant={"primary"}
-                            text={
-                                isLinking
-                                    ? t`Link existing user`
-                                    : isNewUser
-                                      ? t`Create user`
-                                      : t`Update user`
-                            }
+                            text={submitLabel}
                             disabled={isDisabled}
                             onClick={form.submit}
                         />

@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/feature/api";
-import { parseJsonBody } from "@webiny/event-handler-core";
+import { parseJson } from "@webiny/utils";
 import { WebSocketEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/WebSocketEventHandler.js";
 import type { IWebSocketEvent } from "@webiny/event-handler-aws/eventTypes/WebSocketEventType.js";
 import { RequestContainer } from "@webiny/event-handler-core";
@@ -29,7 +29,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 const getBody = (body: GenericRecord | string | undefined) => {
     if (typeof body === "string") {
         try {
-            return parseJsonBody(body) as GenericRecord;
+            return parseJson(body) as GenericRecord;
         } catch {
             return {};
         }
