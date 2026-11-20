@@ -207,17 +207,17 @@ describe("ModelPanel", () => {
         expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
     });
 
-    it("filters the models with the All, With workflow and Without workflow control", () => {
+    it("filters the models with the Workflow control: All, With and Without", () => {
         const props = createProps();
         renderWithAdminUi(<ModelPanel {...props} />);
 
-        const group = screen.getByRole("radiogroup", { name: "Filter models" });
+        const group = screen.getByRole("radiogroup", { name: "Workflow" });
         expect(within(group).getByRole("radio", { name: "All" }).getAttribute("aria-checked")).toBe(
             "true"
         );
 
-        fireEvent.click(within(group).getByRole("radio", { name: "With workflow" }));
-        fireEvent.click(within(group).getByRole("radio", { name: "Without workflow" }));
+        fireEvent.click(within(group).getByRole("radio", { name: "With" }));
+        fireEvent.click(within(group).getByRole("radio", { name: "Without" }));
 
         expect(props.onFilter).toHaveBeenNthCalledWith(1, "with");
         expect(props.onFilter).toHaveBeenNthCalledWith(2, "without");
@@ -228,7 +228,7 @@ describe("ModelPanel", () => {
             <ModelPanel {...createProps({ panel: createPanel({ filter: "without" }) })} />
         );
 
-        const radio = screen.getByRole("radio", { name: "Without workflow" });
+        const radio = screen.getByRole("radio", { name: "Without" });
         expect(radio.getAttribute("aria-checked")).toBe("true");
     });
 
@@ -237,7 +237,7 @@ describe("ModelPanel", () => {
             <ModelPanel {...createProps({ panel: createPanel({ showFilter: false }) })} />
         );
 
-        expect(screen.queryByRole("radiogroup", { name: "Filter models" })).toBeNull();
+        expect(screen.queryByRole("radiogroup", { name: "Workflow" })).toBeNull();
     });
 
     it("offers Delete workflow in the menu of a model with a workflow", () => {

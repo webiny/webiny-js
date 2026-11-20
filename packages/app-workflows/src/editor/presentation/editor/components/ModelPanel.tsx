@@ -41,8 +41,8 @@ interface ModelRowProps {
 
 const FILTER_ITEMS = [
     { value: "all", label: "All" },
-    { value: "with", label: "With workflow" },
-    { value: "without", label: "Without workflow" }
+    { value: "with", label: "With" },
+    { value: "without", label: "Without" }
 ];
 
 const SKELETON_ROWS = [0, 1, 2, 3];
@@ -148,7 +148,7 @@ export const ModelPanel = (props: ModelPanelProps) => {
     if (panel.showFilter) {
         filterControl = (
             <SegmentedControl
-                label="Filter models"
+                label="Workflow"
                 items={FILTER_ITEMS}
                 value={panel.filter}
                 onChange={value => props.onFilter(value as ModelWorkflowFilter)}
