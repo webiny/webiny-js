@@ -17,8 +17,8 @@ export interface ICoreOutput {
     fileManagerBucketId: string;
     fileManagerBucketArn: string;
     /*
-     * The core's DynamoDB tables. Absent with `<Infra.Postgres />`: the core creates none. The types
-     * stay non-optional so existing `CorePulumi` / `ApiPulumi` code keeps compiling.
+     * The core's DynamoDB tables. Absent with `<Infra.AuroraPostgres />`: the core creates none.
+     * The types stay non-optional so existing `CorePulumi` / `ApiPulumi` code keeps compiling.
      */
     primaryDynamodbTableArn: string;
     primaryDynamodbTableName: string;
@@ -51,9 +51,9 @@ export interface ICoreOutput {
     pgUser: string | undefined;
     pgSecretArn: string | undefined;
     /*
-     * Set with `<Infra.Postgres />`: the core's service manifests (`core`, and any a `CorePulumi`
-     * extension adds). The core deploys before the api's schema-setup function exists, so the api
-     * deploy stores them in the database.
+     * Set with `<Infra.AuroraPostgres />`: the core's service manifests (`core`, and any a
+     * `CorePulumi` extension adds). The core deploys before the api's schema-setup function exists,
+     * so the api deploy stores them in the database.
      */
     serviceManifests: ServiceManifest[] | undefined;
 }

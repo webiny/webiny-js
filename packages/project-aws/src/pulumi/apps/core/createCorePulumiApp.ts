@@ -213,7 +213,7 @@ export function createCorePulumiApp() {
                 isProduction
             );
 
-            // DynamoDB tables: none with `<Infra.Postgres />`.
+            // DynamoDB tables: none with `<Infra.AuroraPostgres />`.
             const { dynamoDbTable } = addCoreDynamoDb(app, {
                 usesPostgres,
                 protect,
@@ -340,7 +340,7 @@ export function createCorePulumiApp() {
         app.addServiceManifest(
             createCoreServiceManifest({
                 eventBus: baseApp.resources.eventBus,
-                // None with `<Infra.Postgres />`, so the manifest has only the event bus.
+                // None with `<Infra.AuroraPostgres />`, so the manifest has only the event bus.
                 dynamoDbTable: baseApp.resources.dynamoDbTable
             })
         );

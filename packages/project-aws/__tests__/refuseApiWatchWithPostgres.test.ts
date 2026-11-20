@@ -40,11 +40,12 @@ const failure = async (promise: Promise<unknown>) => {
     throw new Error("Expected watch to be refused, and it was let through.");
 };
 
-describe("watch api with <Infra.Postgres /> on AWS", () => {
+describe("watch api with <Infra.AuroraPostgres /> on AWS", () => {
     it("refuses, says the database is in private subnets, and says to deploy instead", async () => {
         const result = await failure(watchApi([[Postgres, {}]]));
 
         expect(result.reason).toBe("Cannot watch the API of a project that uses Postgres on AWS.");
+        expect(result.message).toContain("<Infra.AuroraPostgres />");
         expect(result.message).toContain("private");
         expect(result.message).toContain("yarn webiny deploy api --env dev");
     });
@@ -55,7 +56,7 @@ describe("watch api with <Infra.Postgres /> on AWS", () => {
         expect(result.reason).toBe("Cannot watch the API of a project that uses Postgres on AWS.");
     });
 
-    it("lets watch through without <Infra.Postgres />", async () => {
+    it("lets watch through without <Infra.AuroraPostgres />", async () => {
         await expect(watchApi([])).resolves.toBeUndefined();
     });
 });
