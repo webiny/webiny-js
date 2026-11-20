@@ -1,6 +1,7 @@
 import React from "react";
-import { Separator } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
+import { SimpleFormContent } from "@webiny/app-admin";
+import { SimpleFormFooter } from "@webiny/app-admin";
 import { LeftPanel } from "@webiny/app-admin";
 import { RightPanel } from "@webiny/app-admin";
 import { SplitView } from "@webiny/app-admin";
@@ -96,26 +97,41 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
     if (vm.detail === "loading") {
         content = <EditorDetailLoading />;
     } else if (vm.detail === "workflow" && header !== null) {
+        /*
+         * One bordered card built from the SimpleForm parts (header, content, footer). `SimpleForm`
+         * itself cannot bound its inner column's height, so the card's column is laid out here: the
+         * header stays put and only the steps scroll. The empty footer closes the card's border.
+         */
         content = (
-            <div className="flex flex-col min-h-0 grow">
-                <EditorHeader
-                    header={header}
-                    onNameChange={name => presenter.setName(name)}
-                    onSave={() => presenter.save()}
-                    onDelete={() => presenter.requestDelete()}
-                />
-                <Separator />
-                {banners}
-                <div className="grow overflow-y-auto p-lg">
-                    <WorkflowFlow
-                        flow={vm.flow}
-                        scrollRequest={vm.scrollRequest}
-                        disabled={header.saving}
-                        onAddStep={index => presenter.openTypePicker(index)}
-                        onEditStep={stepId => presenter.openStep(stepId)}
-                        onMoveStep={(from, to) => presenter.moveStep(from, to)}
-                        onDeleteStep={stepId => presenter.requestDeleteStep(stepId)}
+            <div data-role="editor-page" className="flex min-h-0 grow flex-col p-lg">
+                <div
+                    data-role="editor-card"
+                    className="mx-auto flex min-h-0 w-full max-w-4xl grow flex-col"
+                >
+                    <EditorHeader
+                        header={header}
+                        onNameChange={name => presenter.setName(name)}
+                        onSave={() => presenter.save()}
+                        onDelete={() => presenter.requestDelete()}
                     />
+                    <SimpleFormContent className="flex min-h-0 grow flex-col p-none">
+                        {banners}
+                        <div
+                            data-role="editor-scroll"
+                            className="min-h-0 grow overflow-y-auto px-lg pt-lg"
+                        >
+                            <WorkflowFlow
+                                flow={vm.flow}
+                                scrollRequest={vm.scrollRequest}
+                                disabled={header.saving}
+                                onAddStep={index => presenter.openTypePicker(index)}
+                                onEditStep={stepId => presenter.openStep(stepId)}
+                                onMoveStep={(from, to) => presenter.moveStep(from, to)}
+                                onDeleteStep={stepId => presenter.requestDeleteStep(stepId)}
+                            />
+                        </div>
+                    </SimpleFormContent>
+                    <SimpleFormFooter>{null}</SimpleFormFooter>
                 </div>
             </div>
         );

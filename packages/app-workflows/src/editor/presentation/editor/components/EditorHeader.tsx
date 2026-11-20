@@ -5,6 +5,7 @@ import { EditableTitle } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { SimpleFormHeader } from "@webiny/app-admin";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { WorkflowHeaderVm } from "~/editor/presentation/editor/abstractions.js";
 
@@ -15,7 +16,7 @@ export interface EditorHeaderProps {
     onDelete(): void;
 }
 
-// The sticky header: name, Unsaved changes tag, applies-to line, Delete workflow, Save (design README 3).
+// The card's header: name, Unsaved changes tag, applies-to line, Delete workflow, Save (design README 3).
 export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorHeaderProps) => {
     let saveText = "Save";
     if (header.saving) {
@@ -71,43 +72,48 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         nameError = <FormComponentErrorMessage invalid text={header.nameError} />;
     }
 
-    return (
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md">
-            <div className="flex flex-col gap-xs grow min-w-0">
-                <div data-role="title-row" className="flex items-center gap-sm min-w-0">
-                    <div
-                        className="min-w-0"
-                        tabIndex={nameTriggerEnabled ? 0 : undefined}
-                        role={nameTriggerEnabled ? "button" : undefined}
-                        aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
-                        onClick={nameTriggerEnabled ? () => setEditingName(true) : undefined}
-                        onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
-                    >
-                        {nameTitle}
-                    </div>
-                    {unsavedTag}
+    // `SimpleFormHeader` has no description slot, so the applies-to line sits in the title node.
+    const title = (
+        <div className="flex flex-col gap-xxs min-w-0">
+            <div data-role="title-row" className="flex items-center gap-sm min-w-0">
+                <div
+                    className="min-w-0"
+                    tabIndex={nameTriggerEnabled ? 0 : undefined}
+                    role={nameTriggerEnabled ? "button" : undefined}
+                    aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
+                    onClick={nameTriggerEnabled ? () => setEditingName(true) : undefined}
+                    onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
+                >
+                    {nameTitle}
                 </div>
-                {nameError}
-                <Text size="sm">{header.appliesTo}</Text>
+                {unsavedTag}
             </div>
-            <div data-role="header-actions" className="flex items-start shrink-0">
-                <div className="flex items-center gap-xs">
-                    <IconButton
-                        variant="ghost"
-                        aria-label="Delete workflow"
-                        title="Delete workflow"
-                        icon={<DeleteIcon />}
-                        disabled={deleteDisabled}
-                        onClick={handleDelete}
-                    />
-                    <Button
-                        variant="primary"
-                        text={saveText}
-                        disabled={saveDisabled}
-                        onClick={onSave}
-                    />
-                </div>
-            </div>
+            {nameError}
+            <Text as="div" size="sm" className="text-neutral-strong">
+                {header.appliesTo}
+            </Text>
         </div>
+    );
+
+    return (
+        <SimpleFormHeader title={title} data-testid="workflow-editor-header">
+            <div data-role="header-actions" className="flex items-center justify-end gap-xs">
+                <IconButton
+                    variant="ghost"
+                    aria-label="Delete workflow"
+                    title="Delete workflow"
+                    icon={<DeleteIcon />}
+                    disabled={deleteDisabled}
+                    onClick={handleDelete}
+                />
+                <Button
+                    variant="primary"
+                    size="sm"
+                    text={saveText}
+                    disabled={saveDisabled}
+                    onClick={onSave}
+                />
+            </div>
+        </SimpleFormHeader>
     );
 };

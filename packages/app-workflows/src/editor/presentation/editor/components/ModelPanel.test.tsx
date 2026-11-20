@@ -84,6 +84,15 @@ describe("ModelPanel", () => {
         expect(within(rowOf("Author")).getByTestId("icon-author")).toBeTruthy();
     });
 
+    it("runs the rows edge to edge, outside the padded controls", () => {
+        renderWithAdminUi(<ModelPanel {...createProps()} />);
+
+        const controls = document.querySelector('[data-role="model-panel-controls"]')!;
+        expect(controls.contains(screen.getByText("Content models"))).toBe(true);
+        expect(controls.contains(rowOf("Article"))).toBe(false);
+        expect(rowOf("Article").querySelector(".pl-lg")).not.toBeNull();
+    });
+
     it("marks the open row, the bound indicator and the Unsaved tag", () => {
         renderWithAdminUi(<ModelPanel {...createProps()} />);
 

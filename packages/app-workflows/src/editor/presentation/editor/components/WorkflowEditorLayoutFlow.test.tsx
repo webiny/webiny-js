@@ -95,6 +95,18 @@ describe("WorkflowEditorLayout flow", () => {
         expect(screen.getByText("Legal sign-off")).toBeTruthy();
     });
 
+    it("puts the header and the flow in one card, with only the flow in the scroll area", () => {
+        renderLayout({ flow: { steps: STEPS, stepsError: null, modelName: "Article" } });
+
+        const card = document.querySelector('[data-role="editor-card"]') as HTMLElement;
+        const header = screen.getByTestId("workflow-editor-header");
+        const scroll = document.querySelector('[data-role="editor-scroll"]') as HTMLElement;
+        expect(card.contains(header)).toBe(true);
+        expect(card.contains(scroll)).toBe(true);
+        expect(scroll.contains(header)).toBe(false);
+        expect(scroll.contains(screen.getByTestId("step-card-s1"))).toBe(true);
+    });
+
     it("shows no flow without an open workflow", () => {
         renderLayout({ detail: "none", header: null });
 

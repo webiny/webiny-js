@@ -94,6 +94,16 @@ describe("StepCard", () => {
         expect(title.compareDocumentPosition(tag) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
+    it("keeps the add after button outside the accordion item, beside it", () => {
+        renderCard(createProps());
+
+        const add = screen.getByRole("button", { name: "Add a step after Legal sign-off" });
+        const wrapper = add.closest('[data-role="add-after"]') as HTMLElement;
+        const row = screen.getByText("Legal sign-off").closest('[data-role="step-title-row"]')!;
+        expect(wrapper.parentElement).toBe(cardOf("step-2"));
+        expect(wrapper.contains(row)).toBe(false);
+    });
+
     it("marks the card with its step id", () => {
         renderCard(createProps());
 

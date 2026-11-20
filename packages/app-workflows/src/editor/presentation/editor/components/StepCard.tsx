@@ -54,9 +54,8 @@ export const StepCard = (props: StepCardProps) => {
 
     const title = (
         <span data-role="step-title-row" className="flex items-center gap-xs min-w-0">
-            <Text as="span" size="md" className="truncate">
-                {step.title}
-            </Text>
+            {/* A plain span keeps the accordion title's semibold weight (`Text` resets it). */}
+            <span className="truncate">{step.title}</span>
             <Tag
                 variant="neutral-base-outline"
                 icon={getStepTypeIcon(step.type)}
@@ -134,7 +133,7 @@ export const StepCard = (props: StepCardProps) => {
             data-sortable-item=""
             data-step-id={step.id}
             data-testid={`step-card-${step.id}`}
-            className="flex items-start gap-xs"
+            className="flex items-start gap-sm"
         >
             <div className="min-w-0 grow">
                 <Accordion.Item
@@ -182,14 +181,17 @@ export const StepCard = (props: StepCardProps) => {
                     </div>
                 </Accordion.Item>
             </div>
-            <IconButton
-                aria-label={`Add a step after ${step.title}`}
-                variant="ghost"
-                size="sm"
-                icon={<AddIcon />}
-                disabled={disabled}
-                onClick={() => props.onAddAfter(index)}
-            />
+            {/* Centred on the item's collapsed header (62px tall), so it stays put when the item opens. */}
+            <div data-role="add-after" className="shrink-0 pt-md-extra">
+                <IconButton
+                    aria-label={`Add a step after ${step.title}`}
+                    variant="ghost"
+                    size="sm"
+                    icon={<AddIcon />}
+                    disabled={disabled}
+                    onClick={() => props.onAddAfter(index)}
+                />
+            </div>
         </div>
     );
 };

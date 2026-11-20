@@ -83,6 +83,8 @@ describe("WorkflowFlow", () => {
         const { unmount } = renderFlow(createProps(), createFakeSortable());
         const column = document.querySelector('[data-role="flow-column"]');
         expect(column).not.toBeNull();
+        // The steps span the card's content area: no narrow column.
+        expect(column!.className).not.toContain("max-w-");
         expect(column!.contains(screen.getAllByTestId(/^step-card-/)[0])).toBe(true);
         expect(column!.contains(screen.getByRole("button", { name: "Add new step" }))).toBe(true);
         unmount();
@@ -129,6 +131,9 @@ describe("WorkflowFlow", () => {
         renderFlow(createProps(), createFakeSortable());
 
         const heading = screen.getByRole("heading", { name: "Workflow steps" });
+        // Muted body text, not a bold heading element.
+        expect(heading.tagName).toBe("DIV");
+        expect(heading.className).toContain("text-neutral-strong");
         const first = screen.getAllByTestId(/^step-card-/)[0];
         expect(
             heading.compareDocumentPosition(first) & Node.DOCUMENT_POSITION_FOLLOWING

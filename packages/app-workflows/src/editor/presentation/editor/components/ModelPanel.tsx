@@ -118,6 +118,7 @@ const ModelRow = ({ row, icon, onSelect, onCreateWorkflow, onDeleteWorkflow }: M
             data-testid={`model-row-${row.modelId}`}
             aria-current={ariaCurrent}
             selected={row.active}
+            sidePadding="lg"
             icon={icon}
             title={row.name}
             description={row.subLine}
@@ -129,6 +130,7 @@ const ModelRow = ({ row, icon, onSelect, onCreateWorkflow, onDeleteWorkflow }: M
 };
 
 // The model panel: label, optional search, rows with icon, name, sub line and indicators, Load more.
+// The rows run edge to edge so their dividers span the panel; everything else keeps the rows' side padding.
 export const ModelPanel = (props: ModelPanelProps) => {
     const { panel } = props;
 
@@ -160,14 +162,18 @@ export const ModelPanel = (props: ModelPanelProps) => {
     let list: React.ReactNode = null;
     if (panel.loading) {
         list = (
-            <div data-testid="model-panel-loading" className="flex flex-col gap-sm">
+            <div data-testid="model-panel-loading" className="flex flex-col gap-sm pr-md pl-lg">
                 {SKELETON_ROWS.map(row => (
                     <Skeleton key={row} type="text" />
                 ))}
             </div>
         );
     } else if (panel.emptyText !== null) {
-        list = <Text size="sm">{panel.emptyText}</Text>;
+        list = (
+            <Text as="div" size="sm" className="pr-md pl-lg">
+                {panel.emptyText}
+            </Text>
+        );
     } else {
         list = (
             <List>
@@ -211,16 +217,30 @@ export const ModelPanel = (props: ModelPanelProps) => {
         );
     }
 
+    let footer: React.ReactNode = null;
+    if (error !== null || loadMore !== null) {
+        footer = (
+            <div data-role="model-panel-footer" className="flex flex-col gap-sm py-md pr-md pl-lg">
+                {error}
+                {loadMore}
+            </div>
+        );
+    }
+
     return (
-        <div data-testid="model-panel" className="flex flex-col gap-sm p-md">
-            <Text as="div" size="sm">
-                {panel.label}
-            </Text>
-            {searchInput}
-            {filterControl}
+        <div data-testid="model-panel" className="flex flex-col">
+            <div
+                data-role="model-panel-controls"
+                className="flex flex-col gap-sm pt-md pr-md pb-sm pl-lg"
+            >
+                <Text as="div" size="sm">
+                    {panel.label}
+                </Text>
+                {searchInput}
+                {filterControl}
+            </div>
             {list}
-            {error}
-            {loadMore}
+            {footer}
         </div>
     );
 };

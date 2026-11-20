@@ -7,7 +7,6 @@ import { Accordion } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
-import { Heading } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
@@ -161,7 +160,7 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
     );
 
     const changesNote = (
-        <Text as="div" size="sm" className="text-center">
+        <Text as="div" size="sm" className="text-center text-neutral-strong">
             Changes apply to new review requests; reviews already running are not affected.
         </Text>
     );
@@ -179,7 +178,7 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
             <div
                 ref={rootRef}
                 data-role="flow-column"
-                className="mx-auto flex w-full max-w-2xl flex-col gap-md"
+                className="flex w-full flex-col gap-sm-extra"
             >
                 {error}
                 <EmptyState
@@ -194,18 +193,22 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
     }
 
     return (
-        <div
-            ref={rootRef}
-            data-role="flow-column"
-            className="mx-auto flex w-full max-w-2xl flex-col gap-md"
-        >
+        <div ref={rootRef} data-role="flow-column" className="flex w-full flex-col gap-sm-extra">
             <div role="status" aria-live="polite" className="sr-only">
                 {announcement}
             </div>
-            <Heading level={6} className="text-center">
+            <Text
+                as="div"
+                size="md"
+                role="heading"
+                aria-level={5}
+                className="text-center text-neutral-strong"
+            >
                 Workflow steps
-            </Heading>
-            <Accordion variant="container">
+            </Text>
+            {/* The items take the opposite of the accordion's background: the default "light" gives them
+                the "base" (white) one. `border="accent"` draws their border. */}
+            <Accordion variant="container" border="accent">
                 {steps.map((step, index) => (
                     <StepCard
                         key={step.id}
@@ -220,8 +223,10 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
                     />
                 ))}
             </Accordion>
-            <div className="flex justify-center">{addStep}</div>
-            {changesNote}
+            <div data-role="flow-footer" className="flex flex-col items-center gap-sm pt-xs">
+                {addStep}
+                {changesNote}
+            </div>
         </div>
     );
 });
