@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import { NotifyRoleChangeUseCase } from "./NotifyRoleChangeUseCase.js";
 import { NotifyOnRoleCreatedHandler } from "./NotifyOnRoleCreatedHandler.js";
 import { NotifyOnRoleUpdatedHandler } from "./NotifyOnRoleUpdatedHandler.js";
 import { NotifyOnRoleDeletedHandler } from "./NotifyOnRoleDeletedHandler.js";
@@ -8,7 +7,6 @@ import { NotifyOnRoleDeletedHandler } from "./NotifyOnRoleDeletedHandler.js";
 export const NotifyRoleChangeFeature = createFeature({
     name: "NotifyRoleChange",
     register(container) {
-        container.register(NotifyRoleChangeUseCase);
         container.register(NotifyOnRoleCreatedHandler);
         container.register(NotifyOnRoleUpdatedHandler);
         container.register(NotifyOnRoleDeletedHandler);

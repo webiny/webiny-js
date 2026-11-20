@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import { NotifyFolderChangeUseCase } from "./NotifyFolderChangeUseCase.js";
 import { NotifyOnFolderDeletedHandler } from "./NotifyOnFolderDeletedHandler.js";
 
 /**
@@ -9,7 +8,6 @@ import { NotifyOnFolderDeletedHandler } from "./NotifyOnFolderDeletedHandler.js"
 export const NotifyFolderChangeFeature = createFeature({
     name: "NotifyFolderChange",
     register(container) {
-        container.register(NotifyFolderChangeUseCase);
         container.register(NotifyOnFolderDeletedHandler);
     }
 });

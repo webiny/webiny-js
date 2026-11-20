@@ -11,6 +11,7 @@ import {
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { useFeature } from "@webiny/app";
 import { SettingsPresenterFeature } from "../feature.js";
+import { TestMailSection } from "./TestMailSection.js";
 
 export const SettingsView = observer(function SettingsView() {
     const toast = useToast();
@@ -19,6 +20,7 @@ export const SettingsView = observer(function SettingsView() {
 
     useEffect(() => {
         void presenter.load();
+        return () => presenter.dispose();
     }, [presenter]);
 
     const handleSave = async () => {
@@ -31,6 +33,11 @@ export const SettingsView = observer(function SettingsView() {
             toast.showWarningToast({ title: e.message });
         }
     };
+
+    let saveButton: React.ReactNode = null;
+    if (vm.editable) {
+        saveButton = <Button text={"Save"} onClick={handleSave} disabled={vm.testMail.sending} />;
+    }
 
     return (
         <CenteredView>
@@ -46,10 +53,14 @@ export const SettingsView = observer(function SettingsView() {
                     ) : null}
                     <FormView name={"Mailer Settings"} form={vm.form} />
                 </SimpleFormContent>
-                <SimpleFormFooter>
-                    {vm.editable ? <Button text={"Save"} onClick={handleSave} /> : null}
-                </SimpleFormFooter>
+                <SimpleFormFooter>{saveButton}</SimpleFormFooter>
             </SimpleForm>
+            {/*
+             * Below the form rather than inside it: the section's note and result appear and
+             * disappear as the form turns dirty, which happens when a field loses focus. Above the
+             * Save button, that moved Save between mouse down and mouse up, and the click was lost.
+             */}
+            <TestMailSection />
         </CenteredView>
     );
 });

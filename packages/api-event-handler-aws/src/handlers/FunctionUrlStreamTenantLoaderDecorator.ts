@@ -5,7 +5,8 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import { extractTenantId, headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
+import { extractTenantId } from "@webiny/api-event-handler-core";
+import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
 
 /**
  * EXTRACT (transport-specific): reads the tenant id from the `x-tenant` header of a Function URL event

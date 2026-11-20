@@ -1,9 +1,7 @@
 import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import type { CmsModel } from "~/types/index.js";
-
-const HIDDEN_MODEL_GROUP = "hidden";
+import { isSystemModel } from "./models.js";
 
 const inputSchema = z.object({
     includeSystem: z
@@ -26,15 +24,6 @@ interface ModelSummary {
     titleFieldId: string;
     fieldCount: number;
 }
-
-/**
- * Models Webiny itself owns. Two separate markers, both needed:
- *  - `group: "hidden"` — the convention system models use (languages, tenants, background-task
- *    settings). The admin UI filters the same way, see app-headless-cms useCmsData.
- *  - `isPrivate` — models another app owns and manages through its own UI (e.g. Website Builder).
- */
-const isSystemModel = (model: CmsModel): boolean =>
-    Boolean(model.isPrivate) || model.group === HIDDEN_MODEL_GROUP;
 
 class ListContentModelsToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listModels: ListModelsUseCase.Interface) {}

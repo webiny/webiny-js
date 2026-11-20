@@ -1,4 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { TrashBinFeature } from "@webiny/app-admin/presentation/trashBin/feature.js";
@@ -18,10 +21,14 @@ export const WbTrashBin = observer(() => {
 
     const handleOpen = useCallback(() => {
         presenter.init({
-            nameColumnId: "properties.title"
+            nameColumnId: "properties.title",
+            assistant: { view: "Deleted pages in Website Builder" }
         });
         setOpen(true);
     }, [presenter]);
+
+    // Leaving the list with the trash open would leave its description to the assistant.
+    useEffect(() => () => presenter.dispose(), [presenter]);
 
     const handleClose = useCallback(() => {
         setOpen(false);

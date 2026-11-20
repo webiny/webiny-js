@@ -19,10 +19,13 @@ import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
-import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
 import {
     WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
@@ -41,9 +44,6 @@ import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
-import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
-import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
-import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import { mkdirSync } from "node:fs";
@@ -291,21 +291,21 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             stopTaskRecovery = startTaskRecovery(rootContainer);
         },
 
-        onShutdown: async rootContainer => {
+        onShutdown: async (rootContainer, { requestsFinished }) => {
             /*
              * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
              * Then wait for what is running: tasks hand themselves back, so another process picks
              * them up at its next sweep, and scheduled actions already running get to finish.
              * Websockets close at the same time, with 1012 so clients reconnect to a process that
              * is up, and their connections leave the registry; that takes about a second. The
-             * message bus closes last, once tasks and scheduled actions are done: what they still
-             * send to browsers on other processes goes through it.
+             * message bus closes last, once tasks, scheduled actions and HTTP requests in flight
+             * are done: what they still send to browsers on other processes goes through it.
              */
             stopTaskRecovery?.();
             const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
             const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
             const websockets = stopWebsockets?.();
-            const workDone = Promise.allSettled([tasks, scheduledActions]);
+            const workDone = Promise.allSettled([tasks, scheduledActions, requestsFinished]);
             const messageBus = workDone.then(() => closeMessageBus?.());
 
             // One failing part must not cut the others short; the first failure is reported after.

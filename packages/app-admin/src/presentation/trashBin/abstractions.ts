@@ -111,6 +111,15 @@ export namespace TrashBinBulkActionGateway {
 export interface ITrashBinPresenterConfig {
     nameColumnId: string;
     initialSort?: { field: string; direction: "ASC" | "DESC" };
+    /** Tell the admin assistant whose trash this is. The rows are added by the list. */
+    assistant?: ITrashBinAssistantConfig;
+}
+
+export interface ITrashBinAssistantConfig {
+    /** What the trash holds, in one sentence: `Deleted pages in Website Builder`. */
+    view: string;
+    /** Ids only the caller knows, such as the model. */
+    details?: Record<string, unknown>;
 }
 
 export interface ITrashBinViewModel {
@@ -142,4 +151,5 @@ export namespace TrashBinPresenter {
     export type ViewModel = ITrashBinViewModel;
     export type Actions = ITrashBinActions;
     export type Config = ITrashBinPresenterConfig;
+    export type AssistantConfig = ITrashBinAssistantConfig;
 }

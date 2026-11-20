@@ -316,6 +316,7 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `DuplicatePageUseCase`                     | `@webiny/api-website-builder/features/pages/DuplicatePage/abstractions.js`          |
 | `GetPageByIdUseCase`                       | `@webiny/api-website-builder/features/pages/GetPageById/abstractions.js`            |
 | `GetPageByPathUseCase`                     | `@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js`          |
+| `GetLatestPageByPathUseCase`               | `@webiny/api-website-builder/features/pages/GetLatestPageByPath/abstractions.js`    |
 | `GetPageRevisionsUseCase`                  | `@webiny/api-website-builder/features/pages/GetPageRevisions/abstractions.js`       |
 | `ListPagesUseCase`                         | `@webiny/api-website-builder/features/pages/ListPages/abstractions.js`              |
 | `MovePageUseCase`                          | `@webiny/api-website-builder/features/pages/MovePage/abstractions.js`               |

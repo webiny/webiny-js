@@ -4,6 +4,7 @@ import { Result } from "@webiny/feature/api";
 import { SavePasswordResetCodeStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { ListLivePasswordResetCodesStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { CountPasswordResetCodesStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
+import { SetPasswordResetCodeHashStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { IncrementPasswordResetCodeAttemptsStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { MarkPasswordResetCodesUsedStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
 import { DeleteExpiredPasswordResetCodesStorageOperation } from "~/api/storage/passwordResetCodes/index.js";
@@ -18,10 +19,19 @@ export interface IPasswordResetCodesRepository {
         since: string;
     }): Promise<Result<number, PasswordResetPersistenceError>>;
 
-    /** Stores a freshly minted code, and clears out rows nobody can use any more. */
+    /** Stores a request row, and clears out rows nobody can use any more. */
     issue(params: {
         code: StoredPasswordResetCode;
     }): Promise<Result<true, PasswordResetPersistenceError>>;
+
+    /**
+     * Gives a request row its code hash, if it has none yet. `false` means the row is gone or
+     * already has one, and the caller must not mail a code that was not stored.
+     */
+    setCodeHash(params: {
+        id: string;
+        codeHash: string;
+    }): Promise<Result<boolean, PasswordResetPersistenceError>>;
 
     /** Codes for this address that are neither spent nor expired, newest first. */
     listLive(params: {
@@ -61,6 +71,7 @@ export namespace PasswordResetCodesRepository {
 class PasswordResetCodesRepositoryImpl implements IPasswordResetCodesRepository {
     constructor(
         private saveCode: SavePasswordResetCodeStorageOperation.Interface,
+        private setHash: SetPasswordResetCodeHashStorageOperation.Interface,
         private listLiveCodes: ListLivePasswordResetCodesStorageOperation.Interface,
         private countCodes: CountPasswordResetCodesStorageOperation.Interface,
         private incrementAttempts: IncrementPasswordResetCodeAttemptsStorageOperation.Interface,
@@ -87,6 +98,16 @@ class PasswordResetCodesRepositoryImpl implements IPasswordResetCodesRepository 
             await this.deleteRowsPastRetention();
 
             return Result.ok(true as const);
+        } catch {
+            return Result.fail(new PasswordResetPersistenceError());
+        }
+    }
+
+    async setCodeHash(params: { id: string; codeHash: string }) {
+        try {
+            const updated = await this.setHash.execute(params);
+
+            return Result.ok(updated);
         } catch {
             return Result.fail(new PasswordResetPersistenceError());
         }
@@ -137,6 +158,7 @@ const passwordResetCodesRepository = PasswordResetCodesRepository.createImplemen
     implementation: PasswordResetCodesRepositoryImpl,
     dependencies: [
         SavePasswordResetCodeStorageOperation,
+        SetPasswordResetCodeHashStorageOperation,
         ListLivePasswordResetCodesStorageOperation,
         CountPasswordResetCodesStorageOperation,
         IncrementPasswordResetCodeAttemptsStorageOperation,

@@ -5,6 +5,9 @@ import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abs
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { sortFolders } from "@webiny/app-aco";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
+import { describeFoldersForAssistant } from "@webiny/app-aco/presentation/folderTree/describeFoldersForAssistant.js";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import type { CmsContentEntry } from "~/types.js";
 import { ListEntriesUseCase } from "~/features/contentEntry/listEntries/abstractions.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstractions.js";
@@ -46,7 +49,8 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         private duplicateEntryUseCase: DuplicateEntryUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
         private cacheProvider: ContentEntriesCacheProvider.Interface,
-        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
+        private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface,
+        private foldersContext: FoldersContext.Interface
     ) {
         makeAutoObservable<
             ContentEntriesPresenterImpl,
@@ -62,6 +66,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             | "updateRevisionDescriptionUseCase"
             | "cacheProvider"
             | "getDescendantFoldersUseCase"
+            | "foldersContext"
         >(this, {
             disposeReaction: false,
             confirmation: false,
@@ -75,6 +80,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             updateRevisionDescriptionUseCase: false,
             cacheProvider: false,
             getDescendantFoldersUseCase: false,
+            foldersContext: false,
             vm: computed
         });
     }
@@ -120,7 +126,14 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             initialFilters: { folderId: initialFolderId },
             initialSearch: config.initialSearch,
             limit: 50,
-            itemLabel: { singular: "entry", plural: "entries" }
+            itemLabel: { singular: "entry", plural: "entries" },
+            assistant: {
+                view: () => `Entries of the "${this.model.name}" content model in Headless CMS`,
+                rowTitle: entry => entry.meta.title,
+                // The list's rows are revisions ("abc#0002"); the entry tools take the entry's own id.
+                rowId: entry => entry.entryId,
+                details: () => this.describeForAssistant()
+            }
         });
 
         if (initialFolderId !== "root") {
@@ -134,6 +147,35 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
                 this.listPresenter.actions.filter.set("folderId", effectiveFolderId);
             }
         );
+    }
+
+    /**
+     * What only this view knows: the model, the folders and the open entry, so "list the entries"
+     * or "the Archive folder" need no lookup. `modelId` is named after the CMS tools' argument.
+     */
+    private describeForAssistant(): Record<string, unknown> {
+        const { model, childFolders, selectedEntryId } = this.vm;
+        const { currentFolderId, currentFolderTitle } = this.foldersPresenter.vm;
+
+        const details: Record<string, unknown> = {
+            modelId: model.modelId,
+            modelName: model.name,
+            ...describeFoldersForAssistant({
+                type: this.foldersContext.type,
+                currentFolderId,
+                currentFolderTitle,
+                childFolders
+            })
+        };
+
+        if (selectedEntryId === "new") {
+            details["editing"] = "a new entry, not saved yet";
+        } else if (selectedEntryId) {
+            const { id: entryId } = parseIdentifier(selectedEntryId);
+            details["openEntryId"] = entryId;
+        }
+
+        return details;
     }
 
     get list(): ListPresenter.Interface<CmsContentEntry> {
@@ -228,6 +270,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             this.disposeReaction();
             this.disposeReaction = null;
         }
+        this.listPresenter.dispose();
     }
 }
 
@@ -246,6 +289,7 @@ export const ContentEntriesPresenter = Abstraction.createImplementation({
         DuplicateEntryUseCase,
         UpdateRevisionDescriptionUseCase,
         ContentEntriesCacheProvider,
-        GetDescendantFoldersUseCase
+        GetDescendantFoldersUseCase,
+        FoldersContext
     ]
 });
