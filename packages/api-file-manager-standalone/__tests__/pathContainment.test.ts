@@ -6,15 +6,18 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { invokeHttpRoute } from "@webiny/event-handler-core";
-import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
-import { DeleteFileFromDiskHandler } from "~/features/DeleteFileFromDisk/DeleteFileFromDiskHandler.js";
+import { ObjectStorageContentsReader } from "~/assetDelivery/ObjectStorageContentsReader.js";
+import { DeleteFileFromStorageHandler } from "~/features/DeleteFileFromStorage/DeleteFileFromStorageHandler.js";
 import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFileContentsByIdUseCase.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadFileUseCase } from "~/features/UploadFile/UploadFileUseCase.js";
 import type { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import { cleanupStorage } from "./utils/helpers.js";
 import { getStoragePath } from "./utils/helpers.js";
 import { makeConfig } from "./utils/helpers.js";
+import { makeDiskStorage } from "./utils/helpers.js";
+import { makeLogger } from "./utils/helpers.js";
 import { makeTenantContext } from "./utils/helpers.js";
 import { makeUploadRequest } from "./utils/helpers.js";
 import { setupStorage } from "./utils/helpers.js";
@@ -51,8 +54,12 @@ const makeAsset = (key: string) => ({
 const makeDeleteHandler = () => {
     const keyValueStore = { delete: async () => {} } as any;
     const tenantContext = makeTenantContext();
-    const config = makeConfig();
-    return new DeleteFileFromDiskHandler(tenantContext, keyValueStore, config);
+    return new DeleteFileFromStorageHandler(
+        tenantContext,
+        keyValueStore,
+        makeDiskStorage(),
+        makeLogger()
+    );
 };
 
 const readKeptFile = () => {
@@ -83,7 +90,7 @@ describe("local contents reader", () => {
         const content = Buffer.from("legit");
         await writeTestFile(bucketKey, content);
 
-        const reader = LocalContentsReader.create(getStoragePath());
+        const reader = ObjectStorageContentsReader.create(makeDiskStorage());
         const asset = makeAsset(bucketKey) as any;
         const buffer = await reader.read(asset);
 
@@ -94,10 +101,10 @@ describe("local contents reader", () => {
         const traversalKey = traversalKeyTo(outside().file);
         const bucketKey = `tenants/${TENANT_ID}/files/${traversalKey}`;
 
-        const reader = LocalContentsReader.create(getStoragePath());
+        const reader = ObjectStorageContentsReader.create(makeDiskStorage());
         const asset = makeAsset(bucketKey) as any;
 
-        await expect(reader.read(asset)).rejects.toThrow("outside of the storage directory");
+        await expect(reader.read(asset)).rejects.toThrow("Invalid storage key");
     });
 });
 
@@ -114,8 +121,7 @@ describe("get file contents", () => {
             })
         };
 
-        const config = makeConfig();
-        const useCase = new GetFileContentsByIdUseCase(metadataReader, config);
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeDiskStorage());
         const result = await useCase.execute("evil");
 
         expect(result.isFail()).toBe(true);
@@ -123,8 +129,7 @@ describe("get file contents", () => {
 
     it("should not read outside the storage root by key", async () => {
         const tenantContext = makeTenantContext();
-        const config = makeConfig();
-        const useCase = new GetFileContentsByKeyUseCase(tenantContext, config);
+        const useCase = new GetFileContentsByKeyUseCase(tenantContext, makeDiskStorage());
         const traversalKey = traversalKeyTo(outside().file);
         const result = await useCase.execute(traversalKey);
 
@@ -132,7 +137,7 @@ describe("get file contents", () => {
     });
 });
 
-describe("delete file from disk", () => {
+describe("delete file from storage", () => {
     it("should delete the file folder inside the storage root", async () => {
         const content = Buffer.from("legit");
         await writeTestFile(`tenants/${TENANT_ID}/files/abc/doc.txt`, content);
@@ -174,8 +179,9 @@ describe("single file upload route", () => {
         const fileContent = Buffer.from("planted");
         const request = makeUploadRequest({ storageKey, fileContent, filename: "x.txt" });
 
-        const config = makeConfig();
-        const route = new UploadSingleFileRoute(config);
+        const route = new UploadSingleFileRoute(
+            new UploadFileUseCase(makeConfig(), makeDiskStorage())
+        );
         const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);

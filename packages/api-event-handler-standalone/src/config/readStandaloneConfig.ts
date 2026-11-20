@@ -1,6 +1,6 @@
-import nodePath from "node:path";
 import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
 import type { StandaloneConfig } from "./abstractions.js";
+import { readFileStorageConfig } from "./readFileStorageConfig.js";
 
 type Env = Record<string, string | undefined>;
 
@@ -43,10 +43,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push(`WEBINY_ADMIN_URL is not an absolute http(s) URL: "${adminUrlValue}".`);
     }
 
-    const storagePath = read(env, "WEBINY_LOCAL_STORAGE_PATH");
-    if (!storagePath) {
-        problems.push("WEBINY_LOCAL_STORAGE_PATH is not set.");
-    }
+    const storage = readFileStorageConfig(env, problems);
 
     const uploadSecret = readSecret(env, "WEBINY_UPLOAD_SECRET");
     if (!uploadSecret) {
@@ -72,7 +69,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_REDIS_URL must start with redis:// or rediss://.");
     }
 
-    if (problems.length > 0) {
+    if (problems.length > 0 || !storage) {
         const message = ["The standalone API is missing required configuration:", ...problems].join(
             "\n  "
         );
@@ -83,7 +80,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         apiUrl,
         adminUrl,
         fileStorage: {
-            storagePath: nodePath.resolve(storagePath),
+            storage,
             uploadSecret
         },
         encryption: {

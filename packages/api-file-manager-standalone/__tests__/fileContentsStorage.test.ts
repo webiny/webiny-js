@@ -2,12 +2,12 @@ import { existsSync } from "node:fs";
 import { open, readFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DiskFileContentsStorage } from "~/features/FileContentsStorage/DiskFileContentsStorage.js";
+import { ObjectFileContentsStorage } from "~/features/FileContentsStorage/ObjectFileContentsStorage.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import {
     cleanupStorage,
     getStoragePath,
-    makeConfig,
+    makeDiskStorage,
     makeTenantContext,
     setupStorage,
     TENANT_ID,
@@ -30,7 +30,7 @@ afterEach(async () => {
 
 const filesPath = () => path.join(getStoragePath(), "tenants", TENANT_ID, "files");
 
-const createStorage = () => new DiskFileContentsStorage(makeTenantContext(), makeConfig());
+const createStorage = () => new ObjectFileContentsStorage(makeTenantContext(), makeDiskStorage());
 
 describe("put file contents", () => {
     it("should write the bytes under the tenant's files, readable by key", async () => {
@@ -47,7 +47,7 @@ describe("put file contents", () => {
 
         const read = await new GetFileContentsByKeyUseCase(
             makeTenantContext(),
-            makeConfig()
+            makeDiskStorage()
         ).execute("abc/report.txt");
         expect(read.value.buffer).toEqual(contents);
     });

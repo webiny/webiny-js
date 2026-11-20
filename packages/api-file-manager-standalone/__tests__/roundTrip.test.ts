@@ -1,105 +1,110 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { invokeHttpRoute } from "@webiny/event-handler-core";
-import { createUploadToken } from "~/utils/uploadToken.js";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadFileUseCase } from "~/features/UploadFile/UploadFileUseCase.js";
 import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
+import { UploadPartUseCase } from "~/features/UploadPart/UploadPartUseCase.js";
+import { CreateMultiPartUploadUseCase } from "~/features/CreateMultiPartUpload/CreateMultiPartUploadUseCase.js";
 import { CompleteMultiPartUploadUseCase } from "~/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
-import {
-    cleanupStorage,
-    makeConfig,
-    makeTenantContext,
-    makeUploadRequest,
-    SECRET,
-    setupStorage,
-    TENANT_ID
-} from "./utils/helpers.js";
+import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
+import type { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { makeTenantContext } from "./utils/helpers.js";
+import { makeUploadRequest } from "./utils/helpers.js";
+import { TENANT_ID } from "./utils/helpers.js";
+import { MIN_PART_SIZE } from "./utils/storageBackends.js";
+import { storageBackends } from "./utils/storageBackends.js";
 
-beforeEach(async () => {
-    await setupStorage();
-});
+const API_URL = "https://api.example.com";
 
-afterEach(async () => {
-    await cleanupStorage();
-});
+const publicUrls: PublicUrls.Interface = {
+    getApiUrl: async () => PublicUrl.from(API_URL),
+    getAdminUrl: async () => PublicUrl.from("")
+};
 
-describe("upload + read round trip", () => {
+describe.each(storageBackends)("upload + read round trip: $name", backend => {
+    beforeEach(async () => {
+        await backend.setup();
+    });
+
+    afterEach(async () => {
+        await backend.cleanup();
+    });
+
     it("should upload a file via route then read it back via use case", async () => {
-        const config = makeConfig();
-        const route = new UploadSingleFileRoute(config);
-        const tenantContext = makeTenantContext();
-        const fileContent = Buffer.from("round trip content");
+        const storage = backend.storage();
+        const route = new UploadSingleFileRoute(new UploadFileUseCase(backend.config(), storage));
         const fileKey = "roundtrip/test.txt";
-        const storageKey = `tenants/${TENANT_ID}/files/${fileKey}`;
-
         const request = makeUploadRequest({
-            storageKey,
-            fileContent,
+            storageKey: `tenants/${TENANT_ID}/files/${fileKey}`,
+            fileContent: Buffer.from("round trip content"),
             filename: "test.txt"
         });
 
         const uploadResponse = await invokeHttpRoute(route, request);
-
-        expect(uploadResponse.statusCode).toBe(204);
-
-        const useCase = new GetFileContentsByKeyUseCase(tenantContext, config);
+        const useCase = new GetFileContentsByKeyUseCase(makeTenantContext(), storage);
         const result = await useCase.execute(fileKey);
 
+        expect(uploadResponse.statusCode).toBe(204);
         expect(result.isOk()).toBe(true);
         expect(result.value.buffer.toString()).toBe("round trip content");
         expect(result.value.contentType).toBe("text/plain");
     });
 
-    it("should upload parts, assemble, then read back", async () => {
-        const config = makeConfig();
-        const partRoute = new UploadPartRoute(config);
+    it("should create a multipart upload, upload its parts through their URLs, complete it and read it back", async () => {
+        const storage = backend.storage();
         const tenantContext = makeTenantContext();
-        const uploadId = "rt-mp-001";
-        const fileKey = "assembled.dat";
-
+        const fileKey = "abc/assembled.dat";
         const parts = [
-            { num: 1, data: Buffer.from("FIRST-") },
-            { num: 2, data: Buffer.from("SECOND-") },
-            { num: 3, data: Buffer.from("THIRD") }
+            Buffer.alloc(MIN_PART_SIZE, "1"),
+            Buffer.alloc(MIN_PART_SIZE, "2"),
+            Buffer.from("3")
         ];
 
-        for (const part of parts) {
-            const expectedKey = `tenants/${TENANT_ID}/multipart/${uploadId}/part-${part.num}`;
+        const create = new CreateMultiPartUploadUseCase(
+            tenantContext,
+            backend.config(),
+            publicUrls,
+            storage
+        );
+        const upload = await create.execute({
+            file: {
+                key: fileKey,
+                name: "assembled.dat",
+                size: 0,
+                type: "application/octet-stream"
+            },
+            numberOfParts: parts.length
+        } as any);
 
-            const token = createUploadToken(
-                {
-                    key: expectedKey,
-                    tenantId: TENANT_ID,
-                    expiresAt: Date.now() + 60_000,
-                    uploadMinFileSize: 0,
-                    uploadMaxFileSize: 1_099_511_627_776
-                },
-                SECRET
-            );
-
+        // Each part goes to the URL the use case handed out, as the SDK sends it.
+        const partRoute = new UploadPartRoute(new UploadPartUseCase(backend.config(), storage));
+        for (const part of upload.parts) {
+            const url = new URL(part.url);
+            const query = Object.fromEntries(url.searchParams.entries());
             const response = await invokeHttpRoute(partRoute, {
                 method: "PUT",
-                path: "/webiny-file-upload/parts",
+                path: url.pathname,
                 headers: {},
-                query: {
-                    uploadId,
-                    partNumber: String(part.num),
-                    token
-                },
+                query,
                 pathParameters: {},
-                body: part.data
+                body: parts[part.partNumber - 1]
             });
-
             expect(response.statusCode).toBe(200);
         }
 
-        const completeUseCase = new CompleteMultiPartUploadUseCase(tenantContext, config);
-        await completeUseCase.execute({ fileKey, uploadId });
+        const complete = new CompleteMultiPartUploadUseCase(tenantContext, storage);
+        await complete.execute({ fileKey, uploadId: upload.uploadId });
 
-        const readUseCase = new GetFileContentsByKeyUseCase(tenantContext, config);
-        const result = await readUseCase.execute(fileKey);
+        const read = new GetFileContentsByKeyUseCase(tenantContext, storage);
+        const result = await read.execute(fileKey);
 
         expect(result.isOk()).toBe(true);
-        expect(result.value.buffer.toString()).toBe("FIRST-SECOND-THIRD");
+        const expected = Buffer.concat(parts);
+        expect(result.value.buffer.equals(expected)).toBe(true);
     });
 });

@@ -1,11 +1,10 @@
-import path from "node:path";
-import { mkdir } from "node:fs/promises";
-import { mdbid } from "@webiny/utils";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 
 class CreateMultiPartUploadUseCaseImpl
@@ -14,21 +13,20 @@ class CreateMultiPartUploadUseCaseImpl
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly config: FileManagerStandaloneConfig.Interface,
-        private readonly publicUrls: PublicUrls.Interface
+        private readonly publicUrls: PublicUrls.Interface,
+        private readonly objectStorage: ObjectStorage.Interface
     ) {}
 
     public async execute(
         params: CreateMultiPartUploadUseCaseAbstraction.Params
     ): Promise<CreateMultiPartUploadResult> {
         const { file, numberOfParts } = params;
-        const storagePath = this.config.storagePath;
         const tenant = this.tenantContext.getTenant();
         const apiUrl = await this.publicUrls.getApiUrl();
 
-        const uploadId = mdbid();
+        const key = toTenantFileKey(tenant.id, file.key);
 
-        const multipartDir = path.join(storagePath, "tenants", tenant.id, "multipart", uploadId);
-        await mkdir(multipartDir, { recursive: true });
+        const uploadId = await this.objectStorage.createMultipartUpload(key);
 
         const secret = this.config.uploadSecret;
         const expiresAt = Date.now() + 86_400_000; /* 24h */
@@ -38,17 +36,20 @@ class CreateMultiPartUploadUseCaseImpl
 
             const token = createUploadToken(
                 {
-                    key: `tenants/${tenant.id}/multipart/${uploadId}/part-${partNumber}`,
+                    key,
                     tenantId: tenant.id,
                     expiresAt,
                     uploadMinFileSize: 0,
-                    uploadMaxFileSize: 1_099_511_627_776
+                    uploadMaxFileSize: 1_099_511_627_776,
+                    multipart: { uploadId, partNumber }
                 },
                 secret
             );
 
+            // S3 upload IDs can hold characters a query string can't.
+            const encodedUploadId = encodeURIComponent(uploadId);
             const url = apiUrl.join(
-                `/webiny-file-upload/parts?uploadId=${uploadId}&partNumber=${partNumber}&token=${token}`
+                `/webiny-file-upload/parts?uploadId=${encodedUploadId}&partNumber=${partNumber}&token=${token}`
             );
 
             return { partNumber, url };
@@ -61,5 +62,5 @@ class CreateMultiPartUploadUseCaseImpl
 export const CreateMultiPartUploadUseCase =
     CreateMultiPartUploadUseCaseAbstraction.createImplementation({
         implementation: CreateMultiPartUploadUseCaseImpl,
-        dependencies: [TenantContext, FileManagerStandaloneConfig, PublicUrls]
+        dependencies: [TenantContext, FileManagerStandaloneConfig, PublicUrls, ObjectStorage]
     });
