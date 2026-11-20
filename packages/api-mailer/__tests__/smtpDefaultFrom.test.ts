@@ -59,14 +59,26 @@ describe("SMTP transport default from (R201)", () => {
         expect(nodemailerMock.sendMail.mock.calls[0][0].from).toBe("caller@example.com");
     });
 
-    it("leaves replyTo untouched", async () => {
-        const transport = new SmtpMailTransport({}, "settings-from@example.com");
+    it("uses the default replyTo when the caller passes none, and keeps an explicit one", async () => {
+        const transport = new SmtpMailTransport(
+            {},
+            "settings-from@example.com",
+            "settings-reply@example.com"
+        );
 
         await transport.send(baseMail);
         await transport.send({ ...baseMail, replyTo: "caller-reply@example.com" });
 
-        expect(nodemailerMock.sendMail.mock.calls[0][0].replyTo).toBeUndefined();
+        expect(nodemailerMock.sendMail.mock.calls[0][0].replyTo).toBe("settings-reply@example.com");
         expect(nodemailerMock.sendMail.mock.calls[1][0].replyTo).toBe("caller-reply@example.com");
+    });
+
+    it("sends no replyTo when there is no default and the caller passes none", async () => {
+        const transport = new SmtpMailTransport({}, "settings-from@example.com");
+
+        await transport.send(baseMail);
+
+        expect(nodemailerMock.sendMail.mock.calls[0][0].replyTo).toBeUndefined();
     });
 
     it("sends no from when there is no default and the caller passes none (unchanged behaviour)", async () => {
@@ -91,6 +103,7 @@ describe("SMTP transport default from (R201)", () => {
 
         expect(result.isOk()).toBe(true);
         expect(nodemailerMock.sendMail.mock.calls[0][0].from).toBe("settings-from@example.com");
+        expect(nodemailerMock.sendMail.mock.calls[0][0].replyTo).toBe("settings-reply@example.com");
     });
 
     it("sendMail with an explicit from keeps it end to end", async () => {

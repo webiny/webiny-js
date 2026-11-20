@@ -6,6 +6,7 @@ import { beforeEach } from "vitest";
 import type { Container } from "@webiny/di";
 import { createGraphQLHandler } from "./graphQLHandler";
 import { registerCodeSmtpSettings } from "./helpers/registerCodeSmtpSettings";
+import { MailTransport } from "~/domain/MailTransport/abstractions.js";
 import { MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
 import type { TransportSendData } from "~/types.js";
 
@@ -20,6 +21,31 @@ vi.mock("nodemailer", () => {
         default: { createTransport }
     };
 });
+
+/*
+ * A transport the project registers, configured outside the mailer settings (for example from
+ * environment variables). With `send` null it is not configured.
+ */
+const registerProjectTransport = (send: MailTransport.Interface["send"] | null) => {
+    class ProjectTransportFactory implements MailTransportFactory.Interface {
+        public readonly name = "Project/Transport";
+
+        async createTransport() {
+            if (!send) {
+                return null;
+            }
+            return { name: this.name, send };
+        }
+    }
+
+    return (container: Container) => {
+        const implementation = MailTransportFactory.createImplementation({
+            implementation: ProjectTransportFactory,
+            dependencies: []
+        });
+        container.register(implementation);
+    };
+};
 
 const storedSettings = {
     host: "dummy-host.webiny",
@@ -111,7 +137,7 @@ describe("Mailer sendTestMail GraphQL", () => {
         });
     });
 
-    it("refuses when only the dummy transport is available, instead of reporting its success", async () => {
+    it("refuses when no transport is configured", async () => {
         const handler = createGraphQLHandler();
 
         const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
@@ -181,32 +207,25 @@ describe("Mailer sendTestMail GraphQL", () => {
             return { result: "queued", error: null };
         });
 
-        class ProjectTransportFactory implements MailTransportFactory.Interface {
-            public readonly name = "Project/Transport";
-
-            canUse(): boolean {
-                return true;
-            }
-
-            async createTransport() {
-                return { name: this.name, send: projectTransportSend };
-            }
-        }
-
-        const registerProjectTransport = (container: Container) => {
-            const implementation = MailTransportFactory.createImplementation({
-                implementation: ProjectTransportFactory,
-                dependencies: []
-            });
-            container.register(implementation);
-        };
-        const handler = createGraphQLHandler({ plugins: [registerProjectTransport] });
+        const handler = createGraphQLHandler({
+            plugins: [registerProjectTransport(projectTransportSend)]
+        });
 
         const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
 
         expect(response.data.mailer.sendTestMail).toEqual({ data: true, error: null });
         expect(projectTransportSend).toHaveBeenCalledTimes(1);
         expect(createTransport).not.toHaveBeenCalled();
+    });
+
+    it("falls back to SMTP when the project's transport is not configured", async () => {
+        const handler = createGraphQLHandler({ plugins: [registerProjectTransport(null)] });
+        await handler.saveSettings({ data: storedSettings });
+
+        const [response] = await handler.sendTestMail({ to: "admin@dummy-host.webiny" });
+
+        expect(response.data.mailer.sendTestMail).toEqual({ data: true, error: null });
+        expect(sendMail).toHaveBeenCalledTimes(1);
     });
 
     it("rejects an invalid recipient before connecting", async () => {

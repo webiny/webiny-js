@@ -2,7 +2,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { PasswordResetMailer } from "@webiny/self-hosted-auth";
+import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
+import type { MailTransport } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
 import { createServer } from "./createServer.js";
 
 const INSTALL = /* GraphQL */ `
@@ -59,6 +60,36 @@ const admin = {
     password: "test-admin-password"
 };
 
+/*
+ * A mail transport that records each mail as the address and the code read back out of its text,
+ * so the real mailer runs and no SMTP server is needed.
+ */
+const createRecordingTransport = (sent: { email: string; code: string }[]) => {
+    class RecordingTransportFactory implements MailTransportFactory.Interface {
+        public readonly name = "Test/RecordingTransport";
+
+        async createTransport() {
+            return {
+                name: this.name,
+                send: async (params: MailTransport.SendParams) => {
+                    const code = params.text?.match(/code is (\d+)\./)?.[1] ?? "";
+                    sent.push({ email: params.to?.[0] ?? "", code });
+                    return { result: true, error: null };
+                }
+            };
+        }
+    }
+
+    return createRegisterExtensionPlugin(({ container }) => {
+        container.register(
+            MailTransportFactory.createImplementation({
+                implementation: RecordingTransportFactory,
+                dependencies: []
+            })
+        );
+    });
+};
+
 const waitFor = async (check: () => boolean, timeoutMs = 10_000) => {
     const until = Date.now() + timeoutMs;
     while (!check()) {
@@ -71,21 +102,13 @@ const waitFor = async (check: () => boolean, timeoutMs = 10_000) => {
 
 /*
  * The emailed reset, through the full standalone server: the request is anonymous and only starts
- * a background task, and the task mails the code. The mailer is replaced by one that records what it
- * would have sent, so no SMTP server is needed.
+ * a background task, and the task mails the code. Mail goes through the real mailer to a transport that
+ * records it, so no SMTP server is needed.
  */
 describe("api-event-handler-standalone-sql — password reset by email", () => {
     it("mails a code from a background task, and the code resets the password", async () => {
         const sent: { email: string; code: string }[] = [];
-        const mailer = createRegisterExtensionPlugin(({ container }) => {
-            container.registerInstance(PasswordResetMailer, {
-                isConfigured: async () => true,
-                send: async params => {
-                    sent.push(params);
-                    return true;
-                }
-            });
-        });
+        const mailer = createRecordingTransport(sent);
 
         const server = await createServer(() => [mailer]);
 
@@ -123,16 +146,8 @@ describe("api-event-handler-standalone-sql — password reset by email", () => {
     });
 
     it("answers an address with no account the same way, and mails nothing", async () => {
-        const sent: unknown[] = [];
-        const mailer = createRegisterExtensionPlugin(({ container }) => {
-            container.registerInstance(PasswordResetMailer, {
-                isConfigured: async () => true,
-                send: async params => {
-                    sent.push(params);
-                    return true;
-                }
-            });
-        });
+        const sent: { email: string; code: string }[] = [];
+        const mailer = createRecordingTransport(sent);
 
         const server = await createServer(() => [mailer]);
 

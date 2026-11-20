@@ -9,7 +9,7 @@ import { PasswordResetTaskError } from "~/api/domain/errors.js";
 import { TooManyResetRequestsError } from "~/api/domain/errors.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
-import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
+import { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
 import { normalizeEmail } from "~/api/domain/normalizeEmail.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
@@ -20,7 +20,7 @@ import type { SendPasswordResetCodeInput } from "~/api/features/SendPasswordRese
 class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private codes: PasswordResetCodesRepository.Interface,
-        private mailer: PasswordResetMailer.Interface,
+        private isMailerConfigured: IsMailerConfiguredUseCase.Interface,
         private taskService: TaskService.Interface,
         private logger: Logger.Interface
     ) {}
@@ -38,8 +38,8 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Asked first, and asked without reference to the address, so that an installation with no
         // mail answers the same way for every address anyone types in.
-        const canSendMail = await this.mailer.isConfigured();
-        if (!canSendMail) {
+        const mailConfigured = await this.isMailerConfigured.execute();
+        if (!mailConfigured) {
             return Result.fail(new MailerNotConfiguredError());
         }
 
@@ -99,5 +99,5 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const RequestPasswordResetUseCase = UseCaseAbstraction.createImplementation({
     implementation: RequestPasswordResetUseCaseImpl,
-    dependencies: [PasswordResetCodesRepository, PasswordResetMailer, TaskService, Logger]
+    dependencies: [PasswordResetCodesRepository, IsMailerConfiguredUseCase, TaskService, Logger]
 });

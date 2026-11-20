@@ -14,7 +14,6 @@ import { ResetPasswordWithCodeFeature } from "./features/ResetPasswordWithCode/i
 import { CredentialsRepositoryFeature } from "./repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepositoryFeature } from "./repositories/PasswordResetCodesRepository.js";
 import { PasswordResetCodeGeneratorFeature } from "./domain/crypto/PasswordResetCodeGenerator.js";
-import { PasswordResetMailerFeature } from "./domain/mail/PasswordResetMailer.js";
 import { UserInstallerFeature } from "./features/UserInstaller/index.js";
 import { CreateAdminUserFeature } from "./features/CreateAdminUser/index.js";
 import { UpdateAdminUserFeature } from "./features/UpdateAdminUser/index.js";
@@ -55,7 +54,6 @@ export const SelfHostedAuthApiFeature = createFeature({
         CredentialsRepositoryFeature.register(container);
         PasswordResetCodesRepositoryFeature.register(container);
         PasswordResetCodeGeneratorFeature.register(container);
-        PasswordResetMailerFeature.register(container);
         RequestPasswordResetFeature.register(container);
         SendPasswordResetCodeFeature.register(container);
         ResetPasswordWithCodeFeature.register(container);

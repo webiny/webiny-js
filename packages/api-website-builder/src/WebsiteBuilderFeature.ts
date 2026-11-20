@@ -20,6 +20,7 @@ import { InvalidateRedirectsCacheFeature } from "./features/redirects/Invalidate
 // Pages
 import { GetPageByIdFeature } from "./features/pages/GetPageById/feature.js";
 import { GetPageByPathFeature } from "./features/pages/GetPageByPath/feature.js";
+import { GetLatestPageByPathFeature } from "./features/pages/GetLatestPageByPath/feature.js";
 import { GetPageRevisionsFeature } from "./features/pages/GetPageRevisions/feature.js";
 import { GetDeletedPageByIdFeature } from "./features/pages/GetDeletedPageById/feature.js";
 import { GetPageLanguagePathsFeature } from "./features/pages/GetPageLanguagePaths/feature.js";
@@ -136,6 +137,7 @@ export const WebsiteBuilderFeature = createFeature({
         // Page features.
         GetPageByIdFeature.register(container);
         GetPageByPathFeature.register(container);
+        GetLatestPageByPathFeature.register(container);
         GetPageRevisionsFeature.register(container);
         GetDeletedPageByIdFeature.register(container);
         GetPageLanguagePathsFeature.register(container);

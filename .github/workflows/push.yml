@@ -669,34 +669,17 @@ jobs:
       contents: read
       actions: write
       id-token: write
-  e2eTests-ddb-setup:
+  e2eTests-publish:
     needs:
       - constants
       - build
-    runs-on: ubuntu-latest
-    name: E2E (DDB) - Project setup
-    environment: next
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
-      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+    name: E2E - Publish to Verdaccio
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - name: Configure AWS Credentials
-        uses: >-
-          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
-          fetch-depth: 0
           path: v6
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
@@ -749,8 +732,88 @@ jobs:
 
           echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
       - name: Version and publish to Verdaccio
-        run: yarn release --type=verdaccio
         working-directory: v6
+        run: yarn release --type=verdaccio
+      - name: Compress Verdaccio storage
+        run: >-
+          tar -cf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+          .verdaccio
+      - name: Upload Verdaccio storage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: verdaccio-storage
+          path: verdaccio-storage.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-aws-ddb-deploy:
+    needs:
+      - e2eTests-publish
+    name: E2E - DDB - Deploy
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    outputs:
+      admin-url: ${{ steps.admin-url.outputs.admin-url }}
+      api-url: ${{ steps.api-url.outputs.api-url }}
+    environment: next
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+      - name: Start Verdaccio local server
+        working-directory: v6
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -870,18 +933,73 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: v6/e2e/.e2e
+    runs-on: ubuntu-latest
+  e2eTests-aws-ddb:
+    needs:
+      - e2eTests-aws-ddb-deploy
+    name: E2E - DDB / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: v6
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run tests
         id: e2e-tests
         working-directory: v6
         env:
-          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
-          E2E_API_URL: ${{ steps.api-url.outputs.api-url }}
+          E2E_ADMIN_URL: ${{ needs.e2eTests-aws-ddb-deploy.outputs.admin-url }}
+          E2E_API_URL: ${{ needs.e2eTests-aws-ddb-deploy.outputs.api-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -894,25 +1012,33 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-ddb
+          name: e2e-test-results-ddb-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: v6/e2e/.e2e
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-aws-ddb-os-deploy:
+    needs:
+      - e2eTests-publish
+    name: E2E - DDB+OS - Deploy
     permissions:
       contents: read
       actions: write
       id-token: write
-  e2eTests-ddb-os-setup:
-    needs:
-      - constants
-      - build
-    runs-on: ubuntu-latest
-    name: E2E (DDB+OS) - Project setup
+    outputs:
+      admin-url: ${{ steps.admin-url.outputs.admin-url }}
+      api-url: ${{ steps.api-url.outputs.api-url }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
@@ -935,7 +1061,6 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
-          fetch-depth: 0
           path: v6
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
@@ -946,16 +1071,15 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
       - name: Start Verdaccio local server
         working-directory: v6
         run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -965,31 +1089,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
-        working-directory: v6
-        run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        run: yarn release --type=verdaccio
-        working-directory: v6
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1125,44 +1224,16 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: v6/e2e/.e2e
-      - name: E2E - run tests
-        id: e2e-tests
-        working-directory: v6
-        env:
-          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
-          E2E_API_URL: ${{ steps.api-url.outputs.api-url }}
-          E2E_TELEMETRY_DISABLED: '1'
-        run: >-
-          rm -f e2e/.e2e/summary.md
-
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
-      - name: E2E - tests - write job summary
-        if: always() && steps.e2e-tests.outcome != 'skipped'
-        working-directory: v6
-        run: |-
-          if [ -f e2e/.e2e/summary.md ]; then
-            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
-            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: E2E - upload test results
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: e2e-test-results-ddb-os
-          retention-days: 7
-          if-no-files-found: ignore
-          include-hidden-files: true
-          path: v6/e2e/.e2e
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
-  e2eTests-standalone-publish:
+    runs-on: ubuntu-latest
+  e2eTests-aws-ddb-os:
     needs:
-      - constants
-      - build
-    name: E2E (Standalone) - Publish to Verdaccio
+      - e2eTests-aws-ddb-os-deploy
+    name: E2E - DDB+OS / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1179,63 +1250,64 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
-      - name: Start Verdaccio local server
-        working-directory: v6
-        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
+      - name: Resolve Playwright version
+        id: playwright-version
         working-directory: v6
         run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: v6
-        run: yarn release --type=verdaccio
-      - name: Compress Verdaccio storage
-        run: >-
-          tar -cf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
-          .verdaccio
-      - name: Upload Verdaccio storage
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          name: verdaccio-storage
-          path: verdaccio-storage.tzst
-          retention-days: 1
-          compression-level: 0
-          if-no-files-found: error
-          overwrite: true
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: ${{ needs.e2eTests-aws-ddb-os-deploy.outputs.admin-url }}
+          E2E_API_URL: ${{ needs.e2eTests-aws-ddb-os-deploy.outputs.api-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-ddb-os-shard-${{ matrix.shard }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1245,7 +1317,7 @@ jobs:
       actions: write
   e2eTests-standalone-sqlite-build:
     needs:
-      - e2eTests-standalone-publish
+      - e2eTests-publish
     name: E2E - Standalone (SQLite) - Build
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -1532,7 +1604,7 @@ jobs:
       actions: write
   e2eTests-standalone-postgres-build:
     needs:
-      - e2eTests-standalone-publish
+      - e2eTests-publish
     name: E2E - Standalone (Postgres) - Build
     services:
       postgres:
@@ -1845,7 +1917,7 @@ jobs:
       actions: write
   e2eTests-standalone-postgres-2-processes-build:
     needs:
-      - e2eTests-standalone-publish
+      - e2eTests-publish
     name: E2E - Standalone (Postgres, 2 API processes) - Build
     services:
       postgres:
@@ -2228,7 +2300,7 @@ jobs:
       actions: write
   e2eTests-standalone-sqlite-wcp-build:
     needs:
-      - e2eTests-standalone-publish
+      - e2eTests-publish
     name: E2E - Standalone (SQLite, WCP) - Build
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -2527,7 +2599,7 @@ jobs:
       actions: write
   e2eTests-standalone-postgres-wcp-build:
     needs:
-      - e2eTests-standalone-publish
+      - e2eTests-publish
     name: E2E - Standalone (Postgres, WCP) - Build
     services:
       postgres:
@@ -2855,7 +2927,7 @@ jobs:
       actions: write
   e2eTests-standalone-postgres-wcp-2-processes-build:
     needs:
-      - e2eTests-standalone-publish
+      - e2eTests-publish
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Build
     services:
       postgres:

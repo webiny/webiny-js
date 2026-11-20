@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { TransportSendData, TransportSendResponse, TransportSettings } from "~/types.js";
+import type { TransportSendData, TransportSendResponse } from "~/types.js";
 
 export interface IMailTransport {
     name: string;
@@ -15,8 +15,11 @@ export namespace MailTransport {
 
 export interface IMailTransportFactory {
     name: string;
-    canUse(settings: TransportSettings | null): boolean;
-    createTransport(settings: TransportSettings): Promise<IMailTransport>;
+    /**
+     * Reads the transport's own configuration (stored settings, environment variables, whatever the
+     * transport uses) and builds it. Null when the transport is not configured.
+     */
+    createTransport(): Promise<IMailTransport | null>;
 }
 
 export const MailTransportFactory =
@@ -24,26 +27,5 @@ export const MailTransportFactory =
 
 export namespace MailTransportFactory {
     export type Interface = IMailTransportFactory;
-    export type Return = Promise<IMailTransport>;
-}
-
-export interface IResolvedMailTransport {
-    factory: IMailTransportFactory;
-    settings: TransportSettings | null;
-}
-
-export interface IMailTransportResolver {
-    /**
-     * The factory mail goes out through right now: the last registered one whose settings it can
-     * use. Null when none can.
-     */
-    resolve(): Promise<IResolvedMailTransport | null>;
-}
-
-export const MailTransportResolver =
-    createAbstraction<IMailTransportResolver>("MailTransportResolver");
-
-export namespace MailTransportResolver {
-    export type Interface = IMailTransportResolver;
-    export type Resolved = IResolvedMailTransport;
+    export type Return = Promise<IMailTransport | null>;
 }

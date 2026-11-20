@@ -11234,6 +11234,7 @@ __metadata:
     "@webiny/api-event-handler-standalone": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-storage-pg": "npm:0.0.0"
     "@webiny/api-storage-sqlite": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
