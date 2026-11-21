@@ -42,6 +42,7 @@ const STEPS: StepCardVm[] = [
         readOnly: false,
         warnings: [],
         error: null,
+        errorIndex: 0,
         canMoveUp: false,
         canMoveDown: true
     },
@@ -58,6 +59,7 @@ const STEPS: StepCardVm[] = [
         readOnly: false,
         warnings: [],
         error: null,
+        errorIndex: 0,
         canMoveUp: true,
         canMoveDown: false
     }

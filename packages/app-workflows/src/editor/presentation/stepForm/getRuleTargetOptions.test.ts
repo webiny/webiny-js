@@ -192,6 +192,28 @@ describe("getRuleTargetOptions: a saved user target", () => {
         expect(selected?.label).toBe("Luka Perić (not in reviewing teams)");
     });
 
+    it("keeps the mark when the member search still lists a target who left the reviewing teams", () => {
+        const left = createWorkflowUserSummary({
+            id: "user-3",
+            displayName: "Luka Perić",
+            teamIds: ["team-9"]
+        });
+        const listed = createWorkflowUserSummary({
+            id: "user-3",
+            displayName: "Luka Perić",
+            teamIds: ["team-1"]
+        });
+        const members = createTargetMembersSlice({ items: [IVAN, listed], selected: [left] });
+
+        const { options, selected } = getRuleTargetOptions(
+            createParams({ members, target: { type: "user", id: "user-3" } })
+        );
+
+        const option = options.find(item => item.id === "user:user-3");
+        expect(selected?.label).toBe("Luka Perić (not in reviewing teams)");
+        expect(option?.label).toBe("Luka Perić (not in reviewing teams)");
+    });
+
     it("resolves a user nobody listed through the references and flags it by its known teams", () => {
         const references = createReferencesSlice({
             users: [createReferenceLabel({ id: "user-4", label: "Maja Kos" })],

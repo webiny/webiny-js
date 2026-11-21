@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch } from "@webiny/admin-ui";
+import type { PickerSize } from "~/components/picker/PickerSize.js";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
 import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
 import type { RulePatch } from "~/editor/model/rules/RulePatch.js";
@@ -15,6 +16,13 @@ import { parseRuleTargetOptionId } from "../../parseRuleTargetOptionId.js";
 import { toRuleTargetOptionId } from "../../toRuleTargetOptionId.js";
 import type { RuleCardOptions } from "./RuleCardOptions.js";
 import type { RuleFieldMessages } from "./RuleFieldMessages.js";
+
+/*
+ * The rule fields are the design's compact selects (32px, admin-ui `md`). The optional ones show
+ * their `Any…` row as a value, not as placeholder text, and no field has the × button: the `Any…`
+ * row clears an optional field, and the target is required.
+ */
+const RULE_PICKER_SIZE: PickerSize = "md";
 
 export interface RuleFieldsProps {
     rule: RuleValue;
@@ -106,6 +114,9 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 disabled={readOnly}
                 error={messages.requesterTeam}
                 icon={"none"}
+                size={RULE_PICKER_SIZE}
+                anyAsValue
+                clearable={false}
             />
         );
     }
@@ -146,6 +157,8 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 disabled={readOnly}
                 error={messages.target}
                 icon={"none"}
+                size={RULE_PICKER_SIZE}
+                clearable={false}
             />
         );
     }
@@ -165,6 +178,9 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 disabled={readOnly}
                 error={messages.requesterUser}
                 icon={"none"}
+                size={RULE_PICKER_SIZE}
+                anyAsValue
+                clearable={false}
                 onChange={handleUserChange}
             />
             {teamPicker}
@@ -177,6 +193,9 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 references={references}
                 disabled={readOnly}
                 error={messages.folder}
+                size={RULE_PICKER_SIZE}
+                anyAsValue
+                clearable={false}
                 onRemove={props.onRemoveFolder}
                 onChange={handleFolderChange}
             />

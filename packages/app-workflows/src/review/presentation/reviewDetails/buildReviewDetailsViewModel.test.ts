@@ -549,6 +549,13 @@ describe("buildReviewDetailsViewModel", () => {
             ["Cancelled", "neutral-base-outline"],
             ["Pending", "neutral-base-outline"]
         ]);
+        expect(build(review).steps.map(step => step.cancelled)).toEqual([
+            false,
+            true,
+            true,
+            true,
+            false
+        ]);
     });
 
     it("names who cancelled the review and when (R252)", () => {

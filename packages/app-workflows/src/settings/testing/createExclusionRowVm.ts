@@ -6,6 +6,7 @@ export const createExclusionRowVm = (overrides: Partial<ExclusionRowVm> = {}): E
         userId: "user-1",
         label: "Ana Kovač",
         muted: false,
+        initials: "AK",
         subLine: null,
         reason: "On leave",
         reasonMuted: false,

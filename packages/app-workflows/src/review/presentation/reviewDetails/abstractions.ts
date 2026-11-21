@@ -92,6 +92,8 @@ export interface ReviewDetailsStepVm {
     skipped: ReviewDetailsSkippedVm[] | null;
     // An AI or automation step is running (R263): the tag reads Running with its icon.
     running: boolean;
+    // The step was not finished when the review was cancelled: a neutral Cancelled tag and icon.
+    cancelled: boolean;
     // The alert text of a failed step, "Failed at {time}: {reason}"; `null` for any other step or without a reason.
     failedReason: string | null;
     attempts: ReviewAttemptVm[];

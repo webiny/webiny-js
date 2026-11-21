@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { FormComponentNote } from "@webiny/admin-ui";
+import type { PickerSize } from "~/components/picker/PickerSize.js";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
 import { ASSIGNMENT_FORM_MESSAGES } from "../assignmentFormMessages.js";
 import { filterPickerOptions } from "../filterPickerOptions.js";
@@ -26,6 +27,12 @@ export interface FolderPickerControlProps {
     error: string | null;
     // The restricted folder's `Remove` (QBZ-15); null when the control has no such button.
     onRemove: (() => void) | null;
+    // The height of the field; the picker's default (`lg`) when not set.
+    size?: PickerSize;
+    // Show the clear row's label as the value while nothing is chosen (see `WorkflowPicker`).
+    anyAsValue?: boolean;
+    // Whether a chosen value has the × button; the picker's default (true) when not set.
+    clearable?: boolean;
     onChange(folderId: string | null): void;
 }
 
@@ -74,6 +81,9 @@ export const FolderPickerControl = (props: FolderPickerControlProps) => {
             onChange={props.onChange}
             disabled={props.disabled || restricted}
             error={props.error}
+            size={props.size}
+            anyAsValue={props.anyAsValue}
+            clearable={props.clearable}
         />
     );
 

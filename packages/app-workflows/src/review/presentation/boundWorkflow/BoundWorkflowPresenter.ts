@@ -1,18 +1,19 @@
 import { makeAutoObservable } from "mobx";
-import { GetBoundWorkflowUseCase } from "@webiny/app-workflows/review/useCases/getBoundWorkflow/abstractions.js";
-import { CmsModelWorkflowPresenter as Abstraction } from "./abstractions.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { BoundWorkflowPresenter as Abstraction } from "./abstractions.js";
 
 /*
- * Whether the list's model is bound to a workflow. `GetBoundWorkflowUseCase` reads the app's
- * workflow list once and shares it (one request in flight, cached until a workflow is stored or
- * deleted), so every row asking for the same model costs no extra request.
+ * Whether a content list's namespace (a CMS model, the Website Builder pages) is bound to a
+ * workflow. `GetBoundWorkflowUseCase` reads the app's workflow list once and shares it (one request
+ * in flight, cached until a workflow is stored or deleted), so every row asking for the same
+ * namespace costs no extra request.
  */
-class CmsModelWorkflowPresenterImpl implements Abstraction.Interface {
+class DefaultBoundWorkflowPresenter implements Abstraction.Interface {
     private status: Abstraction.Status = "loading";
     private namespace: string | null = null;
 
     constructor(private getBoundWorkflow: GetBoundWorkflowUseCase.Interface) {
-        makeAutoObservable<CmsModelWorkflowPresenterImpl, "getBoundWorkflow">(this, {
+        makeAutoObservable<DefaultBoundWorkflowPresenter, "getBoundWorkflow">(this, {
             getBoundWorkflow: false
         });
     }
@@ -28,7 +29,7 @@ class CmsModelWorkflowPresenterImpl implements Abstraction.Interface {
             const workflow = await this.getBoundWorkflow.execute({ namespace });
             this.apply(namespace, workflow === null ? "unbound" : "bound");
         } catch (error) {
-            console.error("[CmsModelWorkflowPresenter] Could not load the bound workflow.", error);
+            console.error("[BoundWorkflowPresenter] Could not load the bound workflow.", error);
             this.apply(namespace, "failed");
         }
     }
@@ -49,7 +50,7 @@ class CmsModelWorkflowPresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const CmsModelWorkflowPresenter = Abstraction.createImplementation({
-    implementation: CmsModelWorkflowPresenterImpl,
+export const BoundWorkflowPresenter = Abstraction.createImplementation({
+    implementation: DefaultBoundWorkflowPresenter,
     dependencies: [GetBoundWorkflowUseCase]
 });

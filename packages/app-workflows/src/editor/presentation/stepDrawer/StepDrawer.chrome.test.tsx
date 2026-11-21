@@ -80,6 +80,23 @@ const createPeopleStep = (): EditorStep => {
     });
 };
 
+// Two rules without a target: each holds a live error, with no Save attempt.
+const createTwoUntargetedRulesStep = (): EditorStep => {
+    return createReviewStep({
+        config: {
+            teams: ["team-1"],
+            assignment: {
+                strategy: "none",
+                allowManualPick: false,
+                rules: [
+                    { id: "r1", conditions: {}, target: null },
+                    { id: "r2", conditions: {}, target: null }
+                ]
+            }
+        }
+    });
+};
+
 const createSetup = (step: EditorStep, configure?: (source: FakeStepDrawerSource) => void) => {
     const container = new Container();
     IdentityContextFeature.register(container);
@@ -259,6 +276,27 @@ describe("StepDrawer chrome (R302, R309, R312)", () => {
         expect(count?.textContent).toBe("1");
         expect(screen.getByRole("tab", { name: "General" })).toBeTruthy();
         expect(screen.getByRole("tab", { name: "Test routing" })).toBeTruthy();
+    });
+
+    it("counts the live rule errors of the Assignment tab without a Save attempt", () => {
+        const { open } = createSetup(createTwoUntargetedRulesStep());
+        act(() => {
+            open("step-1");
+        });
+
+        expect(screen.getByRole("tab", { name: "Assignment, 2 errors" })).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "General" })).toBeTruthy();
+    });
+
+    it("counts a server error that replaces the live error of its rule and field once", () => {
+        const { open } = createSetup(createTwoUntargetedRulesStep(), source => {
+            source.errors = [{ ...RULE_ERROR, ruleId: "r1", message: "Server says no." }];
+        });
+        act(() => {
+            open("step-1");
+        });
+
+        expect(screen.getByRole("tab", { name: "Assignment, 2 errors" })).toBeTruthy();
     });
 
     it("counts every field error of a tab (B23)", () => {

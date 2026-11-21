@@ -2,6 +2,7 @@ import { hasPreservedConditions } from "~/editor/model/assignment/hasPreservedCo
 import type { RuleFolderValue } from "~/editor/model/assignment/RuleFolderValue.js";
 import type { RuleTargetValue } from "~/editor/model/assignment/RuleTargetValue.js";
 import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
+import { isTargetOutsideTeams } from "./isTargetOutsideTeams.js";
 import type { ReferenceLabel } from "./ReferenceLabel.js";
 import type { RuleReferences } from "./RuleReferences.js";
 
@@ -46,16 +47,23 @@ function describeConditions(rule: RuleValue, references: RuleReferences): string
     return conditions;
 }
 
-function describeTarget(target: RuleTargetValue | null, references: RuleReferences): string {
+function describeTarget(
+    target: RuleTargetValue | null,
+    references: RuleReferences,
+    stepTeamIds: string[] | undefined
+): string {
     if (target === null) {
         return "(no target)";
     }
+    let text = `${getLabel(references.teams, target.id)} team pool`;
     if (target.type === "user") {
-        return getLabel(references.users, target.id);
+        text = getLabel(references.users, target.id);
     }
-    const team = getLabel(references.teams, target.id);
-
-    return `${team} team pool`;
+    // The same mark as the target picker's label (R307).
+    if (stepTeamIds !== undefined && isTargetOutsideTeams(target, stepTeamIds, references)) {
+        return `${text} (not in reviewing teams)`;
+    }
+    return text;
 }
 
 function describePrefix(rule: RuleValue, conditions: string[]): string {
@@ -73,12 +81,17 @@ function describePrefix(rule: RuleValue, conditions: string[]): string {
 /*
  * The one-line summary of a rule (the design's `ruleSummary`, R313): `If requester is in Marketing
  * and content is in /Campaigns (incl. subfolders) → Ivan Horvat`, or `Always → Legal team pool`.
- * The clause for conditions the editor cannot show is copy gap 11.
+ * The clause for conditions the editor cannot show is copy gap 11. With `stepTeamIds`, a target
+ * outside the reviewing teams is marked `(not in reviewing teams)`, as the target picker shows it.
  */
-export const describeRule = (rule: RuleValue, references: RuleReferences): string => {
+export const describeRule = (
+    rule: RuleValue,
+    references: RuleReferences,
+    stepTeamIds?: string[]
+): string => {
     const conditions = describeConditions(rule, references);
     const prefix = describePrefix(rule, conditions);
-    const target = describeTarget(rule.target, references);
+    const target = describeTarget(rule.target, references, stepTeamIds);
 
     return `${prefix} → ${target}`;
 };

@@ -1,14 +1,8 @@
-import React, { useEffect } from "react";
-import { useFeature } from "@webiny/app";
+import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useEntry } from "@webiny/app-headless-cms/admin/hooks/useEntry.js";
-import { useModel } from "@webiny/app-headless-cms/admin/components/ModelProvider/index.js";
 import { usePermission } from "@webiny/app-headless-cms/admin/hooks/usePermission.js";
-import { CmsModelWorkflowFeature } from "~/presentation/modelWorkflow/feature.js";
-import type { ICmsEntryMetaWithReview } from "~/types.js";
-import { createAppName } from "~/utils/appName.js";
-import { isReviewableModel } from "~/utils/isReviewableModel.js";
-import { getRowPublishDisabledReason } from "./getRowPublishDisabledReason.js";
+import { useRowPublishDisabledReason } from "./useRowPublishDisabledReason.js";
 import { PublishBlocked } from "./PublishBlocked.js";
 
 export interface PublishGateProps {
@@ -23,29 +17,12 @@ export interface PublishGateProps {
  */
 export const PublishGate = createReactiveComponent((props: PublishGateProps) => {
     const { entry } = useEntry();
-    const { model } = useModel();
     const { canPublish, canUnpublish } = usePermission();
-    const { presenter } = useFeature(CmsModelWorkflowFeature);
-    const namespace = createAppName(model);
+    const reason = useRowPublishDisabledReason();
 
-    useEffect(() => {
-        void presenter.load(namespace);
-    }, [presenter, namespace]);
+    const showsUnpublish = entry.meta.status === "published" && canUnpublish("cms.contentEntry");
 
-    const meta: ICmsEntryMetaWithReview = entry.meta;
-    const showsUnpublish = meta.status === "published" && canUnpublish("cms.contentEntry");
-
-    if (!isReviewableModel(model) || showsUnpublish || !canPublish("cms.contentEntry")) {
-        return <>{props.children}</>;
-    }
-
-    const reason = getRowPublishDisabledReason({
-        workflowStatus: presenter.vm.status,
-        reviewState: meta.system?.workflow?.reviewState ?? null,
-        isUnpublished: meta.status === "unpublished"
-    });
-
-    if (reason === null) {
+    if (showsUnpublish || !canPublish("cms.contentEntry") || reason === null) {
         return <>{props.children}</>;
     }
 

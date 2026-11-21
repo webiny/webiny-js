@@ -145,3 +145,40 @@ describe("describeRule: conditions the editor cannot show (R313)", () => {
         expect(describeRule(rule, references)).toBe("Always → Legal team pool");
     });
 });
+
+describe("describeRule: a target outside the reviewing teams", () => {
+    const withTeams = createRuleReferences({
+        users: [
+            createReferenceLabel({ id: "user-mb", label: "Marko Babić" }),
+            createReferenceLabel({ id: "user-iv", label: "Ivan Horvat" })
+        ],
+        teams: [
+            createReferenceLabel({ id: "team-m", label: "Marketing" }),
+            createReferenceLabel({ id: "team-l", label: "Legal" })
+        ],
+        userTeamIds: { "user-mb": ["team-l"], "user-iv": ["team-m"] }
+    });
+
+    it("marks a person who is no longer in the reviewing teams, as the design does", () => {
+        const rule = createRuleValue({ target: { type: "user", id: "user-mb" } });
+
+        expect(describeRule(rule, withTeams, ["team-m"])).toBe(
+            "Always → Marko Babić (not in reviewing teams)"
+        );
+        expect(describeRule(rule, withTeams, ["team-l"])).toBe("Always → Marko Babić");
+    });
+
+    it("marks a team pool outside the reviewing teams", () => {
+        const rule = createRuleValue({ target: { type: "team", id: "team-l" } });
+
+        expect(describeRule(rule, withTeams, ["team-m"])).toBe(
+            "Always → Legal team pool (not in reviewing teams)"
+        );
+    });
+
+    it("does not mark anything without the step's teams", () => {
+        const rule = createRuleValue({ target: { type: "user", id: "user-mb" } });
+
+        expect(describeRule(rule, withTeams)).toBe("Always → Marko Babić");
+    });
+});
