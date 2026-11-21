@@ -32,6 +32,7 @@ const STEP: StepCardVm = {
     readOnly: false,
     warnings: [],
     error: null,
+    errorIndex: 0,
     canMoveUp: true,
     canMoveDown: true
 };

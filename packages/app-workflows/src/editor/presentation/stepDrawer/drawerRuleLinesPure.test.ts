@@ -69,6 +69,22 @@ describe("getRuleLines (R312)", () => {
         ]);
     });
 
+    it("puts a rule's errors before its warnings, whatever the order of the issues", () => {
+        const lines = getRuleLines({
+            ruleIds: ["r-1"],
+            issues: [
+                issue({ kind: "warning", field: "folder", message: "Folder gone." }),
+                issue({ kind: "error", field: "target", message: "Target gone." })
+            ],
+            errors: []
+        });
+
+        expect(lines.map(line => line.text)).toEqual([
+            "Rule 1: Target gone.",
+            "Rule 1: Folder gone."
+        ]);
+    });
+
     it("skips a rule that is not in the list and gives nothing for no rules", () => {
         expect(
             getRuleLines({
