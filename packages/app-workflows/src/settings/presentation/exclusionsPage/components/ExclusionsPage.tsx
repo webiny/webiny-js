@@ -46,7 +46,11 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     } else {
         let namesBanner: React.ReactNode = null;
         if (vm.namesFailed) {
-            namesBanner = <ExclusionsNamesBanner onRetry={() => presenter.retryNames()} />;
+            namesBanner = (
+                <div className="px-lg pb-md">
+                    <ExclusionsNamesBanner onRetry={() => presenter.retryNames()} />
+                </div>
+            );
         }
 
         let list: React.ReactNode = <ExclusionsTable rows={vm.rows} presenter={presenter} />;
@@ -66,9 +70,15 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
                     canAdd={vm.canAdd}
                     presenter={presenter}
                 />
-                {list}
+                <div className="px-lg pt-md pb-lg">{list}</div>
             </>
         );
+    }
+
+    // The ready body is laid out edge to edge like the Content Reviews list; the other states
+    // keep the page's side and bottom padding.
+    if (vm.status !== "ready") {
+        body = <div className="px-lg pb-lg">{body}</div>;
     }
 
     const request = vm.dialog;
@@ -93,7 +103,7 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     }
 
     return (
-        <div data-testid="exclusions-page" className="flex flex-col gap-md p-lg">
+        <div data-testid="exclusions-page" className="flex flex-col">
             <ExclusionsHeader />
             {body}
             {dialog}
