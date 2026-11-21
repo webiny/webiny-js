@@ -95,7 +95,7 @@ export const StepTypePicker = ({ options, onPick, onClose }: StepTypePickerProps
             description="Choose who or what does this step. You can't change the type later."
         >
             {/* The dialog has no footer, so the body keeps the footer's bottom padding itself. */}
-            <div className="pb-lg">
+            <div className="pt-sm pb-lg">
                 <List>
                     {options.map(option => (
                         <TypeCard key={option.type} option={option} onPick={onPick} />

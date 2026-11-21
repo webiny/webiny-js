@@ -7,7 +7,7 @@ import { EXCLUSIONS_PAGE_TITLE } from "../exclusionsCopy.js";
 // The page title and sub line, always shown. Add exclusion lives in the toolbar (R329).
 export const ExclusionsHeader = () => {
     return (
-        <div className="flex flex-col gap-xs pt-md px-lg pb-md">
+        <div className="flex flex-col pt-md px-lg pb-md">
             <Heading level={4} as="h1">
                 {EXCLUSIONS_PAGE_TITLE}
             </Heading>
