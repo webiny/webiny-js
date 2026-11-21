@@ -62,6 +62,14 @@ Set these fields when the provider announces deprecation or end-of-life dates. T
 
 When a model reaches its `endOfLife` date, remove it from the catalog, which takes effect within an hour. Remove it from the factory in the next release too, or deployments that can't reach the catalog will keep offering a model that no longer works.
 
+## API keys
+
+The built-in factories take the key from the connection and nothing else. In practice that is a connection saved in AI Powerups settings, or one registered in code through `AiConnectionFactory`. A call with no key fails with "No API key for <vendor>" (`requireApiKey.ts`) instead of falling back to an environment variable.
+
+That includes the provider SDKs' own variables. Each SDK reads `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` or `OPENROUTER_API_KEY` when it gets no key, and the Anthropic and OpenAI SDKs read `ANTHROPIC_BASE_URL` and `OPENAI_BASE_URL` when they get no base URL. The factories always pass a key, and the Anthropic and OpenAI factories always pass the vendor's base URL, so none of those variables changes where a request goes or which key it carries.
+
+To call a different endpoint, such as a private deployment or a gateway, register a custom `AiSdkFactory` under its own id.
+
 ## Providers
 
 ### Anthropic (`AnthropicSdkFactory.ts`)
@@ -82,7 +90,7 @@ All Anthropic models listed are **Active**. Anthropic commits to a "not sooner t
 | `claude-sonnet-4-6` | Claude Sonnet 4.6 | Active (legacy) | February 17, 2027            |
 | `claude-sonnet-4-5` | Claude Sonnet 4.5 | Active (legacy) | September 29, 2026           |
 
-All Claude models support tool use. Env var fallback: `WEBINY_API_ANTHROPIC_API_KEY`.
+All Claude models support tool use.
 
 Source: https://platform.claude.com/docs/en/about-claude/model-deprecations
 
@@ -115,7 +123,7 @@ Source: https://platform.claude.com/docs/en/about-claude/model-deprecations
 | `gpt-4.1-nano`  | GPT-4.1 Nano  | Deprecated | April 22, 2026 | October 23, 2026  |
 | `o4-mini`       | o4 Mini       | Deprecated | April 22, 2026 | October 23, 2026  |
 
-All listed models support function calling. Env var fallback: `WEBINY_API_OPENAI_API_KEY`.
+All listed models support function calling.
 
 Source: https://developers.openai.com/api/docs/deprecations
 
@@ -135,8 +143,6 @@ Source: https://developers.openai.com/api/docs/deprecations
 
 All listed models support function calling. `gemini-3.1-flash-lite` does not support streaming tool call arguments, but standard (non-streaming) function calling works.
 
-Env var fallback: `WEBINY_API_GOOGLE_API_KEY`.
-
 Source: https://ai.google.dev/gemini-api/docs/deprecations
 
 ### OpenRouter (`OpenRouterSdkFactory.ts`)
@@ -148,8 +154,6 @@ The factory list is a short pick of each vendor's current models that support to
 `openrouter/auto` is OpenRouter's Auto Router: it picks the model per request, so the vendor that answers can change between calls. It's stored as `openrouter/openrouter/auto`. The catalog marks it as not accepting `temperature`, because some of the models it can pick reject it.
 
 Uses `@openrouter/ai-sdk-provider` rather than `@ai-sdk/openai` with a different base URL, so non-OpenAI models routed through it don't get OpenAI-only request options.
-
-Env var fallback: `WEBINY_API_OPENROUTER_API_KEY`.
 
 Source: https://openrouter.ai/models
 

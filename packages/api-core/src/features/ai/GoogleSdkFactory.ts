@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
+import { requireApiKey } from "./requireApiKey.js";
 
 const GOOGLE_MODELS: IAiSdkModel[] = [
     { id: "gemini-3.8-flash", name: "Gemini 3.8 Flash" },
@@ -26,7 +27,7 @@ class GoogleSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
     async execute(apiKey?: string): Promise<IAiSdk> {
         const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
         const provider = createGoogleGenerativeAI({
-            apiKey: apiKey ?? process.env.WEBINY_API_GOOGLE_API_KEY
+            apiKey: requireApiKey(this.name, apiKey)
         });
         return {
             languageModel: modelId => provider.chat(modelId)
