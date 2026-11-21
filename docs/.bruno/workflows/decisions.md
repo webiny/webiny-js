@@ -1454,3 +1454,24 @@ does it; the publish hooks and the decorators share `ApprovedReviewPublishRule`.
 Schedule item is hidden when a publish would be refused (R226) and a published row keeps it for
 unpublish; the row and bulk Publish of both lists are disabled with the reason. The bound-workflow
 lookup of the lists (`BoundWorkflowPresenter`) and the row rules live in `app-workflows` for both apps.
+
+**D222. Visual match, rounds of 2026-11-21.** Compared again by screenshot after dev had data for the
+screens. The workflow title is dark (B20) through a token class on a wrapper around admin-ui's
+`EditableTitle`, whose own colour is the accent. The editor header lays out its title block and its
+actions itself, because app-admin's `SimpleFormHeader` gives the title half of the grid. The Reviewer
+exclusions table is the admin-ui `DataTable` (sort by user in the presenter, column settings, initials
+avatar), edge to edge; a row click opens Edit by reading the clicked row, since `DataTable` rows take no
+handler. Rule pickers are compact, "Any…" is a value, filled pickers have no clear button.
+
+**D223. A step card shows Error for a line that blocks saving.** The tag counted every line as a
+warning unless a server error was set, so a blocking rule issue read "1 warning". Now any line of
+severity error shows the Error tag and only warning lines are counted. Lines keep one order: by rule,
+errors before warnings, step-level lines last; the server-error strip sits at its rule's position.
+
+**D224. Warnings in the step drawer.** As the artboard draws them (this answers question C1): a rule's
+warnings sit at the end of its rule card, also next to its error; step-level warnings ("{team} has no
+members.") are warning alerts at the end of the Assignment tab. Errors stay inline. A tab's count is
+every error shown on it, live rule errors included, once per rule and field, without a Save attempt.
+
+Open with the designer: the artboard draws "{person} is no longer in the reviewing teams." as a warning;
+in code it is an error that blocks saving. Not changed.
