@@ -1,12 +1,18 @@
-import React, { useCallback, useMemo } from "react";
+import React from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
+import { useRef } from "react";
 import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
+import { CmsAdvancedSearchFeature } from "~/presentation/contentEntries/advancedSearch/feature.js";
 import { FieldsMapper } from "./FieldsMapper.js";
 
-const SYSTEM_FIELD_PREFIXES = ["status", "createdOn", "savedOn", "AND", "OR"];
+const SYSTEM_FIELD_PREFIXES = ["status", "createdOn", "savedOn", "createdBy", "AND", "OR"];
 
 function isSystemKey(key: string): boolean {
     return SYSTEM_FIELD_PREFIXES.some(prefix => key === prefix || key.startsWith(`${prefix}_`));
@@ -36,21 +42,37 @@ function wrapUserFields(where: Record<string, unknown>): Record<string, unknown>
 export const CmsAdvancedSearch = observer(() => {
     const presenter = useContentEntriesPresenter();
     const { browser } = useContentEntryListConfig();
+    const { presenter: advancedSearch } = useFeature(CmsAdvancedSearchFeature);
+
+    useEffect(() => {
+        advancedSearch.loadAuthors();
+    }, [advancedSearch]);
+
     const model = presenter.vm.model;
-    const fields = useMemo(() => FieldsMapper.toRaw(model), [model]);
+    const authors = advancedSearch.vm.authors;
+    const fields = useMemo(() => FieldsMapper.toRaw(model, authors), [model, authors]);
     const repository = useFilterRepository(`cms:${model.modelId}`);
+
+    // The list filters also hold keys set by other controls, such as `folderId`. Only the keys
+    // this search set are cleared when a filter is replaced or removed.
+    const appliedKeys = useRef<string[]>([]);
 
     const onApplyFilter = useCallback(
         (data: FilterDTO | null) => {
-            if (!data || !Object.keys(data).length) {
-                presenter.list.actions.filter.clearAll();
-                return;
-            }
+            const where =
+                data && Object.keys(data).length
+                    ? wrapUserFields(GraphQLInputMapper.toGraphQL(data))
+                    : {};
 
-            const where = wrapUserFields(GraphQLInputMapper.toGraphQL(data));
+            for (const key of appliedKeys.current) {
+                if (!(key in where)) {
+                    presenter.list.actions.filter.clear(key);
+                }
+            }
             for (const [key, value] of Object.entries(where)) {
                 presenter.list.actions.filter.set(key, value);
             }
+            appliedKeys.current = Object.keys(where);
         },
         [presenter]
     );
