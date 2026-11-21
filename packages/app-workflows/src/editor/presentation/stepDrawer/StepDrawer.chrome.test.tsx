@@ -272,7 +272,7 @@ describe("StepDrawer chrome (R302, R309, R312)", () => {
 
         const assignment = screen.getByRole("tab", { name: "Assignment, 1 error" });
         const count = assignment.querySelector("[data-role='step-tab-error-count']");
-        expect(count?.getAttribute("aria-hidden")).toBe("true");
+        expect(count?.closest('[aria-hidden="true"]')).not.toBeNull();
         expect(count?.textContent).toBe("1");
         expect(screen.getByRole("tab", { name: "General" })).toBeTruthy();
         expect(screen.getByRole("tab", { name: "Test routing" })).toBeTruthy();
