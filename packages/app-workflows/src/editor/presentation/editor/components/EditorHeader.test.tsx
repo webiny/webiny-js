@@ -33,6 +33,13 @@ describe("EditorHeader", () => {
         ).toBeTruthy();
     });
 
+    it("gives the applies-to line a title with the full text for hover", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        const line = "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026";
+        expect(screen.getByText(line).getAttribute("title")).toBe(line);
+    });
+
     it("does not show the changes note: it sits below the add button", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 

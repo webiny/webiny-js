@@ -77,7 +77,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         <div className="flex flex-col gap-xxs min-w-0">
             <div data-role="title-row" className="flex items-center gap-sm min-w-0">
                 <div
-                    className="min-w-0"
+                    className="min-w-0 [&_*]:text-neutral-primary"
                     tabIndex={nameTriggerEnabled ? 0 : undefined}
                     role={nameTriggerEnabled ? "button" : undefined}
                     aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
@@ -89,7 +89,12 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                 {unsavedTag}
             </div>
             {nameError}
-            <Text as="div" size="sm" className="text-neutral-strong">
+            <Text
+                as="div"
+                size="sm"
+                className="min-w-0 truncate text-neutral-strong"
+                title={header.appliesTo}
+            >
                 {header.appliesTo}
             </Text>
         </div>

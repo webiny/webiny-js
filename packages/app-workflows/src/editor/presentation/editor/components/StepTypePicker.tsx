@@ -72,6 +72,7 @@ const TypeCard = ({ option, onPick }: TypeCardProps) => {
             description={description}
             onClick={disabled ? undefined : () => onPick(option.type)}
             onKeyDown={handleKeyDown}
+            className="last:border-b-0!"
         />
     );
 };
