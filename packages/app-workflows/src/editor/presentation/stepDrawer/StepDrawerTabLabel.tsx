@@ -18,11 +18,15 @@ export const StepDrawerTabLabel = ({ label, errorCount }: StepDrawerTabLabelProp
 
     return (
         <span className={"inline-flex items-center gap-xs"}>
-            {label}
+            {/* The suffix sits in the label's own inline box: as a flex item of its own, browsers
+                put a space before it and the tab reads "Assignment , 2 errors". */}
+            <span>
+                {label}
+                <span className={"sr-only"}>{STEP_DRAWER_MESSAGES.tabErrorCount(errorCount)}</span>
+            </span>
             <span aria-hidden={"true"} data-role={"step-tab-error-count"}>
                 <Tag variant={"destructive-light"} content={String(errorCount)} />
             </span>
-            <span className={"sr-only"}>{STEP_DRAWER_MESSAGES.tabErrorCount(errorCount)}</span>
         </span>
     );
 };
