@@ -36,9 +36,27 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
             error = `${rulePrefix}${firstError.message}`;
         }
     }
+    let stripPosition = -1;
+    if (rulePrefix !== null && firstError !== null) {
+        stripPosition = params.ruleIds.indexOf(firstError.ruleId ?? "");
+    }
     let shown: ShownCardError | null = null;
     if (error !== null) {
         shown = { text: error, rulePrefix };
+    }
+
+    const warnings = omitShownError(params.warnings, shown);
+    let errorIndex = warnings.length;
+    if (stripPosition !== -1) {
+        const found = warnings.findIndex(line => {
+            if (line.ruleId === undefined) {
+                return true;
+            }
+            return params.ruleIds.indexOf(line.ruleId) >= stripPosition;
+        });
+        if (found !== -1) {
+            errorIndex = found;
+        }
     }
 
     let description: string | null = null;
@@ -57,8 +75,9 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
         details: params.details,
         description: description,
         readOnly: params.readOnly,
-        warnings: omitShownError(params.warnings, shown),
+        warnings,
         error,
+        errorIndex,
         canMoveUp: params.index > 0,
         canMoveDown: params.index < params.count - 1
     };

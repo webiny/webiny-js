@@ -117,6 +117,32 @@ export const StepCard = (props: StepCardProps) => {
         </span>
     );
 
+    // The strip stands among the lines at `errorIndex`, so the order is the same before and after a Save attempt.
+    const lines: React.ReactNode[] = step.warnings.map((line, lineIndex) => {
+        const isError = line.severity === "error";
+        // A warning row has the outlined circle-exclamation icon (design).
+        return (
+            <Alert
+                key={`${lineIndex}:${line.text}`}
+                data-severity={line.severity}
+                type={isError ? "danger" : "warning"}
+                icon={isError ? undefined : <ErrorOutlineIcon />}
+                variant="subtle"
+                size="sm"
+            >
+                {line.text}
+            </Alert>
+        );
+    });
+    if (step.error !== null) {
+        const strip = (
+            <Alert key="step-error" type="danger" variant="subtle" size="sm">
+                {step.error}
+            </Alert>
+        );
+        lines.splice(Math.min(step.errorIndex, lines.length), 0, strip);
+    }
+
     const hasProblem = step.error !== null || step.warnings.length > 0;
     // Changes whenever the error or the warnings change, so a new problem is noticed.
     const problemKey = JSON.stringify([step.error, step.warnings.map(line => line.text)]);
@@ -195,27 +221,7 @@ export const StepCard = (props: StepCardProps) => {
                     <div data-role="step-details" className="flex flex-col gap-sm">
                         {descriptionText}
                         {detailGrid}
-                        {step.warnings.map((line, lineIndex) => {
-                            const isError = line.severity === "error";
-                            // A warning row has the outlined circle-exclamation icon (design).
-                            return (
-                                <Alert
-                                    key={`${lineIndex}:${line.text}`}
-                                    data-severity={line.severity}
-                                    type={isError ? "danger" : "warning"}
-                                    icon={isError ? undefined : <ErrorOutlineIcon />}
-                                    variant="subtle"
-                                    size="sm"
-                                >
-                                    {line.text}
-                                </Alert>
-                            );
-                        })}
-                        {step.error !== null ? (
-                            <Alert type="danger" variant="subtle" size="sm">
-                                {step.error}
-                            </Alert>
-                        ) : null}
+                        {lines}
                         <div className="flex">
                             <Button
                                 variant="secondary"

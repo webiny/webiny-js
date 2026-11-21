@@ -72,37 +72,35 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         nameError = <FormComponentErrorMessage invalid text={header.nameError} />;
     }
 
-    // `SimpleFormHeader` has no description slot, so the applies-to line sits in the title node.
+    // `SimpleFormHeader` gives half of its width to its children, so it gets none here: the title
+    // column then spans the whole header and this row lays out the name block and the actions.
     const title = (
-        <div className="flex flex-col gap-xxs min-w-0">
-            <div data-role="title-row" className="flex items-center gap-sm min-w-0">
-                <div
-                    className="min-w-0 [&_*]:text-neutral-primary"
-                    tabIndex={nameTriggerEnabled ? 0 : undefined}
-                    role={nameTriggerEnabled ? "button" : undefined}
-                    aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
-                    onClick={nameTriggerEnabled ? () => setEditingName(true) : undefined}
-                    onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
-                >
-                    {nameTitle}
+        <div className="flex items-center gap-sm min-w-0">
+            <div className="flex flex-col gap-xxs min-w-0 grow">
+                <div data-role="title-row" className="flex items-center gap-sm min-w-0">
+                    <div
+                        className="min-w-0 [&_*]:text-neutral-primary"
+                        tabIndex={nameTriggerEnabled ? 0 : undefined}
+                        role={nameTriggerEnabled ? "button" : undefined}
+                        aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
+                        onClick={nameTriggerEnabled ? () => setEditingName(true) : undefined}
+                        onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
+                    >
+                        {nameTitle}
+                    </div>
+                    <div className="shrink-0">{unsavedTag}</div>
                 </div>
-                {unsavedTag}
+                {nameError}
+                <Text
+                    as="div"
+                    size="sm"
+                    className="min-w-0 truncate text-neutral-strong"
+                    title={header.appliesTo}
+                >
+                    {header.appliesTo}
+                </Text>
             </div>
-            {nameError}
-            <Text
-                as="div"
-                size="sm"
-                className="min-w-0 truncate text-neutral-strong"
-                title={header.appliesTo}
-            >
-                {header.appliesTo}
-            </Text>
-        </div>
-    );
-
-    return (
-        <SimpleFormHeader title={title} data-testid="workflow-editor-header">
-            <div data-role="header-actions" className="flex items-center justify-end gap-xs">
+            <div data-role="header-actions" className="flex shrink-0 items-center gap-xs">
                 <IconButton
                     variant="ghost"
                     aria-label="Delete workflow"
@@ -119,6 +117,8 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                     onClick={onSave}
                 />
             </div>
-        </SimpleFormHeader>
+        </div>
     );
+
+    return <SimpleFormHeader title={title} data-testid="workflow-editor-header" />;
 };
