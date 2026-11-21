@@ -16,7 +16,8 @@ import { ReactComponent as ArrowUpwardIcon } from "@webiny/icons/arrow_upward.sv
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as DragIndicatorIcon } from "@webiny/icons/drag_indicator.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
+import { ReactComponent as ErrorOutlineIcon } from "@webiny/icons/error_outline.svg";
+import { ReactComponent as WarningAmberIcon } from "@webiny/icons/warning_amber.svg";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
 import { StepDropIndicator } from "./StepDropIndicator.js";
@@ -54,13 +55,21 @@ export const StepCard = (props: StepCardProps) => {
         readOnlyTag = <Tag variant="neutral-light" content="Read-only" />;
     }
 
+    /*
+     * The tag follows the lines' real severity: a live rule error (a line with severity `error`,
+     * which blocks Save) or the step's error shows the Error tag; only `warning` lines are counted
+     * as warnings.
+     */
+    const hasErrorLine = step.warnings.some(line => line.severity === "error");
+    const warningCount = step.warnings.filter(line => line.severity === "warning").length;
     let problemTag: React.ReactNode = null;
-    if (step.error !== null) {
+    if (step.error !== null || hasErrorLine) {
         problemTag = <Tag variant="destructive" content="Error" />;
-    } else if (step.warnings.length > 0) {
-        const warningCount = step.warnings.length;
+    } else if (warningCount > 0) {
         const warningText = warningCount === 1 ? "1 warning" : `${warningCount} warnings`;
-        problemTag = <Tag variant="warning-light" icon={<WarningIcon />} content={warningText} />;
+        problemTag = (
+            <Tag variant="warning-light" icon={<WarningAmberIcon />} content={warningText} />
+        );
     }
 
     const title = (
@@ -186,17 +195,22 @@ export const StepCard = (props: StepCardProps) => {
                     <div data-role="step-details" className="flex flex-col gap-sm">
                         {descriptionText}
                         {detailGrid}
-                        {step.warnings.map((line, lineIndex) => (
-                            <Alert
-                                key={`${lineIndex}:${line.text}`}
-                                data-severity={line.severity}
-                                type={line.severity === "error" ? "danger" : "warning"}
-                                variant="subtle"
-                                size="sm"
-                            >
-                                {line.text}
-                            </Alert>
-                        ))}
+                        {step.warnings.map((line, lineIndex) => {
+                            const isError = line.severity === "error";
+                            // A warning row has the outlined circle-exclamation icon (design).
+                            return (
+                                <Alert
+                                    key={`${lineIndex}:${line.text}`}
+                                    data-severity={line.severity}
+                                    type={isError ? "danger" : "warning"}
+                                    icon={isError ? undefined : <ErrorOutlineIcon />}
+                                    variant="subtle"
+                                    size="sm"
+                                >
+                                    {line.text}
+                                </Alert>
+                            );
+                        })}
                         {step.error !== null ? (
                             <Alert type="danger" variant="subtle" size="sm">
                                 {step.error}

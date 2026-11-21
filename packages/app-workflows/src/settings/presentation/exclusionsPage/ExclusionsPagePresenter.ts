@@ -21,6 +21,7 @@ import type { ExclusionRowVm } from "./abstractions.js";
 import type { ExclusionTabVm } from "./abstractions.js";
 import type { ExclusionsPageInitParams } from "./abstractions.js";
 import type { ExclusionsPageStatus } from "./abstractions.js";
+import type { ExclusionsSortDirection } from "./abstractions.js";
 import type { ApplySavedParams } from "./ExclusionsSource.js";
 import type { ExclusionUserName } from "./ExclusionsSource.js";
 import { buildExclusionRowVm } from "./buildExclusionRowVm.js";
@@ -60,6 +61,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
     private namesFailed = false;
     private tab: ExclusionTab = "active";
     private search = "";
+    private sortDirection: ExclusionsSortDirection = "asc";
     private dialog: ExclusionDialogRequest | null = null;
     // Every load and dispose starts a new one; an older answer is dropped.
     private loadToken = 0;
@@ -100,6 +102,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             tab: this.tab,
             tabs: TABS,
             search: this.search,
+            sortDirection: this.sortDirection,
             rows,
             empty: this.buildEmpty(rows.length),
             namesFailed: this.namesFailed,
@@ -185,6 +188,10 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
 
     setSearch(search: string): void {
         this.search = search;
+    }
+
+    toggleSort(): void {
+        this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
     }
 
     openAdd(): void {
@@ -322,6 +329,9 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         const labels = this.buildLabels(tabbed);
         const searched = searchExclusionsByName(tabbed, labels, this.search);
         const sorted = sortExclusions(searched, labels);
+        if (this.sortDirection === "desc") {
+            sorted.reverse();
+        }
         return sorted.map(exclusion => {
             const name = this.getUserName(exclusion.userId);
             return buildExclusionRowVm(exclusion, name, now, this.timeZone);

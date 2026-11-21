@@ -31,6 +31,9 @@ export const WorkflowPickerStub = (props: WorkflowPickerProps) => {
             data-any-label={props.anyLabel ?? ""}
             data-disabled={String(props.disabled)}
             data-error={props.error ?? ""}
+            data-size={props.size ?? ""}
+            data-any-as-value={String(props.anyAsValue ?? false)}
+            data-clearable={String(props.clearable ?? true)}
         >
             {props.options.map(option => (
                 <button

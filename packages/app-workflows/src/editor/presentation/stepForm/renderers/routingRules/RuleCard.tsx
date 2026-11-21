@@ -38,18 +38,16 @@ export interface RuleCardProps {
 /*
  * One routing rule (design 4.2, R299, R303, R313): a top border, the header with the number and the move and
  * delete buttons, the readable summary, the five fields and the rule's warnings. The section is
- * controlled: it reports edits and never holds the rule. A rule's errors show under its fields.
+ * controlled: it reports edits and never holds the rule. A rule's errors show under its fields; its
+ * warnings show as warning alerts at the end of the section, also when the rule has an error.
  */
 export const RuleCard = (props: RuleCardProps) => {
     const { rule, index, total, readOnly, options } = props;
     const messages = getRuleFieldMessages(props.issues, props.errors);
-    const summary = describeRule(rule, options.references);
+    const summary = describeRule(rule, options.references, options.assignment.stepTeamIds);
     const title = ASSIGNMENT_FORM_MESSAGES.ruleTitle(index + 1);
-    // A field error replaces the rule's warnings: the card never shows both.
-    let warnings = messages.warnings;
-    if (messages.hasError) {
-        warnings = [];
-    }
+    // Every warning of the rule shows, also next to a field error (design: Rule 2 has both).
+    const warnings = messages.warnings;
 
     const actions = (
         <ButtonGroup label={"Rule actions"} variant={"ghost"} kind={"icon"} size={"sm"}>

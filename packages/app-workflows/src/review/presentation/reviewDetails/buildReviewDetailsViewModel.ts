@@ -162,7 +162,8 @@ const getStepVm = (
 ): ReviewDetailsStepVm => {
     let running = isStepRunning(step);
     let tag = getStepStateTag(step.state, running);
-    if (cancelled && UNFINISHED_STATES.includes(step.state)) {
+    const stepCancelled = cancelled && UNFINISHED_STATES.includes(step.state);
+    if (stepCancelled) {
         running = false;
         tag = CANCELLED_STEP_TAG;
     }
@@ -187,6 +188,7 @@ const getStepVm = (
         comment: getComment(step),
         skipped: getSkipped(step),
         running,
+        cancelled: stepCancelled,
         failedReason: getFailedReason(step, now),
         attempts: getAttempts(step, canViewStepRun),
         issues: getAiIssues(step, fieldLabels)
