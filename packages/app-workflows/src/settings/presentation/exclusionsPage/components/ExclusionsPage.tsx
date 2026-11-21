@@ -53,10 +53,17 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
             );
         }
 
-        let list: React.ReactNode = <ExclusionsTable rows={vm.rows} presenter={presenter} />;
+        // The table runs edge to edge under the filters band, like the Content Reviews list; the
+        // empty state keeps the page's padding.
+        let list: React.ReactNode = <ExclusionsTable presenter={presenter} />;
         if (vm.empty !== null) {
             list = (
-                <ExclusionsEmpty empty={vm.empty} onClearSearch={() => presenter.setSearch("")} />
+                <div className="px-lg pt-md pb-lg">
+                    <ExclusionsEmpty
+                        empty={vm.empty}
+                        onClearSearch={() => presenter.setSearch("")}
+                    />
+                </div>
             );
         }
 
@@ -70,7 +77,7 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
                     canAdd={vm.canAdd}
                     presenter={presenter}
                 />
-                <div className="px-lg pt-md pb-lg">{list}</div>
+                {list}
             </>
         );
     }

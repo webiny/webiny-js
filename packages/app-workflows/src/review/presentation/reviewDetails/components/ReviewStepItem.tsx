@@ -86,7 +86,13 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
             <Accordion.Item
                 title={title}
                 colorMark={step.color}
-                icon={<ReviewStepCircle state={step.state} running={step.running} />}
+                icon={
+                    <ReviewStepCircle
+                        state={step.state}
+                        running={step.running}
+                        cancelled={step.cancelled}
+                    />
+                }
                 open={open}
                 onOpenChange={setOpen}
                 interactive={hasDetails}

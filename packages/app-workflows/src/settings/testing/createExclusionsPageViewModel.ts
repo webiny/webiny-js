@@ -14,6 +14,7 @@ export const createExclusionsPageViewModel = (
             { id: "all", label: "All" }
         ],
         search: "",
+        sortDirection: "asc",
         rows: [],
         empty: null,
         namesFailed: false,

@@ -134,6 +134,7 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
             userId: "user-ana",
             label: "Ana Kovač",
             muted: false,
+            initials: "AK",
             subLine: null,
             reason: "On leave",
             reasonMuted: false,
@@ -185,6 +186,29 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
             "user-ana",
             "user-ben"
         ]);
+    });
+
+    it("starts sorted ascending by name and flips the order with toggleSort", async () => {
+        const { presenter } = await createNamedPage(createThree());
+        presenter.setTab("all");
+
+        expect(presenter.vm.sortDirection).toBe("asc");
+        expect(presenter.vm.rows.map(row => row.userId)).toEqual([
+            "user-ana",
+            "user-ben",
+            "user-cid"
+        ]);
+
+        presenter.toggleSort();
+        expect(presenter.vm.sortDirection).toBe("desc");
+        expect(presenter.vm.rows.map(row => row.userId)).toEqual([
+            "user-cid",
+            "user-ben",
+            "user-ana"
+        ]);
+
+        presenter.toggleSort();
+        expect(presenter.vm.sortDirection).toBe("asc");
     });
 
     it("filters the rows by the display name, ignoring case, after the tab", async () => {
@@ -268,6 +292,7 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
 
         expect(row.label).toBe("Deleted user");
         expect(row.muted).toBe(true);
+        expect(row.initials).toBeNull();
         expect(row.subLine).toBe("This user no longer exists");
         expect(row.editLabel).toBe("Edit exclusion for Deleted user");
         expect(row.removeLabel).toBe("Remove exclusion for Deleted user");
@@ -307,6 +332,17 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
         expect(row.subLine).toBe("This user no longer exists");
     });
 
+    it("has no initials for a user whose name is not known yet", () => {
+        const row = buildExclusionRowVm(
+            createBenExclusion(),
+            { userId: "user-ben", label: "user-ben", state: "unknown", teamNames: [] },
+            EXCLUSIONS_NOW,
+            ZAGREB
+        );
+
+        expect(row.initials).toBeNull();
+    });
+
     it("names a found user", () => {
         const row = buildExclusionRowVm(
             createBenExclusion(),
@@ -317,6 +353,7 @@ describe("buildExclusionRowVm (R323, QBZ-91)", () => {
 
         expect(row.label).toBe("Ben Babić");
         expect(row.muted).toBe(false);
+        expect(row.initials).toBe("BB");
         expect(row.subLine).toBeNull();
         expect(row.editLabel).toBe("Edit exclusion for Ben Babić");
     });
