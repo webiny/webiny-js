@@ -43,9 +43,9 @@
     "@webiny/handler": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "jsonwebtoken": "^9.0.3",
-    "rimraf": "^6.1.3",
+    "rimraf": "^6.1.4",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"
