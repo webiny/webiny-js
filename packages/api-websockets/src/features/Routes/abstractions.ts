@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
+import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import type { WebsocketsResponse } from "~/response/index.js";
 import type { IWebsocketsRunnerResponse } from "~/runner/abstractions/WebsocketsRunner.js";
@@ -18,7 +19,11 @@ export interface IWebsocketsRouteHandlerParams<
     container: Container;
     response: WebsocketsResponse.Interface;
     getTenant: () => string | null;
-    getIdentity: () => ConnectionRegistry.Identity | null;
+    /*
+     * Always set. A request without a valid token gets the anonymous identity, so a handler that
+     * must refuse anonymous users checks `identity.isAnonymous()`.
+     */
+    getIdentity: () => Identity;
     next: () => Promise<R>;
 }
 

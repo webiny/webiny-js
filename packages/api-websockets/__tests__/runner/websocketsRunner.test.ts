@@ -4,6 +4,7 @@ import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
 import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("websockets runner", () => {
@@ -383,6 +384,47 @@ describe("websockets runner", () => {
         expect(result).toMatchObject({
             error: {
                 message: "Missing identity."
+            }
+        });
+    });
+
+    it("should give a custom route handler the anonymous identity, not null", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+        context.container.registerInstance(WebsocketsRouteHandler, {
+            route: "whoami",
+            async run({ response, getIdentity }) {
+                const identity = getIdentity();
+                return response.ok({
+                    data: {
+                        id: identity.id,
+                        anonymous: identity.isAnonymous()
+                    }
+                });
+            }
+        });
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                route: "whoami"
+            },
+            body: JSON.stringify({
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 200,
+            data: {
+                anonymous: true
             }
         });
     });

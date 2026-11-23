@@ -17,6 +17,7 @@ import { WebsocketsTransport } from "~/transport/index.js";
 import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 type MiddlewareParams = Pick<WebsocketsRouteHandler.Params, "event" | "registry" | "container">;
 
@@ -107,13 +108,8 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             return tenant?.id || null;
         };
 
-        const getIdentity = (): ConnectionRegistry.Identity | null => {
-            const identity = this.context.container.resolve(IdentityContext).getIdentity();
-            // A request without a token gets the anonymous identity, never `undefined`.
-            if (identity.isAnonymous()) {
-                return null;
-            }
-            return identity;
+        const getIdentity = (): Identity => {
+            return this.context.container.resolve(IdentityContext).getIdentity();
         };
 
         const action = middleware<MiddlewareParams, IWebsocketsRunnerResponse>(
