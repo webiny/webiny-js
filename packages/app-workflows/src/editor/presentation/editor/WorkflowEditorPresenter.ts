@@ -396,8 +396,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        // The rows show as soon as the models arrive, while the option lists may still load: a
+        // model the admin opens in that time wins over the first one, which is opened only when
+        // nothing was opened since this run began.
+        const selection = this.selectToken;
         await Promise.all([this.loadModels(false), this.loadOptions()]);
-        if (token !== this.runToken || this.status !== "ready") {
+        if (token !== this.runToken || this.status !== "ready" || selection !== this.selectToken) {
             return;
         }
         const first = this.rows[0];

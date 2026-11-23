@@ -33,6 +33,13 @@ describe("EditorHeader", () => {
         ).toBeTruthy();
     });
 
+    it("gives the applies-to line a title with the full text for hover", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        const line = "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026";
+        expect(screen.getByText(line).getAttribute("title")).toBe(line);
+    });
+
     it("does not show the changes note: it sits below the add button", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
@@ -93,6 +100,27 @@ describe("EditorHeader", () => {
         expect(row.contains(tag)).toBe(true);
         expect(row.contains(title)).toBe(true);
         expect(actions.contains(tag)).toBe(false);
+    });
+
+    it("lays the row out itself: the name block grows, the actions and the tag never shrink", () => {
+        renderWithAdminUi(<EditorHeader {...createProps({ dirty: true })} />);
+
+        const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
+        const tag = screen.getByText("Unsaved changes");
+        const block = (document.querySelector('[data-role="title-row"]') as HTMLElement)
+            .parentElement as HTMLElement;
+        const line = screen.getByText(
+            "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
+        );
+        expect(actions.className).toContain("shrink-0");
+        expect(tag.closest(".shrink-0")).toBeTruthy();
+        expect(block.className).toContain("grow");
+        expect(block.className).toContain("min-w-0");
+        expect(block.contains(actions)).toBe(false);
+        expect(line.className).toContain("truncate");
+        expect(line.getAttribute("title")).toBe(line.textContent);
+        // The actions are no children of the header: they share the title column's row.
+        expect(actions.parentElement).toBe(block.parentElement);
     });
 
     it("reaches the title with the keyboard and opens the input with Enter or F2", () => {

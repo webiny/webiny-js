@@ -46,7 +46,7 @@ interface ConfigureTestProjectParams {
  *
  * - configureBugReporter.js adds `<Project.BugReporter>`.
  * - configureApiRoute.js adds a GET and a POST `<Api.Route>` and their handler, for
- *   e2e/tests/apiRoute.e2e.ts.
+ *   e2e/tests/api/apiRoute.e2e.ts.
  *
  * The editing lives in node scripts rather than in `sed` here. A shell one-liner long enough to
  * carry a JSX element gets folded into a `>-` scalar by the workflow emitter, which is unreadable

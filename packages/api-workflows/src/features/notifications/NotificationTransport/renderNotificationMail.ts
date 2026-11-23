@@ -17,12 +17,19 @@ interface NotificationMailRow {
 const GREETING = "Hi,";
 
 // Plain inline CSS: e-mail clients ignore style sheets. Neutral greys only.
-const TABLE_STYLE = "border-collapse:collapse;margin:16px 0;";
-const LABEL_STYLE = "padding:4px 16px 4px 0;color:#6b6b6b;vertical-align:top;";
-const VALUE_STYLE = "padding:4px 0;vertical-align:top;";
-const BUTTON_STYLE =
-    "display:inline-block;padding:10px 16px;border-radius:4px;background:#333333;color:#ffffff;text-decoration:none;";
-const FOOTER_STYLE = "color:#6b6b6b;font-size:12px;";
+const TEXT_COLOR = "#333333";
+const MUTED_COLOR = "#6b6b6b";
+const BOX_COLOR = "#f5f5f5";
+const FONT_FAMILY =
+    "font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;";
+const CONTAINER_STYLE = `${FONT_FAMILY}max-width:640px;margin:0 auto;padding:24px;background:#ffffff;color:${TEXT_COLOR};font-size:16px;line-height:1.5;`;
+const PARAGRAPH_STYLE = `${FONT_FAMILY}margin:0 0 16px 0;color:${TEXT_COLOR};font-size:16px;line-height:1.5;`;
+const TABLE_STYLE = `${FONT_FAMILY}width:100%;border-collapse:separate;border-spacing:0 4px;margin:0 0 24px 0;padding:12px 16px;background:${BOX_COLOR};border-radius:8px;font-size:14px;line-height:1.5;`;
+const LABEL_STYLE = `${FONT_FAMILY}width:120px;padding:0;color:${MUTED_COLOR};vertical-align:top;`;
+const VALUE_STYLE = `${FONT_FAMILY}padding:0;color:${TEXT_COLOR};vertical-align:top;`;
+const BUTTON_WRAPPER_STYLE = "margin:0 0 24px 0;";
+const BUTTON_STYLE = `${FONT_FAMILY}display:inline-block;padding:10px 16px;border-radius:4px;background:#333333;color:#ffffff;font-size:14px;line-height:1.5;text-decoration:none;`;
+const FOOTER_STYLE = `${FONT_FAMILY}margin:0;color:${MUTED_COLOR};font-size:14px;line-height:1.5;`;
 
 const getRows = (details: NotificationTransport.MessageDetails): NotificationMailRow[] => {
     const contentTitle = toSingleLine(details.contentTitle);
@@ -53,8 +60,8 @@ export const renderNotificationMail = (
 
     const textParts: string[] = [GREETING, message.body];
     const htmlParts: string[] = [
-        `<p>${escapeHtml(GREETING)}</p>`,
-        `<p>${escapeHtml(message.body).replace(/\n/g, "<br/>")}</p>`
+        `<p style="${PARAGRAPH_STYLE}">${escapeHtml(GREETING)}</p>`,
+        `<p style="${PARAGRAPH_STYLE}">${escapeHtml(message.body).replace(/\n/g, "<br/>")}</p>`
     ];
 
     if (rows.length > 0) {
@@ -70,7 +77,7 @@ export const renderNotificationMail = (
     if (message.url !== null) {
         textParts.push(`${message.linkLabel}: ${message.url}`);
         htmlParts.push(
-            `<p><a href="${escapeHtml(message.url)}" style="${BUTTON_STYLE}">${escapeHtml(message.linkLabel)}</a></p>`
+            `<div style="${BUTTON_WRAPPER_STYLE}"><a href="${escapeHtml(message.url)}" style="${BUTTON_STYLE}">${escapeHtml(message.linkLabel)}</a></div>`
         );
     }
 
@@ -79,5 +86,6 @@ export const renderNotificationMail = (
         htmlParts.push(`<p style="${FOOTER_STYLE}">${escapeHtml(footer)}</p>`);
     }
 
-    return { text: textParts.join("\n\n"), html: htmlParts.join("") };
+    const html = `<div style="${CONTAINER_STYLE}">${htmlParts.join("")}</div>`;
+    return { text: textParts.join("\n\n"), html };
 };

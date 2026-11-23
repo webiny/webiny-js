@@ -107,6 +107,9 @@ export interface StepCardVm {
     warnings: StepWarningLine[];
     // The first client or server error of the step, shown as the card strip, or null.
     error: string | null;
+    // Where the strip sits among `warnings` so the lines keep their order: a rule's error stands at
+    // its rule's position (before that rule's warnings); any other error ends the list.
+    errorIndex: number;
     canMoveUp: boolean;
     canMoveDown: boolean;
 }

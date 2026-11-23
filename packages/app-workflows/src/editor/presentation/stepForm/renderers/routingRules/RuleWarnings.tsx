@@ -1,5 +1,6 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
+import { ReactComponent as ErrorOutlineIcon } from "@webiny/icons/error_outline.svg";
 
 export interface RuleWarningsProps {
     // The rule's position in the list, zero-based; each warning starts with `Rule {index + 1}: `.
@@ -7,7 +8,10 @@ export interface RuleWarningsProps {
     warnings: string[];
 }
 
-// The warnings of a rule below its fields (design 4.2): one warning alert per message, prefixed with the rule number.
+/*
+ * The warnings of a rule below its fields (design 4.2): one warning alert per message, prefixed with
+ * the rule number, with the design's outlined circle-exclamation icon.
+ */
 export const RuleWarnings = ({ index, warnings }: RuleWarningsProps) => {
     if (warnings.length === 0) {
         return null;
@@ -21,6 +25,7 @@ export const RuleWarnings = ({ index, warnings }: RuleWarningsProps) => {
                     type={"warning"}
                     variant={"subtle"}
                     size={"sm"}
+                    icon={<ErrorOutlineIcon />}
                 >
                     {`Rule ${index + 1}: ${warning}`}
                 </Alert>

@@ -86,14 +86,22 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
             <Accordion.Item
                 title={title}
                 colorMark={step.color}
-                icon={<ReviewStepCircle state={step.state} running={step.running} />}
+                icon={
+                    <ReviewStepCircle
+                        state={step.state}
+                        running={step.running}
+                        cancelled={step.cancelled}
+                    />
+                }
                 open={open}
                 onOpenChange={setOpen}
                 interactive={hasDetails}
             >
                 {/* The accordion content keeps 48px on the right for the trigger's chevron; the
-                    detail cards run to the item's 16px padding like the design. */}
-                <div className={"flex flex-col gap-sm pb-md -mr-xl"}>
+                    detail cards run to the item's 16px padding like the design. The content
+                    already ends in 24px of bottom padding, so the negative margin takes 8px of
+                    it back to leave 16px, the card's side padding. */}
+                <div className={"flex flex-col gap-sm -mb-sm -mr-xl"}>
                     {step.failedReason !== null && (
                         <Alert data-role={"failed-reason"} type={"danger"} variant={"subtle"}>
                             <Text as={"span"}>{step.failedReason}</Text>

@@ -19,7 +19,7 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import type { ReviewWorkflow } from "@webiny/app-workflows/review/domain/types.js";
 import { GetBoundWorkflowUseCase } from "@webiny/app-workflows/review/useCases/getBoundWorkflow/abstractions.js";
-import { CmsModelWorkflowFeature } from "~/presentation/modelWorkflow/feature.js";
+import { BoundWorkflowFeature } from "@webiny/app-workflows/review/presentation/boundWorkflow/feature.js";
 import { CmsReviewPublishEntryAction } from "./CmsReviewPublishEntryAction.js";
 import { MODEL } from "~/testing/models.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";
@@ -111,7 +111,7 @@ function renderActions(params: RenderParams) {
     const execute = vi.fn<GetBoundWorkflowUseCase.Interface["execute"]>();
     execute.mockResolvedValue(params.workflow);
     container.registerInstance(GetBoundWorkflowUseCase, { execute });
-    CmsModelWorkflowFeature.register(container);
+    BoundWorkflowFeature.register(container);
 
     render(
         <AdminUiProvider>

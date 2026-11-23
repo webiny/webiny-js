@@ -4,11 +4,12 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useContentEntriesPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { useModel } from "@webiny/app-headless-cms/admin/components/ModelProvider/index.js";
 import { usePermission } from "@webiny/app-headless-cms/admin/hooks/usePermission.js";
-import { CmsModelWorkflowFeature } from "~/presentation/modelWorkflow/feature.js";
+import { BoundWorkflowFeature } from "@webiny/app-workflows/review/presentation/boundWorkflow/feature.js";
+import { getSelectionPublishDisabledReason } from "@webiny/app-workflows/review/presentation/listActions/getSelectionPublishDisabledReason.js";
 import { createAppName } from "~/utils/appName.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 import { BulkPublishBlocked } from "./BulkPublishBlocked.js";
-import { getSelectionPublishDisabledReason } from "./getSelectionPublishDisabledReason.js";
+import { toListPublishRow } from "./toListPublishRow.js";
 
 export interface BulkPublishGateProps {
     children?: React.ReactNode;
@@ -22,7 +23,7 @@ export const BulkPublishGate = createReactiveComponent((props: BulkPublishGatePr
     const { model } = useModel();
     const { canPublish } = usePermission();
     const listPresenter = useContentEntriesPresenter();
-    const { presenter } = useFeature(CmsModelWorkflowFeature);
+    const { presenter } = useFeature(BoundWorkflowFeature);
     const namespace = createAppName(model);
 
     useEffect(() => {
@@ -34,12 +35,14 @@ export const BulkPublishGate = createReactiveComponent((props: BulkPublishGatePr
     }
 
     const { rows, selection, pagination } = listPresenter.list.vm;
-    const entries = rows.filter(row => {
-        return selection.selectedIds.has(row.id);
-    });
+    const selectedRows = rows
+        .filter(row => {
+            return selection.selectedIds.has(row.id);
+        })
+        .map(toListPublishRow);
     const reason = getSelectionPublishDisabledReason({
         workflowStatus: presenter.vm.status,
-        entries,
+        rows: selectedRows,
         allSelected: selection.allSelected,
         hasMore: pagination.hasMore
     });

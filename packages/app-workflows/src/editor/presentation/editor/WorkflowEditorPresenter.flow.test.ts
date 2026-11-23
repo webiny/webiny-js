@@ -391,6 +391,7 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
                 readOnly: false,
                 warnings: [],
                 error: null,
+                errorIndex: 0,
                 canMoveUp: false,
                 canMoveDown: false
             }

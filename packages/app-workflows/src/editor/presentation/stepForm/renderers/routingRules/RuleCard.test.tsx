@@ -213,6 +213,49 @@ describe("RuleCard: summary (R313)", () => {
     });
 });
 
+describe("RuleCard: compact fields (design 4.2)", () => {
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("uses the 32px pickers without the clear button, with the Any rows shown as values", () => {
+        renderCard(createProps());
+
+        const optional = ["Requester is", "Requester is in team", "Content is in folder"];
+        for (const label of optional) {
+            const picker = getPicker(label);
+            expect(picker.getAttribute("data-size")).toBe("md");
+            expect(picker.getAttribute("data-any-as-value")).toBe("true");
+            expect(picker.getAttribute("data-clearable")).toBe("false");
+        }
+        const target = getPicker("Then assign to");
+        expect(target.getAttribute("data-size")).toBe("md");
+        expect(target.getAttribute("data-clearable")).toBe("false");
+    });
+});
+
+describe("RuleCard: the summary of a target outside the reviewing teams (R307)", () => {
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("marks a person who left the reviewing teams in the summary and the picker", () => {
+        const references = createReferencesSlice({
+            users: [createReferenceLabel({ id: "user-9", label: "Marko Babić" })],
+            userTeamIds: { "user-9": ["team-9"] }
+        });
+        const rule = createRuleValue({ id: "rule-1", target: { type: "user", id: "user-9" } });
+        renderCard(createProps({ rule, options: createOptions({ references }) }));
+
+        expect(screen.getByTestId("rule-summary").textContent).toBe(
+            "Always → Marko Babić (not in reviewing teams)"
+        );
+        expect(getPicker("Then assign to").getAttribute("data-selected")).toBe(
+            "Marko Babić (not in reviewing teams)"
+        );
+    });
+});
+
 describe("RuleCard: the requester fields (R307)", () => {
     afterEach(() => {
         cleanup();
@@ -670,7 +713,7 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
         expect(screen.getByText("Rule 1: The team was deleted.")).toBeDefined();
     });
 
-    it("hides the warning of a rule that has an error", () => {
+    it("shows the warning of a rule next to its error, as the design does", () => {
         const issues: RuleIssue[] = [
             {
                 ruleId: "rule-1",
@@ -689,7 +732,10 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
         ];
         renderCard(createProps({ issues }));
 
-        expect(screen.queryByText("Rule 1: The team was deleted.")).toBeNull();
+        expect(screen.getByText("Rule 1: The team was deleted.")).toBeDefined();
+        expect(getPicker("Then assign to").getAttribute("data-error")).toBe(
+            "The assigned user was deleted."
+        );
     });
 
     it("renders no read-access warning, no exclusion note and no Unavailable option text (Q50)", () => {

@@ -88,12 +88,13 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   baseBranch:
     needs: checkComment
-    name: Get base branch, PR head and PR features
+    name: Get areas, base branch, PR head and PR features
     permissions:
       contents: read
       actions: write
-      pull-requests: read
+      pull-requests: write
     outputs:
+      e2e-tags: ${{ steps.areas.outputs.tags }}
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
       standalone: ${{ steps.features.outputs.standalone }}
@@ -104,6 +105,36 @@ jobs:
         with:
           node-version: 24
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Select E2E areas
+        id: areas
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: node .github/workflows/wac/e2e/selectE2eAreas.ts
+      - name: Write the areas into the status comment
+        if: >-
+          ${{ always() && steps.areas.outputs.comment-line != '' &&
+          needs.checkComment.outputs.comment-id != '' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          COMMENT_LINE: ${{ steps.areas.outputs.comment-line }}
+        run: >-
+          set -euo pipefail
+
+          comment="repos/${{ github.repository }}/issues/comments/$COMMENT_ID"
+
+          gh api "$comment" --jq .body > /tmp/comment.txt
+
+          {
+            head -n 1 /tmp/comment.txt
+            echo
+            printf "%s\n" "$COMMENT_LINE"
+            tail -n +2 /tmp/comment.txt
+          } > /tmp/comment-with-areas.txt
+
+          gh api "$comment" -X PATCH --field body=@/tmp/comment-with-areas.txt >
+          /dev/null
       - name: Get base branch
         id: base-branch
         env:
@@ -637,11 +668,13 @@ jobs:
           E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
           E2E_API_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.api-url }}
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
-          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation ${E2E_TAGS:+--tag
+          "$E2E_TAGS"} --shard ${{ matrix.shard }}/1 --pass-with-no-tests
+          --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1064,11 +1097,13 @@ jobs:
           E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
           E2E_API_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.api-url }}
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
-          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation ${E2E_TAGS:+--tag
+          "$E2E_TAGS"} --shard ${{ matrix.shard }}/1 --pass-with-no-tests
+          --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1449,11 +1484,13 @@ jobs:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
-          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation ${E2E_TAGS:+--tag
+          "$E2E_TAGS"} --shard ${{ matrix.shard }}/1 --pass-with-no-tests
+          --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1898,11 +1935,13 @@ jobs:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
-          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation ${E2E_TAGS:+--tag
+          "$E2E_TAGS"} --shard ${{ matrix.shard }}/1 --pass-with-no-tests
+          --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -2415,11 +2454,13 @@ jobs:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
-          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation ${E2E_TAGS:+--tag
+          "$E2E_TAGS"} --shard ${{ matrix.shard }}/1 --pass-with-no-tests
+          --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -2850,6 +2891,7 @@ jobs:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -2858,8 +2900,9 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
-          --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation ${E2E_TAGS:+--tag "$E2E_TAGS"}
+          --shard ${{ matrix.shard }}/3 --pass-with-no-tests --reporter
+          list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -3315,6 +3358,7 @@ jobs:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -3323,8 +3367,9 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
-          --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation ${E2E_TAGS:+--tag "$E2E_TAGS"}
+          --shard ${{ matrix.shard }}/3 --pass-with-no-tests --reporter
+          list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -3847,6 +3892,7 @@ jobs:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_API_URL: http://localhost:3002
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_TAGS: ${{ needs.baseBranch.outputs.e2e-tags }}
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -3855,8 +3901,9 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
-          --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation ${E2E_TAGS:+--tag "$E2E_TAGS"}
+          --shard ${{ matrix.shard }}/3 --pass-with-no-tests --reporter
+          list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}

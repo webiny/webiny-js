@@ -24,10 +24,14 @@ export const getRuleLines = (params: RuleLinesParams): StepWarningLine[] => {
                 lines.push({ text: `${prefix}${error.message}`, severity: "error", ruleId });
             }
         }
-        for (const issue of params.issues) {
-            if (issue.ruleId === ruleId) {
-                lines.push({ text: `${prefix}${issue.message}`, severity: issue.kind, ruleId });
-            }
+        // Errors before warnings within a rule, the same order as the card.
+        const ruleIssues = params.issues.filter(issue => issue.ruleId === ruleId);
+        const ordered = [
+            ...ruleIssues.filter(issue => issue.kind === "error"),
+            ...ruleIssues.filter(issue => issue.kind === "warning")
+        ];
+        for (const issue of ordered) {
+            lines.push({ text: `${prefix}${issue.message}`, severity: issue.kind, ruleId });
         }
     }
     return lines;
