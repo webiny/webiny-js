@@ -28,15 +28,8 @@ export interface IWebsocketsRouteHandlerParams<
 }
 
 /**
- * A handler for a single WebSocket route (e.g. "connect", "disconnect", "default", or a
- * custom route key). Register built-in and custom routes as multiple implementations:
- *
- *   container.registerInstance(WebsocketsRouteHandler, {
- *       route: "myRoute",
- *       async run({ response }) { return response.ok(); }
- *   });
- *
- * The runner resolves all handlers via `resolveAll` and runs the ones matching the event route.
+ * A handler for a single WebSocket route: "connect", "disconnect" or "default". The runner
+ * resolves all handlers via `resolveAll` and runs the ones matching the event route.
  */
 export interface IWebsocketsRouteHandler<
     R extends IWebsocketsRunnerResponse = IWebsocketsRunnerResponse,
