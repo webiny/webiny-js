@@ -1,7 +1,5 @@
 import { EntryBeforePublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
-import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { GetActiveTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetActiveTargetReview/index.js";
-import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
+import { ApprovedReviewPublishRule } from "~/features/publishRule/ApprovedReviewPublishRule/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 
 /**
@@ -11,13 +9,11 @@ import { getCmsNamespace } from "~/utils/appName.js";
  * block (fail closed). `system.workflow` is not trusted: the update input can set it. Private
  * models (Website Builder pages, R52) are left to their app (`RequireApprovedReviewOnPagePublish`).
  * Only the publish actions are guarded (this and `RequireApprovedReviewOnRepublish`): creating
- * content as published stays allowed for data transfer (D134 point 2, R83).
+ * content as published stays allowed for data transfer (D134 point 2, R83). The rule itself is
+ * `ApprovedReviewPublishRule`, shared with the scheduler guard.
  */
 class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandler.Interface {
-    public constructor(
-        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private getActiveTargetReview: GetActiveTargetReviewUseCase.Interface
-    ) {}
+    public constructor(private publishRule: ApprovedReviewPublishRule.Interface) {}
 
     public async handle(event: EntryBeforePublishEventHandler.Event): Promise<void> {
         const { model, original } = event.payload;
@@ -26,35 +22,17 @@ class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandl
             return;
         }
 
-        const bound = await this.getBoundWorkflow.execute({ model: namespace });
-        if (bound.isFail()) {
-            throw bound.error;
-        }
-        if (!bound.value) {
-            return;
-        }
-
-        const review = await this.getActiveTargetReview.execute({
-            model: namespace,
+        const allowed = await this.publishRule.check({
+            namespace,
             targetRevisionId: original.id
         });
-        if (review.isFail()) {
-            throw review.error;
+        if (allowed.isFail()) {
+            throw allowed.error;
         }
-        if (review.value?.state === "approved") {
-            return;
-        }
-
-        throw new ReviewPublishBlockedError({
-            model: namespace,
-            targetRevisionId: original.id,
-            workflowId: bound.value.id,
-            reviewState: review.value?.state ?? null
-        });
     }
 }
 
 export const RequireApprovedReviewOnPublish = EntryBeforePublishEventHandler.createImplementation({
     implementation: RequireApprovedReviewOnPublishImpl,
-    dependencies: [GetBoundWorkflowUseCase, GetActiveTargetReviewUseCase]
+    dependencies: [ApprovedReviewPublishRule]
 });

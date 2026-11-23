@@ -62,37 +62,38 @@ export const ExclusionsToolbar = ({
     }
 
     return (
-        <div data-testid="exclusions-toolbar" className="flex flex-col gap-sm">
-            <div className="flex items-center gap-sm">
-                <div data-role="name-search" className="flex-1">
-                    <Input
-                        aria-label={EXCLUSIONS_SEARCH_LABEL}
-                        placeholder={EXCLUSIONS_SEARCH_LABEL}
-                        value={search}
-                        onChange={value => presenter.setSearch(value)}
-                        size="md"
-                        variant="ghost"
-                        startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
-                    />
-                </div>
-                {add}
-            </div>
-            {/* The filters band (design `wb-list__filters`): full width, under a full-width
-                separator; the page's own side padding is taken back with a negative margin. */}
-            <div className="-mx-lg flex flex-col">
-                <Separator />
-                <div
-                    data-role="exclusions-filters"
-                    className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center gap-sm"
-                >
-                    <SegmentedControl
-                        items={items}
-                        value={tab}
-                        onChange={onTabChange}
-                        variant={"dimmed"}
-                    />
+        <div data-testid="exclusions-toolbar" className="flex flex-col">
+            <div className="px-md pb-sm">
+                <div className="flex items-center gap-sm">
+                    <div data-role="name-search" className="flex-1">
+                        <Input
+                            aria-label={EXCLUSIONS_SEARCH_LABEL}
+                            placeholder={EXCLUSIONS_SEARCH_LABEL}
+                            value={search}
+                            onChange={value => presenter.setSearch(value)}
+                            size="md"
+                            variant="ghost"
+                            startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+                        />
+                    </div>
+                    {add}
                 </div>
             </div>
+            {/* The filters band, the same as the Content Reviews list: between two full-width
+                separators. */}
+            <Separator />
+            <div
+                data-role="exclusions-filters"
+                className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center gap-sm"
+            >
+                <SegmentedControl
+                    items={items}
+                    value={tab}
+                    onChange={onTabChange}
+                    variant={"dimmed"}
+                />
+            </div>
+            <Separator />
         </div>
     );
 };

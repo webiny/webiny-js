@@ -11,13 +11,16 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { StepFormOptionsContext } from "~/editor/presentation/stepForm/StepFormOptionsContext.js";
 import { SwitchAutomationDialog } from "~/editor/presentation/stepForm/components/SwitchAutomationDialog.js";
+import { PEOPLE_TAB } from "~/editor/presentation/stepForm/peopleTabs.js";
 import { STEP_FORM_RENDERER } from "~/editor/presentation/stepForm/stepFormRendererNames.js";
 import { buildStepFormOptions } from "./buildStepFormOptions.js";
 import type { StepDrawerSource } from "./abstractions.js";
 import { StepDrawerPresenterFeature } from "./feature.js";
 import { getActiveTabId } from "./getActiveTabId.js";
+import { getStepLevelWarnings } from "./getStepLevelWarnings.js";
 import { StepDrawerBanners } from "./StepDrawerBanners.js";
 import { StepDrawerTabsRenderer } from "./StepDrawerTabsRenderer.js";
+import { StepDrawerWarnings } from "./StepDrawerWarnings.js";
 
 export interface StepDrawerProps {
     // The editor presenter (R284).
@@ -64,6 +67,12 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
     const formOptions = buildStepFormOptions(vm, presenter);
     const activeTabId = getActiveTabId(vm.form);
 
+    // The step's own warnings (team warnings) end the Assignment tab, after its last field.
+    let tabWarnings: React.ReactNode = null;
+    if (activeTabId === PEOPLE_TAB.assignment) {
+        tabWarnings = <StepDrawerWarnings warnings={getStepLevelWarnings(vm.warnings)} />;
+    }
+
     return (
         <StepFormOptionsContext.Provider value={formOptions}>
             <Drawer
@@ -105,6 +114,7 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                             layoutRenderers={layoutRenderers}
                         />
                     )}
+                    {tabWarnings}
                 </div>
                 {vm.switchConfirmation && (
                     <SwitchAutomationDialog

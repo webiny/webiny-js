@@ -5,6 +5,7 @@ import { isExclusionActive } from "~/settings/model/time/isExclusionActive.js";
 import type { ExclusionRowVm } from "./abstractions.js";
 import type { ExclusionUserName } from "./ExclusionsSource.js";
 import { DELETED_USER_SUB_LINE } from "./exclusionUserCopy.js";
+import { getUserInitials } from "./getUserInitials.js";
 
 const NO_REASON = "No reason given";
 
@@ -36,6 +37,12 @@ export const buildExclusionRowVm = (
         reasonMuted = false;
     }
 
+    // Only a found user has a name to take initials from; the rest show an icon avatar.
+    let initials: string | null = null;
+    if (name.state === "found") {
+        initials = getUserInitials(name.label);
+    }
+
     const untilLabel = formatUntilLabel(exclusion.endsOn, timeZone);
     const untilTitle = formatUntilTitle(exclusion.endsOn, timeZone);
 
@@ -43,6 +50,7 @@ export const buildExclusionRowVm = (
         userId: exclusion.userId,
         label: name.label,
         muted: deleted,
+        initials,
         subLine,
         reason,
         reasonMuted,

@@ -571,6 +571,11 @@ export interface StandaloneVariantJobsContext {
      * always is added.
      */
     apiRoute?: PrFeature;
+    /*
+     * Expression for the area tags the shards run (`/e2e <area>`); empty runs every test. See
+     * createUnlicensedE2eSteps and createAiE2eSteps. Unset on `push`.
+     */
+    tags?: string;
 }
 
 /**
@@ -597,7 +602,8 @@ export const createStandaloneVariantJobs = (
         savePlaywrightCache,
         feature,
         bugReporter,
-        apiRoute
+        apiRoute,
+        tags
     }: StandaloneVariantJobsContext
 ) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
@@ -704,14 +710,16 @@ export const createStandaloneVariantJobs = (
                 ? createAiE2eSteps({
                       workingDirectory,
                       artifactName: `ai-e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
-                      shard
+                      shard,
+                      tags
                   })
                 : createUnlicensedE2eSteps({
                       workingDirectory,
                       adminUrl: STANDALONE_ADMIN_URL,
                       apiUrl: STANDALONE_API_URL,
                       artifactName: `e2e-test-results-standalone-${id}-shard-\${{ matrix.shard }}`,
-                      shard
+                      shard,
+                      tags
                   })),
             printServerLogsStep
         ]

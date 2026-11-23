@@ -2,8 +2,7 @@ import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { useEntry } from "@webiny/app-headless-cms/admin/hooks/useEntry.js";
-import { isReviewSelectable } from "@webiny/app-workflows/review/domain/isReviewSelectable.js";
-import type { ICmsEntryMetaWithReview } from "~/types.js";
+import { useRowPublishDisabledReason } from "./useRowPublishDisabledReason.js";
 
 const EntryAction = ContentEntryListConfig.Browser.Entry.Action;
 
@@ -13,18 +12,21 @@ interface ScheduleGateProps {
 
 const ScheduleGate = createReactiveComponent((props: ScheduleGateProps) => {
     const { entry } = useEntry();
-    const meta: ICmsEntryMetaWithReview = entry.meta;
+    const reason = useRowPublishDisabledReason();
 
-    if (!isReviewSelectable(meta.system?.workflow?.reviewState ?? null)) {
-        return null;
+    // A published row offers "Schedule unpublish", which no review blocks.
+    if (entry.meta.status === "published" || reason === null) {
+        return <>{props.children}</>;
     }
 
-    return <>{props.children}</>;
+    return null;
 });
 
 /*
- * The scheduler's per-row "Schedule" action (only present when the scheduler is installed) is
- * hidden for a row whose review blocks publishing, the same rule as the row selection (D121).
+ * The scheduler's per-row "Schedule publish" action (only present when the scheduler is
+ * installed) needs what "Publish" needs (`useRowPublishDisabledReason`; the API refuses the
+ * schedule with `Workflows/Review/PublishBlocked` otherwise). It is hidden rather than disabled
+ * (R226). "Schedule unpublish" on a published row is left alone.
  */
 export const CmsReviewScheduleEntryAction = EntryAction.createDecorator(Original => {
     return function CmsReviewScheduleEntryActionDecorator(props) {

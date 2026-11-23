@@ -37,6 +37,7 @@ describe("buildStepCardVm", () => {
             readOnly: false,
             warnings: [],
             error: null,
+            errorIndex: 0,
             canMoveUp: true,
             canMoveDown: true
         });
@@ -173,6 +174,49 @@ describe("buildStepCardVm", () => {
             { text: "Rule 1: The folder no longer exists.", severity: "warning" },
             { text: "Rule 2: The team was deleted.", severity: "error" }
         ]);
+    });
+
+    it("places the strip of a rule error at its rule's position among the lines", () => {
+        const card = buildStepCardVm(
+            params({
+                ruleIds: ["r1", "r2", "r3"],
+                warnings: [
+                    { text: "Rule 1: Folder gone.", severity: "warning", ruleId: "r1" },
+                    { text: "Rule 2: Team gone.", severity: "error", ruleId: "r2" },
+                    { text: "Rule 2: Requester team gone.", severity: "warning", ruleId: "r2" },
+                    { text: "Rule 3: Folder gone.", severity: "warning", ruleId: "r3" },
+                    { text: "Editors has no members.", severity: "warning" }
+                ],
+                errors: [
+                    {
+                        field: "config.assignment.rules.target",
+                        message: "Server says no.",
+                        ruleId: "r2"
+                    }
+                ]
+            })
+        );
+
+        // The strip stands where the live error of rule 2 stood: after rule 1, before rule 2's warning.
+        expect(card.warnings.map(line => line.text)).toEqual([
+            "Rule 1: Folder gone.",
+            "Rule 2: Requester team gone.",
+            "Rule 3: Folder gone.",
+            "Editors has no members."
+        ]);
+        expect(card.errorIndex).toBe(1);
+    });
+
+    it("ends the list with the strip of an error that is not a rule's", () => {
+        const card = buildStepCardVm(
+            params({
+                ruleIds: ["r1"],
+                warnings: [{ text: "Rule 1: Folder gone.", severity: "warning", ruleId: "r1" }],
+                errors: [{ field: "title", message: "Enter a title.", ruleId: null }]
+            })
+        );
+
+        expect(card.errorIndex).toBe(1);
     });
 
     it("keeps every line when the strip is another field's error", () => {

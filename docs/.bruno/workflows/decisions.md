@@ -1444,3 +1444,34 @@ The footer for the requester is "You get this e-mail because you requested this 
 The Home widget pairs ("For me to review", "Requested by me") show for each app the user can access, also when the app has no workflow; they are then empty. Website Builder's pair needs page read access. No workflow-existence check is made, because dashboard widgets mounted after the first render are not registered (`Compose` in `packages/react-composition`), and `Compose` is not changed. Workflows as a whole show only with the licence feature on.
 
 **Keeps** D199 (per-app lists and widgets). Designer question B30 ("a pair only for an app with at least one workflow") was not built by decision. Decided 2026-11-20 (user).
+
+**D221. A publish can be scheduled only when it could be published now.** (User, 2026-11-20.) A scheduled
+publish of a CMS entry or a page is refused by the API (`Workflows/Review/PublishBlocked`) unless the
+review of that revision is approved or the app has no workflow; a scheduled unpublish is not affected.
+Before, the schedule was accepted, the publish was refused at the due time and the scheduled action
+stayed listed. A decorator on the scheduler's `ScheduleActionUseCase` in each app's workflows package
+does it; the publish hooks and the decorators share `ApprovedReviewPublishRule`. In the admin the
+Schedule item is hidden when a publish would be refused (R226) and a published row keeps it for
+unpublish; the row and bulk Publish of both lists are disabled with the reason. The bound-workflow
+lookup of the lists (`BoundWorkflowPresenter`) and the row rules live in `app-workflows` for both apps.
+
+**D222. Visual match, rounds of 2026-11-21.** Compared again by screenshot after dev had data for the
+screens. The workflow title is dark (B20) through a token class on a wrapper around admin-ui's
+`EditableTitle`, whose own colour is the accent. The editor header lays out its title block and its
+actions itself, because app-admin's `SimpleFormHeader` gives the title half of the grid. The Reviewer
+exclusions table is the admin-ui `DataTable` (sort by user in the presenter, column settings, initials
+avatar), edge to edge; a row click opens Edit by reading the clicked row, since `DataTable` rows take no
+handler. Rule pickers are compact, "Any…" is a value, filled pickers have no clear button.
+
+**D223. A step card shows Error for a line that blocks saving.** The tag counted every line as a
+warning unless a server error was set, so a blocking rule issue read "1 warning". Now any line of
+severity error shows the Error tag and only warning lines are counted. Lines keep one order: by rule,
+errors before warnings, step-level lines last; the server-error strip sits at its rule's position.
+
+**D224. Warnings in the step drawer.** As the artboard draws them (this answers question C1): a rule's
+warnings sit at the end of its rule card, also next to its error; step-level warnings ("{team} has no
+members.") are warning alerts at the end of the Assignment tab. Errors stay inline. A tab's count is
+every error shown on it, live rule errors included, once per rule and field, without a Save attempt.
+
+Open with the designer: the artboard draws "{person} is no longer in the reviewing teams." as a warning;
+in code it is an error that blocks saving. Not changed.
