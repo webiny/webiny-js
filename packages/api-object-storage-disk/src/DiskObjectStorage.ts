@@ -17,10 +17,11 @@ import { resolveStoragePath } from "./resolveStoragePath.js";
 import { DiskStorageConfig } from "./abstractions.js";
 
 /*
- * Multipart uploads in progress: `multipart/<uploadId>/key` holds the target key and is written when
- * the upload starts, `part-<n>` the parts.
+ * Multipart uploads in progress: `.multipart/<uploadId>/key` holds the target key and is written
+ * when the upload starts, `part-<n>` the parts. A key's first segment can't start with `.`
+ * (`isValidObjectKey`), so no object key reaches this folder.
  */
-const MULTIPART_FOLDER = "multipart";
+const MULTIPART_FOLDER = ".multipart";
 const TARGET_KEY_FILE = "key";
 const PART_FILE_PREFIX = "part-";
 const UPLOAD_ID_PATTERN = /^[a-z0-9]+$/i;
@@ -119,6 +120,21 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         }
         const folderKey = prefix.slice(0, -1);
         const folderPath = this.resolveKey(folderKey);
+        /*
+         * Only a folder: an object stored at the key `a/b` is not under the prefix `a/b/`, and a
+         * bucket would keep it too.
+         */
+        try {
+            const stats = await stat(folderPath);
+            if (!stats.isDirectory()) {
+                return;
+            }
+        } catch (error) {
+            if (isMissing(error)) {
+                return;
+            }
+            throw error;
+        }
         await rm(folderPath, { recursive: true, force: true });
     }
 
@@ -149,7 +165,10 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         const entries = await readdir(uploadPath);
         const partNumbers = entries
             .filter(name => name.startsWith(PART_FILE_PREFIX))
-            .map(name => Number(name.slice(PART_FILE_PREFIX.length)))
+            .map(name => {
+                const partNumber = name.slice(PART_FILE_PREFIX.length);
+                return Number(partNumber);
+            })
             .filter(partNumber => Number.isInteger(partNumber) && partNumber > 0)
             .sort((a, b) => a - b);
         if (partNumbers.length === 0) {

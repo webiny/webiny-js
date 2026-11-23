@@ -113,7 +113,8 @@ export class LocalSharpTransform implements IAssetTypeHandler {
         const cachedBuffer = await this.objectStorage.get(transformedAssetKey);
         if (cachedBuffer) {
             const newAsset = asset.withProps({ size: cachedBuffer.length, contentType });
-            newAsset.setContentsReader(CallableContentsReader.create(() => cachedBuffer));
+            const contentsReader = CallableContentsReader.create(() => cachedBuffer);
+            newAsset.setContentsReader(contentsReader);
 
             this.logger.debug(
                 { key: transformedAssetKey, size: newAsset.getSize() },
@@ -142,7 +143,8 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             size: transformedBuffer.length,
             contentType: outputContentType
         });
-        newAsset.setContentsReader(CallableContentsReader.create(() => transformedBuffer));
+        const contentsReader = CallableContentsReader.create(() => transformedBuffer);
+        newAsset.setContentsReader(contentsReader);
 
         const transformedContents = await newAsset.getContents();
         await this.objectStorage.put(transformedAssetKey, transformedContents);
@@ -178,7 +180,8 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             this.logger.debug({ key: optimizedAssetKey }, "Return a previously optimized asset.");
 
             const newAsset = asset.withProps({ size: cachedBuffer.length });
-            newAsset.setContentsReader(CallableContentsReader.create(() => cachedBuffer));
+            const contentsReader = CallableContentsReader.create(() => cachedBuffer);
+            newAsset.setContentsReader(contentsReader);
 
             return newAsset;
         }
@@ -217,7 +220,8 @@ export class LocalSharpTransform implements IAssetTypeHandler {
         this.logger.debug({ size: finalBuffer.length }, "Optimized asset size.");
 
         const newAsset = asset.withProps({ size: finalBuffer.length });
-        newAsset.setContentsReader(CallableContentsReader.create(() => finalBuffer));
+        const contentsReader = CallableContentsReader.create(() => finalBuffer);
+        newAsset.setContentsReader(contentsReader);
 
         const optimizedContents = await newAsset.getContents();
         await this.objectStorage.put(optimizedAssetKey, optimizedContents);

@@ -15,4 +15,9 @@ describe("isValidObjectKey", () => {
             expect(isValidObjectKey(key)).toBe(false);
         }
     });
+
+    it("refuses a first segment starting with a dot, which providers keep for themselves", () => {
+        expect(isValidObjectKey(".multipart/abc/key")).toBe(false);
+        expect(isValidObjectKey("tenants/root/files/abc/.env")).toBe(true);
+    });
 });

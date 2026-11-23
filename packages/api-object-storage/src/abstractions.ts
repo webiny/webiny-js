@@ -18,9 +18,10 @@ export interface IObjectStorageAbortMultipartUploadsParams {
  * a provider; the project registers exactly one provider: a folder on disk
  * (`@webiny/api-object-storage-disk`) or an S3-compatible bucket (`@webiny/api-object-storage-s3`).
  * Keys are relative, `/`-separated paths such as `tenants/root/files/<id>/photo.png`, the same in
- * every provider. Each feature keeps its keys under a top-level folder of its own, so that one
- * feature's `deletePrefix` never reaches another's. Failures are thrown; callers that hand out a
- * `Result` map them.
+ * every provider (`isValidObjectKey`); a first segment starting with `.` is the provider's own.
+ * Each feature keeps its keys under a top-level folder of its own, so that one feature's
+ * `deletePrefix` never reaches another's. Failures are thrown; callers that hand out a `Result`
+ * map them.
  */
 export interface IObjectStorage {
     /** Stores `body` under `key`, replacing what is there. */
@@ -55,7 +56,8 @@ export namespace ObjectStorage {
 }
 
 /**
- * The build param a project extension that provides the storage sets (`<S3Storage />` sets `"s3"`).
- * The standalone API reads it at startup to know that `WEBINY_LOCAL_STORAGE_PATH` is not needed.
+ * The build param a project extension that provides `ObjectStorage` sets, to its own name
+ * (`<S3Storage />` sets `"s3"`), so the host can check at startup that a provider is in the build
+ * before any request resolves one. Every provider extension sets it.
  */
 export const OBJECT_STORAGE_BUILD_PARAM = "ObjectStorage";

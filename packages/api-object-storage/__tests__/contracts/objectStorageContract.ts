@@ -76,17 +76,29 @@ export const describeObjectStorageContract = (backend: ObjectStorageTestBackend)
             expect((await storage.get("tenants/t1/files/abcd/c.png"))?.toString()).toBe("c");
         });
 
-        it.each(["../x.txt", "tenants/t1/../../x.txt", "/tenants/t1/x.txt", "a//b", "a\\b", ""])(
-            "should refuse the key %j",
-            async key => {
-                const storage = backend.storage();
+        it("should keep an object stored at the prefix without its trailing slash", async () => {
+            const storage = backend.storage();
+            await storage.put("tenants/t1/files/abc", Buffer.from("a"));
 
-                await expect(storage.put(key, Buffer.from("x"))).rejects.toThrow(
-                    "Invalid storage key"
-                );
-                await expect(storage.get(key)).rejects.toThrow("Invalid storage key");
-            }
-        );
+            await storage.deletePrefix("tenants/t1/files/abc/");
+
+            expect((await storage.get("tenants/t1/files/abc"))?.toString()).toBe("a");
+        });
+
+        it.each([
+            "../x.txt",
+            "tenants/t1/../../x.txt",
+            "/tenants/t1/x.txt",
+            "a//b",
+            "a\\b",
+            "",
+            ".multipart/abc/key"
+        ])("should refuse the key %j", async key => {
+            const storage = backend.storage();
+
+            await expect(storage.put(key, Buffer.from("x"))).rejects.toThrow("Invalid storage key");
+            await expect(storage.get(key)).rejects.toThrow("Invalid storage key");
+        });
 
         it("should join multipart parts in part number order", async () => {
             const storage = backend.storage();

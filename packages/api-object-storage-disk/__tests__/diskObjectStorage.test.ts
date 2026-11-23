@@ -23,7 +23,7 @@ describe("disk multipart cleanup", () => {
         await storage.uploadPart({ key, uploadId, partNumber: 1, body: Buffer.from("x") });
 
         // Started two days ago; its folder changed a moment ago, when a part arrived.
-        const uploadPath = path.join(diskBackend.path(), "multipart", uploadId);
+        const uploadPath = path.join(diskBackend.path(), ".multipart", uploadId);
         const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
         await utimes(path.join(uploadPath, "key"), twoDaysAgo, twoDaysAgo);
 
