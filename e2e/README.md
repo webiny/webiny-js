@@ -209,3 +209,21 @@ The two "2 API processes" variants start the same API build twice, on ports 3012
 The `push` workflow still runs each variant in a single job.
 
 Tests in a shard share one database, and AWS shards share one deployment. Give anything a test creates a name that is unique per run (`unique()`, or a timestamp as `tenantFileDelivery.e2e.ts` does), and don't assert on counts or empty lists.
+
+### Running some areas
+
+`/e2e` alone runs every test. Names after it run only those areas, on the same variants:
+
+```
+/e2e workflows
+/e2e wf,fm
+/e2e login file-manager
+```
+
+A name is an area, an alias, or a part (`<area>-<part>` or `<area alias>-<part>`, such as `wb-pages` once Website Builder has tests). Case doesn't matter, names are separated by spaces, commas or both, duplicates count once, and an area named together with one of its own parts runs the whole area. Every test command then gets `--tag <areas>` next to its usual filters, and the installation test still runs first. A variant whose filters leave nothing of the selection, such as `/e2e workflows` on an unlicensed variant, passes with no tests. The status comment says which areas ran, `all` for a full run.
+
+The `Get areas, base branch, PR head and PR features` job reads the names first, with `.github/workflows/wac/e2e/selectE2eAreas.ts`. An unknown name fails that job before anything is built, and the status comment lists the valid names. The comment is untrusted input: it reaches the script only through an environment variable, and only known area tags come out of it, into `E2E_TAGS`.
+
+A slash command always runs the workflow as it is on `next`, with `next`'s `e2e/areas.ts`. So `/e2e <area>` works only once this change is on `next`, and an area a PR adds can be selected only after that PR is merged. On a PR branched before its tests had area tags, a selection finds no tests and passes.
+
+The parser's unit tests: `yarn vitest run --config .github/workflows/wac/vitest.config.ts`.

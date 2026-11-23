@@ -1,6 +1,7 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
+import { E2E_TAG_ARGS } from "./e2eTagArgs.js";
 
 interface CreateUnlicensedE2eStepsParams {
     workingDirectory: string;
@@ -12,6 +13,11 @@ interface CreateUnlicensedE2eStepsParams {
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`. Without it the job runs all
     // of the selected tests.
     shard?: string;
+    /*
+     * Expression for the area tags to run, comma-separated and already validated (`/e2e <area>`,
+     * selectE2eAreas.ts). Empty, or unset, runs every test the other filters leave.
+     */
+    tags?: string;
 }
 
 /**
@@ -25,7 +31,8 @@ export const createUnlicensedE2eSteps = ({
     adminUrl,
     apiUrl,
     artifactName,
-    shard
+    shard,
+    tags
 }: CreateUnlicensedE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "E2E - run tests",
@@ -34,12 +41,14 @@ export const createUnlicensedE2eSteps = ({
         env: {
             E2E_ADMIN_URL: adminUrl,
             E2E_API_URL: apiUrl,
-            E2E_TELEMETRY_DISABLED: "1"
+            E2E_TELEMETRY_DISABLED: "1",
+            ...(tags ? { E2E_TAGS: tags } : {})
         },
         run: [
             E2E_CLEAR_SUMMARY,
             [
                 "yarn e2e --exclude-tag wcp,ai,installation",
+                ...(tags ? [E2E_TAG_ARGS] : []),
                 ...(shard ? [`--shard ${shard}`] : []),
                 `--pass-with-no-tests ${E2E_REPORTER_ARGS}`
             ].join(" ")
