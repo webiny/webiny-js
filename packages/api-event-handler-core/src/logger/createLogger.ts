@@ -26,10 +26,17 @@ function serializeError(error: Error) {
  * A Logger at the level `WEBINY_API_LOG_LEVEL` sets, writing to `destination`, or to stdout without
  * one. Each event handler builds one at boot with its hosting type's destination: pino-lambda on AWS,
  * plain stdout on a standalone server.
+ *
+ * `mixin` returns fields to add to every line. It runs when the line is logged, in the caller's async
+ * context, so it can read what the current request is (AWS adds the request id this way).
  */
-export function createLogger(destination?: DestinationStream): Logger.Interface {
+export function createLogger(
+    destination?: DestinationStream,
+    mixin?: () => object
+): Logger.Interface {
     const options: LoggerOptions = {
         level: process.env.WEBINY_API_LOG_LEVEL || DEFAULT_LOG_LEVEL,
+        mixin,
         /*
          * pino only serializes an Error under `err`. Backend code logs `{ error }`, which without
          * this prints `{}`, with no message or stack.
