@@ -11,6 +11,7 @@ import { publishEntry, schedulePublish } from "./support/publishAttempts.ts";
 import { createTestTeam, deleteTestTeam } from "./support/team.ts";
 import type { TestTeam } from "./support/team.ts";
 import { createTestWorkflow, deleteTestWorkflow } from "./support/workflow.ts";
+import { createRunId } from "./support/createRunId.ts";
 
 const PUBLISH_BLOCKED = "Workflows/Review/PublishBlocked";
 
@@ -25,7 +26,7 @@ describe(
     { serial: true, session: "admin", tags: ["wcp", "workflows"] },
     () => {
         // Fresh per run, so earlier runs' models and teams never match.
-        const runId = String(Date.now());
+        const runId = createRunId();
         let session: ApiSession | null = null;
         let model: TestModel | null = null;
         let team: TestTeam | null = null;

@@ -87,11 +87,22 @@ const LIST_WORKFLOW_MODELS = /* GraphQL */ `
     }
 `;
 
-/** Binds a new workflow with one People step, reviewed by `team`, to `model`. Returns its id. */
-export const createTestWorkflow = async (
+/** A People step of a test workflow: its reviewing teams and whether the requester may pick. */
+export interface PeopleStepInput {
+    id: string;
+    title: string;
+    teams: TestTeam[];
+    allowManualPick: boolean;
+}
+
+/**
+ * Binds a new workflow with People steps, in order, to `model`. A step without an assignment rule
+ * waits in its teams' pool. Returns the workflow's id.
+ */
+export const createPeopleWorkflow = async (
     session: ApiSession,
     model: TestModel,
-    team: TestTeam,
+    steps: PeopleStepInput[],
     runId: string
 ): Promise<string> => {
     const result = await callGraphql<StoreWorkflowData>(session, "graphql", STORE_WORKFLOW, {
@@ -100,19 +111,23 @@ export const createTestWorkflow = async (
             id: `e2ewf${runId}`,
             name: `E2E workflow ${runId}`,
             models: [`cms.${model.modelId}`],
-            steps: [
-                {
-                    id: `e2estep${runId}`,
-                    title: "Editorial review",
+            steps: steps.map(step => {
+                return {
+                    id: step.id,
+                    title: step.title,
                     color: "",
                     type: "review",
                     notifications: [],
                     config: {
-                        teams: [team.id],
-                        assignment: { strategy: "none", allowManualPick: false, rules: [] }
+                        teams: step.teams.map(team => team.id),
+                        assignment: {
+                            strategy: "none",
+                            allowManualPick: step.allowManualPick,
+                            rules: []
+                        }
                     }
-                }
-            ]
+                };
+            })
         }
     });
     const stored = requireData(result, "storeCmsEntryWorkflow").cms.storeCmsEntryWorkflow;
@@ -120,6 +135,22 @@ export const createTestWorkflow = async (
         throw new Error(`storeCmsEntryWorkflow failed: ${stored.error?.message}`);
     }
     return stored.data.id;
+};
+
+/** Binds a new workflow with one People step, reviewed by `team`, to `model`. Returns its id. */
+export const createTestWorkflow = async (
+    session: ApiSession,
+    model: TestModel,
+    team: TestTeam,
+    runId: string
+): Promise<string> => {
+    const step: PeopleStepInput = {
+        id: `e2estep${runId}`,
+        title: "Editorial review",
+        teams: [team],
+        allowManualPick: false
+    };
+    return createPeopleWorkflow(session, model, [step], runId);
 };
 
 /** The id of the workflow bound to `model`, or null when it has none. */

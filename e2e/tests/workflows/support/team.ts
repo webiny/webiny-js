@@ -1,6 +1,7 @@
 import type { ApiSession } from "./apiSession.ts";
 import type { GraphqlResult } from "./callGraphql.ts";
 import { callGraphql, requireData } from "./callGraphql.ts";
+import { createTestRole, deleteTestRole } from "./role.ts";
 
 /** A team with a role of its own and no members, to name as a step's reviewing team. */
 export interface TestTeam {
@@ -14,15 +15,6 @@ interface SecurityError {
     message: string | null;
 }
 
-interface CreateRoleData {
-    security: {
-        createRole: {
-            data: { id: string } | null;
-            error: SecurityError | null;
-        };
-    };
-}
-
 interface CreateTeamData {
     security: {
         createTeam: {
@@ -32,30 +24,14 @@ interface CreateTeamData {
     };
 }
 
-interface DeleteData {
+interface DeleteTeamData {
     security: {
-        deleteRecord: {
+        deleteTeam: {
             data: boolean | null;
             error: SecurityError | null;
         };
     };
 }
-
-const CREATE_ROLE = /* GraphQL */ `
-    mutation CreateRole($data: SecurityRoleCreateInput!) {
-        security {
-            createRole(data: $data) {
-                data {
-                    id
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
 
 const CREATE_TEAM = /* GraphQL */ `
     mutation CreateTeam($data: SecurityTeamCreateInput!) {
@@ -76,21 +52,7 @@ const CREATE_TEAM = /* GraphQL */ `
 const DELETE_TEAM = /* GraphQL */ `
     mutation DeleteTeam($id: ID!) {
         security {
-            deleteRecord: deleteTeam(id: $id) {
-                data
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-const DELETE_ROLE = /* GraphQL */ `
-    mutation DeleteRole($id: ID!) {
-        security {
-            deleteRecord: deleteRole(id: $id) {
+            deleteTeam(id: $id) {
                 data
                 error {
                     code
@@ -103,21 +65,15 @@ const DELETE_ROLE = /* GraphQL */ `
 
 /**
  * Creates a role with no permissions and a team with that role, both named after `runId`. A fresh
- * project has no team, and the admin is in none.
+ * project has no team, and the admin is in none. `runId` goes into slugs, so it holds only letters,
+ * digits and dashes.
  */
 export const createTestTeam = async (session: ApiSession, runId: string): Promise<TestTeam> => {
-    const roleResult = await callGraphql<CreateRoleData>(session, "graphql", CREATE_ROLE, {
-        data: {
-            name: `E2E reviewers role ${runId}`,
-            slug: `e2e-reviewers-role-${runId}`,
-            description: "Created by the workflows e2e tests.",
-            permissions: []
-        }
+    const roleId = await createTestRole(session, {
+        name: `E2E reviewers role ${runId}`,
+        slug: `e2e-reviewers-role-${runId}`,
+        permissions: []
     });
-    const role = requireData(roleResult, "createRole").security.createRole;
-    if (!role.data) {
-        throw new Error(`createRole failed: ${role.error?.message}`);
-    }
 
     const name = `E2E reviewers ${runId}`;
     const teamResult = await callGraphql<CreateTeamData>(session, "graphql", CREATE_TEAM, {
@@ -125,7 +81,7 @@ export const createTestTeam = async (session: ApiSession, runId: string): Promis
             name,
             slug: `e2e-reviewers-${runId}`,
             description: "Created by the workflows e2e tests.",
-            roles: [role.data.id]
+            roles: [roleId]
         }
     });
     const team = requireData(teamResult, "createTeam").security.createTeam;
@@ -133,19 +89,22 @@ export const createTestTeam = async (session: ApiSession, runId: string): Promis
         throw new Error(`createTeam failed: ${team.error?.message}`);
     }
 
-    return { id: team.data.id, name, roleId: role.data.id };
+    return { id: team.data.id, name, roleId };
 };
 
-const toErrorMessage = (result: GraphqlResult<DeleteData>): string | null => {
-    return result.errors?.[0]?.message ?? result.data?.security.deleteRecord.error?.message ?? null;
+const toErrorMessage = (result: GraphqlResult<DeleteTeamData>): string | null => {
+    return result.errors?.[0]?.message ?? result.data?.security.deleteTeam.error?.message ?? null;
 };
 
-/** Deletes the team, then its role. Returns the first error message, or null when both are gone. */
+/**
+ * Deletes the team, then its role. Remove its members first. Returns the first error message, or
+ * null when both are gone.
+ */
 export const deleteTestTeam = async (
     session: ApiSession,
     team: TestTeam
 ): Promise<string | null> => {
-    const teamResult = await callGraphql<DeleteData>(session, "graphql", DELETE_TEAM, {
+    const teamResult = await callGraphql<DeleteTeamData>(session, "graphql", DELETE_TEAM, {
         id: team.id
     });
     const teamError = toErrorMessage(teamResult);
@@ -153,8 +112,5 @@ export const deleteTestTeam = async (
         return teamError;
     }
 
-    const roleResult = await callGraphql<DeleteData>(session, "graphql", DELETE_ROLE, {
-        id: team.roleId
-    });
-    return toErrorMessage(roleResult);
+    return deleteTestRole(session, team.roleId);
 };

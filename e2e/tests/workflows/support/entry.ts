@@ -84,3 +84,41 @@ export const deleteEntryPermanently = async (
     });
     return result.errors?.[0]?.message ?? result.data?.deleteEntry.error?.message ?? null;
 };
+
+interface GetEntryData {
+    getEntry: {
+        data: { meta: { status: string | null } | null } | null;
+        error: CmsError | null;
+    };
+}
+
+/** The status of the entry revision: `draft`, `published`, `unpublished` and so on. */
+export const getEntryStatus = async (
+    session: ApiSession,
+    model: TestModel,
+    entry: TestEntry
+): Promise<string | null> => {
+    const query = /* GraphQL */ `
+        query GetEntry($revision: ID!) {
+            getEntry: get${model.singularApiName}(revision: $revision) {
+                data {
+                    meta {
+                        status
+                    }
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    `;
+    const result = await callGraphql<GetEntryData>(session, "cms/manage", query, {
+        revision: entry.id
+    });
+    const read = requireData(result, `get${model.singularApiName}`).getEntry;
+    if (read.error) {
+        throw new Error(`get${model.singularApiName} failed: ${read.error.message}`);
+    }
+    return read.data?.meta?.status ?? null;
+};

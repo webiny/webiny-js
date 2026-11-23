@@ -10,6 +10,7 @@ import { recordPageErrorsFromNowOn, takePageErrors } from "./support/pageErrors.
 import { createTestTeam, deleteTestTeam } from "./support/team.ts";
 import type { TestTeam } from "./support/team.ts";
 import { deleteTestWorkflow, findModelWorkflowId } from "./support/workflow.ts";
+import { createRunId } from "./support/createRunId.ts";
 
 /** Reads the id of the step card titled `title`, for the `step-card-<id>` test id. */
 const findStepId = async (browser: Browser, title: string) => {
@@ -79,7 +80,7 @@ describe(
     { serial: true, session: "admin", tags: ["wcp", "workflows"] },
     () => {
         // Fresh per run, so earlier runs' models and teams never match.
-        const runId = String(Date.now());
+        const runId = createRunId();
         const renamed = `E2E renamed workflow ${runId}`;
         let session: ApiSession | null = null;
         let model: TestModel | null = null;
