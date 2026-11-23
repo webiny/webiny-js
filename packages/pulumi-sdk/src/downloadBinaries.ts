@@ -7,7 +7,6 @@ import semver from "semver";
 import { findUpSync } from "find-up";
 import { loadJsonFileSync } from "load-json-file";
 import { downloadFile } from "./downloadFile.js";
-import { removeUnusedFolders } from "./removeUnusedFolders.js";
 import { PackageJson } from "type-fest";
 
 // We need to sanitize the package version because, occasionally, we've noticed that the Pulumi version
@@ -44,7 +43,6 @@ export default async (
     const binaryFolder = path.join(cliFolder, "pulumi");
 
     if (fs.existsSync(binaryFolder)) {
-        removeUnusedCliVersions(cliFolders, cliFolderName);
         return binaryFolder;
     }
 
@@ -61,22 +59,12 @@ export default async (
         fs.rmSync(tempFolder, { recursive: true, force: true });
     }
 
-    removeUnusedCliVersions(cliFolders, cliFolderName);
-
     if (typeof afterInstall === "function") {
         await afterInstall();
     }
 
     return binaryFolder;
 };
-
-function removeUnusedCliVersions(cliFolders: string, cliFolderName: string) {
-    removeUnusedFolders({
-        parentFolder: cliFolders,
-        keep: cliFolderName,
-        match: name => name.startsWith("pulumi-v")
-    });
-}
 
 function moveIntoPlace(tempFolder: string, cliFolder: string) {
     try {

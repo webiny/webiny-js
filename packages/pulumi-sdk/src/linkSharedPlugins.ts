@@ -52,13 +52,8 @@ function isLinkTo(link: string, folder: string) {
  * saves downloading them again. A plugin the store already has is left behind and deleted. Each
  * plugin is moved to a temporary name in the store first and renamed into place, so a copy that
  * fails partway (when the project and the store are on different drives) never looks installed.
- * A moved plugin keeps the date it was installed, which `removeUnusedFolders` would read as the last
- * time a project used it, so the date is set to now. That gives every moved version 30 days before
- * it can be removed, even if this project's run was the first to reach the store.
  */
 function movePluginsToStore(projectPluginsFolder: string, sharedPluginsFolder: string) {
-    const now = new Date();
-
     for (const entry of fs.readdirSync(projectPluginsFolder)) {
         const source = path.join(projectPluginsFolder, entry);
         const target = path.join(sharedPluginsFolder, entry);
@@ -69,7 +64,6 @@ function movePluginsToStore(projectPluginsFolder: string, sharedPluginsFolder: s
         const tempTarget = `${target}.${process.pid}.${Date.now()}.tmp`;
         try {
             fs.moveSync(source, tempTarget);
-            fs.utimesSync(tempTarget, now, now);
             fs.renameSync(tempTarget, target);
         } catch (error) {
             fs.rmSync(tempTarget, { recursive: true, force: true });

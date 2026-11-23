@@ -10,7 +10,6 @@ import downloadBinaries from "./downloadBinaries.js";
 import { getPulumiStoreFolder } from "./getPulumiStoreFolder.js";
 import { linkSharedPlugins } from "./linkSharedPlugins.js";
 import { removeProjectBinaries } from "./removeProjectBinaries.js";
-import { removeUnusedFolders } from "./removeUnusedFolders.js";
 
 export interface PulumiProcessResult {
     readonly stdout: string;
@@ -251,15 +250,5 @@ export class Pulumi {
                 }
             );
         }
-
-        /*
-         * The plugin folder is shared by every project on the machine, and another project may need
-         * a different version, so only versions no project has used for a while are removed.
-         */
-        removeUnusedFolders({
-            parentFolder: pluginsDir,
-            keep: requiredPluginDir,
-            match: name => name.startsWith("resource-aws-")
-        });
     }
 }
