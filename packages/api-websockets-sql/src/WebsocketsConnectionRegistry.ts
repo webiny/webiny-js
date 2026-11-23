@@ -1,6 +1,6 @@
 import { WebinyError } from "@webiny/error";
 import { KnexClient, SqlSchemaConfig, SqlSchemaSetup } from "@webiny/api-core-sql";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { TableName } from "~/TableName/abstractions.js";
 import { toIsoString } from "~/toIsoString.js";
 

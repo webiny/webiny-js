@@ -5,7 +5,7 @@ import { mdbid } from "@webiny/utils";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
 import type { WebsocketsUpgradeHandler } from "~/upgradeHandler/abstractions.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import { DefaultUpgradeHandlerImpl } from "~/upgradeHandler/DefaultUpgradeHandler.js";
 import { HeartbeatManager } from "~/heartbeat/HeartbeatManager.js";
