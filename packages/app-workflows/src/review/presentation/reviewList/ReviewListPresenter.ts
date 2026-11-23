@@ -72,6 +72,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private app: WorkflowAppKind | null = null;
     private rowProvider: IReviewRowProvider | null = null;
     private showContentType = false;
+    // The content model every request is narrowed to, outside the filters; `null` for none.
+    private fixedContentTypeId: string | null = null;
     private unsubscribe: (() => void) | null = null;
     // A generation: every load, reload and dispose starts a new one, and a response of an older
     // generation is ignored. An in-flight refetch only counts for the generation it started in.
@@ -95,6 +97,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             | "app"
             | "rowProvider"
             | "showContentType"
+            | "fixedContentTypeId"
             | "unsubscribe"
             | "loadToken"
             | "refreshingToken"
@@ -108,6 +111,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             app: false,
             rowProvider: false,
             showContentType: false,
+            fixedContentTypeId: false,
             unsubscribe: false,
             loadToken: false,
             refreshingToken: false,
@@ -170,6 +174,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.app = params.app;
         this.rowProvider = params.rowProvider;
         this.showContentType = params.showContentType;
+        this.fixedContentTypeId = params.fixedContentTypeId;
         const { scope, state } = resolveReviewListRoute({
             scope: params.initialScope,
             state: params.initialState
@@ -562,6 +567,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.signalDuringLoad = false;
         this.app = null;
         this.rowProvider = null;
+        this.fixedContentTypeId = null;
         this._scope = "assignedToMe";
         this._state = "inReview";
         this._sort = "lastChangedOn_ASC";
@@ -732,8 +738,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         if (search) {
             where.titleContains = search;
         }
-        if (this._contentTypeId) {
-            where.modelId = this._contentTypeId;
+        // A fixed content model wins over the filter, which the list hides with it.
+        const contentTypeId = this.fixedContentTypeId ?? this._contentTypeId;
+        if (contentTypeId) {
+            where.modelId = contentTypeId;
         }
         where.state = this._state;
         return { app, scope: this._scope, where, sort: this._sort, limit, after };
