@@ -63,6 +63,24 @@ export const AREAS: readonly Area[] = [
         needs: ["wcp"]
     },
     {
+        name: "cms",
+        folder: "cms",
+        description:
+            "Headless CMS models built in the editor, and entries from draft to bulk publish.",
+        needs: [],
+        parts: [
+            {
+                name: "models",
+                description: "Model groups and models created, edited and deleted in the UI."
+            },
+            {
+                name: "entries",
+                description:
+                    "Entries edited, published and revised; listed, searched, filtered, trashed, moved and published in bulk."
+            }
+        ]
+    },
+    {
         name: "workflows",
         folder: "workflows",
         aliases: ["wf"],

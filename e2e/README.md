@@ -14,17 +14,20 @@ yarn e2e:list --exclude-tag wcp,ai         # what runs without a licence or a mo
 
 The suite is split into areas, listed in `areas.ts`:
 
-| Area           | Folder               | Aliases | What it covers                                                                 | Needs         |
-| -------------- | -------------------- | ------- | ------------------------------------------------------------------------------ | ------------- |
-| `login`        | `tests/login/`       |         | The admin signs in through the sign-in form.                                   | nothing       |
-| `api`          | `tests/api/`         |         | A custom HTTP route declared with `<Api.Route>` answers GET and POST.          | `E2E_API_URL` |
-| `file-manager` | `tests/fileManager/` | `fm`    | Upload, listing and delivery of files, private files, and AI image enrichment. | `wcp`, `ai`   |
-| `tenancy`      | `tests/tenancy/`     |         | A new tenant is created and installed, and delivers its own files.             | `wcp`         |
-| `workflows`    | `tests/workflows/`   | `wf`    | Workflow editor, publish guard and content reviews from request to publish.    | `wcp`         |
+| Area           | Folder               | Aliases | What it covers                                                                   | Needs         |
+| -------------- | -------------------- | ------- | -------------------------------------------------------------------------------- | ------------- |
+| `login`        | `tests/login/`       |         | The admin signs in through the sign-in form.                                     | nothing       |
+| `api`          | `tests/api/`         |         | A custom HTTP route declared with `<Api.Route>` answers GET and POST.            | `E2E_API_URL` |
+| `file-manager` | `tests/fileManager/` | `fm`    | Upload, listing and delivery of files, private files, and AI image enrichment.   | `wcp`, `ai`   |
+| `tenancy`      | `tests/tenancy/`     |         | A new tenant is created and installed, and delivers its own files.               | `wcp`         |
+| `cms`          | `tests/cms/`         |         | Headless CMS models built in the editor, and entries from draft to bulk publish. | nothing       |
+| `workflows`    | `tests/workflows/`   | `wf`    | Workflow editor, publish guard and content reviews from request to publish.      | `wcp`         |
 
 "Needs" is the union over the area's tests: `file-manager` has a test that needs nothing, two that need `wcp`, and one that needs `wcp` and `ai`.
 
-Not covered yet: Headless CMS, security, and Website Builder. Website Builder is planned with two parts, `pages` and `redirects`, and the alias `wb`, so `/e2e wb-pages` or `/e2e wb-redirects` will run one part.
+`cms` has two parts, `models` and `entries` (tags `cms-models` and `cms-entries`), so `/e2e cms-entries` runs one of them.
+
+Not covered yet: security and Website Builder. Website Builder is planned with two parts, `pages` and `redirects`, and the alias `wb`, so `/e2e wb-pages` or `/e2e wb-redirects` will run one part.
 
 ## Areas
 
@@ -123,12 +126,23 @@ support/                        helpers any area can use
   team.ts                       a team with its role, created and deleted
   adminUser.ts                  an admin user with a permanent password, created and deleted
   signIn.ts                     sign in as another user
-  leavePrompt.ts                accept the entry form's leave prompt
+  leavePrompt.ts                accept the entry form's and model editor's leave prompt
 tests/
   auth.setup.e2e.ts             signs in once and saves the session
   installation.e2e.ts           tags: installation
   api/
     apiRoute.e2e.ts             tags: api
+  cms/
+    models/
+      modelLifecycle.e2e.ts     tags: cms, cms-models
+      modelValidation.e2e.ts    tags: cms, cms-models
+    entries/
+      entryLifecycle.e2e.ts     tags: cms, cms-entries
+      entryList.e2e.ts          tags: cms, cms-entries
+      entryTrash.e2e.ts         tags: cms, cms-entries
+      entryFolders.e2e.ts       tags: cms, cms-entries
+      entryBulk.e2e.ts          tags: cms, cms-entries
+    support/                    cms only: entries model, entry list, entry state, revisions, trash, folders, model lookup
   fileManager/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
     privateFileDelivery.e2e.ts  tags: wcp, file-manager
@@ -169,6 +183,26 @@ Every test carries exactly one area tag, see "Areas".
 
 A WCP test that reaches an unlicensed project should fail, not skip. That means the run is misconfigured, and a skip would hide it.
 
+## Headless CMS
+
+`tests/cms/` covers the base Headless CMS, with no licence tag:
+
+- `models/modelLifecycle.e2e.ts`: a group is created, then a model in it through the New model dialog, a required text field and a number field are dragged into the editor, the text field is made the entry title, and the model is saved, reloaded, renamed and deleted from the list with its typed confirmation.
+- `models/modelValidation.e2e.ts`: the New model dialog refuses an empty name and API name, and the API refuses an API name or a model id another model has.
+- `entries/entryLifecycle.e2e.ts`: an entry is saved as a draft in the form, edited, saved and published with its confirmation, given a new revision that is published from the revisions list, and unpublished.
+- `entries/entryList.e2e.ts`: the entry list searches by title, reverses the order of the rows when sorted by name twice, filters by status and opens an entry.
+- `entries/entryTrash.e2e.ts`: an entry is trashed from its row menu, found in the trash and restored, and another is deleted from the trash for good.
+- `entries/entryFolders.e2e.ts`: a folder is created in the entry list, an entry is moved into it, found there and moved back, and the folder is deleted.
+- `entries/entryBulk.e2e.ts`: two drafts picked by their checkboxes are published with the bulk Publish action.
+
+Each file makes its own model through the API, with names unique per run and no workflow, so no review rule gets in the way on a licensed project. The model tests make theirs in the UI and delete what is left through the API.
+
+The New model dialog does not derive the API names from the name: the user types both, and the model id is made from the name. When the API refuses a model, for example for a taken API name or model id, the dialog stays open with no message (`NewContentModelPresenter.save()` swallows the error). `modelValidation.e2e.ts` checks the API's refusal and that nothing is stored, and leaves the missing message as a `BUG:` comment.
+
+Some steps are set up through the API, not the UI: the entries' models and entries, the published entry of the list test and the entry trashed before the trash test deletes it for good. In the model editor, the first field is dragged onto the empty model with `dragTo`, but the drop zone below a row sits behind the row until a drag starts, so the number field is dragged with a pointer path (`screen.swipe`) to just below the Title row.
+
+The entry form and the model editor both raise the browser's leave prompt on reload, even when nothing changed (see "Workflows" below), so the files that reload or leave them accept it (`support/leavePrompt.ts`).
+
 ## Workflows
 
 `tests/workflows/` covers the workflows app on Headless CMS:
@@ -184,7 +218,7 @@ Each run creates its own role, teams, users, content model and workflow through 
 
 The users' password is generated per run in `e2e.config.ts` and registered as the framework secret `workflows-user-password`, so reports and traces show it redacted. Cognito creates a user's password as temporary, so `support/adminUser.ts` makes it permanent right away by setting it again. Signing in as such a user on standalone, which uses self-hosted auth, was read from source only and has not been run.
 
-The tests that switch users accept the browser's leave prompt of the Headless CMS entry form (`support/leavePrompt.ts`). That prompt is a known bug: `ContentEntryFormView.tsx` registers its router guard even while the form is clean, so the browser asks before leaving an unchanged entry. Any other dialog fails the test.
+The tests that switch users accept the browser's leave prompt of the Headless CMS entry form (`support/leavePrompt.ts`). That prompt is a known bug: `ContentEntryFormView.tsx` registers its router guard even while the form is clean, so the browser asks before leaving an unchanged entry. The Headless CMS model editor does the same (`ContentModelEditor.tsx` adds its guard on mount), even right after a save. Any other dialog fails the test.
 
 ## In CI
 
@@ -198,7 +232,7 @@ Every variant is three jobs:
 
 The installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, creates the admin user the other tests sign in with. It runs once per database: in every standalone shard, and in the AWS `Deploy` job, since all AWS shards share one deployment. Every `e2e run` writes its `summary.md` into the job summary, so a failure can be read on the run page, and uploads `e2e/.e2e/` as an artifact on failure.
 
-The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite, Postgres, and Postgres with 2 API processes) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today are the `login` and `api` areas and `fileManager/uploadAndDeliver.e2e.ts`. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
+The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite, Postgres, and Postgres with 2 API processes) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today are the `login`, `api` and `cms` areas and `fileManager/uploadAndDeliver.e2e.ts`. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
 
 The WCP variants, "Standalone (SQLite, WCP)", "Standalone (Postgres, WCP)" and "Standalone (Postgres, 2 API processes, WCP)", run the whole suite. Like the other variants, they run on every `/e2e` comment.
 

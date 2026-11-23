@@ -2,13 +2,35 @@ import type { ApiSession } from "./apiSession.ts";
 import type { GraphqlResult } from "./callGraphql.ts";
 import { callGraphql, requireData } from "./callGraphql.ts";
 
-/** A Headless CMS model with one text field, `title`, in a group of its own. */
+/**
+ * A Headless CMS model in a group of its own, with a text field `title`, its title field, and, when
+ * asked for, a number field `price`.
+ */
 export interface TestModel {
     groupId: string;
     modelId: string;
     name: string;
     singularApiName: string;
+    pluralApiName: string;
 }
+
+/** Who the model is for, and what goes into its names. */
+export interface TestModelOptions {
+    /** The area that creates it, in the group's name, slug and description: `workflows`. */
+    area: string;
+    /** The model's name, before the run id: `E2E Review`. */
+    label: string;
+    /** The singular API name, before the run id, letters only: `WfReview`. The plural adds `s`. */
+    apiName: string;
+    /** Adds a number field, `price`, after the title. */
+    withPrice?: boolean;
+}
+
+const WORKFLOWS_MODEL: TestModelOptions = {
+    area: "workflows",
+    label: "E2E Review",
+    apiName: "WfReview"
+};
 
 interface CmsError {
     code: string | null;
@@ -92,16 +114,37 @@ const DELETE_GROUP = /* GraphQL */ `
     }
 `;
 
+const TITLE_FIELD = {
+    id: "title",
+    fieldId: "title",
+    label: "Title",
+    type: "text",
+    renderer: { name: "text-input" }
+};
+
+const PRICE_FIELD = {
+    id: "price",
+    fieldId: "price",
+    label: "Price",
+    type: "number",
+    renderer: { name: "number-input" }
+};
+
 /**
  * Creates a group and a model in it, both named after `runId` so runs and shards never share them.
- * The model's one field, `title`, is its title field.
+ * The model's `title` field is its title field. Without `options` it is the workflows tests' model.
  */
-export const createTestModel = async (session: ApiSession, runId: string): Promise<TestModel> => {
+export const createTestModel = async (
+    session: ApiSession,
+    runId: string,
+    options: TestModelOptions = WORKFLOWS_MODEL
+): Promise<TestModel> => {
+    const description = `Created by the ${options.area} e2e tests.`;
     const groupResult = await callGraphql<CreateGroupData>(session, "cms/manage", CREATE_GROUP, {
         data: {
-            name: `E2E workflows ${runId}`,
-            slug: `e2e-workflows-${runId}`,
-            description: "Created by the workflows e2e tests.",
+            name: `E2E ${options.area} ${runId}`,
+            slug: `e2e-${options.area}-${runId}`,
+            description,
             icon: { type: "icon", name: "fas/star" }
         }
     });
@@ -110,28 +153,23 @@ export const createTestModel = async (session: ApiSession, runId: string): Promi
         throw new Error(`createContentModelGroup failed: ${group.error?.message}`);
     }
 
-    const name = `E2E Review ${runId}`;
+    const name = `${options.label} ${runId}`;
     // API names must stay unchanged by camel-casing, so the digits go last and no letter follows them.
-    const singularApiName = `WfReview${runId}`;
+    const singularApiName = `${options.apiName}${runId}`;
+    const pluralApiName = `${options.apiName}s${runId}`;
+    const modelId = `${options.apiName.charAt(0).toLowerCase()}${options.apiName.slice(1)}${runId}`;
+    const fields = options.withPrice ? [TITLE_FIELD, PRICE_FIELD] : [TITLE_FIELD];
     const modelResult = await callGraphql<CreateModelData>(session, "cms/manage", CREATE_MODEL, {
         data: {
             name,
-            modelId: `wfReview${runId}`,
+            modelId,
             singularApiName,
-            pluralApiName: `WfReviews${runId}`,
+            pluralApiName,
             // A model names its group by slug; workflows look the group up by it.
             group: group.data.slug,
-            description: "Created by the workflows e2e tests.",
-            fields: [
-                {
-                    id: "title",
-                    fieldId: "title",
-                    label: "Title",
-                    type: "text",
-                    renderer: { name: "text-input" }
-                }
-            ],
-            layout: [["title"]],
+            description,
+            fields,
+            layout: fields.map(field => [field.id]),
             titleFieldId: "title"
         }
     });
@@ -141,7 +179,13 @@ export const createTestModel = async (session: ApiSession, runId: string): Promi
         throw new Error(`createContentModel failed: ${model.error?.message} ${details}`);
     }
 
-    return { groupId: group.data.id, modelId: model.data.modelId, name, singularApiName };
+    return {
+        groupId: group.data.id,
+        modelId: model.data.modelId,
+        name,
+        singularApiName,
+        pluralApiName
+    };
 };
 
 const toErrorMessage = (result: GraphqlResult<DeleteData>): string | null => {

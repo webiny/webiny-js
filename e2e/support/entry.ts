@@ -26,11 +26,15 @@ interface DeleteEntryData {
     };
 }
 
-/** Creates a draft entry with `title`. */
+/** Field values of an entry besides its title, by field id: `{ price: 10 }`. */
+export type EntryValues = Record<string, unknown>;
+
+/** Creates a draft entry with `title` and any other `values`. */
 export const createDraftEntry = async (
     session: ApiSession,
     model: TestModel,
-    title: string
+    title: string,
+    values: EntryValues = {}
 ): Promise<TestEntry> => {
     const query = /* GraphQL */ `
         mutation CreateEntry($data: ${model.singularApiName}Input!) {
@@ -48,7 +52,7 @@ export const createDraftEntry = async (
     `;
     const result = await callGraphql<CreateEntryData>(session, "cms/manage", query, {
         // Field values sit under `values`, beside the entry's system fields.
-        data: { values: { title } }
+        data: { values: { ...values, title } }
     });
     const created = requireData(result, `create${model.singularApiName}`).createEntry;
     if (!created.data) {
