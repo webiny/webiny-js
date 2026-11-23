@@ -13,9 +13,9 @@ import { EnvVar } from "@webiny/project/extensions/EnvVar.js";
  * (`readStandaloneConfig`) and refuses to start without them. Nothing is baked into the build: a
  * deployed container sets both itself.
  *
- * Leave `path` out when another extension provides the storage, such as `<S3FileStorage />` from
- * `@webiny/api-file-manager-standalone-s3/project`: a folder only works when every API process runs
- * on one machine.
+ * Leave `path` out when another extension provides the storage, such as `<S3Storage />` from
+ * `@webiny/api-object-storage-s3/project`: a folder only works when every API process runs on one
+ * machine.
  *
  * A relative storage path is resolved against the project root (not the disposable app workspace), so
  * uploaded files survive rebuilds — same rule as `Infra.Sqlite`.

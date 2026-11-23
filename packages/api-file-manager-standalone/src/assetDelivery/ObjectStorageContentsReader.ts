@@ -1,5 +1,5 @@
 import type { AssetContentsReader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
-import type { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import type { ObjectStorage } from "@webiny/api-object-storage";
 
 export class ObjectStorageContentsReader implements AssetContentsReader.Interface {
     private readonly objectStorage: ObjectStorage.Interface;

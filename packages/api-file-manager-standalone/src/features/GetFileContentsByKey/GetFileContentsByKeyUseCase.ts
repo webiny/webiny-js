@@ -6,7 +6,7 @@ import {
     FileNotFoundError,
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {

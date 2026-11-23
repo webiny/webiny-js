@@ -25,7 +25,7 @@ describe("assertFileStorage", () => {
     });
 
     it("accepts a storage extension without a folder", () => {
-        const buildParams = createBuildParams({ FileManagerStorage: "s3" });
+        const buildParams = createBuildParams({ ObjectStorage: "s3" });
 
         expect(() => assertFileStorage(fileStorage(undefined), buildParams)).not.toThrow();
     });
@@ -35,12 +35,12 @@ describe("assertFileStorage", () => {
 
         expect(() => assertFileStorage(fileStorage(undefined), buildParams)).toThrowError(
             "WEBINY_LOCAL_STORAGE_PATH is not set, and no file storage extension (such as " +
-                "<S3FileStorage />) is in the build. Set one of the two."
+                "<S3Storage />) is in the build. Set one of the two."
         );
     });
 
     it("refuses both a folder and a storage extension", () => {
-        const buildParams = createBuildParams({ FileManagerStorage: "s3" });
+        const buildParams = createBuildParams({ ObjectStorage: "s3" });
 
         expect(() => assertFileStorage(fileStorage("/data/storage"), buildParams)).toThrowError(
             'WEBINY_LOCAL_STORAGE_PATH is set, but the build keeps files in "s3" storage.'

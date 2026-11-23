@@ -1,4 +1,6 @@
 import { describeUploadRoundTripContract } from "./contracts/uploadRoundTripContract.js";
-import { diskBackend } from "./utils/storageBackends.js";
+import { storageBackends } from "./utils/storageBackends.js";
 
-describeUploadRoundTripContract(diskBackend);
+for (const backend of storageBackends) {
+    describeUploadRoundTripContract(backend);
+}

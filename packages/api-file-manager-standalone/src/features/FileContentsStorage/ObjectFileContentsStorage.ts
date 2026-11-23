@@ -3,7 +3,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { FileContentsStorage } from "@webiny/api-file-manager/features/file/FileContentsStorage/index.js";
 import { FileAlreadyExistsError } from "@webiny/api-file-manager/domain/file/errors.js";
 import { FilePersistenceError } from "@webiny/api-file-manager/domain/file/errors.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 const toPersistenceError = (error: unknown) => {

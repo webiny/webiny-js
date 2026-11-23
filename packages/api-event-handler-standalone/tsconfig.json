@@ -7,6 +7,8 @@
     { "path": "../api-file-manager-standalone" },
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms-bulk-actions-standalone" },
+    { "path": "../api-object-storage" },
+    { "path": "../api-object-storage-disk" },
     { "path": "../api-scheduler" },
     { "path": "../api-scheduler-standalone" },
     { "path": "../api-websockets-standalone" },
@@ -38,6 +40,10 @@
       "@webiny/api-headless-cms-bulk-actions-standalone": [
         "../api-headless-cms-bulk-actions-standalone/src"
       ],
+      "@webiny/api-object-storage/*": ["../api-object-storage/src/*"],
+      "@webiny/api-object-storage": ["../api-object-storage/src"],
+      "@webiny/api-object-storage-disk/*": ["../api-object-storage-disk/src/*"],
+      "@webiny/api-object-storage-disk": ["../api-object-storage-disk/src"],
       "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-scheduler-standalone/*": ["../api-scheduler-standalone/src/*"],

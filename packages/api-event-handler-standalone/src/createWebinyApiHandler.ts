@@ -42,6 +42,7 @@ import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-stand
 import { startTaskRecovery } from "@webiny/background-tasks-standalone";
 import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
+import { DiskObjectStorageFeature } from "@webiny/api-object-storage-disk";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
@@ -132,18 +133,20 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     WebsocketsStandaloneFeature.register(requestContainer);
                 },
                 /*
-                 * File-manager storage transport: a folder on disk, or what a project extension
-                 * registers instead (`<S3FileStorage />` registers an S3-compatible bucket). Where
-                 * AWS uploads straight to S3 (+ a separate asset-delivery Lambda), the server takes
-                 * uploads and serves files in-process. FileManagerStandaloneFeature registers asset
-                 * delivery (overriding the domain's null impls), the upload/multipart HTTP routes,
-                 * and the storage they write to.
+                 * File-manager storage transport. Where AWS uploads straight to S3 (+ a separate
+                 * asset-delivery Lambda), the server takes uploads and serves files in-process.
+                 * FileManagerStandaloneFeature registers asset delivery (overriding the domain's
+                 * null impls) and the upload/multipart HTTP routes; they store through
+                 * `ObjectStorage`. The default is a folder on disk; a project extension registered
+                 * later replaces it (`<S3Storage />` registers an S3-compatible bucket), and
+                 * `assertFileStorage` has made sure exactly one of the two is configured.
                  */
                 fileManager: requestContainer => {
-                    FileManagerStandaloneFeature.register(
-                        requestContainer,
-                        standaloneConfig.fileStorage
-                    );
+                    const { storagePath, uploadSecret } = standaloneConfig.fileStorage;
+                    if (storagePath) {
+                        DiskObjectStorageFeature.register(requestContainer, { path: storagePath });
+                    }
+                    FileManagerStandaloneFeature.register(requestContainer, { uploadSecret });
                 }
             }
         });

@@ -44,7 +44,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
     }
 
     /*
-     * Optional here: a project extension can provide the storage instead (`<S3FileStorage />`).
+     * Optional here: a project extension can provide the storage instead (`<S3Storage />`).
      * Whether one of the two is there is checked once the build params are read
      * (`assertFileStorage`).
      */

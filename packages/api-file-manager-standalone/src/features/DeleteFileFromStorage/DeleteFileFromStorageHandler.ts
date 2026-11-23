@@ -2,7 +2,7 @@ import { FileAfterDeleteEventHandler } from "@webiny/api-file-manager/features/f
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 class DeleteFileFromStorageHandlerImpl implements FileAfterDeleteEventHandler.Interface {

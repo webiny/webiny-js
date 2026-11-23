@@ -1,6 +1,6 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CompleteMultiPartUploadUseCase as CompleteMultiPartUploadUseCaseAbstraction } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 class CompleteMultiPartUploadUseCaseImpl
