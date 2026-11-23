@@ -34,16 +34,10 @@ const stepNumber = (browser: Browser, stepId: string) => {
 };
 
 /**
- * Opens the model's workflow in the editor. The editor first opens the first model it lists; a
- * model picked before that one has loaded is replaced by it, so the pick waits for it.
+ * Opens the model's workflow in the editor. It is picked at once, while the editor may still be
+ * opening the first model it lists: the picked model must win.
  */
 const openModel = async (screen: Screen, model: TestModel) => {
-    const detail = screen.getByTestId("rightPanel");
-    const firstModelLoaded = screen
-        .getByTestId("workflow-editor-header")
-        .or(detail.getByText("has no workflow", { exact: false }));
-    await expect(firstModelLoaded.first()).toBeVisible();
-
     await screen.getByPlaceholder("Search models").fill(model.name);
     const row = screen.getByTestId(`model-row-${model.modelId}`);
     await row.tap();
@@ -123,19 +117,6 @@ describe(
         });
 
         test("the test model has no workflow", async ({ app, screen, browser }) => {
-            /*
-             * The editor raises the browser's leave prompt (`beforeunload`) even with no unsaved
-             * changes, so a reload after Save would stop the run. Accept the prompt; the header's
-             * Unsaved changes tag and disabled Save are what this test checks for a clean editor.
-             */
-            await browser.onDialog(async dialog => {
-                if (dialog.type === "beforeunload") {
-                    await dialog.accept();
-                    return;
-                }
-                await dialog.dismiss();
-            });
-
             // The data is made before the editor opens, so its model panel lists the new model.
             const captured = await captureApiSession(browser);
             await app.open("/");
@@ -219,6 +200,8 @@ describe(
             await expect(header.getByText("Unsaved changes")).toBeHidden();
             await expect(header.getByRole("button", "Save")).toBeDisabled();
 
+            // No dialog handler is registered, so a leave prompt (`beforeunload`) from the clean
+            // editor fails the test as an unexpected dialog.
             await browser.reload();
             await openModel(screen, model!);
 

@@ -68,30 +68,84 @@ describe("useLeaveGuard", () => {
         router.addTransitionGuard.mockReturnValue(dispose);
     });
 
-    it("registers one transition guard and disposes it on unmount", () => {
+    it("registers no transition guard while the draft is clean", () => {
+        const { rerender, unmount } = renderHook(
+            (props: NameProps) => useLeaveGuard(false, props.name),
+            { initialProps: { name: "Article review" } }
+        );
+        rerender({ name: "Article sign-off" });
+        unmount();
+
+        expect(router.addTransitionGuard).not.toHaveBeenCalled();
+    });
+
+    it("registers the transition guard while dirty and disposes it when clean again", () => {
         const { rerender, unmount } = renderHook(
             (props: DirtyProps) => useLeaveGuard(props.dirty, "Article review"),
             { initialProps: { dirty: false } }
         );
 
         rerender({ dirty: true });
-        rerender({ dirty: false });
-
         expect(router.addTransitionGuard).toHaveBeenCalledTimes(1);
+        expect(registeredGuard().guard()).toBe(true);
         expect(dispose).not.toHaveBeenCalled();
-        unmount();
+
+        rerender({ dirty: false });
         expect(dispose).toHaveBeenCalledTimes(1);
+
+        rerender({ dirty: true });
+        expect(router.addTransitionGuard).toHaveBeenCalledTimes(2);
+        unmount();
+        expect(dispose).toHaveBeenCalledTimes(2);
+    });
+
+    /*
+     * The router blocks with history v5's `history.block`, which adds a `beforeunload` prompt for
+     * as long as any guard is registered, whatever the guard returns. This router mirrors that: a
+     * clean editor must leave it without a guard, or the browser asks "Leave page?".
+     */
+    it("leaves no router blocker that would prompt on unload while clean", () => {
+        const guards = new Set<GuardConfig>();
+        const historyPrompt = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            event.returnValue = "";
+        };
+        router.addTransitionGuard.mockImplementation((config: GuardConfig) => {
+            if (guards.size === 0) {
+                window.addEventListener("beforeunload", historyPrompt);
+            }
+            guards.add(config);
+            return () => {
+                guards.delete(config);
+                if (guards.size === 0) {
+                    window.removeEventListener("beforeunload", historyPrompt);
+                }
+            };
+        });
+
+        const { rerender, unmount } = renderHook(
+            (props: DirtyProps) => useLeaveGuard(props.dirty, "Article review"),
+            { initialProps: { dirty: false } }
+        );
+        expect(dispatchBeforeUnload().defaultPrevented).toBe(false);
+
+        rerender({ dirty: true });
+        expect(dispatchBeforeUnload().defaultPrevented).toBe(true);
+
+        rerender({ dirty: false });
+        expect(dispatchBeforeUnload().defaultPrevented).toBe(false);
+
+        unmount();
+        window.removeEventListener("beforeunload", historyPrompt);
     });
 
     it("blocks a transition only while the latest draft is dirty", () => {
         const { rerender } = renderHook(
             (props: DirtyProps) => useLeaveGuard(props.dirty, "Article review"),
-            { initialProps: { dirty: false } }
+            { initialProps: { dirty: true } }
         );
         const config = registeredGuard();
 
-        expect(config.guard()).toBe(false);
-        rerender({ dirty: true });
         expect(config.guard()).toBe(true);
         rerender({ dirty: false });
         expect(config.guard()).toBe(false);
