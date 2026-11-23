@@ -1,4 +1,3 @@
-import nodePath from "node:path";
 import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
 import type { StandaloneConfig } from "./abstractions.js";
 
@@ -43,13 +42,6 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push(`WEBINY_ADMIN_URL is not an absolute http(s) URL: "${adminUrlValue}".`);
     }
 
-    /*
-     * Optional here: a project extension can provide the storage instead (`<S3Storage />`).
-     * Whether one of the two is there is checked once the build params are read
-     * (`assertFileStorage`).
-     */
-    const storagePath = read(env, "WEBINY_LOCAL_STORAGE_PATH");
-
     const uploadSecret = readSecret(env, "WEBINY_UPLOAD_SECRET");
     if (!uploadSecret) {
         problems.push("WEBINY_UPLOAD_SECRET is not set.");
@@ -85,7 +77,6 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         apiUrl,
         adminUrl,
         fileStorage: {
-            storagePath: storagePath ? nodePath.resolve(storagePath) : undefined,
             uploadSecret
         },
         encryption: {

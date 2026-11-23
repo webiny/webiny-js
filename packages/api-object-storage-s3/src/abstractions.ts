@@ -20,5 +20,5 @@ export namespace S3StorageConfig {
     export type Interface = IS3StorageConfig;
 }
 
-/** The value `<S3Storage />` gives the `OBJECT_STORAGE_BUILD_PARAM` build param. */
+/** The value `<Infra.S3Storage />` gives the `OBJECT_STORAGE_BUILD_PARAM` build param. */
 export const S3_OBJECT_STORAGE = "s3";

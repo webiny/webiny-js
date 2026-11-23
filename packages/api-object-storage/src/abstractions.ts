@@ -57,7 +57,7 @@ export namespace ObjectStorage {
 
 /**
  * The build param a project extension that provides `ObjectStorage` sets, to its own name
- * (`<S3Storage />` sets `"s3"`), so the host can check at startup that a provider is in the build
- * before any request resolves one. Every provider extension sets it.
+ * (`"disk"`, `"s3"`), so the host can check at startup that a provider is in the build before any
+ * request resolves one. Every provider extension sets it.
  */
 export const OBJECT_STORAGE_BUILD_PARAM = "ObjectStorage";

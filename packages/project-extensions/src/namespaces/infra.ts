@@ -54,6 +54,7 @@ import { FileStorage } from "@webiny/project-extensions-standalone/extensions/in
 import { Postgres as StandalonePostgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { S3Storage } from "@webiny/api-object-storage-s3/project.js";
 
 export { useEnv };
 
@@ -132,6 +133,7 @@ export const Infra = {
     Sqlite,
     Pglite,
     FileStorage,
+    S3Storage,
     ApiUrl,
     AdminUrl,
 

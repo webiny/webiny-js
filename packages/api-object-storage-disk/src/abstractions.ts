@@ -11,3 +11,6 @@ export const DiskStorageConfig = createAbstraction<IDiskStorageConfig>("ObjectSt
 export namespace DiskStorageConfig {
     export type Interface = IDiskStorageConfig;
 }
+
+/** The value `<DiskStorage />` gives the `OBJECT_STORAGE_BUILD_PARAM` build param. */
+export const DISK_OBJECT_STORAGE = "disk";

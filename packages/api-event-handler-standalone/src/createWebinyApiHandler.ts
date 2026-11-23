@@ -42,7 +42,6 @@ import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-stand
 import { startTaskRecovery } from "@webiny/background-tasks-standalone";
 import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
-import { DiskObjectStorageFeature } from "@webiny/api-object-storage-disk";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
@@ -137,15 +136,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                  * asset-delivery Lambda), the server takes uploads and serves files in-process.
                  * FileManagerStandaloneFeature registers asset delivery (overriding the domain's
                  * null impls) and the upload/multipart HTTP routes; they store through
-                 * `ObjectStorage`. The default is a folder on disk; a project extension registered
-                 * later replaces it (`<S3Storage />` registers an S3-compatible bucket), and
-                 * `assertFileStorage` has made sure exactly one of the two is configured.
+                 * `ObjectStorage`, which a project extension registers (`<Infra.FileStorage path>`
+                 * a folder on disk, `<Infra.S3Storage />` an S3-compatible bucket).
+                 * `assertFileStorage` has made sure the build has one.
                  */
                 fileManager: requestContainer => {
-                    const { storagePath, uploadSecret } = standaloneConfig.fileStorage;
-                    if (storagePath) {
-                        DiskObjectStorageFeature.register(requestContainer, { path: storagePath });
-                    }
+                    const { uploadSecret } = standaloneConfig.fileStorage;
                     FileManagerStandaloneFeature.register(requestContainer, { uploadSecret });
                 }
             }
@@ -161,7 +157,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             const extensions = config.extensions();
             const buildParams = await readBuildParams(extensions);
             assertNoBakedSecrets(buildParams);
-            assertFileStorage(standaloneConfig.fileStorage, buildParams);
+            assertFileStorage(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             rootContainer.registerInstance(Logger, logger);

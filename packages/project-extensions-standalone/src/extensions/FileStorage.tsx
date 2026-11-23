@@ -3,19 +3,19 @@ import nodePath from "node:path";
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { EnvVar } from "@webiny/project/extensions/EnvVar.js";
+import { DiskStorage } from "@webiny/api-object-storage-disk/project.js";
 
 /**
  * Configure the standalone hosting type's local file storage (uploaded files) + upload secret.
  *
- * Sets the `WEBINY_LOCAL_STORAGE_PATH` (the on-disk directory uploaded files are written to and
- * served from) and `WEBINY_UPLOAD_SECRET` (signs upload tokens) env vars for `webiny watch` and
- * `webiny serve`, which pass them to the API server. The API reads them at startup
- * (`readStandaloneConfig`) and refuses to start without them. Nothing is baked into the build: a
- * deployed container sets both itself.
+ * Sets `WEBINY_UPLOAD_SECRET` (signs upload tokens) for `webiny watch` and `webiny serve`. With
+ * `path`, it also adds the disk storage (`DiskStorage` from `@webiny/api-object-storage-disk`),
+ * which sets `WEBINY_LOCAL_STORAGE_PATH`, the folder uploaded files are written to and served from.
+ * Nothing is baked into the build: a deployed container sets both itself, and the API refuses to
+ * start without the secret or without a storage.
  *
- * Leave `path` out when another extension provides the storage, such as `<S3Storage />` from
- * `@webiny/api-object-storage-s3/project`: a folder only works when every API process runs on one
- * machine.
+ * Leave `path` out when another extension provides the storage, such as `<Infra.S3Storage />`: a
+ * folder only works when every API process runs on one machine.
  *
  * A relative storage path is resolved against the project root (not the disposable app workspace), so
  * uploaded files survive rebuilds — same rule as `Infra.Sqlite`.
@@ -49,7 +49,7 @@ export const FileStorage = defineExtension({
 
         return (
             <>
-                <EnvVar varName="WEBINY_LOCAL_STORAGE_PATH" value={storagePath} />
+                <DiskStorage path={storagePath} />
                 <EnvVar varName="WEBINY_UPLOAD_SECRET" value={uploadSecret} />
             </>
         );

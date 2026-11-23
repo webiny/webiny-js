@@ -46,9 +46,8 @@ the API image built and tested in one environment runs unchanged in the others:
   - `WEBINY_LOCAL_STORAGE_PATH`: a folder on a persistent volume. Only when every API process runs on
     one machine.
   - An S3-compatible bucket (AWS S3, Cloudflare R2, Backblaze B2, Garage, SeaweedFS...), which API
-    processes on any number of machines can share. Add `@webiny/api-object-storage-s3` to the
-    project, put `<S3Storage bucket="..." />` from its `/project` export in
-    `webiny.config.tsx`, and leave `path` off `<Infra.FileStorage>`. At runtime: `WEBINY_S3_BUCKET`,
+    processes on any number of machines can share. Put `<Infra.S3Storage bucket="..." />` (from
+    `webiny/extensions`) in `webiny.config.tsx`, and leave `path` off `<Infra.FileStorage>`. At runtime: `WEBINY_S3_BUCKET`,
     `WEBINY_S3_REGION` (`"auto"` for R2; defaults to `AWS_REGION`), `WEBINY_S3_ENDPOINT` (unset for
     AWS S3), `WEBINY_S3_FORCE_PATH_STYLE` (`true` for most self-hosted services), `WEBINY_S3_PREFIX`
     (optional, to share a bucket), and `WEBINY_S3_ACCESS_KEY_ID` + `WEBINY_S3_SECRET_ACCESS_KEY`

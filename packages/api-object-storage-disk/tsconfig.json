@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-object-storage" },
     { "path": "../feature" },
+    { "path": "../project" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -17,6 +18,8 @@
       "@webiny/api-object-storage": ["../api-object-storage/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

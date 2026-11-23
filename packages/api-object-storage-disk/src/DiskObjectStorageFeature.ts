@@ -4,9 +4,8 @@ import { DiskStorageConfig } from "./abstractions.js";
 import { DiskObjectStorage } from "./DiskObjectStorage.js";
 
 /**
- * Stores objects in a folder on disk. The standalone API registers it when
- * `WEBINY_LOCAL_STORAGE_PATH` is set; a project extension that provides another storage
- * (`<S3Storage />`) is registered after it, so that one wins.
+ * Stores objects in a folder on disk. `DiskStorageExtension` registers it, for the folder in
+ * `WEBINY_LOCAL_STORAGE_PATH`.
  */
 export const DiskObjectStorageFeature = createFeature({
     name: "ObjectStorage/Disk",

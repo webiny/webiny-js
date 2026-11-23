@@ -7,11 +7,6 @@ export interface IStandaloneConfig {
     /** `WEBINY_ADMIN_URL`. Optional: unknown when not set. */
     readonly adminUrl: PublicUrl;
     readonly fileStorage: {
-        /**
-         * `WEBINY_LOCAL_STORAGE_PATH`, resolved to an absolute path. Unset when a project extension
-         * provides the storage instead (`<S3Storage />`).
-         */
-        readonly storagePath: string | undefined;
         /** `WEBINY_UPLOAD_SECRET`. Required. */
         readonly uploadSecret: string;
     };

@@ -29,7 +29,7 @@ function normalizePrefix(prefix: string): string {
 /**
  * The bucket from the `WEBINY_S3_*` env vars. Throws one error naming every missing or invalid
  * variable. Nothing is baked into the build: `webiny watch` and `webiny serve` get the values from
- * `<S3Storage />`, and a deployed container sets them itself.
+ * `<Infra.S3Storage />`, and a deployed container sets them itself.
  */
 export function readS3StorageConfig(env: Env): S3StorageConfig.Interface {
     const problems: string[] = [];
