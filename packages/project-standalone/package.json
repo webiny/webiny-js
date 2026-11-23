@@ -15,7 +15,7 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.5.17",
     "@electric-sql/pglite-socket": "^0.2.20",
-    "@vercel/nft": "^1.11.7",
+    "@vercel/nft": "^1.11.10",
     "@webiny/build-tools": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/di": "^2.0.0",
