@@ -5,9 +5,8 @@ const DEFAULT: WebsocketsRoute = "default";
 
 export const websocketsRouteDefault: WebsocketsRouteHandler.Interface = {
     route: DEFAULT,
-    async run({ response, getIdentity, getTenant }) {
+    async run({ response, identity, getTenant }) {
         const tenant = getTenant();
-        const identity = getIdentity();
         if (!tenant) {
             return response.error({
                 message: "Missing tenant."

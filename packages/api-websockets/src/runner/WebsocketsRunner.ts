@@ -17,7 +17,6 @@ import { WebsocketsTransport } from "~/transport/index.js";
 import { WebsocketsSendToConnectionsUseCase } from "~/features/SendToConnections/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 type MiddlewareParams = Pick<WebsocketsRouteHandler.Params, "event" | "registry" | "container">;
 
@@ -108,19 +107,18 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             return tenant?.id || null;
         };
 
-        const getIdentity = (): Identity => {
-            return this.context.container.resolve(IdentityContext).getIdentity();
-        };
+        const identityContext = this.context.container.resolve(IdentityContext);
 
         const action = middleware<MiddlewareParams, IWebsocketsRunnerResponse>(
             handlers.map(handler => {
                 return async (params, next) => {
+                    const identity = identityContext.getIdentity();
                     return handler.run({
                         registry: params.registry,
                         event: params.event,
                         container: params.container,
                         getTenant,
-                        getIdentity,
+                        identity,
                         response: this.response,
                         next
                     });

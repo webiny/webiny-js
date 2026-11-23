@@ -23,7 +23,7 @@ export interface IWebsocketsRouteHandlerParams<
      * Always set. A request without a valid token gets the anonymous identity, so a handler that
      * must refuse anonymous users checks `identity.isAnonymous()`.
      */
-    getIdentity: () => Identity;
+    identity: Identity;
     next: () => Promise<R>;
 }
 

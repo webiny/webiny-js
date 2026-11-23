@@ -395,8 +395,7 @@ describe("websockets runner", () => {
         context.container.resolve(IdentityContext).setIdentity(undefined);
         context.container.registerInstance(WebsocketsRouteHandler, {
             route: "whoami",
-            async run({ response, getIdentity }) {
-                const identity = getIdentity();
+            async run({ response, identity }) {
                 return response.ok({
                     data: {
                         id: identity.id,
