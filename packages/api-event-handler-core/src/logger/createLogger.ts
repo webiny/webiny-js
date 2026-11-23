@@ -27,16 +27,22 @@ function serializeError(error: Error) {
  * one. Each event handler builds one at boot with its hosting type's destination: pino-lambda on AWS,
  * plain stdout on a standalone server.
  *
- * `mixin` returns fields to add to every line. It runs when the line is logged, in the caller's async
- * context, so it can read what the current request is (AWS adds the request id this way).
+ * `lineContext` returns fields every line carries, such as the id of the request that wrote it. It
+ * runs when the line is logged, in the caller's async context, so it can read which request is
+ * running. Its fields win over a log call's own fields of the same name: a line can't claim to
+ * belong to another request.
  */
 export function createLogger(
     destination?: DestinationStream,
-    mixin?: () => object
+    lineContext?: () => object
 ): Logger.Interface {
     const options: LoggerOptions = {
         level: process.env.WEBINY_API_LOG_LEVEL || DEFAULT_LOG_LEVEL,
-        mixin,
+        mixin: lineContext,
+        // pino's default lets the log call's fields win, and writes them into the mixin's object.
+        mixinMergeStrategy: (mergeObject, mixinObject) => {
+            return { ...mergeObject, ...mixinObject };
+        },
         /*
          * pino only serializes an Error under `err`. Backend code logs `{ error }`, which without
          * this prints `{}`, with no message or stack.

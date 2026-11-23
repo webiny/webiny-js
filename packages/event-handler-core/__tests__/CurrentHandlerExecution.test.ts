@@ -82,7 +82,8 @@ describe("CurrentHandlerExecution", () => {
 
         // The first execution waits; the second runs to the end in the meantime.
         const first = app.handle({ id: "first", resume: firstResume });
-        const second = await app.handle({ id: "second", resume: Promise.resolve() });
+        const secondResume = Promise.resolve();
+        const second = await app.handle({ id: "second", resume: secondResume });
         resumeFirst();
 
         expect(await first).toEqual(["first", "first"]);

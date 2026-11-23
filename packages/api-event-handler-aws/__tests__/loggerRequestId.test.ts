@@ -14,6 +14,7 @@ import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { createLambdaHandler } from "@webiny/event-handler-aws";
 import { EventHandler } from "@webiny/event-handler-core";
 import { EventType } from "@webiny/event-handler-core";
+import type { EventContext } from "@webiny/event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { registerWebinyApiRoot } from "~/composition/registerWebinyApiRoot.js";
 
@@ -34,8 +35,10 @@ const anyEventType = EventType.createImplementation({
 class LogHandler implements EventHandler.Interface {
     constructor(private logger: Logger.Interface) {}
 
-    async execute() {
-        this.logger.info("Handled the event.");
+    async execute(ctx: EventContext) {
+        // An event with fields is logged as the line's fields, so a test can pass `awsRequestId`.
+        const fields = ctx.event;
+        this.logger.info(fields, "Handled the event.");
     }
 }
 
@@ -83,5 +86,16 @@ describe("API log lines on AWS", () => {
         const requestIds = lines.map(line => line.requestId);
         expect(requestIds).toEqual(["first-request", "second-request"]);
         expect(lines[0].message.msg).toBe("Handled the event.");
+    });
+
+    it("should keep the invocation's request id when the log call passes its own", async () => {
+        const handler = createHandler();
+
+        await handler({ awsRequestId: "from-the-log-call" }, {
+            awsRequestId: "invocation-request"
+        } as Context);
+
+        const requestIds = lines.map(line => line.requestId);
+        expect(requestIds).toEqual(["invocation-request"]);
     });
 });
