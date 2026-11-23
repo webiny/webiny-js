@@ -18,6 +18,9 @@ export {
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
 export { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
+export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
+export { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
+export { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js";
 export {
     HttpAllowedRequestHeaders,
     HttpRouteDefinition,

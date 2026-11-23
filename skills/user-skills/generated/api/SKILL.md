@@ -2,7 +2,7 @@
 name: webiny-api-catalog
 context: webiny-api
 description: >
-  api — 32 abstractions.
+  api — 35 abstractions.
 ---
 
 # api
@@ -252,6 +252,24 @@ tell WHICH route is running and act only on the one it cares about.
 **Source:** `@webiny/feature/api/index.ts`
 **Description:** A container type that represents either a successful result (`ok`) or a failure (`fail`).
 Inspired by functional programming constructs like `Either` or `Result` in other languages.
+
+---
+
+**Name:** `WebsocketsDisconnectUseCase`
+**Import:** `import { WebsocketsDisconnectUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/Disconnect/abstractions.ts`
+
+---
+
+**Name:** `WebsocketsListConnectionsUseCase`
+**Import:** `import { WebsocketsListConnectionsUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/ListConnections/abstractions.ts`
+
+---
+
+**Name:** `WebsocketsSendToConnectionsUseCase`
+**Import:** `import { WebsocketsSendToConnectionsUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/SendToConnections/abstractions.ts`
 
 ---
 
