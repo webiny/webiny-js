@@ -33,7 +33,8 @@ const createUseCaseFakes = () => {
                 description: "Reads the copy.",
                 type: "review",
                 allowManualPick: true,
-                assignedAutomatically: false
+                assignedAutomatically: false,
+                candidateTeamNames: []
             },
             {
                 id: "tone",
@@ -42,7 +43,8 @@ const createUseCaseFakes = () => {
                 description: null,
                 type: "ai",
                 allowManualPick: false,
-                assignedAutomatically: false
+                assignedAutomatically: false,
+                candidateTeamNames: []
             }
         ]
     });
@@ -187,17 +189,18 @@ describe("RequestReviewDialog", () => {
         ).toBeTruthy();
     });
 
-    it("shows both radios and the pick hint in every mode", async () => {
+    it("shows both radios and the pick hint only under Choose a person", async () => {
         renderDialog();
         await screen.findByText("Editorial check");
 
         const hint =
             "Picks are checked again when the step is reached. If the person is no longer eligible, a reviewer is assigned automatically.";
-        expect(screen.getByText(hint)).toBeTruthy();
+        expect(screen.queryByText(hint)).toBeNull();
         const group = screen
             .getByRole("radio", { name: "Automatic" })
             .closest("[role='radiogroup']");
         expect(group?.querySelectorAll("[role='radio']")).toHaveLength(2);
+        expect(group?.getAttribute("aria-orientation")).toBe("horizontal");
         expect(screen.queryByText("Reviewer")).toBeNull();
 
         fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));
@@ -222,7 +225,7 @@ describe("RequestReviewDialog", () => {
         await screen.findByText("Editorial check");
 
         fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));
-        const picker = await screen.findByPlaceholderText("Search reviewers by name");
+        const picker = await screen.findByPlaceholderText("Search people");
         const radio = screen.getByRole("radio", { name: "Automatic" });
         const hint = screen.getByText(/^Picks are checked again/);
 
@@ -249,13 +252,11 @@ describe("RequestReviewDialog", () => {
 
         expect(
             await screen.findByText(
-                "No one other than you can review this step right now. It may wait in the team pool until someone reassigns it."
+                "Nobody other than you can review this step. Ask a workflow manager to add reviewers."
             )
         ).toBeTruthy();
         expect(screen.queryByText("Reviewer")).toBeNull();
-        const note = screen.getByText(/^No one other than you/);
-        const hint = screen.getByText(/^Picks are checked again/);
-        expect(note.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(screen.queryByText(/^Picks are checked again/)).toBeNull();
         const choose = screen.getByRole("radio", { name: "Choose a person" });
         expect(choose.hasAttribute("disabled")).toBe(true);
     });

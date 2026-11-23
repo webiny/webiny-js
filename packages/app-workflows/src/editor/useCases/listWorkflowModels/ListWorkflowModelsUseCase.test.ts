@@ -16,6 +16,7 @@ import { ListWorkflowModelsUseCase } from "./ListWorkflowModelsUseCase.js";
 const params: UseCaseAbstraction.Params = {
     app: "cms",
     search: "art",
+    hasWorkflow: null,
     limit: 20,
     after: "cursor-1"
 };

@@ -26,7 +26,8 @@ interface RouteStub {
 }
 
 interface RouteParamsStub {
-    tab: string;
+    scope: string;
+    state: string;
 }
 
 // The router is not under test (only `getLink` is read).
@@ -38,7 +39,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
             return {
                 getLink: (route: RouteStub, params?: RouteParamsStub) => {
                     if (params) {
-                        return `${route.path}?tab=${params.tab}`;
+                        return `${route.path}?scope=${params.scope}&state=${params.state}`;
                     }
                     return route.path;
                 }

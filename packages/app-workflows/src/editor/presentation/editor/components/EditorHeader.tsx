@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { EditableTitle } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
-import { FormComponentNote } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
-import { ReactComponent as SaveIcon } from "@webiny/icons/save.svg";
+import { SimpleFormHeader } from "@webiny/app-admin";
+import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { WorkflowHeaderVm } from "~/editor/presentation/editor/abstractions.js";
 
 export interface EditorHeaderProps {
@@ -18,7 +16,7 @@ export interface EditorHeaderProps {
     onDelete(): void;
 }
 
-// The sticky header: name, Unsaved changes tag, applies-to line, the menu and Save (design README 3).
+// The card's header: name, Unsaved changes tag, applies-to line, Delete workflow, Save (design README 3).
 export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorHeaderProps) => {
     let saveText = "Save";
     if (header.saving) {
@@ -27,7 +25,6 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
     const saveDisabled = !header.canSave || header.saving;
     const deleteDisabled = !header.canDelete || header.saving;
 
-    // The item's onClick sits on an inner element that still fires when the item is disabled.
     const handleDelete = () => {
         if (deleteDisabled) {
             return;
@@ -75,12 +72,14 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         nameError = <FormComponentErrorMessage invalid text={header.nameError} />;
     }
 
-    return (
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md">
-            <div className="flex flex-col gap-xs grow min-w-0">
+    // `SimpleFormHeader` gives half of its width to its children, so it gets none here: the title
+    // column then spans the whole header and this row lays out the name block and the actions.
+    const title = (
+        <div className="flex items-center gap-sm min-w-0">
+            <div className="flex flex-col gap-xxs min-w-0 grow">
                 <div data-role="title-row" className="flex items-center gap-sm min-w-0">
                     <div
-                        className="min-w-0"
+                        className="min-w-0 [&_*]:text-neutral-primary"
                         tabIndex={nameTriggerEnabled ? 0 : undefined}
                         role={nameTriggerEnabled ? "button" : undefined}
                         aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
@@ -89,44 +88,37 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                     >
                         {nameTitle}
                     </div>
-                    {unsavedTag}
+                    <div className="shrink-0">{unsavedTag}</div>
                 </div>
                 {nameError}
-                <Text size="sm">{header.appliesTo}</Text>
-                <div data-role="changes-hint">
-                    <FormComponentNote text="Changes apply to new review requests; reviews already running are not affected." />
-                </div>
+                <Text
+                    as="div"
+                    size="sm"
+                    className="min-w-0 truncate text-neutral-strong"
+                    title={header.appliesTo}
+                >
+                    {header.appliesTo}
+                </Text>
             </div>
-            <div data-role="header-actions" className="flex items-start shrink-0">
-                <div className="flex items-center gap-xs">
-                    <DropdownMenu
-                        align="end"
-                        side="bottom"
-                        trigger={
-                            <IconButton
-                                variant="ghost"
-                                aria-label="More actions"
-                                title="More actions"
-                                icon={<MoreHorizIcon />}
-                            />
-                        }
-                    >
-                        <DropdownMenu.Item
-                            variant="destructive"
-                            text="Delete workflow"
-                            disabled={deleteDisabled}
-                            onClick={handleDelete}
-                        />
-                    </DropdownMenu>
-                    <Button
-                        variant="primary"
-                        text={saveText}
-                        icon={<SaveIcon />}
-                        disabled={saveDisabled}
-                        onClick={onSave}
-                    />
-                </div>
+            <div data-role="header-actions" className="flex shrink-0 items-center gap-xs">
+                <IconButton
+                    variant="ghost"
+                    aria-label="Delete workflow"
+                    title="Delete workflow"
+                    icon={<DeleteIcon />}
+                    disabled={deleteDisabled}
+                    onClick={handleDelete}
+                />
+                <Button
+                    variant="primary"
+                    size="sm"
+                    text={saveText}
+                    disabled={saveDisabled}
+                    onClick={onSave}
+                />
             </div>
         </div>
     );
+
+    return <SimpleFormHeader title={title} data-testid="workflow-editor-header" />;
 };

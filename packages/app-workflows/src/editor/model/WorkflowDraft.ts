@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
+import type { EditorActor } from "~/editor/domain/types.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { EditorWorkflowInput } from "~/editor/domain/types.js";
@@ -63,6 +64,15 @@ export class WorkflowDraft {
     // The loaded string, sent back unchanged (Review Focus 1); null for a draft never saved.
     get savedOn(): string | null {
         return this.baseline === null ? null : this.baseline.savedOn;
+    }
+
+    // Who created the loaded workflow and when; null for a draft never saved.
+    get createdBy(): EditorActor | null {
+        return this.baseline === null ? null : this.baseline.createdBy;
+    }
+
+    get createdOn(): string | null {
+        return this.baseline === null ? null : this.baseline.createdOn;
     }
 
     get isDirty(): boolean {

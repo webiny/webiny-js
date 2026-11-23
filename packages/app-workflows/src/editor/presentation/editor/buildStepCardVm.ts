@@ -1,5 +1,6 @@
 import { FALLBACK_STEP_COLOUR } from "~/editor/domain/stepColours.js";
 import type { EditorStep } from "~/editor/domain/types.js";
+import type { StepDetailRow } from "~/editor/model/StepDetailRow.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepCardVm } from "./abstractions.js";
@@ -14,6 +15,7 @@ export interface StepCardParams {
     count: number;
     typeLabel: string;
     summary: string;
+    details: StepDetailRow[];
     warnings: StepWarningLine[];
     errors: StepFieldError[];
     // The step's rule ids in order, to number a rule error (R303).
@@ -34,9 +36,27 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
             error = `${rulePrefix}${firstError.message}`;
         }
     }
+    let stripPosition = -1;
+    if (rulePrefix !== null && firstError !== null) {
+        stripPosition = params.ruleIds.indexOf(firstError.ruleId ?? "");
+    }
     let shown: ShownCardError | null = null;
     if (error !== null) {
         shown = { text: error, rulePrefix };
+    }
+
+    const warnings = omitShownError(params.warnings, shown);
+    let errorIndex = warnings.length;
+    if (stripPosition !== -1) {
+        const found = warnings.findIndex(line => {
+            if (line.ruleId === undefined) {
+                return true;
+            }
+            return params.ruleIds.indexOf(line.ruleId) >= stripPosition;
+        });
+        if (found !== -1) {
+            errorIndex = found;
+        }
     }
 
     let description: string | null = null;
@@ -52,10 +72,12 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
         typeLabel: params.typeLabel,
         type: step.type,
         summary: params.summary,
+        details: params.details,
         description: description,
         readOnly: params.readOnly,
-        warnings: omitShownError(params.warnings, shown),
+        warnings,
         error,
+        errorIndex,
         canMoveUp: params.index > 0,
         canMoveDown: params.index < params.count - 1
     };

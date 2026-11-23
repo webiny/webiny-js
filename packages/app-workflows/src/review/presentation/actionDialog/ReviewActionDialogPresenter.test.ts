@@ -187,7 +187,7 @@ describe("ReviewActionDialogPresenter", () => {
         const { vm } = setup.presenter;
         expect(vm.title).toBe("Take over this step?");
         expect(vm.body).toBe(
-            "Luka Perić is reviewing “Legal sign-off”. If you take over, you become the owner and Luka can no longer approve or reject it."
+            "Luka Perić is reviewing “Legal sign-off”. If you take over, you become the owner and Luka no longer reviews it."
         );
         expect(vm.showNotify).toBe(true);
         expect(vm.notify).toBe(true);
@@ -217,9 +217,12 @@ describe("ReviewActionDialogPresenter", () => {
         await setup.presenter.init(setup.params(REQUEST("approve")));
 
         const { vm } = setup.presenter;
-        expect(vm.title).toBe("Approve “Legal sign-off”");
+        expect(vm.title).toBe("Approve “Legal sign-off”?");
+        expect(vm.description).toBe("The review moves on to the next step.");
         expect(vm.showComment).toBe(true);
         expect(vm.commentLabel).toBe("Comment");
+        expect(vm.commentDescription).toBe("(optional)");
+        expect(vm.confirmIcon).toBe("check");
         expect(vm.commentCounter).toBeNull();
         expect(vm.confirmLabel).toBe("Approve");
     });
@@ -228,11 +231,11 @@ describe("ReviewActionDialogPresenter", () => {
         await setup.presenter.init(setup.params(REQUEST("reject")));
 
         const { vm } = setup.presenter;
-        expect(vm.title).toBe("Reject “Legal sign-off”");
+        expect(vm.title).toBe("Reject “Legal sign-off”?");
         expect(vm.body).toBe(
-            "Rejection is final for this revision. The requester will need to create a new revision, fix the issues and request a new review."
+            "Rejection is final for this revision. The author creates a new revision to fix it and requests a new review."
         );
-        expect(vm.commentLabel).toBe("Comment");
+        expect(vm.commentLabel).toBe("Reason");
         expect(vm.commentCounter).toBe("0 / 10 min.");
         expect(vm.confirmLabel).toBe("Reject");
     });
@@ -241,9 +244,9 @@ describe("ReviewActionDialogPresenter", () => {
         await setup.presenter.init(setup.params(REQUEST("cancel")));
 
         const { vm } = setup.presenter;
-        expect(vm.title).toBe("Cancel review?");
+        expect(vm.title).toBe("Cancel this review?");
         expect(vm.body).toBe(
-            "Review progress is lost. Editing is unlocked, and a new request starts again from the first step."
+            "Review progress on “Spring campaign” is lost and editing is unlocked for the requester."
         );
         expect(vm.cancelLabel).toBe("Keep review");
         expect(vm.confirmLabel).toBe("Cancel review");
@@ -643,17 +646,17 @@ describe("ReviewActionDialogPresenter", () => {
             expect(setup.presenter.vm.showComment).toBe(false);
         });
 
-        it("keeps the Cancel review? title in the list context (LS1)", async () => {
+        it("keeps the Cancel this review? title in the list context (LS1)", async () => {
             const request: ReviewActionRequest = { ...REQUEST("cancel"), context: "list" };
             cancelUnderneath("cancel");
             await setup.presenter.init(setup.params(request));
             const before = setup.presenter.vm;
-            expect(before.title).toBe("Cancel review?");
+            expect(before.title).toBe("Cancel this review?");
 
             await setup.presenter.submit();
 
             expect(setup.presenter.vm.conflict).not.toBeNull();
-            expect(setup.presenter.vm.title).toBe("Cancel review?");
+            expect(setup.presenter.vm.title).toBe("Cancel this review?");
             expect(setup.presenter.vm.body).toBe(before.body);
         });
 
@@ -949,7 +952,7 @@ describe("ReviewActionDialogPresenter", () => {
             expect(vm.status).toBe("ready");
             expect(vm.title).toBe("Restart “AI tone check”?");
             expect(vm.body).toBe(
-                "Last attempt failed at 10:20: Provider unavailable: request timed out after 60 s. Restarting runs the step again from the beginning."
+                "Last attempt failed at 10:20: Provider unavailable: request timed out after 60 s. Restarting runs the step again from the start."
             );
             expect(vm.confirmLabel).toBe("Restart");
             expect(vm.cancelLabel).toBe("Cancel");
@@ -1089,7 +1092,7 @@ describe("ReviewActionDialogPresenter", () => {
         );
 
         expect(setup.presenter.vm.body).toBe(
-            "Review progress is lost. Editing is unlocked, and a new request starts again from the first step. AI tone check is running and will be stopped."
+            "Review progress on “Spring campaign” is lost and editing is unlocked for the requester. AI tone check is running and will be stopped."
         );
     });
 

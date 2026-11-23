@@ -9,9 +9,10 @@ import { Label } from "~/Label/index.js";
 interface RadioProps extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> {
     label: string | React.ReactNode;
     id: string;
+    description?: React.ReactNode;
 }
 
-const DecoratableRadio = ({ className, label, id, ...props }: RadioProps) => {
+const DecoratableRadio = ({ className, label, id, description, ...props }: RadioProps) => {
     return (
         <div className="flex items-start space-x-sm-extra">
             <RadioGroupPrimitive.Item
@@ -37,7 +38,14 @@ const DecoratableRadio = ({ className, label, id, ...props }: RadioProps) => {
                     />
                 </RadioGroupPrimitive.Indicator>
             </RadioGroupPrimitive.Item>
-            <Label htmlFor={id} text={label} weight={"light"} className={"text-md"} />
+            {description ? (
+                <div className="flex flex-col">
+                    <Label htmlFor={id} text={label} weight={"light"} className={"text-md"} />
+                    <span className="text-sm text-neutral-muted">{description}</span>
+                </div>
+            ) : (
+                <Label htmlFor={id} text={label} weight={"light"} className={"text-md"} />
+            )}
         </div>
     );
 };

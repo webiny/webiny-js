@@ -14,6 +14,7 @@ class FakeWbPageTargetLoaderImpl implements ReviewTargetLoader.Interface {
                 folder: null,
                 modelId: "wbyWbPage",
                 title: "Page 1",
+                contentTypeName: "Page",
                 author: { id: ADMIN.id, displayName: ADMIN.displayName }
             }
         };

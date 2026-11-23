@@ -6,7 +6,8 @@ export interface ModelDeleteWorkflowCopyParams {
 }
 
 export interface ModelDeleteWorkflowCopy {
-    title: string;
+    // The heading line; null when the whole message is one sentence (no heading, no icon).
+    title: string | null;
     body: string;
     showLink: boolean;
 }

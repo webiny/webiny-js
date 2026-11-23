@@ -88,14 +88,14 @@ describe("UserPickerControl (R307, R315)", () => {
         expect(picker.getAttribute("data-error")).toBe("Pick someone.");
     });
 
-    it("lists the users with the person icon and their team names as the sub line", () => {
+    it("lists the users without an icon and with their team names as the sub line", () => {
         renderWithAdminUi(<UserPickerControl {...createProps()} />);
 
         const details = getOptionDetails();
 
         expect(details.map(option => option.label)).toEqual(["Ivan Horvat", "Ana Kovač"]);
         expect(details.map(option => option.description)).toEqual(["Legal", "Marketing"]);
-        expect(details.map(option => option.icon)).toEqual(["person", "person"]);
+        expect(details.map(option => option.icon)).toEqual([null, null]);
     });
 
     it("shows a saved user the search results contain", () => {

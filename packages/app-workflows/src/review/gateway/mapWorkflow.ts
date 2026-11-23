@@ -51,7 +51,8 @@ const mapStep = (dto: WorkflowStepDto): ReviewWorkflowStep => {
         description: dto.description ?? null,
         type: dto.type,
         allowManualPick: readAllowManualPick(dto.type, dto.config),
-        assignedAutomatically: readAssignedAutomatically(dto.type, dto.config)
+        assignedAutomatically: readAssignedAutomatically(dto.type, dto.config),
+        candidateTeamNames: (dto.candidateTeams ?? []).map(team => team.name)
     };
 };
 

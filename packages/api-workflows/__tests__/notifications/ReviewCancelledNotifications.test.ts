@@ -82,13 +82,17 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
         const [call] = notifier.calls;
         expect(call.event).toBe("cancelled");
         expect(call.stepId).toBe("legal");
-        expect(call.recipients).toEqual([{ id: "user-reviewer", displayName: "Rob Reviewer" }]);
-        expect(call.message).toEqual({
+        expect(call.deliveries[0].recipients).toEqual([
+            { id: "user-reviewer", displayName: "Rob Reviewer" }
+        ]);
+        expect(call.deliveries[0].message).toEqual({
             title: "The review of “Article 1” was cancelled",
             body: "Cancelled by Rita Requester. You no longer need to review Legal review.",
             subject: "Review cancelled: Article 1",
             text: "Rita Requester cancelled this review. You don’t need to review Legal review any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: "You get this e-mail because you owned this step."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: LEGAL_CHANNEL }
@@ -102,10 +106,10 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
 
         const [call] = notifier.calls;
         expect(call.stepId).toBe("editorial");
-        expect(call.recipients).toEqual([
+        expect(call.deliveries[0].recipients).toEqual([
             { id: "user-other-reviewer", displayName: "Olga Reviewer" }
         ]);
-        expect(call.message.body).toBe(
+        expect(call.deliveries[0].message.body).toBe(
             "Cancelled by Rita Requester. You no longer need to review Editorial review."
         );
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
@@ -120,7 +124,7 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
 
         await handle(review, createFact());
 
-        expect(notifier.calls[0].recipients).toEqual([
+        expect(notifier.calls[0].deliveries[0].recipients).toEqual([
             { id: "user-reviewer", displayName: "Rob Reviewer" }
         ]);
     });
@@ -173,7 +177,7 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
             createFact({ actor: { ...requester, displayName: "" } })
         );
 
-        expect(notifier.calls[0].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
             "Cancelled by A user. You no longer need to review Legal review."
         );
     });
@@ -186,12 +190,14 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
             createFact({ reason: REVIEW_CANCEL_REASON_CONTENT_TRASHED })
         );
 
-        expect(notifier.calls[0].message).toEqual({
+        expect(notifier.calls[0].deliveries[0].message).toEqual({
             title: "The review of “Article 1” was cancelled",
             body: "The content was moved to the trash. You no longer need to review Legal review.",
             subject: "Review cancelled: Article 1",
             text: "The content was moved to the trash, so this review was cancelled. You don’t need to review Legal review any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: "You get this e-mail because you owned this step."
         });
     });
 
@@ -203,7 +209,7 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
             createFact({ reason: REVIEW_CANCEL_REASON_CONTENT_DELETED })
         );
 
-        expect(notifier.calls[0].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
             "The content was deleted. You no longer need to review Legal review."
         );
     });
@@ -213,10 +219,10 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
 
         await handle(createNotificationReview(), createFact({ reason: "SECRET internal reason" }));
 
-        expect(notifier.calls[0].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
             "Cancelled by Rita Requester. You no longer need to review Legal review."
         );
-        expect(JSON.stringify(notifier.calls[0].message)).not.toContain("SECRET");
+        expect(JSON.stringify(notifier.calls[0].deliveries[0].message)).not.toContain("SECRET");
     });
 
     it("logs and returns when the cancelled step is not in the review", async () => {

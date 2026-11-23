@@ -24,9 +24,9 @@ export interface StepTypeOption {
 }
 
 const DESCRIPTIONS: Record<string, string> = {
-    [StepTypeId.Review]: "Members of one or more teams review.",
-    [StepTypeId.Automation]: "Runs a code-defined automation, such as Send webhook.",
-    [StepTypeId.Ai]: "An AI model reviews against your written instructions."
+    [StepTypeId.Review]: "Members of the reviewing teams approve or reject the revision.",
+    [StepTypeId.Automation]: "Runs an automation, e.g. sends a webhook.",
+    [StepTypeId.Ai]: "An AI model checks the content and approves or rejects it."
 };
 
 const AI_REASON = "Requires the AI Power-Ups licence.";

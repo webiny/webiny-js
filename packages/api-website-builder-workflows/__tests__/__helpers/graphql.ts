@@ -161,7 +161,7 @@ export const GET_TARGET_REVIEW = /* GraphQL */ `
 
 export const LIST_REVIEWS = /* GraphQL */ `
     query ListReviews(
-        $list: WorkflowsReviewListKind!
+        $scope: WorkflowsReviewListScope!
         $where: WbPageReviewListWhere
         $sort: WorkflowsReviewListSort
         $limit: Int
@@ -169,7 +169,7 @@ export const LIST_REVIEWS = /* GraphQL */ `
     ) {
         websiteBuilder {
             listWebsiteBuilderPageReviews(
-                list: $list
+                scope: $scope
                 where: $where
                 sort: $sort
                 limit: $limit

@@ -2,24 +2,24 @@ import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { AutoComplete } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import type { ReviewerPickerPresenter } from "../abstractions.js";
 import { renderReviewerOption } from "./renderReviewerOption.js";
 
 export interface ReviewerPickerProps {
     presenter: ReviewerPickerPresenter.Interface;
-    // The accessible name only; the dialogs show no visible label (design).
+    // The accessible name; shown as a visible required field label only with `showLabel`.
     label?: string;
+    showLabel?: boolean;
     hint?: string;
 }
 
 // The reviewer picker over `AutoComplete` (R209): client-side search, disabled people, retry in the list.
+// The small field without a leading icon, as in the design Picker.
 export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     props: ReviewerPickerProps
 ) {
-    const { presenter, label, hint } = props;
+    const { presenter, label, showLabel, hint } = props;
     const { vm } = presenter;
 
     let emptyMessage: React.ReactNode = vm.emptyMessage;
@@ -48,11 +48,13 @@ export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     });
 
     return (
-        <div role={"group"} aria-label={label}>
+        <div role={"group"} aria-label={showLabel ? undefined : label}>
             <AutoComplete
+                label={showLabel ? label : undefined}
+                required={showLabel ? true : undefined}
                 note={hint}
-                placeholder={"Search reviewers by name"}
-                startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+                placeholder={"Search people"}
+                size={"md"}
                 displayResetAction={vm.value !== null}
                 options={options}
                 value={vm.value ?? undefined}

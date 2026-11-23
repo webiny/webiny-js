@@ -255,9 +255,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // createWebsocketsAuthenticator for why (AuthenticationContext is per-request, unreachable
             // from the root container the WS server is attached to).
             const connectionManager = rootContainer.resolve(WebsocketsConnectionManager);
+            const adapter = rootContainer.resolve(WebsocketsServerAdapter);
             const websockets = attachWebsocketsServer({
                 server,
                 connectionManager,
+                adapter,
                 authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
@@ -266,7 +268,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Receive sends and disconnects other API processes publish for this one's sockets.
             const messageBus = rootContainer.resolve(WebsocketsMessageBus);
             const processOwner = rootContainer.resolve(ProcessOwner);
-            const adapter = rootContainer.resolve(WebsocketsServerAdapter);
             const handleBusMessage = createBusMessageHandler({
                 connectionManager,
                 adapter,

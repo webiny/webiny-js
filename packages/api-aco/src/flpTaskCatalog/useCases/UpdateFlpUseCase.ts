@@ -1,17 +1,15 @@
 import { WebinyError } from "@webiny/error";
 import { Path } from "~/utils/Path.js";
 import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
-import type {
-    UpdateFlpParams,
-    UpdateFlpUseCase as UseCaseAbstraction
-} from "~/features/flp/UpdateFlp/abstractions.js";
+import type { UpdateFlpParams } from "~/features/flp/UpdateFlp/abstractions.js";
+import { UpdateFlpUseCase as UseCaseAbstraction } from "~/features/flp/UpdateFlp/abstractions.js";
 import type { Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
-import type { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
-import type { ListFoldersUseCase } from "~/features/folder/ListFolders/abstractions.js";
-import type { FolderModelProvider } from "~/domain/folder/abstractions.js";
+import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import type { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
-import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
 interface FlpUpdateData {
     parentId: string;
@@ -20,7 +18,7 @@ interface FlpUpdateData {
     permissions: FolderPermission[];
 }
 
-export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
+class UpdateFlpUseCaseImpl implements UseCaseAbstraction.Interface {
     private isCloseToTimeout?: () => boolean;
     private handleTimeout?: (updated: string[]) => void;
 
@@ -268,3 +266,14 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         return flp;
     }
 }
+
+export const UpdateFlpUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UpdateFlpUseCaseImpl,
+    dependencies: [
+        AcoFlpCrud,
+        ListFoldersUseCase,
+        FolderModelProvider,
+        UpdateEntryUseCase,
+        IdentityContext
+    ]
+});

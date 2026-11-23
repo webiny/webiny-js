@@ -7,7 +7,8 @@ export class RadioItemFormatter {
             id: item.id,
             label: item.label,
             value: String(item.value),
-            disabled: item.disabled
+            disabled: item.disabled,
+            description: item.description
         };
     }
 }

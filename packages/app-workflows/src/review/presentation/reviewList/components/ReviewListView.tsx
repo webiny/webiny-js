@@ -2,23 +2,24 @@ import React from "react";
 import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { Separator } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
-import { ReactComponent as ContentReviewsIcon } from "@webiny/icons/flowchart.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { IReviewRowProvider } from "../abstractions.js";
-import type { ReviewListTab } from "../abstractions.js";
+import type { ReviewListRouteParams } from "../abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewListPresenterFeature } from "../feature.js";
 import { ReviewListDialogs } from "./ReviewListDialogs.js";
 import { ReviewListEmpty } from "./ReviewListEmpty.js";
 import { ReviewListNotice } from "./ReviewListNotice.js";
+import { ReviewListScopeControl } from "./ReviewListScopeControl.js";
+import { ReviewListStateControl } from "./ReviewListStateControl.js";
 import { ReviewListTable } from "./ReviewListTable.js";
-import { ReviewListTabs } from "./ReviewListTabs.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
 export interface ReviewListViewProps {
@@ -27,7 +28,15 @@ export interface ReviewListViewProps {
     namespaces: string[];
     showContentType: boolean;
     contentTypeFilter: IReviewContentTypeFilter | null;
-    initialTab?: ReviewListTab;
+    // From the route; the presenter falls back to the defaults for a missing or invalid value.
+    initialScope?: ReviewListScope | null;
+    initialState?: ReviewListState | null;
+    /*
+     * Writes the scope and state the list shows to the route, after a choice in the controls,
+     * "Clear filters" or a fallback of the route's own values. A route change that comes back
+     * with the shown values does not reload the list.
+     */
+    onRouteChange?: (params: ReviewListRouteParams) => void;
 }
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4, 5];
@@ -52,17 +61,55 @@ const ReviewListSkeleton = () => {
 };
 
 export const ReviewListView = createReactiveComponent((props: ReviewListViewProps) => {
-    const { app, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
-    const initialTab = props.initialTab ?? "assignedToMe";
+    const { app, rowProvider, namespaces, showContentType, contentTypeFilter, onRouteChange } =
+        props;
+    const initialScope = props.initialScope ?? null;
+    const initialState = props.initialState ?? null;
     const { presenter } = useFeature(ReviewListPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
+    // Writes the shown scope and state to the route when they differ from it.
+    const writeRoute = () => {
+        if (!onRouteChange) {
+            return;
+        }
+        const { scope, state } = presenter.vm;
+        if (scope === initialScope && state === initialState) {
+            return;
+        }
+        onRouteChange({ scope, state });
+    };
+
+    // A route that names a scope or state shows the values really applied after a fallback.
+    const writeRouteFallback = () => {
+        if (initialScope === null && initialState === null) {
+            return;
+        }
+        writeRoute();
+    };
+
+    // The route's values are read when the list opens; later route changes go to `applyRoute`.
     useEffect(() => {
-        void presenter.init({ app, namespaces, rowProvider, initialTab });
+        void presenter.init({
+            app,
+            namespaces,
+            rowProvider,
+            initialScope,
+            initialState,
+            showContentType
+        });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, app, rowProvider, namespacesKey, initialTab]);
+    }, [presenter, app, rowProvider, namespacesKey, showContentType]);
+
+    // A route changed from outside (a link, back or forward) or by `writeRoute`; the presenter
+    // ignores the values it already shows, so the search and the content model filter stay. On
+    // mount it runs after `init` and only writes a fallback back to the route.
+    useEffect(() => {
+        void presenter.applyRoute({ scope: initialScope, state: initialState });
+        writeRouteFallback();
+    }, [presenter, initialScope, initialState]);
 
     const vm = presenter.vm;
 
@@ -113,7 +160,12 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                 title={vm.empty.title}
                 description={vm.empty.description}
                 actionLabel={actionLabel}
-                onAction={() => presenter.clearFilters()}
+                actionVariant="primary"
+                onAction={() => {
+                    const pending = presenter.clearFilters();
+                    writeRoute();
+                    void pending;
+                }}
             />
         );
     } else if (vm.rows.length > 0) {
@@ -124,23 +176,12 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
 
     return (
         <div>
-            {/* The same header as the CMS entry list (app-admin ListView.Header). */}
+            {/* The header of the CMS entry list (app-admin ListView.Header), without the title icon. */}
             <div className="flex flex-col gap-md">
                 <div className="pt-md px-lg">
-                    <div className="flex gap-sm items-center">
-                        <Icon
-                            icon={<ContentReviewsIcon />}
-                            label="Content Reviews"
-                            size="md"
-                            color="neutral-strong"
-                        />
-                        <Heading level={4} as="h1">
-                            Content Reviews
-                        </Heading>
-                    </div>
-                </div>
-                <div className="px-lg">
-                    <ReviewListTabs presenter={presenter} />
+                    <Heading level={4} as="h1">
+                        Content Reviews
+                    </Heading>
                 </div>
                 <div className="px-md pb-sm">
                     <ReviewListToolbar
@@ -149,6 +190,15 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                         contentTypeFilter={contentTypeFilter}
                     />
                 </div>
+            </div>
+            <Separator />
+            {/* One filters row under the search: the review state at the start, the scope at the end. */}
+            <div
+                data-role="review-list-filters"
+                className="bg-neutral-subtle px-lg py-sm-plus flex flex-wrap items-center justify-between gap-sm"
+            >
+                <ReviewListStateControl presenter={presenter} onChanged={writeRoute} />
+                <ReviewListScopeControl presenter={presenter} onChanged={writeRoute} />
             </div>
             <Separator />
             {notices}

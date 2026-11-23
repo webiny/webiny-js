@@ -135,7 +135,7 @@ class CmsReviewGatewayImpl implements GatewayAbstraction.Interface {
         >({
             query: LIST_CMS_ENTRY_REVIEWS,
             variables: {
-                list: params.list,
+                scope: params.scope,
                 where: params.where,
                 sort: params.sort,
                 limit: params.limit,

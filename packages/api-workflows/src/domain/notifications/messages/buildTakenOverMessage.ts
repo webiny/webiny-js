@@ -1,4 +1,5 @@
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { PREVIOUS_REVIEWER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface TakenOverMessageParams {
     /** `review.title`. */
@@ -16,6 +17,8 @@ export const buildTakenOverMessage = (params: TakenOverMessageParams): Notificat
         body: "You no longer own this step.",
         subject: `Taken over: ${contentTitle} (${stepTitle})`,
         text: `${taker} took over ${stepTitle} on “${contentTitle}”. You don’t need to review it any more.`,
-        linkLabel: "Open content"
+        linkLabel: "Open content",
+        link: "content",
+        footer: PREVIOUS_REVIEWER_FOOTER
     };
 };

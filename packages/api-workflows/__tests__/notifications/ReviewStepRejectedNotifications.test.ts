@@ -72,13 +72,17 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
         const [call] = notifier.calls;
         expect(call.event).toBe("rejected");
         expect(call.stepId).toBe("legal");
-        expect(call.recipients).toEqual([{ id: "user-requester", displayName: "Rita Requester" }]);
-        expect(call.message).toEqual({
+        expect(call.deliveries[0].recipients).toEqual([
+            { id: "user-requester", displayName: "Rita Requester" }
+        ]);
+        expect(call.deliveries[0].message).toEqual({
             title: "“Article 1” was rejected at Legal review",
-            body: "Rob Reviewer: “The terms are unclear.”. Create a new revision to fix it, then request a new review.",
+            body: "Rob Reviewer: “The terms are unclear.”. Create a new revision to fix it.",
             subject: "Rejected: Article 1 (Legal review)",
-            text: "Rob Reviewer rejected this revision at Legal review: “The terms are unclear.”. Create a new revision to fix it, then request a new review.",
-            linkLabel: "Open content"
+            text: "Rob Reviewer rejected this revision at Legal review: “The terms are unclear.”. Create a new revision, fix it and request a new review.",
+            linkLabel: "Open content",
+            link: "content",
+            footer: "You get this e-mail because you requested this review."
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: LEGAL_CHANNEL }
@@ -97,7 +101,9 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
 
         const [call] = notifier.calls;
         expect(call.stepId).toBe("editorial");
-        expect(call.message.title).toBe("“Article 1” was rejected at Editorial review");
+        expect(call.deliveries[0].message.title).toBe(
+            "“Article 1” was rejected at Editorial review"
+        );
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: EDITORIAL_CHANNEL }
         ]);
@@ -114,14 +120,14 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
             await handle(createNotificationReview(), createFact({ actor }));
 
             const [call] = notifier.calls;
-            expect(call.message.body).toBe(
-                "Legal review: “The terms are unclear.”. Create a new revision to fix it, then request a new review."
+            expect(call.deliveries[0].message.body).toBe(
+                "Legal review: “The terms are unclear.”. Create a new revision to fix it."
             );
-            expect(call.message.text).toContain(
+            expect(call.deliveries[0].message.text).toContain(
                 "Legal review rejected this revision at Legal review"
             );
-            expect(JSON.stringify(call.message)).not.toContain("AI model name");
-            expect(JSON.stringify(call.message)).not.toContain("Link checker");
+            expect(JSON.stringify(call.deliveries[0].message)).not.toContain("AI model name");
+            expect(JSON.stringify(call.deliveries[0].message)).not.toContain("Link checker");
         }
     );
 
@@ -136,7 +142,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
             await handle(createNotificationReview(), createFact({ actor }));
 
             expect(notifier.calls).toHaveLength(1);
-            expect(notifier.calls[0].recipients).toEqual([
+            expect(notifier.calls[0].deliveries[0].recipients).toEqual([
                 { id: "user-requester", displayName: "Rita Requester" }
             ]);
         }
@@ -158,8 +164,8 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
             createFact({ actor: { ...reviewer, displayName: "  " } })
         );
 
-        expect(notifier.calls[0].message.body).toBe(
-            "A user: “The terms are unclear.”. Create a new revision to fix it, then request a new review."
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
+            "A user: “The terms are unclear.”. Create a new revision to fix it."
         );
     });
 
@@ -168,7 +174,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
 
         await handle(createNotificationReview(), createFact({ comment: null }));
 
-        expect(notifier.calls[0].message.body).toBe(
+        expect(notifier.calls[0].deliveries[0].message.body).toBe(
             "Rejected at Legal review by Rob Reviewer. Create a new revision to fix it, then request a new review."
         );
     });
@@ -179,7 +185,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
 
         await handle(createNotificationReview(), createFact({ comment }));
 
-        const body = notifier.calls[0].message.body;
+        const body = notifier.calls[0].deliveries[0].message.body;
         expect(body).toContain(`“${"x".repeat(299)}…”`);
         expect(body).not.toContain("x".repeat(300));
     });

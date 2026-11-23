@@ -3,9 +3,10 @@ import type { PickerOptionIcon } from "~/components/picker/PickerOptionIcon.js";
 import type { ReferenceKind } from "~/editor/model/rules/ReferenceLabel.js";
 import type { ReferenceLabel } from "~/editor/model/rules/ReferenceLabel.js";
 
-const FOUND_ICON: Record<ReferenceKind, PickerOptionIcon> = {
-    user: "person",
-    team: "group",
+// A found user or team row shows only its name (design Picker); a found folder keeps its icon.
+const FOUND_ICON: Record<ReferenceKind, PickerOptionIcon | null> = {
+    user: null,
+    team: null,
     folder: "folder"
 };
 

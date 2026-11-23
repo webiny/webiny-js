@@ -16,13 +16,11 @@ class ReviewToastsImpl implements Abstraction.Interface {
         const text = getReviewToastText(params);
         const input: INotificationInput = {
             title: text.title,
+            description: text.description,
             position: REVIEW_TOAST_POSITION,
             duration: REVIEW_TOAST_DURATION,
             dismissible: true
         };
-        if (text.description !== null) {
-            input.description = text.description;
-        }
         if (params.reviewsUrl) {
             input.link = { label: REVIEW_TOAST_LINK_LABEL, url: params.reviewsUrl };
         }

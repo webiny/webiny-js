@@ -128,8 +128,8 @@ export const WorkflowsRolePermissions = () => {
             {note !== null && (
                 <FormComponentNote className={"mt-0"} text={<Text size={"sm"}>{note}</Text>} />
             )}
-            <Alert type={"info"} variant={"subtle"}>
-                <Text>{WORKFLOWS_ACCESS_COPY.reviewingNote}</Text>
+            <Alert type={"info"} variant={"subtle"} size={"sm"}>
+                {WORKFLOWS_ACCESS_COPY.reviewingNote}
             </Alert>
         </div>
     );

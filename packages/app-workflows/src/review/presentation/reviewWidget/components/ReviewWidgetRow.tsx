@@ -3,14 +3,13 @@ import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
-import { REVIEW_TAG_ICONS } from "~/review/presentation/targetReview/components/reviewBarAppearance.js";
 import type { ReviewWidgetRowVm } from "../abstractions.js";
 
 export interface ReviewWidgetRowProps {
     row: ReviewWidgetRowVm;
 }
 
-// One review of a dashboard widget: title (linked when the content is reachable), step dot and line, state.
+// One review of a dashboard widget: title (linked when the content is reachable), step dot and line, a text-only state tag.
 export const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
     let title: React.ReactNode = row.title;
     if (row.contentUrl) {
@@ -38,12 +37,6 @@ export const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
         stepLine = `${stepLine} (${row.app})`;
     }
 
-    let stateIcon: React.ReactElement | undefined = undefined;
-    if (row.stateIcon) {
-        const StateIcon = REVIEW_TAG_ICONS[row.stateIcon];
-        stateIcon = <StateIcon />;
-    }
-
     return (
         <List.Item
             data-testid={`review-widget-row-${row.reviewId}`}
@@ -52,7 +45,7 @@ export const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
             colorMark={stepColor}
             actions={
                 <>
-                    <Tag variant={row.stateVariant} content={row.stateLabel} icon={stateIcon} />
+                    <Tag variant={row.stateVariant} content={row.stateLabel} />
                     <FormComponentNote className="mt-0 whitespace-nowrap" text={row.lastChange} />
                 </>
             }

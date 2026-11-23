@@ -3,6 +3,7 @@ import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { TargetReviewActionKind } from "../targetReview/abstractions.js";
 import type { TargetReviewActionVm } from "../targetReview/abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
+import type { TargetReviewTag } from "../targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "../targetReview/abstractions.js";
 import type { AttemptOutcomeTone } from "./AttemptOutcomeTone.js";
 
@@ -28,8 +29,8 @@ export interface ReviewDetailsInitParams {
 
 export interface ReviewDetailsHeaderVm {
     title: string;
-    stateLabel: string;
-    stateVariant: TargetReviewTagVariant;
+    // Set on a finished or cancelled review; `null` while the review is in progress.
+    stateTag: TargetReviewTag | null;
     // "Article · Summer launch (#3)", or "Summer launch (#3)" without a type label.
     contentLabel: string;
     contentUrl: string | null;
@@ -64,7 +65,7 @@ export interface ReviewAttemptVm {
 // One issue an AI step reported, as the cells of the design's table (R264).
 export interface ReviewAiIssueVm {
     severityLabel: string;
-    // The tag treatment of the severity: a warning is the warning tag, every other one neutral.
+    // The tag treatment of the severity: an error is destructive, a warning is the warning tag, every other one the Info tag.
     severityVariant: TargetReviewTagVariant;
     field: string;
     message: string;
@@ -91,7 +92,9 @@ export interface ReviewDetailsStepVm {
     skipped: ReviewDetailsSkippedVm[] | null;
     // An AI or automation step is running (R263): the tag reads Running with its icon.
     running: boolean;
-    // The reason a failed step failed (its comment); `null` for any other step or without one.
+    // The step was not finished when the review was cancelled: a neutral Cancelled tag and icon.
+    cancelled: boolean;
+    // The alert text of a failed step, "Failed at {time}: {reason}"; `null` for any other step or without a reason.
     failedReason: string | null;
     attempts: ReviewAttemptVm[];
     issues: ReviewAiIssueVm[];
@@ -119,6 +122,7 @@ export interface IReviewDetailsViewModel {
     status: ReviewDetailsStatus;
     header: ReviewDetailsHeaderVm | null;
     steps: ReviewDetailsStepVm[];
+    // The info alert text of a cancelled review, "This review was cancelled by {name} on {date}."; `null` otherwise.
     cancelledText: string | null;
     actions: TargetReviewActionVm[];
     error: string | null;

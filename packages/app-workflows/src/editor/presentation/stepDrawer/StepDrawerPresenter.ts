@@ -191,7 +191,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             kind: this.kind,
             typeLabel,
             title,
-            subtitle: `${typeLabel} step · the type can't be changed`,
+            subtitle: `${typeLabel} step · the type can’t be changed`,
             footerText: STEP_DRAWER_MESSAGES.footerText,
             doneLabel: STEP_DRAWER_MESSAGES.done,
             readOnly,
@@ -862,7 +862,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         return getRuleIssues(rules, { stepTeamIds, references });
     }
 
-    // The source's lines minus its rule lines (they carry a `ruleId` and are rebuilt live), plus the live rule lines.
+    // The live rule lines (by rule position, errors first), then the source's lines minus its rule lines (they carry a `ruleId` and are rebuilt live).
     private getWarnings(
         issues: RuleIssue[],
         errors: RuleErrorVm[],
@@ -876,7 +876,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         const base = sourceLines.filter(line => line.ruleId === undefined);
         const ruleIds = this.getFormRules().map(rule => rule.id);
         const ruleLines = getRuleLines({ ruleIds, issues, errors });
-        return [...base, ...ruleLines];
+        return [...ruleLines, ...base];
     }
 
     // The rules of the People form as edited; empty for any other form.

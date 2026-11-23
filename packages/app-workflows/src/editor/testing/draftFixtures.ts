@@ -70,6 +70,7 @@ export const createWebhookAutomation = (
         name: "Send webhook",
         models: ["*"],
         settingsSchema: SETTINGS_SCHEMA,
+        keySetting: "url",
         ...overrides
     });
 };

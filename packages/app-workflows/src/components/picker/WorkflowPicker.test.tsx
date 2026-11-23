@@ -74,6 +74,12 @@ describe("WorkflowPicker", () => {
         expect(document.querySelector('[data-picker-field-icon="search"]')).toBeNull();
     });
 
+    it("shows no leading icon for the none icon", () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps({ icon: "none" })} />);
+
+        expect(document.querySelector("[data-picker-field-icon]")).toBeNull();
+    });
+
     it("offers no clear button while nothing is chosen", () => {
         renderWithAdminUi(<WorkflowPicker {...createProps({ anyLabel: "Any team" })} />);
 

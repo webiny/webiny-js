@@ -137,6 +137,7 @@ const LIST_AUTOMATION_DEFINITIONS = /* GraphQL */ `
                     name
                     models
                     settingsSchema
+                    keySetting
                 }
                 ${ERROR_FIELDS}
             }
@@ -224,6 +225,7 @@ interface AutomationDefinitionRow {
     name: string;
     models: string[];
     settingsSchema: JsonSchemaRow | null;
+    keySetting: string | null;
 }
 
 interface AutomationDefinitionsEnvelope {
@@ -601,7 +603,8 @@ describe("workflows GraphQL root", () => {
         expect(data?.[0]).toMatchObject({
             id: TEST_AUTOMATION_ID,
             name: "Test automation",
-            models: ["cms.*"]
+            models: ["cms.*"],
+            keySetting: null
         });
         expect(data?.[0].settingsSchema).toMatchObject({ type: "object" });
         expect(Object.keys(data?.[0].settingsSchema?.properties ?? {})).toEqual([
@@ -929,7 +932,8 @@ describe("workflows GraphQL root", () => {
             "id",
             "name",
             "models",
-            "settingsSchema"
+            "settingsSchema",
+            "keySetting"
         ]);
         expect(memberNames(types, "WorkflowsAutomationDefinitionListResponse")).toEqual([
             "data",
@@ -954,7 +958,12 @@ describe("workflows GraphQL root", () => {
             "error"
         ]);
         expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
-        expect(memberNames(types, "WorkflowsListedUser")).toEqual(["id", "displayName", "teamIds"]);
+        expect(memberNames(types, "WorkflowsListedUser")).toEqual([
+            "id",
+            "displayName",
+            "teamIds",
+            "teams"
+        ]);
         expect(memberNames(types, "WorkflowsTeam")).toEqual(["id", "name"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
         expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);
@@ -1036,7 +1045,7 @@ describe("workflows GraphQL root", () => {
             "notifications",
             "config"
         ];
-        expect(memberNames(types, "WorkflowsStep")).toEqual(stepFields);
+        expect(memberNames(types, "WorkflowsStep")).toEqual([...stepFields, "candidateTeams"]);
         expect(memberNames(types, "WorkflowsStepInput")).toEqual(stepFields);
         expect(memberNames(types, "WorkflowsReview")).toEqual([
             "id",
@@ -1133,16 +1142,26 @@ describe("workflows GraphQL root", () => {
             "stepCount",
             "stepName"
         ]);
-        expect(memberNames(types, "WorkflowsReviewListKind")).toEqual([
+        expect(types.some(item => item.name === "WorkflowsReviewListKind")).toBe(false);
+        expect(memberNames(types, "WorkflowsReviewListScope")).toEqual([
             "assignedToMe",
             "pool",
             "teamInReview",
             "myRequests",
-            "failedSteps"
+            "all"
+        ]);
+        expect(memberNames(types, "WorkflowsReviewListState")).toEqual([
+            "all",
+            "inReview",
+            "failed",
+            "approved",
+            "rejected"
         ]);
         expect(memberNames(types, "WorkflowsReviewListSort")).toEqual([
             "lastChangedOn_ASC",
-            "lastChangedOn_DESC"
+            "lastChangedOn_DESC",
+            "title_ASC",
+            "title_DESC"
         ]);
         // The review list filter is each app's own; the CMS one has a model id (R94).
         expect(types.some(item => item.name === "WorkflowsReviewListWhere")).toBe(false);

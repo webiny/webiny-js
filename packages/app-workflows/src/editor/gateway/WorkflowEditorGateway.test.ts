@@ -65,7 +65,14 @@ const inspectParams: InspectRoutingUseCase.Params = {
 const operationCases: OperationCase[] = [
     {
         name: "listModels",
-        run: (gateway, app) => gateway.listModels({ app, search: "art", limit: 20, after: null })
+        run: (gateway, app) =>
+            gateway.listModels({
+                app,
+                search: "art",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            })
     },
     {
         name: "getWorkflow",
@@ -171,14 +178,21 @@ describe("WorkflowEditorGateway", () => {
     });
 
     describe("the app gateway receives exactly its old parameters (R347)", () => {
-        it("listModels sends search, limit and after without the app", async () => {
+        it("listModels sends search, hasWorkflow, limit and after without the app", async () => {
             const cms = createFakeEditorAppGateway("cms");
             const gateway = createGateway([cms]);
 
-            await gateway.listModels({ app: "cms", search: "art", limit: 20, after: "cursor-1" });
+            await gateway.listModels({
+                app: "cms",
+                search: "art",
+                hasWorkflow: true,
+                limit: 20,
+                after: "cursor-1"
+            });
 
             expect(cms.listModels).toHaveBeenCalledWith({
                 search: "art",
+                hasWorkflow: true,
                 limit: 20,
                 after: "cursor-1"
             });
@@ -257,6 +271,7 @@ describe("WorkflowEditorGateway", () => {
             const listed = await gateway.listModels({
                 app: "cms",
                 search: "",
+                hasWorkflow: null,
                 limit: 20,
                 after: null
             });

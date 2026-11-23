@@ -70,6 +70,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -89,12 +90,14 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(cms.listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
         expect(wb.listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "wb",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -161,7 +164,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(presenter.vm.header).toEqual({
             name: "Article review",
             nameError: null,
-            appliesTo: "Applies to Article · Headless CMS model",
+            appliesTo: "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026",
             dirty: false,
             saving: false,
             canSave: false,

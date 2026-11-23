@@ -18,7 +18,7 @@ import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstraction
 class CmsWorkflowEditorAppAdapterImpl implements AdapterAbstraction.Interface {
     public readonly appKind = "cms";
     public readonly panelLabel = "Content models";
-    public readonly appliesToLabel = "Headless CMS model";
+    public readonly appliesToLabel = "Headless CMS";
 
     constructor(
         private listModels: ListModelsUseCase.Interface,

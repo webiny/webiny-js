@@ -115,7 +115,7 @@ describe("StepDrawer (README 4, R284)", () => {
         expect(screen.queryByRole("button", { name: "Done" })).toBeNull();
     });
 
-    it("opens for the stepId, with the sub line above the title, the footer text and Done", () => {
+    it("opens for the stepId, with the sub line below the title, the footer text and Done", () => {
         const { open } = createSetup(createReviewStep());
 
         act(() => {
@@ -123,7 +123,7 @@ describe("StepDrawer (README 4, R284)", () => {
         });
 
         expect(screen.getByText("Legal sign-off")).toBeDefined();
-        expect(screen.getByText("People step · the type can't be changed")).toBeDefined();
+        expect(screen.getByText("People step · the type can’t be changed")).toBeDefined();
         expect(screen.getByText("Edits stay in this workflow until you save it.")).toBeDefined();
         expect(screen.getByRole("button", { name: "Done" })).toBeDefined();
     });

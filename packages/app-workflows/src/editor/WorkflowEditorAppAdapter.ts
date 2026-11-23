@@ -21,7 +21,7 @@ export interface WorkflowEditorAppAdapter {
     appKind: WorkflowAppKind;
     // `Content models` for the CMS, `Website Builder` for the WB (the panel's style shows it uppercase, R280).
     panelLabel: string;
-    // The header's `Applies to {Model} · {appliesToLabel}`.
+    // The header's `Applies to {Model} ({appliesToLabel})`.
     appliesToLabel: string;
     // Runs once before the model list is shown (the CMS fills the admin `ModelsCache`); the WB does nothing.
     init(): Promise<void>;

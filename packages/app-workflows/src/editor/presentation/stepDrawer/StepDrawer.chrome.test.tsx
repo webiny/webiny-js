@@ -80,6 +80,23 @@ const createPeopleStep = (): EditorStep => {
     });
 };
 
+// Two rules without a target: each holds a live error, with no Save attempt.
+const createTwoUntargetedRulesStep = (): EditorStep => {
+    return createReviewStep({
+        config: {
+            teams: ["team-1"],
+            assignment: {
+                strategy: "none",
+                allowManualPick: false,
+                rules: [
+                    { id: "r1", conditions: {}, target: null },
+                    { id: "r2", conditions: {}, target: null }
+                ]
+            }
+        }
+    });
+};
+
 const createSetup = (step: EditorStep, configure?: (source: FakeStepDrawerSource) => void) => {
     const container = new Container();
     IdentityContextFeature.register(container);
@@ -225,45 +242,73 @@ describe("StepDrawer chrome (R302, R309, R312)", () => {
         expect(screen.getByText("This step has an error on the Assignment tab.")).toBeTruthy();
     });
 
-    it("shows the Check this step block on General and Assignment and hides it on Test routing", () => {
-        const { open } = createSetup(createPeopleStep(), source => {
+    it("has no Check this step block, with or without tabs (B23)", () => {
+        const people = createSetup(createPeopleStep(), source => {
             source.setWarnings([LEGAL_LINE]);
         });
         act(() => {
-            open("step-1");
+            people.open("step-1");
         });
-
-        expect(screen.getByText("Check this step")).toBeTruthy();
-        expect(screen.getByText("Legal has no members.")).toBeTruthy();
-
-        activateTab(/Test routing/);
         expect(screen.queryByText("Check this step")).toBeNull();
+        expect(screen.queryByText("Legal has no members.")).toBeNull();
 
-        activateTab(/Assignment/);
-        expect(screen.getByText("Check this step")).toBeTruthy();
-    });
-
-    it("shows no block for a step without warnings", () => {
-        const { open } = createSetup(createPeopleStep());
-
-        act(() => {
-            open("step-1");
-        });
-
-        expect(screen.queryByText("Check this step")).toBeNull();
-    });
-
-    it("shows the block for a step without tabs", () => {
-        const { open } = createSetup(createAutomationStep({ id: "step-1" }), source => {
+        cleanup();
+        const automation = createSetup(createAutomationStep({ id: "step-1" }), source => {
             source.setWarnings([WEBHOOK_LINE]);
         });
+        act(() => {
+            automation.open("step-1");
+        });
+        expect(screen.queryByText("Check this step")).toBeNull();
+    });
 
+    it("counts the field errors on the tab that holds them (B23)", () => {
+        const { open } = createSetup(createPeopleStep(), source => {
+            source.errors = [RULE_ERROR];
+        });
         act(() => {
             open("step-1");
         });
 
-        expect(screen.getByText("Check this step")).toBeTruthy();
-        expect(screen.getByText("The automation “Send webhook” no longer exists.")).toBeTruthy();
+        const assignment = screen.getByRole("tab", { name: "Assignment, 1 error" });
+        const count = assignment.querySelector("[data-role='step-tab-error-count']");
+        expect(count?.closest('[aria-hidden="true"]')).not.toBeNull();
+        expect(count?.textContent).toBe("1");
+        expect(screen.getByRole("tab", { name: "General" })).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "Test routing" })).toBeTruthy();
+    });
+
+    it("counts the live rule errors of the Assignment tab without a Save attempt", () => {
+        const { open } = createSetup(createTwoUntargetedRulesStep());
+        act(() => {
+            open("step-1");
+        });
+
+        expect(screen.getByRole("tab", { name: "Assignment, 2 errors" })).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "General" })).toBeTruthy();
+    });
+
+    it("counts a server error that replaces the live error of its rule and field once", () => {
+        const { open } = createSetup(createTwoUntargetedRulesStep(), source => {
+            source.errors = [{ ...RULE_ERROR, ruleId: "r1", message: "Server says no." }];
+        });
+        act(() => {
+            open("step-1");
+        });
+
+        expect(screen.getByRole("tab", { name: "Assignment, 2 errors" })).toBeTruthy();
+    });
+
+    it("counts every field error of a tab (B23)", () => {
+        const { open } = createSetup(createPeopleStep(), source => {
+            source.errors = [TITLE_ERROR, { ...TITLE_ERROR, field: "config.teams" }];
+        });
+        act(() => {
+            open("step-1");
+        });
+
+        expect(screen.getByRole("tab", { name: "General, 2 errors" })).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "Assignment" })).toBeTruthy();
     });
 
     it("shows the teams-off notice and no tabs for a read-only People step", () => {

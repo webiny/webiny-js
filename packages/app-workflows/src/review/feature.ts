@@ -7,6 +7,7 @@ import { ReviewNotificationService as ReviewNotificationServiceAbstraction } fro
 import { ReviewNotificationService } from "./notifications/ReviewNotificationService.js";
 import { ReviewRepositoryFeature } from "./repository/feature.js";
 import { GetBoundWorkflowFeature } from "./useCases/getBoundWorkflow/feature.js";
+import { BoundWorkflowFeature } from "./presentation/boundWorkflow/feature.js";
 import { GetReviewFeature } from "./useCases/getReview/feature.js";
 import { GetStepRunFeature } from "./useCases/getStepRun/feature.js";
 import { GetTargetReviewFeature } from "./useCases/getTargetReview/feature.js";
@@ -27,8 +28,8 @@ import { TakeOverReviewStepFeature } from "./useCases/takeOverReviewStep/feature
 /*
  * The app-neutral review services, registered once by `WorkflowsAdminApp` inside the feature flag
  * gate (R211): activity, toasts and notifications (singletons, R212), and the review data layer,
- * the routing gateway and the repository (singletons) and one transient use case per operation
- * (R354).
+ * the routing gateway and the repository (singletons), one transient use case per operation
+ * (R354), and the transient bound-workflow presenter the content lists' publish gates share.
  */
 export const ReviewServicesFeature = createFeature({
     name: "Workflows/ReviewServices",
@@ -38,6 +39,7 @@ export const ReviewServicesFeature = createFeature({
         container.register(ReviewNotificationService).inSingletonScope();
         ReviewRepositoryFeature.register(container);
         GetBoundWorkflowFeature.register(container);
+        BoundWorkflowFeature.register(container);
         GetTargetReviewFeature.register(container);
         GetReviewFeature.register(container);
         ListStepCandidatesFeature.register(container);
