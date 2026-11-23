@@ -13832,6 +13832,7 @@ __metadata:
     tar: "npm:^7.5.23"
     type-fest: "npm:^6.0.3"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
   languageName: unknown
   linkType: soft
 
