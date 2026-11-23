@@ -27,12 +27,12 @@ export const tenant = {
 };
 
 export const makeConfig = (): FileManagerStandaloneConfig.Interface => ({
-    storage: { type: "disk", path: storagePath },
+    storagePath: storagePath,
     uploadSecret: SECRET
 });
 
 export const makeDiskStorage = (): ObjectStorage.Interface => {
-    return new DiskObjectStorage({ type: "disk", path: storagePath });
+    return new DiskObjectStorage({ path: storagePath });
 };
 
 export const makeLogger = (): Logger.Interface => {

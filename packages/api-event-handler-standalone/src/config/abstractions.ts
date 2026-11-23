@@ -8,9 +8,8 @@ export interface IStandaloneConfig {
     /** `WEBINY_ADMIN_URL`. Optional: unknown when not set. */
     readonly adminUrl: PublicUrl;
     /**
-     * `WEBINY_LOCAL_STORAGE_PATH` (a folder on disk, resolved to an absolute path) or
-     * `WEBINY_S3_BUCKET` and the other `WEBINY_S3_*` variables (an S3-compatible bucket), plus
-     * `WEBINY_UPLOAD_SECRET`. Required.
+     * `WEBINY_LOCAL_STORAGE_PATH`, resolved to an absolute path, unless a project extension
+     * provides the storage (`<S3FileStorage />`); and `WEBINY_UPLOAD_SECRET`, required.
      */
     readonly fileStorage: FileManagerStandaloneConfig.Interface;
     readonly encryption: {

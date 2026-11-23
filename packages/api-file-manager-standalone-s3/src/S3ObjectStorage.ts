@@ -13,8 +13,8 @@ import { UploadPartCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { createS3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import type { CompletedPart } from "@webiny/aws-sdk/client-s3/index.js";
 import type { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
-import { isValidObjectKey } from "~/utils/isValidObjectKey.js";
-import { ObjectStorage } from "./abstractions.js";
+import { isValidObjectKey } from "@webiny/api-file-manager-standalone/utils/isValidObjectKey.js";
+import { ObjectStorage } from "@webiny/api-file-manager-standalone/features/ObjectStorage/abstractions.js";
 import { S3StorageConfig } from "./abstractions.js";
 
 /*

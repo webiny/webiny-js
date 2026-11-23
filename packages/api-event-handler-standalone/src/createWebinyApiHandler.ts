@@ -51,6 +51,7 @@ import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
+import { assertFileStorage } from "~/config/assertFileStorage.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
 import { createLogger, readBuildParams } from "@webiny/api-event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -131,7 +132,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     WebsocketsStandaloneFeature.register(requestContainer);
                 },
                 /*
-                 * File-manager storage transport: a folder on disk or an S3-compatible bucket. Where
+                 * File-manager storage transport: a folder on disk, or what a project extension
+                 * registers instead (`<S3FileStorage />` registers an S3-compatible bucket). Where
                  * AWS uploads straight to S3 (+ a separate asset-delivery Lambda), the server takes
                  * uploads and serves files in-process. FileManagerStandaloneFeature registers asset
                  * delivery (overriding the domain's null impls), the upload/multipart HTTP routes,
@@ -156,6 +158,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             const extensions = config.extensions();
             const buildParams = await readBuildParams(extensions);
             assertNoBakedSecrets(buildParams);
+            assertFileStorage(standaloneConfig.fileStorage, buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             rootContainer.registerInstance(Logger, logger);

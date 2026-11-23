@@ -45,10 +45,12 @@ the API image built and tested in one environment runs unchanged in the others:
 - Uploaded files (one of the two is required):
   - `WEBINY_LOCAL_STORAGE_PATH`: a folder on a persistent volume. Only when every API process runs on
     one machine.
-  - `WEBINY_S3_BUCKET`: an S3-compatible bucket (AWS S3, Cloudflare R2, Backblaze B2, Garage,
-    SeaweedFS...), which API processes on any number of machines can share. With it:
-    `WEBINY_S3_REGION` (`"auto"` for R2; defaults to `AWS_REGION`), `WEBINY_S3_ENDPOINT` (unset for AWS
-    S3), `WEBINY_S3_FORCE_PATH_STYLE` (`true` for most self-hosted services), `WEBINY_S3_PREFIX`
+  - An S3-compatible bucket (AWS S3, Cloudflare R2, Backblaze B2, Garage, SeaweedFS...), which API
+    processes on any number of machines can share. Add `@webiny/api-file-manager-standalone-s3` to
+    the project, put `<S3FileStorage bucket="..." />` from its `/project` export in
+    `webiny.config.tsx`, and leave `path` off `<Infra.FileStorage>`. At runtime: `WEBINY_S3_BUCKET`,
+    `WEBINY_S3_REGION` (`"auto"` for R2; defaults to `AWS_REGION`), `WEBINY_S3_ENDPOINT` (unset for
+    AWS S3), `WEBINY_S3_FORCE_PATH_STYLE` (`true` for most self-hosted services), `WEBINY_S3_PREFIX`
     (optional, to share a bucket), and `WEBINY_S3_ACCESS_KEY_ID` + `WEBINY_S3_SECRET_ACCESS_KEY`
     (unset to use the AWS SDK's default credentials, e.g. an instance or task role). Uploads still
     go through the API, so the bucket needs no CORS rules.

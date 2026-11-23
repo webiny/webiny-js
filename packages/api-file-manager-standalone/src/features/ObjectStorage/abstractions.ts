@@ -1,5 +1,4 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 
 export interface IObjectStorageUploadPartParams {
     key: string;
@@ -15,9 +14,11 @@ export interface IObjectStorageAbortMultipartUploadsParams {
 }
 
 /**
- * Where uploaded files and their resized copies are kept: a folder on disk, or an S3-compatible
- * bucket. Keys are relative, `/`-separated paths such as `tenants/root/files/<id>/photo.png`, the
- * same in both. Failures are thrown; callers that hand out a `Result` map them.
+ * Where uploaded files and their resized copies are kept: a folder on disk (`DiskObjectStorage`,
+ * the default), or what a project extension registers instead, such as the S3-compatible bucket of
+ * `@webiny/api-file-manager-standalone-s3`. Keys are relative, `/`-separated paths such as
+ * `tenants/root/files/<id>/photo.png`, the same in every storage. Failures are thrown; callers that
+ * hand out a `Result` map them.
  */
 export interface IObjectStorage {
     /** Stores `body` under `key`, replacing what is there. */
@@ -51,20 +52,23 @@ export namespace ObjectStorage {
     export type AbortMultipartUploadsParams = IObjectStorageAbortMultipartUploadsParams;
 }
 
+export interface IDiskStorageConfig {
+    /** Absolute path of the folder. */
+    readonly path: string;
+}
+
 /** The folder `DiskObjectStorage` keeps files in. */
-export const DiskStorageConfig = createAbstraction<FileManagerStandaloneConfig.DiskStorage>(
+export const DiskStorageConfig = createAbstraction<IDiskStorageConfig>(
     "FileManagerServer/DiskStorageConfig"
 );
 
 export namespace DiskStorageConfig {
-    export type Interface = FileManagerStandaloneConfig.DiskStorage;
+    export type Interface = IDiskStorageConfig;
 }
 
-/** The bucket `S3ObjectStorage` keeps files in. */
-export const S3StorageConfig = createAbstraction<FileManagerStandaloneConfig.S3Storage>(
-    "FileManagerServer/S3StorageConfig"
-);
-
-export namespace S3StorageConfig {
-    export type Interface = FileManagerStandaloneConfig.S3Storage;
-}
+/**
+ * The build param a project extension that provides the storage sets (`<S3FileStorage />` sets
+ * `"s3"`). The standalone API reads it at startup to know that `WEBINY_LOCAL_STORAGE_PATH` is not
+ * needed.
+ */
+export const FILE_STORAGE_BUILD_PARAM = "FileManagerStorage";

@@ -1,5 +1,4 @@
-import nodePath from "node:path";
-import type { FileManagerStandaloneConfig } from "@webiny/api-file-manager-standalone/features/FileManagerStandaloneConfig/abstractions.js";
+import type { S3StorageConfig } from "./abstractions.js";
 
 type Env = Record<string, string | undefined>;
 
@@ -28,31 +27,17 @@ function normalizePrefix(prefix: string): string {
 }
 
 /**
- * Where uploaded files are kept. `WEBINY_S3_BUCKET` selects an S3-compatible bucket, otherwise
- * `WEBINY_LOCAL_STORAGE_PATH` a folder on disk; exactly one of the two must be set. Every problem
- * found is appended to `problems`, and `undefined` returned when there is one.
+ * The bucket from the `WEBINY_S3_*` env vars. Throws one error naming every missing or invalid
+ * variable. Nothing is baked into the build: `webiny watch` and `webiny serve` get the values from
+ * `<S3FileStorage />`, and a deployed container sets them itself.
  */
-export function readFileStorageConfig(
-    env: Env,
-    problems: string[]
-): FileManagerStandaloneConfig.Storage | undefined {
-    const storagePath = read(env, "WEBINY_LOCAL_STORAGE_PATH");
+export function readS3StorageConfig(env: Env): S3StorageConfig.Interface {
+    const problems: string[] = [];
+
     const bucket = read(env, "WEBINY_S3_BUCKET");
-
-    if (storagePath && bucket) {
-        problems.push("Set WEBINY_LOCAL_STORAGE_PATH or WEBINY_S3_BUCKET, not both.");
-        return undefined;
-    }
-
     if (!bucket) {
-        if (!storagePath) {
-            problems.push("WEBINY_LOCAL_STORAGE_PATH is not set.");
-            return undefined;
-        }
-        return { type: "disk", path: nodePath.resolve(storagePath) };
+        problems.push("WEBINY_S3_BUCKET is not set.");
     }
-
-    const startCount = problems.length;
 
     // AWS_REGION is what the SDK reads by itself, and what AWS sets in ECS and Lambda.
     const region = read(env, "WEBINY_S3_REGION") || read(env, "AWS_REGION");
@@ -75,7 +60,7 @@ export function readFileStorageConfig(
         problems.push(`WEBINY_S3_PREFIX must not start with "/": "${prefix}".`);
     }
 
-    // Secrets are used exactly as given, like every other secret here.
+    // Secrets are used exactly as given: trimming would change them.
     const accessKeyId = read(env, "WEBINY_S3_ACCESS_KEY_ID");
     const secretAccessKeyValue = env["WEBINY_S3_SECRET_ACCESS_KEY"] ?? "";
     let secretAccessKey = "";
@@ -88,17 +73,17 @@ export function readFileStorageConfig(
         );
     }
 
-    if (problems.length > startCount) {
-        return undefined;
+    if (problems.length > 0) {
+        const message = ["The S3 file storage is misconfigured:", ...problems].join("\n  ");
+        throw new Error(message);
     }
 
-    let credentials: FileManagerStandaloneConfig.S3Storage["credentials"];
+    let credentials: S3StorageConfig.Interface["credentials"];
     if (accessKeyId) {
         credentials = { accessKeyId, secretAccessKey };
     }
 
     return {
-        type: "s3",
         bucket,
         region,
         endpoint: endpoint || undefined,
