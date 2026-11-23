@@ -5,7 +5,7 @@ import { EventHandler } from "~/features/events/EventHandler.js";
 import type { EventContext } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import { HandlerApp } from "~/features/events/HandlerApp.js";
-import { CurrentHandlerExecution } from "~/features/events/CurrentHandlerExecution.js";
+import { HandlerExecutionId } from "~/features/events/HandlerExecutionId.js";
 import { HandlerPlatform } from "~/features/events/HandlerPlatform.js";
 
 // A platform whose invocation id is the event's `id`.
@@ -47,19 +47,19 @@ interface ITestEvent {
  * before and after waiting, so another execution can run in between.
  */
 class ReadIdsHandler implements EventHandler.Interface<ITestEvent> {
-    constructor(private currentExecution: CurrentHandlerExecution.Interface) {}
+    constructor(private executionId: HandlerExecutionId.Interface) {}
 
     async execute(ctx: EventContext<ITestEvent>) {
-        const before = this.currentExecution.getId();
+        const before = this.executionId.getId();
         await ctx.event.resume;
-        const after = this.currentExecution.getId();
+        const after = this.executionId.getId();
         return [before, after];
     }
 }
 
 const readIdsHandler = EventHandler.createImplementation({
     implementation: ReadIdsHandler,
-    dependencies: [CurrentHandlerExecution]
+    dependencies: [HandlerExecutionId]
 });
 
 const createApp = () => {
@@ -72,7 +72,7 @@ const createApp = () => {
     });
 };
 
-describe("CurrentHandlerExecution", () => {
+describe("HandlerExecutionId", () => {
     it("gives each of two interleaved executions its own id", async () => {
         const app = createApp();
         let resumeFirst = () => {};
@@ -94,8 +94,8 @@ describe("CurrentHandlerExecution", () => {
         const app = createApp();
         const root = await app.getRootContainer();
 
-        const currentExecution = root.resolve(CurrentHandlerExecution);
+        const executionId = root.resolve(HandlerExecutionId);
 
-        expect(currentExecution.getId()).toBeUndefined();
+        expect(executionId.getId()).toBeUndefined();
     });
 });

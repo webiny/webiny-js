@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { CurrentHandlerExecution } from "@webiny/event-handler-core";
+import { HandlerExecutionId } from "@webiny/event-handler-core";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
@@ -28,9 +28,9 @@ export async function registerWebinyApiRoot(
      * a web function). Read per line, not set per invocation as pino-lambda's `lambdaRequestTracker`
      * does: that keeps one id in a global, and a web function runs several requests at once.
      */
-    const currentExecution = container.resolve(CurrentHandlerExecution);
+    const executionId = container.resolve(HandlerExecutionId);
     const logger = createLogger(destination, () => {
-        return { awsRequestId: currentExecution.getId() };
+        return { awsRequestId: executionId.getId() };
     });
     container.registerInstance(Logger, logger);
 

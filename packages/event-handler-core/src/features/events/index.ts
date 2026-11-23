@@ -2,7 +2,7 @@ export * from "./EventHandler.js";
 export * from "./EventType.js";
 export * from "./RequestContainer.js";
 export { HandlerExecution } from "./HandlerExecution.js";
-export { CurrentHandlerExecution } from "./CurrentHandlerExecution.js";
+export { HandlerExecutionId } from "./HandlerExecutionId.js";
 export * from "./StaleHandlerExecutionError.js";
 export * from "./NoMatchingEventTypeError.js";
 export * from "./chain.js";
