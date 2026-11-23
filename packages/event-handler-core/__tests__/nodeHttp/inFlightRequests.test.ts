@@ -5,6 +5,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { InFlightRequests } from "~/nodeHttp/server/InFlightRequests.js";
+import { writeHttpResponse } from "~/nodeHttp/server/writeHttpResponse.js";
 
 interface IReply {
     body: string;
@@ -96,10 +97,14 @@ describe("InFlightRequests", () => {
         expect(received.count).toBe(1);
     });
 
-    it("closes the connection of a response that sets `connection: keep-alive` itself", async () => {
+    it("tells the client to close even when the route sets `connection: keep-alive`", async () => {
         const { inFlight, server, port, firstRequest, received } = await listen(res => {
-            // What an SSE response from `HttpResponseBuilder.sse` writes.
-            setTimeout(() => res.writeHead(200, { connection: "keep-alive" }).end("done"), 100);
+            const response = {
+                statusCode: 200,
+                headers: { connection: "keep-alive" },
+                body: "done"
+            };
+            setTimeout(() => void writeHttpResponse(res, response), 100);
         });
 
         const first = get(port);
@@ -108,9 +113,10 @@ describe("InFlightRequests", () => {
         inFlight.stopConnectionReuse();
         const allFinished = inFlight.waitUntilAllFinished();
 
-        await expect(first).resolves.toEqual({ body: "done", connection: "keep-alive" });
+        await expect(first).resolves.toEqual({ body: "done", connection: "close" });
         await allFinished;
-        await expect(get(port)).rejects.toMatchObject({ code: /^ECONN(RESET|REFUSED)$/ });
+        const second = get(port);
+        await expect(second).rejects.toMatchObject({ code: "ECONNREFUSED" });
         expect(received.count).toBe(1);
     });
 });

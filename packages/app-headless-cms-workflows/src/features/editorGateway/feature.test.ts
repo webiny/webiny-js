@@ -165,7 +165,13 @@ describe("CmsWorkflowEditorFeature", () => {
             });
             const useCase = container.resolve(ListWorkflowModelsUseCase);
 
-            const page = await useCase.execute({ app: "cms", search: "", limit: 20, after: null });
+            const page = await useCase.execute({
+                app: "cms",
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(page.cursor).toBe("cursor-2");
             expect(page.hasMoreItems).toBe(true);

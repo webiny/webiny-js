@@ -9,10 +9,9 @@ import type { StepCandidateDto } from "~/review/gateway/dto.js";
 import type { WorkflowDto } from "~/review/gateway/dto.js";
 import type { ReviewForDeleteAction } from "~/review/domain/types.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
-import type { ReviewListKind } from "~/review/domain/ReviewListKind.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
-import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
-import type { StepStateValue } from "~/review/domain/StepState.js";
 
 export interface ListStepCandidatesParams {
     workflowId: string;
@@ -64,12 +63,11 @@ export interface CancelReviewParams {
 export interface ReviewListWhere {
     modelId?: string;
     titleContains?: string;
-    reviewState?: ReviewStateValue;
-    stepState?: StepStateValue;
+    state?: ReviewListState;
 }
 
 export interface ListReviewsParams {
-    list: ReviewListKind;
+    scope: ReviewListScope;
     where: ReviewListWhere;
     sort: ReviewListSort;
     limit: number;

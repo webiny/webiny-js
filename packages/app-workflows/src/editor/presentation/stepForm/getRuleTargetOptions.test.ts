@@ -42,19 +42,19 @@ describe("getRuleTargetOptions: the list (R307)", () => {
         const { options } = getRuleTargetOptions(createParams());
 
         expect(options).toEqual([
-            createPickerOption({ id: "team:team-1", label: "Legal team pool", icon: "groups" }),
-            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: "groups" }),
+            createPickerOption({ id: "team:team-1", label: "Legal team pool", icon: null }),
+            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: null }),
             createPickerOption({
                 id: "user:user-1",
                 label: "Ivan Horvat",
                 description: "Legal",
-                icon: "person"
+                icon: null
             }),
             createPickerOption({
                 id: "user:user-2",
                 label: "Ana Kovač",
                 description: "Legal, Marketing",
-                icon: "person"
+                icon: null
             })
         ]);
     });
@@ -83,7 +83,7 @@ describe("getRuleTargetOptions: a saved team target", () => {
         );
 
         expect(selected).toEqual(
-            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: "groups" })
+            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: null })
         );
     });
 
@@ -100,7 +100,7 @@ describe("getRuleTargetOptions: a saved team target", () => {
             createPickerOption({
                 id: "team:team-3",
                 label: "Press (not in reviewing teams)",
-                icon: "group"
+                icon: null
             })
         );
         expect(options.map(option => option.id)).not.toContain("team:team-3");
@@ -171,7 +171,7 @@ describe("getRuleTargetOptions: a saved user target", () => {
                 id: "user:user-2",
                 label: "Ana Kovač",
                 description: "Legal, Marketing",
-                icon: "person"
+                icon: null
             })
         );
     });
@@ -206,7 +206,7 @@ describe("getRuleTargetOptions: a saved user target", () => {
             createPickerOption({
                 id: "user:user-4",
                 label: "Maja Kos (not in reviewing teams)",
-                icon: "person"
+                icon: null
             })
         );
     });

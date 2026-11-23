@@ -13,7 +13,6 @@ import { ExclusionsLoadError } from "./ExclusionsLoadError.js";
 import { ExclusionsLoading } from "./ExclusionsLoading.js";
 import { ExclusionsNamesBanner } from "./ExclusionsNamesBanner.js";
 import { ExclusionsNoAccess } from "./ExclusionsNoAccess.js";
-import { ExclusionsRulesCard } from "./ExclusionsRulesCard.js";
 import { ExclusionsTable } from "./ExclusionsTable.js";
 import { ExclusionsToolbar } from "./ExclusionsToolbar.js";
 
@@ -52,17 +51,19 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
 
         let list: React.ReactNode = <ExclusionsTable rows={vm.rows} presenter={presenter} />;
         if (vm.empty !== null) {
-            list = <ExclusionsEmpty empty={vm.empty} onAdd={() => presenter.openAdd()} />;
+            list = (
+                <ExclusionsEmpty empty={vm.empty} onClearSearch={() => presenter.setSearch("")} />
+            );
         }
 
         body = (
             <>
                 {namesBanner}
-                <ExclusionsRulesCard />
                 <ExclusionsToolbar
                     tab={vm.tab}
                     tabs={vm.tabs}
-                    filter={vm.filter}
+                    search={vm.search}
+                    canAdd={vm.canAdd}
                     presenter={presenter}
                 />
                 {list}
@@ -93,7 +94,7 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
 
     return (
         <div data-testid="exclusions-page" className="flex flex-col gap-md p-lg">
-            <ExclusionsHeader canAdd={vm.canAdd} onAdd={() => presenter.openAdd()} />
+            <ExclusionsHeader />
             {body}
             {dialog}
         </div>

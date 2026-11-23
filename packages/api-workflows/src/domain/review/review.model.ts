@@ -22,6 +22,8 @@ class ReviewModelImpl implements ModelFactory.Interface {
                     targetId: fields.text().label("Target ID"),
                     targetRevisionId: fields.text().label("Target revision ID"),
                     title: fields.text().label("Title"),
+                    // Storage only (B2 design 2): the trimmed, lower-cased title the lists sort by.
+                    titleSortKey: fields.text().label("Title sort key"),
                     isActive: fields.boolean().label("Is active"),
                     state: fields.text().label("State"),
                     currentStepId: fields.text().label("Current step ID"),
@@ -45,6 +47,7 @@ class ReviewModelImpl implements ModelFactory.Interface {
                                 })),
                             modelId: contextFields.text().label("Model ID"),
                             title: contextFields.text().label("Title"),
+                            contentTypeName: contextFields.text().label("Content type name"),
                             author: contextFields
                                 .object()
                                 .label("Author")

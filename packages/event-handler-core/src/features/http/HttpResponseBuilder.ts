@@ -153,10 +153,10 @@ export class HttpResponseBuilder implements IHttpResponseBuilder {
         // `no-transform` and `x-accel-buffering: no` are the two that silently matter: without them a
         // proxy compresses or buffers the body and the response stops being incremental while still
         // looking correct. `no-store` is about something else entirely — see the interface docs.
+        // No `connection` header: the transport decides it, and a server shutting down answers `close`.
         return this.setHeaders({
             "content-type": "text/event-stream",
             "cache-control": "no-store, no-cache, no-transform",
-            connection: "keep-alive",
             "x-accel-buffering": "no"
         }).end(new HttpStreamBody(source));
     }

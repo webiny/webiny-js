@@ -1,4 +1,5 @@
 import React from "react";
+import type { PickerFieldIcon } from "~/components/picker/PickerFieldIcon.js";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import { getReferenceSelection } from "../getReferenceSelection.js";
@@ -21,6 +22,8 @@ export interface UserPickerControlProps {
     teamNames: ReadonlyMap<string, string>;
     disabled: boolean;
     error: string | null;
+    // The leading icon of the field; the picker's default when not set.
+    icon?: PickerFieldIcon;
     onChange(userId: string | null): void;
 }
 
@@ -64,6 +67,7 @@ export const UserPickerControl = (props: UserPickerControlProps) => {
             onChange={props.onChange}
             disabled={props.disabled}
             error={props.error}
+            icon={props.icon}
         />
     );
 };

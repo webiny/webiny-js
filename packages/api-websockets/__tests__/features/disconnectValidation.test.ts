@@ -4,8 +4,8 @@ import { DisconnectUseCase } from "~/features/Disconnect/DisconnectUseCase.js";
 import { WebsocketsGraphQLFactory } from "~/graphql/WebsocketsGraphQLFactory.js";
 
 /**
- * Pure unit tests (no DynamoDB): an empty `identityId` / `tenant` / `connections` must be
- * rejected instead of falling through to "list all" and disconnecting everyone.
+ * Pure unit tests (no DynamoDB): an empty `identityId` / `connections` must be rejected instead of
+ * falling through to "list all" and disconnecting everyone.
  */
 const createListConnections = () => {
     return {
@@ -39,29 +39,21 @@ const setupGraphQL = async () => {
         getPermissions: async () => [{ name: "websockets" }],
         hasFullAccess: async () => true
     };
-    const tenantContext = { getTenant: () => ({ id: "root" }) };
-    const listConnections = createListConnections();
-    const disconnect = { execute: vi.fn(async () => Result.ok([])) };
+    // The resolvers pass the filter to the disconnect use case, which validates it.
+    const { disconnect, listConnections } = setupUseCase();
 
     const call = (path: string, args: Record<string, any>) => {
-        const resolver = resolvers.get(path)(
-            identityContext,
-            tenantContext,
-            listConnections,
-            disconnect
-        );
+        const resolver = resolvers.get(path)(identityContext, disconnect);
         return resolver({ args, parent: {}, context: {}, info: {} });
     };
 
-    return { call, listConnections, disconnect };
+    return { call, listConnections };
 };
 
 describe("disconnect validation", () => {
     it.each([
         ["empty identityId", { identityId: "" }],
         ["whitespace identityId", { identityId: "   " }],
-        ["empty tenant", { tenant: "" }],
-        ["whitespace tenant", { tenant: " " }],
         ["empty connections", { connections: [] }],
         ["empty connection id", { connections: ["abc", ""] }],
         ["empty where", {}]
@@ -79,27 +71,23 @@ describe("disconnect validation", () => {
         const { disconnect, listConnections } = setupUseCase();
 
         expect((await disconnect.execute({ where: { identityId: "id-1" } })).isOk()).toBe(true);
-        expect((await disconnect.execute({ where: { tenant: "root" } })).isOk()).toBe(true);
         expect((await disconnect.execute({ where: { connections: ["c-1"] } })).isOk()).toBe(true);
         expect((await disconnect.execute()).isOk()).toBe(true);
-        expect(listConnections.execute).toHaveBeenCalledTimes(4);
+        expect(listConnections.execute).toHaveBeenCalledTimes(3);
     });
 
     it.each([
         ["WebsocketsMutation.disconnectIdentity", { identityId: "" }],
         ["WebsocketsMutation.disconnectIdentity", { identityId: "  " }],
-        ["WebsocketsMutation.disconnectTenant", { tenant: "" }],
-        ["WebsocketsMutation.disconnectTenant", { tenant: "  " }],
         ["WebsocketsMutation.disconnect", { connections: [] }]
     ])("%s should reject %j", async (path, args) => {
-        const { call, listConnections, disconnect } = await setupGraphQL();
+        const { call, listConnections } = await setupGraphQL();
 
         const response = await call(path, args);
 
         expect(response.data).toBeNull();
         expect(response.error.code).toBe("Websocket/Validation");
         expect(listConnections.execute).not.toHaveBeenCalled();
-        expect(disconnect.execute).not.toHaveBeenCalled();
     });
 
     it("graphql should still allow targeted disconnects and disconnectAll", async () => {

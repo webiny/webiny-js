@@ -48,13 +48,17 @@ class ReviewCancelledNotificationsImpl implements ReviewCancelledEventHandler.In
                 review,
                 stepId: step.id,
                 event: "cancelled",
-                recipients,
-                message: buildCancelledMessage({
-                    contentTitle: review.title,
-                    stepTitle: step.title,
-                    canceller: getActorName(fact.actor, step.title),
-                    reason: fact.reason
-                })
+                deliveries: [
+                    {
+                        recipients,
+                        message: buildCancelledMessage({
+                            contentTitle: review.title,
+                            stepTitle: step.title,
+                            canceller: getActorName(fact.actor, step.title),
+                            reason: fact.reason
+                        })
+                    }
+                ]
             });
         } catch (error) {
             this.logger.error(

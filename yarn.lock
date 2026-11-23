@@ -6206,9 +6206,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.276.0":
-  version: 3.276.0
-  resolution: "@pulumi/pulumi@npm:3.276.0"
+"@pulumi/pulumi@npm:^3.142.0, @pulumi/pulumi@npm:^3.269.0, @pulumi/pulumi@npm:^3.277.0":
+  version: 3.277.0
+  resolution: "@pulumi/pulumi@npm:3.277.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -6242,7 +6242,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/c572890c426b9df586f9d97164af8762bb9cf3ca479bc458fd04f570df07b748c88126327b14716c55526eebbd012acddee7799aa3da39441273c83ff68c2cbd
+  checksum: 10/65aa6940b268e16f0d0c71d756216ffe7692f197ce72a976a71e384fea12815ceb3519911702055560c6f80c43a61b97b4f217865ab1e2f6d8f9ced721b7bb91
   languageName: node
   linkType: hard
 
@@ -14062,7 +14062,7 @@ __metadata:
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
     "@pulumi/aws": "npm:^7.55.0"
-    "@pulumi/pulumi": "npm:^3.276.0"
+    "@pulumi/pulumi": "npm:^3.277.0"
     "@pulumi/random": "npm:^4.21.6"
     "@types/adm-zip": "npm:^0.6.0"
     "@types/lodash": "npm:^4.17.27"
@@ -14256,7 +14256,7 @@ __metadata:
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
     "@pulumi/aws": "npm:^7.55.0"
-    "@pulumi/pulumi": "npm:^3.276.0"
+    "@pulumi/pulumi": "npm:^3.277.0"
     "@types/adm-zip": "npm:^0.6.0"
     "@types/lodash": "npm:^4.17.27"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14278,7 +14278,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
-    "@pulumi/pulumi": "npm:^3.276.0"
+    "@pulumi/pulumi": "npm:^3.277.0"
     "@types/lodash": "npm:^4.17.27"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"

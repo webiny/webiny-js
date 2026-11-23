@@ -1,12 +1,15 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
+import type { ButtonProps } from "@webiny/admin-ui";
 
 export interface ReviewListEmptyProps {
     title: string;
     description: string;
     actionLabel: string | null;
     actionIcon?: React.ReactElement;
+    // The action button's look; "tertiary" unless given.
+    actionVariant?: ButtonProps["variant"];
     onAction: () => void;
 }
 
@@ -16,12 +19,18 @@ export const ReviewListEmpty = ({
     description,
     actionLabel,
     actionIcon,
+    actionVariant = "tertiary",
     onAction
 }: ReviewListEmptyProps) => {
     let actions: React.ReactNode = null;
     if (actionLabel) {
         actions = (
-            <Button variant="tertiary" text={actionLabel} icon={actionIcon} onClick={onAction} />
+            <Button
+                variant={actionVariant}
+                text={actionLabel}
+                icon={actionIcon}
+                onClick={onAction}
+            />
         );
     }
 

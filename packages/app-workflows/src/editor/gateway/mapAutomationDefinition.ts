@@ -7,6 +7,7 @@ export const mapAutomationDefinition = (dto: AutomationDefinitionDto): Automatio
         id: dto.id,
         name: dto.name,
         models: dto.models,
-        settingsSchema: toJsonSchema(dto.settingsSchema)
+        settingsSchema: toJsonSchema(dto.settingsSchema),
+        keySetting: dto.keySetting ?? null
     };
 };

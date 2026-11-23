@@ -19,7 +19,7 @@ const LISTED = createPickerOption({
     id: "user-2",
     label: "Luka Perić",
     disabled: true,
-    note: "In the list"
+    note: "Already excluded"
 });
 
 const IVAN = createPickerOption({ id: "user-3", label: "Ivan Horvat" });
@@ -58,7 +58,7 @@ describe("ExclusionDialog fields (R324)", () => {
 
         expect(screen.getAllByText("Add exclusion")).toHaveLength(2);
         expect(screen.getAllByText("User").length).toBeGreaterThan(0);
-        expect(screen.getByPlaceholderText("Search users")).toBeTruthy();
+        expect(screen.getByPlaceholderText("Search people")).toBeTruthy();
         expect(screen.getAllByText("Reason").length).toBeGreaterThan(0);
         expect(screen.getByPlaceholderText("e.g. On leave")).toBeTruthy();
         expect(
@@ -74,15 +74,18 @@ describe("ExclusionDialog fields (R324)", () => {
         ).toBeTruthy();
         expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
         expect(screen.getByRole("button", { name: "Add exclusion" })).toBeTruthy();
-        expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
+        const clear: HTMLButtonElement = screen.getByRole("button", { name: "Clear" });
+        expect(clear.disabled).toBe(true);
         expect(screen.queryByTestId("exclusion-dialog-note")).toBeNull();
         expect(screen.queryByTestId("exclusion-dialog-alert")).toBeNull();
     });
 
-    it("limits the reason to 500 characters and sends what is typed", () => {
+    it("limits the reason to 500 characters in a two-row textarea and sends what is typed", () => {
         const { presenter } = renderDialog(createExclusionDialogViewModel({ reason: "On leave" }));
 
-        const input: HTMLInputElement = screen.getByPlaceholderText("e.g. On leave");
+        const input: HTMLTextAreaElement = screen.getByPlaceholderText("e.g. On leave");
+        expect(input.tagName).toBe("TEXTAREA");
+        expect(input.rows).toBe(2);
         expect(input.getAttribute("maxlength")).toBe("500");
         expect(input.value).toBe("On leave");
 
@@ -118,7 +121,7 @@ describe("ExclusionDialog fields (R324)", () => {
         expect(presenter.setUser).toHaveBeenCalledWith("user-3");
     });
 
-    it("lists a user already in the list disabled with the note In the list (Q64)", async () => {
+    it("lists a user already in the list disabled with the note Already excluded (Q64)", async () => {
         renderDialog(
             createExclusionDialogViewModel({
                 user: {
@@ -132,7 +135,7 @@ describe("ExclusionDialog fields (R324)", () => {
         );
 
         openUserList();
-        const note = await screen.findByText("In the list");
+        const note = await screen.findByText("Already excluded");
         const item = note.closest("[cmdk-item]");
 
         expect(item?.getAttribute("aria-disabled")).toBe("true");
@@ -397,7 +400,6 @@ describe("ExclusionDialog polish (ES1)", () => {
             })
         );
 
-        expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
         expect(screen.queryByLabelText("Clear")).toBeNull();
     });
 });

@@ -66,6 +66,7 @@ export const FolderPickerControl = (props: FolderPickerControlProps) => {
             description={props.description}
             placeholder={props.placeholder}
             anyLabel={props.anyLabel}
+            icon={"folder"}
             value={value}
             selected={selected}
             options={shown}

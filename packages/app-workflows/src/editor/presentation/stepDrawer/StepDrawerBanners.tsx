@@ -1,8 +1,6 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
-import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
-import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepDrawerAlertVm } from "./abstractions.js";
 import { STEP_DRAWER_MESSAGES } from "./stepDrawerMessages.js";
 import { STEP_DRAWER_TAB } from "./stepDrawerTabs.js";
@@ -16,8 +14,6 @@ export interface StepDrawerBannersProps {
     topError: string | null;
     // The tab holding an error (R302), or null.
     errorTab: StepErrorTab | null;
-    // The `Check this step` lines (R312), each with its severity.
-    warnings: StepWarningLine[];
     // The tab the form has open, or null when the form has no tabs.
     activeTabId: string | null;
     onShowErrorTab(): void;
@@ -25,17 +21,17 @@ export interface StepDrawerBannersProps {
 
 /*
  * What sits above the form in the step drawer, in the order of the design: the licence alert, the
- * teams-off notice, the error with no field, the banner for an error on another tab and the
- * `Check this step` block. Plain props, no state (the presenter owns it, R234).
+ * teams-off notice, the error with no field and the banner for an error on another tab. The
+ * `Check this step` block is gone (B23): errors and warnings show at their fields and as counts on
+ * the tabs. Plain props, no state (the presenter owns it, R234).
  */
 export const StepDrawerBanners = (props: StepDrawerBannersProps) => {
-    const { licenceAlert, notice, topError, errorTab, warnings, activeTabId } = props;
+    const { licenceAlert, notice, topError, errorTab, activeTabId } = props;
 
     let showTabBanner = false;
     if (errorTab !== null && activeTabId !== null) {
         showTabBanner = activeTabId !== STEP_DRAWER_TAB[errorTab];
     }
-    const showWarnings = warnings.length > 0 && activeTabId !== STEP_DRAWER_TAB.testRouting;
 
     return (
         <>
@@ -67,22 +63,6 @@ export const StepDrawerBanners = (props: StepDrawerBannersProps) => {
                     }
                 >
                     {STEP_DRAWER_MESSAGES.errorOnTab(STEP_ERROR_TAB_LABELS[errorTab])}
-                </Alert>
-            )}
-            {showWarnings && (
-                <Alert type={"warning"} variant={"subtle"}>
-                    <Heading level={6}>{STEP_DRAWER_MESSAGES.warningsHeading}</Heading>
-                    <ul className={"mt-xs flex flex-col gap-xxs"}>
-                        {warnings.map((line, index) => (
-                            <li key={`${index}:${line.text}`} data-severity={line.severity}>
-                                {line.severity === "error" ? (
-                                    <FormComponentErrorMessage invalid={true} text={line.text} />
-                                ) : (
-                                    line.text
-                                )}
-                            </li>
-                        ))}
-                    </ul>
                 </Alert>
             )}
         </>

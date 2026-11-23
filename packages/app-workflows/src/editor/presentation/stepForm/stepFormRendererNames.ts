@@ -1,6 +1,7 @@
 /*
  * The names of the step form renderers, registered by `WorkflowEditorConfig` and used by the
- * builders. `testRouting` is a layout element, registered as `element:workflowTestRouting`.
+ * builders. `testRouting` is a layout element, registered as `element:workflowTestRouting`;
+ * `stepTabs` is the tabs layout renderer the step drawer passes to its form (B23).
  */
 export const STEP_FORM_RENDERER = {
     colour: "workflowStepColour",
@@ -14,7 +15,8 @@ export const STEP_FORM_RENDERER = {
     routingRules: "workflowRoutingRules",
     userPicker: "workflowUserPicker",
     folderPicker: "workflowFolderPicker",
-    testRouting: "workflowTestRouting"
+    testRouting: "workflowTestRouting",
+    stepTabs: "workflowStepTabs"
 } as const;
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {

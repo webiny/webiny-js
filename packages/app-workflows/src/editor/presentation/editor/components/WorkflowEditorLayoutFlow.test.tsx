@@ -9,6 +9,7 @@ import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import type { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
@@ -36,6 +37,7 @@ const STEPS: StepCardVm[] = [
         typeLabel: "People",
         type: "review",
         summary: "Editors",
+        details: [],
         description: null,
         readOnly: false,
         warnings: [],
@@ -51,6 +53,7 @@ const STEPS: StepCardVm[] = [
         typeLabel: "People",
         type: "review",
         summary: "Legal",
+        details: [],
         description: null,
         readOnly: false,
         warnings: [],
@@ -67,6 +70,7 @@ const renderLayout = (overrides: Partial<WorkflowEditorPresenter.ViewModel> = {}
         createEditorViewModel({ detail: "workflow", header: HEADER, ...overrides })
     );
     const container = new Container();
+    LocalStorageFeature.register(container, { prefix: "test" });
     container.registerInstance(SortablePresenter, createFakeSortable());
     renderWithContainer(
         <WorkflowEditorLayout
@@ -91,11 +95,23 @@ describe("WorkflowEditorLayout flow", () => {
         expect(screen.getByText("Legal sign-off")).toBeTruthy();
     });
 
+    it("puts the header and the flow in one card, with only the flow in the scroll area", () => {
+        renderLayout({ flow: { steps: STEPS, stepsError: null, modelName: "Article" } });
+
+        const card = document.querySelector('[data-role="editor-card"]') as HTMLElement;
+        const header = screen.getByTestId("workflow-editor-header");
+        const scroll = document.querySelector('[data-role="editor-scroll"]') as HTMLElement;
+        expect(card.contains(header)).toBe(true);
+        expect(card.contains(scroll)).toBe(true);
+        expect(scroll.contains(header)).toBe(false);
+        expect(scroll.contains(screen.getByTestId("step-card-s1"))).toBe(true);
+    });
+
     it("shows no flow without an open workflow", () => {
         renderLayout({ detail: "none", header: null });
 
         expect(screen.queryByTestId("step-card-s1")).toBeNull();
-        expect(screen.queryByRole("button", { name: "Add step" })).toBeNull();
+        expect(screen.queryByRole("button", { name: "Add new step" })).toBeNull();
     });
 
     it("mounts the step drawer once", () => {
@@ -110,6 +126,8 @@ describe("WorkflowEditorLayout flow", () => {
         });
 
         const card = screen.getByTestId("step-card-s2");
+        // The Edit step button sits in the item's body: open the item first.
+        fireEvent.click(within(card).getByText("Legal sign-off"));
         fireEvent.click(within(card).getByRole("button", { name: "Edit step" }));
 
         expect(presenter.openStep).toHaveBeenCalledWith("s2");
@@ -120,15 +138,15 @@ describe("WorkflowEditorLayout flow", () => {
             flow: { steps: STEPS, stepsError: null, modelName: "Article" }
         });
 
-        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
+        fireEvent.click(screen.getByRole("button", { name: "Add new step" }));
         expect(presenter.openTypePicker).toHaveBeenCalledWith(STEPS.length);
 
         const first = screen.getByTestId("step-card-s1");
-        fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
+        fireEvent.click(within(first).getByRole("button", { name: "Move Editorial check down" }));
         expect(presenter.moveStep).toHaveBeenCalledWith(0, 1);
 
         const second = screen.getByTestId("step-card-s2");
-        fireEvent.click(within(second).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(second).getByRole("button", { name: "Delete Legal sign-off" }));
         expect(presenter.requestDeleteStep).toHaveBeenCalledWith("s2");
     });
 
@@ -139,11 +157,11 @@ describe("WorkflowEditorLayout flow", () => {
             flow: { steps: STEPS, stepsError: null, modelName: "Article" }
         });
 
-        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
+        fireEvent.click(screen.getByRole("button", { name: "Add new step" }));
         const first = screen.getByTestId("step-card-s1");
-        fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
+        fireEvent.click(within(first).getByRole("button", { name: "Move Editorial check down" }));
         const second = screen.getByTestId("step-card-s2");
-        fireEvent.click(within(second).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(second).getByRole("button", { name: "Delete Legal sign-off" }));
 
         expect(presenter.openTypePicker).not.toHaveBeenCalled();
         expect(presenter.moveStep).not.toHaveBeenCalled();
@@ -183,14 +201,15 @@ describe("WorkflowEditorLayout flow", () => {
                     {
                         type: "review",
                         label: "People",
-                        description: "Members of one or more teams review.",
+                        description:
+                            "Members of the reviewing teams approve or reject the revision.",
                         addable: true,
                         reason: null
                     },
                     {
                         type: "ai",
                         label: "AI",
-                        description: "An AI model reviews against your written instructions.",
+                        description: "An AI model checks the content and approves or rejects it.",
                         addable: false,
                         reason: "Requires the AI Power-Ups licence."
                     }

@@ -4,10 +4,8 @@ import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractio
 import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 import { WebsocketsDisconnectUseCase } from "~/features/Disconnect/abstractions.js";
-import { validateDisconnectWhere } from "~/features/Disconnect/validateDisconnectWhere.js";
 import type { WebsocketsPermission } from "~/types.js";
 
 interface IDisconnectConnectionsArgs {
@@ -18,73 +16,12 @@ interface IDisconnectIdentityArgs {
     identityId: string;
 }
 
-interface IDisconnectTenantArgs {
-    tenant: string;
-}
-
 const checkPermissions = async (identityContext: IdentityContext.Interface): Promise<void> => {
     const permissions = await identityContext.getPermissions<WebsocketsPermission>("websockets");
 
     if (permissions.length === 0) {
         throw new NotAuthorizedError();
     }
-};
-
-interface IScope {
-    identityContext: IdentityContext.Interface;
-    tenantContext: TenantContext.Interface;
-}
-
-/**
- * Only a full-access identity in the root tenant may see and disconnect connections of all
- * tenants. Everyone else is limited to the current tenant's connections.
- */
-const canAccessAllTenants = async (scope: IScope): Promise<boolean> => {
-    const tenant = scope.tenantContext.getTenant();
-    if (tenant.id !== "root") {
-        return false;
-    }
-    return scope.identityContext.hasFullAccess();
-};
-
-const listScopedConnections = async (
-    scope: IScope,
-    listConnections: WebsocketsListConnectionsUseCase.Interface,
-    where: WebsocketsListConnectionsUseCase.ParamsWhere | undefined
-): Promise<WebsocketsListConnectionsUseCase.RegistryData[]> => {
-    const result = await listConnections.execute({ where });
-    if (result.isFail()) {
-        throw result.error;
-    }
-    if (await canAccessAllTenants(scope)) {
-        return result.value;
-    }
-    const tenantId = scope.tenantContext.getTenant().id;
-    return result.value.filter(connection => connection.tenant === tenantId);
-};
-
-const disconnectScopedConnections = async (
-    scope: IScope,
-    listConnections: WebsocketsListConnectionsUseCase.Interface,
-    disconnect: WebsocketsDisconnectUseCase.Interface,
-    where: WebsocketsListConnectionsUseCase.ParamsWhere | undefined
-): Promise<WebsocketsListConnectionsUseCase.RegistryData[]> => {
-    // Security: an empty `identityId` / `tenant` / `connections` must not fall through to "list all".
-    const validationError = validateDisconnectWhere(where);
-    if (validationError) {
-        throw validationError;
-    }
-    const connections = await listScopedConnections(scope, listConnections, where);
-    if (connections.length === 0) {
-        return [];
-    }
-    const result = await disconnect.execute({
-        where: { connections: connections.map(connection => connection.connectionId) }
-    });
-    if (result.isFail()) {
-        throw result.error;
-    }
-    return result.value;
 };
 
 class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
@@ -121,7 +58,6 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
             input WebsocketsListConnectionsWhereInput {
                 identityId: String
-                tenant: String
             }
 
             type WebsocketsDisconnectResponse {
@@ -154,7 +90,6 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
             extend type WebsocketsMutation {
                 disconnect(connections: [String!]!): WebsocketsDisconnectResponse!
                 disconnectIdentity(identityId: String!): WebsocketsDisconnectResponse!
-                disconnectTenant(tenant: String!): WebsocketsDisconnectResponse!
                 disconnectAll: WebsocketsDisconnectResponse!
             }
         `);
@@ -179,23 +114,22 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<WebsocketsListConnectionsUseCase.Params>({
             path: "WebsocketsQuery.listConnections",
-            dependencies: [IdentityContext, TenantContext, WebsocketsListConnectionsUseCase],
+            dependencies: [IdentityContext, WebsocketsListConnectionsUseCase],
             resolver: (
                 identityContext: IdentityContext.Interface,
-                tenantContext: TenantContext.Interface,
                 listConnections: WebsocketsListConnectionsUseCase.Interface
             ) => {
                 return async ({ args }: { args: WebsocketsListConnectionsUseCase.Params }) => {
                     try {
                         await checkPermissions(identityContext);
 
-                        const result = await listScopedConnections(
-                            { identityContext, tenantContext },
-                            listConnections,
-                            args.where
-                        );
+                        const result = await listConnections.execute(args);
 
-                        return new Response(result);
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
+
+                        return new Response(result.value);
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -205,30 +139,26 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IDisconnectConnectionsArgs>({
             path: "WebsocketsMutation.disconnect",
-            dependencies: [
-                IdentityContext,
-                TenantContext,
-                WebsocketsListConnectionsUseCase,
-                WebsocketsDisconnectUseCase
-            ],
+            dependencies: [IdentityContext, WebsocketsDisconnectUseCase],
             resolver: (
                 identityContext: IdentityContext.Interface,
-                tenantContext: TenantContext.Interface,
-                listConnections: WebsocketsListConnectionsUseCase.Interface,
                 disconnect: WebsocketsDisconnectUseCase.Interface
             ) => {
                 return async ({ args }: { args: IDisconnectConnectionsArgs }) => {
                     try {
                         await checkPermissions(identityContext);
 
-                        const result = await disconnectScopedConnections(
-                            { identityContext, tenantContext },
-                            listConnections,
-                            disconnect,
-                            { connections: args.connections }
-                        );
+                        const result = await disconnect.execute({
+                            where: {
+                                connections: args.connections
+                            }
+                        });
 
-                        return new Response(result);
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
+
+                        return new Response(result.value);
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -238,72 +168,26 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IDisconnectIdentityArgs>({
             path: "WebsocketsMutation.disconnectIdentity",
-            dependencies: [
-                IdentityContext,
-                TenantContext,
-                WebsocketsListConnectionsUseCase,
-                WebsocketsDisconnectUseCase
-            ],
+            dependencies: [IdentityContext, WebsocketsDisconnectUseCase],
             resolver: (
                 identityContext: IdentityContext.Interface,
-                tenantContext: TenantContext.Interface,
-                listConnections: WebsocketsListConnectionsUseCase.Interface,
                 disconnect: WebsocketsDisconnectUseCase.Interface
             ) => {
                 return async ({ args }: { args: IDisconnectIdentityArgs }) => {
                     try {
                         await checkPermissions(identityContext);
 
-                        const result = await disconnectScopedConnections(
-                            { identityContext, tenantContext },
-                            listConnections,
-                            disconnect,
-                            { identityId: args.identityId }
-                        );
+                        const result = await disconnect.execute({
+                            where: {
+                                identityId: args.identityId
+                            }
+                        });
 
-                        return new Response(result);
-                    } catch (ex) {
-                        return new ErrorResponse(ex);
-                    }
-                };
-            }
-        });
-
-        builder.addResolver<IDisconnectTenantArgs>({
-            path: "WebsocketsMutation.disconnectTenant",
-            dependencies: [
-                IdentityContext,
-                TenantContext,
-                WebsocketsListConnectionsUseCase,
-                WebsocketsDisconnectUseCase
-            ],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                tenantContext: TenantContext.Interface,
-                listConnections: WebsocketsListConnectionsUseCase.Interface,
-                disconnect: WebsocketsDisconnectUseCase.Interface
-            ) => {
-                return async ({ args }: { args: IDisconnectTenantArgs }) => {
-                    try {
-                        await checkPermissions(identityContext);
-
-                        const scope = { identityContext, tenantContext };
-                        const currentTenant = tenantContext.getTenant();
-                        if (
-                            args.tenant !== currentTenant.id &&
-                            !(await canAccessAllTenants(scope))
-                        ) {
-                            throw new NotAuthorizedError();
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
                         }
 
-                        const result = await disconnectScopedConnections(
-                            { identityContext, tenantContext },
-                            listConnections,
-                            disconnect,
-                            { tenant: args.tenant }
-                        );
-
-                        return new Response(result);
+                        return new Response(result.value);
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -313,30 +197,22 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WebsocketsMutation.disconnectAll",
-            dependencies: [
-                IdentityContext,
-                TenantContext,
-                WebsocketsListConnectionsUseCase,
-                WebsocketsDisconnectUseCase
-            ],
+            dependencies: [IdentityContext, WebsocketsDisconnectUseCase],
             resolver: (
                 identityContext: IdentityContext.Interface,
-                tenantContext: TenantContext.Interface,
-                listConnections: WebsocketsListConnectionsUseCase.Interface,
                 disconnect: WebsocketsDisconnectUseCase.Interface
             ) => {
                 return async () => {
                     try {
                         await checkPermissions(identityContext);
 
-                        const result = await disconnectScopedConnections(
-                            { identityContext, tenantContext },
-                            listConnections,
-                            disconnect,
-                            undefined
-                        );
+                        const result = await disconnect.execute();
 
-                        return new Response(result);
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
+
+                        return new Response(result.value);
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }

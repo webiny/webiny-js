@@ -1,4 +1,5 @@
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { STEP_REVIEWER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface AssignedMessageParams {
     /** `review.title`. */
@@ -28,6 +29,8 @@ export const buildAssignedMessage = (params: AssignedMessageParams): Notificatio
         body: `${stepTitle} · ${why}`,
         subject: `You’re reviewing: ${contentTitle} (${stepTitle})`,
         text: `You are the owner of ${stepTitle}. Open the content to approve or reject it.`,
-        linkLabel: "Open content"
+        linkLabel: "Open content",
+        link: "content",
+        footer: STEP_REVIEWER_FOOTER
     };
 };

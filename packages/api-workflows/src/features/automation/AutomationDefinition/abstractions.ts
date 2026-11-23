@@ -52,6 +52,12 @@ export interface IAutomationDefinition<TSettings = unknown> {
      * workflow authors never set or see them (R154).
      */
     readonly settingsSchema: ZodType<TSettings>;
+    /**
+     * The name of one top-level property of `settingsSchema` that identifies what this step does
+     * (a webhook's URL, say). The editor shows that setting's title and value next to the
+     * automation's name. Ignored, with a log line, when it is not a property of the schema.
+     */
+    readonly keySetting?: string;
     /** How many times `run` may be called for one step (default 50); past it the step fails. */
     readonly maxIterations?: number;
     run(params: AutomationRunParams<TSettings>): Promise<AutomationOutcome>;

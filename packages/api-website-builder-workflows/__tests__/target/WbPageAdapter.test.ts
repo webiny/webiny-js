@@ -135,6 +135,8 @@ describe("WB page adapter", () => {
                 folder: { id: "folder-1", type: "wb:page" },
                 modelId: PAGE_MODEL_ID,
                 title: "Page A",
+                // Pages have one content type name (B2 design 10).
+                contentTypeName: "Page",
                 author: { id: ADMIN.id, displayName: ADMIN.displayName }
             }
         });

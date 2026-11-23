@@ -134,6 +134,15 @@ describe("ExclusionsTable (R323)", () => {
         expect(expired?.textContent).toBe("Expired");
     });
 
+    it("does not dim an expired row (B27)", () => {
+        const { result } = renderTable([ANA, EXPIRED]);
+
+        const expired = getRow(result.container, "user-2");
+        expect(expired.className).not.toMatch(/opacity|muted|disabled/);
+        expect(expired.querySelector("[class*='opacity']")).toBeNull();
+        expect(expired.querySelector("[data-muted]")).toBeNull();
+    });
+
     it("names the row actions for screen readers and titles them Edit and Remove (Q68.6)", () => {
         renderTable([ANA]);
 

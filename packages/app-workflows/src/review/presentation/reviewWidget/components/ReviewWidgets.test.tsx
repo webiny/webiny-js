@@ -15,7 +15,8 @@ import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/a
 import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
-import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
@@ -55,7 +56,9 @@ const createListReviews = (...results: ListResult[]) => {
 
 type ListReviewsFake = ReturnType<typeof createListReviews>;
 
-const viewAllUrl = (tab: ReviewListTab): string => `/content-reviews?tab=${tab}`;
+const viewAllUrl = (scope: ReviewListScope, state: ReviewListState): string => {
+    return `/content-reviews?scope=${scope}&state=${state}`;
+};
 
 const mount = (ui: React.ReactElement, listReviews: ListReviewsFake, teamCount = 1) => {
     const container = new Container();
@@ -77,7 +80,7 @@ const mount = (ui: React.ReactElement, listReviews: ListReviewsFake, teamCount =
 
 const callsOf = (listReviews: ListReviewsFake, mine: boolean): number => {
     return listReviews.execute.mock.calls.filter(call => {
-        return (call[0].list === "myRequests") !== mine;
+        return (call[0].scope === "myRequests") !== mine;
     }).length;
 };
 
@@ -107,7 +110,7 @@ describe("review dashboard widgets", () => {
         expect(link.getAttribute("href")).toBe("/content/e1");
         expect(screen.getByText("Legal check · Type article (Headless CMS)")).toBeTruthy();
         expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe(
-            "/content-reviews?tab=assignedToMe"
+            "/content-reviews?scope=assignedToMe&state=inReview"
         );
         expect(listReviews.execute.mock.calls[0][0].app).toBe("cms");
         // "View all" ends with the arrow icon.
@@ -116,7 +119,7 @@ describe("review dashboard widgets", () => {
         );
     });
 
-    it("renders the step dot, the step line with the app and the Failed tag with its icon", async () => {
+    it("renders the step dot, the step line with the app and a text-only Failed tag", async () => {
         const item = createReviewListItem({
             id: "r1",
             title: "Spring launch",
@@ -138,8 +141,8 @@ describe("review dashboard widgets", () => {
         expect(within(row).getByText("Legal sign-off · Type Article (Headless CMS)")).toBeTruthy();
         expect(row.querySelector("[style*='background-color']")).not.toBeNull();
         expect(within(row).getByText("Failed")).toBeTruthy();
-        // The row's only icon is the one inside the Failed tag.
-        expect(row.querySelectorAll("svg")).toHaveLength(1);
+        // The Failed tag is text only: the row has no icon.
+        expect(row.querySelectorAll("svg")).toHaveLength(0);
     });
 
     it("renders no step dot for a row without a current step", async () => {
@@ -201,10 +204,10 @@ describe("review dashboard widgets", () => {
 
         expect(await screen.findByText("Your team pools are empty")).toBeTruthy();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ app: "cms", list: "pool" })
+            expect.objectContaining({ app: "cms", scope: "pool", where: { state: "inReview" } })
         );
         expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe(
-            "/content-reviews?tab=pool"
+            "/content-reviews?scope=pool&state=inReview"
         );
     });
 
@@ -225,6 +228,11 @@ describe("review dashboard widgets", () => {
         fireEvent.click(screen.getByRole("radio", { name: "Team pool" }));
 
         expect(await screen.findByText("You’re not in a reviewing team")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Ask a workflow manager to add you to a team that reviews Headless CMS content."
+            )
+        ).toBeTruthy();
     });
 
     it("renders My requests with its empty state and View all to My requests", async () => {
@@ -243,7 +251,7 @@ describe("review dashboard widgets", () => {
         expect(await screen.findByText("You haven’t requested any reviews")).toBeTruthy();
         expect(screen.queryByRole("radio")).toBeNull();
         expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe(
-            "/content-reviews?tab=myRequests"
+            "/content-reviews?scope=myRequests&state=all"
         );
         expect(listReviews.execute.mock.calls[0][0].app).toBe("wb");
     });
@@ -321,7 +329,7 @@ describe("review dashboard widgets", () => {
         const requestedItem = createReviewListItem({ id: "b", title: "Requested" });
         // One injected use case answers both widgets, by the list each asks for.
         const execute = vi.fn<ListReviewsUseCase.Interface["execute"]>(async params => {
-            if (params.list === "myRequests") {
+            if (params.scope === "myRequests") {
                 return page([requestedItem]);
             }
             return page([mineItem]);

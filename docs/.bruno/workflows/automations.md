@@ -85,7 +85,7 @@ Every failure writes a fixed reason on the step (`failed`, R146); nothing is lef
 
 Stuck detection runs when a review is read. A task that finished as `failed` or `aborted` gets a five-minute grace first, so the runner's own error hooks can write the proper reason; a task that is gone is given the same grace measured from when the step started. A pending or running task is never treated as stuck.
 
-A failed step shows in the failed list (D112). The requester, or a viewer with `reassign`, restarts it (`restartCmsEntryReviewStep`, `restartWebsiteBuilderPageReviewStep`, `canRestart`, R153, R158). The restart re-reaches the step as the requester, and `runs` on the step holds the earlier attempts only, each with its `taskId`, outcome and reason. A rejected step cannot be restarted (D8). Cancelling or deleting a review aborts the running task (R151).
+A failed step shows in the review lists with the state Failed (D112, D190); operators see all of them under All. The requester, or a viewer with `reassign`, restarts it (`restartCmsEntryReviewStep`, `restartWebsiteBuilderPageReviewStep`, `canRestart`, R153, R158). The restart re-reaches the step as the requester, and `runs` on the step holds the earlier attempts only, each with its `taskId`, outcome and reason. A rejected step cannot be restarted (D8). Cancelling or deleting a review aborts the running task (R151).
 
 ## 9. Registering it
 

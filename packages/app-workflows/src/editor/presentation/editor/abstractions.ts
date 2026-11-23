@@ -8,6 +8,7 @@ import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
+import type { StepDetailRow } from "~/editor/model/StepDetailRow.js";
 import type { RoutingStepConfig } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
@@ -32,6 +33,9 @@ export type WorkflowEditorStatus = "loading" | "ready" | "failed" | "noAccess";
 // What the right side shows: nothing, a loading workflow, a model without a workflow, or a draft.
 export type WorkflowEditorDetailKind = "none" | "loading" | "empty" | "workflow";
 
+// The model list filter of the panel: every model, only with a workflow, only without.
+export type ModelWorkflowFilter = "all" | "with" | "without";
+
 export interface ModelRowVm {
     modelId: string;
     name: string;
@@ -40,12 +44,17 @@ export interface ModelRowVm {
     bound: boolean;
     unsaved: boolean;
     active: boolean;
+    // The row menu is off while a save or a dialog action runs, as the header's Delete is.
+    actionsDisabled: boolean;
 }
 
 export interface ModelPanelVm {
     label: string;
     showSearch: boolean;
     search: string;
+    // The All / With workflow / Without workflow control; the CMS only.
+    showFilter: boolean;
+    filter: ModelWorkflowFilter;
     rows: ModelRowVm[];
     loading: boolean;
     loadingMore: boolean;
@@ -59,7 +68,7 @@ export interface ModelPanelVm {
 export interface WorkflowHeaderVm {
     name: string;
     nameError: string | null;
-    // `Applies to {Model} · {appliesToLabel}`.
+    // `Applies to {Model} ({appliesToLabel}) · Created by {name} on {dd.mm.yyyy}`; no `Created by` part for a draft never saved.
     appliesTo: string;
     dirty: boolean;
     saving: boolean;
@@ -89,6 +98,8 @@ export interface StepCardVm {
     typeLabel: string;
     type: string;
     summary: string;
+    // The key and value rows of the expanded body (`Reviewing teams`, `Model`, ...); empty when there are none.
+    details: StepDetailRow[];
     // The step's own description, or null when empty.
     description: string | null;
     readOnly: boolean;
@@ -269,6 +280,12 @@ export interface IWorkflowEditorPresenter {
     // The `Delete workflow` menu item: asks first (R278).
     requestDelete(): void;
     setSearch(search: string): void;
+    // Sets the filter and reloads the model list from the first page.
+    setWorkflowFilter(filter: ModelWorkflowFilter): void;
+    // The row menu: opens the model, then starts the same flow as the no-workflow state's button.
+    createWorkflowForModel(modelId: string): Promise<void>;
+    // The row menu: opens the model, then asks to delete its workflow like the header's button.
+    requestDeleteWorkflowForModel(modelId: string): Promise<void>;
     loadMore(): Promise<void>;
     selectModel(modelId: string): Promise<void>;
     createWorkflow(): void;
