@@ -1,30 +1,36 @@
-import { GetProjectService } from "@webiny/project/abstractions/index.js";
 import { UiService } from "@webiny/project/abstractions/index.js";
 import { GetPulumiService } from "~/abstractions/services/GetPulumiService.js";
 
 export class GetPulumiServiceWithDownloadInfo implements GetPulumiService.Interface {
     constructor(
-        private getProjectService: GetProjectService.Interface,
         private ui: UiService.Interface,
         private decoratee: GetPulumiService.Interface
     ) {}
 
     async execute(params: GetPulumiService.Params = {}) {
-        const project = this.getProjectService.execute();
-        const pulumiCliPath = project.paths.dotWebinyFolder.join("pulumi-cli");
+        const pulumiOptions = params.pulumiOptions || {};
+        const beforePulumiInstall = pulumiOptions.beforePulumiInstall;
 
-        if (!pulumiCliPath.existsSync()) {
-            this.ui.info("Looks like this is your first time using Pulumi CLI. Downloading...");
+        return this.decoratee.execute({
+            ...params,
+            pulumiOptions: {
+                ...pulumiOptions,
+                beforePulumiInstall: async () => {
+                    this.ui.info(
+                        "Downloading Pulumi CLI. This happens once per Pulumi version, and all projects on this machine share it."
+                    );
 
-            // New line b/c after the Pulumi CLI download, plugins are next.
-            this.ui.emptyLine();
-        }
+                    // New line b/c after the Pulumi CLI download, plugins are next.
+                    this.ui.emptyLine();
 
-        return this.decoratee.execute(params);
+                    await beforePulumiInstall?.();
+                }
+            }
+        });
     }
 }
 
 export const getPulumiServiceWithDownloadInfo = GetPulumiService.createDecorator({
     decorator: GetPulumiServiceWithDownloadInfo,
-    dependencies: [GetProjectService, UiService]
+    dependencies: [UiService]
 });

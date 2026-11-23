@@ -7,6 +7,7 @@ import semver from "semver";
 import { findUpSync } from "find-up";
 import { loadJsonFileSync } from "load-json-file";
 import { downloadFile } from "./downloadFile.js";
+import { removeUnusedFolders } from "./removeUnusedFolders.js";
 import { PackageJson } from "type-fest";
 
 // We need to sanitize the package version because, occasionally, we've noticed that the Pulumi version
@@ -18,19 +19,19 @@ const getPulumiVersion = () => {
     return semver.clean(version!);
 };
 
+export interface DownloadBinariesResult {
+    binaryFolder: string;
+    downloaded: boolean;
+}
+
+// Each Pulumi version is downloaded once into the store and shared by every project that uses it.
+// The archive is extracted into a temporary folder and renamed into place, so a project that finds
+// the folder never sees a half-extracted CLI, even while another project is downloading it.
 export default async (
-    downloadFolder: string,
+    storeFolder: string,
     beforeInstall?: () => void,
     afterInstall?: () => void
-) => {
-    if (fs.existsSync(downloadFolder)) {
-        return false;
-    }
-
-    if (typeof beforeInstall === "function") {
-        await beforeInstall();
-    }
-
+): Promise<DownloadBinariesResult> => {
     const platform = os.platform();
     if (platform !== "darwin" && platform !== "linux" && platform !== "win32") {
         throw Error(
@@ -38,19 +39,61 @@ export default async (
         );
     }
 
-    try {
-        await setupPlatform(downloadFolder, platform);
-    } catch (error) {
-        fs.rmSync(downloadFolder, { recursive: true, force: true });
-        throw error;
+    const version = getPulumiVersion();
+    const filename = getDownloadFilename(version!, platform);
+    const cliFolders = path.join(storeFolder, "cli");
+    const cliFolderName = filename.replace(/\.(tar\.gz|zip)$/, "");
+    const cliFolder = path.join(cliFolders, cliFolderName);
+    const binaryFolder = path.join(cliFolder, "pulumi");
+
+    if (fs.existsSync(binaryFolder)) {
+        removeUnusedCliVersions(cliFolders, cliFolderName);
+        return { binaryFolder, downloaded: false };
     }
+
+    if (typeof beforeInstall === "function") {
+        await beforeInstall();
+    }
+
+    const tempFolder = `${cliFolder}.${process.pid}.tmp`;
+    try {
+        fs.rmSync(tempFolder, { recursive: true, force: true });
+        await setupPlatform(tempFolder, filename, platform);
+        moveIntoPlace(tempFolder, cliFolder);
+    } finally {
+        fs.rmSync(tempFolder, { recursive: true, force: true });
+    }
+
+    removeUnusedCliVersions(cliFolders, cliFolderName);
 
     if (typeof afterInstall === "function") {
         await afterInstall();
     }
 
-    return true;
+    return { binaryFolder, downloaded: true };
 };
+
+const UNUSED_CLI_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function removeUnusedCliVersions(cliFolders: string, cliFolderName: string) {
+    removeUnusedFolders({
+        parentFolder: cliFolders,
+        keep: cliFolderName,
+        match: name => name.startsWith("pulumi-v"),
+        maxAgeMs: UNUSED_CLI_MAX_AGE_MS
+    });
+}
+
+function moveIntoPlace(tempFolder: string, cliFolder: string) {
+    try {
+        fs.renameSync(tempFolder, cliFolder);
+    } catch (error) {
+        // Another project downloaded the same version first.
+        if (!fs.existsSync(path.join(cliFolder, "pulumi"))) {
+            throw error;
+        }
+    }
+}
 
 const SUPPORTED_ARCHITECTURES = ["x64", "arm64"];
 
@@ -69,9 +112,11 @@ function getDownloadFilename(version: string, platform: SupportedPlatform): stri
     }
 }
 
-async function setupPlatform(downloadFolder: string, platform: SupportedPlatform) {
-    const version = getPulumiVersion();
-    const filename = getDownloadFilename(version!, platform);
+async function setupPlatform(
+    downloadFolder: string,
+    filename: string,
+    platform: SupportedPlatform
+) {
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     const absoluteFilename = path.join(downloadFolder, filename);

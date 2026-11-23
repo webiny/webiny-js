@@ -7,6 +7,10 @@ import merge from "lodash/merge.js";
 import kebabCase from "lodash/kebabCase.js";
 import set from "lodash/set.js";
 import downloadBinaries from "./downloadBinaries.js";
+import { getPulumiStoreFolder } from "./getPulumiStoreFolder.js";
+import { linkSharedPlugins } from "./linkSharedPlugins.js";
+import { removeProjectBinaries } from "./removeProjectBinaries.js";
+import { removeUnusedFolders } from "./removeUnusedFolders.js";
 
 export interface PulumiProcessResult {
     readonly stdout: string;
@@ -40,9 +44,10 @@ export interface Options {
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
 
-    // A folder into which the Pulumi CLI, along with all of its meta data and config files, will be set up.
-    // It's recommended this folder is not checked in into a code repository, since the Pulumi CLI can store
-    // sensitive information here, for example - user's Pulumi Service credentials.
+    // The project's own Pulumi folder (PULUMI_HOME), with its config and credentials. The CLI and its
+    // plugins live in the shared store instead (see `getPulumiStoreFolder`). It's recommended this folder
+    // is not checked in into a code repository, since the Pulumi CLI can store sensitive information
+    // here, for example - user's Pulumi Service credentials.
     pulumiFolder?: string;
 }
 
@@ -61,13 +66,16 @@ export interface InstallArgs {
 
 export const FLAG_NON_INTERACTIVE = "--non-interactive";
 
+const UNUSED_PLUGIN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
 export class PulumiError extends Error {}
 
 export class Pulumi {
     options: Options;
     pulumiFolder: string;
-    pulumiDownloadFolder: string;
-    pulumiBinaryPath: string;
+    pulumiStoreFolder: string;
+    pulumiBinaryFolder = "";
+    pulumiBinaryPath = "";
 
     static async create(options: Options = {}) {
         const pulumi = new Pulumi(options);
@@ -81,14 +89,14 @@ export class Pulumi {
     private constructor(options: Options = {}) {
         this.options = options;
 
-        this.pulumiDownloadFolder = path.join(
+        this.pulumiFolder = path.join(
             options.pulumiFolder || process.cwd(),
             "pulumi-cli",
-            os.platform()
+            os.platform(),
+            "pulumi"
         );
 
-        this.pulumiFolder = path.join(this.pulumiDownloadFolder, "pulumi");
-        this.pulumiBinaryPath = path.join(this.pulumiFolder, "pulumi");
+        this.pulumiStoreFolder = getPulumiStoreFolder();
     }
 
     run(rawArgs: RunArgs) {
@@ -150,7 +158,7 @@ export class Pulumi {
                  * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
                  * plugins necessary for custom resources and dynamic providers to work.
                  */
-                PATH: this.pulumiFolder + PATH_SEPARATOR + process.env.PATH
+                PATH: this.pulumiBinaryFolder + PATH_SEPARATOR + process.env.PATH
             }
         };
 
@@ -179,14 +187,20 @@ export class Pulumi {
         return wrapped as unknown as PulumiProcess;
     }
 
-    private async install(rawArgs?: InstallArgs): Promise<boolean> {
+    private async install(rawArgs?: InstallArgs) {
         const args = merge({}, this.options, rawArgs);
 
-        return await downloadBinaries(
-            this.pulumiDownloadFolder,
+        const { binaryFolder } = await downloadBinaries(
+            this.pulumiStoreFolder,
             args.beforePulumiInstall,
             args.afterPulumiInstall
         );
+
+        this.pulumiBinaryFolder = binaryFolder;
+        this.pulumiBinaryPath = path.join(binaryFolder, "pulumi");
+
+        removeProjectBinaries(this.pulumiFolder);
+        linkSharedPlugins(this.pulumiFolder, path.join(this.pulumiStoreFolder, "plugins"));
     }
 
     private async ensureAwsPluginIsInstalled() {
@@ -233,19 +247,13 @@ export class Pulumi {
             );
         }
 
-        // Remove stale resource-aws plugin versions to reclaim disk space.
-        if (fs.pathExistsSync(pluginsDir)) {
-            for (const entry of fs.readdirSync(pluginsDir)) {
-                if (!entry.startsWith("resource-aws-") || entry === requiredPluginDir) {
-                    continue;
-                }
-                // Strip the trailing ".lock" suffix so both the directory and its
-                // lock file are matched by the same prefix check.
-                const baseName = entry.endsWith(".lock") ? entry.slice(0, -5) : entry;
-                if (baseName !== requiredPluginDir) {
-                    fs.removeSync(path.join(pluginsDir, entry));
-                }
-            }
-        }
+        // The plugin folder is shared by every project on the machine, and another project may need
+        // a different version, so only versions no project has used for a while are removed.
+        removeUnusedFolders({
+            parentFolder: pluginsDir,
+            keep: requiredPluginDir,
+            match: name => name.startsWith("resource-aws-"),
+            maxAgeMs: UNUSED_PLUGIN_MAX_AGE_MS
+        });
     }
 }
