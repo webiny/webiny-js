@@ -11,7 +11,13 @@ interface ObjectFieldLike extends IFieldVM {
     items?: ObjectFieldItemLike[];
 }
 
+// The routing rules field: its errors are counted per rule message (`countRuleErrors`), not as one field.
+export const RULES_FIELD_NAME = "assignment.rules";
+
 const countFieldErrors = (field: ObjectFieldLike): number => {
+    if (field.qualifiedName === RULES_FIELD_NAME) {
+        return 0;
+    }
     let count = 0;
     if (field.validation.isValid === false) {
         count += 1;
@@ -31,7 +37,7 @@ const countFieldErrors = (field: ObjectFieldLike): number => {
 };
 
 /*
- * The invalid fields of a layout, nested object fields and tabs included (B23): the error count of
+ * The invalid fields of a layout (the routing rules field aside), nested object fields and tabs included (B23): the error count of
  * a step drawer tab. The same fields the form model's own `hasErrors` of a tab looks at.
  */
 export const countLayoutErrors = (layout: LayoutNodeVM[]): number => {

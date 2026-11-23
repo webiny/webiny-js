@@ -39,7 +39,7 @@
     "@types/jsonwebtoken": "9.0.10",
     "@types/react": "19.3.0",
     "@webiny/build-tools": "0.0.0",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"

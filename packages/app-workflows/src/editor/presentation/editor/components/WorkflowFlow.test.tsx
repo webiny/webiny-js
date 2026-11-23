@@ -32,6 +32,7 @@ const createStep = (id: string, number: number, title: string): StepCardVm => {
         readOnly: false,
         warnings: [],
         error: null,
+        errorIndex: 0,
         canMoveUp: number > 1,
         canMoveDown: number < 3
     };

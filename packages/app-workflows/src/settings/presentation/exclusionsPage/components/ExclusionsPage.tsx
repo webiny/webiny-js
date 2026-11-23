@@ -46,13 +46,24 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     } else {
         let namesBanner: React.ReactNode = null;
         if (vm.namesFailed) {
-            namesBanner = <ExclusionsNamesBanner onRetry={() => presenter.retryNames()} />;
+            namesBanner = (
+                <div className="px-lg pb-md">
+                    <ExclusionsNamesBanner onRetry={() => presenter.retryNames()} />
+                </div>
+            );
         }
 
-        let list: React.ReactNode = <ExclusionsTable rows={vm.rows} presenter={presenter} />;
+        // The table runs edge to edge under the filters band, like the Content Reviews list; the
+        // empty state keeps the page's padding.
+        let list: React.ReactNode = <ExclusionsTable presenter={presenter} />;
         if (vm.empty !== null) {
             list = (
-                <ExclusionsEmpty empty={vm.empty} onClearSearch={() => presenter.setSearch("")} />
+                <div className="px-lg pt-md pb-lg">
+                    <ExclusionsEmpty
+                        empty={vm.empty}
+                        onClearSearch={() => presenter.setSearch("")}
+                    />
+                </div>
             );
         }
 
@@ -69,6 +80,12 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
                 {list}
             </>
         );
+    }
+
+    // The ready body is laid out edge to edge like the Content Reviews list; the other states
+    // keep the page's side and bottom padding.
+    if (vm.status !== "ready") {
+        body = <div className="px-lg pb-lg">{body}</div>;
     }
 
     const request = vm.dialog;
@@ -93,7 +110,7 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     }
 
     return (
-        <div data-testid="exclusions-page" className="flex flex-col gap-md p-lg">
+        <div data-testid="exclusions-page" className="flex flex-col">
             <ExclusionsHeader />
             {body}
             {dialog}

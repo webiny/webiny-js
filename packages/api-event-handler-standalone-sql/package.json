@@ -29,8 +29,8 @@
     "@webiny/self-hosted-auth-sql": "0.0.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.14",
-    "@electric-sql/pglite-socket": "^0.2.17",
+    "@electric-sql/pglite": "^0.5.17",
+    "@electric-sql/pglite-socket": "^0.2.20",
     "@types/ws": "^8.18.2",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-aco-pg": "0.0.0",
@@ -44,7 +44,7 @@
     "knex": "^3.3.0",
     "rimraf": "^6.1.4",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.0",
+    "vitest": "^5.1.1",
     "ws": "^8.23.0"
   },
   "publishConfig": {

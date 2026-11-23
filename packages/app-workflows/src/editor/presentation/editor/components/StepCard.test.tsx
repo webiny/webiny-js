@@ -32,6 +32,7 @@ const STEP: StepCardVm = {
     readOnly: false,
     warnings: [],
     error: null,
+    errorIndex: 0,
     canMoveUp: true,
     canMoveDown: true
 };
@@ -488,6 +489,39 @@ describe("StepCard", () => {
                 })
             );
             expect(screen.getByText("2 warnings")).toBeTruthy();
+        });
+
+        it("shows the Error tag, not a warning count, for a live rule error line", () => {
+            renderCard(
+                createProps({
+                    step: {
+                        ...STEP,
+                        warnings: [
+                            { text: "Rule 2: Legal is not a reviewing team.", severity: "error" }
+                        ]
+                    }
+                })
+            );
+
+            expect(screen.getByText("Error")).toBeTruthy();
+            expect(screen.queryByText(/\d+ warnings?$/)).toBeNull();
+        });
+
+        it("counts only the warning lines next to an error line as the Error tag", () => {
+            renderCard(
+                createProps({
+                    step: {
+                        ...STEP,
+                        warnings: [
+                            { text: "Rule 1: The assigned user was deleted.", severity: "error" },
+                            { text: "Rule 2: The folder no longer exists.", severity: "warning" }
+                        ]
+                    }
+                })
+            );
+
+            expect(screen.getByText("Error")).toBeTruthy();
+            expect(screen.queryByText("2 warnings")).toBeNull();
         });
     });
 

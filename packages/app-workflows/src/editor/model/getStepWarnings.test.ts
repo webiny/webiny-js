@@ -271,18 +271,36 @@ describe("getStepWarnings: People rules (R299, R312)", () => {
         ]);
     });
 
-    it("lists the team warnings before the rule lines", () => {
+    it("lists the rule lines before the step's own team warnings", () => {
         const step = stepWith([createRuleValue({ id: "a", target: null })]);
         const teams = [createWorkflowTeamSummary({ id: "team-1", name: "Legal", memberCount: 0 })];
 
         const lines = getStepWarnings(step, context({ teams, references }));
 
         expect(lines.map(line => line.text)).toEqual([
-            "Legal has no members.",
-            "Rule 1: Choose who this rule assigns to."
+            "Rule 1: Choose who this rule assigns to.",
+            "Legal has no members."
         ]);
-        expect(lines.map(line => line.severity)).toEqual(["warning", "error"]);
-        expect(lines[0].ruleId).toBeUndefined();
+        expect(lines.map(line => line.severity)).toEqual(["error", "warning"]);
+        expect(lines[1].ruleId).toBeUndefined();
+    });
+
+    it("orders by rule position, errors before warnings within a rule, then step lines", () => {
+        const folder = { id: "fx", type: "cms:article", includeDescendants: false };
+        const step = stepWith([
+            createRuleValue({ id: "a", folder }),
+            createRuleValue({ id: "b", target: null, folder })
+        ]);
+        const teams = [createWorkflowTeamSummary({ id: "team-1", name: "Legal", memberCount: 0 })];
+
+        const lines = getStepWarnings(step, context({ teams, references }));
+
+        expect(lines.map(line => `${line.severity}: ${line.text}`)).toEqual([
+            "warning: Rule 1: The folder no longer exists.",
+            "error: Rule 2: Choose who this rule assigns to.",
+            "warning: Rule 2: The folder no longer exists.",
+            "warning: Legal has no members."
+        ]);
     });
 
     it("follows the rule's current position", () => {

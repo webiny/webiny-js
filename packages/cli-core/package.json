@@ -31,7 +31,7 @@
     "pino": "^10.4.0",
     "pino-pretty": "^13.2.0",
     "semver": "^7.8.6",
-    "type-fest": "^5.10.0",
+    "type-fest": "^6.0.3",
     "wrap-ansi": "10.0.2",
     "write-json-file": "^7.0.0",
     "yargs": "^18.2.0",
@@ -43,7 +43,7 @@
     "rimraf": "^6.1.4",
     "strip-ansi": "7.2.0",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"

@@ -29,7 +29,7 @@
     "ora": "10.0.0",
     "os": "0.1.2",
     "rimraf": "^6.1.4",
-    "type-fest": "^5.10.0",
+    "type-fest": "^6.0.3",
     "validate-npm-package-name": "^8.0.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.2.0",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/validate-npm-package-name": "^4.0.2",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"

@@ -38,7 +38,7 @@
     "@webiny/lexical-converter": "0.0.0",
     "@webiny/project-extensions": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ai": "^7.0.173",
+    "ai": "^7.0.177",
     "front-matter": "^4.0.2",
     "happy-dom": "^21.0.4",
     "lodash": "^4.18.1",
@@ -61,7 +61,7 @@
     "graphql": "^16.15.0",
     "rimraf": "^6.1.4",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"

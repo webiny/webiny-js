@@ -46,8 +46,13 @@ const FULL_MESSAGE: NotificationTransport.Message = {
     details: DETAILS
 };
 
-const BUTTON_STYLE =
-    "display:inline-block;padding:10px 16px;border-radius:4px;background:#333333;color:#ffffff;text-decoration:none;";
+/** The inner HTML of the e-mail container, without the wrapper and the inline styles. */
+const stripStyles = (html: string): string => html.replace(/ style="[^"]*"/g, "");
+const unwrap = (html: string): string => {
+    const stripped = stripStyles(html);
+    expect(stripped.startsWith("<div>") && stripped.endsWith("</div>")).toBe(true);
+    return stripped.slice("<div>".length, -"</div>".length);
+};
 
 const createTransport = async (
     mailer: RecordingMailer,
@@ -104,7 +109,7 @@ describe("MailNotificationTransport (R193)", () => {
         });
 
         expect(mailer.sent).toHaveLength(1);
-        expect(mailer.sent[0].html).toBe(
+        expect(unwrap(mailer.sent[0].html)).toBe(
             "<p>Hi,</p><p>Anna &lt;b&gt;&quot;Adams&quot;&lt;/b&gt; &amp; &#39;Cara&#39;<br/>second line &lt;script&gt;</p>"
         );
         expect(mailer.sent[0].text).toBe(
@@ -139,9 +144,9 @@ describe("MailNotificationTransport (R193)", () => {
             message: { ...MESSAGE, url, linkLabel: "Open <content>" }
         });
 
-        expect(mailer.sent[0].html).toBe(
+        expect(unwrap(mailer.sent[0].html)).toBe(
             "<p>Hi,</p><p>Every step approved this revision.</p>" +
-                `<p><a href="https://admin.test/cms/content-entries/article?id=a%231&amp;tenantId=root" style="${BUTTON_STYLE}">Open &lt;content&gt;</a></p>`
+                `<div><a href="https://admin.test/cms/content-entries/article?id=a%231&amp;tenantId=root">Open &lt;content&gt;</a></div>`
         );
         expect(mailer.sent[0].text).toBe(`Hi,\n\n${MESSAGE.body}\n\nOpen <content>: ${url}`);
     });
@@ -152,7 +157,9 @@ describe("MailNotificationTransport (R193)", () => {
 
         await transport.send({ users: toRecipients(createUsers(1)), message: MESSAGE });
 
-        expect(mailer.sent[0].html).toBe("<p>Hi,</p><p>Every step approved this revision.</p>");
+        expect(unwrap(mailer.sent[0].html)).toBe(
+            "<p>Hi,</p><p>Every step approved this revision.</p>"
+        );
         expect(mailer.sent[0].html).not.toContain("<a");
         expect(mailer.sent[0].text).toBe(`Hi,\n\n${MESSAGE.body}`);
     });
@@ -168,7 +175,8 @@ describe("MailNotificationTransport (R193)", () => {
             message: { ...FULL_MESSAGE, url }
         });
 
-        const { html, text } = mailer.sent[0];
+        const { text } = mailer.sent[0];
+        const html = stripStyles(mailer.sent[0].html);
         expect(text).toBe(
             [
                 "Hi,",
@@ -193,9 +201,11 @@ describe("MailNotificationTransport (R193)", () => {
             ">Requested by</td>",
             ">Rita Requester</td>",
             "</table>",
-            `<a href="https://admin.test/website-builder/pages/editor/p%231?tenantId=root&amp;reviewId=r-1" style="${BUTTON_STYLE}">View review details</a>`,
+            `<a href="https://admin.test/website-builder/pages/editor/p%231?tenantId=root&amp;reviewId=r-1">View review details</a>`,
             `>${FULL_MESSAGE.footer}</p>`
         ];
+        expect(mailer.sent[0].html).toContain("max-width:640px");
+        expect(mailer.sent[0].html).toContain("font-family:");
         let position = -1;
         for (const part of parts) {
             const next = html.indexOf(part, position + 1);
@@ -238,7 +248,8 @@ describe("MailNotificationTransport (R193)", () => {
             }
         });
 
-        const { html, text } = mailer.sent[0];
+        const { text } = mailer.sent[0];
+        const html = stripStyles(mailer.sent[0].html);
         expect(html).not.toContain("<script>");
         expect(html).not.toContain("<i>");
         expect(html).toContain(

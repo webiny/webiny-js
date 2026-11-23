@@ -11,6 +11,8 @@ export interface ExclusionsPageInitParams {
 
 export type ExclusionsPageStatus = "loading" | "ready" | "failed" | "noAccess";
 
+export type ExclusionsSortDirection = "asc" | "desc";
+
 // The open dialog: Add has no user; Edit and Remove name the entry by its user (R234).
 export interface ExclusionDialogRequest {
     kind: "add" | "edit" | "remove";
@@ -28,6 +30,8 @@ export interface ExclusionRowVm {
     label: string;
     // A deleted user (QBZ-91).
     muted: boolean;
+    // The avatar initials of a found user; null for a deleted or not yet known user (icon avatar).
+    initials: string | null;
     // `This user no longer exists` for a deleted user, else null.
     subLine: string | null;
     // The reason or `No reason given`.
@@ -52,6 +56,8 @@ export interface ExclusionsPageVm {
     tabs: ExclusionTabVm[];
     // The text of `Search by name`; the rows are filtered by it on the client.
     search: string;
+    // The order of the rows by the user's name, toggled from the User column header.
+    sortDirection: ExclusionsSortDirection;
     rows: ExclusionRowVm[];
     // The empty state when the list is loaded and no row shows, else null (R322).
     empty: ExclusionsEmptyVm | null;
@@ -69,6 +75,8 @@ export interface IExclusionsPagePresenter extends ExclusionsSource {
     retryNames(): Promise<void>;
     setTab(tab: ExclusionTab): void;
     setSearch(search: string): void;
+    // Flips the name order between ascending and descending; the list is fully loaded, so on the client.
+    toggleSort(): void;
     openAdd(): void;
     openEdit(userId: string): void;
     dispose(): void;

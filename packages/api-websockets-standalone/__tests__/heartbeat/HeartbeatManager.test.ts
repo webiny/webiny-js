@@ -35,7 +35,6 @@ const createManager = (
 const createAdapter = (): WebsocketsServerAdapter.Interface<unknown> => ({
     start: vi.fn(),
     stop: vi.fn(),
-    onConnection: vi.fn(),
     onMessage: vi.fn(),
     onClose: vi.fn(),
     onError: vi.fn(),

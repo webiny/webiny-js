@@ -43,7 +43,7 @@
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^16.15.0",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"

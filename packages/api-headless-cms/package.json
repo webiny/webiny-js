@@ -54,10 +54,10 @@
     "@webiny/sdk": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.15.0",
-    "oxfmt": "^0.78.0",
+    "oxfmt": "^0.79.0",
     "rimraf": "^6.1.4",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.0",
+    "vitest": "^5.1.1",
     "write-json-file": "^7.0.0"
   },
   "publishConfig": {

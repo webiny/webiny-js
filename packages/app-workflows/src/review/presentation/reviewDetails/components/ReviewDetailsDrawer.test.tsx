@@ -753,6 +753,18 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
             expect(screen.getByText(/^Requested by/)).toBeTruthy();
         });
 
+        it("gives a step cut short by the cancel the neutral pending icon, not the in-review one", async () => {
+            renderDrawer(createCancelledUseCases());
+            await screen.findByText(/^This review was cancelled by /);
+
+            const tiles = Array.from(document.querySelectorAll("[data-role='step-circle']")).map(
+                circle => circle.getAttribute("data-tile")
+            );
+
+            expect(tiles).not.toContain("rate_review");
+            expect(tiles).not.toContain("hourglass_empty");
+        });
+
         it("shows no footer actions", async () => {
             renderDrawer(createCancelledUseCases());
             await screen.findByText(/^This review was cancelled by /);
