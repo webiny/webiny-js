@@ -17,7 +17,8 @@ const CONTENT_TYPES: IReviewContentTypesSource = {
 
 /*
  * Mounts the shared Content Reviews route, menu item and dashboard widgets for the `wb` app.
- * Pages have no content type: no Content type column and no filter (D113).
+ * Pages have no content model: no Content model column and no filter (D113, B6). The widgets are
+ * always mounted: a widget that mounts after the first render is not registered on the dashboard.
  */
 export const WbContentReviews = () => {
     const { rowProvider } = useFeature(WbReviewFeature);

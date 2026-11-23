@@ -6,10 +6,15 @@ import { useDialogs } from "@webiny/app-admin";
 const UNNAMED = "this workflow";
 
 /*
- * Protects a dirty draft when the admin leaves the page (R279, QBZ-17). A router transition guard,
- * registered once, asks `Discard unsaved changes?` through the admin dialogs while `dirty` is true
- * (the `ContentModelEditor.tsx` pattern). While dirty, `beforeunload` raises the browser's own
- * prompt for closing the tab or reloading; its text cannot be customised.
+ * Protects a dirty draft when the admin leaves the page (R279, QBZ-17). While `dirty` is true, a
+ * router transition guard asks `Discard unsaved changes?` through the admin dialogs (the
+ * `ContentModelEditor.tsx` pattern) and `beforeunload` raises the browser's own prompt for closing
+ * the tab or reloading; its text cannot be customised.
+ *
+ * The transition guard is registered only while dirty, never for the editor's whole life: the
+ * router blocks transitions with history v5's `history.block`, which adds its own `beforeunload`
+ * prompt for as long as any blocker is installed, whatever the guard returns. A guard kept while
+ * clean made the browser ask "Leave page?" for an editor with nothing unsaved.
  */
 export const useLeaveGuard = (dirty: boolean, name: string): void => {
     const router = useRouter();
@@ -25,6 +30,10 @@ export const useLeaveGuard = (dirty: boolean, name: string): void => {
     nameRef.current = name;
 
     useEffect(() => {
+        if (!dirty) {
+            return;
+        }
+
         return routerRef.current.addTransitionGuard({
             guard: () => dirtyRef.current,
             onBlocked: () => {
@@ -52,7 +61,7 @@ export const useLeaveGuard = (dirty: boolean, name: string): void => {
                 });
             }
         });
-    }, []);
+    }, [dirty]);
 
     useEffect(() => {
         if (!dirty) {

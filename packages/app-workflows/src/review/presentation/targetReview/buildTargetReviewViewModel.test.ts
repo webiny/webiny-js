@@ -133,11 +133,15 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.reviewId).toBe("review-1");
         expect(vm.reviewKind).toBe("inProgress");
         expect(vm.tile).toBe("rate_review");
-        expect(vm.message).toBe("Luka Perić is reviewing");
+        expect(vm.message).toBe("Luka Perić is reviewing this step.");
         expect(vm.stepMeta).toBe("Step 2 of 2: Legal sign-off");
         expect(vm.ownerName).toBe("Luka Perić");
-        expect(vm.stateTag).toEqual({ label: "Review: In progress", variant: "accent-light" });
-        expect(vm.stepStateTag).toEqual({ label: "In review", variant: "accent-light" });
+        expect(vm.stateTag).toBeNull();
+        expect(vm.stepStateTag).toEqual({
+            label: "In review",
+            variant: "accent-light",
+            icon: "rate_review"
+        });
         expect(vm.progress?.approved).toBe(1);
         expect(vm.progress?.total).toBe(2);
         expect(vm.actions).toEqual([
@@ -155,7 +159,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.moveDisabledReason).toBe("Can’t move while this revision is in review.");
     });
 
-    it("uses the hourglass tile for a step in the team pool", () => {
+    it("uses the hourglass tile for a step in the team pool.", () => {
         const vm = buildTargetReviewViewModel(
             input({ status: "active", review: createReviewWithFlags() })
         );
@@ -170,7 +174,7 @@ describe("buildTargetReviewViewModel", () => {
         );
         expect(vm.reviewKind).toBe("approved");
         expect(vm.tile).toBe("check_circle");
-        expect(vm.stateTag).toEqual({ label: "Review: Approved", variant: "success-light" });
+        expect(vm.stateTag).toEqual({ label: "Approved", variant: "success-light" });
         expect(vm.allowsPublishing).toBe(true);
         expect(vm.allowsEditing).toBe(false);
         expect(vm.message).toBe("Approved and published");
@@ -199,7 +203,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.stepColor).toBe("#FA5723");
     });
 
-    it("keeps the rejecting step's name, and leaves the step tag to the review tag (QBZ-52)", () => {
+    it("has no step line, step tag, owner or step colour for a rejected review", () => {
         const review = createReview({
             state: ReviewState.Rejected,
             currentStepId: "step-1",
@@ -217,12 +221,12 @@ describe("buildTargetReviewViewModel", () => {
         );
         expect(vm.reviewKind).toBe("rejected");
         expect(vm.tile).toBe("cancel");
-        expect(vm.stepMeta).toBe("Step 1 of 1: Legal sign-off");
-        expect(vm.ownerName).toBe("Ana Legal");
+        expect(vm.stepMeta).toBeNull();
+        expect(vm.ownerName).toBeNull();
         expect(vm.stepColor).toBeNull();
         expect(vm.stepStateTag).toBeNull();
         expect(vm.stepStateTooltip).toBeNull();
-        expect(vm.stateTag).toEqual({ label: "Review: Rejected", variant: "neutral-dark" });
+        expect(vm.stateTag).toEqual({ label: "Rejected", variant: "destructive" });
     });
 
     it("carries the target the bar belongs to (R-f)", () => {
@@ -247,7 +251,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(unpublished.message).toBe(
             "Approved and unpublished. Publishing again needs no new review."
         );
-        expect(ready.message).toBe("Approved, ready to publish");
+        expect(ready.message).toBe("Every step approved. Ready to publish.");
     });
 
     it("enables Publish for an unpublished revision with no review (Q19)", () => {
@@ -285,7 +289,7 @@ describe("buildTargetReviewViewModel", () => {
                 viewerTeamIds: ["t2"]
             })
         );
-        expect(vm.message).toBe("Waiting in the Legal team pool");
+        expect(vm.message).toBe("Waiting in the Legal team pool.");
         expect(vm.ownerName).toBe("Team pool (Marketing, Legal)");
     });
 
@@ -327,7 +331,7 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         const vm = buildTargetReviewViewModel(input({ status: "active", review }));
 
         expect(vm.tile).toBe("rate_review");
-        expect(vm.message).toBe("AI tone check running since 14:20");
+        expect(vm.message).toBe("AI tone check is running.");
         expect(vm.stepStateTag).toEqual({
             label: "Running",
             variant: "accent-light",
@@ -335,7 +339,6 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         });
         expect(vm.stepStateTooltip).toBe("AI tone check is running since 14:20.");
         expect(vm.ownerName).toBe("AI tone check");
-        expect(vm.progress?.segments[0].message).toBe("AI tone check running since 14:20");
     });
 
     it("shows a failed automation step with the sync_problem tile and the Failed tag", () => {
@@ -347,7 +350,7 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         expect(vm.message).toBe("Notify web team failed: Webhook returned 503 Service Unavailable");
         expect(vm.stepStateTag).toEqual({
             label: "Failed",
-            variant: "destructive",
+            variant: "destructive-light",
             icon: "sync_problem"
         });
         expect(vm.stepStateTooltip).toBe(
@@ -368,7 +371,11 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         );
 
         expect(vm.tile).toBe("rate_review");
-        expect(vm.stepStateTag).toEqual({ label: "In review", variant: "accent-light" });
+        expect(vm.stepStateTag).toEqual({
+            label: "In review",
+            variant: "accent-light",
+            icon: "rate_review"
+        });
         expect(vm.stepStateTooltip).toBeNull();
     });
 

@@ -10,7 +10,10 @@ import { useMemo } from "react";
 import { Separator } from "~/Separator/index.js";
 
 export type DrawerHeaderProps = Omit<React.HTMLAttributes<HTMLDivElement>, "title"> &
-    Pick<DrawerProps, "title" | "icon" | "description" | "showCloseButton" | "headerActions"> & {
+    Pick<
+        DrawerProps,
+        "title" | "icon" | "description" | "showCloseButton" | "headerActions" | "headerExtra"
+    > & {
         separator?: DrawerProps["headerSeparator"];
     };
 
@@ -20,13 +23,16 @@ export const DrawerHeader = ({
     description,
     showCloseButton,
     headerActions,
+    headerExtra,
     separator,
     className,
     ...props
 }: DrawerHeaderProps) => {
     const nothingToRender = useMemo(() => {
-        return !title && !description && !icon && !showCloseButton && !headerActions;
-    }, [title, description, icon, showCloseButton, headerActions]);
+        return (
+            !title && !description && !icon && !showCloseButton && !headerActions && !headerExtra
+        );
+    }, [title, description, icon, showCloseButton, headerActions, headerExtra]);
 
     if (nothingToRender) {
         return null;
@@ -63,8 +69,9 @@ export const DrawerHeader = ({
                     </div>
                 </div>
                 {description && <DrawerDescription>{description}</DrawerDescription>}
+                {headerExtra}
             </div>
-            {separator && <Separator />}
+            {separator && !headerExtra && <Separator />}
         </>
     );
 };

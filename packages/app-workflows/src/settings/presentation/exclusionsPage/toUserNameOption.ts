@@ -3,7 +3,7 @@ import type { PickerOptionIcon } from "~/components/picker/PickerOptionIcon.js";
 import type { ExclusionUserName } from "./ExclusionsSource.js";
 
 /*
- * A user of the list as a picker option, for `Filter by user` and the locked User field of the
+ * A user of the list as a picker option, for the locked User field of the
  * Edit dialog (R332, QBZ-91): a deleted user is muted with `person_off`.
  */
 export const toUserNameOption = (

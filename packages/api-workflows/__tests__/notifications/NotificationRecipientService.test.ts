@@ -139,7 +139,9 @@ describe("NotificationRecipientService.listPool (R183, R194)", () => {
         const result = await service.listPool(createPoolParams(createReviewData()));
 
         expect(result.isOk()).toBe(true);
-        expect(result.value).toEqual([{ id: "user-anna", displayName: "Anna" }]);
+        expect(result.value).toEqual([
+            { id: "user-anna", displayName: "Anna", teamIds: [REVIEW_TEAM_ID] }
+        ]);
         expect(result.value.map(recipient => recipient.id)).not.toContain(requester.id);
     });
 
@@ -156,10 +158,11 @@ describe("NotificationRecipientService.listPool (R183, R194)", () => {
 
         const result = await service.listPool(createPoolParams(createReviewData()));
 
+        // Cara is in the legal team too, which is not a candidate of the step.
         expect(result.value).toEqual([
-            { id: "user-anna", displayName: "Anna" },
-            { id: "user-bob", displayName: "Bob" },
-            { id: "user-cara", displayName: "Cara" }
+            { id: "user-anna", displayName: "Anna", teamIds: [REVIEW_TEAM_ID] },
+            { id: "user-bob", displayName: "Bob", teamIds: [REVIEW_TEAM_ID] },
+            { id: "user-cara", displayName: "Cara", teamIds: [REVIEW_TEAM_ID] }
         ]);
     });
 
@@ -196,8 +199,27 @@ describe("NotificationRecipientService.listPool (R183, R194)", () => {
         const result = await service.listPool(createPoolParams(createReviewData()));
 
         expect(result.value).toEqual([
-            { id: "user-a", displayName: "user-a" },
-            { id: "user-e", displayName: "user-e" }
+            { id: "user-a", displayName: "user-a", teamIds: [REVIEW_TEAM_ID] },
+            { id: "user-e", displayName: "user-e", teamIds: [REVIEW_TEAM_ID] }
+        ]);
+    });
+
+    it("gives each member the step's candidate teams they are in, in the step's order", async () => {
+        const { routing, service } = await setupStubbed();
+        const review = createReviewData();
+        review.steps[0].candidateTeamIds = ["team-one", "team-two", "team-three"];
+        routing.members = [
+            toMember("user-a", { teamIds: ["team-three", "team-other", "team-one"] }),
+            toMember("user-b", { teamIds: ["team-two"] }),
+            toMember("user-c", { teamIds: [] })
+        ];
+
+        const result = await service.listPool(createPoolParams(review));
+
+        expect(result.value).toEqual([
+            { id: "user-a", displayName: "user-a", teamIds: ["team-one", "team-three"] },
+            { id: "user-b", displayName: "user-b", teamIds: ["team-two"] },
+            { id: "user-c", displayName: "user-c", teamIds: [] }
         ]);
     });
 

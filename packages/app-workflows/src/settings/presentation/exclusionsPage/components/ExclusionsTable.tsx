@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { Avatar } from "@webiny/admin-ui";
+import { DataTable } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentNote } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
-import { Table } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import type { DataTableColumns } from "@webiny/admin-ui";
+import type { DataTableColumnVisibility } from "@webiny/admin-ui";
+import type { DataTableSorting } from "@webiny/admin-ui";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
+import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as PersonOffIcon } from "@webiny/icons/person_off.svg";
 import type { ExclusionRowVm } from "../abstractions.js";
 import type { ExclusionsPagePresenter } from "../abstractions.js";
@@ -19,8 +24,12 @@ import { EXCLUSIONS_EDIT_TITLE } from "../exclusionsCopy.js";
 import { EXCLUSIONS_REMOVE_TITLE } from "../exclusionsCopy.js";
 
 export interface ExclusionsTableProps {
-    rows: ExclusionRowVm[];
     presenter: ExclusionsPagePresenter.Interface;
+}
+
+// A row as `DataTable` takes it: the row view model with the `id` the table keys rows by.
+interface ExclusionsTableEntry extends ExclusionRowVm {
+    id: string;
 }
 
 interface ExclusionRowProps {
@@ -49,33 +58,62 @@ const MutedText = ({ muted, text }: MutedTextProps) => {
 };
 
 /*
- * The user cell: a muted row is a deleted user, marked with the person_off icon (QBZ-91; not an
- * avatar, so Q64 keeps it); the sub line is "This user no longer exists". An unresolved user shows
- * the raw id as its label.
+ * The user's avatar: the initials of a found user; a deleted user is marked with the person_off
+ * icon (QBZ-91); a user whose name is not known yet shows the plain person icon.
  */
-const ExclusionUserCell = ({ row }: ExclusionCellProps) => {
-    let icon: React.ReactNode = null;
+const ExclusionUserAvatar = ({ row }: ExclusionCellProps) => {
     if (row.muted) {
-        icon = (
-            <Icon
-                icon={<PersonOffIcon />}
-                label=""
-                size="sm"
-                color="neutral-light"
-                data-icon="person_off"
+        return (
+            <Avatar
+                aria-hidden={true}
+                variant="subtle"
+                fallback={
+                    <Avatar.Fallback>
+                        <PersonOffIcon data-icon="person_off" />
+                    </Avatar.Fallback>
+                }
             />
         );
     }
 
+    if (row.initials === null) {
+        return (
+            <Avatar
+                aria-hidden={true}
+                variant="subtle"
+                fallback={
+                    <Avatar.Fallback>
+                        <PersonIcon data-icon="person" />
+                    </Avatar.Fallback>
+                }
+            />
+        );
+    }
+
+    return (
+        <Avatar
+            aria-hidden={true}
+            variant="subtle"
+            fallback={<Avatar.Fallback>{row.initials}</Avatar.Fallback>}
+        />
+    );
+};
+
+/*
+ * The user cell: the avatar, then the label and the sub line (the teams, or "This user no longer
+ * exists" for a deleted user). An unresolved user shows the raw id as its label. The cell carries
+ * the row's user id, which the row click reads.
+ */
+const ExclusionUserCell = ({ row }: ExclusionCellProps) => {
     let subLine: React.ReactNode = null;
     if (row.subLine !== null) {
         subLine = <FormComponentNote className="mt-0" text={row.subLine} />;
     }
 
     return (
-        <div className="flex items-center gap-sm">
-            {icon}
-            <div className="flex flex-col">
+        <div data-user-id={row.userId} className="flex items-center gap-sm">
+            <ExclusionUserAvatar row={row} />
+            <div className="flex flex-col min-w-0">
                 <MutedText muted={row.muted} text={row.label} />
                 {subLine}
             </div>
@@ -126,48 +164,93 @@ const ExclusionRowActions = ({ row, presenter }: ExclusionRowProps) => {
     );
 };
 
-const ExclusionRow = ({ row, presenter }: ExclusionRowProps) => {
-    return (
-        <Table.Row data-user-id={row.userId} onClick={() => presenter.openEdit(row.userId)}>
-            <Table.Cell>
-                <ExclusionUserCell row={row} />
-            </Table.Cell>
-            <Table.Cell>
-                <MutedText muted={row.reasonMuted} text={row.reason} />
-            </Table.Cell>
-            <Table.Cell className="whitespace-nowrap">
-                <span title={row.untilTitle}>{row.untilLabel}</span>
-            </Table.Cell>
-            <Table.Cell>
-                <ExclusionStatusTag row={row} />
-            </Table.Cell>
-            <Table.Cell>
-                <ExclusionRowActions row={row} presenter={presenter} />
-            </Table.Cell>
-        </Table.Row>
-    );
-};
+/*
+ * Every entry of the current tab and filter, in the presenter's order (R322, R323), edge to edge
+ * like the Content Reviews list. The list is fully loaded, so the User column sorts on the client
+ * through the presenter; the other columns can be hidden from the header's column settings.
+ */
+export const ExclusionsTable = createReactiveComponent((props: ExclusionsTableProps) => {
+    const { presenter } = props;
+    const vm = presenter.vm;
+    const [columnVisibility, setColumnVisibility] = useState<DataTableColumnVisibility>({});
 
-// Every entry of the current tab and filter, in the presenter's order (R322, R323).
-export const ExclusionsTable = ({ rows, presenter }: ExclusionsTableProps) => {
+    const columns = useMemo(() => {
+        const result: DataTableColumns<ExclusionsTableEntry> = {
+            label: {
+                header: EXCLUSIONS_COLUMN_USER,
+                cell: row => <ExclusionUserCell row={row} />,
+                enableSorting: true,
+                enableHiding: false,
+                size: 280
+            },
+            reason: {
+                header: EXCLUSIONS_COLUMN_REASON,
+                cell: row => <MutedText muted={row.reasonMuted} text={row.reason} />,
+                size: 400
+            },
+            untilLabel: {
+                header: EXCLUSIONS_COLUMN_UNTIL,
+                cell: row => <span title={row.untilTitle}>{row.untilLabel}</span>,
+                size: 240
+            },
+            status: {
+                header: EXCLUSIONS_COLUMN_STATUS,
+                cell: row => <ExclusionStatusTag row={row} />,
+                size: 160
+            },
+            userId: {
+                header: "",
+                cell: row => <ExclusionRowActions row={row} presenter={presenter} />,
+                enableSorting: false,
+                enableHiding: false,
+                enableResizing: false,
+                truncate: false,
+                size: 96
+            }
+        };
+        return result;
+    }, [presenter]);
+
+    const data = useMemo(() => {
+        return vm.rows.map(row => ({ ...row, id: row.userId }));
+    }, [vm.rows]);
+
+    const sorting = useMemo<DataTableSorting>(() => {
+        return [{ id: "label", desc: vm.sortDirection === "desc" }];
+    }, [vm.sortDirection]);
+
+    // Only the User column sorts, ascending or descending, never unsorted.
+    const onSortingChange = () => {
+        presenter.toggleSort();
+    };
+
+    /*
+     * A click anywhere on a row opens Edit (the row actions stop their own clicks). `DataTable` rows
+     * take no click handler, so the click is read here from the user cell of the clicked row; the
+     * header row has no user cell.
+     */
+    const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+        const row = event.target.closest("tr");
+        const cell = row?.querySelector<HTMLElement>("[data-user-id]");
+        const userId = cell?.dataset.userId;
+        if (userId) {
+            presenter.openEdit(userId);
+        }
+    };
+
     return (
-        <div data-testid="exclusions-table">
-            <Table bordered>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.Head>{EXCLUSIONS_COLUMN_USER}</Table.Head>
-                        <Table.Head>{EXCLUSIONS_COLUMN_REASON}</Table.Head>
-                        <Table.Head>{EXCLUSIONS_COLUMN_UNTIL}</Table.Head>
-                        <Table.Head>{EXCLUSIONS_COLUMN_STATUS}</Table.Head>
-                        <Table.Head />
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {rows.map(row => (
-                        <ExclusionRow key={row.userId} row={row} presenter={presenter} />
-                    ))}
-                </Table.Body>
-            </Table>
+        <div data-testid="exclusions-table" onClick={onClick}>
+            <DataTable
+                columns={columns}
+                data={data}
+                sorting={sorting}
+                onSortingChange={onSortingChange}
+                columnVisibility={columnVisibility}
+                onColumnVisibilityChange={setColumnVisibility}
+            />
         </div>
     );
-};
+});

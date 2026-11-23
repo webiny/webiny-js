@@ -31,7 +31,7 @@ const toHeaders = (raw: IncomingMessage["headers"]): Record<string, string> => {
     return headers;
 };
 
-// What the upgrade step learned about a connection, handed to the connection handler.
+// What the upgrade step learned about a connection, used to register it once the socket is open.
 interface IHandshake {
     identity: ConnectionRegistry.Identity;
     tenant: string;
@@ -70,8 +70,6 @@ class WebsocketsServer implements IWebsocketsServer {
     private readonly debug: boolean;
     private readonly requestedPort: number;
     private readonly requestedHost: string;
-    // Set when an upgrade is accepted, read once the socket is open.
-    private readonly handshakes = new WeakMap<IncomingMessage, IHandshake>();
 
     private shuttingDown: boolean = false;
     private endpoint: string = "";
@@ -101,7 +99,6 @@ class WebsocketsServer implements IWebsocketsServer {
     public async start(): Promise<void> {
         this.adapter.start(this.httpServer);
         this.wireUpgradeHandler();
-        this.wireConnectionHandler();
 
         if (this.ownsHttpServer) {
             await this.listen();
@@ -188,8 +185,9 @@ class WebsocketsServer implements IWebsocketsServer {
                         return;
                     }
 
-                    this.handshakes.set(request, handshake);
-                    this.adapter.handleUpgrade(request, socket, head);
+                    this.adapter.handleUpgrade(request, socket, head, opened => {
+                        this.acceptConnection(opened, request, handshake);
+                    });
                 } catch (error) {
                     console.error("WebSocket upgrade failed:", error);
                     refuse(socket, 500, "Internal Server Error");
@@ -198,82 +196,79 @@ class WebsocketsServer implements IWebsocketsServer {
         );
     }
 
-    private wireConnectionHandler(): void {
-        this.adapter.onConnection((socket, request) => {
+    // Called with each socket an authenticated upgrade opened.
+    private acceptConnection(
+        socket: unknown,
+        request: IncomingMessage,
+        handshake: IHandshake
+    ): void {
+        if (this.shuttingDown) {
+            return;
+        }
+
+        const connectionId = mdbid();
+        const connectedAt = Date.now();
+        const host = request.headers.host || "localhost";
+        const headers = toHeaders(request.headers);
+
+        // The registry write is async, so we kick it off without awaiting it and wire the socket
+        // handlers below synchronously — that way we don't miss a close or message that arrives
+        // during the gap. If a message does arrive before registration finishes, the
+        // `getMetadata` guard below just drops it, which is fine since the client doesn't send
+        // anything meaningful right at connect time.
+        const registration = this.registerConnection({
+            connectionId,
+            socket,
+            handshake,
+            connectedAt,
+            host,
+            headers
+        });
+
+        this.adapter.onMessage(socket, data => {
             if (this.shuttingDown) {
                 return;
             }
 
-            const handshake = this.handshakes.get(request);
-            if (!handshake) {
+            const metadata = this.connectionManager?.getMetadata(connectionId);
+            if (!metadata) {
                 return;
             }
-            this.handshakes.delete(request);
 
-            const connectionId = mdbid();
-            const connectedAt = Date.now();
-            const host = request.headers.host || "localhost";
-            const headers = toHeaders(request.headers);
+            try {
+                JSON.parse(data.toString());
+            } catch {
+                return;
+            }
 
-            // The registry write is async, so we kick it off without awaiting it and wire the socket
-            // handlers below synchronously — that way we don't miss a close or message that arrives
-            // during the gap. If a message does arrive before registration finishes, the
-            // `getMetadata` guard below just drops it, which is fine since the client doesn't send
-            // anything meaningful right at connect time.
-            const registration = this.registerConnection({
-                connectionId,
-                socket,
-                handshake,
-                connectedAt,
-                host,
-                headers
+            this.connectionManager?.updateLastSeen(connectionId).catch(error => {
+                console.error(
+                    `Failed to update last seen for WebSocket connection "${connectionId}":`,
+                    error
+                );
             });
+        });
 
-            this.adapter.onMessage(socket, data => {
-                if (this.shuttingDown) {
-                    return;
-                }
+        this.adapter.onClose(socket, () => {
+            if (this.shuttingDown) {
+                return;
+            }
+            /*
+             * Wait for registration: a socket that closes while it is still being registered
+             * would otherwise be removed first and then registered, leaving a dead entry.
+             */
+            void registration.then(() => this.removeConnection(connectionId));
+        });
 
-                const metadata = this.connectionManager?.getMetadata(connectionId);
-                if (!metadata) {
-                    return;
-                }
-
-                try {
-                    JSON.parse(data.toString());
-                } catch {
-                    return;
-                }
-
-                this.connectionManager?.updateLastSeen(connectionId).catch(error => {
-                    console.error(
-                        `Failed to update last seen for WebSocket connection "${connectionId}":`,
-                        error
-                    );
-                });
-            });
-
-            this.adapter.onClose(socket, () => {
-                if (this.shuttingDown) {
-                    return;
-                }
-                /*
-                 * Wait for registration: a socket that closes while it is still being registered
-                 * would otherwise be removed first and then registered, leaving a dead entry.
-                 */
-                void registration.then(() => this.removeConnection(connectionId));
-            });
-
-            this.adapter.onError(socket, error => {
-                console.error(`WebSocket error for connection "${connectionId}":`, error.message);
-            });
+        this.adapter.onError(socket, error => {
+            console.error(`WebSocket error for connection "${connectionId}":`, error.message);
         });
     }
 
     /**
      * Reads the `?token`/`?tenant` query the app-websockets client sends and resolves the token to an
-     * identity. Returns `null` when there is no token or it doesn't resolve to one, and the upgrade
-     * is refused.
+     * identity in that tenant. Returns `null` when there is no token, or the token doesn't resolve to
+     * an identity that can access the tenant, and the upgrade is refused.
      */
     private async authenticateUpgrade(url: URL): Promise<IHandshake | null> {
         const token = url.searchParams.get("token") ?? "";
@@ -281,12 +276,14 @@ class WebsocketsServer implements IWebsocketsServer {
             return null;
         }
 
-        const identity = await this.authenticate(token);
+        // The same default as the request tenant loader and the AWS transport.
+        const tenant = url.searchParams.get("tenant") || "root";
+        const identity = await this.authenticate(token, tenant);
         if (!identity?.id) {
             return null;
         }
 
-        return { identity, tenant: url.searchParams.get("tenant") ?? "" };
+        return { identity, tenant };
     }
 
     /**
@@ -393,7 +390,7 @@ export const attachWebsocketsServer = (params: AttachWebsocketsServerParams): IW
     const server = new WebsocketsServer({
         httpServer: params.server,
         ownsHttpServer: false,
-        adapter: new NodeWsAdapterImpl(),
+        adapter: params.adapter,
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
         authenticate: params.authenticate,

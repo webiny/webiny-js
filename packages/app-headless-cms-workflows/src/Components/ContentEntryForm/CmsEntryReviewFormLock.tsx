@@ -1,10 +1,12 @@
 import React from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
+import { useFeature } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { ContentEntryForm } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useCmsEntryReview } from "~/features/editorReview/useCmsEntryReview.js";
+import { CmsEntryFormFieldLockFeature } from "~/features/formFieldLock/feature.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
 interface FormLockProps {
@@ -42,6 +44,18 @@ export const CmsEntryReviewFormLock = ContentEntryForm.createDecorator(Original 
         const { entry, model } = formPresenter.vm;
         const isReviewed = entry !== null && isReviewableModel(model);
         const isLocked = isReviewed && !session.presenter.vm.allowsEditing;
+        const { fieldLock } = useFeature(CmsEntryFormFieldLockFeature);
+
+        useEffect(() => {
+            fieldLock.setLocked(isLocked);
+        }, [fieldLock, isLocked]);
+
+        // Leaving the editor never leaves the next form locked.
+        useEffect(() => {
+            return () => {
+                fieldLock.setLocked(false);
+            };
+        }, [fieldLock]);
 
         return (
             <FormLock isLocked={isLocked}>

@@ -32,7 +32,7 @@ describe("WB review lists through GraphQL", () => {
         const { review, otherReview, cmsReview } = await createScenario();
         const reviewer = asGraphQLUser({ identity: REVIEWER, permissions: WB_READER });
 
-        const body = await reviewer.run(LIST_REVIEWS, { list: "pool" });
+        const body = await reviewer.run(LIST_REVIEWS, { scope: "pool" });
         const result = body.data.websiteBuilder.listWebsiteBuilderPageReviews;
 
         expect(result.error).toBeNull();
@@ -46,10 +46,10 @@ describe("WB review lists through GraphQL", () => {
         const { review, otherReview } = await createScenario();
         const reviewer = asGraphQLUser({ identity: REVIEWER, permissions: WB_READER });
 
-        const first = await reviewer.run(LIST_REVIEWS, { list: "pool", limit: 1 });
+        const first = await reviewer.run(LIST_REVIEWS, { scope: "pool", limit: 1 });
         const firstResult = first.data.websiteBuilder.listWebsiteBuilderPageReviews;
         const second = await reviewer.run(LIST_REVIEWS, {
-            list: "pool",
+            scope: "pool",
             limit: 1,
             after: firstResult.meta.cursor
         });
@@ -66,15 +66,15 @@ describe("WB review lists through GraphQL", () => {
         const requester = asGraphQLUser({ identity: REQUESTER, permissions: WB_WRITER });
 
         const newestFirst = await requester.run(LIST_REVIEWS, {
-            list: "myRequests",
-            where: { reviewState: "inProgress" }
+            scope: "myRequests",
+            where: { state: "inReview" }
         });
         const oldestFirst = await requester.run(LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             sort: "lastChangedOn_ASC"
         });
         const byTitle = await requester.run(LIST_REVIEWS, {
-            list: "myRequests",
+            scope: "myRequests",
             where: { titleContains: "Page B" }
         });
 
@@ -91,27 +91,29 @@ describe("WB review lists through GraphQL", () => {
         ]);
     });
 
+    it("lists the all scope for a viewer without reassign: the reviews that involve them (B7)", async () => {
+        const { review, otherReview, cmsReview } = await createScenario();
+        const reviewer = asGraphQLUser({ identity: REVIEWER, permissions: WB_READER });
+
+        const body = await reviewer.run(LIST_REVIEWS, { scope: "all" });
+        const result = body.data.websiteBuilder.listWebsiteBuilderPageReviews;
+
+        expect(result.error).toBeNull();
+        expect(ids(result.data).sort()).toEqual([review.id, otherReview.id].sort());
+        expect(ids(result.data)).not.toContain(cmsReview.id);
+    });
+
     it("returns the list errors with code, data and a null meta", async () => {
         await createScenario();
         const reviewer = asGraphQLUser({ identity: REVIEWER, permissions: WB_READER });
 
-        const failed = await reviewer.run(LIST_REVIEWS, { list: "failedSteps" });
-        const stateFilter = await reviewer.run(LIST_REVIEWS, {
-            list: "pool",
-            where: { stepState: "awaiting" }
+        const badCursor = await reviewer.run(LIST_REVIEWS, {
+            scope: "pool",
+            after: "not-a-cursor"
         });
 
-        expect(failed.data.websiteBuilder.listWebsiteBuilderPageReviews).toEqual({
-            data: null,
-            meta: null,
-            error: {
-                code: "Workflows/NotAuthorized",
-                message: expect.any(String),
-                data: { action: "list failed steps" }
-            }
-        });
-        const stateResult = stateFilter.data.websiteBuilder.listWebsiteBuilderPageReviews;
-        expect(stateResult.meta).toBeNull();
-        expect(stateResult.error.code).toBe("Workflows/Review/Validation");
+        const cursorResult = badCursor.data.websiteBuilder.listWebsiteBuilderPageReviews;
+        expect(cursorResult.meta).toBeNull();
+        expect(cursorResult.error.code).toBe("Workflows/Review/Validation");
     });
 });

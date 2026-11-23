@@ -27,10 +27,12 @@ const createStep = (id: string, number: number, title: string): StepCardVm => {
         typeLabel: "People",
         type: "review",
         summary: `${title} summary`,
+        details: [],
         description: null,
         readOnly: false,
         warnings: [],
         error: null,
+        errorIndex: 0,
         canMoveUp: number > 1,
         canMoveDown: number < 3
     };
@@ -78,12 +80,14 @@ describe("WorkflowFlow", () => {
         expect(document.querySelectorAll('[data-role="connector"]')).toHaveLength(0);
     });
 
-    it("renders the steps, the Add step button and the empty state inside one flow column", () => {
+    it("renders the steps, the Add new step button and the empty state inside one flow column", () => {
         const { unmount } = renderFlow(createProps(), createFakeSortable());
         const column = document.querySelector('[data-role="flow-column"]');
         expect(column).not.toBeNull();
+        // The steps span the card's content area: no narrow column.
+        expect(column!.className).not.toContain("max-w-");
         expect(column!.contains(screen.getAllByTestId(/^step-card-/)[0])).toBe(true);
-        expect(column!.contains(screen.getByRole("button", { name: "Add step" }))).toBe(true);
+        expect(column!.contains(screen.getByRole("button", { name: "Add new step" }))).toBe(true);
         unmount();
 
         renderFlow(
@@ -94,7 +98,7 @@ describe("WorkflowFlow", () => {
         expect(emptyColumn!.contains(screen.getByTestId("no-steps"))).toBe(true);
     });
 
-    it("renders one item per step in order, with its title, type tag and meta line", () => {
+    it("renders one item per step in order, with its title and type tag, without a meta line", () => {
         renderFlow(createProps(), createFakeSortable());
 
         const cards = screen.getAllByTestId(/^step-card-/);
@@ -103,15 +107,26 @@ describe("WorkflowFlow", () => {
         cards.forEach((card, index) => {
             expect(within(card).getByText(titles[index])).toBeTruthy();
             expect(within(card).getByText("People")).toBeTruthy();
-            expect(within(card).getByText(`${titles[index]} summary`)).toBeTruthy();
+            expect(within(card).queryByText(`${titles[index]} summary`)).toBeNull();
         });
     });
 
-    it("has one Add step button after the last item that appends a step", () => {
+    it("labels every drag handle with the step's position in the flow", () => {
+        renderFlow(createProps(), createFakeSortable());
+
+        const card = screen.getByTestId("step-card-s2");
+        expect(
+            within(card).getByRole("button", {
+                name: "Drag to reorder Legal sign-off (step 2 of 3)"
+            })
+        ).toBeTruthy();
+    });
+
+    it("has one Add new step button after the last item that appends a step", () => {
         const props = createProps();
         renderFlow(props, createFakeSortable());
 
-        const add = screen.getAllByRole("button", { name: "Add step" });
+        const add = screen.getAllByRole("button", { name: "Add new step" });
         expect(add).toHaveLength(1);
         const cards = screen.getAllByTestId(/^step-card-/);
         const last = cards[cards.length - 1];
@@ -124,7 +139,34 @@ describe("WorkflowFlow", () => {
         expect(props.onAddStep).toHaveBeenCalledWith(3);
     });
 
-    it("shows the empty state with the model name and one Add step action", () => {
+    it("shows the Workflow steps heading above the steps and the changes note below the add button", () => {
+        renderFlow(createProps(), createFakeSortable());
+
+        const heading = screen.getByRole("heading", { name: "Workflow steps" });
+        // Muted body text, not a bold heading element.
+        expect(heading.tagName).toBe("DIV");
+        expect(heading.className).toContain("text-neutral-strong");
+        const first = screen.getAllByTestId(/^step-card-/)[0];
+        expect(
+            heading.compareDocumentPosition(first) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        const add = screen.getByRole("button", { name: "Add new step" });
+        const note = screen.getByText(
+            "Changes apply to new review requests; reviews already running are not affected."
+        );
+        expect(add.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it("adds a step after the step whose plus button is clicked", () => {
+        const props = createProps();
+        renderFlow(props, createFakeSortable());
+
+        fireEvent.click(screen.getByRole("button", { name: "Add a step after Legal sign-off" }));
+
+        expect(props.onAddStep).toHaveBeenCalledWith(2);
+    });
+
+    it("shows the empty state with the model name and one Add new step action", () => {
         const props = createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } });
         renderFlow(props, createFakeSortable());
 
@@ -135,7 +177,7 @@ describe("WorkflowFlow", () => {
                 "Add the first step: who or what reviews Article content before it can be published."
             )
         ).toBeTruthy();
-        const add = screen.getAllByRole("button", { name: "Add step" });
+        const add = screen.getAllByRole("button", { name: "Add new step" });
         expect(add).toHaveLength(1);
         expect(screen.getByTestId("no-steps").contains(add[0])).toBe(true);
 
@@ -166,9 +208,11 @@ describe("WorkflowFlow", () => {
         renderFlow(props, createFakeSortable());
 
         const card = screen.getByTestId("step-card-s2");
+        // The Edit step button sits in the item's body: open the item first.
+        fireEvent.click(within(card).getByText("Legal sign-off"));
         fireEvent.click(within(card).getByRole("button", { name: "Edit step" }));
-        fireEvent.click(within(card).getByRole("button", { name: "Move down" }));
-        fireEvent.click(within(card).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Move .+ down$/ }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Delete / }));
 
         expect(props.onEditStep).toHaveBeenCalledWith("s2");
         expect(props.onMoveStep).toHaveBeenCalledWith(1, 2);
@@ -224,26 +268,28 @@ describe("WorkflowFlow", () => {
         sortable.config().onReorder(0, 2);
         expect(props.onMoveStep).not.toHaveBeenCalled();
 
-        const add = screen.getByRole("button", { name: "Add step" });
+        const add = screen.getByRole("button", { name: "Add new step" });
         expect(add.getAttribute("aria-disabled")).toBe("true");
         fireEvent.click(add);
         expect(props.onAddStep).not.toHaveBeenCalled();
 
         const card = screen.getByTestId("step-card-s2");
-        fireEvent.click(within(card).getByRole("button", { name: "Move down" }));
-        fireEvent.click(within(card).getByRole("button", { name: "Delete step" }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Add a step after/ }));
+        expect(props.onAddStep).not.toHaveBeenCalled();
+        fireEvent.click(within(card).getByRole("button", { name: /^Move .+ down$/ }));
+        fireEvent.click(within(card).getByRole("button", { name: /^Delete / }));
         expect(props.onMoveStep).not.toHaveBeenCalled();
         expect(props.onDeleteStep).not.toHaveBeenCalled();
     });
 
-    it("disables the empty-flow Add step button while disabled", () => {
+    it("disables the empty-flow Add new step button while disabled", () => {
         const props = createProps({
             flow: { steps: [], stepsError: null, modelName: "Article" },
             disabled: true
         });
         renderFlow(props, createFakeSortable());
 
-        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
+        fireEvent.click(screen.getByRole("button", { name: "Add new step" }));
 
         expect(props.onAddStep).not.toHaveBeenCalled();
     });
@@ -353,7 +399,7 @@ describe("WorkflowFlow", () => {
         const view = renderMovable(container, STEPS, props);
 
         const button = within(screen.getByTestId("step-card-s1")).getByRole("button", {
-            name: "Move down"
+            name: /^Move .+ down$/
         });
         button.focus();
         fireEvent.click(button);
@@ -367,7 +413,7 @@ describe("WorkflowFlow", () => {
         view.rerender(rerenderMovable(container, moved, props));
 
         const expected = within(screen.getByTestId("step-card-s1")).getByRole("button", {
-            name: "Move down"
+            name: /^Move .+ down$/
         });
         expect(document.activeElement).toBe(expected);
     });
@@ -378,7 +424,7 @@ describe("WorkflowFlow", () => {
         const view = renderMovable(container, STEPS, props);
 
         const button = within(screen.getByTestId("step-card-s2")).getByRole("button", {
-            name: "Move down"
+            name: /^Move .+ down$/
         });
         fireEvent.click(button);
 
@@ -388,7 +434,7 @@ describe("WorkflowFlow", () => {
         view.rerender(rerenderMovable(container, moved, props));
 
         const expected = within(screen.getByTestId("step-card-s2")).getByRole("button", {
-            name: "Move up"
+            name: /^Move .+ up$/
         });
         expect(document.activeElement).toBe(expected);
     });
@@ -403,7 +449,9 @@ describe("WorkflowFlow", () => {
         expect(region.textContent).toBe("");
 
         fireEvent.click(
-            within(screen.getByTestId("step-card-s1")).getByRole("button", { name: "Move down" })
+            within(screen.getByTestId("step-card-s1")).getByRole("button", {
+                name: /^Move .+ down$/
+            })
         );
         const moved = [STEPS[1], STEPS[0], STEPS[2]];
         view.rerender(rerenderMovable(container, moved, props));

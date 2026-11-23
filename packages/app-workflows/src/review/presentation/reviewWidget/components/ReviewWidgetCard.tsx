@@ -12,7 +12,8 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
-import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { getReviewListEmpty } from "~/review/presentation/reviewList/getReviewListEmpty.js";
 import type { ReviewWidgetKind } from "../abstractions.js";
 import type { ReviewWidgetTab } from "../abstractions.js";
@@ -27,7 +28,7 @@ export interface ReviewWidgetCardProps {
     app: WorkflowAppKind;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
-    viewAllUrl: (tab: ReviewListTab) => string;
+    viewAllUrl: (scope: ReviewListScope, state: ReviewListState) => string;
 }
 
 const SEGMENTS = [
@@ -37,8 +38,8 @@ const SEGMENTS = [
 
 const SKELETON_ROWS = [0, 1, 2];
 
-// The shared card of both widgets: an admin-ui Widget with the segment in its header, the rows or a
-// state in its body and "View all" in its footer.
+// The shared card of both widgets: a flat, outlined admin-ui Widget with the segment in its header,
+// the rows or a state in its padded body and "View all" in its footer.
 export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCardProps) => {
     const { kind, title, icon, app, namespaces, rowProvider, viewAllUrl } = props;
     const { presenter } = useFeature(ReviewWidgetPresenterFeature);
@@ -62,6 +63,14 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             }
         };
         segment = <SegmentedControl items={SEGMENTS} value={vm.tab} onChange={onChange} />;
+    }
+
+    // "View all" opens the list the widget shows: the segment's queue in review, or every request.
+    let viewAllScope: ReviewListScope = "myRequests";
+    let viewAllState: ReviewListState = "all";
+    if (vm.tab) {
+        viewAllScope = vm.tab;
+        viewAllState = "inReview";
     }
 
     let body: React.ReactNode = null;
@@ -90,7 +99,14 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             />
         );
     } else if (vm.empty) {
-        const empty = getReviewListEmpty(vm.tab ?? "myRequests", false, vm.hasTeams);
+        const empty = getReviewListEmpty({
+            scope: viewAllScope,
+            state: viewAllState,
+            hasFilters: false,
+            hasTeams: vm.hasTeams,
+            showContentType: false,
+            appLabel: WIDGET_APP_LABELS[app]
+        });
         body = (
             <EmptyState
                 type="table"
@@ -109,19 +125,15 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
         );
     }
 
-    const viewAllTab: ReviewListTab = vm.tab ?? "myRequests";
-
     return (
         <div data-testid={`review-widget-${kind}`}>
             <Widget
                 variant="base"
                 outline
-                elevation="sm"
                 title={title}
                 description={WIDGET_APP_LABELS[app]}
                 icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
                 padding="sm"
-                bodyPadding={false}
                 headerActions={segment}
                 footerEndActions={
                     <Widget.Action
@@ -131,7 +143,7 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
                         icon={<ArrowForwardIcon />}
                         iconPosition="end"
                     >
-                        <Link to={viewAllUrl(viewAllTab)}>View all</Link>
+                        <Link to={viewAllUrl(viewAllScope, viewAllState)}>View all</Link>
                     </Widget.Action>
                 }
             >

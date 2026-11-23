@@ -20,6 +20,7 @@ import {
     WCP_VARIANTS,
     createPrFeature,
     createFinalStatusCommentJob,
+    type AwsVariantJobsContext,
     type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
@@ -41,10 +42,16 @@ const PR_FEATURE_PATHS = {
     "bug-reporter": nodeScriptPath("configureBugReporter"),
     /*
      * Gates adding the E2E API route. The script came in with the fix that makes `<Api.Route>` build
-     * on standalone, and so did e2e/tests/apiRoute.e2e.ts, so a branch without it has neither.
+     * on standalone, and so did e2e/tests/api/apiRoute.e2e.ts, so a branch without it has neither.
      */
     "api-route": nodeScriptPath("configureApiRoute")
 };
+
+/*
+ * The area tags the comment asks for (`/e2e workflows fm`), comma-separated, read and validated by
+ * the `baseBranch` job (./e2e/selectE2eAreas.ts). Empty for `/e2e` alone, which runs every test.
+ */
+const E2E_TAGS = "${{ needs.baseBranch.outputs.e2e-tags }}";
 
 const STANDALONE = createPrFeature("baseBranch", "standalone");
 const BUG_REPORTER = createPrFeature("baseBranch", "bug-reporter");
@@ -62,6 +69,19 @@ for (const [name, path] of Object.entries(PR_FEATURE_PATHS)) {
     );
 }
 
+const AWS_VARIANT_JOBS_CONTEXT: AwsVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2e-aws",
+    deployNeeds: ["baseBranch", "publish", "checkComment"],
+    // The checkout path comes from the base branch.
+    testsNeeds: ["baseBranch"],
+    setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
+    report: true,
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE,
+    tags: E2E_TAGS
+};
+
 const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     workingDirectory: DIR_WEBINY_JS,
     jobKeyPrefix: "e2e-standalone",
@@ -72,7 +92,8 @@ const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     report: true,
     feature: STANDALONE,
     bugReporter: BUG_REPORTER,
-    apiRoute: API_ROUTE
+    apiRoute: API_ROUTE,
+    tags: E2E_TAGS
 };
 
 // Every variant's build (or deploy), test and report jobs.
@@ -80,7 +101,7 @@ const VARIANT_JOBS: Record<string, NormalJob> = {
     ...AWS_VARIANTS.reduce(
         (jobs, variant) => ({
             ...jobs,
-            ...createAwsJobs(variant, { bugReporter: BUG_REPORTER, apiRoute: API_ROUTE })
+            ...createAwsJobs(variant, AWS_VARIANT_JOBS_CONTEXT)
         }),
         {}
     ),
@@ -122,15 +143,55 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     jobs: {
         baseBranch: createJob({
             needs: "checkComment",
-            name: "Get base branch, PR head and PR features",
-            // `contents` for the feature checks, which read the PR's tree.
-            permissions: { "pull-requests": "read", contents: "read" },
+            name: "Get areas, base branch, PR head and PR features",
+            /*
+             * `contents` for the feature checks, which read the PR's tree. `pull-requests: write`
+             * to write the areas into the status comment.
+             */
+            permissions: { "pull-requests": "write", contents: "read" },
             outputs: {
+                "e2e-tags": "${{ steps.areas.outputs.tags }}",
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
                 "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
                 ...PR_FEATURE_OUTPUTS
             },
             steps: [
+                {
+                    /*
+                     * First, so an unknown area stops the run before anything is built. The
+                     * comment is untrusted: it reaches the script only through the environment,
+                     * and only known area tags come out. The script and e2e/areas.ts are read from
+                     * this checkout, the workflow's own branch (`next`), so an area a PR adds can
+                     * be selected once it is merged.
+                     */
+                    name: "Select E2E areas",
+                    id: "areas",
+                    env: { COMMENT_BODY: "${{ github.event.comment.body }}" },
+                    run: "node .github/workflows/wac/e2e/selectE2eAreas.ts"
+                },
+                {
+                    // The areas, or why the comment was refused, under the status comment's intro.
+                    name: "Write the areas into the status comment",
+                    if: "${{ always() && steps.areas.outputs.comment-line != '' && needs.checkComment.outputs.comment-id != '' }}",
+                    "continue-on-error": true,
+                    env: {
+                        GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+                        COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
+                        COMMENT_LINE: "${{ steps.areas.outputs.comment-line }}"
+                    },
+                    run: [
+                        "set -euo pipefail",
+                        'comment="repos/${{ github.repository }}/issues/comments/$COMMENT_ID"',
+                        'gh api "$comment" --jq .body > /tmp/comment.txt',
+                        "{",
+                        "  head -n 1 /tmp/comment.txt",
+                        "  echo",
+                        '  printf "%s\\n" "$COMMENT_LINE"',
+                        "  tail -n +2 /tmp/comment.txt",
+                        "} > /tmp/comment-with-areas.txt",
+                        'gh api "$comment" -X PATCH --field body=@/tmp/comment-with-areas.txt > /dev/null'
+                    ].join("\n")
+                },
                 {
                     name: "Get base branch",
                     id: "base-branch",

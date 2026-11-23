@@ -26,6 +26,7 @@ export interface ReassignNobodyVm {
 export interface IReassignDialogViewModel {
     status: "loading" | "ready" | "failed";
     title: string;
+    description: string;
     hint: string;
     nobody: ReassignNobodyVm | null;
     nobodyEligible: boolean;

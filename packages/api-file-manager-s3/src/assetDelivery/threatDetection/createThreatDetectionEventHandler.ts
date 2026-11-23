@@ -41,6 +41,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
 
         const objectKey = payload.detail.s3ObjectDetails.objectKey;
         const keyValueStore = this.container.resolve(GlobalKeyValueStore);
+        let tenant: string | null = null;
 
         try {
             const fileId = ObjectKey.from(objectKey).id();
@@ -52,6 +53,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
                 const tenantResult = await this.getTenantById.execute(result.value.tenant);
                 if (tenantResult.isOk()) {
                     this.tenantCtx.setTenant(tenantResult.value);
+                    tenant = tenantResult.value.id;
                 }
             }
         } catch {
@@ -60,7 +62,8 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
 
         await processThreatScanResult(
             { container: this.container } as unknown as ApiCoreContext,
-            payload.detail
+            payload.detail,
+            tenant
         );
         return { success: true };
     }

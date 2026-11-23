@@ -14,11 +14,12 @@ import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
 import type { FakeReviewKind } from "~/testing/createFakeVm.js";
+import type { WbStatus } from "@webiny/app-website-builder/constants.js";
 import { PageScheduleDecorator } from "./PageScheduleDecorator.js";
 
 const { Ui } = PageEditorConfig;
 
-const mountSchedule = (kind: FakeReviewKind) => {
+const mountSchedule = (kind: FakeReviewKind, pageStatus: WbStatus = "draft") => {
     const handle = createFakeSession(kind);
     const container = new Container();
     container.registerInstance(WbPageReview, handle.session);
@@ -26,7 +27,7 @@ const mountSchedule = (kind: FakeReviewKind) => {
     render(
         <WbEditorHarness
             container={container}
-            editor={createPageEditor("draft")}
+            editor={createPageEditor(pageStatus)}
             groups={["dropdownActions"]}
         >
             <PageScheduleDecorator />
@@ -71,4 +72,14 @@ describe("PageScheduleDecorator", () => {
 
         expect(screen.queryAllByTestId("schedule")).toHaveLength(shown ? 1 : 0);
     });
+
+    it.each(["none", "inProgress", "rejected", "loading"] as FakeReviewKind[])(
+        "%s review: keeps Schedule (unpublish) of a published page",
+        async kind => {
+            mountSchedule(kind, "published");
+            await screen.findByTestId("other-action");
+
+            expect(screen.queryAllByTestId("schedule")).toHaveLength(1);
+        }
+    );
 });

@@ -142,6 +142,8 @@ export interface WorkflowStepDto {
     type: string;
     // The step config (JSON); only `assignment.allowManualPick` of a review step is read.
     config: unknown;
+    // The teams of a review step by name, in the step's order; empty for every other step.
+    candidateTeams?: ReviewCandidateTeamDto[] | null;
 }
 
 export interface WorkflowDto {

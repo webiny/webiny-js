@@ -40,13 +40,17 @@ class ReviewStepReassignedNotificationsImpl implements ReviewStepReassignedEvent
                         review,
                         stepId: step.id,
                         event: "assigned",
-                        recipients: newOwners,
-                        message: buildAssignedMessage({
-                            contentTitle: review.title,
-                            stepTitle: step.title,
-                            reason: null,
-                            reassignedBy: getActorName(fact.actor, step.title)
-                        })
+                        deliveries: [
+                            {
+                                recipients: newOwners,
+                                message: buildAssignedMessage({
+                                    contentTitle: review.title,
+                                    stepTitle: step.title,
+                                    reason: null,
+                                    reassignedBy: getActorName(fact.actor, step.title)
+                                })
+                            }
+                        ]
                     });
                 }
             }
@@ -63,13 +67,17 @@ class ReviewStepReassignedNotificationsImpl implements ReviewStepReassignedEvent
                         review,
                         stepId: step.id,
                         event: "reassigned",
-                        recipients: oldOwners,
-                        message: buildReassignedMessage({
-                            contentTitle: review.title,
-                            stepTitle: step.title,
-                            operator: getActorName(fact.actor, step.title),
-                            newOwner: getActorName(fact.owner, step.title)
-                        })
+                        deliveries: [
+                            {
+                                recipients: oldOwners,
+                                message: buildReassignedMessage({
+                                    contentTitle: review.title,
+                                    stepTitle: step.title,
+                                    operator: getActorName(fact.actor, step.title),
+                                    newOwner: getActorName(fact.owner, step.title)
+                                })
+                            }
+                        ]
                     });
                 }
             }

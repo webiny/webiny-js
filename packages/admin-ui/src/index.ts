@@ -5,6 +5,7 @@ export * from "./Avatar/index.js";
 export * from "./BetaBadge/BetaBadge.js";
 export * from "./Breadcrumbs/index.js";
 export * from "./Button/index.js";
+export * from "./ButtonGroup/index.js";
 export * from "./Card/index.js";
 export * from "./Checkbox/index.js";
 export * from "./CheckboxGroup/index.js";

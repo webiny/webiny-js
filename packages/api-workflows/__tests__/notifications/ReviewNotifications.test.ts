@@ -346,7 +346,8 @@ describe("review notifications through the real saver (R181-R197)", () => {
                     namespace: ARTICLE_MODEL,
                     targetId: "article-1",
                     targetRevisionId: "article-1#0001",
-                    title: `“${TITLE}” is waiting in the team pool`,
+                    // The three are in the "Reviewers" team only (B2 design 8).
+                    title: `“${TITLE}” is waiting in the Reviewers team pool`,
                     body: "Legal review · requested by Rita Requester"
                 });
             }
@@ -360,6 +361,14 @@ describe("review notifications through the real saver (R181-R197)", () => {
             expect(mailer.sent[0].subject).toBe(`Team pool: ${TITLE} (Legal review)`);
             expect(mailer.sent[0].text).toContain(
                 `Open content: ${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}`
+            );
+            // The e-mail layout (B2 design 10): greeting, details and the reviewer's footer.
+            expect(mailer.sent[0].text).toMatch(/^Hi,\n\n/);
+            expect(mailer.sent[0].text).toContain(
+                `Content: Article · ${TITLE}\nStep: 1 of 2 · Legal review\nRequested by: Rita Requester`
+            );
+            expect(mailer.sent[0].text).toContain(
+                "You get this e-mail because you review this step and it notifies by e-mail."
             );
             expect(chat.sent).toEqual([]);
             expect(loggedErrors).toEqual([]);
@@ -513,7 +522,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
                 event: "rejected",
                 stepId: "legal",
                 title: `“${TITLE}” was rejected at Legal review`,
-                body: `Anna: “${COMMENT}”. Create a new revision to fix it, then request a new review.`
+                body: `Anna: “${COMMENT}”. Create a new revision to fix it.`
             });
             expect(mailer.sent).toHaveLength(1);
             expect(mailer.sent[0].bcc).toEqual(["user-requester@webiny.test"]);
@@ -750,7 +759,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
 
     describe("reassign", () => {
         it("tells the new owner, then the old owner and the next new owner, with the operator's name", async () => {
-            const { request, reassign, connectAll, clear, sends, mailer, frameUsers } =
+            const { request, reassign, connectAll, clear, sends, mailer, frameUsers, tenantId } =
                 await setup();
             allowReaders();
             connectAll();
@@ -799,6 +808,23 @@ describe("review notifications through the real saver (R181-R197)", () => {
                 title: `“${TITLE}” was reassigned to Bob`,
                 body: "Legal review · reassigned by Mona Manager. You no longer own this step."
             });
+            // The old owner's e-mail opens the review details (B2 design 9); the new owner's the
+            // content.
+            const reassignedMail = mailer.sent.find(
+                mail => mail.subject === `Reassigned: ${TITLE} (Legal review)`
+            );
+            const assignedMail = mailer.sent.find(
+                mail => mail.subject === `You’re reviewing: ${TITLE} (Legal review)`
+            );
+            expect(reassignedMail?.text).toContain(
+                `View review details: ${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}&reviewId=${review.id}`
+            );
+            expect(reassignedMail?.text).toContain(
+                "You get this e-mail because you owned this step."
+            );
+            expect(assignedMail?.text).toContain(
+                `Open content: ${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}\n`
+            );
         });
     });
 

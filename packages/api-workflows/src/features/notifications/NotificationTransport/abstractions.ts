@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { NonEmptyArray } from "@webiny/api/types.js";
+import type { NotificationDetails } from "~/domain/notifications/types.js";
 
 export interface INotificationTransportUser {
     id: string;
@@ -8,14 +9,24 @@ export interface INotificationTransportUser {
 }
 
 /**
+ * The review facts a transport may show next to the text: content type (`null` when unknown),
+ * content title, step number and count, step title and requester. Plain text.
+ */
+export type INotificationTransportMessageDetails = NotificationDetails;
+
+/**
  * What a transport sends. `title` is the subject line, `body` the plain text, `url` the link to
- * the content (`null` when there is none) and `linkLabel` the text of that link (R190).
+ * the content or to its review details (`null` when there is none) and `linkLabel` the text of
+ * that link (R190). `footer` (why the recipient gets it) and `details` are optional: a transport
+ * written before they existed can ignore them.
  */
 export interface INotificationTransportMessage {
     title: string;
     body: string;
     url: string | null;
     linkLabel: string;
+    footer?: string;
+    details?: INotificationTransportMessageDetails;
 }
 
 export interface INotificationTransportSendParams {
@@ -46,4 +57,5 @@ export namespace NotificationTransport {
     export type SendParams = INotificationTransportSendParams;
     export type User = INotificationTransportUser;
     export type Message = INotificationTransportMessage;
+    export type MessageDetails = INotificationTransportMessageDetails;
 }

@@ -1,5 +1,4 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { PickerOption } from "~/components/picker/PickerOption.js";
 import type { ExclusionTab } from "~/settings/model/list/ExclusionTab.js";
 import type { ExclusionsEmptyVm } from "~/settings/model/list/ExclusionsEmptyVm.js";
 import type { ExclusionsSource } from "./ExclusionsSource.js";
@@ -12,6 +11,8 @@ export interface ExclusionsPageInitParams {
 
 export type ExclusionsPageStatus = "loading" | "ready" | "failed" | "noAccess";
 
+export type ExclusionsSortDirection = "asc" | "desc";
+
 // The open dialog: Add has no user; Edit and Remove name the entry by its user (R234).
 export interface ExclusionDialogRequest {
     kind: "add" | "edit" | "remove";
@@ -23,19 +24,14 @@ export interface ExclusionTabVm {
     label: "Active" | "Expired" | "All";
 }
 
-// The `Filter by user` picker (R332): the users in the list, filtered on the client.
-export interface ExclusionFilterVm {
-    value: string | null;
-    selected: PickerOption | null;
-    options: PickerOption[];
-}
-
 export interface ExclusionRowVm {
     userId: string;
     // The display name, `Deleted user` or the raw id.
     label: string;
     // A deleted user (QBZ-91).
     muted: boolean;
+    // The avatar initials of a found user; null for a deleted or not yet known user (icon avatar).
+    initials: string | null;
     // `This user no longer exists` for a deleted user, else null.
     subLine: string | null;
     // The reason or `No reason given`.
@@ -58,7 +54,10 @@ export interface ExclusionsPageVm {
     canAdd: boolean;
     tab: ExclusionTab;
     tabs: ExclusionTabVm[];
-    filter: ExclusionFilterVm;
+    // The text of `Search by name`; the rows are filtered by it on the client.
+    search: string;
+    // The order of the rows by the user's name, toggled from the User column header.
+    sortDirection: ExclusionsSortDirection;
     rows: ExclusionRowVm[];
     // The empty state when the list is loaded and no row shows, else null (R322).
     empty: ExclusionsEmptyVm | null;
@@ -75,8 +74,9 @@ export interface IExclusionsPagePresenter extends ExclusionsSource {
     // `Try again` on the names banner: looks up only the ids that are still unresolved (R321).
     retryNames(): Promise<void>;
     setTab(tab: ExclusionTab): void;
-    setUserFilter(userId: string | null): void;
-    searchUserFilter(search: string): void;
+    setSearch(search: string): void;
+    // Flips the name order between ascending and descending; the list is fully loaded, so on the client.
+    toggleSort(): void;
     openAdd(): void;
     openEdit(userId: string): void;
     dispose(): void;

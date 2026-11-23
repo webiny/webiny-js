@@ -54,9 +54,6 @@ const { Ui } = PageEditorConfig;
 const NOT_LOADED = "Read-only until the review status loads.";
 const PUBLISHED =
     "Read-only. The Website Builder only edits draft revisions. Create a new revision to make changes.";
-const APPROVED =
-    "Read-only: this revision has an approved review. Create a new revision to make changes; it needs a new review.";
-const REJECTED = "Read-only: this revision was rejected. Create a new revision to fix it.";
 
 interface MatrixCase {
     kind: FakeReviewKind;
@@ -82,12 +79,12 @@ const MATRIX: MatrixCase[] = [
     { kind: "inProgress", page: "draft", bar: true, note: null, readOnly: true },
     { kind: "inProgress", page: "published", bar: true, note: PUBLISHED, readOnly: true },
     { kind: "inProgress", page: "unpublished", bar: true, note: null, readOnly: true },
-    { kind: "approved", page: "draft", bar: true, note: APPROVED, readOnly: true },
+    { kind: "approved", page: "draft", bar: true, note: null, readOnly: true },
     { kind: "approved", page: "published", bar: true, note: PUBLISHED, readOnly: true },
-    { kind: "approved", page: "unpublished", bar: true, note: APPROVED, readOnly: true },
-    { kind: "rejected", page: "draft", bar: true, note: REJECTED, readOnly: true },
+    { kind: "approved", page: "unpublished", bar: true, note: null, readOnly: true },
+    { kind: "rejected", page: "draft", bar: true, note: null, readOnly: true },
     { kind: "rejected", page: "published", bar: true, note: PUBLISHED, readOnly: true },
-    { kind: "rejected", page: "unpublished", bar: true, note: REJECTED, readOnly: true }
+    { kind: "rejected", page: "unpublished", bar: true, note: null, readOnly: true }
 ];
 
 describe("review status x page status (bar, note and canvas)", () => {

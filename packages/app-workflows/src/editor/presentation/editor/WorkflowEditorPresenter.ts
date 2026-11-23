@@ -10,6 +10,7 @@ import { deleteWorkflowDialog } from "./dialogs/deleteWorkflowDialog.js";
 import { deletedDialog } from "./dialogs/deletedDialog.js";
 import { reloadWorkflowDialog } from "./dialogs/reloadWorkflowDialog.js";
 import { duplicateBannerMessage } from "./duplicateBannerMessage.js";
+import { formatAppliesTo } from "./formatAppliesTo.js";
 import { mapSaveError } from "./mapSaveError.js";
 import type { SaveFailure } from "./mapSaveError.js";
 import type { ValidationFailure } from "./mapSaveError.js";
@@ -56,6 +57,7 @@ import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissio
 import { WorkflowEditorPresenter as Abstraction } from "./abstractions.js";
 import type { EmptyWorkflowVm } from "./abstractions.js";
 import type { ModelPanelVm } from "./abstractions.js";
+import type { ModelWorkflowFilter } from "./abstractions.js";
 import type { OptionList } from "./abstractions.js";
 import type { OptionsBannerVm } from "./abstractions.js";
 import type { WorkflowEditorDetailKind } from "./abstractions.js";
@@ -97,6 +99,7 @@ import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import { createNewStep } from "~/editor/model/createNewStep.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import { getStepDetails } from "~/editor/model/getStepDetails.js";
 import { getStepSummary } from "~/editor/model/getStepSummary.js";
 import { getStepTypeLabel } from "~/editor/model/getStepTypeLabel.js";
 import { getStepTypeOptions } from "~/editor/model/getStepTypeOptions.js";
@@ -137,6 +140,13 @@ function mergeTeams(
     return merged;
 }
 
+const toHasWorkflow = (filter: ModelWorkflowFilter): boolean | null => {
+    if (filter === "with") {
+        return true;
+    }
+    return filter === "without" ? false : null;
+};
+
 class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private params: WorkflowEditorInitParams | null = null;
     private status: WorkflowEditorStatus = "loading";
@@ -151,6 +161,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private modelsFailed = false;
     private searchDraft = "";
     private search = "";
+    private workflowFilter: ModelWorkflowFilter = "all";
     private selectedRow: WorkflowModelRow | null = null;
     private detail: WorkflowEditorDetailKind = "none";
     private stepTypes: OptionList<EditorStepType> = createOptionList("loading");
@@ -385,8 +396,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        // The rows show as soon as the models arrive, while the option lists may still load: a
+        // model the admin opens in that time wins over the first one, which is opened only when
+        // nothing was opened since this run began.
+        const selection = this.selectToken;
         await Promise.all([this.loadModels(false), this.loadOptions()]);
-        if (token !== this.runToken || this.status !== "ready") {
+        if (token !== this.runToken || this.status !== "ready" || selection !== this.selectToken) {
             return;
         }
         const first = this.rows[0];
@@ -504,6 +519,38 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             this.modelSearchTimer = null;
             void this.applySearch(search);
         }, SEARCH_DEBOUNCE_MS);
+    }
+
+    setWorkflowFilter(filter: ModelWorkflowFilter): void {
+        if (filter === this.workflowFilter) {
+            return;
+        }
+        this.workflowFilter = filter;
+        // A search still waiting for its debounce applies with the new filter.
+        this.cancelModelSearchTimer();
+        void this.applySearch(this.searchDraft);
+    }
+
+    async createWorkflowForModel(modelId: string): Promise<void> {
+        if (this.saving || this.dialogBusy || this.pending !== null) {
+            return;
+        }
+        await this.selectModel(modelId);
+        const selected = this.selectedRow;
+        if (selected !== null && selected.modelId === modelId) {
+            this.createWorkflow();
+        }
+    }
+
+    async requestDeleteWorkflowForModel(modelId: string): Promise<void> {
+        if (this.saving || this.dialogBusy || this.pending !== null) {
+            return;
+        }
+        await this.selectModel(modelId);
+        const selected = this.selectedRow;
+        if (selected !== null && selected.modelId === modelId) {
+            this.requestDelete();
+        }
     }
 
     async loadMore(): Promise<void> {
@@ -926,6 +973,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.modelsFailed = false;
         this.searchDraft = "";
         this.search = "";
+        this.workflowFilter = "all";
         this.selectedRow = null;
         this.detail = "none";
         this.stepTypes = createOptionList("loading");
@@ -979,13 +1027,16 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             label: params ? params.app.panelLabel : "",
             showSearch: params ? params.app.appKind === "cms" : false,
             search: this.searchDraft,
+            showFilter: params ? params.app.appKind === "cms" : false,
+            filter: this.workflowFilter,
             rows: buildModelRowVms({
                 rows: this.rows,
                 activeModelId: selected ? selected.modelId : null,
                 draftOpen: this.draft.isOpen,
                 draftIsNew: this.draft.isNew,
                 draftDirty: this.draft.isDirty,
-                draftStepCount: this.draft.steps.length
+                draftStepCount: this.draft.steps.length,
+                actionsDisabled: this.saving || this.dialogBusy
             }),
             loading: this.modelsLoading,
             loadingMore: this.loadingMore,
@@ -1008,7 +1059,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         return {
             name: this.draft.name,
             nameError: this.nameError,
-            appliesTo: `Applies to ${row.name} · ${params.app.appliesToLabel}`,
+            appliesTo: formatAppliesTo({
+                modelName: row.name,
+                appLabel: params.app.appliesToLabel,
+                createdBy: this.draft.createdBy,
+                createdOn: this.draft.createdOn
+            }),
             dirty: draftDirty || stepEdited,
             saving: this.saving,
             canSave: draftDirty && !this.saving,
@@ -1098,6 +1154,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 count,
                 typeLabel: getStepTypeLabel(step.type, stepTypes),
                 summary: getStepSummary(step, context),
+                details: getStepDetails(step, context),
                 warnings: getStepWarnings(step, context),
                 errors: entry ? entry.errors : [],
                 ruleIds: getStepRuleIds(step),
@@ -1170,6 +1227,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             const page = await this.listWorkflowModelsUseCase.execute({
                 app: params.app.appKind,
                 search: this.search,
+                hasWorkflow: toHasWorkflow(this.workflowFilter),
                 limit: MODEL_PAGE_SIZE,
                 after
             });
@@ -1979,7 +2037,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 continue;
             }
             const teamIds = this.references.userTeamIds.get(label.id) ?? [];
-            users.push({ id: label.id, displayName: label.label, teamIds });
+            users.push({ id: label.id, displayName: label.label, teamIds, teams: [] });
         }
         return users;
     }

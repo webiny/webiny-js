@@ -13,7 +13,7 @@ class ReviewTargetLinkServiceImpl implements Abstraction.Interface {
         private links: ReviewTargetLink.Interface[]
     ) {}
 
-    public async getUrl(params: ReviewTargetLink.Params): Promise<string | null> {
+    public async getUrl(params: Abstraction.Params): Promise<string | null> {
         try {
             // Several adapters may match; the last registered wins, like `ReviewTargetEditorService`.
             const link = [...this.links].reverse().find(item => item.canLink(params.model));
@@ -32,9 +32,18 @@ class ReviewTargetLinkServiceImpl implements Abstraction.Interface {
             }
 
             // String concatenation only: the adapter's encoded path (`%23`) is never re-serialised.
-            const path = link.getPath(params);
+            const path = link.getPath({
+                model: params.model,
+                targetId: params.targetId,
+                targetRevisionId: params.targetRevisionId
+            });
             const separator = path.includes("?") ? "&" : "?";
-            return `${adminUrl}${path}${separator}tenantId=${encodeURIComponent(tenantId)}`;
+            const url = `${adminUrl}${path}${separator}tenantId=${encodeURIComponent(tenantId)}`;
+            if (!params.reviewId) {
+                return url;
+            }
+            // The editor opens the Review details drawer of this review (and drops the param).
+            return `${url}&reviewId=${encodeURIComponent(params.reviewId)}`;
         } catch (error) {
             // Code and name only: the message of a port or tenant error is not ours to print.
             const source: PersistenceErrorSource =
