@@ -13664,6 +13664,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-extensions-aws@workspace:packages/project-extensions-aws"
   dependencies:
+    "@webiny/api-aco-pg": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     react: "npm:19.3.1"

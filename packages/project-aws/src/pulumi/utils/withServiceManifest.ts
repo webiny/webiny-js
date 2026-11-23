@@ -65,7 +65,7 @@ export const getSchemaSetupFunctionArn = (
 };
 
 /**
- * With `<Infra.Postgres />`: stores the manifests in the database by invoking the api app's
+ * With `<Infra.AuroraPostgres />`: stores the manifests in the database by invoking the api app's
  * `schema-setup` function with them (its ARN is in the api stack output). The database is in the
  * VPC's private subnets, where the deploy can't reach it.
  *
@@ -93,7 +93,7 @@ export const invokeSchemaSetupWithManifests = (app: PulumiApp, manifests: Servic
     });
 };
 
-/** Picks where the manifests go: the database with `<Infra.Postgres />`, else DynamoDB. */
+/** Picks where the manifests go: the database with `<Infra.AuroraPostgres />`, else DynamoDB. */
 const defaultApplyManifests = async (app: PulumiApp, manifests: ServiceManifest[]) => {
     if (!manifests.length) {
         return;
@@ -111,7 +111,7 @@ const defaultApplyManifests = async (app: PulumiApp, manifests: ServiceManifest[
  * Augment the given app with `addServiceManifest` functionality.
  *
  * Without `applyManifests`, the app publishes its manifests as DynamoDB items, or, with
- * `<Infra.Postgres />`, through the api app's schema-setup function.
+ * `<Infra.AuroraPostgres />`, through the api app's schema-setup function.
  * @param {PulumiApp} app
  */
 export function withServiceManifest<T extends PulumiApp>(

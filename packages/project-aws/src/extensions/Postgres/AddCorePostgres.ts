@@ -4,7 +4,6 @@ import type { CorePulumiApp } from "~/pulumi/apps/core/createCorePulumiApp.js";
 import { CoreVpc } from "~/pulumi/apps/core/CoreVpc.js";
 import { CorePostgres, type PostgresNetwork } from "~/pulumi/apps/core/CorePostgres.js";
 import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPostgresConfigFromExtension.js";
-import { getRdsProxyConfigFromExtension } from "~/pulumi/apps/extensions/getRdsProxyConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import type { VpcExtensionConfig } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 
@@ -47,7 +46,7 @@ export const getPostgresNetwork = (
 
 /**
  * Adds the Postgres database (`CorePostgres`) to the core app, and the outputs the API app
- * connects with. Rendered by `<Infra.Postgres />`.
+ * connects with. Rendered by `<Infra.AuroraPostgres />`.
  */
 export class AddCorePostgresImpl implements CorePulumi.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
@@ -63,7 +62,6 @@ export class AddCorePostgresImpl implements CorePulumi.Interface {
 
         const { outputs } = app.addModule(CorePostgres, {
             ...postgres,
-            rdsProxy: getRdsProxyConfigFromExtension(projectConfig),
             network,
             protect: app.env.isProduction
         });

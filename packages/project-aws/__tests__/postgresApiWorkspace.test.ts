@@ -12,7 +12,7 @@ import { ReplaceApiLambdaFnHandlers } from "~/extensions/Postgres/ReplaceApiLamb
 
 const DDB_ENTRY = `export const handler = createAwsDdbApiHandler({ extensions });`;
 
-describe("the api workspace with <Infra.Postgres />", () => {
+describe("the api workspace with <Infra.AuroraPostgres />", () => {
     let tmp: string;
     let container: Container;
 
