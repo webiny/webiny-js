@@ -63,6 +63,20 @@ describe("linkSharedPlugins", () => {
         expect(fs.readdirSync(randomFolder)).toEqual(["store-copy"]);
     });
 
+    it("dates a moved plugin as used now, not when it was installed", () => {
+        writePlugin(pluginsLink, "resource-aws-v7.43.0", "pulumi-resource-aws");
+        const projectPlugin = path.join(pluginsLink, "resource-aws-v7.43.0");
+        const ninetyDaysMs = 90 * 24 * 60 * 60 * 1000;
+        const installedAt = new Date(Date.now() - ninetyDaysMs);
+        fs.utimesSync(projectPlugin, installedAt, installedAt);
+
+        linkSharedPlugins(pulumiHome, store);
+
+        const storePlugin = path.join(store, "resource-aws-v7.43.0");
+        const { mtimeMs } = fs.statSync(storePlugin);
+        expect(Date.now() - mtimeMs).toBeLessThan(60 * 1000);
+    });
+
     it("repoints a link that leads somewhere other than the store", () => {
         const elsewhere = path.join(root, "elsewhere");
         fs.mkdirSync(elsewhere, { recursive: true });
