@@ -44,11 +44,18 @@ export interface Options {
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
 
-    // The project's own Pulumi folder (PULUMI_HOME), with its config and credentials. The CLI and its
-    // plugins live in the shared store instead (see `getPulumiStoreFolder`). It's recommended this folder
-    // is not checked in into a code repository, since the Pulumi CLI can store sensitive information
-    // here, for example - user's Pulumi Service credentials.
+    /*
+     * The project's own Pulumi folder (PULUMI_HOME), with its config and credentials. It's recommended
+     * this folder is not checked in into a code repository, since the Pulumi CLI can store sensitive
+     * information here, for example - user's Pulumi Service credentials.
+     */
     pulumiFolder?: string;
+
+    /*
+     * The folder that holds the Pulumi CLI and its plugins for every project on the machine. Defaults
+     * to `~/.webiny/pulumi`.
+     */
+    storeFolder?: string;
 }
 
 export interface RunArgs {
@@ -66,14 +73,13 @@ export interface InstallArgs {
 
 export const FLAG_NON_INTERACTIVE = "--non-interactive";
 
-const UNUSED_PLUGIN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
-
 export class PulumiError extends Error {}
 
 export class Pulumi {
     options: Options;
     pulumiFolder: string;
-    pulumiStoreFolder: string;
+    pulumiCliFolders: string;
+    pulumiPluginsFolder: string;
     pulumiBinaryFolder = "";
     pulumiBinaryPath = "";
 
@@ -89,14 +95,13 @@ export class Pulumi {
     private constructor(options: Options = {}) {
         this.options = options;
 
-        this.pulumiFolder = path.join(
-            options.pulumiFolder || process.cwd(),
-            "pulumi-cli",
-            os.platform(),
-            "pulumi"
-        );
+        const projectFolder = options.pulumiFolder || process.cwd();
+        const platform = os.platform();
+        this.pulumiFolder = path.join(projectFolder, "pulumi-cli", platform, "pulumi");
 
-        this.pulumiStoreFolder = getPulumiStoreFolder();
+        const storeFolder = options.storeFolder || getPulumiStoreFolder();
+        this.pulumiCliFolders = path.join(storeFolder, "cli");
+        this.pulumiPluginsFolder = path.join(storeFolder, "plugins");
     }
 
     run(rawArgs: RunArgs) {
@@ -190,8 +195,8 @@ export class Pulumi {
     private async install(rawArgs?: InstallArgs) {
         const args = merge({}, this.options, rawArgs);
 
-        const { binaryFolder } = await downloadBinaries(
-            this.pulumiStoreFolder,
+        const binaryFolder = await downloadBinaries(
+            this.pulumiCliFolders,
             args.beforePulumiInstall,
             args.afterPulumiInstall
         );
@@ -200,7 +205,7 @@ export class Pulumi {
         this.pulumiBinaryPath = path.join(binaryFolder, "pulumi");
 
         removeProjectBinaries(this.pulumiFolder);
-        linkSharedPlugins(this.pulumiFolder, path.join(this.pulumiStoreFolder, "plugins"));
+        linkSharedPlugins(this.pulumiFolder, this.pulumiPluginsFolder);
     }
 
     private async ensureAwsPluginIsInstalled() {
@@ -247,13 +252,14 @@ export class Pulumi {
             );
         }
 
-        // The plugin folder is shared by every project on the machine, and another project may need
-        // a different version, so only versions no project has used for a while are removed.
+        /*
+         * The plugin folder is shared by every project on the machine, and another project may need
+         * a different version, so only versions no project has used for a while are removed.
+         */
         removeUnusedFolders({
             parentFolder: pluginsDir,
             keep: requiredPluginDir,
-            match: name => name.startsWith("resource-aws-"),
-            maxAgeMs: UNUSED_PLUGIN_MAX_AGE_MS
+            match: name => name.startsWith("resource-aws-")
         });
     }
 }

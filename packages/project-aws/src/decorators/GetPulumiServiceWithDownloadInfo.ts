@@ -16,9 +16,7 @@ export class GetPulumiServiceWithDownloadInfo implements GetPulumiService.Interf
             pulumiOptions: {
                 ...pulumiOptions,
                 beforePulumiInstall: async () => {
-                    this.ui.info(
-                        "Downloading Pulumi CLI. This happens once per Pulumi version, and all projects on this machine share it."
-                    );
+                    this.ui.info("Downloading Pulumi CLI...");
 
                     // New line b/c after the Pulumi CLI download, plugins are next.
                     this.ui.emptyLine();

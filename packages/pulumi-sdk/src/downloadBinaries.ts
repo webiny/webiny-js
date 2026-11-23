@@ -19,19 +19,17 @@ const getPulumiVersion = () => {
     return semver.clean(version!);
 };
 
-export interface DownloadBinariesResult {
-    binaryFolder: string;
-    downloaded: boolean;
-}
-
-// Each Pulumi version is downloaded once into the store and shared by every project that uses it.
-// The archive is extracted into a temporary folder and renamed into place, so a project that finds
-// the folder never sees a half-extracted CLI, even while another project is downloading it.
+/*
+ * Each Pulumi version is downloaded once into the store's CLI folder and shared by every project
+ * that uses it. The archive is extracted into a temporary folder and renamed into place, so a project
+ * that finds the folder never sees a half-extracted CLI, even while another project is downloading it.
+ * Returns the folder that holds the `pulumi` executable.
+ */
 export default async (
-    storeFolder: string,
+    cliFolders: string,
     beforeInstall?: () => void,
     afterInstall?: () => void
-): Promise<DownloadBinariesResult> => {
+): Promise<string> => {
     const platform = os.platform();
     if (platform !== "darwin" && platform !== "linux" && platform !== "win32") {
         throw Error(
@@ -41,23 +39,22 @@ export default async (
 
     const version = getPulumiVersion();
     const filename = getDownloadFilename(version!, platform);
-    const cliFolders = path.join(storeFolder, "cli");
     const cliFolderName = filename.replace(/\.(tar\.gz|zip)$/, "");
     const cliFolder = path.join(cliFolders, cliFolderName);
     const binaryFolder = path.join(cliFolder, "pulumi");
 
     if (fs.existsSync(binaryFolder)) {
         removeUnusedCliVersions(cliFolders, cliFolderName);
-        return { binaryFolder, downloaded: false };
+        return binaryFolder;
     }
 
     if (typeof beforeInstall === "function") {
         await beforeInstall();
     }
 
-    const tempFolder = `${cliFolder}.${process.pid}.tmp`;
+    fs.mkdirSync(cliFolders, { recursive: true });
+    const tempFolder = fs.mkdtempSync(`${cliFolder}.`);
     try {
-        fs.rmSync(tempFolder, { recursive: true, force: true });
         await setupPlatform(tempFolder, filename, platform);
         moveIntoPlace(tempFolder, cliFolder);
     } finally {
@@ -70,17 +67,14 @@ export default async (
         await afterInstall();
     }
 
-    return { binaryFolder, downloaded: true };
+    return binaryFolder;
 };
-
-const UNUSED_CLI_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 function removeUnusedCliVersions(cliFolders: string, cliFolderName: string) {
     removeUnusedFolders({
         parentFolder: cliFolders,
         keep: cliFolderName,
-        match: name => name.startsWith("pulumi-v"),
-        maxAgeMs: UNUSED_CLI_MAX_AGE_MS
+        match: name => name.startsWith("pulumi-v")
     });
 }
 
@@ -89,7 +83,8 @@ function moveIntoPlace(tempFolder: string, cliFolder: string) {
         fs.renameSync(tempFolder, cliFolder);
     } catch (error) {
         // Another project downloaded the same version first.
-        if (!fs.existsSync(path.join(cliFolder, "pulumi"))) {
+        const binaryFolder = path.join(cliFolder, "pulumi");
+        if (!fs.existsSync(binaryFolder)) {
             throw error;
         }
     }
