@@ -9,7 +9,6 @@ import set from "lodash/set.js";
 import downloadBinaries from "./downloadBinaries.js";
 import { getPulumiStoreFolder } from "./getPulumiStoreFolder.js";
 import { linkSharedPlugins } from "./linkSharedPlugins.js";
-import { removeProjectBinaries } from "./removeProjectBinaries.js";
 
 export interface PulumiProcessResult {
     readonly stdout: string;
@@ -94,11 +93,16 @@ export class Pulumi {
     private constructor(options: Options = {}) {
         this.options = options;
 
+        /*
+         * The project's own Pulumi folder used to be `pulumi-cli/<platform>/pulumi`, which also held a
+         * copy of the CLI and the plugins. That folder is no longer read, and is left for the user to
+         * delete. Every run logs in and selects its stack again, so nothing in it is needed.
+         */
         const projectFolder = options.pulumiFolder || process.cwd();
-        const platform = os.platform();
-        this.pulumiFolder = path.join(projectFolder, "pulumi-cli", platform, "pulumi");
+        this.pulumiFolder = path.join(projectFolder, "pulumi");
 
-        const storeFolder = options.storeFolder || getPulumiStoreFolder();
+        // A relative store folder would make the plugins link resolve against the link's own folder.
+        const storeFolder = path.resolve(options.storeFolder || getPulumiStoreFolder());
         this.pulumiCliFolders = path.join(storeFolder, "cli");
         this.pulumiPluginsFolder = path.join(storeFolder, "plugins");
     }
@@ -203,7 +207,6 @@ export class Pulumi {
         this.pulumiBinaryFolder = binaryFolder;
         this.pulumiBinaryPath = path.join(binaryFolder, "pulumi");
 
-        removeProjectBinaries(this.pulumiFolder);
         linkSharedPlugins(this.pulumiFolder, this.pulumiPluginsFolder);
     }
 

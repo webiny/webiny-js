@@ -40,27 +40,14 @@ describe("linkSharedPlugins", () => {
         expect(fs.realpathSync(pluginsLink)).toBe(fs.realpathSync(store));
     });
 
-    it("moves an existing project's plugins into the store", () => {
+    it("leaves a real plugins folder and its contents alone", () => {
         writePlugin(pluginsLink, "resource-aws-v7.55.0", "pulumi-resource-aws");
-        const lockFile = path.join(pluginsLink, "resource-aws-v7.55.0.lock");
-        fs.writeFileSync(lockFile, "");
-        writePlugin(store, "resource-random-v4.21.6", "store-copy");
-        writePlugin(pluginsLink, "resource-random-v4.21.6", "project-copy");
 
         linkSharedPlugins(pulumiHome, store);
 
-        expect(fs.lstatSync(pluginsLink).isSymbolicLink()).toBe(true);
-        expect(fs.readdirSync(store).sort()).toEqual([
-            "resource-aws-v7.55.0",
-            "resource-aws-v7.55.0.lock",
-            "resource-random-v4.21.6"
-        ]);
-        const awsBinary = path.join(store, "resource-aws-v7.55.0", "pulumi-resource-aws");
-        expect(fs.readFileSync(awsBinary, "utf8")).toBe("resource-aws-v7.55.0");
-
-        // The store already had this plugin, so the project's copy is deleted rather than merged.
-        const randomFolder = path.join(store, "resource-random-v4.21.6");
-        expect(fs.readdirSync(randomFolder)).toEqual(["store-copy"]);
+        expect(fs.lstatSync(pluginsLink).isDirectory()).toBe(true);
+        expect(fs.readdirSync(pluginsLink)).toEqual(["resource-aws-v7.55.0"]);
+        expect(fs.readdirSync(store)).toEqual([]);
     });
 
     it("repoints a link that leads somewhere other than the store", () => {
