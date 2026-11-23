@@ -24,7 +24,7 @@ const routeUrl = (path: string) => {
     return new URL(path, API_URL);
 };
 
-describe("a custom route declared with Api.Route answers", { tags: ["api-route"], skip }, () => {
+describe("a custom route declared with Api.Route answers", { tags: ["api"], skip }, () => {
     test("GET passes the path parameter to the handler", async () => {
         const url = routeUrl("/e2e/api-route/42");
         const response = await fetch(url);

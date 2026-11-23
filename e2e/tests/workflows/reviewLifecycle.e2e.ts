@@ -1,14 +1,14 @@
 import { afterAll, afterEach, beforeEach, describe, test } from "@e2e-dev/web";
 import { expect } from "e2e";
-import { captureApiSession, waitForApiSession } from "./support/apiSession.ts";
-import type { ApiSession } from "./support/apiSession.ts";
-import { createTestModel, deleteTestModel } from "./support/contentModel.ts";
-import type { TestModel } from "./support/contentModel.ts";
-import { createDraftEntry, deleteEntryPermanently, getEntryStatus } from "./support/entry.ts";
-import type { TestEntry } from "./support/entry.ts";
+import { captureApiSession, waitForApiSession } from "../../support/apiSession.ts";
+import type { ApiSession } from "../../support/apiSession.ts";
+import { createTestModel, deleteTestModel } from "../../support/contentModel.ts";
+import type { TestModel } from "../../support/contentModel.ts";
+import { createDraftEntry, deleteEntryPermanently, getEntryStatus } from "../../support/entry.ts";
+import type { TestEntry } from "../../support/entry.ts";
 import { openEntryForm, reviewBar } from "./support/entryForm.ts";
-import { acceptEntryFormLeavePrompt } from "./support/leavePrompt.ts";
-import { recordPageErrorsFromNowOn, takePageErrors } from "./support/pageErrors.ts";
+import { acceptEntryFormLeavePrompt } from "../../support/leavePrompt.ts";
+import { recordPageErrorsFromNowOn, takePageErrors } from "../../support/pageErrors.ts";
 import {
     approveStep,
     cancelReviewsForDelete,
@@ -20,9 +20,9 @@ import { createReviewCast, deleteReviewCast } from "./support/reviewCast.ts";
 import type { ReviewCast } from "./support/reviewCast.ts";
 import { createReviewWorkflow } from "./support/reviewWorkflow.ts";
 import type { ReviewWorkflow } from "./support/reviewWorkflow.ts";
-import { signInAs } from "./support/signIn.ts";
+import { signInAs } from "../../support/signIn.ts";
 import { deleteTestWorkflow } from "./support/workflow.ts";
-import { createRunId } from "./support/createRunId.ts";
+import { createRunId } from "../../support/createRunId.ts";
 
 /*
  * One review from request to publish, driven in the entry form by the people it involves: the

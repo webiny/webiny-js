@@ -2,15 +2,15 @@ import type { Browser } from "@e2e-dev/web";
 import { afterAll, afterEach, beforeEach, describe, test } from "@e2e-dev/web";
 import type { Screen } from "e2e";
 import { expect } from "e2e";
-import { captureApiSession, waitForApiSession } from "./support/apiSession.ts";
-import type { ApiSession } from "./support/apiSession.ts";
-import { createTestModel, deleteTestModel } from "./support/contentModel.ts";
-import type { TestModel } from "./support/contentModel.ts";
-import { recordPageErrorsFromNowOn, takePageErrors } from "./support/pageErrors.ts";
-import { createTestTeam, deleteTestTeam } from "./support/team.ts";
-import type { TestTeam } from "./support/team.ts";
+import { captureApiSession, waitForApiSession } from "../../support/apiSession.ts";
+import type { ApiSession } from "../../support/apiSession.ts";
+import { createTestModel, deleteTestModel } from "../../support/contentModel.ts";
+import type { TestModel } from "../../support/contentModel.ts";
+import { recordPageErrorsFromNowOn, takePageErrors } from "../../support/pageErrors.ts";
+import { createTestTeam, deleteTestTeam } from "../../support/team.ts";
+import type { TestTeam } from "../../support/team.ts";
 import { deleteTestWorkflow, findModelWorkflowId } from "./support/workflow.ts";
-import { createRunId } from "./support/createRunId.ts";
+import { createRunId } from "../../support/createRunId.ts";
 
 /** Reads the id of the step card titled `title`, for the `step-card-<id>` test id. */
 const findStepId = async (browser: Browser, title: string) => {

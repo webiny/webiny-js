@@ -1,7 +1,7 @@
 import type { Browser } from "@e2e-dev/web";
 import type { App, Locator } from "e2e";
-import type { TestModel } from "./contentModel.ts";
-import type { TestEntry } from "./entry.ts";
+import type { TestModel } from "../../../support/contentModel.ts";
+import type { TestEntry } from "../../../support/entry.ts";
 
 /** Opens the entry revision in the Headless CMS entry form. */
 export const openEntryForm = async (app: App, model: TestModel, entry: TestEntry) => {

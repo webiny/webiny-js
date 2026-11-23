@@ -6,7 +6,7 @@ interface CreateUnlicensedE2eStepsParams {
     workingDirectory: string;
     // Shell expression for the Admin app's URL.
     adminUrl: string;
-    // Shell expression for the API's URL, which e2e/tests/apiRoute.e2e.ts calls.
+    // Shell expression for the API's URL, which e2e/tests/api/apiRoute.e2e.ts calls.
     apiUrl: string;
     artifactName: string;
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`. Without it the job runs all

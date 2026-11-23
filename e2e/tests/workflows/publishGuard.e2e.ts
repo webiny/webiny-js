@@ -1,17 +1,17 @@
 import { afterAll, afterEach, beforeEach, describe, test } from "@e2e-dev/web";
 import { expect } from "e2e";
-import { captureApiSession, waitForApiSession } from "./support/apiSession.ts";
-import type { ApiSession } from "./support/apiSession.ts";
-import { createTestModel, deleteTestModel } from "./support/contentModel.ts";
-import type { TestModel } from "./support/contentModel.ts";
-import { createDraftEntry, deleteEntryPermanently } from "./support/entry.ts";
-import type { TestEntry } from "./support/entry.ts";
-import { recordPageErrorsFromNowOn, takePageErrors } from "./support/pageErrors.ts";
+import { captureApiSession, waitForApiSession } from "../../support/apiSession.ts";
+import type { ApiSession } from "../../support/apiSession.ts";
+import { createTestModel, deleteTestModel } from "../../support/contentModel.ts";
+import type { TestModel } from "../../support/contentModel.ts";
+import { createDraftEntry, deleteEntryPermanently } from "../../support/entry.ts";
+import type { TestEntry } from "../../support/entry.ts";
+import { recordPageErrorsFromNowOn, takePageErrors } from "../../support/pageErrors.ts";
 import { publishEntry, schedulePublish } from "./support/publishAttempts.ts";
-import { createTestTeam, deleteTestTeam } from "./support/team.ts";
-import type { TestTeam } from "./support/team.ts";
+import { createTestTeam, deleteTestTeam } from "../../support/team.ts";
+import type { TestTeam } from "../../support/team.ts";
 import { createTestWorkflow, deleteTestWorkflow } from "./support/workflow.ts";
-import { createRunId } from "./support/createRunId.ts";
+import { createRunId } from "../../support/createRunId.ts";
 
 const PUBLISH_BLOCKED = "Workflows/Review/PublishBlocked";
 

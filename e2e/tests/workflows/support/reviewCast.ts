@@ -1,11 +1,11 @@
-import type { ApiSession } from "./apiSession.ts";
-import { createTestUser, deleteTestUser } from "./adminUser.ts";
-import type { TestUser } from "./adminUser.ts";
-import { createTestRole, deleteTestRole } from "./role.ts";
-import type { RolePermission } from "./role.ts";
-import { readTestUserPassword } from "./signIn.ts";
-import { createTestTeam, deleteTestTeam } from "./team.ts";
-import type { TestTeam } from "./team.ts";
+import type { ApiSession } from "../../../support/apiSession.ts";
+import { createTestUser, deleteTestUser } from "../../../support/adminUser.ts";
+import type { TestUser } from "../../../support/adminUser.ts";
+import { createTestRole, deleteTestRole } from "../../../support/role.ts";
+import type { RolePermission } from "../../../support/role.ts";
+import { readTestUserPassword } from "../../../support/signIn.ts";
+import { createTestTeam, deleteTestTeam } from "../../../support/team.ts";
+import type { TestTeam } from "../../../support/team.ts";
 
 /**
  * The people of a review: an author in no team, two reviewers in team A and one in team B. All of

@@ -1,7 +1,7 @@
-import type { ApiSession } from "./apiSession.ts";
-import { callGraphql, requireData } from "./callGraphql.ts";
-import type { TestModel } from "./contentModel.ts";
-import type { TestEntry } from "./entry.ts";
+import type { ApiSession } from "../../../support/apiSession.ts";
+import { callGraphql, requireData } from "../../../support/callGraphql.ts";
+import type { TestModel } from "../../../support/contentModel.ts";
+import type { TestEntry } from "../../../support/entry.ts";
 
 /** What the API answered to a publish: the error code when it refused, else null. */
 export interface PublishAttempt {

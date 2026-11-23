@@ -42,7 +42,7 @@ const PR_FEATURE_PATHS = {
     "bug-reporter": nodeScriptPath("configureBugReporter"),
     /*
      * Gates adding the E2E API route. The script came in with the fix that makes `<Api.Route>` build
-     * on standalone, and so did e2e/tests/apiRoute.e2e.ts, so a branch without it has neither.
+     * on standalone, and so did e2e/tests/api/apiRoute.e2e.ts, so a branch without it has neither.
      */
     "api-route": nodeScriptPath("configureApiRoute")
 };

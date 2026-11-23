@@ -1,22 +1,22 @@
 import type { App, Screen } from "e2e";
 import { afterAll, afterEach, beforeEach, describe, test } from "@e2e-dev/web";
 import { expect } from "e2e";
-import { captureApiSession, waitForApiSession } from "./support/apiSession.ts";
-import type { ApiSession } from "./support/apiSession.ts";
-import { createTestModel, deleteTestModel } from "./support/contentModel.ts";
-import type { TestModel } from "./support/contentModel.ts";
-import { createDraftEntry, deleteEntryPermanently } from "./support/entry.ts";
-import type { TestEntry } from "./support/entry.ts";
-import { acceptEntryFormLeavePrompt } from "./support/leavePrompt.ts";
-import { recordPageErrorsFromNowOn, takePageErrors } from "./support/pageErrors.ts";
+import { captureApiSession, waitForApiSession } from "../../support/apiSession.ts";
+import type { ApiSession } from "../../support/apiSession.ts";
+import { createTestModel, deleteTestModel } from "../../support/contentModel.ts";
+import type { TestModel } from "../../support/contentModel.ts";
+import { createDraftEntry, deleteEntryPermanently } from "../../support/entry.ts";
+import type { TestEntry } from "../../support/entry.ts";
+import { acceptEntryFormLeavePrompt } from "../../support/leavePrompt.ts";
+import { recordPageErrorsFromNowOn, takePageErrors } from "../../support/pageErrors.ts";
 import { cancelReviewsForDelete, requestReview, startStep } from "./support/review.ts";
 import { createReviewCast, deleteReviewCast } from "./support/reviewCast.ts";
 import type { ReviewCast } from "./support/reviewCast.ts";
 import { createReviewWorkflow } from "./support/reviewWorkflow.ts";
 import type { ReviewWorkflow } from "./support/reviewWorkflow.ts";
-import { signInAs } from "./support/signIn.ts";
+import { signInAs } from "../../support/signIn.ts";
 import { deleteTestWorkflow } from "./support/workflow.ts";
-import { createRunId } from "./support/createRunId.ts";
+import { createRunId } from "../../support/createRunId.ts";
 
 type ReviewListScopeLabel = "Assigned to me" | "Team pool" | "Team in review" | "Requested by me";
 

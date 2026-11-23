@@ -8,7 +8,7 @@ const FIXTURE = "fixtures/sample.jpeg";
 // `wcp`: multi-tenancy only exists on a licensed project.
 describe(
     "a file uploaded in a new tenant is delivered",
-    { serial: true, session: "admin", tags: ["wcp", "tenancy", "file-manager"] },
+    { serial: true, session: "admin", tags: ["wcp", "tenancy"] },
     () => {
         // Fresh per run, so earlier runs' tenants and files never match.
         const runId = Date.now();

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, test } from "@e2e-dev/web";
 import { expect } from "e2e";
-import { recordPageErrorsFromNowOn, takePageErrors } from "./support/pageErrors.ts";
+import { recordPageErrorsFromNowOn, takePageErrors } from "../../support/pageErrors.ts";
 
 /*
  * Every workflows page opens and shows its landmark. Each test opens its page in a browser of its

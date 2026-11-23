@@ -1,7 +1,7 @@
-import type { ApiSession } from "./apiSession.ts";
-import { callGraphql, requireData } from "./callGraphql.ts";
-import type { TestModel } from "./contentModel.ts";
-import type { TestTeam } from "./team.ts";
+import type { ApiSession } from "../../../support/apiSession.ts";
+import { callGraphql, requireData } from "../../../support/callGraphql.ts";
+import type { TestModel } from "../../../support/contentModel.ts";
+import type { TestTeam } from "../../../support/team.ts";
 
 interface WorkflowsError {
     code: string | null;

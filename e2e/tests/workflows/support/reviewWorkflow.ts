@@ -1,5 +1,5 @@
-import type { ApiSession } from "./apiSession.ts";
-import type { TestModel } from "./contentModel.ts";
+import type { ApiSession } from "../../../support/apiSession.ts";
+import type { TestModel } from "../../../support/contentModel.ts";
 import type { ReviewCast } from "./reviewCast.ts";
 import { createPeopleWorkflow } from "./workflow.ts";
 import type { PeopleStepInput } from "./workflow.ts";

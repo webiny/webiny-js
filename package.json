@@ -102,6 +102,8 @@
     "clear-webiny-build-cache": "rm -rf .webiny/cached-packages",
     "e2e": "yarn workspace e2e-tests e2e run",
     "e2e:headed": "yarn workspace e2e-tests e2e run --headed",
+    "e2e:list": "yarn workspace e2e-tests e2e list",
+    "e2e:areas": "tsx e2e/scripts/checkAreas.ts",
     "e2e:ts": "yarn workspace e2e-tests typecheck",
     "deploy": "yarn webiny deploy",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",

@@ -253,7 +253,7 @@ export const createAwsJobs = (
                 run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
             },
             {
-                // The API's CloudFront URL, which e2e/tests/apiRoute.e2e.ts calls.
+                // The API's CloudFront URL, which e2e/tests/api/apiRoute.e2e.ts calls.
                 name: "Extract API URL",
                 id: "api-url",
                 "working-directory": DIR_TEST_PROJECT,

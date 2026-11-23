@@ -10,5 +10,5 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["e2e.config.ts", "tests/**/*.ts"]
+  "include": ["e2e.config.ts", "areas.ts", "scripts/**/*.ts", "support/**/*.ts", "tests/**/*.ts"]
 }
