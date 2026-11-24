@@ -7,7 +7,7 @@ import { AuditLogFeature } from "~/api/features/AuditLog/feature.js";
 import { SmtpSettingsSchemaFactory } from "~/api/graphql/SmtpSettingsSchemaFactory.js";
 
 /*
- * The SMTP transport and its settings. The settings come from `<Api.Mailer.Smtp>` props in code or from the
+ * The SMTP transport and its settings. The settings come from `<MailerSmtp>` props in code or from the
  * Mailer settings screen.
  */
 export const MailerSmtpFeature = createFeature({

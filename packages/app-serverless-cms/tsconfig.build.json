@@ -24,7 +24,6 @@
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../lexical-editor-actions/tsconfig.build.json" },
     { "path": "../lexical-theme/tsconfig.build.json" },
-    { "path": "../mailer-smtp/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -78,8 +77,6 @@
       "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
       "@webiny/lexical-theme": ["../lexical-theme/src"],
-      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
-      "@webiny/mailer-smtp": ["../mailer-smtp/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

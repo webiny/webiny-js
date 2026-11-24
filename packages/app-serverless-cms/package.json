@@ -37,7 +37,6 @@
     "@webiny/di": "^2.0.0",
     "@webiny/lexical-editor-actions": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
-    "@webiny/mailer-smtp": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"

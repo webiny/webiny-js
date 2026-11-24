@@ -551,7 +551,7 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ## Mailer Features
 
-Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration. `@webiny/api-mailer` has no transport of its own. SMTP is the `@webiny/mailer-smtp` package, registered by default in the API and the Admin app; `<Api.Mailer.Smtp>` sets its settings in code. Other providers are extensions from the webiny/extensions repository, installed with `yarn webiny extension mailer/resend` (also `mailer/sendgrid`, `mailer/ses`); each renders an `Api.Extension` that registers a `MailTransportFactory` reading `WEBINY_API_*` environment variables when mail is sent. See `skills/user-skills/mailer-providers`. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
+Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration. `@webiny/api-mailer` has no transport of its own. SMTP is the `@webiny/mailer-smtp` package: the project templates render `<MailerSmtp />` in `webiny.config.tsx`, and replacing SMTP means replacing that component. Other providers are extensions from the webiny/extensions repository, installed with `yarn webiny extension mailer/resend` (also `mailer/sendgrid`, `mailer/ses`); each renders an `Api.Extension` that registers a `MailTransportFactory` reading `WEBINY_API_*` environment variables when mail is sent. See `skills/user-skills/mailer-providers`. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
 
 `webiny/api/mailer` merges exports from both packages, so the settings use cases below are imported from the same path as before.
 
@@ -577,19 +577,19 @@ Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` 
 
 - **Import:** `import { GetSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/mailer-smtp/src/api/features/GetSettings/abstractions.ts`
-- **Usage:** Read the SMTP settings. Takes a `transportName` argument (only `"Mailer/SmtpTransport"` has settings) and returns `Promise<Result<{ settings: TransportSettings | null, source: "code" | "storage" | null }>>`; check `isOk()` and read `.value`. `source: "code"` means `<Api.Mailer.Smtp>` props are driving the config; `"storage"` means settings were saved via the admin UI.
+- **Usage:** Read the SMTP settings. Takes a `transportName` argument (only `"Mailer/SmtpTransport"` has settings) and returns `Promise<Result<{ settings: TransportSettings | null, source: "code" | "storage" | null }>>`; check `isOk()` and read `.value`. `source: "code"` means `<MailerSmtp>` props are driving the config; `"storage"` means settings were saved via the admin UI.
 
 ### SaveSettingsUseCase (Mailer)
 
 - **Import:** `import { SaveSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/mailer-smtp/src/api/features/SaveSettings/abstractions.ts`
-- **Usage:** Persist the SMTP settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when `<Api.Mailer.Smtp>` props set the settings in code. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
+- **Usage:** Persist the SMTP settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when `<MailerSmtp>` props set the settings in code. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
 
 ### CodeMailerSettings
 
 - **Import:** `import { CodeMailerSettings } from "@webiny/mailer-smtp/api/domain/CodeMailerSettings/abstractions.js"`
 - **Interface Type:** See `packages/mailer-smtp/src/api/domain/CodeMailerSettings/abstractions.ts`
-- **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<Api.Mailer.Smtp>` props registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
+- **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<MailerSmtp>` props registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
 
 ### Mailer settings screen (Admin)
 

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { SmtpParamsSchema as schema } from "./SmtpParamsSchema.js";
+import { SmtpParamsSchema as schema } from "~/SmtpParamsSchema.js";
+import { MailerSmtpParamsSchema } from "~/SmtpParamsSchema.js";
 
 const validParams = {
     host: "smtp.example.com",
@@ -115,5 +116,36 @@ describe("Smtp paramsSchema", () => {
             expect(result.success).toBe(false);
             expect(result.error?.issues[0].message).toBe("Invalid email address.");
         });
+    });
+});
+
+describe("MailerSmtp paramsSchema", () => {
+    it("accepts no props: the settings come from the Mailer settings screen", async () => {
+        const result = await MailerSmtpParamsSchema.safeParseAsync({});
+        expect(result.success).toBe(true);
+    });
+
+    it("accepts a complete set of code settings", async () => {
+        const result = await MailerSmtpParamsSchema.safeParseAsync(validParams);
+        expect(result.success).toBe(true);
+    });
+
+    it("rejects code settings with a required one missing", async () => {
+        const result = await MailerSmtpParamsSchema.safeParseAsync({
+            host: "smtp.example.com",
+            port: 587
+        });
+        expect(result.success).toBe(false);
+        const paths = result.error?.issues.map(issue => issue.path.join("."));
+        expect(paths).toEqual(["user", "password", "from"]);
+    });
+
+    it("rejects an invalid field the same way the full schema does", async () => {
+        const result = await MailerSmtpParamsSchema.safeParseAsync({
+            ...validParams,
+            from: "not-an-email"
+        });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe("Invalid email address.");
     });
 });

@@ -42,7 +42,6 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/mailer-smtp": "0.0.0",
     "pino": "^10.4.0"
   },
   "peerDependencies": {

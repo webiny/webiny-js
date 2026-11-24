@@ -3,21 +3,23 @@ name: webiny-mailer-smtp
 description: >
   Use when configuring SMTP email/mailer settings in a Webiny project.
   Triggers on: "configure email", "set up SMTP", "mailer config", "sending emails",
-  "email not working", "configure mailer", "SMTP password", "Api.Mailer.Smtp".
+  "email not working", "configure mailer", "SMTP password", "MailerSmtp".
 ---
 
 # Mailer SMTP Configuration
 
 ## TL;DR
 
-Every Webiny project sends mail over SMTP out of the box. The settings are entered in the Admin app under Settings > Mailer. To set them in code instead, add `<Api.Mailer.Smtp ... />` to your `webiny.config.tsx`; the settings screen then shows them read-only. The component serializes the settings into the build artifact — always pass the password via an environment variable, never hard-code it. Deploy the API after making changes.
+New projects send mail over SMTP through `<MailerSmtp />` from `@webiny/mailer-smtp`, which `webiny.config.tsx` renders. Without props, the settings are entered in the Admin app under Settings > Mailer. With props, they come from code and the settings screen shows them read-only. The props are serialized into the build artifact, so always pass the password through an environment variable, never hard-code it. Deploy the API after making changes.
+
+To send through Resend, SendGrid or Amazon SES instead, replace `<MailerSmtp />` with that provider's component (see `webiny-mailer-providers`).
 
 ## Core Pattern
 
 ```tsx
-import { Api } from "webiny/extensions";
+import { MailerSmtp } from "@webiny/mailer-smtp";
 
-<Api.Mailer.Smtp
+<MailerSmtp
     host={"smtp.example.com"}
     port={587}
     user={"smtp-user"}
@@ -27,18 +29,20 @@ import { Api } from "webiny/extensions";
 />
 ```
 
-Place this inside the JSX returned by your config component in `webiny.config.tsx`, alongside other `<Api.*>` extensions.
+Place this inside the JSX returned by your config component in `webiny.config.tsx`, in place of the `<MailerSmtp />` the project template added. Set all of `host`, `port`, `user`, `password` and `from`, or none of them.
 
 ## Props Reference
 
 | Prop       | Type     | Required | Description                                    |
 | ---------- | -------- | -------- | ---------------------------------------------- |
-| `host`     | `string` | Yes      | SMTP server hostname                           |
+| `host`     | `string` | Yes\*    | SMTP server hostname                           |
 | `port`     | `number` | Yes      | SMTP server port (positive integer)            |
 | `user`     | `string` | Yes      | SMTP authentication username                   |
 | `password` | `string` | Yes      | SMTP authentication password — **use env var** |
 | `from`     | `string` | Yes      | Default sender address                         |
 | `replyTo`  | `string` | No       | Default reply-to address                       |
+
+\* Required when settings are set in code. Leave every prop out to enter the settings in the Admin app instead; `port`, `user`, `password` and `from` follow the same rule as `host`.
 
 `from` and `replyTo` are validated by the [`email-addresses`](https://www.npmjs.com/package/email-addresses) package against RFC 5322.
 
@@ -46,15 +50,15 @@ Place this inside the JSX returned by your config component in `webiny.config.ts
 
 ```tsx
 import React from "react";
-import { Api, Admin, Core } from "webiny/extensions";
+import { MailerSmtp } from "@webiny/mailer-smtp";
 
 const MyConfig = () => {
   return (
     <>
       {/* ... other extensions ... */}
 
-      {/* Mailer: configure SMTP transport via code */}
-      <Api.Mailer.Smtp
+      {/* Mailer: SMTP settings set in code */}
+      <MailerSmtp
         host={"smtp.sendgrid.net"}
         port={587}
         user={"apikey"}

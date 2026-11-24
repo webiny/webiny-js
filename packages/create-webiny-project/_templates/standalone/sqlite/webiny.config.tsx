@@ -2,6 +2,7 @@ import React from "react";
 import { Admin } from "webiny/extensions";
 import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
+import { MailerSmtp } from "@webiny/mailer-smtp";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
@@ -51,6 +52,11 @@ export const Extensions = () => {
                     process.env.WEBINY_SELF_HOSTED_AUTH_SECRET || "dev-only-insecure-secret"
                 }
             />
+            {/* Mail: SMTP, set in Settings > Mailer. To set it in code, pass host, port, user,
+                password and from. For Resend, SendGrid or Amazon SES, run
+                `yarn webiny extension mailer/resend` (or mailer/sendgrid, mailer/ses) and remove
+                <MailerSmtp />. */}
+            <MailerSmtp />
         </>
     );
 };

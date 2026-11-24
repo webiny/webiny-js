@@ -10,7 +10,6 @@ import { imagePlugin } from "@webiny/app/plugins/index.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Extension as MailerSettings } from "@webiny/app-mailer";
-import { Extension as MailerSmtpSettings } from "@webiny/mailer-smtp/admin/Extension.js";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-admin/presentation/trashBin/index.js";
@@ -48,7 +47,6 @@ const App = (props: AdminProps) => {
             <FileManager />
             <AuditLogs />
             <MailerSettings />
-            <MailerSmtpSettings />
             <SchedulerModule />
             <CmsScheduler />
             <TrashBinConfigs />

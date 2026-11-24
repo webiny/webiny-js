@@ -12,14 +12,14 @@ description: >
 ## TL;DR
 
 Webiny sends its mail (password reset codes, workflow notifications, the test email) through one
-mail transport. SMTP is built in. Resend, SendGrid and Amazon SES are extensions: install one with
-the CLI and set its environment variables. While the provider is configured, it is used instead of
-SMTP. Each is configured with environment variables that the API reads when it sends mail, so API keys never go
+mail transport. New projects render `<MailerSmtp />` in `webiny.config.tsx`. Resend, SendGrid and
+Amazon SES are extensions: install one with the CLI, then remove `<MailerSmtp />`. Each is
+configured with environment variables that the API reads when it sends mail, so API keys never go
 into the build.
 
 | Provider   | Install                                 | Component            |
 | ---------- | --------------------------------------- | -------------------- |
-| SMTP       | built in                                | none                 |
+| SMTP       | in the project template                 | `<MailerSmtp />`     |
 | Resend     | `yarn webiny extension mailer/resend`   | `<ResendMailer />`   |
 | SendGrid   | `yarn webiny extension mailer/sendgrid` | `<SendGridMailer />` |
 | Amazon SES | `yarn webiny extension mailer/ses`      | `<SesMailer />`      |
@@ -27,16 +27,20 @@ into the build.
 Installing copies the source into `extensions/mailer/<provider>/` and adds the component to
 `webiny.config.tsx`. The code is the project's own from then on: it can be read and changed.
 
-## Using a provider instead of SMTP (`webiny.config.tsx`)
+## Replacing SMTP (`webiny.config.tsx`)
 
 ```tsx
-// Added by `yarn webiny extension mailer/resend`
+// Before
+import { MailerSmtp } from "@webiny/mailer-smtp";
+<MailerSmtp />;
+
+// After `yarn webiny extension mailer/resend`
 import { ResendMailer } from "./extensions/mailer/resend/ResendMailer.js";
 <ResendMailer />;
 ```
 
-Nothing has to be removed. The provider is used while its required variables are set; without
-them, mail goes over SMTP. The SMTP form stays on the Settings > Mailer screen.
+Remove `<MailerSmtp />` and its import yourself. If both are rendered, the provider is used while
+it is configured, and SMTP is the fallback.
 
 ## Environment variables
 
@@ -124,10 +128,11 @@ unverified sender or a missing permission only shows up when the provider is cal
 
 ## Common mistakes
 
-| Mistake                                     | Fix                                                                             |
-| ------------------------------------------- | ------------------------------------------------------------------------------- |
-| Test email says no transport is configured  | Set the provider's required variables and redeploy the API                      |
-| BCC-only mail arrives in the sender's inbox | Expected for Resend and SendGrid: they require `to`, so it is set to the sender |
+| Mistake                                         | Fix                                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------------------- |
+| Both `<MailerSmtp />` and the provider rendered | Remove `<MailerSmtp />` unless you want SMTP as a fallback                      |
+| Test email says no transport is configured      | Set the provider's required variables and redeploy the API                      |
+| BCC-only mail arrives in the sender's inbox     | Expected for Resend and SendGrid: they require `to`, so it is set to the sender |
 
 ## Related skills
 

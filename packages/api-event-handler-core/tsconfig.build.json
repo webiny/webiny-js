@@ -25,8 +25,7 @@
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../mailer-smtp/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -82,9 +81,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
-      "@webiny/mailer-smtp": ["../mailer-smtp/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }
