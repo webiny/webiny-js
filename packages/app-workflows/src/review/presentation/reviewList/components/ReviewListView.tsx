@@ -34,9 +34,17 @@ export interface ReviewListViewProps {
     /*
      * Writes the scope and state the list shows to the route, after a choice in the controls,
      * "Clear filters" or a fallback of the route's own values. A route change that comes back
-     * with the shown values does not reload the list.
+     * with the shown values does not reload the list. Without it the list keeps them in memory.
      */
     onRouteChange?: (params: ReviewListRouteParams) => void;
+    /*
+     * The one content model every request is narrowed to, outside the filters: it is not counted
+     * as a filter and "Clear filters" keeps it. Pass it with `showContentType` off, as the column
+     * and filter have nothing to show.
+     */
+    fixedContentTypeId?: string | null;
+    // The heading above the search; `null` shows none (the host names the list itself).
+    title?: string | null;
 }
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4, 5];
@@ -65,6 +73,8 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
         props;
     const initialScope = props.initialScope ?? null;
     const initialState = props.initialState ?? null;
+    const fixedContentTypeId = props.fixedContentTypeId ?? null;
+    const title = props.title === undefined ? "Content Reviews" : props.title;
     const { presenter } = useFeature(ReviewListPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
@@ -96,12 +106,13 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
             rowProvider,
             initialScope,
             initialState,
-            showContentType
+            showContentType,
+            fixedContentTypeId
         });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, app, rowProvider, namespacesKey, showContentType]);
+    }, [presenter, app, rowProvider, namespacesKey, showContentType, fixedContentTypeId]);
 
     // A route changed from outside (a link, back or forward) or by `writeRoute`; the presenter
     // ignores the values it already shows, so the search and the content model filter stay. On
@@ -112,6 +123,17 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
     }, [presenter, initialScope, initialState]);
 
     const vm = presenter.vm;
+
+    let heading: React.ReactNode = null;
+    if (title !== null) {
+        heading = (
+            <div className="pt-md px-lg">
+                <Heading level={4} as="h1">
+                    {title}
+                </Heading>
+            </div>
+        );
+    }
 
     let notice: React.ReactNode = null;
     if (vm.notice) {
@@ -178,12 +200,8 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
         <div>
             {/* The header of the CMS entry list (app-admin ListView.Header), without the title icon. */}
             <div className="flex flex-col gap-md">
-                <div className="pt-md px-lg">
-                    <Heading level={4} as="h1">
-                        Content Reviews
-                    </Heading>
-                </div>
-                <div className="px-md pb-sm">
+                {heading}
+                <div className={title === null ? "px-md py-sm" : "px-md pb-sm"}>
                     <ReviewListToolbar
                         presenter={presenter}
                         showContentType={showContentType}
