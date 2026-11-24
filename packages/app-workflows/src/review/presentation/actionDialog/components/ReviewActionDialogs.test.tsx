@@ -125,7 +125,7 @@ describe("ReviewActionDialogs", () => {
             createContainer(fakes)
         );
 
-        expect(await screen.findByText("Reject “Legal sign-off”")).toBeTruthy();
+        expect(await screen.findByText("Reject “Legal sign-off”?")).toBeTruthy();
         expect(screen.getByText("0 / 10 min.")).toBeTruthy();
         expect(screen.getByText("Reject").closest("button")?.getAttribute("aria-disabled")).toBe(
             "true"
@@ -149,19 +149,17 @@ describe("ReviewActionDialogs", () => {
             />,
             createContainer(fakes)
         );
-        await screen.findByText("Reject “Legal sign-off”");
+        await screen.findByText("Reject “Legal sign-off”?");
 
-        expect(screen.getByText("Required. The requester sees this.")).toBeTruthy();
-        expect(screen.queryByText("Write at least 10 characters.")).toBeNull();
-        expect(screen.getByPlaceholderText("Explain what needs to change")).toBeTruthy();
+        expect(screen.queryByText("Use at least 10 characters.")).toBeNull();
+        expect(screen.getByText("Reason")).toBeTruthy();
         expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
 
-        fireEvent.change(screen.getByPlaceholderText("Explain what needs to change"), {
+        fireEvent.change(screen.getByRole("textbox"), {
             target: { value: "too short" }
         });
 
-        expect(await screen.findByText("Write at least 10 characters.")).toBeTruthy();
-        expect(screen.queryByText("Required. The requester sees this.")).toBeNull();
+        expect(await screen.findByText("Use at least 10 characters.")).toBeTruthy();
         expect(screen.getByText("9 / 10 min.")).toBeTruthy();
     });
 
@@ -200,7 +198,7 @@ describe("ReviewActionDialogs", () => {
             />,
             createContainer(fakes)
         );
-        await screen.findByText("Approve “Legal sign-off”");
+        await screen.findByText("Approve “Legal sign-off”?");
 
         fireEvent.click(screen.getByText("Approve", { selector: "button *, button" }));
 
@@ -314,7 +312,7 @@ describe("ReviewActionDialogs", () => {
         expect(await screen.findByText("Restart “AI tone check”?")).toBeTruthy();
         expect(
             screen.getByText(
-                "Last attempt failed at 10:20: Provider unavailable: request timed out after 60 s. Restarting runs the step again from the beginning."
+                "Last attempt failed at 10:20: Provider unavailable: request timed out after 60 s. Restarting runs the step again from the start."
             )
         ).toBeTruthy();
         fireEvent.click(screen.getByText("Restart", { selector: "button *, button" }));
@@ -404,7 +402,7 @@ describe("ReviewActionDialogs", () => {
             createContainer(fakes)
         );
 
-        expect(await screen.findByText("Approve “Legal sign-off”")).toBeTruthy();
+        expect(await screen.findByText("Approve “Legal sign-off”?")).toBeTruthy();
         fireEvent.click(screen.getByText("Cancel"));
         expect(presenter.closeAction).toHaveBeenCalledTimes(1);
     });

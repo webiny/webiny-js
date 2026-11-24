@@ -61,8 +61,8 @@ describe("getAiIssues (R264)", () => {
         expect(getAiIssues(step, {}).map(item => item.severityVariant)).toEqual([
             "warning",
             "destructive",
-            "neutral-base-outline",
-            "neutral-base-outline"
+            "neutral-light",
+            "neutral-light"
         ]);
     });
 

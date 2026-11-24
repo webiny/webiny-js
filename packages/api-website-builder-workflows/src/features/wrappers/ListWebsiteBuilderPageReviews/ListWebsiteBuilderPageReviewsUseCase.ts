@@ -1,7 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { getReviewViewerFlags } from "@webiny/api-workflows/domain/review/getReviewViewerFlags.js";
 import { canReassignByPermission } from "@webiny/api-workflows/domain/review/canReassignByPermission.js";
-import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
 import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
 import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/CurrentReviewViewer/index.js";
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
@@ -32,10 +31,6 @@ class ListWebsiteBuilderPageReviewsUseCaseImpl implements UseCase.Interface {
         }
         const reviewViewer = viewer.value;
 
-        if (input.list === "failedSteps" && !canReassignByPermission(reviewViewer)) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list failed steps" }));
-        }
-
         // Read access as the page list applies it, once per call, as query filters (Q77), so no
         // title of a page the viewer cannot read is listed (D76).
         const readFilter = await this.readFilter.build();
@@ -48,9 +43,11 @@ class ListWebsiteBuilderPageReviewsUseCaseImpl implements UseCase.Interface {
         }
 
         const listed = await this.listReviews.execute({
-            list: input.list,
+            scope: input.scope,
             viewerUserId: reviewViewer.actor.id,
             viewerTeamIds: reviewViewer.teamIds,
+            // `all` is open to everyone; without `reassign` it lists only their reviews (B7).
+            viewerCanReassign: canReassignByPermission(reviewViewer),
             readFilter: readable,
             where: input.where,
             sort: input.sort,

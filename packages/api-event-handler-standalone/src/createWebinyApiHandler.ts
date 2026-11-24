@@ -251,9 +251,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // createWebsocketsAuthenticator for why (AuthenticationContext is per-request, unreachable
             // from the root container the WS server is attached to).
             const connectionManager = rootContainer.resolve(WebsocketsConnectionManager);
+            const adapter = rootContainer.resolve(WebsocketsServerAdapter);
             const websockets = attachWebsocketsServer({
                 server,
                 connectionManager,
+                adapter,
                 authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
@@ -262,7 +264,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Receive sends and disconnects other API processes publish for this one's sockets.
             const messageBus = rootContainer.resolve(WebsocketsMessageBus);
             const processOwner = rootContainer.resolve(ProcessOwner);
-            const adapter = rootContainer.resolve(WebsocketsServerAdapter);
             const handleBusMessage = createBusMessageHandler({
                 connectionManager,
                 adapter,
@@ -291,21 +292,21 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             stopTaskRecovery = startTaskRecovery(rootContainer);
         },
 
-        onShutdown: async rootContainer => {
+        onShutdown: async (rootContainer, { requestsFinished }) => {
             /*
              * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
              * Then wait for what is running: tasks hand themselves back, so another process picks
              * them up at its next sweep, and scheduled actions already running get to finish.
              * Websockets close at the same time, with 1012 so clients reconnect to a process that
              * is up, and their connections leave the registry; that takes about a second. The
-             * message bus closes last, once tasks and scheduled actions are done: what they still
-             * send to browsers on other processes goes through it.
+             * message bus closes last, once tasks, scheduled actions and HTTP requests in flight
+             * are done: what they still send to browsers on other processes goes through it.
              */
             stopTaskRecovery?.();
             const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
             const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
             const websockets = stopWebsockets?.();
-            const workDone = Promise.allSettled([tasks, scheduledActions]);
+            const workDone = Promise.allSettled([tasks, scheduledActions, requestsFinished]);
             const messageBus = workDone.then(() => closeMessageBus?.());
 
             // One failing part must not cut the others short; the first failure is reported after.

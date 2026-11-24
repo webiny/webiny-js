@@ -7,6 +7,7 @@ import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
 import { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
 import { LAST_SEEN_WRITE_INTERVAL } from "~/connectionManager/ServerConnectionManager.js";
+import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import type { IWebsocketsServer } from "~/server/types.js";
 import type { WebsocketsConnectionAuthenticator } from "~/server/types.js";
 
@@ -388,7 +389,7 @@ describe("WebsocketsServer", () => {
             const outcome = await attemptUpgrade(port, "/ws?token=expired&tenant=root");
 
             expect(outcome).toBe(401);
-            expect(authenticateSpy).toHaveBeenCalledWith("expired");
+            expect(authenticateSpy).toHaveBeenCalledWith("expired", "root");
             expect(registry.register).not.toHaveBeenCalled();
         });
 
@@ -418,6 +419,7 @@ describe("WebsocketsServer", () => {
 
     describe("attach mode (attachWebsocketsServer)", () => {
         let httpServer: HttpServer;
+        let adapter: NodeWsAdapterImpl;
         let server: IWebsocketsServer;
         let port: number;
 
@@ -428,9 +430,11 @@ describe("WebsocketsServer", () => {
             const registry = createNoopRegistry();
             const manager = createConnectionManager(registry, owner);
 
+            adapter = new NodeWsAdapterImpl();
             server = attachWebsocketsServer({
                 server: httpServer,
                 connectionManager: manager,
+                adapter,
                 authenticate
             });
             await server.start();
@@ -444,6 +448,16 @@ describe("WebsocketsServer", () => {
         it("should work with an existing HTTP server", async () => {
             const client = await connectClient(port);
             expect(client.readyState).toBe(WebSocket.OPEN);
+            await closeClient(client);
+        });
+
+        // An adapter registered in the container in place of NodeWsAdapter must take upgrades too.
+        it("takes upgrades through the adapter it is given", async () => {
+            const handleUpgrade = vi.spyOn(adapter, "handleUpgrade");
+
+            const client = await connectClient(port);
+
+            expect(handleUpgrade).toHaveBeenCalledTimes(1);
             await closeClient(client);
         });
 

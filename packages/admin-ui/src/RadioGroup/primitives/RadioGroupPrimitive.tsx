@@ -8,10 +8,20 @@ import { useRadioGroup } from "./useRadioGroup.js";
 /**
  * Radio Group Root
  */
-const RadioGroupRoot = ({ className, ...props }: RadioGroupPrimitives.RadioGroupProps) => {
+const RadioGroupRoot = ({
+    className,
+    orientation,
+    ...props
+}: RadioGroupPrimitives.RadioGroupProps) => {
     return (
         <RadioGroupPrimitives.Root
-            className={cn("grid gap-sm-extra py-xs-plus", className)}
+            orientation={orientation}
+            className={cn(
+                orientation === "horizontal"
+                    ? "flex flex-row flex-wrap gap-x-lg gap-y-sm-extra py-xs-plus"
+                    : "grid gap-sm-extra py-xs-plus",
+                className
+            )}
             {...props}
         />
     );
@@ -49,6 +59,7 @@ const RadioGroupRenderer = ({
     changeValue,
     value,
     disabled,
+    orientation,
     "aria-label": ariaLabel,
     "aria-labelledby": ariaLabelledBy
 }: RadioGroupRendererProps) => {
@@ -57,6 +68,7 @@ const RadioGroupRenderer = ({
             value={value ?? ""}
             onValueChange={value => changeValue(value)}
             disabled={disabled}
+            orientation={orientation}
             aria-label={ariaLabel}
             aria-labelledby={ariaLabelledBy}
         >
@@ -67,6 +79,7 @@ const RadioGroupRenderer = ({
                     key={item.id}
                     label={item.label}
                     disabled={item.disabled}
+                    description={item.description}
                 />
             ))}
         </RadioGroupRoot>

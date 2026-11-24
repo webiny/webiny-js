@@ -37,7 +37,7 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
 
     const title = (
         <span className={"flex flex-wrap items-center gap-xs min-w-0"}>
-            <Text as={"span"} size={"md"}>
+            <Text as={"span"} size={"md"} className={"text-neutral-primary"}>
                 {step.title}
             </Text>
             <Tag variant={"neutral-base-outline"} content={step.typeLabel} />
@@ -53,13 +53,19 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
     if (step.ownerLine !== null) {
         ownerRows = (
             <List>
-                <List.Item title={"Owner"} description={step.ownerLine} />
+                <List.Item
+                    title={<span className={"font-normal"}>{"Owner"}</span>}
+                    description={step.ownerLine}
+                />
                 {step.whyOwner !== null && (
-                    <List.Item title={"Why this owner"} description={step.whyOwner} />
+                    <List.Item
+                        title={<span className={"font-normal"}>{"Why this owner"}</span>}
+                        description={step.whyOwner}
+                    />
                 )}
                 {step.times !== null && (
                     <List.Item
-                        title={"Times"}
+                        title={<span className={"font-normal"}>{"Times"}</span>}
                         description={<span title={step.timesTitle ?? undefined}>{step.times}</span>}
                     />
                 )}
@@ -80,12 +86,27 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
             <Accordion.Item
                 title={title}
                 colorMark={step.color}
-                icon={<ReviewStepCircle state={step.state} running={step.running} />}
+                icon={
+                    <ReviewStepCircle
+                        state={step.state}
+                        running={step.running}
+                        cancelled={step.cancelled}
+                    />
+                }
                 open={open}
                 onOpenChange={setOpen}
                 interactive={hasDetails}
             >
-                <div className={"flex flex-col gap-sm pb-md"}>
+                {/* The accordion content keeps 48px on the right for the trigger's chevron; the
+                    detail cards run to the item's 16px padding like the design. The content
+                    already ends in 24px of bottom padding, so the negative margin takes 8px of
+                    it back to leave 16px, the card's side padding. */}
+                <div className={"flex flex-col gap-sm -mb-sm -mr-xl"}>
+                    {step.failedReason !== null && (
+                        <Alert data-role={"failed-reason"} type={"danger"} variant={"subtle"}>
+                            <Text as={"span"}>{step.failedReason}</Text>
+                        </Alert>
+                    )}
                     {ownerRows}
                     {step.comment !== null && (
                         <div data-role={"step-comment"} className={"px-md"}>
@@ -93,11 +114,6 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                                 {step.comment}
                             </Text>
                         </div>
-                    )}
-                    {step.failedReason !== null && (
-                        <Alert data-role={"failed-reason"} type={"danger"} variant={"subtle"}>
-                            <Text as={"span"}>{step.failedReason}</Text>
-                        </Alert>
                     )}
                     {step.issues.length > 0 && (
                         <div data-role={"issues"} className={"flex flex-col gap-xs"}>

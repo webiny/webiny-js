@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import { EmptyState } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Accordion } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
@@ -12,7 +12,7 @@ import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
-import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
+import { ReviewActionList } from "../../targetReview/components/ReviewActionList.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
 import type { ReviewFieldLabels } from "../abstractions.js";
@@ -51,20 +51,6 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
     const { vm } = presenter;
     const request = toActionRequest(vm.openAction);
 
-    const footer = vm.actions.map(action => {
-        const ActionIcon = REVIEW_ACTION_ICONS[action.icon];
-        return (
-            <Button
-                key={action.kind}
-                variant={action.emphasis}
-                size={"md"}
-                text={action.label}
-                icon={<ActionIcon />}
-                onClick={() => presenter.openAction(action.kind, action.stepId)}
-            />
-        );
-    });
-
     // A conflict means the review changed behind the drawer: reload it and tell the host.
     const handleConflict = async () => {
         await presenter.refresh();
@@ -74,8 +60,13 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
     };
 
     let actions: React.ReactNode = undefined;
-    if (footer.length > 0) {
-        actions = <>{footer}</>;
+    if (vm.actions.length > 0) {
+        actions = (
+            <ReviewActionList
+                actions={vm.actions}
+                onSelect={(kind, stepId) => presenter.openAction(kind, stepId)}
+            />
+        );
     }
 
     let title: React.ReactNode = "Review details";
@@ -93,23 +84,23 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                     <Text as={"span"} size={"lg"}>
                         {vm.header.title}
                     </Text>
-                    <Tag variant={vm.header.stateVariant} content={vm.header.stateLabel} />
+                    {vm.header.stateTag && (
+                        <Tag
+                            variant={vm.header.stateTag.variant}
+                            content={vm.header.stateTag.label}
+                        />
+                    )}
                 </span>
             </span>
         );
-        if (vm.cancelledText === null) {
-            let contentLink = (
-                <Button
-                    variant={"link"}
-                    size={"sm"}
-                    text={vm.header.contentLabel}
-                    onClick={onClose}
-                />
-            );
-            if (vm.header.contentUrl !== null) {
-                contentLink = <Link to={vm.header.contentUrl}>{vm.header.contentLabel}</Link>;
-            }
-            description = (
+        let contentLink = (
+            <Button variant={"link"} size={"sm"} text={vm.header.contentLabel} onClick={onClose} />
+        );
+        if (vm.header.contentUrl !== null) {
+            contentLink = <Link to={vm.header.contentUrl}>{vm.header.contentLabel}</Link>;
+        }
+        description = (
+            <span className={"flex flex-col gap-xs"}>
                 <span className={"flex flex-wrap items-center gap-x-md gap-y-xs"}>
                     <Text as={"span"} size={"sm"}>
                         {"Content: "}
@@ -118,20 +109,11 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                     <Text as={"span"} size={"sm"}>
                         {vm.header.requesterLine}
                     </Text>
-                    <Text as={"span"} size={"sm"} title={vm.header.requestedTitle}>
-                        {vm.header.requestedLine}
-                    </Text>
                 </span>
-            );
-        }
-    }
-
-    let openContent = <Button variant={"tertiary"} text={"Open content"} onClick={onClose} />;
-    if (vm.header?.contentUrl) {
-        openContent = (
-            <Button variant={"tertiary"} asChild={true}>
-                <Link to={vm.header.contentUrl}>{"Open content"}</Link>
-            </Button>
+                <Text as={"span"} size={"sm"} title={vm.header.requestedTitle}>
+                    {vm.header.requestedLine}
+                </Text>
+            </span>
         );
     }
 
@@ -167,15 +149,16 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                         </div>
                     )}
                     {vm.cancelledText !== null && (
-                        <EmptyState
-                            type={"content"}
-                            title={"This review was cancelled"}
-                            description={vm.cancelledText}
-                            actions={openContent}
-                        />
+                        <div className={"mb-md"}>
+                            <Alert data-role={"cancelled-alert"} type={"info"} variant={"subtle"}>
+                                <Text as={"span"}>{vm.cancelledText}</Text>
+                            </Alert>
+                        </div>
                     )}
                     {vm.steps.length > 0 && (
-                        <Accordion variant={"container"}>
+                        // `background` is the surface the accordion sits on: on the white drawer
+                        // body its items take the light background, so each step is a light card.
+                        <Accordion variant={"container"} background={"base"}>
                             {vm.steps.map(step => (
                                 <ReviewStepItem
                                     key={step.stepId}

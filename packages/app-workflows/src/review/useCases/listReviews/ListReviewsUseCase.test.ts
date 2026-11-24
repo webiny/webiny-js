@@ -14,7 +14,7 @@ import { ListReviewsUseCase } from "./ListReviewsUseCase.js";
 
 const params: UseCaseAbstraction.Params = {
     app: "wb",
-    list: "assignedToMe",
+    scope: "assignedToMe",
     where: {},
     sort: "lastChangedOn_ASC",
     limit: 5,

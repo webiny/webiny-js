@@ -166,7 +166,7 @@ export const copyPgRuntimeModules = async (
     const handlerDir = findPackageDir(PG_HANDLER_PACKAGE, resolveFrom);
     if (!handlerDir) {
         throw new Error(
-            `<Infra.Postgres /> needs ${PG_HANDLER_PACKAGE} in the project. Add it to package.json and install it.`
+            `<Infra.AuroraPostgres /> needs ${PG_HANDLER_PACKAGE} in the project. Add it to package.json and install it.`
         );
     }
 

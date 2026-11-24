@@ -38,8 +38,9 @@ class ReviewApprovedNotificationsImpl implements ReviewApprovedEventHandler.Inte
                 review,
                 stepId: step.id,
                 event: "approved",
-                recipients,
-                message: buildApprovedMessage({ contentTitle: review.title })
+                deliveries: [
+                    { recipients, message: buildApprovedMessage({ contentTitle: review.title }) }
+                ]
             });
         } catch (error) {
             this.logger.error(

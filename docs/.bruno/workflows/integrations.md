@@ -16,7 +16,7 @@ How workflows plug into Headless CMS entries and Website Builder pages: `api-hea
   - `CmsWorkflowsSchemaFactory` (every CMS workflow and review operation on the `cms` root of `/graphql`) and a `CmsGraphQLSchemaFactory` instance that adds `CmsEntrySystem.workflow: CmsEntrySystemWorkflow` to the CMS endpoints (`src/graphql/entrySystemSchema.ts`).
 - Utils: `utils/appName.ts` (`toCmsNamespace`, `getModelIdFromAppName`, `isCmsNamespace`, `getCmsNamespace`; regex `/^cms\.([a-zA-Z0-9_-]+)$/`), `utils/isBindableModel.ts` (public and without the `$publishing:false` tag), `utils/folderType.ts` (`cms:<modelId>`).
 - Phase 8b wrappers: `GetCmsEntryReviewStepRun` (query `getCmsEntryReviewStepRun`, guard, then `editor` or `reassign`, D161) and `ListCmsEntryBlockingReviews` (query `listCmsEntryBlockingReviews`, D164).
-- Phase 9a: `listCmsEntryWorkflowModels` is the editor's model list (D116); it lists readable public models without the `$publishing:false` tag, sorted, with a search and a cursor.
+- Phase 9a: `listCmsEntryWorkflowModels` is the editor's model list (D116); it lists readable public models without the `$publishing:false` tag, sorted, with a search, an optional `hasWorkflow` filter applied before paging (D198) and a cursor.
 
 ### api-website-builder-workflows
 

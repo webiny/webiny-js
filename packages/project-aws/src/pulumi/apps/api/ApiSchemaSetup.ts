@@ -47,7 +47,7 @@ const POSTGRES_LAMBDA_ENV_NAMES: Array<keyof PostgresLambdaEnv> = [
  * certificates of the Lambda runtime. No password: the functions read it from the secret.
  *
  * Throws when the core stack has no Postgres database, which is the case until `deploy core` runs
- * with `<Infra.Postgres />`.
+ * with `<Infra.AuroraPostgres />`.
  */
 export const getPostgresLambdaEnv = (pg: PostgresOutputs): PostgresLambdaEnv => {
     const missing = (["pgWriterHost", "pgDatabase", "pgUser", "pgSecretArn"] as const).filter(
@@ -56,7 +56,7 @@ export const getPostgresLambdaEnv = (pg: PostgresOutputs): PostgresLambdaEnv => 
     if (missing.length) {
         throw new Error(
             `The core app has no Postgres database (missing outputs: ${missing.join(", ")}). ` +
-                "Deploy the core app with `<Infra.Postgres />` first: `yarn webiny deploy core`."
+                "Deploy the core app with `<Infra.AuroraPostgres />` first: `yarn webiny deploy core`."
         );
     }
 
@@ -87,7 +87,7 @@ export const getPostgresLambdaEnvFromCore = (
 
 /**
  * Env only the API's web function gets, on top of the `graphql` Lambda's (and over it), with
- * `<Infra.Postgres />`. Nothing without Postgres.
+ * `<Infra.AuroraPostgres />`. Nothing without Postgres.
  *
  * - `WEBINY_PG_POOL_MAX`: its pool size. One web function environment serves several requests at
  *   once, so it needs more than the 1 connection the plain Lambda functions keep.

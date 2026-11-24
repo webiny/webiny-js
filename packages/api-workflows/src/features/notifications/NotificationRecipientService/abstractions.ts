@@ -11,6 +11,11 @@ export interface NotificationRecipient {
     displayName: string;
 }
 
+/** A pool recipient and the step's candidate teams they are in, in the step's order (R183). */
+export interface NotificationPoolRecipient extends NotificationRecipient {
+    teamIds: string[];
+}
+
 export interface NotificationPoolParams {
     review: ReviewData;
     /** The step that reached the pool. */
@@ -23,11 +28,14 @@ export interface INotificationRecipientService {
     /**
      * The people a pool step is announced to (R183, R194): the members of the step's candidate
      * teams, without the requester, without an active exclusion and only those who can read the
-     * target. Fails when the step is not in the review or routing fails.
+     * target. Each carries the step's candidate teams they are in (`teamIds`, the step's order).
+     * Fails when the step is not in the review or routing fails.
      */
     listPool(
         params: NotificationPoolParams
-    ): Promise<Result<NotificationRecipient[], WorkflowPersistenceError | ReviewValidationError>>;
+    ): Promise<
+        Result<NotificationPoolRecipient[], WorkflowPersistenceError | ReviewValidationError>
+    >;
     /**
      * The e-mail data of users by id (R194). Ids with no user (an api-key requester, A67) are
      * omitted. Runs the lookup without authorization, and only that. Users are returned as
@@ -52,10 +60,11 @@ export const NotificationRecipientService = createAbstraction<INotificationRecip
 export namespace NotificationRecipientService {
     export type Interface = INotificationRecipientService;
     export type Recipient = NotificationRecipient;
+    export type PoolRecipient = NotificationPoolRecipient;
     export type PoolParams = NotificationPoolParams;
     export type Error = WorkflowPersistenceError;
     export type PoolReturn = Promise<
-        Result<NotificationRecipient[], WorkflowPersistenceError | ReviewValidationError>
+        Result<NotificationPoolRecipient[], WorkflowPersistenceError | ReviewValidationError>
     >;
     export type UsersReturn = Promise<
         Result<NotificationTransport.User[], WorkflowPersistenceError>

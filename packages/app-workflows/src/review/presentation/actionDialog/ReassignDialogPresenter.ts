@@ -78,6 +78,10 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         if (step) {
             title = `Reassign “${step.title}”`;
         }
+        let description = "";
+        if (showPicker) {
+            description = `Choose who reviews this step on “${review ? review.review.title : ""}”.`;
+        }
         let hint = "";
         if (ready && !nobodyEligible && this.conflict === null) {
             hint = HINT;
@@ -104,6 +108,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         return {
             status: this.status,
             title,
+            description,
             hint,
             nobody,
             nobodyEligible,

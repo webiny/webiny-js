@@ -30,6 +30,30 @@ const MESSAGE: NotificationTransport.Message = {
     linkLabel: "Open content"
 };
 
+const DETAILS: NotificationTransport.MessageDetails = {
+    contentType: "Article",
+    contentTitle: "Home page",
+    stepNumber: 2,
+    stepCount: 3,
+    stepTitle: "Legal review",
+    requester: "Rita Requester"
+};
+
+const FULL_MESSAGE: NotificationTransport.Message = {
+    ...MESSAGE,
+    linkLabel: "View review details",
+    footer: "You get this e-mail because you owned this step.",
+    details: DETAILS
+};
+
+/** The inner HTML of the e-mail container, without the wrapper and the inline styles. */
+const stripStyles = (html: string): string => html.replace(/ style="[^"]*"/g, "");
+const unwrap = (html: string): string => {
+    const stripped = stripStyles(html);
+    expect(stripped.startsWith("<div>") && stripped.endsWith("</div>")).toBe(true);
+    return stripped.slice("<div>".length, -"</div>".length);
+};
+
 const createTransport = async (
     mailer: RecordingMailer,
     register?: (container: Container) => void
@@ -85,10 +109,12 @@ describe("MailNotificationTransport (R193)", () => {
         });
 
         expect(mailer.sent).toHaveLength(1);
-        expect(mailer.sent[0].html).toBe(
-            "<p>Anna &lt;b&gt;&quot;Adams&quot;&lt;/b&gt; &amp; &#39;Cara&#39;<br/>second line &lt;script&gt;</p>"
+        expect(unwrap(mailer.sent[0].html)).toBe(
+            "<p>Hi,</p><p>Anna &lt;b&gt;&quot;Adams&quot;&lt;/b&gt; &amp; &#39;Cara&#39;<br/>second line &lt;script&gt;</p>"
         );
-        expect(mailer.sent[0].text).toBe(`Anna <b>"Adams"</b> & 'Cara'\nsecond line <script>`);
+        expect(mailer.sent[0].text).toBe(
+            `Hi,\n\nAnna <b>"Adams"</b> & 'Cara'\nsecond line <script>`
+        );
         expect(mailer.sent[0].html).not.toContain("<script>");
     });
 
@@ -118,11 +144,11 @@ describe("MailNotificationTransport (R193)", () => {
             message: { ...MESSAGE, url, linkLabel: "Open <content>" }
         });
 
-        expect(mailer.sent[0].html).toBe(
-            "<p>Every step approved this revision.</p>" +
-                `<p><a href="https://admin.test/cms/content-entries/article?id=a%231&amp;tenantId=root">Open &lt;content&gt;</a></p>`
+        expect(unwrap(mailer.sent[0].html)).toBe(
+            "<p>Hi,</p><p>Every step approved this revision.</p>" +
+                `<div><a href="https://admin.test/cms/content-entries/article?id=a%231&amp;tenantId=root">Open &lt;content&gt;</a></div>`
         );
-        expect(mailer.sent[0].text).toBe(`${MESSAGE.body}\n\nOpen <content>: ${url}`);
+        expect(mailer.sent[0].text).toBe(`Hi,\n\n${MESSAGE.body}\n\nOpen <content>: ${url}`);
     });
 
     it("sends no link when the url is null", async () => {
@@ -131,9 +157,123 @@ describe("MailNotificationTransport (R193)", () => {
 
         await transport.send({ users: toRecipients(createUsers(1)), message: MESSAGE });
 
-        expect(mailer.sent[0].html).toBe("<p>Every step approved this revision.</p>");
+        expect(unwrap(mailer.sent[0].html)).toBe(
+            "<p>Hi,</p><p>Every step approved this revision.</p>"
+        );
         expect(mailer.sent[0].html).not.toContain("<a");
-        expect(mailer.sent[0].text).toBe(MESSAGE.body);
+        expect(mailer.sent[0].text).toBe(`Hi,\n\n${MESSAGE.body}`);
+    });
+
+    it("renders the greeting, the body, the details table, the button and the footer, in that order", async () => {
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer);
+        const url =
+            "https://admin.test/website-builder/pages/editor/p%231?tenantId=root&reviewId=r-1";
+
+        await transport.send({
+            users: toRecipients(createUsers(1)),
+            message: { ...FULL_MESSAGE, url }
+        });
+
+        const { text } = mailer.sent[0];
+        const html = stripStyles(mailer.sent[0].html);
+        expect(text).toBe(
+            [
+                "Hi,",
+                "Every step approved this revision.",
+                [
+                    "Content: Article · Home page",
+                    "Step: 2 of 3 · Legal review",
+                    "Requested by: Rita Requester"
+                ].join("\n"),
+                `View review details: ${url}`,
+                FULL_MESSAGE.footer
+            ].join("\n\n")
+        );
+        const parts = [
+            "<p>Hi,</p>",
+            "<p>Every step approved this revision.</p>",
+            "<table",
+            ">Content</td>",
+            ">Article · Home page</td>",
+            ">Step</td>",
+            ">2 of 3 · Legal review</td>",
+            ">Requested by</td>",
+            ">Rita Requester</td>",
+            "</table>",
+            `<a href="https://admin.test/website-builder/pages/editor/p%231?tenantId=root&amp;reviewId=r-1">View review details</a>`,
+            `>${FULL_MESSAGE.footer}</p>`
+        ];
+        expect(mailer.sent[0].html).toContain("max-width:640px");
+        expect(mailer.sent[0].html).toContain("font-family:");
+        let position = -1;
+        for (const part of parts) {
+            const next = html.indexOf(part, position + 1);
+            expect(next, part).toBeGreaterThan(position);
+            position = next;
+        }
+    });
+
+    it("shows only the title in the Content row when the content type is unknown", async () => {
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer);
+
+        await transport.send({
+            users: toRecipients(createUsers(1)),
+            message: { ...FULL_MESSAGE, details: { ...DETAILS, contentType: null } }
+        });
+
+        expect(mailer.sent[0].text).toContain("Content: Home page\n");
+        expect(mailer.sent[0].html).toContain(">Home page</td>");
+        expect(mailer.sent[0].html).not.toContain("·  Home page");
+    });
+
+    it("escapes every value of the details and the footer, and keeps the details on one line", async () => {
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer);
+
+        await transport.send({
+            users: toRecipients(createUsers(1)),
+            message: {
+                ...FULL_MESSAGE,
+                footer: "Footer <b>&</b>",
+                details: {
+                    contentType: "<i>Type</i>",
+                    contentTitle: "Title\n<script>x</script>",
+                    stepNumber: 1,
+                    stepCount: 1,
+                    stepTitle: `"Step" & 'co'`,
+                    requester: "<Rita>"
+                }
+            }
+        });
+
+        const { text } = mailer.sent[0];
+        const html = stripStyles(mailer.sent[0].html);
+        expect(html).not.toContain("<script>");
+        expect(html).not.toContain("<i>");
+        expect(html).toContain(
+            ">&lt;i&gt;Type&lt;/i&gt; · Title &lt;script&gt;x&lt;/script&gt;</td>"
+        );
+        expect(html).toContain(">1 of 1 · &quot;Step&quot; &amp; &#39;co&#39;</td>");
+        expect(html).toContain(">&lt;Rita&gt;</td>");
+        expect(html).toContain(">Footer &lt;b&gt;&amp;&lt;/b&gt;</p>");
+        expect(text).toContain("Content: <i>Type</i> · Title <script>x</script>\n");
+        expect(text).toContain("Requested by: <Rita>");
+        expect(text.endsWith("Footer <b>&</b>")).toBe(true);
+    });
+
+    it("leaves the table out without details and the footer out without a footer", async () => {
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer);
+
+        await transport.send({
+            users: toRecipients(createUsers(1)),
+            message: { ...FULL_MESSAGE, details: undefined, footer: "  " }
+        });
+
+        expect(mailer.sent[0].html).not.toContain("<table");
+        expect(mailer.sent[0].text).toBe(`Hi,\n\n${MESSAGE.body}`);
     });
 
     it("uses bare addresses: a display name with quotes and a newline never reaches a header", async () => {

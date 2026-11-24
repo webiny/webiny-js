@@ -1,6 +1,5 @@
 import type { StepCandidate } from "~/review/domain/types.js";
 import type { ReviewerPickerOptionVm } from "./abstractions.js";
-import { getInitials } from "./getInitials.js";
 
 /*
  * The picker options (R209, R230): the current owner noted "Current owner", excluded people noted
@@ -24,7 +23,6 @@ export const getPickerOptions = (
             label: candidate.displayName,
             value: candidate.id,
             disabled: note !== null,
-            initials: getInitials(candidate.displayName),
             teams: candidate.teamNames.join(", "),
             note
         };

@@ -7,9 +7,6 @@ export type PageReadOnlyReasonVm = Pick<TargetReviewPresenter.ViewModel, "status
 const NOT_LOADED = "Read-only until the review status loads.";
 const PUBLISHED =
     "Read-only. The Website Builder only edits draft revisions. Create a new revision to make changes.";
-const APPROVED =
-    "Read-only: this revision has an approved review. Create a new revision to make changes; it needs a new review.";
-const REJECTED = "Read-only: this revision was rejected. Create a new revision to fix it.";
 
 /*
  * The canvas note of the Website Builder design frames (QBZ-23), switched on `vm.status` and
@@ -32,13 +29,7 @@ export function getPageReadOnlyReason(
     }
 
     if (vm.status === "active") {
-        if (vm.reviewKind === "approved") {
-            return APPROVED;
-        }
-        if (vm.reviewKind === "rejected") {
-            return REJECTED;
-        }
-        // The strip's lock text already says the revision is locked while in review.
+        // The strip's lock line is the read-only reason in every review state.
         return null;
     }
 

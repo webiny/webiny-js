@@ -139,6 +139,8 @@ export interface ReviewWorkflowStep {
     type: string;
     allowManualPick: boolean;
     assignedAutomatically: boolean;
+    /** The names of the step's teams, in the step's order; empty for a step that has none. */
+    candidateTeamNames: string[];
 }
 
 export interface ReviewWorkflow {

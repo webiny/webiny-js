@@ -160,7 +160,7 @@ describe("addFoundUsers and addFoundTeams", () => {
         const empty = createEmptyRuleReferences();
 
         const withUsers = addFoundUsers(empty, [
-            { id: "user-1", displayName: "Ada Lovelace", teamIds: ["team-1", "team-2"] }
+            { id: "user-1", displayName: "Ada Lovelace", teamIds: ["team-1", "team-2"], teams: [] }
         ]);
         const withTeams = addFoundTeams(withUsers, [
             { id: "team-1", name: "Editors", memberCount: 3 }
@@ -186,7 +186,7 @@ describe("addFoundUsers and addFoundTeams", () => {
         });
 
         const found = addFoundUsers(deleted, [
-            { id: "user-1", displayName: "Ada Lovelace", teamIds: [] }
+            { id: "user-1", displayName: "Ada Lovelace", teamIds: [], teams: [] }
         ]);
 
         expect(found.users.get("user-1")?.state).toBe("found");
@@ -209,7 +209,7 @@ describe("resolveRuleReferences (R298)", () => {
         const references = resolveRuleReferences({
             previous: createEmptyRuleReferences(),
             requested,
-            users: [{ id: "user-1", displayName: "Ada Lovelace", teamIds: ["team-1"] }],
+            users: [{ id: "user-1", displayName: "Ada Lovelace", teamIds: ["team-1"], teams: [] }],
             missingUserIds: ["user-2"],
             teams: [{ id: "team-8", name: "Marketing", memberCount: 2 }],
             missingTeamIds: ["team-9"],

@@ -27,7 +27,7 @@ const getSeverityVariant = (severity: string): TargetReviewTagVariant => {
     if (severity === "warning") {
         return "warning";
     }
-    return "neutral-base-outline";
+    return "neutral-light";
 };
 
 // The first path segment is the field id: it takes the field's label; the rest stays as is.

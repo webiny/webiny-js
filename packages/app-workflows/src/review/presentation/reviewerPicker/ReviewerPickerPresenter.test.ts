@@ -68,7 +68,6 @@ describe("ReviewerPickerPresenter", () => {
                 label: "Ivan Horvat",
                 value: "u1",
                 disabled: false,
-                initials: "IH",
                 teams: "Marketing",
                 note: null
             },
@@ -76,7 +75,6 @@ describe("ReviewerPickerPresenter", () => {
                 label: "Luka Perić",
                 value: "u2",
                 disabled: false,
-                initials: "LP",
                 teams: "",
                 note: null
             },
@@ -84,7 +82,6 @@ describe("ReviewerPickerPresenter", () => {
                 label: "Petra Novak",
                 value: "u3",
                 disabled: true,
-                initials: "PN",
                 teams: "",
                 note: "Unavailable: on leave"
             },
@@ -92,7 +89,6 @@ describe("ReviewerPickerPresenter", () => {
                 label: "Hana Radić",
                 value: "u4",
                 disabled: true,
-                initials: "HR",
                 teams: "",
                 note: "Unavailable"
             }
@@ -107,7 +103,6 @@ describe("ReviewerPickerPresenter", () => {
             label: "Luka Perić",
             value: "u2",
             disabled: true,
-            initials: "LP",
             teams: "",
             note: "Current owner"
         });

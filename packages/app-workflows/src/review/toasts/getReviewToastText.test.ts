@@ -104,7 +104,7 @@ describe("getReviewToastText (QBZ-93, QBZ-82)", () => {
         });
     });
 
-    it("tookOver: has no body when notify was not ticked", () => {
+    it("tookOver: says the viewer is the owner when notify was not ticked", () => {
         expect(
             getReviewToastText({
                 kind: "tookOver",
@@ -112,7 +112,10 @@ describe("getReviewToastText (QBZ-93, QBZ-82)", () => {
                 personName: null,
                 reviewsUrl: null
             })
-        ).toEqual({ title: "Took over “Draft check”", description: null });
+        ).toEqual({
+            title: "Took over “Draft check”",
+            description: "You’re now the owner of this step."
+        });
     });
 
     it("reassigned: names the new owner and says both are notified", () => {
@@ -137,6 +140,9 @@ describe("getReviewToastText (QBZ-93, QBZ-82)", () => {
                 personName: null,
                 reviewsUrl: null
             })
-        ).toEqual({ title: "Review cancelled", description: "Editing is unlocked." });
+        ).toEqual({
+            title: "Review cancelled",
+            description: "Editing is unlocked for the requester."
+        });
     });
 });

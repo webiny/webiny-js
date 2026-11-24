@@ -17,14 +17,34 @@ import {
 import type { AssignmentSource } from "~/domain/assignment/types.js";
 
 const CONTENT = "Launch page";
+const REVIEWER_FOOTER =
+    "You get this e-mail because you review this step and it notifies by e-mail.";
+const REQUESTER_FOOTER = "You get this e-mail because you requested this review.";
+const PREVIOUS_REVIEWER_FOOTER = "You get this e-mail because you owned this step.";
 const STEP = "Legal review";
 
 describe("buildPoolReachedMessage (R189)", () => {
-    it("builds the pool text", () => {
+    it("names the teams of the pool", () => {
         const message = buildPoolReachedMessage({
             contentTitle: CONTENT,
             stepTitle: STEP,
-            requester: "Rita Requester"
+            requester: "Rita Requester",
+            teamNames: "Legal and Marketing"
+        });
+
+        expect(message.title).toBe("“Launch page” is waiting in the Legal and Marketing team pool");
+        expect(message.text).toBe(
+            "“Legal review” is waiting in the Legal and Marketing team pool. Anyone in the team can start it."
+        );
+        expect(message.subject).toBe("Team pool: Launch page (Legal review)");
+    });
+
+    it.each([null, ""])("says `the team pool` without team names (%j)", teamNames => {
+        const message = buildPoolReachedMessage({
+            contentTitle: CONTENT,
+            stepTitle: STEP,
+            requester: "Rita Requester",
+            teamNames
         });
 
         expect(message).toEqual({
@@ -32,7 +52,9 @@ describe("buildPoolReachedMessage (R189)", () => {
             body: "Legal review · requested by Rita Requester",
             subject: "Team pool: Launch page (Legal review)",
             text: "“Legal review” is waiting in the team pool. Anyone in the team can start it.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: REVIEWER_FOOTER
         });
     });
 });
@@ -51,7 +73,9 @@ describe("buildAssignedMessage (R189)", () => {
             body: "Legal review · picked by Rita Requester",
             subject: "You’re reviewing: Launch page (Legal review)",
             text: "You are the owner of Legal review. Open the content to approve or reject it.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: REVIEWER_FOOTER
         });
     });
 
@@ -68,7 +92,9 @@ describe("buildAssignedMessage (R189)", () => {
             body: "Legal review · reassigned to you by Eddie Editor",
             subject: "You’re reviewing: Launch page (Legal review)",
             text: "You are the owner of Legal review. Open the content to approve or reject it.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: REVIEWER_FOOTER
         });
     });
 
@@ -98,7 +124,9 @@ describe("buildReassignedMessage (R189)", () => {
             body: "Legal review · reassigned by Eddie Editor. You no longer own this step.",
             subject: "Reassigned: Launch page (Legal review)",
             text: "Eddie Editor reassigned this step to Rob Reviewer. You don’t need to review it any more.",
-            linkLabel: "Open content"
+            linkLabel: "View review details",
+            link: "reviewDetails",
+            footer: PREVIOUS_REVIEWER_FOOTER
         });
     });
 });
@@ -116,7 +144,9 @@ describe("buildTakenOverMessage (D111, R189)", () => {
             body: "You no longer own this step.",
             subject: "Taken over: Launch page (Legal review)",
             text: "Olga Reviewer took over Legal review on “Launch page”. You don’t need to review it any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: PREVIOUS_REVIEWER_FOOTER
         });
     });
 });
@@ -130,7 +160,9 @@ describe("buildApprovedMessage (R189)", () => {
             body: "All steps approved. It’s ready to publish.",
             subject: "Approved: Launch page",
             text: "Every step approved this revision. It’s ready to publish.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: REQUESTER_FOOTER
         });
     });
 });
@@ -146,10 +178,12 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
 
         expect(message).toEqual({
             title: "“Launch page” was rejected at Legal review",
-            body: "Rob Reviewer: “The hero image is missing alt text.”. Create a new revision to fix it, then request a new review.",
+            body: "Rob Reviewer: “The hero image is missing alt text.”. Create a new revision to fix it.",
             subject: "Rejected: Launch page (Legal review)",
-            text: "Rob Reviewer rejected this revision at Legal review: “The hero image is missing alt text.”. Create a new revision to fix it, then request a new review.",
-            linkLabel: "Open content"
+            text: "Rob Reviewer rejected this revision at Legal review: “The hero image is missing alt text.”. Create a new revision, fix it and request a new review.",
+            linkLabel: "Open content",
+            link: "content",
+            footer: REQUESTER_FOOTER
         });
     });
 
@@ -162,7 +196,7 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
         });
 
         expect(message.body).toBe(
-            "Brand check: “The tone is off.”. Create a new revision to fix it, then request a new review."
+            "Brand check: “The tone is off.”. Create a new revision to fix it."
         );
     });
 
@@ -247,7 +281,9 @@ describe("buildFailedMessage (R146, R189)", () => {
             body: "The automation could not be started. You can restart the step.",
             subject: "Step failed: Launch page (Check links)",
             text: "Check links hit a technical error: The automation could not be started. The review is paused at this step until it is restarted.",
-            linkLabel: "Open content"
+            linkLabel: "View review details",
+            link: "reviewDetails",
+            footer: REQUESTER_FOOTER
         });
     });
 });
@@ -266,7 +302,9 @@ describe("buildCancelledMessage (D134, R189)", () => {
             body: "Cancelled by Rita Requester. You no longer need to review Legal review.",
             subject: "Review cancelled: Launch page",
             text: "Rita Requester cancelled this review. You don’t need to review Legal review any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: PREVIOUS_REVIEWER_FOOTER
         });
     });
 
@@ -283,7 +321,9 @@ describe("buildCancelledMessage (D134, R189)", () => {
             body: "The content was moved to the trash. You no longer need to review Legal review.",
             subject: "Review cancelled: Launch page",
             text: "The content was moved to the trash, so this review was cancelled. You don’t need to review Legal review any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: PREVIOUS_REVIEWER_FOOTER
         });
     });
 
@@ -300,7 +340,9 @@ describe("buildCancelledMessage (D134, R189)", () => {
             body: "The content was deleted. You no longer need to review Legal review.",
             subject: "Review cancelled: Launch page",
             text: "The content was deleted, so this review was cancelled. You don’t need to review Legal review any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: PREVIOUS_REVIEWER_FOOTER
         });
     });
 
@@ -339,7 +381,12 @@ describe("getAssignmentReason (R189a)", () => {
 describe("message content (R189, R200)", () => {
     const messages = (): NotificationMessage[] => {
         return [
-            buildPoolReachedMessage({ contentTitle: "<T>", stepTitle: "<S>", requester: "<R>" }),
+            buildPoolReachedMessage({
+                contentTitle: "<T>",
+                stepTitle: "<S>",
+                requester: "<R>",
+                teamNames: "<N>"
+            }),
             buildAssignedMessage({
                 contentTitle: "<T>",
                 stepTitle: "<S>",
@@ -376,17 +423,53 @@ describe("message content (R189, R200)", () => {
         ];
     };
 
-    it("has exactly the five contract fields and the same link label everywhere", () => {
+    it("has exactly the contract fields, and a link label that matches the link", () => {
         for (const message of messages()) {
             expect(Object.keys(message).sort()).toEqual([
                 "body",
+                "footer",
+                "link",
                 "linkLabel",
                 "subject",
                 "text",
                 "title"
             ]);
-            expect(message.linkLabel).toBe("Open content");
+            expect(message.linkLabel).toBe(
+                message.link === "reviewDetails" ? "View review details" : "Open content"
+            );
         }
+    });
+
+    it("links to the review details only for the previous owner of a reassigned step and a failed step", () => {
+        const links = messages().map(message => message.link);
+
+        expect(links).toEqual([
+            "content",
+            "content",
+            "content",
+            "reviewDetails",
+            "content",
+            "content",
+            "content",
+            "reviewDetails",
+            "content"
+        ]);
+    });
+
+    it("tells reviewers, requesters and previous owners why they get the e-mail", () => {
+        const footers = messages().map(message => message.footer);
+
+        expect(footers).toEqual([
+            REVIEWER_FOOTER,
+            REVIEWER_FOOTER,
+            REVIEWER_FOOTER,
+            PREVIOUS_REVIEWER_FOOTER,
+            PREVIOUS_REVIEWER_FOOTER,
+            REQUESTER_FOOTER,
+            REQUESTER_FOOTER,
+            REQUESTER_FOOTER,
+            PREVIOUS_REVIEWER_FOOTER
+        ]);
     });
 
     it("passes markup, quotes and newlines through unescaped (the transport escapes)", () => {

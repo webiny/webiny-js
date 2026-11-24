@@ -136,7 +136,7 @@ class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
         console.error("[CmsContentReviewsPresenter] Could not load the content types.", error);
         // Without the model list the list has no namespaces to follow: say so once per attempt.
         this.notifications.error({
-            title: "Could not load the content types",
+            title: "Could not load the content models",
             description: "Content Reviews will not update live. Reload the page to try again."
         });
     }

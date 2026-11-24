@@ -6,13 +6,13 @@ import type { CoreOutput } from "~/pulumi/apps/common/CoreOutput.js";
 export interface AdminSettingsItemParams {
     core: CoreOutput;
     cloudfront: { output: { domainName: pulumi.Output<string> } };
-    /* The project has `<Infra.Postgres />`. */
+    /* The project has `<Infra.AuroraPostgres />`. */
     usesPostgres: boolean;
 }
 
 /**
  * Stores the app's URL in the `ADMIN#SETTINGS` item of the core's DynamoDB table. With
- * `<Infra.Postgres />` the core has no DynamoDB table, and nothing on Postgres reads the item.
+ * `<Infra.AuroraPostgres />` the core has no DynamoDB table, and nothing on Postgres reads it.
  */
 export const addAdminSettingsItem = (app: PulumiApp, params: AdminSettingsItemParams) => {
     if (params.usesPostgres) {

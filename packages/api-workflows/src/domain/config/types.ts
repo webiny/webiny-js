@@ -23,6 +23,8 @@ export interface AutomationDefinitionInfo {
     name: string;
     models: string[];
     settingsSchema: Record<string, unknown>;
+    /** A top-level property of `settingsSchema` the editor shows as the step's key setting; null when unset or invalid. */
+    keySetting: string | null;
 }
 
 /**

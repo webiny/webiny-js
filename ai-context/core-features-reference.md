@@ -106,13 +106,13 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/ListConnections/abstractions.ts`
-- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Filters out stale connections (>3 hours).
+- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Returns the current tenant's connections only, whatever the filter. For another tenant, call it inside `TenantContext.withTenant()`. Filters out stale connections (>3 hours).
 
 ### WebsocketsSendToIdentityUseCase
 
 - **Import:** `import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/SendToIdentity/abstractions.ts`
-- **Usage:** Send a message to all connections for a given identity. Namespace types: `.Interface`, `.Identity`, `.Data<T>`. Call `.execute({ id: userId }, { action, data })`. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
+- **Usage:** Send a message to all of an identity's connections in the current tenant. Namespace types: `.Interface`, `.Identity`, `.Data<T>`. Call `.execute({ id: userId }, { action, data })`. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
 
 ### WebsocketsSendToConnectionsUseCase
 

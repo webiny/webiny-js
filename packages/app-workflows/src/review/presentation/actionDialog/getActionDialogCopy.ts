@@ -6,6 +6,7 @@ import { getCancelDialogBody } from "./getCancelDialogBody.js";
 import { getRestartDialogBody } from "./getRestartDialogBody.js";
 import type { ReviewActionDialogContext } from "./ReviewActionDialogContext.js";
 import type { ActionDialogConfirmVariant } from "./ActionDialogConfirmVariant.js";
+import type { TargetReviewActionIcon } from "../targetReview/abstractions.js";
 
 export interface ActionDialogCopyParams {
     kind: ReviewActionKind;
@@ -19,9 +20,13 @@ export interface ActionDialogCopyParams {
 
 export interface ActionDialogCopy {
     title: string;
+    // The line under the title, `null` for none.
+    description: string | null;
     body: string;
     showComment: boolean;
     commentLabel: string;
+    // The hint beside the comment label, `null` for none.
+    commentDescription: string | null;
     commentRequired: boolean;
     commentPlaceholder: string;
     commentNote: string | null;
@@ -30,8 +35,9 @@ export interface ActionDialogCopy {
     showNotify: boolean;
     notifyLabel: string | null;
     confirmLabel: string;
-    // Reject and Cancel review end work for good, so their confirm is red (C5).
+    // Cancel review ends work for good, so its confirm is red; Reject stays primary (DS 2.0).
     confirmVariant: ActionDialogConfirmVariant;
+    confirmIcon: TargetReviewActionIcon | null;
     cancelLabel: string;
     canSubmit: boolean;
 }
@@ -43,9 +49,11 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
     const stepTitle = step ? step.title : "";
     const base: ActionDialogCopy = {
         title: "",
+        description: null,
         body: "",
         showComment: false,
         commentLabel: "",
+        commentDescription: null,
         commentRequired: false,
         commentPlaceholder: "",
         commentNote: null,
@@ -55,6 +63,7 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
         notifyLabel: null,
         confirmLabel: "",
         confirmVariant: "primary",
+        confirmIcon: null,
         cancelLabel: "Cancel",
         canSubmit: true
     };
@@ -81,7 +90,7 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
         if (ownerIsPerson) {
             notifyLabel = `Notify ${owner} that you took over`;
         }
-        let body = `${owner} is reviewing “${stepTitle}”. If you take over, you become the owner and ${firstName} can no longer approve or reject it.`;
+        let body = `${owner} is reviewing “${stepTitle}”. If you take over, you become the owner and ${firstName} no longer reviews it.`;
         if (context === "list") {
             body = `${owner} is reviewing “${stepTitle}” on “${review.title}”. If you take over, you become the owner.`;
         }
@@ -98,37 +107,34 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
     if (kind === "approve") {
         return {
             ...base,
-            title: `Approve “${stepTitle}”`,
+            title: `Approve “${stepTitle}”?`,
+            description: "The review moves on to the next step.",
             showComment: true,
             commentLabel: "Comment",
-            commentPlaceholder: "Anything the requester or next reviewer should know",
-            commentNote: "Visible to the requester and in review details.",
-            confirmLabel: "Approve"
+            commentDescription: "(optional)",
+            commentPlaceholder: "Anything the author should know",
+            confirmLabel: "Approve",
+            confirmIcon: "check"
         };
     }
 
     if (kind === "reject") {
         const length = comment.trim().length;
         const tooShort = length < REJECT_COMMENT_MIN_LENGTH;
-        let commentNote: string | null = "Required. The requester sees this.";
         let commentError: string | null = null;
         if (touched && tooShort) {
-            commentNote = null;
-            commentError = `Write at least ${REJECT_COMMENT_MIN_LENGTH} characters.`;
+            commentError = `Use at least ${REJECT_COMMENT_MIN_LENGTH} characters.`;
         }
         return {
             ...base,
-            title: `Reject “${stepTitle}”`,
-            body: "Rejection is final for this revision. The requester will need to create a new revision, fix the issues and request a new review.",
+            title: `Reject “${stepTitle}”?`,
+            body: "Rejection is final for this revision. The author creates a new revision to fix it and requests a new review.",
             showComment: true,
-            commentLabel: "Comment",
+            commentLabel: "Reason",
             commentRequired: true,
-            commentPlaceholder: "Explain what needs to change",
-            commentNote,
             commentError,
             commentCounter: `${length} / ${REJECT_COMMENT_MIN_LENGTH} min.`,
             confirmLabel: "Reject",
-            confirmVariant: "destructive",
             canSubmit: !tooShort
         };
     }
@@ -136,8 +142,8 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
     if (kind === "cancel") {
         return {
             ...base,
-            title: "Cancel review?",
-            body: getCancelDialogBody(review, context),
+            title: "Cancel this review?",
+            body: getCancelDialogBody(review),
             confirmLabel: "Cancel review",
             confirmVariant: "destructive",
             cancelLabel: "Keep review"

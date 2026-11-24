@@ -2,7 +2,6 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { IReviewUnsavedChanges } from "~/review/content/IReviewUnsavedChanges.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
-import type { StepStateValue } from "~/review/domain/StepState.js";
 
 export type TargetReviewStatus = "loading" | "failed" | "noWorkflow" | "none" | "active";
 
@@ -38,9 +37,11 @@ export type TargetReviewTagVariant =
     | "accent-light"
     | "success-light"
     | "destructive"
+    | "destructive-light"
+    | "neutral-light"
     | "warning"
-    | "neutral-base-outline"
-    | "neutral-dark";
+    | "warning-light"
+    | "neutral-base-outline";
 
 // The state tile of the bar (README 6): the Material icon name that names it.
 export type TargetReviewTile =
@@ -52,8 +53,12 @@ export type TargetReviewTile =
     | "check_circle"
     | "cancel";
 
-// The icon of a step tag: only the running tag has one (R263).
-export type TargetReviewTagIcon = "progress_activity" | "sync_problem";
+// The icon of a step tag: Awaiting, In review, Running and Failed have one.
+export type TargetReviewTagIcon =
+    | "progress_activity"
+    | "sync_problem"
+    | "hourglass_empty"
+    | "rate_review";
 
 export interface TargetReviewTag {
     label: string;
@@ -71,28 +76,9 @@ export interface TargetReviewActionVm {
     disabledReason: string | null;
 }
 
-export interface TargetReviewSegmentVm {
-    stepId: string;
-    title: string;
-    state: StepStateValue;
-    ownerLabel: string;
-    // The step colour, shown as the dot of the popover row.
-    color: string;
-    // The step description, shown muted after the title.
-    description: string | null;
-    // The decision comment of the step.
-    comment: string | null;
-    tag: TargetReviewTag;
-    // "{Step} running since {hh:mm}" or "{Step} failed: {reason}", else `null` (R263).
-    message: string | null;
-    // The tag tooltip of a running or failed step (R264), else `null`.
-    tooltip: string | null;
-}
-
 export interface TargetReviewProgressVm {
     approved: number;
     total: number;
-    segments: TargetReviewSegmentVm[];
 }
 
 // The icon of the "Content updated by {step}" notice: AI `auto_awesome`, automation `bolt` (R262).

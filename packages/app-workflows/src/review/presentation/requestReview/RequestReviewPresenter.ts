@@ -18,6 +18,7 @@ import type { RequestReviewStepVm } from "./abstractions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
 import { getStepTypeLabel } from "./getStepTypeLabel.js";
 import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
+import { getNobodyEligibleNote } from "./getNobodyEligibleNote.js";
 
 const SHORT_TITLE = "Use at least 5 characters.";
 
@@ -106,7 +107,8 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
                     allowManualPick: step.allowManualPick,
                     mode: this.modes[step.id] ?? "automatic",
                     hasPicker: picker !== undefined,
-                    noCandidates
+                    noCandidates,
+                    noCandidatesNote: getNobodyEligibleNote(step.candidateTeamNames)
                 });
             });
         }

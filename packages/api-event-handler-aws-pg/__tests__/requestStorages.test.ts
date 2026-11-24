@@ -4,7 +4,7 @@ import type { Abstraction, Container } from "@webiny/di";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { ApiCoreStorageOperationsFactory } from "@webiny/api-core";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createAwsPgApiHandler } from "~/index.js";
 import { postgresModules, startPglite } from "./startPglite.js";
 

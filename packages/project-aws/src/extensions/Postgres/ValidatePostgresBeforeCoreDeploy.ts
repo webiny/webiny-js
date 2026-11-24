@@ -13,7 +13,7 @@ import { getBgDeploymentsConfigFromExtension } from "~/pulumi/apps/extensions/ge
 const CONFIG_FILE = "webiny.config.tsx";
 
 /**
- * Stops `deploy core` when `<Infra.Postgres />` is combined with settings it can't run with:
+ * Stops `deploy core` when `<Infra.AuroraPostgres />` is combined with settings it can't run with:
  *
  * - no VPC: the database sits in private subnets, and the functions reach Secrets Manager through
  *   the VPC's NAT gateway. Production environments get a VPC by default, so this only asks for
@@ -41,11 +41,12 @@ export class ValidatePostgresBeforeCoreDeployImpl implements CoreBeforeDeploy.In
             throw GracefulError.from(
                 new Error("Cannot deploy Postgres without a VPC."),
                 [
-                    "The Postgres database runs in the VPC's private subnets, and the API functions reach it, and Secrets Manager, from inside the VPC.",
+                    "The database of %s runs in the VPC's private subnets, and the API functions reach it, and Secrets Manager, from inside the VPC.",
                     "",
                     "Add %s to your %s config file. The VPC adds a NAT gateway, which has its own cost.",
                     "Production environments use a VPC by default, unless %s turns it off."
                 ].join("\n"),
+                "<Infra.AuroraPostgres />",
                 "<Infra.Vpc enabled />",
                 CONFIG_FILE,
                 "<Infra.Vpc enabled={false} />"
@@ -82,7 +83,7 @@ export class ValidatePostgresBeforeCoreDeployImpl implements CoreBeforeDeploy.In
                     "Remove %s, or remove %s, from your %s config file."
                 ].join("\n"),
                 "<Infra.OpenSearch enabled />",
-                "<Infra.Postgres />",
+                "<Infra.AuroraPostgres />",
                 CONFIG_FILE
             );
         }
@@ -97,7 +98,7 @@ export class ValidatePostgresBeforeCoreDeployImpl implements CoreBeforeDeploy.In
                     "Remove %s, or remove %s, from your %s config file."
                 ].join("\n"),
                 "<Infra.BlueGreenDeployments enabled />",
-                "<Infra.Postgres />",
+                "<Infra.AuroraPostgres />",
                 CONFIG_FILE
             );
         }

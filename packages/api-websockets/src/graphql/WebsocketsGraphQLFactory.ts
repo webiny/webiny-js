@@ -16,10 +16,6 @@ interface IDisconnectIdentityArgs {
     identityId: string;
 }
 
-interface IDisconnectTenantArgs {
-    tenant: string;
-}
-
 const checkPermissions = async (identityContext: IdentityContext.Interface): Promise<void> => {
     const permissions = await identityContext.getPermissions<WebsocketsPermission>("websockets");
 
@@ -62,7 +58,6 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
             input WebsocketsListConnectionsWhereInput {
                 identityId: String
-                tenant: String
             }
 
             type WebsocketsDisconnectResponse {
@@ -95,7 +90,6 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
             extend type WebsocketsMutation {
                 disconnect(connections: [String!]!): WebsocketsDisconnectResponse!
                 disconnectIdentity(identityId: String!): WebsocketsDisconnectResponse!
-                disconnectTenant(tenant: String!): WebsocketsDisconnectResponse!
                 disconnectAll: WebsocketsDisconnectResponse!
             }
         `);
@@ -186,35 +180,6 @@ class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         const result = await disconnect.execute({
                             where: {
                                 identityId: args.identityId
-                            }
-                        });
-
-                        if (result.isFail()) {
-                            return new ErrorResponse(result.error);
-                        }
-
-                        return new Response(result.value);
-                    } catch (ex) {
-                        return new ErrorResponse(ex);
-                    }
-                };
-            }
-        });
-
-        builder.addResolver<IDisconnectTenantArgs>({
-            path: "WebsocketsMutation.disconnectTenant",
-            dependencies: [IdentityContext, WebsocketsDisconnectUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                disconnect: WebsocketsDisconnectUseCase.Interface
-            ) => {
-                return async ({ args }: { args: IDisconnectTenantArgs }) => {
-                    try {
-                        await checkPermissions(identityContext);
-
-                        const result = await disconnect.execute({
-                            where: {
-                                tenant: args.tenant
                             }
                         });
 

@@ -169,7 +169,7 @@ describe("buildPeopleStepForm (R293, R302, R308)", () => {
         expect(strategy.renderer).toBe(STEP_FORM_RENDERER.assignmentStrategy);
         expect(toggle.label).toBe("Let the requester pick a reviewer");
         expect(toggle.note).toBe(
-            "The requester can choose a person from this step's eligible reviewers when requesting a review. Picks are checked again when the step is reached."
+            "The requester can choose a reviewer when they request a review. Picks are checked again when the step is reached."
         );
         expect(toggle.renderer).toBe(STEP_FORM_RENDERER.requesterPick);
         expect(rules.label).toBe("Routing rules");

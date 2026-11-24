@@ -9,7 +9,6 @@ import { createWorkflowUserSummary } from "~/editor/testing/editorFixtures.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import type { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
 import { createAnaExclusion } from "~/settings/testing/exclusionFixtures.js";
-import { createBenExclusion } from "~/settings/testing/exclusionFixtures.js";
 import { createCidExclusion } from "~/settings/testing/exclusionFixtures.js";
 import { EXCLUSIONS_NOW } from "~/settings/testing/exclusionFixtures.js";
 import { ZAGREB } from "~/settings/testing/exclusionFixtures.js";
@@ -120,7 +119,8 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
         expect(presenter.getUserName("user-ana")).toEqual({
             userId: "user-ana",
             label: "Ana Kovač",
-            state: "found"
+            state: "found",
+            teamNames: []
         });
     });
 
@@ -147,7 +147,8 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
         expect(presenter.getUserName("user-dan")).toEqual({
             userId: "user-dan",
             label: "Dan Novak",
-            state: "found"
+            state: "found",
+            teamNames: []
         });
         expect(presenter.vm.rows.map(row => row.label)).toEqual(["Dan Novak", "user-ana"]);
     });
@@ -173,41 +174,6 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
             user: null
         });
         expect(presenter.vm.tab).toBe("expired");
-    });
-
-    it("resets a user filter whose user left the list", async () => {
-        const { presenter } = createExclusionsPageSetup([
-            createAnaExclusion(),
-            createBenExclusion()
-        ]);
-        await presenter.init(MANAGE);
-        presenter.setUserFilter("user-ben");
-
-        presenter.applySaved({
-            settings: { exclusions: [createAnaExclusion()] },
-            change: "remove",
-            user: null
-        });
-
-        expect(presenter.vm.filter.value).toBeNull();
-        expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-ana"]);
-    });
-
-    it("keeps a user filter whose user is still in the list", async () => {
-        const { presenter } = createExclusionsPageSetup([
-            createAnaExclusion(),
-            createBenExclusion()
-        ]);
-        await presenter.init(MANAGE);
-        presenter.setUserFilter("user-ben");
-
-        presenter.applySaved({
-            settings: { exclusions: [createBenExclusion()] },
-            change: "remove",
-            user: null
-        });
-
-        expect(presenter.vm.filter.value).toBe("user-ben");
     });
 
     it("does not close the dialog in applySaved (the dialog presenter does)", async () => {

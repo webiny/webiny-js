@@ -59,7 +59,7 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/project-aws": "0.0.0",
-    "rimraf": "^6.1.3",
+    "rimraf": "^6.1.4",
     "typescript": "^7.0.2"
   },
   "peerDependencies": {
@@ -166,7 +166,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "331d04f2f65973a88a63cde6e658989deba1c85ef05e7295d8eb35756c981baa",
+  "exportGenerationHash": "a61c79ebd88fe8da21054a30f2ecd1765e63f8582e9a7cc4f807292e6dae43b4",
   "webiny": {
     "publishFrom": "dist"
   }

@@ -115,8 +115,7 @@ describe("review decision inbox notifications", () => {
                 type: "rejected",
                 actor: { id: REVIEWER.id, displayName: "Rob Reviewer", type: "admin" },
                 title: "Spring launch",
-                snippet:
-                    "Rob Reviewer: “Needs work.”. Create a new revision to fix it, then request a new review.",
+                snippet: "Rob Reviewer: “Needs work.”. Create a new revision to fix it.",
                 link: { app: "cms", contentId: "article:entry-1" }
             })
         ]);
@@ -147,8 +146,7 @@ describe("review decision inbox notifications", () => {
                 type: "rejected",
                 recipientId: REQUESTER.id,
                 actor: { id: REQUESTER.id, displayName: "Legal sign-off", type: "automation" },
-                snippet:
-                    "Legal sign-off: “Needs work.”. Create a new revision to fix it, then request a new review."
+                snippet: "Legal sign-off: “Needs work.”. Create a new revision to fix it."
             },
             {
                 type: "rejected",

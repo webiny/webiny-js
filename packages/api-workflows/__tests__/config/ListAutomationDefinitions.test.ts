@@ -34,13 +34,15 @@ const registerDefinition = (
     id: string,
     name: string,
     settingsSchema: zod.ZodType,
-    models: string[] = ["*"]
+    models: string[] = ["*"],
+    keySetting?: string
 ) => {
     class DefinitionImpl implements AutomationDefinition.Interface {
         public readonly id = id;
         public readonly name = name;
         public readonly models = models;
         public readonly settingsSchema = settingsSchema;
+        public readonly keySetting = keySetting;
 
         public async run(): Promise<AutomationDefinition.Outcome> {
             return { type: "approved" };
@@ -90,7 +92,8 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
                 settingsSchema: zod.toJSONSchema(testAutomationSettingsSchema, {
                     io: "input",
                     unrepresentable: "any"
-                })
+                }),
+                keySetting: null
             }
         ]);
         expect(rows[0].settingsSchema).toMatchObject({ type: "object" });
@@ -155,6 +158,53 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
             type: "object",
             properties: { at: {} }
         });
+    });
+
+    it("passes a key setting that is a property of the schema through", async () => {
+        const { listAutomations } = await createListContext({
+            setup: registerDefinition(
+                "hook",
+                "Hook",
+                zod.object({ url: zod.string(), method: zod.string().optional() }),
+                ["*"],
+                "url"
+            )
+        });
+
+        const rows = expectOk(await listAutomations.execute());
+
+        expect(rows[0].keySetting).toBe("url");
+    });
+
+    it("drops a key setting that is not a property of the schema, with one fixed log line", async () => {
+        const { listAutomations } = await createListContext({
+            setup: container => {
+                captureLoggedErrors(container);
+                registerDefinition(
+                    "a",
+                    "A",
+                    zod.object({ url: zod.string() }),
+                    ["*"],
+                    "nope"
+                )(container);
+                registerDefinition(
+                    "b",
+                    "B",
+                    zod.object({ url: zod.string() }),
+                    ["*"],
+                    "toString"
+                )(container);
+                registerDefinition("c", "C", zod.string(), ["*"], "url")(container);
+            }
+        });
+
+        const rows = expectOk(await listAutomations.execute());
+
+        expect(rows.map(row => row.keySetting)).toEqual([null, null, null]);
+        expect(loggedErrors).toHaveLength(1);
+        expect(loggedErrors[0].message).toBe(
+            "An automation definition names a key setting that is not a property of its settings schema."
+        );
     });
 
     it("allows a full-access permission set", async () => {

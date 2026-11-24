@@ -66,7 +66,7 @@ describe("WorkflowsRolePermissions (R333)", () => {
     it("shows the labelled level control, No access, its note and the reviewing note for a role without workflows entries", () => {
         const onChange = renderGroup([{ name: "cms.*" }]);
 
-        expect(screen.getByText("Access level")).toBeDefined();
+        expect(screen.getByText("Workflows access")).toBeDefined();
         const none = screen.getByRole("radio", { name: "No access" });
         const full = screen.getByRole("radio", { name: "Full access" });
         const custom = screen.getByRole("radio", { name: "Custom" });
@@ -74,13 +74,11 @@ describe("WorkflowsRolePermissions (R333)", () => {
         expect(isChecked(full)).toBe(false);
         expect(isChecked(custom)).toBe(false);
         expect(
-            screen.getByText(
-                "Can't build workflows or operate reviews. Can still review content as a member of a reviewing team."
-            )
+            screen.getByText("People with this role can’t manage workflows or operate reviews.")
         ).toBeDefined();
         expect(
             screen.getByText(
-                "Reviewing is not a permission. Anyone in a step's reviewing teams who can read the content can review it."
+                "Reviewing is not a permission. Anyone in a step’s reviewing teams who can read the content can review it."
             )
         ).toBeDefined();
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
@@ -97,43 +95,35 @@ describe("WorkflowsRolePermissions (R333)", () => {
         const full = screen.getByRole("radio", { name: "Full access" });
         expect(isChecked(full)).toBe(true);
         expect(
-            screen.getByText("Includes Manage workflows and Reassign and operate.")
+            screen.getByText(
+                "People with this role can manage workflows, reassign reviewers and operate reviews."
+            )
         ).toBeDefined();
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     });
 
-    it("writes { name: workflows } for Custom from No access, with nothing ticked and the same-as-No-access note", () => {
+    it("writes { name: workflows, editor: true } for Custom from No access, with only Manage workflows ticked", () => {
         const onChange = renderGroup([]);
 
         fireEvent.click(screen.getByRole("radio", { name: "Custom" }));
 
-        expect(getLastValue(onChange)).toEqual([{ name: "workflows" }]);
+        expect(getLastValue(onChange)).toEqual([{ name: "workflows", editor: true }]);
         const editor = screen.getByRole("checkbox", { name: "Manage workflows" });
         const reassign = screen.getByRole("checkbox", { name: "Reassign and operate" });
-        expect(isChecked(editor)).toBe(false);
+        expect(isChecked(editor)).toBe(true);
         expect(isChecked(reassign)).toBe(false);
-        expect(
-            screen.getByText("With nothing selected, this role has the same access as No access.")
-        ).toBeDefined();
     });
 
-    it("starts Custom from Full with both boxes ticked and the same-as-Full note", () => {
+    it("starts Custom from Full with only Manage workflows ticked", () => {
         const onChange = renderGroup([{ name: "workflows.*" }]);
 
         fireEvent.click(screen.getByRole("radio", { name: "Custom" }));
 
-        expect(getLastValue(onChange)).toEqual([
-            { name: "workflows", editor: true, reassign: true }
-        ]);
+        expect(getLastValue(onChange)).toEqual([{ name: "workflows", editor: true }]);
         const editor = screen.getByRole("checkbox", { name: "Manage workflows" });
         const reassign = screen.getByRole("checkbox", { name: "Reassign and operate" });
         expect(isChecked(editor)).toBe(true);
-        expect(isChecked(reassign)).toBe(true);
-        expect(
-            screen.getByText(
-                "Same as Full access today. Full access also gets workflow permissions added in later versions; Custom doesn't."
-            )
-        ).toBeDefined();
+        expect(isChecked(reassign)).toBe(false);
     });
 
     it("ticks Manage workflows and shows no level note with one box ticked", () => {
@@ -215,9 +205,7 @@ describe("WorkflowsRolePermissions (R333)", () => {
 
         fireEvent.click(screen.getByRole("radio", { name: "Custom" }));
 
-        expect(getLastValue(onChange)).toEqual([
-            { name: "workflows", editor: true, reassign: true }
-        ]);
+        expect(getLastValue(onChange)).toEqual([{ name: "workflows", editor: true }]);
     });
 
     it("does not write when the active Custom level is clicked again", () => {
@@ -260,7 +248,9 @@ describe("WorkflowsRolePermissions (R333)", () => {
 
         expect(onChange).not.toHaveBeenCalled();
         expect(
-            screen.getByText("Includes Manage workflows and Reassign and operate.")
+            screen.getByText(
+                "People with this role can manage workflows, reassign reviewers and operate reviews."
+            )
         ).toBeDefined();
     });
 

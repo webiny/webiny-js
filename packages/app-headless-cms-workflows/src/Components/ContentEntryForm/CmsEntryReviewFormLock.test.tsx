@@ -3,9 +3,11 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { act } from "@testing-library/react";
+import { cleanup } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { ContentEntryForm } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { CmsEntryReviewFormLock } from "./CmsEntryReviewFormLock.js";
+import { CmsEntryFormFieldLock } from "~/features/formFieldLock/abstractions.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";
 import { renderEditorTree } from "~/testing/renderEditorTree.js";
 import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
@@ -85,5 +87,37 @@ describe("CmsEntryReviewFormLock", () => {
         const wrapper = await findWrapper();
 
         expect(wrapper.disabled).toBe(false);
+    });
+
+    it("locks the form fields while the review locks the form, so field controls hide too", async () => {
+        const view = renderForm({ reviewVm: IN_REVIEW });
+        const fieldLock = view.container.resolve(CmsEntryFormFieldLock);
+
+        await waitFor(() => expect(fieldLock.isLocked).toBe(true));
+
+        act(() => {
+            view.setVm(BOUND_NO_REVIEW);
+        });
+
+        await waitFor(() => expect(fieldLock.isLocked).toBe(false));
+    });
+
+    it("leaves the form fields unlocked for a new entry", async () => {
+        const view = renderForm({ formVm: { entry: null, isNewEntry: true }, reviewVm: LOADING });
+        const fieldLock = view.container.resolve(CmsEntryFormFieldLock);
+
+        await findWrapper();
+
+        expect(fieldLock.isLocked).toBe(false);
+    });
+
+    it("releases the form fields when the editor closes", async () => {
+        const view = renderForm({ reviewVm: IN_REVIEW });
+        const fieldLock = view.container.resolve(CmsEntryFormFieldLock);
+        await waitFor(() => expect(fieldLock.isLocked).toBe(true));
+
+        cleanup();
+
+        expect(fieldLock.isLocked).toBe(false);
     });
 });

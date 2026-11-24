@@ -3,7 +3,7 @@
  *
  * The composition root lives in @webiny/api-event-handler-aws-pg (`createAwsPgApiHandler`). The
  * Postgres extension's ReplaceApiLambdaFnHandlers copies this file over the api workspace when
- * `<Infra.Postgres />` is rendered. This file only supplies project-specific extensions.
+ * `<Infra.AuroraPostgres />` is rendered. This file only supplies project-specific extensions.
  *
  * Exports both the buffered (API Gateway) and the response-streaming (Function URL) handler; see the
  * DynamoDB variant of this file for why streaming needs its own Lambda function. The same bundle also

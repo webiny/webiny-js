@@ -5,7 +5,7 @@ import { DatePicker } from "@webiny/admin-ui";
 import type { DatePickerProps } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { FormComponentNote } from "@webiny/admin-ui";
-import { Input } from "@webiny/admin-ui";
+import { Textarea } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
@@ -25,18 +25,6 @@ const REASON_HINT = "Optional. Shown only to people with Manage workflows or Rea
 const NOTE_ICONS: Record<ExclusionDialogNoteVm["kind"], React.ReactElement> = {
     expired: <HistoryIcon data-icon="history" />,
     deletedUser: <PersonOffIcon data-icon="person_off" />
-};
-
-/*
- * admin-ui `Input` turns its `maxLength` prop into the `size` attribute, so the native limit is set
- * on the element (R324); the presenter still trims and caps the reason on save (R328).
- */
-const limitReasonLength = (element: HTMLInputElement | null): void => {
-    if (element === null) {
-        return;
-    }
-    const limit = String(REASON_MAX_LENGTH);
-    element.setAttribute("maxlength", limit);
 };
 
 /*
@@ -89,19 +77,6 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
         );
     }
 
-    let clear: React.ReactNode = null;
-    if (vm.showClear) {
-        clear = (
-            <Button
-                variant="ghost"
-                size="sm"
-                text="Clear"
-                disabled={vm.saving}
-                onClick={() => presenter.clearDate()}
-            />
-        );
-    }
-
     const userDisabled = vm.user.locked || vm.saving;
     let dateValidation: DatePickerProps["validation"] = undefined;
     if (vm.dateError !== null) {
@@ -111,7 +86,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
     const actions = (
         <>
             <Button
-                variant="tertiary"
+                variant="secondary"
                 text="Cancel"
                 disabled={vm.saving}
                 onClick={() => presenter.cancel()}
@@ -144,8 +119,9 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                 <WorkflowPicker
                     label="User"
                     required={true}
-                    placeholder="Search users"
-                    icon={"search"}
+                    placeholder="Search people"
+                    icon={"none"}
+                    size="md"
                     value={vm.user.value}
                     selected={vm.user.selected}
                     options={vm.user.options}
@@ -155,13 +131,16 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                     onSearch={search => presenter.searchUsers(search)}
                     onChange={id => presenter.setUser(id)}
                 />
-                <Input
+                <Textarea
                     label="Reason"
+                    rows={2}
+                    size="md"
+                    className="min-h-0"
+                    maxLength={REASON_MAX_LENGTH}
                     placeholder="e.g. On leave"
-                    note={REASON_HINT}
+                    description={REASON_HINT}
                     value={vm.reason}
                     disabled={vm.saving}
-                    inputRef={limitReasonLength}
                     onChange={(value: string) => presenter.setReason(value)}
                 />
                 <div className="flex flex-col gap-xs">
@@ -169,6 +148,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                         <div className="w-3xs shrink-0">
                             <DatePicker
                                 type="date"
+                                size="md"
                                 label="Until"
                                 value={vm.date ?? undefined}
                                 minDate={vm.minDate}
@@ -177,7 +157,13 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                                 onChange={value => presenter.setDate(value ?? null)}
                             />
                         </div>
-                        {clear}
+                        <Button
+                            variant="ghost"
+                            size="md"
+                            text="Clear"
+                            disabled={vm.saving || !vm.showClear}
+                            onClick={() => presenter.clearDate()}
+                        />
                     </div>
                     <FormComponentNote
                         className="mt-0"

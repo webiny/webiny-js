@@ -8,8 +8,7 @@ export { websocketsRouteConnect, websocketsRouteDisconnect, websocketsRouteDefau
 
 /**
  * Registers the built-in WebSocket route handlers (connect, disconnect, default) as
- * WebsocketsRouteHandler implementations. Custom routes can be added the same way:
- * `container.registerInstance(WebsocketsRouteHandler, { route, run })`.
+ * WebsocketsRouteHandler implementations.
  */
 export const registerWebsocketsRoutes = (container: Container): void => {
     container.registerInstance(WebsocketsRouteHandler, websocketsRouteConnect);
