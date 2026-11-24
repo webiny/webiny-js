@@ -90,4 +90,40 @@ describe("SmtpSettingsPresenter", () => {
         expect(save).toHaveBeenCalledTimes(1);
         expect(testMail.result).toBeNull();
     });
+
+    it("drops edits from an earlier visit as soon as the form loads again", async () => {
+        const forms: FakeForm[] = [];
+        let resolveSettings: (value: typeof settings) => void = () => {};
+
+        const container = new Container();
+        container.registerInstance(GetSettingsUseCase, {
+            execute: () => new Promise(resolve => (resolveSettings = resolve))
+        } as unknown as GetSettingsUseCase.Interface);
+        container.registerInstance(SaveSettingsUseCase, { execute: vi.fn() });
+        container.registerInstance(FormModelFactory, {
+            create: () => {
+                const form = new FakeForm();
+                forms.push(form);
+                return form;
+            }
+        } as unknown as FormModelFactory.Interface);
+        const store = new TestMailStore();
+        container.registerInstance(TestMailState, store);
+        container.registerInstance(TestMailRuns, store);
+        container.register(SmtpSettingsPresenter).inSingletonScope();
+        const presenter = container.resolve(PresenterAbstraction);
+
+        const firstVisit = presenter.load();
+        resolveSettings(settings);
+        await firstVisit;
+        forms[forms.length - 1].vm.isDirty = true;
+        expect(presenter.vm.form.isDirty).toBe(true);
+
+        // Second visit: the stored settings have not arrived yet.
+        const secondVisit = presenter.load();
+        expect(presenter.vm.form.isDirty).toBe(false);
+
+        resolveSettings(settings);
+        await secondVisit;
+    });
 });

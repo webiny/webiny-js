@@ -39,8 +39,13 @@ class SmtpSettingsPresenterImpl implements Abstraction.Interface {
     }
 
     async load(): Promise<void> {
+        /*
+         * The presenter is a singleton, so a fresh form drops edits left over from an earlier
+         * visit before the stored settings arrive.
+         */
         runInAction(() => {
             this.loading = true;
+            this.form = this.buildForm(this.source);
         });
 
         try {

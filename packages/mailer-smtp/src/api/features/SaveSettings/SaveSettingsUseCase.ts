@@ -11,7 +11,7 @@ import { SettingsNotAuthorized } from "~/api/domain/errors.js";
 import { SettingsLockedByCode } from "~/api/domain/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CodeMailerSettings } from "~/api/domain/CodeMailerSettings/abstractions.js";
-import { MAILER_SETTINGS_PERMISSION } from "@webiny/api-mailer/constants.js";
+import { MAILER_SETTINGS_PERMISSION } from "@webiny/api-mailer";
 import { SMTP_TRANSPORT_NAME } from "~/api/constants.js";
 
 class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {

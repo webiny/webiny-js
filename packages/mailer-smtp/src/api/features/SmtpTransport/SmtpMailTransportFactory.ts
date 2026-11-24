@@ -1,4 +1,4 @@
-import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
+import { MailTransportFactory } from "@webiny/api-mailer";
 import { GetSettingsRepository } from "~/api/features/GetSettings/abstractions.js";
 import { SmtpMailTransport } from "~/api/features/SmtpTransport/SmtpMailTransport.js";
 import { SmtpConfig } from "~/api/features/SmtpTransport/SmtpConfig.js";

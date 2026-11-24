@@ -1,7 +1,7 @@
 import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
-import { MailTransport } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
+import { MailTransport } from "@webiny/api-mailer";
 import { SMTP_TRANSPORT_NAME } from "~/api/constants.js";
 
 /*

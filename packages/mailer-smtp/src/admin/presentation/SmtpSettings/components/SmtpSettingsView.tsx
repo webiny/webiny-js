@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { useToast } from "@webiny/admin-ui";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { SimpleForm } from "@webiny/app-admin";
 import { SimpleFormContent } from "@webiny/app-admin";
 import { SimpleFormFooter } from "@webiny/app-admin";
@@ -12,7 +12,7 @@ import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { useFeature } from "@webiny/app";
 import { SmtpSettingsPresenterFeature } from "../feature.js";
 
-export const SmtpSettingsView = observer(function SmtpSettingsView() {
+export const SmtpSettingsView = createReactiveComponent(function SmtpSettingsView() {
     const toast = useToast();
     const { presenter } = useFeature(SmtpSettingsPresenterFeature);
     const { vm } = presenter;

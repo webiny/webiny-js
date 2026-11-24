@@ -1,5 +1,5 @@
 import zod from "zod";
-import { isMailboxAddress } from "@webiny/api-mailer/utils/isMailboxAddress.js";
+import { isMailboxAddress } from "@webiny/api-mailer";
 
 const password = zod.string().describe("Password");
 

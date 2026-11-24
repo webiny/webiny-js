@@ -4,6 +4,7 @@ import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.j
 import type { TransportSettings } from "~/api/types.js";
 import { SettingsPersistenceError } from "~/api/domain/errors.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { KeyNotFoundError } from "@webiny/api-core/features/keyValueStore/index.js";
 import { MAILER_TRANSPORT_SETTINGS } from "~/api/constants.js";
 
 const DEFAULT_PORT = 587;
@@ -15,9 +16,15 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
     ) {}
 
     async execute(input: SaveSettingsInput): SaveSettingsRepository.Return {
-        // Check if settings exist
         const existingResult =
             await this.keyValueStore.get<TransportSettings>(MAILER_TRANSPORT_SETTINGS);
+        /*
+         * Only a missing key means "nothing saved yet". Any other read failure would have the save
+         * below replace the stored password and fields with blanks.
+         */
+        if (existingResult.isFail() && !(existingResult.error instanceof KeyNotFoundError)) {
+            return Result.fail(new SettingsPersistenceError(existingResult.error));
+        }
         const existingSettings = existingResult.isOk() ? existingResult.value : null;
         const transportSettings: Partial<TransportSettings> = existingSettings ?? {};
 
