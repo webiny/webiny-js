@@ -15,7 +15,7 @@ import { FunctionUrlStreamRouterHandler } from "~/handlers/FunctionUrlStreamRout
  * composition roots.
  *
  * Auth/tenant establishment is NOT here; it lives in the composition layer
- * (@webiny/api-runtime-aws), same split as `ApiGatewayFeature`.
+ * (@webiny/api-composition-aws), same split as `ApiGatewayFeature`.
  */
 export const FunctionUrlStreamFeature = createFeature({
     name: "FunctionUrlStream",

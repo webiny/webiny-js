@@ -11,7 +11,7 @@ import { NodeHttpRouterHandler } from "~/nodeHttp/handlers/NodeHttpRouterHandler
  * - NodeHttpRouterHandler (terminal: translates IncomingMessage → IHttpRequest, routes via HttpRouter)
  *
  * Auth/tenant establishment (the extract→load decorators, which depend on api-core) is NOT here —
- * it lives in the composition layer (@webiny/api-runtime-standalone), mirroring how the AWS
+ * it lives in the composition layer (@webiny/api-composition-standalone), mirroring how the AWS
  * ApiGatewayFeature keeps api-kernel-aws free of any api-* (domain) dependency.
  */
 export const NodeHttpFeature = createFeature({

@@ -3,7 +3,7 @@ import fs from "fs";
 import { createRequire } from "module";
 
 /** The package whose handlers the Postgres api bundle exports; knex and pg are resolved from it. */
-export const PG_HANDLER_PACKAGE = "@webiny/api-runtime-aws-pg";
+export const PG_HANDLER_PACKAGE = "@webiny/api-composition-aws-pg";
 
 /**
  * What the Postgres bundle loads from `node_modules` at runtime. The bundler keeps knex external

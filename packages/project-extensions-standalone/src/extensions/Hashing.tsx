@@ -7,7 +7,7 @@ import { BuildParam } from "@webiny/project/extensions/ApiBuildParam.js";
 /**
  * Hashing settings for a standalone project. A standalone API always folds a pepper into every hash:
  * it refuses to start without `WEBINY_HASHING_PEPPER` (`readStandaloneConfig` in
- * @webiny/api-runtime-standalone).
+ * @webiny/api-composition-standalone).
  *
  * The pepper is a secret that differs per environment, so it is not baked into the build. This
  * component sets it as the `WEBINY_HASHING_PEPPER` env var for `webiny watch` and `webiny serve`; a

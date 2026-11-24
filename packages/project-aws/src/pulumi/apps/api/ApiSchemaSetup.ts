@@ -8,7 +8,7 @@ import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem
 import { WEB_FUNCTION_RDS_CA_CERTS } from "~/extensions/Postgres/rdsCaBundle.js";
 import { ApiGraphql } from "./ApiGraphql.js";
 
-/* The event `@webiny/api-runtime-aws-pg` answers with the schema setup. */
+/* The event `@webiny/api-composition-aws-pg` answers with the schema setup. */
 export const SQL_SCHEMA_SETUP_EVENT = "WebinySqlSchemaSetup";
 
 export const ApiSchemaSetupLambdaName = "schema-setup";

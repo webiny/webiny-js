@@ -13,7 +13,7 @@ export interface ICdnCache {
 
 /**
  * The CDN cache in front of the API, if the deployment has one. AWS caches API responses in
- * CloudFront, and `@webiny/api-runtime-aws` supplies the implementation that invalidates them.
+ * CloudFront, and `@webiny/api-composition-aws` supplies the implementation that invalidates them.
  * Standalone has no CDN, so it keeps the default, which has nothing to invalidate.
  *
  * Invalidating is a side effect of a write that has already succeeded, so `invalidate` never

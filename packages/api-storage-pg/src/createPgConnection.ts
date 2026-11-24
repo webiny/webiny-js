@@ -37,7 +37,7 @@ export interface CreatePgConnectionOptions {
  * env vars `<Infra.Postgres>` sets, with explicit options taking precedence. A connection string
  * (`WEBINY_PG_CONNECTION_STRING` or `options.connection.connectionString`) is enough on its own:
  * node-postgres reads host, port, user, password and database from it. On AWS Lambda, use
- * `createLambdaPgConnection` (`@webiny/api-runtime-aws-pg`) instead.
+ * `createLambdaPgConnection` (`@webiny/api-composition-aws-pg`) instead.
  */
 export function createPgConnection(options: CreatePgConnectionOptions = {}): Knex {
     const env = readPgConnectionEnv();

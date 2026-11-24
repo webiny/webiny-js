@@ -1,7 +1,7 @@
 /**
  * DI-native API GraphQL handler (DynamoDB storage).
  *
- * The composition root lives in @webiny/api-runtime-aws-ddb (`createAwsDdbApiHandler`) so the wiring
+ * The composition root lives in @webiny/api-composition-aws-ddb (`createAwsDdbApiHandler`) so the wiring
  * is a real, testable package rather than template code. This file only supplies project-specific
  * extensions.
  *
@@ -14,7 +14,7 @@
 import {
     createAwsDdbApiHandler,
     createAwsDdbStreamApiHandler
-} from "@webiny/api-runtime-aws-ddb";
+} from "@webiny/api-composition-aws-ddb";
 import { extensions } from "./extensions";
 
 export const handler = createAwsDdbApiHandler({ extensions });

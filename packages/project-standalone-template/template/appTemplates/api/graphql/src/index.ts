@@ -1,7 +1,7 @@
 /**
  * DI-native API GraphQL handler — standalone hosting type (Node server, SQL storage).
  *
- * The composition root lives in @webiny/api-runtime-standalone-sql (`createSqlApiHandler`) —
+ * The composition root lives in @webiny/api-composition-standalone-sql (`createSqlApiHandler`) —
  * the same shared, transport-agnostic request stack the AWS handler uses, over the Node HTTP server
  * transport, with the self-hosted JWT identity provider. This file only supplies project-specific
  * extensions + the storage, built from its connection.
@@ -16,7 +16,7 @@
  * import the real package here so the template parses, lints, and passes dependency checks before
  * substitution.
  */
-import { createSqlApiHandler } from "@webiny/api-runtime-standalone-sql";
+import { createSqlApiHandler } from "@webiny/api-composition-standalone-sql";
 import { __WEBINY_DB_CONNECTION__ } from "@webiny/api-storage-sqlite";
 import { __WEBINY_STORAGE__ } from "@webiny/api-storage-sqlite";
 import { extensions } from "./extensions";
