@@ -8,7 +8,6 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { GetPublishedEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedEntriesByIds";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry";
-import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry";
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IScheduledActionPayload } from "~/types.js";
@@ -20,9 +19,8 @@ import { extractModelIdFromNamespace } from "~/utils/namespace.js";
  * Handles the "Publish" action for CMS entries with namespace pattern: Cms/Entry/{modelId}
  *
  * Publishing logic:
- * 1. If entry is not published -> publish it
- * 2. If the same revision is already published -> republish it
- * 3. If a different revision is published -> unpublish old, publish new
+ * 1. If the same revision is already published -> republish it
+ * 2. Otherwise -> publish it (storage marks the previously published revision as unpublished)
  */
 class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface {
     constructor(
@@ -30,7 +28,6 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
         private getPublishedEntriesByIdsUseCase: GetPublishedEntriesByIdsUseCase.Interface,
         private publishEntryUseCase: PublishEntryUseCase.Interface,
-        private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private republishEntryUseCase: RepublishEntryUseCase.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
@@ -93,23 +90,9 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         const [publishedTargetEntry] = publishedEntriesResult.value;
 
         /**
-         * Scenario 1: Entry has no published revision -> publish it
+         * Target revision is already published -> republish it.
          */
-        if (!publishedTargetEntry) {
-            const publishResult = await this.publishEntryUseCase.execute<
-                IScheduledAction<IScheduledActionPayload>
-            >(model, targetEntry.id);
-            if (publishResult.isFail()) {
-                console.error(`Failed to publish entry "${action.targetId}":`, publishResult.error);
-                throw new Error(`Failed to publish entry: ${action.targetId}`);
-            }
-            return;
-        }
-
-        /**
-         * Scenario 2: Target entry is already published (same revision) -> republish it
-         */
-        if (publishedTargetEntry.id === targetEntry.id) {
+        if (publishedTargetEntry?.id === targetEntry.id) {
             const republishResult = await this.republishEntryUseCase.execute(model, targetEntry.id);
             if (republishResult.isFail()) {
                 console.error(
@@ -122,19 +105,12 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         }
 
         /**
-         * Scenario 3: A different revision is published -> unpublish old, publish new
+         * No revision or a different revision is published -> publish the target revision.
+         *
+         * Do not unpublish the currently published revision first. Publishing marks the previously
+         * published revision as unpublished in the same storage write. A separate unpublish leaves
+         * the entry with no published revision when the publish fails.
          */
-        const unpublishResult = await this.unpublishEntryUseCase.execute<
-            IScheduledAction<IScheduledActionPayload>
-        >(model, publishedTargetEntry.id);
-        if (unpublishResult.isFail()) {
-            console.error(
-                `Failed to unpublish old revision "${publishedTargetEntry.id}":`,
-                unpublishResult.error
-            );
-            throw new Error(`Failed to unpublish old revision: ${publishedTargetEntry.id}`);
-        }
-
         const publishResult = await this.publishEntryUseCase.execute<
             IScheduledAction<IScheduledActionPayload>
         >(model, targetEntry.id);
@@ -152,7 +128,6 @@ export const PublishEntryActionHandler = ScheduledActionHandler.createImplementa
         GetEntryByIdUseCase,
         GetPublishedEntriesByIdsUseCase,
         PublishEntryUseCase,
-        UnpublishEntryUseCase,
         RepublishEntryUseCase,
         IdentityContext
     ]
