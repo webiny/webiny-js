@@ -111,6 +111,7 @@ export const targetContext: TargetContext = {
     folder: { id: "folder-1", type: "cms:article" },
     modelId: "article",
     title: "Article 1",
+    contentTypeName: "Article",
     author: { id: "user-requester", displayName: "Rita Requester" }
 };
 

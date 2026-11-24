@@ -109,7 +109,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
     async listReviews(params: ListReviewsGatewayParams): Promise<ReviewListResultDto> {
         const appGateway = this.forApp(params.app);
         const envelope = await appGateway.listReviews({
-            list: params.list,
+            scope: params.scope,
             where: params.where,
             sort: params.sort,
             limit: params.limit,

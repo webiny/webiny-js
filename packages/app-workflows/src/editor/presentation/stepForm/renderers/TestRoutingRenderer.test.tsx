@@ -75,8 +75,18 @@ vi.mock("~/components/picker/WorkflowPicker.js", async () => {
     };
 });
 
-const IVAN: WorkflowUserSummary = { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"] };
-const ANA: WorkflowUserSummary = { id: "user-2", displayName: "Ana Kovac", teamIds: ["team-2"] };
+const IVAN: WorkflowUserSummary = {
+    id: "user-1",
+    displayName: "Ivan Horvat",
+    teamIds: ["team-1"],
+    teams: []
+};
+const ANA: WorkflowUserSummary = {
+    id: "user-2",
+    displayName: "Ana Kovac",
+    teamIds: ["team-2"],
+    teams: []
+};
 const CAMPAIGNS: AppFolder = { id: "f1", path: "/Campaigns" };
 const PARTNERS: AppFolder = { id: "f2", path: "/Partners" };
 const ARCHIVE: AppFolder = { id: "f3", path: "/Campaign archive/2025" };

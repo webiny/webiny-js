@@ -141,7 +141,7 @@ describe("copyPgRuntimeModules", () => {
 
         await expect(
             copyPgRuntimeModules({ resolveFrom: graphql, buildDir: path.join(graphql, "build") })
-        ).rejects.toThrow("@webiny/api-event-handler-aws-pg");
+        ).rejects.toThrow("<Infra.AuroraPostgres /> needs @webiny/api-event-handler-aws-pg");
     });
 
     it("gives the build a knex that loads the pg driver, with the repo's real packages", async () => {

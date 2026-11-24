@@ -219,7 +219,7 @@ describe("CMS editor model list wrapper", () => {
         expect(workflowsResult.error.code).toBe("Workflows/Workflow/Persistence");
     });
 
-    it("does not list the workflows for an empty page", async () => {
+    it("lists the workflows even for an empty page, because the filter needs them", async () => {
         await createScenario();
         const editor = await createModelsContext({
             identity: EDITOR,
@@ -227,12 +227,41 @@ describe("CMS editor model list wrapper", () => {
             legacyPlugins: [failListWorkflows]
         });
 
-        const noMatch = expectOk(await listModels(editor, { search: "nothing-matches" }));
-        const withMatch = await listModels(editor, { search: "author" });
+        const noMatch = await listModels(editor, { search: "nothing-matches" });
 
-        expect(noMatch).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
-        // The failing workflow list is reached only by a page with rows.
-        expect(withMatch.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(noMatch.error.code).toBe("Workflows/Workflow/Persistence");
+    });
+
+    it("filters by hasWorkflow before paging", async () => {
+        await createScenario();
+        const editor = await createModelsContext({
+            identity: EDITOR,
+            permissions: EDITOR_PERMISSIONS
+        });
+
+        const all = expectOk(await listModels(editor, { hasWorkflow: null }));
+        const unset = expectOk(await listModels(editor));
+        const withWorkflow = expectOk(await listModels(editor, { hasWorkflow: true }));
+        const without = expectOk(await listModels(editor, { hasWorkflow: false }));
+        const firstWithout = expectOk(await listModels(editor, { hasWorkflow: false, limit: 1 }));
+        const secondWithout = expectOk(
+            await listModels(editor, {
+                hasWorkflow: false,
+                limit: 1,
+                after: firstWithout.meta.cursor
+            })
+        );
+
+        expect(all.items).toHaveLength(4);
+        expect(unset.items).toHaveLength(4);
+        expect(withWorkflow.items.map(row => row.modelId)).toEqual(["author", "book"]);
+        expect(withWorkflow.items.every(row => row.workflow !== null)).toBe(true);
+        expect(without.items.map(row => row.modelId)).toEqual(["article", "termEntry"]);
+        expect(without.items.every(row => row.workflow === null)).toBe(true);
+        expect(firstWithout.items.map(row => row.modelId)).toEqual(["article"]);
+        expect(firstWithout.meta.hasMoreItems).toBe(true);
+        expect(secondWithout.items.map(row => row.modelId)).toEqual(["termEntry"]);
+        expect(secondWithout.meta).toEqual({ cursor: null, hasMoreItems: false });
     });
 
     it("guards the limit: not finite is 20, fractions floor, the range is 1 to 100", async () => {

@@ -32,6 +32,15 @@ export interface ReviewRepositoryByTargetsParams {
 }
 
 /**
+ * The reviews that involve one user (B7), any of: the requester, a current candidate team shared
+ * with `teamIds` (left out when empty), or the owner of a step.
+ */
+export interface ReviewRepositoryListInvolvedUser {
+    userId: string;
+    teamIds: string[];
+}
+
+/**
  * Storage pre-filter of the review lists (R91). Keys combine with AND; omitted keys do not
  * restrict. `ListReviewsUseCase` checks every condition again in code on the primary row (R18).
  */
@@ -44,19 +53,36 @@ export interface ReviewRepositoryListWhere {
     isActive?: boolean;
     state?: ReviewState;
     currentStepState?: StepState;
+    currentStepState_not?: StepState;
     currentOwnerId?: string;
     currentOwnerId_not?: string;
+    /** `true`: the current step has a user owner (`currentOwnerId` is not `null`). */
+    hasCurrentOwner?: true;
     /** Any shared team; an empty list matches nothing and is answered without a query. */
     currentCandidateTeamIds_in?: string[];
     currentStepType_in?: string[];
     /** The requester's id (stored as `requester.id`). */
     requesterId?: string;
     requesterId_not?: string;
+    /**
+     * Some step has an owner with this id (`steps.owner.id`), the current one included. The owner
+     * type is not filtered: `ListReviewsUseCase` keeps only `user` owners in code (B9).
+     */
+    stepOwnerId?: string;
+    /** Only the reviews that involve this user (B7). */
+    involvedUser?: ReviewRepositoryListInvolvedUser;
     title_contains?: string;
     /** Changed at or after this time (ISO); where an ascending list cursor resumes. */
     lastChangedOn_gte?: string;
     /** Changed at or before this time (ISO); where a descending list cursor resumes. */
     lastChangedOn_lte?: string;
+    /**
+     * Title sort key (trimmed, lower-cased title) at or after this value; where an ascending title
+     * cursor resumes. A row stored before the key existed has none and is left out.
+     */
+    titleSortKey_gte?: string;
+    /** Title sort key at or before this value; where a descending title cursor resumes. */
+    titleSortKey_lte?: string;
     /** Review ids to leave out; the rows a list cursor already examined at its time. */
     id_not_in?: string[];
 }
@@ -144,6 +170,7 @@ export namespace ReviewRepository {
     export type ByTargetParams = ReviewRepositoryByTargetParams;
     export type ByTargetsParams = ReviewRepositoryByTargetsParams;
     export type ListWhere = ReviewRepositoryListWhere;
+    export type ListInvolvedUser = ReviewRepositoryListInvolvedUser;
     export type ListParams = ReviewRepositoryListParams;
     export type ListResult = ReviewRepositoryListResult;
 }

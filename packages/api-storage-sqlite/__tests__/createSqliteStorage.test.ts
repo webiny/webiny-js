@@ -11,7 +11,7 @@ import {
     type ISqlSchemaSetupRequest
 } from "@webiny/api-core-sql";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 import { createSqliteStorage } from "~/index.js";
 

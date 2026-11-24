@@ -18,19 +18,17 @@ const getPulumiVersion = () => {
     return semver.clean(version!);
 };
 
+/*
+ * Each Pulumi version is downloaded once into the store's CLI folder and shared by every project
+ * that uses it. The archive is extracted into a temporary folder and renamed into place, so a project
+ * that finds the folder never sees a half-extracted CLI, even while another project is downloading it.
+ * Returns the folder that holds the `pulumi` executable.
+ */
 export default async (
-    downloadFolder: string,
+    cliFolders: string,
     beforeInstall?: () => void,
     afterInstall?: () => void
-) => {
-    if (fs.existsSync(downloadFolder)) {
-        return false;
-    }
-
-    if (typeof beforeInstall === "function") {
-        await beforeInstall();
-    }
-
+): Promise<string> => {
     const platform = os.platform();
     if (platform !== "darwin" && platform !== "linux" && platform !== "win32") {
         throw Error(
@@ -38,19 +36,47 @@ export default async (
         );
     }
 
+    const version = getPulumiVersion();
+    const filename = getDownloadFilename(version!, platform);
+    const cliFolderName = filename.replace(/\.(tar\.gz|zip)$/, "");
+    const cliFolder = path.join(cliFolders, cliFolderName);
+    const binaryFolder = path.join(cliFolder, "pulumi");
+
+    if (fs.existsSync(binaryFolder)) {
+        return binaryFolder;
+    }
+
+    if (typeof beforeInstall === "function") {
+        await beforeInstall();
+    }
+
+    fs.mkdirSync(cliFolders, { recursive: true });
+    const tempFolder = fs.mkdtempSync(`${cliFolder}.`);
     try {
-        await setupPlatform(downloadFolder, platform);
-    } catch (error) {
-        fs.rmSync(downloadFolder, { recursive: true, force: true });
-        throw error;
+        await setupPlatform(tempFolder, filename, platform);
+        moveIntoPlace(tempFolder, cliFolder);
+    } finally {
+        fs.rmSync(tempFolder, { recursive: true, force: true });
     }
 
     if (typeof afterInstall === "function") {
         await afterInstall();
     }
 
-    return true;
+    return binaryFolder;
 };
+
+function moveIntoPlace(tempFolder: string, cliFolder: string) {
+    try {
+        fs.renameSync(tempFolder, cliFolder);
+    } catch (error) {
+        // Another project downloaded the same version first.
+        const binaryFolder = path.join(cliFolder, "pulumi");
+        if (!fs.existsSync(binaryFolder)) {
+            throw error;
+        }
+    }
+}
 
 const SUPPORTED_ARCHITECTURES = ["x64", "arm64"];
 
@@ -69,9 +95,11 @@ function getDownloadFilename(version: string, platform: SupportedPlatform): stri
     }
 }
 
-async function setupPlatform(downloadFolder: string, platform: SupportedPlatform) {
-    const version = getPulumiVersion();
-    const filename = getDownloadFilename(version!, platform);
+async function setupPlatform(
+    downloadFolder: string,
+    filename: string,
+    platform: SupportedPlatform
+) {
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     const absoluteFilename = path.join(downloadFolder, filename);

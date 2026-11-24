@@ -68,6 +68,8 @@ export interface AutomationDefinition {
     // Where it may be used: `*`, `<app>.*` or exact namespace ids (D35).
     models: string[];
     settingsSchema: JsonSchema | null;
+    // The one top-level setting that identifies what the step does; null when the definition has none.
+    keySetting: string | null;
 }
 
 export interface NotificationTransport {
@@ -88,11 +90,18 @@ export interface WorkflowTeamList {
 }
 
 // A user as the editor lists one (D104): id, display name and the ids of the user's teams, no more.
+export interface WorkflowUserTeam {
+    id: string;
+    name: string;
+}
+
 export interface WorkflowUserSummary {
     id: string;
     displayName: string;
     // `[]` when the user has no team and always `[]` while teams are off (R286).
     teamIds: string[];
+    // The user's teams by name, sorted by name; a team that no longer exists is left out.
+    teams: WorkflowUserTeam[];
 }
 
 export interface WorkflowUserList {

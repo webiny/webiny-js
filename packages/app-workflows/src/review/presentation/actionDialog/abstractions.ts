@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewActionRequest } from "./ReviewActionRequest.js";
 import type { ActionDialogConfirmVariant } from "./ActionDialogConfirmVariant.js";
+import type { TargetReviewActionIcon } from "../targetReview/abstractions.js";
 
 export interface ReviewActionDialogInitParams {
     // The review's namespace; the injected use cases route by it (R347, R353).
@@ -25,9 +26,11 @@ export interface ReviewActionConflictVm {
 export interface IReviewActionDialogViewModel {
     status: "loading" | "ready" | "failed";
     title: string;
+    description: string | null;
     body: string;
     showComment: boolean;
     commentLabel: string;
+    commentDescription: string | null;
     commentRequired: boolean;
     commentPlaceholder: string;
     commentNote: string | null;
@@ -39,6 +42,7 @@ export interface IReviewActionDialogViewModel {
     notifyLabel: string | null;
     confirmLabel: string;
     confirmVariant: ActionDialogConfirmVariant;
+    confirmIcon: TargetReviewActionIcon | null;
     cancelLabel: string;
     canSubmit: boolean;
     submitting: boolean;

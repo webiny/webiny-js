@@ -2,14 +2,16 @@ import * as pulumi from "@pulumi/pulumi";
 import type { PulumiApp } from "@webiny/pulumi";
 import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem.js";
 
-/** The core stack output that carries the core's service manifests, with `<Infra.Postgres />`. */
+/**
+ * The core stack output that carries the core's service manifests, with `<Infra.AuroraPostgres />`.
+ */
 export const CORE_SERVICE_MANIFESTS_OUTPUT = "serviceManifests";
 
 export interface CoreServiceManifestParams {
     eventBus: {
         output: { arn: pulumi.Output<string>; name: pulumi.Output<string> };
     };
-    /* The primary DynamoDB table. Not in the manifest with `<Infra.Postgres />`. */
+    /* The primary DynamoDB table. Not in the manifest with `<Infra.AuroraPostgres />`. */
     dynamoDbTable?: {
         output: {
             arn: pulumi.Output<string>;
@@ -43,9 +45,9 @@ export const createCoreServiceManifest = (params: CoreServiceManifestParams): Se
 };
 
 /**
- * With `<Infra.Postgres />`: puts the core's service manifests in its stack output. The core deploys
- * before the api's schema-setup function exists, and the database is in private subnets the deploy
- * can't reach, so the api deploy passes them on to the schema setup, which stores them.
+ * With `<Infra.AuroraPostgres />`: puts the core's service manifests in its stack output. The core
+ * deploys before the api's schema-setup function exists, and the database is in private subnets the
+ * deploy can't reach, so the api deploy passes them on to the schema setup, which stores them.
  */
 export const addServiceManifestsOutput = (app: PulumiApp, manifests: ServiceManifest[]) => {
     app.addOutput(

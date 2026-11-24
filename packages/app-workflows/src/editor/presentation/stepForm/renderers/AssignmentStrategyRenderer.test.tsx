@@ -158,13 +158,16 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         });
 
         expect(screen.getByText("Let the requester pick a reviewer")).toBeDefined();
-        expect(
-            screen.getByText(
-                "The requester can choose a person from this step's eligible reviewers when requesting a review. Picks are checked again when the step is reached."
-            )
-        ).toBeDefined();
+        const hint = screen.getByText(
+            "The requester can choose a reviewer when they request a review. Picks are checked again when the step is reached."
+        );
+        expect(hint).toBeDefined();
 
         const toggle = screen.getByRole("switch");
+        // The hint sits under the label and above the switch (design order).
+        expect(
+            hint.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
         expect(toggle.getAttribute("aria-checked")).toBe("false");
 
         fireEvent.click(toggle);
@@ -179,14 +182,23 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(screen.getByRole("switch").getAttribute("aria-checked")).toBe("true");
     });
 
-    it("wraps a long strategy description inside the drawer", () => {
+    it("shows each strategy's description as the radio item description, under its name", () => {
         renderStrategy(createForm("none"));
 
         const description = screen.getByText("Takes turns across eligible team members.");
-        const card = description.parentElement as HTMLElement;
-        expect(description.classList.contains("break-words")).toBe(true);
-        expect(card.classList.contains("whitespace-normal")).toBe(true);
-        expect(card.classList.contains("min-w-0")).toBe(true);
+        const name = screen.getByText("Round-robin");
+        expect(description.previousElementSibling).toBe(name.closest("label"));
+    });
+
+    it("uses the branded switch for the requester pick", () => {
+        const form = createForm("none");
+        renderStepFormField({
+            form,
+            name: "assignment.allowManualPick",
+            Renderer: RequesterPickRenderer
+        });
+
+        expect(screen.getByRole("switch").className).toContain("data-[state=checked]:bg-primary");
     });
 
     it("starts the Strategy section without a divider, as the first section of its tab", () => {
@@ -195,7 +207,7 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(screen.queryByRole("separator")).toBeNull();
     });
 
-    it("starts the requester-pick section with a divider above the switch", () => {
+    it("starts the requester-pick section without a divider, the rules section owns the divider below it", () => {
         const form = createForm("none");
         renderStepFormField({
             form,
@@ -203,10 +215,7 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
             Renderer: RequesterPickRenderer
         });
 
-        const divider = screen.getByRole("separator");
-        const toggle = screen.getByRole("switch");
-        expect(
-            divider.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING
-        ).toBeTruthy();
+        expect(screen.getByRole("switch")).toBeDefined();
+        expect(screen.queryByRole("separator")).toBeNull();
     });
 });

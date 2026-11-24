@@ -27,6 +27,11 @@ interface DrawerProps
      * Controls rendered in the header, next to the close button.
      */
     headerActions?: React.ReactNode;
+    /**
+     * Content rendered in the header, under the title and description (for example a tab list).
+     * When set, the separator between the header and the body is not drawn.
+     */
+    headerExtra?: React.ReactNode;
     footerSeparator?: boolean;
     description?: React.ReactNode;
     children: React.ReactNode;
@@ -62,6 +67,7 @@ const DrawerBase = (props: DrawerProps) => {
                 showCloseButton,
                 headerSeparator,
                 headerActions,
+                headerExtra,
 
                 // Body props.
                 children,
@@ -108,6 +114,7 @@ const DrawerBase = (props: DrawerProps) => {
                     description,
                     showCloseButton,
                     headerActions,
+                    headerExtra,
                     separator: headerSeparator
                 },
                 bodyProps: { children, bodyPadding },

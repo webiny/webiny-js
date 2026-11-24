@@ -52,6 +52,14 @@ vi.mock("~/Components/CmsEntriesList/CmsReviewScheduleEntryAction.js", () => {
     return { CmsReviewScheduleEntryAction: () => null };
 });
 
+vi.mock("~/Components/CmsEntriesList/CmsReviewPublishEntryAction.js", () => {
+    return { CmsReviewPublishEntryAction: () => null };
+});
+
+vi.mock("~/Components/CmsEntriesList/CmsReviewBulkPublishAction.js", () => {
+    return { CmsReviewBulkPublishAction: () => null };
+});
+
 vi.mock("~/Components/ModelDelete/ModelDeleteWorkflowError.js", () => {
     return { ModelDeleteWorkflowError: () => null };
 });

@@ -244,6 +244,7 @@ export const FullExample: Story = {
                 <Tag {...args} content={"Neutral dark"} variant={"neutral-dark"} />
                 <Tag {...args} content={"Success"} variant={"success"} />
                 <Tag {...args} content={"Success light"} variant={"success-light"} />
+                <Tag {...args} content={"Warning light"} variant={"warning-light"} />
                 <Tag {...args} content={"Warning"} variant={"warning"} />
                 <Tag {...args} content={"Destructive"} variant={"destructive"} />
                 <Tag {...args} content={"Accent"} variant={"accent"} />
@@ -289,6 +290,7 @@ export const Documentation: Story = {
                 "neutral-dark",
                 "success",
                 "success-light",
+                "warning-light",
                 "warning",
                 "destructive",
                 "accent",

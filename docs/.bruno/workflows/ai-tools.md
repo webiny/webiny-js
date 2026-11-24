@@ -218,7 +218,7 @@ Runner-time reasons are in `packages/ai-powerups/src/api/features/WorkflowReview
 
 `listAiModels` logs a throwing permission read or a throwing `list()` once and answers the fixed text `Could not list the AI models.`
 
-A failed AI step shows in the failed list (D112). The requester, or a viewer with `reassign`, restarts it through the phase 5 restart; each restart is a new task and a new model cost.
+A failed AI step shows in the review lists with the state Failed (D112, D190); operators see all of them under All. The requester, or a viewer with `reassign`, restarts it through the phase 5 restart; each restart is a new task and a new model cost.
 
 The AI task is one iteration: a re-entered task fails without a second model call.
 

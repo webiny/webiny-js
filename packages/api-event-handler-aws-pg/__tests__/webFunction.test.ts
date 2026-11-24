@@ -8,9 +8,9 @@ import { storageConfig } from "~/storageConfig.js";
 import { postgresModules, startPglite } from "./startPglite.js";
 
 /**
- * The Lambda web function serves the API's HTTP routes, so on `<Infra.Postgres />` it has to run on
- * Postgres like the Lambda handlers. `startAwsPgWebApi` is `createWebinyWebApiHandler` with this
- * package's storage plus `listen`; the test builds the same server so it can close it afterwards.
+ * The Lambda web function serves the API's HTTP routes, so on `<Infra.AuroraPostgres />` it has to
+ * run on Postgres like the Lambda handlers. `startAwsPgWebApi` is `createWebinyWebApiHandler` with
+ * this package's storage plus `listen`; the test builds the same server so it can close it later.
  */
 describe("api-event-handler-aws-pg — web function", () => {
     let pglite: Awaited<ReturnType<typeof startPglite>>;

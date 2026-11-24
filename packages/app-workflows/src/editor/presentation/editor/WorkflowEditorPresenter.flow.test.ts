@@ -194,21 +194,21 @@ describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
                 {
                     type: "review",
                     label: "People",
-                    description: "Members of one or more teams review.",
+                    description: "Members of the reviewing teams approve or reject the revision.",
                     addable: true,
                     reason: null
                 },
                 {
                     type: "automation",
                     label: "Automation",
-                    description: "Runs a code-defined automation, such as Send webhook.",
+                    description: "Runs an automation, e.g. sends a webhook.",
                     addable: false,
                     reason: "No automations are available for this model."
                 },
                 {
                     type: "ai",
                     label: "AI",
-                    description: "An AI model reviews against your written instructions.",
+                    description: "An AI model checks the content and approves or rejects it.",
                     addable: true,
                     reason: null
                 }
@@ -383,10 +383,15 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
                 typeLabel: "People",
                 type: "review",
                 summary: "Editors · Team pool",
+                details: [
+                    { label: "Reviewing teams", value: "Editors" },
+                    { label: "Assignment", value: "Team pool" }
+                ],
                 description: null,
                 readOnly: false,
                 warnings: [],
                 error: null,
+                errorIndex: 0,
                 canMoveUp: false,
                 canMoveDown: false
             }

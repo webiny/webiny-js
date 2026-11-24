@@ -13,6 +13,7 @@ import { DiContainerProvider } from "@webiny/app";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { CompositionProvider } from "@webiny/react-composition";
+import { AdminUiProvider } from "@webiny/admin-ui";
 import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
 import { PageDtoMapper } from "@webiny/app-website-builder/domain/Page/index.js";
 import { PageListConfig } from "@webiny/app-website-builder/presentation/pages/PageList/configs/index.js";
@@ -26,9 +27,18 @@ import { ReviewNotificationService } from "@webiny/app-workflows/review/notifica
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import type { ReviewStateValue } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
+import type { ReviewWorkflow } from "@webiny/app-workflows/review/domain/types.js";
+import { GetBoundWorkflowUseCase } from "@webiny/app-workflows/review/useCases/getBoundWorkflow/abstractions.js";
+import { BoundWorkflowFeature } from "@webiny/app-workflows/review/presentation/boundWorkflow/feature.js";
 import { Routes } from "~/routes.js";
 import "~/types.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
+
+interface MenuItemStubProps {
+    label: string;
+    disabled?: boolean;
+    "data-testid"?: string;
+}
 
 interface SidebarItemStubProps {
     text: string;
@@ -43,10 +53,19 @@ const goToRoute = vi.hoisted(() => vi.fn());
 
 vi.mock("@webiny/app-admin", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app-admin")>();
+    const React = await import("react");
     return {
         ...actual,
         useFeatureFlags: () => ({ isEnabled: () => flags.enabled }),
-        useRouter: () => ({ goToRoute })
+        useRouter: () => ({ goToRoute }),
+        // The menu item needs the row menu around it; a button stands in for it.
+        OptionsMenuItem: (props: MenuItemStubProps) => {
+            return React.createElement(
+                "button",
+                { "data-testid": props["data-testid"], disabled: props.disabled ?? false },
+                props.label
+            );
+        }
     };
 });
 
@@ -60,6 +79,19 @@ vi.mock("@webiny/admin-ui", async importOriginal => {
     return {
         ...actual,
         Sidebar: { ...actual.Sidebar, Item: Object.assign(Item, { Icon: ItemIcon }) }
+    };
+});
+
+interface ChildrenProps {
+    children?: React.ReactNode;
+}
+
+// The permission check is the base app's; the user here may publish.
+vi.mock("@webiny/app-website-builder/presentation/security/HasPermission.js", () => {
+    return {
+        HasPermission: (props: ChildrenProps) => {
+            return props.children;
+        }
     };
 });
 
@@ -91,6 +123,8 @@ vi.mock(
 );
 
 const { Browser } = PageListConfig;
+
+const WORKFLOW = { id: "workflow-1", namespaces: ["wb.page"] } as unknown as ReviewWorkflow;
 
 const createDto = (reviewState: ReviewStateValue | null) => {
     let system = null;
@@ -129,7 +163,11 @@ const waitForActions = async () => {
     await screen.findByTestId("edit");
 };
 
-const mountRoot = (enabled: boolean, reviewState: ReviewStateValue | null) => {
+const mountRoot = (
+    enabled: boolean,
+    reviewState: ReviewStateValue | null,
+    workflow: ReviewWorkflow | null = null
+) => {
     flags.enabled = enabled;
     const container = new Container();
     container.register(BaseTableRowMapper);
@@ -137,30 +175,37 @@ const mountRoot = (enabled: boolean, reviewState: ReviewStateValue | null) => {
     container.registerInstance(FullPageCache, new ListCache<Page>("id"));
     container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
     container.registerInstance(ReviewNotificationService, { handle: vi.fn() });
+    // `ReviewServicesFeature` registers these in the app.
+    container.registerInstance(GetBoundWorkflowUseCase, {
+        execute: vi.fn<GetBoundWorkflowUseCase.Interface["execute"]>().mockResolvedValue(workflow)
+    });
+    BoundWorkflowFeature.register(container);
 
     render(
-        <DiContainerProvider container={container}>
-            <CompositionProvider>
-                <WebsiteBuilderWorkflows />
-                {/* A neutral config entry, so the page list config flushes with the flag off too. */}
-                <PageListConfig>
-                    <Browser.Sidebar.Footer name={"neutral"} element={<span />} />
-                </PageListConfig>
-                <PageListWithConfig>
-                    <SidebarFooterProbe />
-                    <PageProvider page={createDto(reviewState)}>
-                        <Browser.Page.Action
-                            name={"changeStatus"}
-                            element={<span data-testid={"change-status"} />}
-                        />
-                        <Browser.Page.Action
-                            name={"edit"}
-                            element={<span data-testid={"edit"} />}
-                        />
-                    </PageProvider>
-                </PageListWithConfig>
-            </CompositionProvider>
-        </DiContainerProvider>
+        <AdminUiProvider>
+            <DiContainerProvider container={container}>
+                <CompositionProvider>
+                    <WebsiteBuilderWorkflows />
+                    {/* A neutral config entry, so the page list config flushes with the flag off too. */}
+                    <PageListConfig>
+                        <Browser.Sidebar.Footer name={"neutral"} element={<span />} />
+                    </PageListConfig>
+                    <PageListWithConfig>
+                        <SidebarFooterProbe />
+                        <PageProvider page={createDto(reviewState)}>
+                            <Browser.Page.Action
+                                name={"changeStatus"}
+                                element={<span data-testid={"change-status"} />}
+                            />
+                            <Browser.Page.Action
+                                name={"edit"}
+                                element={<span data-testid={"edit"} />}
+                            />
+                        </PageProvider>
+                    </PageListWithConfig>
+                </CompositionProvider>
+            </DiContainerProvider>
+        </AdminUiProvider>
     );
 };
 
@@ -170,26 +215,35 @@ describe("Website Builder Change status decoration from the composition root", (
         goToRoute.mockReset();
     });
 
-    it("flag on: the action is hidden for a page whose review is in progress", async () => {
-        mountRoot(true, ReviewState.InProgress);
+    it("flag on: the action is replaced by a disabled Publish while the review is in progress", async () => {
+        mountRoot(true, ReviewState.InProgress, WORKFLOW);
 
         await waitForActions();
+        expect(await screen.findByTestId("wb.page-list.page-action.publish.blocked")).toBeTruthy();
         expect(screen.queryAllByTestId("change-status")).toHaveLength(0);
         expect(screen.queryAllByTestId("edit")).toHaveLength(1);
     });
 
     it("flag on: the action is shown for an approved review", async () => {
-        mountRoot(true, ReviewState.Approved);
+        mountRoot(true, ReviewState.Approved, WORKFLOW);
 
         await waitForActions();
-        expect(screen.queryAllByTestId("change-status")).toHaveLength(1);
+        expect(await screen.findByTestId("change-status")).toBeTruthy();
     });
 
-    it("flag on: the action is shown for a page with no review", async () => {
+    it("flag on: the action is shown for a page with no review when no workflow exists", async () => {
         mountRoot(true, null);
 
         await waitForActions();
-        expect(screen.queryAllByTestId("change-status")).toHaveLength(1);
+        expect(await screen.findByTestId("change-status")).toBeTruthy();
+    });
+
+    it("flag on: Publish is disabled for a page with no review while a workflow binds the pages", async () => {
+        mountRoot(true, null, WORKFLOW);
+
+        await waitForActions();
+        expect(await screen.findByTestId("wb.page-list.page-action.publish.blocked")).toBeTruthy();
+        expect(screen.queryAllByTestId("change-status")).toHaveLength(0);
     });
 
     it("flag off: the action is left untouched even for a review in progress", async () => {

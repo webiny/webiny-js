@@ -34,7 +34,7 @@ export const ApiOutput = createAppModule({
                 fileManagerManageLambdaRole: output["fileManagerManageLambdaRole"],
                 fileManagerManageLambdaRoleName: output["fileManagerManageLambdaRoleName"],
                 fileManagerDownloadLambdaArn: output["fileManagerDownloadLambdaArn"],
-                // Set with `<Infra.Postgres />` only.
+                // Set with `<Infra.AuroraPostgres />` only.
                 schemaSetupLambdaArn: output["schemaSetupLambdaArn"]
             };
         });

@@ -7,6 +7,7 @@ import {
     PgStorageConfig
 } from "~/features/config/abstractions.js";
 import { BuildParamsPgStorageConfig } from "~/features/config/pgStorageSettings.js";
+import { PG_CMS_DEFAULTS_BUILD_PARAM as PG_CMS_DEFAULTS_BUILD_PARAM_OF_PROJECT } from "~/project.js";
 
 /* The CMS storage config as the API resolves it, from the given build params. */
 const resolveConfig = (params: Record<string, unknown>) => {
@@ -19,9 +20,9 @@ const resolveConfig = (params: Record<string, unknown>) => {
 };
 
 describe("bitmapHints in the CMS storage config", () => {
-    it("reads the defaults from the build param `<Infra.RdsProxy enabled />` sets", () => {
-        // `@webiny/project-aws` sets it by this name (`HEADLESS_CMS_PG_DEFAULTS_BUILD_PARAM`).
-        expect(PG_CMS_DEFAULTS_BUILD_PARAM).toBe("HeadlessCmsPgDefaults");
+    it("reads the defaults from the build param `<Infra.AuroraPostgres rdsProxy />` sets", () => {
+        // `@webiny/project-extensions-aws` imports it from the `/project` entry.
+        expect(PG_CMS_DEFAULTS_BUILD_PARAM_OF_PROJECT).toBe(PG_CMS_DEFAULTS_BUILD_PARAM);
     });
 
     it("is on when nothing sets it", () => {

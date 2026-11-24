@@ -7,11 +7,10 @@ import { Separator } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as TimelineIcon } from "@webiny/icons/timeline.svg";
-import { REVIEW_ACTION_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_NOTICE_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_ICON_COLORS } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_ICONS } from "./reviewBarAppearance.js";
-import { ReviewDisabledActionButton } from "./ReviewDisabledActionButton.js";
+import { ReviewActionList } from "./ReviewActionList.js";
 import { ReviewBarFrame } from "./ReviewBarFrame.js";
 import { ReviewBarFailed } from "./ReviewBarFailed.js";
 import { ReviewBarSkeleton } from "./ReviewBarSkeleton.js";
@@ -63,7 +62,11 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
         (inlineLock && !!vm.lockText);
 
     const lockText = vm.lockText ? (
-        <Text data-role={"review-bar-lock-text"} size={"sm"} className={"min-w-0 break-words"}>
+        <Text
+            data-role={"review-bar-lock-text"}
+            size={"sm"}
+            className={"min-w-0 break-words text-neutral-strong"}
+        >
             {vm.lockText}
         </Text>
     ) : null;
@@ -114,7 +117,11 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                     className={"flex flex-wrap items-center gap-sm-plus"}
                                 >
                                     {vm.stepMeta !== null && vm.stepColor !== null ? (
-                                        <Tag content={vm.stepMeta} swatchColor={vm.stepColor} />
+                                        <Tag
+                                            variant={"neutral-light"}
+                                            content={vm.stepMeta}
+                                            swatchColor={vm.stepColor}
+                                        />
                                     ) : null}
                                     {vm.stepMeta !== null && vm.stepColor === null ? (
                                         <Text size={"sm"}>{vm.stepMeta}</Text>
@@ -126,7 +133,9 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                         />
                                     )}
                                     {vm.ownerName ? (
-                                        <Text size={"sm"}>{`Owner: ${vm.ownerName}`}</Text>
+                                        <Text size={"sm"} className={"text-neutral-strong"}>
+                                            {`Owner: ${vm.ownerName}`}
+                                        </Text>
                                     ) : null}
                                     {inlineLock ? lockText : null}
                                 </div>
@@ -137,31 +146,11 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                             data-role={"review-bar-actions"}
                             className={"flex flex-wrap items-center justify-end gap-sm"}
                         >
-                            {vm.actions.map(action => {
-                                if (action.disabledReason !== null) {
-                                    return (
-                                        <ReviewDisabledActionButton
-                                            key={action.kind}
-                                            action={action}
-                                            reason={action.disabledReason}
-                                        />
-                                    );
-                                }
-                                const ActionIcon = REVIEW_ACTION_ICONS[action.icon];
-                                return (
-                                    <Button
-                                        key={action.kind}
-                                        variant={action.emphasis}
-                                        size={"md"}
-                                        text={action.label}
-                                        icon={<ActionIcon />}
-                                        disabled={vm.busy}
-                                        onClick={() =>
-                                            presenter.openAction(action.kind, action.stepId)
-                                        }
-                                    />
-                                );
-                            })}
+                            <ReviewActionList
+                                actions={vm.actions}
+                                busy={vm.busy}
+                                onSelect={(kind, stepId) => presenter.openAction(kind, stepId)}
+                            />
                         </div>
                     </div>
                     {vm.progress && vm.progress.total > 0 && (

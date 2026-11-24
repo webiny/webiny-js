@@ -4,6 +4,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { fireEvent } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { Route } from "@webiny/app/features/router/Route.js";
@@ -15,21 +16,34 @@ import { ReviewContentReviewsRoute } from "./ReviewContentReviewsRoute.js";
 import { ReviewDashboardWidgets } from "./ReviewDashboardWidgets.js";
 
 const routeState = vi.hoisted(() => {
-    return { tab: undefined as string | undefined };
+    return { scope: undefined as string | undefined, state: undefined as string | undefined };
 });
+
+type RouteParamsUpdate = (current: Record<string, unknown>) => Record<string, unknown>;
+
+const replaceRouteParams = vi.hoisted(() => {
+    return vi.fn<(update: RouteParamsUpdate) => void>();
+});
+
+interface RouteChangeStubParams {
+    scope: string | null;
+    state: string | null;
+}
 
 interface ListViewStubProps {
     app: string;
     namespaces: string[];
     showContentType: boolean;
     contentTypeFilter: { options: unknown[] } | null;
-    initialTab?: string;
+    initialScope?: string | null;
+    initialState?: string | null;
+    onRouteChange?: (params: RouteChangeStubParams) => void;
 }
 
 interface WidgetStubProps {
     app: string;
     namespaces: string[];
-    viewAllUrl: (tab: string) => string;
+    viewAllUrl: (scope: string, state: string) => string;
 }
 
 vi.mock("@webiny/app-admin", async importOriginal => {
@@ -41,13 +55,16 @@ vi.mock("@webiny/app-admin", async importOriginal => {
         AdminConfig: stub.AdminConfig,
         AdminLayout: stub.AdminLayout,
         useRoute: () => {
-            return { route: { params: { tab: routeState.tab } } };
+            return {
+                route: { params: { scope: routeState.scope, state: routeState.state } },
+                replaceRouteParams
+            };
         },
         useRouter: () => {
             return {
-                getLink: (route: { path: string }, params?: { tab: string }) => {
+                getLink: (route: { path: string }, params?: { scope: string; state: string }) => {
                     if (params) {
-                        return `${route.path}?tab=${params.tab}`;
+                        return `${route.path}?scope=${params.scope}&state=${params.state}`;
                     }
                     return route.path;
                 }
@@ -69,14 +86,22 @@ vi.mock("~/review/presentation/reviewList/components/ReviewListView.js", async (
     const React = await import("react");
     return {
         ReviewListView: (props: ListViewStubProps) => {
-            return React.createElement("div", {
-                "data-testid": "list-view",
-                "data-app": props.app,
-                "data-namespaces": props.namespaces.join(","),
-                "data-show-content-type": String(props.showContentType),
-                "data-has-filter": String(props.contentTypeFilter !== null),
-                "data-initial-tab": props.initialTab ?? ""
-            });
+            return React.createElement(
+                "div",
+                {
+                    "data-testid": "list-view",
+                    "data-app": props.app,
+                    "data-namespaces": props.namespaces.join(","),
+                    "data-show-content-type": String(props.showContentType),
+                    "data-has-filter": String(props.contentTypeFilter !== null),
+                    "data-initial-scope": props.initialScope ?? "",
+                    "data-initial-state": props.initialState ?? ""
+                },
+                React.createElement("button", {
+                    "data-testid": "route-change",
+                    onClick: () => props.onRouteChange?.({ scope: "pool", state: "all" })
+                })
+            );
         }
     };
 });
@@ -89,7 +114,7 @@ vi.mock("~/review/presentation/reviewWidget/components/ReviewForMeWidget.js", as
                 "data-testid": "for-me",
                 "data-app": props.app,
                 "data-namespaces": props.namespaces.join(","),
-                "data-url": props.viewAllUrl("pool")
+                "data-url": props.viewAllUrl("pool", "inReview")
             });
         }
     };
@@ -102,7 +127,7 @@ vi.mock("~/review/presentation/reviewWidget/components/ReviewMyRequestsWidget.js
             return React.createElement("div", {
                 "data-testid": "my-requests",
                 "data-app": props.app,
-                "data-url": props.viewAllUrl("myRequests")
+                "data-url": props.viewAllUrl("myRequests", "all")
             });
         }
     };
@@ -124,7 +149,9 @@ const contentTypes = (
 
 describe("ReviewContentReviewsRoute", () => {
     beforeEach(() => {
-        routeState.tab = undefined;
+        routeState.scope = undefined;
+        routeState.state = undefined;
+        replaceRouteParams.mockClear();
     });
 
     it("registers the route with the title, the breadcrumb and the shared list view", () => {
@@ -155,7 +182,7 @@ describe("ReviewContentReviewsRoute", () => {
         expect(view.getAttribute("data-namespaces")).toBe("cms.article,cms.press");
         expect(view.getAttribute("data-show-content-type")).toBe("true");
         expect(view.getAttribute("data-has-filter")).toBe("true");
-        expect(view.getAttribute("data-initial-tab")).toBe("");
+        expect(view.getAttribute("data-initial-scope")).toBe("");
     });
 
     it("shows a loader instead of the list while the content types load", () => {
@@ -192,39 +219,9 @@ describe("ReviewContentReviewsRoute", () => {
         expect(view.getAttribute("data-has-filter")).toBe("false");
     });
 
-    it("opens the tab named by the route parameter and ignores an unknown one", () => {
-        routeState.tab = "pool";
-        const first = render(
-            <ReviewContentReviewsRoute
-                route={route}
-                app={"cms"}
-                rowProvider={rowProvider}
-                showContentType={true}
-                contentTypes={contentTypes(["cms.article"])}
-                breadcrumbName="cms.content-reviews"
-            />
-        );
-        expect(screen.getByTestId("list-view").getAttribute("data-initial-tab")).toBe("pool");
-        first.unmount();
-
-        routeState.tab = "failedSteps";
-        const second = render(
-            <ReviewContentReviewsRoute
-                route={route}
-                app={"cms"}
-                rowProvider={rowProvider}
-                showContentType={true}
-                contentTypes={contentTypes(["cms.article"])}
-                breadcrumbName="cms.content-reviews"
-            />
-        );
-        // The route parses the tab; the list presenter decides whether the viewer may open it.
-        expect(screen.getByTestId("list-view").getAttribute("data-initial-tab")).toBe(
-            "failedSteps"
-        );
-        second.unmount();
-
-        routeState.tab = "nonsense";
+    it("replaces the scope and state in the route query when the list changes them", () => {
+        routeState.scope = "assignedToMe";
+        routeState.state = "inReview";
         render(
             <ReviewContentReviewsRoute
                 route={route}
@@ -235,7 +232,56 @@ describe("ReviewContentReviewsRoute", () => {
                 breadcrumbName="cms.content-reviews"
             />
         );
-        expect(screen.getByTestId("list-view").getAttribute("data-initial-tab")).toBe("");
+
+        fireEvent.click(screen.getByTestId("route-change"));
+
+        expect(replaceRouteParams).toHaveBeenCalledTimes(1);
+        const update = replaceRouteParams.mock.calls[0][0];
+        expect(update({ scope: "assignedToMe", state: "inReview", other: "kept" })).toEqual({
+            scope: "pool",
+            state: "all",
+            other: "kept"
+        });
+    });
+
+    it("opens the scope and state named by the route parameters and ignores unknown ones", () => {
+        const renderRoute = () => {
+            return render(
+                <ReviewContentReviewsRoute
+                    route={route}
+                    app={"cms"}
+                    rowProvider={rowProvider}
+                    showContentType={true}
+                    contentTypes={contentTypes(["cms.article"])}
+                    breadcrumbName="cms.content-reviews"
+                />
+            );
+        };
+        const initial = () => {
+            const view = screen.getByTestId("list-view");
+            return [
+                view.getAttribute("data-initial-scope"),
+                view.getAttribute("data-initial-state")
+            ];
+        };
+
+        routeState.scope = "pool";
+        routeState.state = "inReview";
+        const first = renderRoute();
+        expect(initial()).toEqual(["pool", "inReview"]);
+        first.unmount();
+
+        // The route parses the values; the list presenter decides whether the viewer may open them.
+        routeState.scope = "all";
+        routeState.state = "failed";
+        const second = renderRoute();
+        expect(initial()).toEqual(["all", "failed"]);
+        second.unmount();
+
+        routeState.scope = "failedSteps";
+        routeState.state = "awaiting";
+        renderRoute();
+        expect(initial()).toEqual(["", ""]);
     });
 });
 
@@ -265,7 +311,7 @@ describe("ReviewContentReviewsMenu", () => {
 });
 
 describe("ReviewDashboardWidgets", () => {
-    it("registers the two widgets named per prefix in the right column (R231)", () => {
+    it("registers the two widgets named per prefix in the right column, For me first (R231)", () => {
         render(
             <ReviewDashboardWidgets
                 prefix="cms"
@@ -318,10 +364,10 @@ describe("ReviewDashboardWidgets", () => {
         ).toEqual(["workflows.wb.review", "workflows.wb.requested"]);
         expect(screen.getByTestId("for-me").getAttribute("data-app")).toBe("wb");
         expect(screen.getByTestId("for-me").getAttribute("data-url")).toBe(
-            "/cms/content-reviews?tab=pool"
+            "/cms/content-reviews?scope=pool&state=inReview"
         );
         expect(screen.getByTestId("my-requests").getAttribute("data-url")).toBe(
-            "/cms/content-reviews?tab=myRequests"
+            "/cms/content-reviews?scope=myRequests&state=all"
         );
     });
 });

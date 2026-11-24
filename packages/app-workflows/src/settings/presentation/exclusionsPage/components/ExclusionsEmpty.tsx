@@ -1,25 +1,24 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
-import { ReactComponent as PersonOffIcon } from "@webiny/icons/person_off.svg";
 import type { ExclusionsEmptyVm } from "~/settings/model/list/ExclusionsEmptyVm.js";
-import { EXCLUSIONS_ADD_LABEL } from "../exclusionsCopy.js";
+import { EXCLUSIONS_CLEAR_SEARCH_LABEL } from "../exclusionsCopy.js";
 
 export interface ExclusionsEmptyProps {
     empty: ExclusionsEmptyVm;
-    onAdd(): void;
+    onClearSearch(): void;
 }
 
-// The empty states of R322: Add exclusion when the VM says so.
-export const ExclusionsEmpty = ({ empty, onAdd }: ExclusionsEmptyProps) => {
+// The empty states of R322: Clear search when the VM says so; Add exclusion is the toolbar's only.
+export const ExclusionsEmpty = ({ empty, onClearSearch }: ExclusionsEmptyProps) => {
     let actions: React.ReactNode = null;
-    if (empty.showAdd) {
+    if (empty.showClearSearch) {
         actions = (
             <Button
-                variant="primary"
-                text={EXCLUSIONS_ADD_LABEL}
-                icon={<PersonOffIcon />}
-                onClick={() => onAdd()}
+                variant="secondary"
+                text={EXCLUSIONS_CLEAR_SEARCH_LABEL}
+                size="sm"
+                onClick={() => onClearSearch()}
             />
         );
     }
@@ -27,9 +26,10 @@ export const ExclusionsEmpty = ({ empty, onAdd }: ExclusionsEmptyProps) => {
     return (
         <div data-testid="exclusions-empty" className="flex flex-col items-center pt-xl">
             <EmptyState
-                type="listing"
+                type="table"
+                size="sm"
                 title={empty.title}
-                description={empty.text}
+                description={empty.text ?? undefined}
                 actions={actions}
             />
         </div>

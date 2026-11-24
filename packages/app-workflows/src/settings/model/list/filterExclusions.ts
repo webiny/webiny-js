@@ -14,20 +14,12 @@ const matchesTab = (exclusion: WorkflowExclusion, tab: ExclusionTab, now: number
     return !active;
 };
 
-// The rows of a tab, then of the user filter, in the list's order (R322).
+// The rows of a tab, in the list's order (R322).
 export const filterExclusions = (
     list: WorkflowExclusion[],
     params: FilterExclusionsParams
 ): WorkflowExclusion[] => {
-    const { tab, userId, now } = params;
+    const { tab, now } = params;
 
-    return list.filter(exclusion => {
-        if (!matchesTab(exclusion, tab, now)) {
-            return false;
-        }
-        if (userId === null) {
-            return true;
-        }
-        return exclusion.userId === userId;
-    });
+    return list.filter(exclusion => matchesTab(exclusion, tab, now));
 };

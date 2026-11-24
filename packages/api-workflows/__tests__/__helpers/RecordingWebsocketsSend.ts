@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
-import {
-    WebsocketsSendToConnectionsUseCase,
-    type WebsocketsError
-} from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 import { FakeWebsocketFailure } from "./FakeWebsocketFailure.js";
 import type { WebsocketFakeMode } from "./FakeWebsocketConnections.js";
 

@@ -3,18 +3,10 @@ import type { AiTool } from "~/editor/domain/types.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import { readAiConfig } from "./readAiConfig.js";
 import { readAutomationConfig } from "./readAutomationConfig.js";
-import type { AssignmentStrategy } from "./assignment/AssignmentStrategy.js";
-import { readAssignment } from "./assignment/readAssignment.js";
+import { getAssignmentSummary } from "./getAssignmentSummary.js";
+import { getReviewTeamNames } from "./getReviewTeamNames.js";
 import { readReviewConfig } from "./readReviewConfig.js";
 import type { StepContext } from "./StepContext.js";
-
-const UNKNOWN_ITEM = "Unknown item";
-
-const STRATEGY_NAMES: Record<AssignmentStrategy, string> = {
-    none: "Team pool",
-    roundRobin: "Round-robin",
-    leastLoaded: "Least-loaded"
-};
 
 function getReviewSummary(step: EditorStep, context: StepContext): string {
     // Team names do not resolve while teams are off, so a step of an unavailable review row has none.
@@ -26,23 +18,10 @@ function getReviewSummary(step: EditorStep, context: StepContext): string {
         return "";
     }
 
-    const names = config.teams.map(id => {
-        const team = context.teams.find(item => item.id === id);
-        return team ? team.name : UNKNOWN_ITEM;
-    });
-    const parts = [names.join(" + ")];
-
-    const assignment = readAssignment(config.assignment);
-    if (assignment.strategy !== null) {
-        parts.push(STRATEGY_NAMES[assignment.strategy]);
-    }
-    const count = assignment.rules.length;
-    if (count > 0) {
-        const noun = count === 1 ? "rule" : "rules";
-        parts.push(`${count} routing ${noun}`);
-    }
-    if (assignment.allowManualPick) {
-        parts.push("requester can pick");
+    const parts = [getReviewTeamNames(step, context).join(" + ")];
+    const assignment = getAssignmentSummary(step);
+    if (assignment !== "") {
+        parts.push(assignment);
     }
 
     return parts.join(" · ");

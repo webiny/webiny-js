@@ -66,7 +66,7 @@ export const createListedUser = (
     displayName: string,
     teamIds: string[] = ["team-1"]
 ): WorkflowUserSummary => {
-    return { id, displayName, teamIds };
+    return { id, displayName, teamIds, teams: [] };
 };
 
 // An inspection where no rule matched and nobody was chosen: the step waits in the team pool.

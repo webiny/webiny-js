@@ -1,5 +1,5 @@
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import type { EventContext } from "@webiny/event-handler-core";
 import {
     WebsocketsConnectionRowsEventHandler,

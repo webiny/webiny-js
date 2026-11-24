@@ -14,6 +14,8 @@ import { DeleteReviewsOnEntriesDeleteMultiple } from "./DeleteReviewsOnEntriesDe
 import { DeleteModelBoundToWorkflowDecorator } from "./DeleteModelBoundToWorkflowDecorator.js";
 import { FullyDeleteModelBoundToWorkflowDecorator } from "./FullyDeleteModelBoundToWorkflowDecorator.js";
 import { DeleteModelTaskBoundToWorkflowDecorator } from "./DeleteModelTaskBoundToWorkflowDecorator.js";
+import { ApprovedReviewPublishRule } from "~/features/publishRule/ApprovedReviewPublishRule/ApprovedReviewPublishRule.js";
+import { RequireApprovedReviewOnSchedulePublishDecorator } from "~/features/scheduler/RequireApprovedReviewOnSchedulePublishDecorator.js";
 
 /**
  * Workflow handlers on CMS events (spec 9.2). The single handlers cover every CMS model with a
@@ -26,6 +28,10 @@ export const CmsHooksFeature = createFeature({
         // publish no CMS entry events and have their own handlers.
         container.register(NullReviewStateOnRevisionCreate);
         container.register(BlockUpdateWhileInReview);
+
+        // The publish rule, shared by the publish hooks and the scheduler guards (also the Website
+        // Builder ones).
+        container.register(ApprovedReviewPublishRule);
 
         // `cms.*` adapter rules (public CMS models only, R52)
         container.register(RequireApprovedReviewOnPublish);
@@ -47,5 +53,9 @@ export const CmsHooksFeature = createFeature({
         container.registerDecorator(DeleteModelBoundToWorkflowDecorator);
         container.registerDecorator(FullyDeleteModelBoundToWorkflowDecorator);
         container.registerDecorator(DeleteModelTaskBoundToWorkflowDecorator);
+
+        // Scheduling a publish needs what publishing needs; without the scheduler nothing is
+        // decorated.
+        container.registerDecorator(RequireApprovedReviewOnSchedulePublishDecorator);
     }
 });

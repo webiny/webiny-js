@@ -4,7 +4,7 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { ApiCoreStorageOperationsFactory } from "@webiny/api-core";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { GetCredentialByEmailStorageOperation } from "@webiny/self-hosted-auth";
 
 type Storages = [string, Abstraction<unknown>][];

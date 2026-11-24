@@ -24,7 +24,12 @@ import { UpdateWorkflowSettingsUseCase } from "~/settings/useCases/updateWorkflo
 
 const TRANSPORT_ALERT = "The server did not respond, so nothing was changed. Try again.";
 
-const BEN_NAME: ExclusionUserName = { userId: "user-ben", label: "Ben Babić", state: "found" };
+const BEN_NAME: ExclusionUserName = {
+    userId: "user-ben",
+    label: "Ben Babić",
+    state: "found",
+    teamNames: []
+};
 
 interface RemoveSetup {
     presenter: RemoveExclusionDialogPresenter.Interface;
@@ -94,7 +99,7 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
 
     it("explains that removing a deleted user's entry changes nothing else (QBZ-91)", () => {
         openRemove(setup, "user-ben", [
-            { userId: "user-ben", label: "Deleted user", state: "deleted" }
+            { userId: "user-ben", label: "Deleted user", state: "deleted", teamNames: [] }
         ]);
 
         expect(setup.presenter.vm.body).toBe(

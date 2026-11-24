@@ -7,12 +7,14 @@ import { waitFor } from "@testing-library/react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { CmsEntryReviewScheduleMenuItem } from "./CmsEntryReviewScheduleMenuItem.js";
 import { renderEditorTree } from "~/testing/renderEditorTree.js";
+import { createEntry } from "~/testing/createEntry.js";
 import { APPROVED } from "~/testing/reviewStates.js";
 import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
 import { BOUND_UNPUBLISHED } from "~/testing/reviewStates.js";
 import { IN_REVIEW } from "~/testing/reviewStates.js";
 import { LOADING } from "~/testing/reviewStates.js";
 import { NO_WORKFLOW } from "~/testing/reviewStates.js";
+import { REJECTED } from "~/testing/reviewStates.js";
 
 const { Actions } = ContentEntryEditorConfig;
 
@@ -52,12 +54,22 @@ describe("CmsEntryReviewScheduleMenuItem", () => {
     it.each([
         ["a bound workflow and no review", BOUND_NO_REVIEW],
         ["a review in progress", IN_REVIEW],
+        ["a rejected review", REJECTED],
         ["an unknown status", LOADING]
     ])("hides schedule, and only schedule, for %s", async (_name, reviewVm) => {
         renderMenu({ reviewVm });
 
         expect(await screen.findByTestId("delete-item")).toBeTruthy();
         await waitFor(() => expect(screen.queryByTestId("schedule-item")).toBeNull());
+    });
+
+    it.each([
+        ["a bound workflow and no review", BOUND_NO_REVIEW],
+        ["an unknown status", LOADING]
+    ])("keeps Schedule unpublish of a published entry for %s", async (_name, reviewVm) => {
+        renderMenu({ formVm: { entry: createEntry({ status: "published" }) }, reviewVm });
+
+        expect(await screen.findByTestId("schedule-item")).toBeTruthy();
     });
 
     it("keeps schedule for a new entry", async () => {

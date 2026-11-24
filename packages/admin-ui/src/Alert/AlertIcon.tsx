@@ -16,11 +16,13 @@ const VARIANT_ICON_MAP = {
 const alertIconVariants = cva("size-md", {
     variants: {
         type: { info: "", success: "", warning: "", danger: "" },
-        variant: { strong: "", subtle: "" }
+        variant: { strong: "", subtle: "" },
+        size: { md: "", sm: "size-md" }
     },
     defaultVariants: {
         type: "info",
-        variant: "subtle"
+        variant: "subtle",
+        size: "md"
     },
     compoundVariants: [
         { type: "info", variant: "strong", className: "fill-neutral-base" },
@@ -35,7 +37,7 @@ const alertIconVariants = cva("size-md", {
 });
 
 export const AlertIcon = () => {
-    const { icon, type, variant } = useAlertProps();
+    const { icon, type, variant, size } = useAlertProps();
     if (icon === null) {
         return null;
     }
@@ -51,7 +53,7 @@ export const AlertIcon = () => {
             <Icon
                 label={"Alert icon"}
                 icon={iconElement}
-                className={alertIconVariants({ type, variant })}
+                className={alertIconVariants({ type, variant, size })}
             />
         </div>
     );

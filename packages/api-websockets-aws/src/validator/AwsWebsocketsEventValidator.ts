@@ -1,5 +1,6 @@
 import zod from "zod";
-import { WebsocketsEventValidator, WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsEventValidator } from "@webiny/api-websockets/validator/index.js";
+import { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner.js";
 import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
 import { createZodError } from "@webiny/utils";
 

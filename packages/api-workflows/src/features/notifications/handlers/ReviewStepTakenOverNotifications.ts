@@ -44,12 +44,16 @@ class ReviewStepTakenOverNotificationsImpl implements ReviewStepTakenOverEventHa
                 review,
                 stepId: step.id,
                 event: "takenOver",
-                recipients,
-                message: buildTakenOverMessage({
-                    contentTitle: review.title,
-                    stepTitle: step.title,
-                    taker: getActorName(fact.actor, step.title)
-                })
+                deliveries: [
+                    {
+                        recipients,
+                        message: buildTakenOverMessage({
+                            contentTitle: review.title,
+                            stepTitle: step.title,
+                            taker: getActorName(fact.actor, step.title)
+                        })
+                    }
+                ]
             });
         } catch (error) {
             this.logger.error(

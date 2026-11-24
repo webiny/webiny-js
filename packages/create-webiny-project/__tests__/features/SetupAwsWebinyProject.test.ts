@@ -5,11 +5,11 @@ import os from "os";
 import { SetupAwsWebinyProject } from "~/features/CreateWebinyProject/projects/aws/SetupAwsWebinyProject.js";
 import type { CliParams } from "~/types.js";
 
-const PG_PACKAGES = [
-    "@webiny/api-aco-pg",
-    "@webiny/api-event-handler-aws-pg",
-    "@webiny/api-headless-cms-pg"
-];
+// The Postgres handlers the project's api entry imports. Only `pg` projects install them.
+const PG_HANDLER_PACKAGE = "@webiny/api-event-handler-aws-pg";
+
+// The CMS storage and the folder catalog come with `<Infra.AuroraPostgres />`, through `webiny`.
+const PG_MODULE_PACKAGES = ["@webiny/api-aco-pg", "@webiny/api-headless-cms-pg"];
 
 const createCliParams = (projectName: string, templateOptions: object): CliParams => ({
     projectName,
@@ -45,7 +45,7 @@ describe("SetupAwsWebinyProject", () => {
         fs.removeSync(projectRoot);
     });
 
-    it("writes a Postgres config and installs the Postgres packages for the `pg` option", async () => {
+    it("writes an Aurora Postgres config and installs the Postgres handlers for the `pg` option", async () => {
         const setup = new SetupAwsWebinyProject();
         const args = await setup.execute(
             createCliParams(projectRoot, { storageOps: "pg", region: "eu-central-1" })
@@ -56,18 +56,22 @@ describe("SetupAwsWebinyProject", () => {
         const config = readConfig();
         expect(config).toContain(`<Infra.Aws.DefaultRegion name={"eu-central-1"} />`);
         expect(config).toContain("<Infra.Vpc enabled={true} />");
-        expect(config).toContain("<Infra.Postgres />");
-        expect(config).toContain("<HeadlessCmsPg />");
-        expect(config).toContain("<AcoPg />");
-        expect(config).toContain(`from "@webiny/api-headless-cms-pg/project"`);
-        expect(config).toContain(`from "@webiny/api-aco-pg/project"`);
+        expect(config).toContain("<Infra.AuroraPostgres />");
+        // The RDS Proxy is a commented option.
+        expect(config).toContain("{/* <Infra.AuroraPostgres rdsProxy /> */}");
+        // `<Infra.AuroraPostgres />` brings the CMS storage and the folder catalog itself.
+        expect(config).not.toContain("HeadlessCmsPg");
+        expect(config).not.toContain("AcoPg");
+        expect(config).not.toContain("Infra.Postgres");
+        expect(config).not.toContain("RdsProxy");
         expect(config).toContain("<Cognito />");
         expect(config).not.toContain("{REGION}");
         expect(config).not.toContain("OpenSearch");
 
         const dependencies = readDependencies();
-        for (const name of PG_PACKAGES) {
-            expect(dependencies[name]).toBe("latest");
+        expect(dependencies[PG_HANDLER_PACKAGE]).toBe("latest");
+        for (const name of PG_MODULE_PACKAGES) {
+            expect(dependencies[name]).toBeUndefined();
         }
         // The AWS hosting packages are still there, and the base dependencies are kept.
         expect(dependencies["@webiny/project-aws"]).toBe("latest");
@@ -84,11 +88,11 @@ describe("SetupAwsWebinyProject", () => {
             await setup.execute(createCliParams(projectRoot, { storageOps }));
 
             const config = readConfig();
-            expect(config).not.toContain("Infra.Postgres");
+            expect(config).not.toContain("Postgres");
             expect(config).not.toContain("HeadlessCmsPg");
 
             const dependencies = readDependencies();
-            for (const name of PG_PACKAGES) {
+            for (const name of [PG_HANDLER_PACKAGE, ...PG_MODULE_PACKAGES]) {
                 expect(dependencies[name]).toBeUndefined();
             }
             expect(dependencies["@webiny/project-aws"]).toBe("latest");

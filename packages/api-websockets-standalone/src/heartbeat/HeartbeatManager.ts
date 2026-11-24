@@ -1,7 +1,7 @@
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
+import { GOING_AWAY } from "~/closeCodes.js";
 
-const STALE_CLOSE_CODE = 1001;
 const STALE_CLOSE_REASON = "Connection went stale.";
 
 /*
@@ -58,7 +58,7 @@ export class HeartbeatManager {
                 continue;
             }
             try {
-                this.adapter.close(socket, STALE_CLOSE_CODE, STALE_CLOSE_REASON);
+                this.adapter.close(socket, GOING_AWAY, STALE_CLOSE_REASON);
             } catch (error) {
                 console.error(`Failed to close stale WebSocket "${connectionId}":`, error);
             }

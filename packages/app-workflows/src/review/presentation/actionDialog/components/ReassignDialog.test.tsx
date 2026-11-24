@@ -112,6 +112,9 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         expect(
             await screen.findByText("The previous owner (if any) and the new owner are notified.")
         ).toBeTruthy();
+        expect(screen.getByText("Choose who reviews this step on “Spring campaign”.")).toBeTruthy();
+        expect(screen.getByText("New owner", { selector: "span" })).toBeTruthy();
+        expect(screen.getByPlaceholderText("Search people")).toBeTruthy();
         const confirm = screen.getByText("Reassign", { selector: "button *, button" });
         expect(confirm.closest("button")?.getAttribute("aria-disabled")).toBe("true");
         expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();

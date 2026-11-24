@@ -30,7 +30,8 @@ const WORKFLOW: ReviewWorkflow = createWorkflow({
             description: "Reads the copy.",
             type: "review",
             allowManualPick: true,
-            assignedAutomatically: false
+            assignedAutomatically: false,
+            candidateTeamNames: []
         },
         {
             id: "legal",
@@ -39,7 +40,8 @@ const WORKFLOW: ReviewWorkflow = createWorkflow({
             description: null,
             type: "review",
             allowManualPick: true,
-            assignedAutomatically: true
+            assignedAutomatically: true,
+            candidateTeamNames: []
         },
         {
             id: "tone",
@@ -48,7 +50,8 @@ const WORKFLOW: ReviewWorkflow = createWorkflow({
             description: null,
             type: "ai",
             allowManualPick: false,
-            assignedAutomatically: false
+            assignedAutomatically: false,
+            candidateTeamNames: []
         },
         {
             id: "hook",
@@ -57,7 +60,8 @@ const WORKFLOW: ReviewWorkflow = createWorkflow({
             description: null,
             type: "automation",
             allowManualPick: false,
-            assignedAutomatically: false
+            assignedAutomatically: false,
+            candidateTeamNames: []
         }
     ]
 });
@@ -181,6 +185,33 @@ describe("RequestReviewPresenter", () => {
 
         expect(setup.presenter.vm.steps[0].mode).toBe("automatic");
         expect(setup.presenter.vm.steps[0].noCandidates).toBe(true);
+        expect(setup.presenter.vm.steps[0].noCandidatesNote).toBe(
+            "Nobody other than you can review this step. Ask a workflow manager to add reviewers."
+        );
+    });
+
+    it("names the step's teams in the nobody-eligible note", async () => {
+        const [editorial, ...rest] = WORKFLOW.steps;
+        setup.getBoundWorkflow.execute.mockResolvedValue(
+            createWorkflow({
+                steps: [{ ...editorial, candidateTeamNames: ["Editors", "Legal"] }, ...rest]
+            })
+        );
+        setup.listStepCandidates.execute.mockResolvedValue([
+            {
+                id: "u1",
+                displayName: "Ivan Horvat",
+                teamNames: [],
+                excluded: true,
+                excludedReason: null
+            }
+        ]);
+
+        await setup.presenter.init(setup.params());
+
+        expect(setup.presenter.vm.steps[0].noCandidatesNote).toBe(
+            "Nobody in Editors and Legal other than you can review this step. Ask a workflow manager to add reviewers."
+        );
     });
 
     it("prefills the title with the content title", async () => {

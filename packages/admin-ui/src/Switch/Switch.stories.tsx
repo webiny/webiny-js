@@ -37,6 +37,14 @@ export const Default: Story = {
     }
 };
 
+export const Branded: Story = {
+    args: {
+        label: "Any field label",
+        variant: "branded",
+        checked: true
+    }
+};
+
 export const WithLabelRequired: Story = {
     args: {
         label: "Any field label",

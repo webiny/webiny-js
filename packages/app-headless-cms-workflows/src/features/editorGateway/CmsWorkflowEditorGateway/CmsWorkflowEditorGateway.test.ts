@@ -83,6 +83,7 @@ describe("CmsWorkflowEditorGateway", () => {
 
             const result = await gateway.listModels({
                 search: "art",
+                hasWorkflow: true,
                 limit: 20,
                 after: "cursor-1"
             });
@@ -93,9 +94,14 @@ describe("CmsWorkflowEditorGateway", () => {
             });
             expect(client.execute).toHaveBeenCalledTimes(1);
             const request = client.execute.mock.calls[0][0];
-            expect(request.variables).toEqual({ search: "art", limit: 20, after: "cursor-1" });
+            expect(request.variables).toEqual({
+                search: "art",
+                hasWorkflow: true,
+                limit: 20,
+                after: "cursor-1"
+            });
             expect(request.query).toContain(
-                "listCmsEntryWorkflowModels(search: $search, limit: $limit, after: $after)"
+                "listCmsEntryWorkflowModels(search: $search, hasWorkflow: $hasWorkflow, limit: $limit, after: $after)"
             );
             expect(request.query).toContain("meta");
             expect(request.query).toContain(ERROR_FIELDS);
@@ -106,7 +112,7 @@ describe("CmsWorkflowEditorGateway", () => {
                 cms: { listCmsEntryWorkflowModels: { data: [], meta: null, error: null } }
             });
 
-            await gateway.listModels({ search: "", limit: 20, after: null });
+            await gateway.listModels({ search: "", hasWorkflow: null, limit: 20, after: null });
 
             const query: string = client.execute.mock.calls[0][0].query;
             expect(query).toMatch(
@@ -119,10 +125,15 @@ describe("CmsWorkflowEditorGateway", () => {
                 cms: { listCmsEntryWorkflowModels: { data: [], meta: null, error: null } }
             });
 
-            await gateway.listModels({ search: "", limit: 20, after: null });
+            await gateway.listModels({ search: "", hasWorkflow: null, limit: 20, after: null });
 
             const request = client.execute.mock.calls[0][0];
-            expect(request.variables).toEqual({ search: null, limit: 20, after: null });
+            expect(request.variables).toEqual({
+                search: null,
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
         });
 
         it("answers the default meta when the server sends none", async () => {
@@ -130,7 +141,12 @@ describe("CmsWorkflowEditorGateway", () => {
                 cms: { listCmsEntryWorkflowModels: { data: [], meta: null, error: null } }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result).toEqual({
                 data: { rows: [], meta: { cursor: null, hasMoreItems: false } },
@@ -144,7 +160,12 @@ describe("CmsWorkflowEditorGateway", () => {
                 cms: { listCmsEntryWorkflowModels: { data: null, meta: null, error } }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result).toEqual({ data: null, error });
         });
@@ -154,7 +175,12 @@ describe("CmsWorkflowEditorGateway", () => {
                 cms: { listCmsEntryWorkflowModels: { data: null, meta: null, error: null } }
             });
 
-            const result = await gateway.listModels({ search: "", limit: 20, after: null });
+            const result = await gateway.listModels({
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(result).toEqual({ data: null, error: null });
         });
@@ -163,9 +189,9 @@ describe("CmsWorkflowEditorGateway", () => {
             const failure = new Error("Network down.");
             client.execute.mockRejectedValue(failure);
 
-            await expect(gateway.listModels({ search: "", limit: 20, after: null })).rejects.toBe(
-                failure
-            );
+            await expect(
+                gateway.listModels({ search: "", hasWorkflow: null, limit: 20, after: null })
+            ).rejects.toBe(failure);
         });
     });
 

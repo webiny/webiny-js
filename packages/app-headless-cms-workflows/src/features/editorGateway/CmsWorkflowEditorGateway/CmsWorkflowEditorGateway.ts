@@ -42,7 +42,12 @@ class CmsWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
             CmsOperationResponse<"listCmsEntryWorkflowModels", CmsWorkflowModelListEnvelope>
         >({
             query: LIST_CMS_ENTRY_WORKFLOW_MODELS,
-            variables: { search, limit: params.limit, after: params.after }
+            variables: {
+                search,
+                hasWorkflow: params.hasWorkflow,
+                limit: params.limit,
+                after: params.after
+            }
         });
 
         const envelope = response.cms.listCmsEntryWorkflowModels;

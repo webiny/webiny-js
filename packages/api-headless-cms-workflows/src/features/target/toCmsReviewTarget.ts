@@ -18,6 +18,8 @@ export const toCmsReviewTarget = (target: CmsEntryTargetReader.Target): ReviewTa
                     : null,
             modelId: model.modelId,
             title,
+            // Snapshotted for notifications: the model's name at request time.
+            contentTypeName: model.name,
             author: { id: entry.createdBy.id, displayName: entry.createdBy.displayName }
         }
     };

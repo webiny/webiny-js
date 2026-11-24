@@ -41,11 +41,9 @@ export const ReviewWidgetPreview = ({
         <Widget
             variant="base"
             outline
-            elevation="sm"
             title={title}
             icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
             padding="sm"
-            bodyPadding={false}
             headerActions={segment}
             footerEndActions={
                 <Widget.Action

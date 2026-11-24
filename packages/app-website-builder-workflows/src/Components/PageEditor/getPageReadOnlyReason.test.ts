@@ -9,9 +9,6 @@ import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
 const NOT_LOADED = "Read-only until the review status loads.";
 const PUBLISHED =
     "Read-only. The Website Builder only edits draft revisions. Create a new revision to make changes.";
-const APPROVED =
-    "Read-only: this revision has an approved review. Create a new revision to make changes; it needs a new review.";
-const REJECTED = "Read-only: this revision was rejected. Create a new revision to fix it.";
 
 interface ReasonCase {
     kind: FakeReviewKind;
@@ -35,12 +32,12 @@ const CASES: ReasonCase[] = [
     { kind: "inProgress", page: "draft", reason: null },
     { kind: "inProgress", page: "published", reason: PUBLISHED },
     { kind: "inProgress", page: "unpublished", reason: null },
-    { kind: "approved", page: "draft", reason: APPROVED },
+    { kind: "approved", page: "draft", reason: null },
     { kind: "approved", page: "published", reason: PUBLISHED },
-    { kind: "approved", page: "unpublished", reason: APPROVED },
-    { kind: "rejected", page: "draft", reason: REJECTED },
+    { kind: "approved", page: "unpublished", reason: null },
+    { kind: "rejected", page: "draft", reason: null },
     { kind: "rejected", page: "published", reason: PUBLISHED },
-    { kind: "rejected", page: "unpublished", reason: REJECTED }
+    { kind: "rejected", page: "unpublished", reason: null }
 ];
 
 describe("getPageReadOnlyReason", () => {

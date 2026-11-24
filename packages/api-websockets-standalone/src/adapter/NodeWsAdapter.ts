@@ -4,18 +4,13 @@ import type { Duplex } from "node:stream";
 import { WebSocketServer } from "ws";
 import { WebSocket } from "ws";
 import { WebsocketsServerAdapter } from "./abstractions.js";
+import { SERVICE_RESTART } from "~/closeCodes.js";
 
 /*
  * Clients only send small JSON envelopes (a ping carrying a token). The `ws` default is 100 MiB,
  * which any client, authenticated or not, could make the server buffer per message.
  */
 const MAX_PAYLOAD_BYTES = 64 * 1024;
-
-/*
- * Sent to every client when the server stops. 1012 means "service restart": the client reconnects,
- * and behind a load balancer it reaches a process that is still up.
- */
-const SERVICE_RESTART = 1012;
 
 // How long a client gets to answer the close before its socket is cut.
 const CLOSE_WAIT_MS = 1000;
@@ -94,9 +89,17 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
         }, this.pingInterval);
     }
 
-    public handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): void {
-        this.getWss().handleUpgrade(request, socket, head, ws => {
-            this.getWss().emit("connection", ws, request);
+    public handleUpgrade(
+        request: IncomingMessage,
+        socket: Duplex,
+        head: Buffer,
+        onOpen: (socket: WebSocket) => void
+    ): void {
+        const wss = this.getWss();
+        wss.handleUpgrade(request, socket, head, ws => {
+            // Runs the `connection` listener from `start()`, which tracks pongs for the socket.
+            wss.emit("connection", ws, request);
+            onOpen(ws);
         });
     }
 
@@ -140,12 +143,6 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
                 socket.ping();
             }
         }
-    }
-
-    public onConnection(
-        cb: (socket: WebSocket, request: import("node:http").IncomingMessage) => void
-    ): void {
-        this.getWss().on("connection", cb);
     }
 
     public onMessage(socket: WebSocket, cb: (data: Buffer) => void): void {

@@ -57,8 +57,8 @@ export const createAdminPulumiApp = async () => {
     });
 
     // `createReactPulumiApp` already adds service manifests: one set, published once (with
-    // `<Infra.Postgres />`, one invocation of the api's schema setup, with `admin` and any manifest
-    // an `AdminPulumi` extension adds).
+    // `<Infra.AuroraPostgres />`, one invocation of the api's schema setup, with `admin` and any
+    // manifest an `AdminPulumi` extension adds).
     const app = baseApp;
 
     app.addHandler(() => {

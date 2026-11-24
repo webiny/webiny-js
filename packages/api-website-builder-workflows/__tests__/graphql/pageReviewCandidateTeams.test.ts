@@ -85,9 +85,9 @@ const GET_TARGET_REVIEW = /* GraphQL */ `
 `;
 
 const LIST_REVIEWS = /* GraphQL */ `
-    query ListReviews($list: WorkflowsReviewListKind!) {
+    query ListReviews($scope: WorkflowsReviewListScope!) {
         websiteBuilder {
-            listWebsiteBuilderPageReviews(list: $list) {
+            listWebsiteBuilderPageReviews(scope: $scope) {
                 data { review { ${REVIEW} } }
                 meta { cursor hasMoreItems }
                 ${ERROR}
@@ -202,7 +202,7 @@ describe("WB review candidateTeams (R208, Q7)", () => {
             legacyPlugins: [registerTeams]
         });
 
-        const body = await reader.run(LIST_REVIEWS, { list: "pool" });
+        const body = await reader.run(LIST_REVIEWS, { scope: "pool" });
 
         const result = body.data.websiteBuilder.listWebsiteBuilderPageReviews;
         expect(result.error).toBeNull();
