@@ -1,12 +1,12 @@
-import { HandlerApp } from "@webiny/kernel-core";
-import type { HandlerSetup } from "@webiny/kernel-core";
-import { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform.js";
-import type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamHandlerPlatform.js";
+import { Kernel } from "@webiny/kernel-core";
+import type { KernelSetup } from "@webiny/kernel-core";
+import { AwsLambdaStreamKernelPlatform } from "./AwsLambdaStreamKernelPlatform.js";
+import type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamKernelPlatform.js";
 import { getAwsLambdaGlobal, isAwsLambdaStreamingRuntime } from "./streaming/awslambda.js";
 
 export interface CreateStreamLambdaHandlerOptions {
-    root: HandlerSetup;
-    child?: HandlerSetup;
+    root: KernelSetup;
+    child?: KernelSetup;
 }
 
 export type StreamLambdaHandler = (...invocation: AwsLambdaStreamInvocation) => Promise<void>;
@@ -28,10 +28,10 @@ export type StreamLambdaHandler = (...invocation: AwsLambdaStreamInvocation) => 
 export function createStreamLambdaHandler(
     options: CreateStreamLambdaHandlerOptions
 ): StreamLambdaHandler {
-    const app = HandlerApp.init({
+    const app = Kernel.init({
         root: options.root,
         child: options.child,
-        platform: AwsLambdaStreamHandlerPlatform
+        platform: AwsLambdaStreamKernelPlatform
     });
 
     const handler: StreamLambdaHandler = async (...invocation) => {

@@ -3,13 +3,13 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
-import { HandlerApp } from "~/features/events/HandlerApp.js";
-import { HandlerExecution } from "~/features/events/HandlerExecution.js";
-import { StaleHandlerExecutionError } from "~/features/events/StaleHandlerExecutionError.js";
-import { HandlerPlatform } from "~/features/events/HandlerPlatform.js";
+import { Kernel } from "~/features/events/Kernel.js";
+import { KernelExecution } from "~/features/events/KernelExecution.js";
+import { StaleKernelExecutionError } from "~/features/events/StaleKernelExecutionError.js";
+import { KernelPlatform } from "~/features/events/KernelPlatform.js";
 
 // A platform whose invocation id is the second raw argument's `requestId`, like Lambda's context.
-class SecondArgumentIdPlatform implements HandlerPlatform.Interface {
+class SecondArgumentIdPlatform implements KernelPlatform.Interface {
     bind() {}
 
     getExecutionId(rawArgs: any[]): string | undefined {
@@ -18,13 +18,13 @@ class SecondArgumentIdPlatform implements HandlerPlatform.Interface {
     }
 }
 
-const secondArgumentIdPlatform = HandlerPlatform.createImplementation({
+const secondArgumentIdPlatform = KernelPlatform.createImplementation({
     implementation: SecondArgumentIdPlatform,
     dependencies: []
 });
 
 // A platform that gives every invocation the same id, as Lambda does when it retries one.
-class RetryingPlatform implements HandlerPlatform.Interface {
+class RetryingPlatform implements KernelPlatform.Interface {
     bind() {}
 
     getExecutionId(): string {
@@ -32,7 +32,7 @@ class RetryingPlatform implements HandlerPlatform.Interface {
     }
 }
 
-const retryingPlatform = HandlerPlatform.createImplementation({
+const retryingPlatform = KernelPlatform.createImplementation({
     implementation: RetryingPlatform,
     dependencies: []
 });
@@ -51,23 +51,23 @@ const anyEventType = EventType.createImplementation({
     dependencies: []
 });
 
-describe("HandlerExecution", () => {
+describe("KernelExecution", () => {
     class ReadExecutionHandler implements EventHandler.Interface {
-        constructor(private handlerExecution: HandlerExecution.Interface) {}
+        constructor(private kernelExecution: KernelExecution.Interface) {}
 
         async execute() {
-            this.handlerExecution.assertCurrent("Test");
-            return this.handlerExecution.getId();
+            this.kernelExecution.assertCurrent("Test");
+            return this.kernelExecution.getId();
         }
     }
 
     const readExecutionHandler = EventHandler.createImplementation({
         implementation: ReadExecutionHandler,
-        dependencies: [HandlerExecution]
+        dependencies: [KernelExecution]
     });
 
     it("passes inside its own execution, with a generated id per execution", async () => {
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 container.register(anyEventType);
                 container.register(readExecutionHandler);
@@ -81,7 +81,7 @@ describe("HandlerExecution", () => {
     });
 
     it("takes its id from the platform when the platform has one", async () => {
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             platform: secondArgumentIdPlatform,
             root: container => {
                 container.register(anyEventType);
@@ -96,13 +96,13 @@ describe("HandlerExecution", () => {
     });
 
     it("tells two executions apart even when the platform gives them the same id", async () => {
-        const kept: HandlerExecution.Interface[] = [];
+        const kept: KernelExecution.Interface[] = [];
 
         class KeepFirstExecutionHandler implements EventHandler.Interface {
-            constructor(private handlerExecution: HandlerExecution.Interface) {}
+            constructor(private kernelExecution: KernelExecution.Interface) {}
 
             async execute() {
-                kept.push(this.handlerExecution);
+                kept.push(this.kernelExecution);
                 kept[0].assertCurrent("Test");
                 return kept[0].getId();
             }
@@ -110,10 +110,10 @@ describe("HandlerExecution", () => {
 
         const keepFirstExecutionHandler = EventHandler.createImplementation({
             implementation: KeepFirstExecutionHandler,
-            dependencies: [HandlerExecution]
+            dependencies: [KernelExecution]
         });
 
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             platform: retryingPlatform,
             root: container => {
                 container.register(anyEventType);
@@ -123,37 +123,37 @@ describe("HandlerExecution", () => {
 
         expect(await app.handle({})).toBe("retried-request");
         await expect(app.handle({})).rejects.toThrow(
-            'belongs to handler execution "retried-request" but was used during a later handler execution with the same id'
+            'belongs to kernel execution "retried-request" but was used during a later kernel execution with the same id'
         );
     });
 
     it("checks container setup too", async () => {
-        const kept: HandlerExecution.Interface[] = [];
+        const kept: KernelExecution.Interface[] = [];
 
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 container.register(anyEventType);
                 container.register(readExecutionHandler);
             },
             child: container => {
-                const handlerExecution = container.resolve(HandlerExecution);
-                kept.push(handlerExecution);
+                const kernelExecution = container.resolve(KernelExecution);
+                kept.push(kernelExecution);
                 kept[0].assertCurrent("Setup");
             }
         });
 
         await app.handle({});
-        await expect(app.handle({})).rejects.toThrow(StaleHandlerExecutionError);
+        await expect(app.handle({})).rejects.toThrow(StaleKernelExecutionError);
     });
 
-    it("throws when a later handler execution uses an earlier one's instance", async () => {
-        const kept: HandlerExecution.Interface[] = [];
+    it("throws when a later kernel execution uses an earlier one's instance", async () => {
+        const kept: KernelExecution.Interface[] = [];
 
         class KeepExecutionHandler implements EventHandler.Interface {
-            constructor(private handlerExecution: HandlerExecution.Interface) {}
+            constructor(private kernelExecution: KernelExecution.Interface) {}
 
             async execute() {
-                kept.push(this.handlerExecution);
+                kept.push(this.kernelExecution);
                 kept[0].assertCurrent("Test");
                 return "ok";
             }
@@ -161,10 +161,10 @@ describe("HandlerExecution", () => {
 
         const keepExecutionHandler = EventHandler.createImplementation({
             implementation: KeepExecutionHandler,
-            dependencies: [HandlerExecution]
+            dependencies: [KernelExecution]
         });
 
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 container.register(anyEventType);
                 container.register(keepExecutionHandler);
@@ -172,6 +172,6 @@ describe("HandlerExecution", () => {
         });
 
         expect(await app.handle({})).toBe("ok");
-        await expect(app.handle({})).rejects.toThrow(StaleHandlerExecutionError);
+        await expect(app.handle({})).rejects.toThrow(StaleKernelExecutionError);
     });
 });

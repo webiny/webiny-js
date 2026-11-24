@@ -1,6 +1,6 @@
 import http from "node:http";
 import type { Container } from "@webiny/di";
-import { HandlerPlatform } from "@webiny/kernel-core";
+import { KernelPlatform } from "@webiny/kernel-core";
 
 /**
  * The header Lambda sets on every request it forwards to a web function's HTTP server. Lambda
@@ -16,7 +16,7 @@ const REQUEST_ID_HEADER = "lambda-web-request-id";
  * Events dispatched through `EventDispatcher` are executions too, and get a generated id: they are
  * not requests, so they have no header to read.
  */
-class LambdaWebHandlerPlatformImpl implements HandlerPlatform.Interface {
+class LambdaWebKernelPlatformImpl implements KernelPlatform.Interface {
     bind(_container: Container, _rawArgs: any[]): void {}
 
     getExecutionId(rawArgs: any[]): string | undefined {
@@ -33,7 +33,7 @@ class LambdaWebHandlerPlatformImpl implements HandlerPlatform.Interface {
     }
 }
 
-export const LambdaWebHandlerPlatform = HandlerPlatform.createImplementation({
-    implementation: LambdaWebHandlerPlatformImpl,
+export const LambdaWebKernelPlatform = KernelPlatform.createImplementation({
+    implementation: LambdaWebKernelPlatformImpl,
     dependencies: []
 });

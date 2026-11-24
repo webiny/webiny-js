@@ -6,10 +6,10 @@ import type { Container } from "@webiny/di";
  * Lambda, `[event, context]`). Declaring it as a named tuple keeps the argument order in one type
  * that the platform and its handler factory both use.
  */
-export interface IHandlerPlatform<TArgs extends any[] = any[]> {
+export interface IKernelPlatform<TArgs extends any[] = any[]> {
     /**
      * Registers the platform's raw invocation arguments (the AWS Lambda event and context, for
-     * example) into the handler execution's container, before the execution's own setup runs.
+     * example) into the kernel execution's container, before the execution's own setup runs.
      * The event to dispatch is always `rawArgs[0]`; a platform never changes it.
      */
     bind(container: Container, rawArgs: TArgs): void | Promise<void>;
@@ -24,12 +24,12 @@ export interface IHandlerPlatform<TArgs extends any[] = any[]> {
 }
 
 /**
- * The platform a handler app runs on: what turns one platform invocation into a handler execution.
- * `HandlerApp.init()` registers the implementation given as `config.platform` in its app container,
- * or `NoopHandlerPlatform` when there is none.
+ * The platform a handler app runs on: what turns one platform invocation into a kernel execution.
+ * `Kernel.init()` registers the implementation given as `config.platform` in its app container,
+ * or `NoopKernelPlatform` when there is none.
  */
-export const HandlerPlatform = new Abstraction<IHandlerPlatform>("HandlerPlatform");
+export const KernelPlatform = new Abstraction<IKernelPlatform>("KernelPlatform");
 
-export namespace HandlerPlatform {
-    export type Interface<TArgs extends any[] = any[]> = IHandlerPlatform<TArgs>;
+export namespace KernelPlatform {
+    export type Interface<TArgs extends any[] = any[]> = IKernelPlatform<TArgs>;
 }

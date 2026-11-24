@@ -143,7 +143,7 @@ return async (event: any, context: Context): Promise<any> => {
   container.registerInstance(AwsLambdaEvent, event);
   container.registerInstance(AwsLambdaContext, context);
 
-  // ... event qualification and handler execution ...
+  // ... event qualification and kernel execution ...
 };
 ```
 

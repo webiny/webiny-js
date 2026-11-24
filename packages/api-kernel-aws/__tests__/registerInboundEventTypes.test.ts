@@ -2,7 +2,7 @@
  * Guards the inbound transport wiring of the AWS Lambda handler.
  *
  * Dispatch starts by finding an event type that recognises the incoming payload. When none matches,
- * `HandlerApp` throws "No event type matched the incoming event" and the invocation fails — and
+ * `Kernel` throws "No event type matched the incoming event" and the invocation fails — and
  * because these invokers retry silently in the background, nothing surfaces in the product. Two
  * bugs of exactly this shape have shipped: WebSockets ($connect never dispatched, so server→client
  * push was dead) and EventBridge Scheduler (schedules were created and fired on time, but the

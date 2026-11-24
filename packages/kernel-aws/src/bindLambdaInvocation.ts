@@ -13,7 +13,7 @@ function createContextValue(context: Context | undefined): AwsLambdaContext.Inte
 }
 
 /**
- * Registers a Lambda invocation's event and context into a handler execution's container, for both
+ * Registers a Lambda invocation's event and context into a kernel execution's container, for both
  * Lambda handler platforms. `AwsLambdaContext` is ALWAYS registered — a `NullAwsLambdaContext` when
  * the invocation had no context — so consumers can resolve it unconditionally and branch on `isSet()`.
  */

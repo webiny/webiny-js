@@ -4,12 +4,12 @@ import { expect } from "vitest";
 import { EventHandler } from "~/features/events/EventHandler.js";
 import type { EventContext } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
-import { HandlerApp } from "~/features/events/HandlerApp.js";
-import { HandlerExecutionId } from "~/features/events/HandlerExecutionId.js";
-import { HandlerPlatform } from "~/features/events/HandlerPlatform.js";
+import { Kernel } from "~/features/events/Kernel.js";
+import { KernelExecutionId } from "~/features/events/KernelExecutionId.js";
+import { KernelPlatform } from "~/features/events/KernelPlatform.js";
 
 // A platform whose invocation id is the event's `id`.
-class EventIdPlatform implements HandlerPlatform.Interface {
+class EventIdPlatform implements KernelPlatform.Interface {
     bind() {}
 
     getExecutionId(rawArgs: any[]): string | undefined {
@@ -17,7 +17,7 @@ class EventIdPlatform implements HandlerPlatform.Interface {
     }
 }
 
-const eventIdPlatform = HandlerPlatform.createImplementation({
+const eventIdPlatform = KernelPlatform.createImplementation({
     implementation: EventIdPlatform,
     dependencies: []
 });
@@ -47,7 +47,7 @@ interface ITestEvent {
  * before and after waiting, so another execution can run in between.
  */
 class ReadIdsHandler implements EventHandler.Interface<ITestEvent> {
-    constructor(private executionId: HandlerExecutionId.Interface) {}
+    constructor(private executionId: KernelExecutionId.Interface) {}
 
     async execute(ctx: EventContext<ITestEvent>) {
         const before = this.executionId.getId();
@@ -59,11 +59,11 @@ class ReadIdsHandler implements EventHandler.Interface<ITestEvent> {
 
 const readIdsHandler = EventHandler.createImplementation({
     implementation: ReadIdsHandler,
-    dependencies: [HandlerExecutionId]
+    dependencies: [KernelExecutionId]
 });
 
 const createApp = () => {
-    return HandlerApp.init({
+    return Kernel.init({
         platform: eventIdPlatform,
         root: container => {
             container.register(anyEventType);
@@ -72,7 +72,7 @@ const createApp = () => {
     });
 };
 
-describe("HandlerExecutionId", () => {
+describe("KernelExecutionId", () => {
     it("gives each of two interleaved executions its own id", async () => {
         const app = createApp();
         let resumeFirst = () => {};
@@ -94,7 +94,7 @@ describe("HandlerExecutionId", () => {
         const app = createApp();
         const root = await app.getRootContainer();
 
-        const executionId = root.resolve(HandlerExecutionId);
+        const executionId = root.resolve(KernelExecutionId);
 
         expect(executionId.getId()).toBeUndefined();
     });

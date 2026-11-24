@@ -3,7 +3,7 @@ import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import { HttpFeature } from "@webiny/kernel-core";
 import { HttpRouteHandler } from "@webiny/kernel-core";
-import { HandlerExecution } from "@webiny/kernel-core";
+import { KernelExecution } from "@webiny/kernel-core";
 import { createHttpRouteDefinition } from "@webiny/kernel-core";
 import type { IHttpResponse } from "@webiny/kernel-core";
 import { ApiGatewayEventType, ApiGatewayHttpRouterHandler, type APIGatewayEvent } from "~/index.js";
@@ -18,10 +18,10 @@ const event = {
 } as APIGatewayEvent;
 
 class ExecutionIdRoute implements HttpRouteHandler.Interface {
-    constructor(private handlerExecution: HandlerExecution.Interface) {}
+    constructor(private kernelExecution: KernelExecution.Interface) {}
 
     async handle(): Promise<IHttpResponse> {
-        return { statusCode: 200, body: { executionId: this.handlerExecution.getId() } };
+        return { statusCode: 200, body: { executionId: this.kernelExecution.getId() } };
     }
 }
 
@@ -38,7 +38,7 @@ const createHandler = () => {
                     path: "/execution-id",
                     handler: HttpRouteHandler.createImplementation({
                         implementation: ExecutionIdRoute,
-                        dependencies: [HandlerExecution]
+                        dependencies: [KernelExecution]
                     })
                 })
             );
@@ -50,7 +50,7 @@ const readExecutionId = (body: string | undefined): string => {
     return JSON.parse(body || "{}").executionId;
 };
 
-describe("Handler execution id on Lambda", () => {
+describe("Kernel execution id on Lambda", () => {
     it("should use the Lambda invocation's own id", async () => {
         const context = { awsRequestId: "aws-request-id" } as Context;
 

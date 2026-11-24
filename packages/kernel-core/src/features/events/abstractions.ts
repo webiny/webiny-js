@@ -1,25 +1,25 @@
 import { Abstraction, Container } from "@webiny/di";
 import type { Constructor } from "@webiny/di";
-import type { HandlerPlatform } from "./HandlerPlatform.js";
-import type { HandlerSetup } from "./types.js";
+import type { KernelPlatform } from "./KernelPlatform.js";
+import type { KernelSetup } from "./types.js";
 
 /**
- * Configuration for `HandlerApp.init` — and the DI value the default lifecycle abstractions
+ * Configuration for `Kernel.init` — and the DI value the default lifecycle abstractions
  * ({@link RootContainerFactory} / {@link ChildContainerFactory}) resolve. The object passed to
  * `init` is registered as-is under this abstraction (no remapping), so the config the caller writes
  * is exactly the config the factories read.
  */
-export interface IHandlerConfig {
+export interface IKernelConfig {
     /** Set up the ROOT container (once per process). */
-    root: HandlerSetup;
+    root: KernelSetup;
     /** Set up the per-request CHILD container. */
-    child?: HandlerSetup;
+    child?: KernelSetup;
     /**
-     * The platform the app runs on: a `HandlerPlatform` implementation, registered in the app
-     * container. Defaults to `NoopHandlerPlatform`, which binds nothing and leaves the event to pass
+     * The platform the app runs on: a `KernelPlatform` implementation, registered in the app
+     * container. Defaults to `NoopKernelPlatform`, which binds nothing and leaves the event to pass
      * straight through — the plain server/HTTP behavior.
      */
-    platform?: Constructor<HandlerPlatform.Interface>;
+    platform?: Constructor<KernelPlatform.Interface>;
     /**
      * Decorate the DI-native handler app before its first use. Runs against the APP container (the
      * small container holding the lifecycle abstractions), so callers can `registerDecorator(...)`
@@ -29,17 +29,17 @@ export interface IHandlerConfig {
     app?: (container: Container) => void;
 }
 
-export const HandlerConfig = new Abstraction<IHandlerConfig>("HandlerConfig");
+export const KernelConfig = new Abstraction<IKernelConfig>("KernelConfig");
 
-export namespace HandlerConfig {
-    export type Interface = IHandlerConfig;
+export namespace KernelConfig {
+    export type Interface = IKernelConfig;
 }
 
 /**
  * Builds the ROOT container once per process and reuses it across warm invocations. Decoratable —
  * wrap it to run process-lifetime setup around the root build. `get()` is idempotent — the root is
  * built (and `config.root` run) on the first call and the same instance is returned thereafter, so a
- * transport can call it eagerly (see `HandlerApp.getRootContainer`) without rebuilding.
+ * transport can call it eagerly (see `Kernel.getRootContainer`) without rebuilding.
  */
 export interface IRootContainerFactory {
     get(): Promise<Container>;
@@ -53,7 +53,7 @@ export namespace RootContainerFactory {
 
 /**
  * Creates and sets up the per-request (child) container: spawns the child, has the
- * `HandlerPlatform` bind the raw invocation arguments into it, and runs request setup.
+ * `KernelPlatform` bind the raw invocation arguments into it, and runs request setup.
  *
  * Decoratable — this is the seam for per-request work that must run BEFORE the register/dispatch
  * flow (e.g. refreshing a project-level license so register-time checks see it). Since such work
@@ -72,22 +72,22 @@ export namespace ChildContainerFactory {
 }
 
 /**
- * Runs one handler execution: one `HandlerApp.handle()` call, whatever triggered it. The default
- * gets the root container, takes the execution id from the `HandlerPlatform` (or generates one),
+ * Runs one kernel execution: one `Kernel.handle()` call, whatever triggered it. The default
+ * gets the root container, takes the execution id from the `KernelPlatform` (or generates one),
  * opens the execution's scope, builds the execution's container inside it, and dispatches the event.
  *
  * Decoratable, to wrap a whole execution (timing, error reporting). The order of the steps inside
  * the default is what the stale-execution check relies on (the id exists before the scope opens, and
  * the container is built inside the scope), so a decorator should wrap `execute()`, not replace it.
  */
-export interface IHandlerExecutionRunner {
+export interface IKernelExecutionRunner {
     execute(rawArgs: any[]): Promise<any>;
 }
 
-export const HandlerExecutionRunner = new Abstraction<IHandlerExecutionRunner>(
-    "HandlerExecutionRunner"
+export const KernelExecutionRunner = new Abstraction<IKernelExecutionRunner>(
+    "KernelExecutionRunner"
 );
 
-export namespace HandlerExecutionRunner {
-    export type Interface = IHandlerExecutionRunner;
+export namespace KernelExecutionRunner {
+    export type Interface = IKernelExecutionRunner;
 }

@@ -5,19 +5,19 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { HandlerExecution } from "@webiny/kernel-core";
+import { KernelExecution } from "@webiny/kernel-core";
 import { HttpRouteDefinition } from "@webiny/kernel-core";
 import { HttpRouteHandler } from "@webiny/kernel-core";
 import type { IHttpResponse } from "@webiny/kernel-core";
 import { createServerHandler } from "@webiny/kernel-core/nodeHttp/index.js";
 import { NodeHttpFeature } from "@webiny/kernel-core/nodeHttp/index.js";
-import { LambdaWebHandlerPlatform } from "~/LambdaWebHandlerPlatform.js";
+import { LambdaWebKernelPlatform } from "~/LambdaWebKernelPlatform.js";
 
 class ExecutionIdRoute implements HttpRouteHandler.Interface {
-    constructor(private handlerExecution: HandlerExecution.Interface) {}
+    constructor(private kernelExecution: KernelExecution.Interface) {}
 
     async handle(): Promise<IHttpResponse> {
-        return { statusCode: 200, body: { executionId: this.handlerExecution.getId() } };
+        return { statusCode: 200, body: { executionId: this.kernelExecution.getId() } };
     }
 }
 
@@ -27,7 +27,7 @@ const definition: HttpRouteDefinition.Interface = {
     path: "/execution-id",
     handler: HttpRouteHandler.createImplementation({
         implementation: ExecutionIdRoute,
-        dependencies: [HandlerExecution]
+        dependencies: [KernelExecution]
     })
 };
 
@@ -50,13 +50,13 @@ function readExecutionId(port: number, headers: Record<string, string>): Promise
     });
 }
 
-describe("Handler execution id on a Lambda web function", () => {
+describe("Kernel execution id on a Lambda web function", () => {
     let server: http.Server;
     let port: number;
 
     beforeEach(async () => {
         server = await createServerHandler({
-            platform: LambdaWebHandlerPlatform,
+            platform: LambdaWebKernelPlatform,
             root: container => {
                 NodeHttpFeature.register(container);
                 container.registerInstance(HttpRouteDefinition, definition);

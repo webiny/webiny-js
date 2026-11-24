@@ -1,5 +1,5 @@
 import http from "node:http";
-import type { HandlerApp } from "~/index.js";
+import type { Kernel } from "~/index.js";
 import type { IHttpResponse } from "~/index.js";
 import { writeHttpResponse } from "./writeHttpResponse.js";
 import { writeErrorResponse } from "./writeErrorResponse.js";
@@ -13,7 +13,7 @@ import type { InFlightRequests } from "./InFlightRequests.js";
  * Callers own the returned server's lifecycle (`listen`, `close`), and transport add-ons such as the
  * WebSockets upgrade handler attach to it directly.
  */
-export function createNodeHttpServer(app: HandlerApp, inFlight: InFlightRequests): http.Server {
+export function createNodeHttpServer(app: Kernel, inFlight: InFlightRequests): http.Server {
     return http.createServer((req, res) => {
         inFlight.track(res);
         // Fire-and-forget: `createServer` ignores a returned promise, and every failure path is
@@ -23,7 +23,7 @@ export function createNodeHttpServer(app: HandlerApp, inFlight: InFlightRequests
 }
 
 async function handleRequest(
-    app: HandlerApp,
+    app: Kernel,
     req: http.IncomingMessage,
     res: http.ServerResponse
 ): Promise<void> {

@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { HandlerPlatform } from "@webiny/kernel-core";
+import { KernelPlatform } from "@webiny/kernel-core";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { LambdaResponseStream } from "./abstractions/LambdaResponseStream.js";
 import { LambdaResponseStreamValue } from "./abstractions/LambdaResponseStream.js";
@@ -17,10 +17,10 @@ export type AwsLambdaStreamInvocation = [
 ];
 
 /**
- * AWS Lambda response streaming: the same job as `AwsLambdaHandlerPlatform`, plus the response
+ * AWS Lambda response streaming: the same job as `AwsLambdaKernelPlatform`, plus the response
  * stream the streaming runtime supplies, which the terminal handler resolves and writes to.
  */
-class AwsLambdaStreamHandlerPlatformImpl implements HandlerPlatform.Interface<AwsLambdaStreamInvocation> {
+class AwsLambdaStreamKernelPlatformImpl implements KernelPlatform.Interface<AwsLambdaStreamInvocation> {
     bind(container: Container, rawArgs: AwsLambdaStreamInvocation): void {
         const [event, responseStream, context] = rawArgs;
         const responseStreamValue = new LambdaResponseStreamValue(responseStream);
@@ -35,7 +35,7 @@ class AwsLambdaStreamHandlerPlatformImpl implements HandlerPlatform.Interface<Aw
     }
 }
 
-export const AwsLambdaStreamHandlerPlatform = HandlerPlatform.createImplementation({
-    implementation: AwsLambdaStreamHandlerPlatformImpl,
+export const AwsLambdaStreamKernelPlatform = KernelPlatform.createImplementation({
+    implementation: AwsLambdaStreamKernelPlatformImpl,
     dependencies: []
 });

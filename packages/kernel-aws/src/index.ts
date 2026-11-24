@@ -1,15 +1,15 @@
 export { createLambdaHandler } from "./createLambdaHandler.js";
 export type { CreateLambdaHandlerOptions } from "./createLambdaHandler.js";
-export { AwsLambdaHandlerPlatform } from "./AwsLambdaHandlerPlatform.js";
-export type { AwsLambdaInvocation } from "./AwsLambdaHandlerPlatform.js";
+export { AwsLambdaKernelPlatform } from "./AwsLambdaKernelPlatform.js";
+export type { AwsLambdaInvocation } from "./AwsLambdaKernelPlatform.js";
 export { createStreamLambdaHandler } from "./createStreamLambdaHandler.js";
 export type {
     CreateStreamLambdaHandlerOptions,
     StreamLambdaHandler
 } from "./createStreamLambdaHandler.js";
-export { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform.js";
-export type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamHandlerPlatform.js";
-export { LambdaWebHandlerPlatform } from "./LambdaWebHandlerPlatform.js";
+export { AwsLambdaStreamKernelPlatform } from "./AwsLambdaStreamKernelPlatform.js";
+export type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamKernelPlatform.js";
+export { LambdaWebKernelPlatform } from "./LambdaWebKernelPlatform.js";
 export * from "./streaming/awslambda.js";
 export * from "./streaming/writeHttpResponseToStream.js";
 
@@ -21,7 +21,7 @@ export type {
     IHttpRequest,
     IHttpResponse,
     NextFunction,
-    HandlerSetup,
+    KernelSetup,
     EventContext
 } from "@webiny/kernel-core";
 export * from "./translators/apiGatewayEventToHttpRequest.js";

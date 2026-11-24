@@ -1,5 +1,5 @@
 import { HttpRouteHandler } from "@webiny/kernel-core";
-import { HandlerExecution } from "@webiny/kernel-core";
+import { KernelExecution } from "@webiny/kernel-core";
 import type { IHttpResponse } from "@webiny/kernel-core";
 import type { IHttpResponseBuilder } from "@webiny/kernel-core";
 import { Debugger } from "./abstractions.js";
@@ -104,7 +104,7 @@ class DebuggerRouteDecoratorImpl implements HttpRouteHandler.Interface {
         private readonly debuggerService: Debugger.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly logger: Logger.Interface,
-        private readonly handlerExecution: HandlerExecution.Interface,
+        private readonly kernelExecution: KernelExecution.Interface,
         private readonly decoratee: HttpRouteHandler.Interface
     ) {}
 
@@ -192,7 +192,7 @@ class DebuggerRouteDecoratorImpl implements HttpRouteHandler.Interface {
             const target: IGraphQLDeliveryTarget = {
                 type: GRAPHQL_TARGET,
                 result,
-                requestId: this.handlerExecution.getId(),
+                requestId: this.kernelExecution.getId(),
                 operations: readOperationNames(request.body),
                 /**
                  * Which endpoint this was. An Admin session talks to several (the main API and the
@@ -215,5 +215,5 @@ class DebuggerRouteDecoratorImpl implements HttpRouteHandler.Interface {
 
 export const DebuggerRouteDecorator = HttpRouteHandler.createDecorator({
     decorator: DebuggerRouteDecoratorImpl,
-    dependencies: [Debugger, IdentityContext, Logger, HandlerExecution]
+    dependencies: [Debugger, IdentityContext, Logger, KernelExecution]
 });

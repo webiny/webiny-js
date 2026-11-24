@@ -1,19 +1,19 @@
 import { randomUUID } from "node:crypto";
 import { ChildContainerFactory } from "./abstractions.js";
-import { HandlerExecutionRunner } from "./abstractions.js";
+import { KernelExecutionRunner } from "./abstractions.js";
 import { RootContainerFactory } from "./abstractions.js";
-import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
-import { HandlerPlatform } from "./HandlerPlatform.js";
+import { KernelExecutionScope } from "./KernelExecutionScope.js";
+import { KernelPlatform } from "./KernelPlatform.js";
 import { EventType } from "./EventType.js";
 import { NoMatchingEventTypeError } from "./NoMatchingEventTypeError.js";
 import { executeChain } from "./chain.js";
 
-class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
+class KernelExecutionRunnerImpl implements KernelExecutionRunner.Interface {
     constructor(
         private readonly rootContainerFactory: RootContainerFactory.Interface,
         private readonly childContainerFactory: ChildContainerFactory.Interface,
-        private readonly scope: HandlerExecutionScope.Interface,
-        private readonly platform: HandlerPlatform.Interface
+        private readonly scope: KernelExecutionScope.Interface,
+        private readonly platform: KernelPlatform.Interface
     ) {}
 
     async execute(rawArgs: any[]): Promise<any> {
@@ -49,12 +49,12 @@ class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
     }
 }
 
-export const DefaultHandlerExecutionRunner = HandlerExecutionRunner.createImplementation({
-    implementation: HandlerExecutionRunnerImpl,
+export const DefaultKernelExecutionRunner = KernelExecutionRunner.createImplementation({
+    implementation: KernelExecutionRunnerImpl,
     dependencies: [
         RootContainerFactory,
         ChildContainerFactory,
-        HandlerExecutionScope,
-        HandlerPlatform
+        KernelExecutionScope,
+        KernelPlatform
     ]
 });

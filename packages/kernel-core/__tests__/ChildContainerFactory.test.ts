@@ -3,45 +3,45 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { ChildContainerFactory } from "~/features/events/abstractions.js";
-import { HandlerConfig } from "~/features/events/abstractions.js";
+import { KernelConfig } from "~/features/events/abstractions.js";
 import { DefaultChildContainerFactory } from "~/features/events/ChildContainerFactory.js";
-import { HandlerExecutionScope } from "~/features/events/HandlerExecutionScope.js";
-import { DefaultHandlerExecutionScope } from "~/features/events/DefaultHandlerExecutionScope.js";
-import { HandlerExecution } from "~/features/events/HandlerExecution.js";
-import { NoopHandlerPlatform } from "~/features/events/NoopHandlerPlatform.js";
+import { KernelExecutionScope } from "~/features/events/KernelExecutionScope.js";
+import { DefaultKernelExecutionScope } from "~/features/events/DefaultKernelExecutionScope.js";
+import { KernelExecution } from "~/features/events/KernelExecution.js";
+import { NoopKernelPlatform } from "~/features/events/NoopKernelPlatform.js";
 
 const createAppContainer = () => {
     const appContainer = new Container();
-    appContainer.registerInstance(HandlerConfig, { root: () => {} });
-    appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
+    appContainer.registerInstance(KernelConfig, { root: () => {} });
+    appContainer.register(DefaultKernelExecutionScope).inSingletonScope();
     appContainer.register(DefaultChildContainerFactory).inSingletonScope();
-    appContainer.register(NoopHandlerPlatform).inSingletonScope();
+    appContainer.register(NoopKernelPlatform).inSingletonScope();
     return appContainer;
 };
 
 describe("ChildContainerFactory", () => {
-    it("registers the current handler execution in the container it creates", async () => {
+    it("registers the current kernel execution in the container it creates", async () => {
         const appContainer = createAppContainer();
         const factory = appContainer.resolve(ChildContainerFactory);
-        const scope = appContainer.resolve(HandlerExecutionScope);
+        const scope = appContainer.resolve(KernelExecutionScope);
         const root = new Container();
 
         const executionId = await scope.run("execution-1", async () => {
             const child = await factory.create(root, [{}]);
-            const handlerExecution = child.resolve(HandlerExecution);
-            return handlerExecution.getId();
+            const kernelExecution = child.resolve(KernelExecution);
+            return kernelExecution.getId();
         });
 
         expect(executionId).toBe("execution-1");
     });
 
-    it("refuses to create a container outside a handler execution", async () => {
+    it("refuses to create a container outside a kernel execution", async () => {
         const appContainer = createAppContainer();
         const factory = appContainer.resolve(ChildContainerFactory);
         const root = new Container();
 
         await expect(factory.create(root, [{}])).rejects.toThrow(
-            "ChildContainerFactory.create() was called outside a handler execution"
+            "ChildContainerFactory.create() was called outside a kernel execution"
         );
     });
 });

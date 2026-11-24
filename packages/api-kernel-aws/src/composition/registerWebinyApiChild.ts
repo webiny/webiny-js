@@ -11,7 +11,7 @@ import type { WebinyApiCompositionConfig } from "./types.js";
  * Sets up the per-request CHILD container: the transport-agnostic feature stack (shared with the
  * server transport), with the AWS-specific interleave points supplied as the `transports` adapters.
  *
- * Named for the `child` lifecycle step of `HandlerConfig`, not "request", so it matches the contract
+ * Named for the `child` lifecycle step of `KernelConfig`, not "request", so it matches the contract
  * it implements.
  */
 export async function registerWebinyApiChild(

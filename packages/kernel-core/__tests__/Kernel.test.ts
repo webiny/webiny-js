@@ -4,9 +4,9 @@ import { EventType } from "~/features/events/EventType.js";
 import type { IEventType } from "~/features/events/EventType.js";
 import { ChildContainerFactory, RootContainerFactory } from "~/features/events/abstractions.js";
 import type { IEventHandler } from "~/features/events/EventHandler.js";
-import { HandlerApp } from "~/features/events/HandlerApp.js";
+import { Kernel } from "~/features/events/Kernel.js";
 
-describe("HandlerApp (DI-native handler app)", () => {
+describe("Kernel (DI-native handler app)", () => {
     class HttpEventType implements IEventType {
         canHandle(e: any): e is any {
             return !!e.method;
@@ -33,7 +33,7 @@ describe("HandlerApp (DI-native handler app)", () => {
     };
 
     it("dispatches an event like the previous closure", async () => {
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -61,7 +61,7 @@ describe("HandlerApp (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -96,7 +96,7 @@ describe("HandlerApp (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 rootSetupCalls++;
                 container.register(httpType);
@@ -118,7 +118,7 @@ describe("HandlerApp (DI-native handler app)", () => {
     it("getRootContainer builds the root eagerly and handle() reuses it", async () => {
         let rootSetupCalls = 0;
 
-        const app = HandlerApp.init({
+        const app = Kernel.init({
             root: container => {
                 rootSetupCalls++;
                 container.register(httpType);

@@ -1,4 +1,4 @@
-import type { HandlerApp } from "~/index.js";
+import type { Kernel } from "~/index.js";
 import type { EventDispatcher } from "~/index.js";
 
 type RunInContext = <TResult>(fn: () => TResult) => TResult;
@@ -8,9 +8,9 @@ type RunInContext = <TResult>(fn: () => TResult) => TResult;
  * authorization overrides (`withIdentity`, `withoutAuthorization`) live in AsyncLocalStorage, so an
  * event dispatched from inside one of them would otherwise run its whole request under it.
  */
-export class HandlerAppEventDispatcher implements EventDispatcher.Interface {
+export class KernelEventDispatcher implements EventDispatcher.Interface {
     public constructor(
-        private readonly app: HandlerApp,
+        private readonly app: Kernel,
         private readonly runInBootContext: RunInContext
     ) {}
 

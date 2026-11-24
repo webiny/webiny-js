@@ -1,12 +1,12 @@
 import { HttpFeature } from "~/features/http/feature.js";
 import { HttpRouterHandler } from "./HttpRouterHandler.js";
-import { HandlerApp } from "~/features/events/HandlerApp.js";
+import { Kernel } from "~/features/events/Kernel.js";
 import { TestHttpEventType } from "./TestHttpEventType.js";
-import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
+import type { KernelSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
 export interface createTestHttpHandlerOptions {
-    root: HandlerSetup;
-    child?: HandlerSetup;
+    root: KernelSetup;
+    child?: KernelSetup;
 }
 
 /**
@@ -15,7 +15,7 @@ export interface createTestHttpHandlerOptions {
  * Callers layer middleware on top via container.registerDecorator() in options.root.
  */
 export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
-    const app = HandlerApp.init({
+    const app = Kernel.init({
         root: async container => {
             container.register(TestHttpEventType);
             container.register(HttpRouterHandler);

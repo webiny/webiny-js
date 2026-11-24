@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createImplementation } from "@webiny/feature/api";
-import { HandlerExecution } from "@webiny/kernel-core";
+import { KernelExecution } from "@webiny/kernel-core";
 import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
@@ -23,11 +23,11 @@ class TenantContextImpl implements Abstraction.Interface {
 
     constructor(
         private getRootTenant: GetRootTenantUseCase.Interface,
-        private handlerExecution: HandlerExecution.Interface | undefined
+        private kernelExecution: KernelExecution.Interface | undefined
     ) {}
 
     getTenant(): Tenant {
-        this.handlerExecution?.assertCurrent("TenantContext");
+        this.kernelExecution?.assertCurrent("TenantContext");
         const override = this.overrides.getStore();
         if (override) {
             return override;
@@ -40,7 +40,7 @@ class TenantContextImpl implements Abstraction.Interface {
      * shared with every async branch of that callback or leak past it, so nest another `with*` call.
      */
     setTenant(tenant: Tenant): void {
-        this.handlerExecution?.assertCurrent("TenantContext");
+        this.kernelExecution?.assertCurrent("TenantContext");
         assertTenantEnabled(tenant);
 
         const override = this.overrides.getStore();
@@ -81,7 +81,7 @@ class TenantContextImpl implements Abstraction.Interface {
     }
 
     private runAs<TReturn>(tenant: Tenant, cb: () => Promise<TReturn>): Promise<TReturn> {
-        this.handlerExecution?.assertCurrent("TenantContext");
+        this.kernelExecution?.assertCurrent("TenantContext");
         assertTenantEnabled(tenant);
 
         return this.overrides.run(tenant, cb);
@@ -91,5 +91,5 @@ class TenantContextImpl implements Abstraction.Interface {
 export const TenantContext = createImplementation({
     abstraction: Abstraction,
     implementation: TenantContextImpl,
-    dependencies: [GetRootTenantUseCase, [HandlerExecution, { optional: true }]]
+    dependencies: [GetRootTenantUseCase, [KernelExecution, { optional: true }]]
 });

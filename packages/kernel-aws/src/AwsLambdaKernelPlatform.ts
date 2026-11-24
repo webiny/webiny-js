@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { HandlerPlatform } from "@webiny/kernel-core";
+import { KernelPlatform } from "@webiny/kernel-core";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { bindLambdaInvocation } from "./bindLambdaInvocation.js";
 
@@ -11,7 +11,7 @@ export type AwsLambdaInvocation = [event: any, context?: Context];
  * handlers can resolve them, and gives the invocation's `awsRequestId` as the execution id, so an id
  * in an error or a debug capture can be matched against CloudWatch and X-Ray.
  */
-class AwsLambdaHandlerPlatformImpl implements HandlerPlatform.Interface<AwsLambdaInvocation> {
+class AwsLambdaKernelPlatformImpl implements KernelPlatform.Interface<AwsLambdaInvocation> {
     bind(container: Container, rawArgs: AwsLambdaInvocation): void {
         const [event, context] = rawArgs;
         bindLambdaInvocation(container, event, context);
@@ -23,7 +23,7 @@ class AwsLambdaHandlerPlatformImpl implements HandlerPlatform.Interface<AwsLambd
     }
 }
 
-export const AwsLambdaHandlerPlatform = HandlerPlatform.createImplementation({
-    implementation: AwsLambdaHandlerPlatformImpl,
+export const AwsLambdaKernelPlatform = KernelPlatform.createImplementation({
+    implementation: AwsLambdaKernelPlatformImpl,
     dependencies: []
 });

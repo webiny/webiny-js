@@ -1,15 +1,15 @@
 import { Container } from "@webiny/di";
-import { HandlerConfig, RootContainerFactory } from "./abstractions.js";
-import { HandlerExecutionId } from "./HandlerExecutionId.js";
-import { DefaultHandlerExecutionId } from "./DefaultHandlerExecutionId.js";
-import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
+import { KernelConfig, RootContainerFactory } from "./abstractions.js";
+import { KernelExecutionId } from "./KernelExecutionId.js";
+import { DefaultKernelExecutionId } from "./DefaultKernelExecutionId.js";
+import { KernelExecutionScope } from "./KernelExecutionScope.js";
 
 class RootContainerFactoryImpl implements RootContainerFactory.Interface {
     private rootContainer: Container | null = null;
 
     constructor(
-        private config: HandlerConfig.Interface,
-        private scope: HandlerExecutionScope.Interface
+        private config: KernelConfig.Interface,
+        private scope: KernelExecutionScope.Interface
     ) {}
 
     async get(): Promise<Container> {
@@ -17,8 +17,8 @@ class RootContainerFactoryImpl implements RootContainerFactory.Interface {
             this.rootContainer = new Container();
 
             // Registered first, so everything `root` registers can depend on it.
-            const executionId = new DefaultHandlerExecutionId(this.scope);
-            this.rootContainer.registerInstance(HandlerExecutionId, executionId);
+            const executionId = new DefaultKernelExecutionId(this.scope);
+            this.rootContainer.registerInstance(KernelExecutionId, executionId);
 
             await this.config.root(this.rootContainer);
         }
@@ -28,5 +28,5 @@ class RootContainerFactoryImpl implements RootContainerFactory.Interface {
 
 export const DefaultRootContainerFactory = RootContainerFactory.createImplementation({
     implementation: RootContainerFactoryImpl,
-    dependencies: [HandlerConfig, HandlerExecutionScope]
+    dependencies: [KernelConfig, KernelExecutionScope]
 });
