@@ -1,4 +1,5 @@
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client } from "~/assetDelivery/abstractions.js";
 import {
     TaskDefinition,
     TaskHandler
@@ -24,6 +25,8 @@ export interface DeleteS3FolderInput {
 }
 
 class DeleteS3FolderTaskHandlerImpl implements TaskHandler.Interface<DeleteS3FolderInput> {
+    constructor(private s3: S3) {}
+
     public async run({
         input,
         controller
@@ -38,7 +41,7 @@ class DeleteS3FolderTaskHandlerImpl implements TaskHandler.Interface<DeleteS3Fol
             return controller.response.error({ message: `Bucket is not defined.` });
         }
 
-        const s3 = new S3();
+        const s3 = this.s3;
 
         // List objects in the folder with pagination support.
         const filesList = await s3.listObjectsV2({
@@ -77,7 +80,7 @@ class DeleteS3FolderTaskHandlerImpl implements TaskHandler.Interface<DeleteS3Fol
 
 const DeleteS3FolderTaskHandler = TaskHandler.createImplementation({
     implementation: DeleteS3FolderTaskHandlerImpl,
-    dependencies: []
+    dependencies: [S3Client]
 });
 
 class DeleteS3FolderTask implements TaskDefinition.Interface {

@@ -75,3 +75,6 @@ export {
     getRadioOptionNodes,
     withRadioValue
 } from "@webiny/website-builder-sdk";
+// Object list items carry a stable `_id` (kept on move and remove): a renderer that adds items
+// gives each a new one.
+export { LIST_ITEM_ID, generateListItemId, isListItemId } from "@webiny/website-builder-sdk";

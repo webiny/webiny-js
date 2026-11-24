@@ -7,6 +7,8 @@ import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settin
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
+import { getFileStorageKey } from "~/utils/storagePaths.js";
 
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; /* 1TB */
 
@@ -28,7 +30,8 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
 
     public async execute(
         file: FileData,
-        settings: FileManagerSettings
+        settings: FileManagerSettings,
+        options: GetUploadPayloadUseCaseAbstraction.Options = {}
     ): Promise<UploadPayloadResponse> {
         const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
         const uploadMaxFileSize = sanitizeFileSizeValue(
@@ -37,7 +40,14 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
         );
 
         const tenant = this.tenantContext.getTenant();
-        const storageKey = `tenants/${tenant.id}/files/${file.key}`;
+        await ensureNewFileId({
+            storagePath: this.config.storagePath,
+            file,
+            tenantId: tenant.id,
+            clientId: options.clientId
+        });
+
+        const storageKey = getFileStorageKey(tenant.id, file.key);
         const secret = this.config.uploadSecret;
         const expiresAt = Date.now() + 60_000;
 

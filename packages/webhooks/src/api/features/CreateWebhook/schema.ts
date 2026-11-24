@@ -5,7 +5,7 @@ export const CreateWebhookInputSchema = z.object({
     name: z.string().min(1, "Name is required."),
     slug: z.string().optional(),
     endpointUrl: z.string().refine(isValidEndpointUrl, {
-        message: "Endpoint URL must use HTTPS. HTTP is only allowed for localhost."
+        message: "Endpoint URL must use HTTPS and must not point to a local or link-local address."
     }),
     description: z.string().optional(),
     enabled: z.boolean().optional(),

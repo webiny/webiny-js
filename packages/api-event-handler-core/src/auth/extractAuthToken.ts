@@ -26,6 +26,24 @@ function readCookie(cookieHeader: string, name: string): string | null {
     }
 }
 
+export interface AuthTokenRequest {
+    method: string | undefined;
+    path: string | undefined;
+}
+
+/**
+ * The `wby-id-token` cookie exists only for private file delivery: an `<img src>` cannot send an
+ * `Authorization` header. It must not log users in anywhere else, because the browser attaches it
+ * to cross-site requests too (`SameSite=None`), which would let any website call the API as the user.
+ */
+export function isCookieAuthenticationAllowed(request: AuthTokenRequest): boolean {
+    const method = (request.method || "").toUpperCase();
+    if (method !== "GET" && method !== "HEAD") {
+        return false;
+    }
+    return (request.path || "").startsWith("/private/");
+}
+
 /**
  * Reads the auth token, preferring `x-webiny-authorization` over `Authorization`.
  *
@@ -33,9 +51,13 @@ function readCookie(cookieHeader: string, name: string): string | null {
  * Origin Access Control signs those requests with SigV4 in the `Authorization` header, so a viewer's
  * bearer token cannot survive to the origin, and clients send it in `x-webiny-authorization` instead.
  * A Lambda web function origin is different: CloudFront keeps the viewer's `Authorization` there, so
- * plain `Authorization` works for the API's main routes. The `wby-id-token` cookie is the last resort.
+ * plain `Authorization` works for the API's main routes. The `wby-id-token` cookie is the last resort,
+ * and only for private file reads (see {@link isCookieAuthenticationAllowed}).
  */
-export function extractAuthToken(headers: Record<string, string> | undefined): string | null {
+export function extractAuthToken(
+    headers: Record<string, string> | undefined,
+    request: AuthTokenRequest
+): string | null {
     const webinyAuth = getHeader(headers, WEBINY_AUTHORIZATION_HEADER).replace(/^Bearer\s+/i, "");
     if (webinyAuth) {
         return webinyAuth;
@@ -44,6 +66,10 @@ export function extractAuthToken(headers: Record<string, string> | undefined): s
     const bearer = getHeader(headers, "authorization").replace(/^Bearer\s+/i, "");
     if (bearer) {
         return bearer;
+    }
+
+    if (!isCookieAuthenticationAllowed(request)) {
+        return null;
     }
 
     const cookieHeader = getHeader(headers, "cookie");

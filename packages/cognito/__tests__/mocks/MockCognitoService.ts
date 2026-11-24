@@ -20,11 +20,23 @@ export class MockCognitoService implements CognitoService.Interface {
         this.clearError();
     }
 
-    async userExists(username: string): Promise<boolean> {
+    async getUser(username: string): Promise<CognitoService.User | null> {
         if (this.shouldThrowError && this.errorToThrow) {
             throw this.errorToThrow;
         }
-        return this.users.has(username);
+        const user = this.users.get(username);
+        if (!user) {
+            return null;
+        }
+        return {
+            username,
+            attributes: {
+                email: user.attributes.email,
+                given_name: user.attributes.givenName ?? "",
+                family_name: user.attributes.familyName ?? "",
+                "custom:id": user.attributes.customId
+            }
+        };
     }
 
     async createUser(params: {
@@ -76,5 +88,20 @@ export class MockCognitoService implements CognitoService.Interface {
             throw this.errorToThrow;
         }
         this.users.delete(username);
+    }
+
+    async resetMfa(username: string): Promise<void> {
+        if (this.shouldThrowError && this.errorToThrow) {
+            throw this.errorToThrow;
+        }
+        const user = this.users.get(username);
+        if (user) {
+            user.mfaResets = (user.mfaResets ?? 0) + 1;
+        }
+    }
+
+    /** How many times the account's MFA was reset. */
+    getMfaResets(username: string): number {
+        return this.users.get(username)?.mfaResets ?? 0;
     }
 }

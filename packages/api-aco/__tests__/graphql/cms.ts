@@ -85,6 +85,25 @@ export const DELETE_ENTRY = (model: CmsModel) => {
     `;
 };
 
+const createPublishingMutation = (action: "publish" | "unpublish" | "republish") => {
+    return (model: CmsModel) => {
+        const Entry = model.singularApiName;
+
+        return /* GraphQL */ `
+            mutation ${action}${Entry}($revision: ID!) {
+                ${action}${Entry}(revision: $revision) {
+                    data ${DATA_FIELD}
+                    error ${ERROR_FIELD}
+                }
+            }
+        `;
+    };
+};
+
+export const PUBLISH_ENTRY = createPublishingMutation("publish");
+export const UNPUBLISH_ENTRY = createPublishingMutation("unpublish");
+export const REPUBLISH_ENTRY = createPublishingMutation("republish");
+
 export const LIST_ENTRIES = (model: CmsModel) => {
     const Entry = model.singularApiName;
     const Entries = model.pluralApiName;

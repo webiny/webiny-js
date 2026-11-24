@@ -13,6 +13,7 @@ import {
     type InputAstNode
 } from "./ComponentManifestToAstConverter.js";
 import { ComponentInputTraverser } from "./ComponentInputTraverser.js";
+import { generateListItemId, isListItemId } from "./listItemId.js";
 
 const defaultStyles = {
     display: "flex",
@@ -100,7 +101,10 @@ const defaultOperations: ElementFactoryOperations = {
 export class ElementFactory {
     constructor(
         private components: Record<string, ComponentManifest>,
-        private generateId: () => string = generateElementId
+        private generateId: () => string = generateElementId,
+        // An object list item's `_id`, for items created without one (a default instance of a global
+        // passes a deterministic one, so the server render and the hydration agree).
+        private generateItemId: () => string = generateListItemId
     ) {}
 
     public createElementFromComponent({
@@ -244,7 +248,11 @@ export class ElementFactory {
             const isObject = node.type === "object";
 
             if (isCreateElement) {
-                const factory = new ElementFactory(this.components, this.generateId);
+                const factory = new ElementFactory(
+                    this.components,
+                    this.generateId,
+                    this.generateItemId
+                );
                 const newElement = factory.createElementFromComponent({
                     componentName: value.params.component,
                     // undefined index = append to end of the slot array
@@ -282,6 +290,17 @@ export class ElementFactory {
                 }
             } else if (isObject && isList) {
                 return;
+            } else if (node.listItemId && !(ignoreDefaultValues && value === undefined)) {
+                // A new item gets its id here; an id the item was given (a copy, defaults) is kept.
+                ops.push(
+                    operations.setInputBinding(elementId, path, {
+                        id: this.generateId(),
+                        static: isListItemId(value) ? value : this.generateItemId(),
+                        type: node.type,
+                        list: node.list,
+                        translatable: node.input.translatable
+                    })
+                );
             } else if (ignoreDefaultValues && value === undefined) {
                 // A breakpoint override only holds the values supplied for it: an empty binding would
                 // replace the inherited value with undefined.

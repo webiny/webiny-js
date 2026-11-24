@@ -73,9 +73,10 @@ class AssumePermissionsUseCaseImpl implements Abstraction.Interface {
     }
 
     private async verify(value: AssumePermissionsContext.Value | null): Promise<void> {
-        const identity = await this.logInRepository.login();
+        const result = await this.logInRepository.login();
 
-        if (value && !hasAppPermissions(identity)) {
+        // A login that asks for another tenant has no identity on this one, so nothing is granted here.
+        if (value && (result.step !== "done" || !hasAppPermissions(result.identity))) {
             throw new Error(`"${value.name}" grants no permissions on this tenant.`);
         }
     }

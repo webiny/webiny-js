@@ -11,6 +11,16 @@ export class EntryNotFoundError extends BaseError {
     }
 }
 
+export class EntryAlreadyExistsError extends BaseError {
+    override readonly code = "Cms/Entry/AlreadyExists" as const;
+
+    constructor(id: string) {
+        super({
+            message: `Entry "${id}" already exists.`
+        });
+    }
+}
+
 export class EntryPersistenceError extends BaseError {
     override readonly code = "Cms/Entry/PersistenceError" as const;
 

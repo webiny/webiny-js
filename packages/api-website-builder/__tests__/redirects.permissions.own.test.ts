@@ -255,9 +255,10 @@ describe("Redirects Own Scope Permissions", () => {
             });
             const ctx = await handler.handler();
             const moveRedirect = ctx.container.resolve(MoveRedirectUseCase);
+            // Non-root targets must be existing redirect folders (see move.targetFolder.test.ts).
             const result = await moveRedirect.execute({
                 id: seedRedirectId,
-                folderId: "another-folder"
+                folderId: "root"
             });
             expect(result.isFail()).toBe(false);
         });

@@ -1,3 +1,4 @@
+import { parseJsonBody } from "@webiny/event-handler-core";
 import type { IWebsocketsEventData, IWebsocketsIncomingEvent } from "~/handler/types.js";
 
 const getEventBody = (event: IWebsocketsIncomingEvent): IWebsocketsEventData => {
@@ -7,7 +8,7 @@ const getEventBody = (event: IWebsocketsIncomingEvent): IWebsocketsEventData => 
         return event.body;
     } else if (typeof event.body === "string") {
         try {
-            return JSON.parse(event.body);
+            return parseJsonBody(event.body);
         } catch (ex) {
             console.log(ex.message);
             return {};

@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 import type { PrimitiveValue } from "~/types.js";
 
 /**
@@ -30,7 +31,7 @@ export const decodeCursor = (cursor?: string | null): PrimitiveValue[] | undefin
         return undefined;
     }
     try {
-        const value = JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
+        const value = parseJson(Buffer.from(cursor, "base64").toString("ascii"));
         if (Array.isArray(value)) {
             return value.filter(item => item !== null).map(decodeURIComponent);
         }

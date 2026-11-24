@@ -6,12 +6,17 @@ import type { FileManagerSettings } from "~/domain/settings/types.js";
 import type { UpdateSettingsInput } from "~/domain/settings/types.js";
 import { SettingsUpdateError } from "~/domain/settings/errors.js";
 import { SettingsValidationError } from "~/domain/settings/errors.js";
+import { SettingsNotAuthorizedError } from "~/domain/settings/errors.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { DefaultSrcPrefix } from "~/features/settings/DefaultSrcPrefix/index.js";
 import { SettingsBeforeUpdateEvent, SettingsAfterUpdateEvent } from "./events.js";
-import { updateSettingsValidation } from "~/domain/settings/validation.js";
+import {
+    mergedSettingsValidation,
+    updateSettingsValidation
+} from "~/domain/settings/validation.js";
 import { createZodError } from "@webiny/utils";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 /**
  * Stores only a custom `srcPrefix`. An empty value, or the current default (which is what the
@@ -21,6 +26,7 @@ import { createZodError } from "@webiny/utils";
  */
 class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: FmPermissions.Interface,
         private keyValueStore: KeyValueStore.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
@@ -30,6 +36,11 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         input: UpdateSettingsInput
     ): Promise<Result<FileManagerSettings, UseCaseAbstraction.Error>> {
+        const hasPermission = await this.permissions.canAccess("settings");
+        if (!hasPermission) {
+            return Result.fail(new SettingsNotAuthorizedError());
+        }
+
         // Validate input
         const validationResult = await updateSettingsValidation.safeParseAsync(input);
         if (!validationResult.success) {
@@ -37,7 +48,10 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new SettingsValidationError(zodError.data!.invalidFields));
         }
 
-        const validatedInput = validationResult.data;
+        // Drop keys passed as `undefined`, so they don't overwrite stored values.
+        const validatedInput = Object.fromEntries(
+            Object.entries(validationResult.data).filter(([, value]) => value !== undefined)
+        ) as UpdateSettingsInput;
 
         // The settings in effect, with the default prefix filled in when none is stored.
         const existingResult = await this.getSettings.execute();
@@ -53,6 +67,12 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             ...validatedInput,
             srcPrefix: srcPrefix || defaultSrcPrefix
         };
+
+        const mergedValidationResult = mergedSettingsValidation.safeParse(updatedSettings);
+        if (!mergedValidationResult.success) {
+            const zodError = createZodError(mergedValidationResult.error);
+            return Result.fail(new SettingsValidationError(zodError.data!.invalidFields));
+        }
 
         // Publish BeforeUpdate event
         await this.eventPublisher.publish(
@@ -90,5 +110,11 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateSettingsUseCaseImpl,
-    dependencies: [KeyValueStore, GetSettingsUseCase, EventPublisher, DefaultSrcPrefix]
+    dependencies: [
+        FmPermissions,
+        KeyValueStore,
+        GetSettingsUseCase,
+        EventPublisher,
+        DefaultSrcPrefix
+    ]
 });

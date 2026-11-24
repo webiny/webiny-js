@@ -53,9 +53,12 @@ describe("RequestTenantLoader (LOAD)", () => {
         expect(getSet()).toEqual({ id: "root", name: "root" });
     });
 
-    it("does not set the tenant when a non-root id can't be resolved", async () => {
+    it("fails with Tenancy/TenantNotFound when a non-root id can't be resolved", async () => {
         const { loader, getSet } = setup("ghost", ["root"]);
-        await loader.establish();
+        await expect(loader.establish()).rejects.toMatchObject({
+            code: "Tenancy/TenantNotFound",
+            data: { tenantId: "ghost" }
+        });
         expect(getSet()).toBeUndefined();
     });
 

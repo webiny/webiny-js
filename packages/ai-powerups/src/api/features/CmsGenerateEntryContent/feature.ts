@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { CmsGenerateEntryContentUseCaseImplementation } from "./CmsGenerateEntryContentUseCase.js";
 import { CmsGenerateEntryContentTask } from "./CmsGenerateEntryContentTask.js";
 import { CmsGenerateEntryCapability } from "./capability.js";
+import QueueCmsGenerateEntryContentUseCase from "./QueueCmsGenerateEntryContentUseCase.js";
 
 export const CmsGenerateEntryContentFeature = createFeature({
     name: "AiPowerUps/CmsGenerateEntryContent",
@@ -9,5 +10,6 @@ export const CmsGenerateEntryContentFeature = createFeature({
         container.register(CmsGenerateEntryCapability);
         container.register(CmsGenerateEntryContentUseCaseImplementation);
         container.register(CmsGenerateEntryContentTask);
+        container.register(QueueCmsGenerateEntryContentUseCase);
     }
 });

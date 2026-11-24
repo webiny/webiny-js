@@ -14,15 +14,6 @@ import { SchedulerPermissionsResolver } from "~/features/permissions/abstraction
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
-/**
- * Lists scheduled actions with optional filtering
- *
- * Flow:
- * 1. Build query filters based on where params (namespace, actionType, targetId, etc.)
- * 2. Fetch entries from CMS storage with pagination and sorting
- * 3. Transform CMS entries to IScheduledAction format
- * 4. Return paginated results with metadata
- */
 class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private listEntriesUseCase: ListLatestEntriesUseCase.Interface,
@@ -36,14 +27,20 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const namespace = params.where?.namespace || params.where?.namespace_startsWith;
+        const exactNamespace = params.where?.namespace;
+        const namespace = exactNamespace || params.where?.namespace_startsWith;
         const permissions = this.permissionsResolver.forNamespace(namespace);
+        // Security: a prefix covers many namespaces, so the app must check all of them.
+        const permissionsParams = {
+            namespace: namespace || "",
+            startsWith: !exactNamespace
+        };
 
-        if (!(await permissions.canRead())) {
+        if (!(await permissions.canRead(permissionsParams))) {
             return Result.fail(new NotAuthorizedError());
         }
 
-        const ownRecordsOnly = await permissions.onlyOwnRecords();
+        const ownRecordsOnly = await permissions.onlyOwnRecords(permissionsParams);
 
         const { where: initialWhere, sort: sortInput, limit, after } = params;
         const model = await this.modelProvider.get();
@@ -62,7 +59,6 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             input: sortInput,
             fields: model.fields
         });
-        // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledActionEntryValues<T>>(
             model,
             {

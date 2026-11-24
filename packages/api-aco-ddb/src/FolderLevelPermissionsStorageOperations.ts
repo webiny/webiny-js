@@ -72,6 +72,17 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
                 return entries.map(entry => entry.data);
             }
 
+            // All folder level permissions of a folder type.
+            if (type) {
+                const entries = await this.entity.queryAll({
+                    partitionKey: `T#${tenant}#AT#${type}#FLP`,
+                    options: {
+                        index: "GSI1"
+                    }
+                });
+                return entries.map(entry => entry.data);
+            }
+
             throw new WebinyError("Missing required parameters.", "LIST_FLP_MISSING_PARAMETERS", {
                 tenant,
                 type,

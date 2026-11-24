@@ -46,8 +46,22 @@ export type LexicalEditorProps = Omit<React.ComponentProps<typeof BaseLexicalEdi
 
 const { useAdminConfig } = AdminConfig;
 
-const LexicalEditorComponent = (props: LexicalEditorProps) => {
+interface LexicalEditorComponentProps extends LexicalEditorProps {
+    /**
+     * The caller's styles go over the defaults (a form-like editor has its own border and
+     * height). Only the scoped editor does it: `.Expanded` and `.Compact` keep their styles.
+     */
+    stylesOverride?: boolean;
+}
+
+const LexicalEditorComponent = ({
+    stylesOverride = false,
+    ...props
+}: LexicalEditorComponentProps) => {
     const { theme } = useWebsiteBuilderTheme();
+    const withOverrides = (base: React.CSSProperties, given?: React.CSSProperties) => {
+        return stylesOverride ? { ...base, ...given } : base;
+    };
     const { lexicalTheme } = useAdminConfig();
 
     const editorTheme: EditorTheme = {
@@ -61,14 +75,36 @@ const LexicalEditorComponent = (props: LexicalEditorProps) => {
     return (
         <BaseLexicalEditor
             {...props}
+            // Without a toolbar container in config (the scope's config isn't registered), the
+            // static band shows the admin's global toolbar.
             staticToolbar={<StaticToolbar className={"wb-static-toolbar"} />}
             tag={"p"}
             placeholder={props?.placeholder || "Enter your text here..."}
-            placeholderStyles={placeholderStyles}
-            contentEditableStyles={contentEditableStyles}
-            styles={styles}
+            placeholderStyles={withOverrides(placeholderStyles, props.placeholderStyles)}
+            contentEditableStyles={withOverrides(
+                contentEditableStyles,
+                props.contentEditableStyles
+            )}
+            styles={withOverrides(styles, props.styles)}
             theme={editorTheme}
         />
+    );
+};
+
+export interface ScopedLexicalEditorProps extends LexicalEditorProps {
+    /** The config scope it reads, as registered with `<LexicalEditorConfig.Scope name={...}>`. */
+    scope: string;
+}
+
+/**
+ * The website builder's editor, with the config of a scope: its toolbar contents and container.
+ * The page's theme comes from `ThemeProvider`.
+ */
+const ScopedLexicalEditor = ({ scope, ...props }: ScopedLexicalEditorProps) => {
+    return (
+        <CompositionScope name={scope}>
+            <LexicalEditorComponent {...props} stylesOverride />
+        </CompositionScope>
     );
 };
 
@@ -88,7 +124,7 @@ const CompactLexicalEditor = (props: LexicalEditorProps) => {
     );
 };
 
-export const LexicalEditor = {
+export const LexicalEditor = Object.assign(ScopedLexicalEditor, {
     Expanded: ExpandedLexicalEditor,
     Compact: CompactLexicalEditor
-};
+});

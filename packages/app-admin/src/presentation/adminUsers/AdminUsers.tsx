@@ -15,6 +15,13 @@ import { CreateUserFeature } from "~/features/adminUsers/users/createUser/index.
 import { UpdateUserFeature } from "~/features/adminUsers/users/updateUser/index.js";
 import { DeleteUserFeature } from "~/features/adminUsers/users/deleteUser/index.js";
 import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
+import { CheckEmailFeature } from "~/features/adminUsers/users/checkEmail/index.js";
+import { LinkUserFeature } from "~/features/adminUsers/users/linkUser/index.js";
+import { ResetUserMfaFeature } from "~/features/adminUsers/users/resetUserMfa/index.js";
+import { AdminUsersCapabilitiesFeature } from "~/features/adminUsers/capabilities/index.js";
+import type { AdminUsersCapabilities } from "~/features/adminUsers/capabilities/index.js";
+import { UserFormFeature } from "./userForm/feature.js";
+import { ResetMfaFeature } from "./resetMfa/feature.js";
 import { UsersView } from "./views/Users/UsersView.js";
 import { UserAccountForm } from "./views/Account/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
@@ -28,8 +35,17 @@ const { Route, Menu } = AdminConfig;
  * whose users are created and edited in Webiny. Rendered by such a provider's admin extension, which
  * also has to serve the `adminUsers` create, update and delete mutations behind these screens. The
  * password rules come from the build, see `readPasswordPolicyRules`.
+ *
+ * `capabilities` turns on what only some providers serve: linking an account from another tenant,
+ * and resetting a user's MFA.
  */
-const AdminUsersComponent = () => {
+export interface AdminUsersProps {
+    capabilities?: Partial<AdminUsersCapabilities.Interface>;
+}
+
+const NO_CAPABILITIES: Partial<AdminUsersCapabilities.Interface> = {};
+
+const AdminUsersComponent = ({ capabilities = NO_CAPABILITIES }: AdminUsersProps) => {
     const { getLink } = useRouter();
 
     return (
@@ -43,6 +59,12 @@ const AdminUsersComponent = () => {
             <RegisterFeature feature={UpdateUserFeature} />
             <RegisterFeature feature={DeleteUserFeature} />
             <RegisterFeature feature={UserEventsFeature} />
+            <RegisterFeature feature={AdminUsersCapabilitiesFeature} options={capabilities} />
+            <RegisterFeature feature={CheckEmailFeature} />
+            <RegisterFeature feature={LinkUserFeature} />
+            <RegisterFeature feature={ResetUserMfaFeature} />
+            <RegisterFeature feature={UserFormFeature} />
+            <RegisterFeature feature={ResetMfaFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <HasPermission name={"adminUsers.user"}>

@@ -1,6 +1,11 @@
 export { LexicalEditorConfig } from "@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.js";
 export { LexicalEditor } from "@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditor.js";
-export type { LexicalEditorProps } from "@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditor.js";
+export type {
+    LexicalEditorProps,
+    ScopedLexicalEditorProps
+} from "@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditor.js";
+export { ThemeProvider } from "@webiny/app-website-builder/BaseEditor/components/ThemeProvider.js";
+export type { WebsiteBuilderTheme } from "@webiny/website-builder-sdk";
 export { useLexicalEditorConfig } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
 export { LexicalHtmlRenderer } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
 export { getNodeFromSelection } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";

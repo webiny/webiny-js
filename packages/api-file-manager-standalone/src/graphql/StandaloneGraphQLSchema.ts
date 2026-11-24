@@ -136,12 +136,16 @@ class StandaloneGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface 
                         await checkPermissions(identityContext, { rwd: "w" });
 
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createNormalizer();
                         const payload = await getUploadPayload.execute(
                             (await normalizer.normalizeFile(args.data)) as FileData,
-                            settings
+                            settings,
+                            { clientId: args.data?.id }
                         );
 
                         return new Response(payload);
@@ -169,13 +173,17 @@ class StandaloneGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface 
                         await checkPermissions(identityContext, { rwd: "w" });
 
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createNormalizer();
                         const payloads = await pMap(args.data, async (data: any) => {
                             return getUploadPayload.execute(
                                 (await normalizer.normalizeFile(data)) as FileData,
-                                settings
+                                settings,
+                                { clientId: data?.id }
                             );
                         });
 
@@ -205,7 +213,8 @@ class StandaloneGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface 
                         const normalizer = createNormalizer();
                         const result = await createMultiPartUpload.execute({
                             file: (await normalizer.normalizeFile(args.data)) as FileData,
-                            numberOfParts: args.numberOfParts
+                            numberOfParts: args.numberOfParts,
+                            clientId: args.data?.id
                         });
 
                         return new Response(result);

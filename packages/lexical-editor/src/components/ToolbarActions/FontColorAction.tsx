@@ -31,11 +31,11 @@ export const FontColorAction: FontColorAction = () => {
     const { editor } = useRichTextEditor();
     const fontColor = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
-            return "#000";
+            return undefined;
         }
 
         const node = getSelectedNode(rangeSelection);
-        return $isFontColorNode(node) ? node.getColorStyle().color : "#000";
+        return $isFontColorNode(node) ? node.getColorStyle().color : undefined;
     });
 
     const onFontColorSelect = useCallback(
@@ -49,7 +49,8 @@ export const FontColorAction: FontColorAction = () => {
 
     const context = useMemo(
         () => ({
-            value: fontColor,
+            value: fontColor ?? "#000",
+            isDefault: fontColor === undefined,
             applyColor: onFontColorSelect
         }),
         [onFontColorSelect, fontColor]

@@ -2,6 +2,7 @@ import type { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
 import { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import { CmsEntryTargetReader as Abstraction } from "./abstractions.js";
 import { CmsModelGroupService } from "../CmsModelGroupService/index.js";
@@ -31,7 +32,8 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
         private getModel: GetModelUseCase.Interface,
         private modelGroups: CmsModelGroupService.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private getEntriesByIds: GetEntriesByIdsUseCase.Interface
+        private getEntriesByIds: GetEntriesByIdsUseCase.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     public async read(params: Abstraction.Params): Promise<Abstraction.Target | null> {
@@ -40,10 +42,11 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
             return null;
         }
 
-        const entry = await this.getRevisionById.execute(
-            targetModel.model,
-            params.targetRevisionId
-        );
+        /* The read use cases refuse entries the identity can't access (own-only permissions, for
+           one). That is `CmsEntryAccess`'s decision here, so the revision is read without it. */
+        const entry = await this.identityContext.withoutAuthorization(() => {
+            return this.getRevisionById.execute(targetModel.model, params.targetRevisionId);
+        });
         if (entry.isFail()) {
             if (entry.error.code === ENTRY_NOT_FOUND) {
                 return null;
@@ -112,6 +115,7 @@ export const CmsEntryTargetReader = Abstraction.createImplementation({
         GetModelUseCase,
         CmsModelGroupService,
         GetRevisionByIdUseCase,
-        GetEntriesByIdsUseCase
+        GetEntriesByIdsUseCase,
+        IdentityContext
     ]
 });
