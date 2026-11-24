@@ -1,4 +1,5 @@
-import { ConnectionRegistry, WebsocketsTransport } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsTransport } from "@webiny/api-websockets/transport/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { ProcessOwner } from "@webiny/event-handler-standalone";

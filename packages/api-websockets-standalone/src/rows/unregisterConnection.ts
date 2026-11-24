@@ -1,4 +1,4 @@
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 /** Removes a connection's row. One already gone (removed by another process) is not an error. */
 export const unregisterConnection = async (

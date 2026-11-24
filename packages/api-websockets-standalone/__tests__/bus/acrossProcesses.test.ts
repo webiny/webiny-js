@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import { vi } from "vitest";
 import { beforeEach } from "vitest";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
 import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { ServerWebsocketsTransportImpl } from "~/transport/ServerWebsocketsTransport.js";

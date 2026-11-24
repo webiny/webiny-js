@@ -1,4 +1,4 @@
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createAbstraction } from "@webiny/feature/api";
 
 export interface IWebsocketsConnectionManagerAddParams<TSocket> {

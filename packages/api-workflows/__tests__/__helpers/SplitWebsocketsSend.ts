@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
-import {
-    WebsocketsSendToConnectionsUseCase,
-    type WebsocketsError
-} from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
 import { RecordingWebsocketsSend, type SentFrame } from "./RecordingWebsocketsSend.js";
 
