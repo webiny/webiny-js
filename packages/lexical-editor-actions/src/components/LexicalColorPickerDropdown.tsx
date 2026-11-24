@@ -10,17 +10,17 @@ export interface LexicalColorPickerDropdownProps {
 export const LexicalColorPickerDropdown = ({
     allowCustomColor
 }: LexicalColorPickerDropdownProps) => {
-    const { value, applyColor } = useFontColorPicker();
+    const { value, isDefault, applyColor } = useFontColorPicker();
+    // Tint the A icon with the selected text's font color; without one it's drawn like the
+    // other toolbar icons.
+    const tint = value && !isDefault ? { fill: value } : undefined;
     const { theme } = useRichTextEditor();
 
     return (
         <DropDown
             buttonClassName="toolbar-item color-picker"
             buttonAriaLabel={"Formatting options for text color"}
-            buttonIcon={
-                // Tint the A icon with the current font color.
-                <FontColorIcon className="icon" style={value ? { fill: value } : undefined} />
-            }
+            buttonIcon={<FontColorIcon className="icon" style={tint} />}
             stopCloseOnClickSelf={true}
             disabled={false}
             showScroll={false}
