@@ -8,5 +8,9 @@ export {
     CreateFolderUseCase,
     CreateFolderGateway
 } from "@webiny/app-aco/features/folders/createFolder/abstractions.js";
+export {
+    DeleteFolderUseCase,
+    DeleteFolderGateway
+} from "@webiny/app-aco/features/folders/deleteFolder/abstractions.js";
 export type { Folder } from "@webiny/app-aco/domain/folder/Folder.js";
 export type { FolderDto } from "@webiny/app-aco/domain/folder/FolderDto.js";

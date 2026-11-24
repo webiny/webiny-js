@@ -22,6 +22,8 @@ export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAc
 export { ImageAction } from "~/components/ToolbarActions/ImageAction.js";
 // toolbars
 export { StaticToolbar } from "~/components/Toolbar/StaticToolbar.js";
+export { FloatingToolbar } from "~/components/Toolbar/FloatingToolbar.js";
+export type { FloatingToolbarProps } from "~/components/Toolbar/FloatingToolbar.js";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor.js";
 // plugins

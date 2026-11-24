@@ -14,12 +14,14 @@ export interface LexicalEditorProps extends Omit<
     value?: RichTextValueWithHtml;
     onChange?: (value: RichTextValueWithHtml) => void;
     theme?: RichTextEditorProps["theme"];
+    /** How long typing settles before `onChange` (ms, 400 by default). */
+    delay?: number;
 }
 
 const imagesOnly = ["image/*"];
 const noop = () => {};
 
-export const LexicalEditor = (props: LexicalEditorProps) => {
+export const LexicalEditor = ({ delay, ...props }: LexicalEditorProps) => {
     const { lexicalTheme } = useAdminConfig();
     const configRef = useRef<BaseEditor.InitialConfig | undefined>(undefined);
 
@@ -37,7 +39,7 @@ export const LexicalEditor = (props: LexicalEditorProps) => {
         <FileManager
             accept={imagesOnly}
             render={({ showFileManager }) => (
-                <DelayedOnChange value={props.value?.state} onChange={onChange}>
+                <DelayedOnChange value={props.value?.state} onChange={onChange} delay={delay}>
                     {({ value, onChange }) => (
                         <BaseEditor
                             {...props}
