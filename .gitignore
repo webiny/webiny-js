@@ -77,3 +77,4 @@ tsconfig.build.tmp-*.json
 ds-bundle
 .ds-sync
 
+.webiny-testing/
