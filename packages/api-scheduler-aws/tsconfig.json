@@ -12,10 +12,10 @@
     { "path": "../api-core-testing" },
     { "path": "../api-graphql" },
     { "path": "../db-dynamodb" },
-    { "path": "../event-handler-aws" },
-    { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../handler" },
+    { "path": "../kernel-aws" },
+    { "path": "../kernel-core" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -45,14 +45,14 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
-      "@webiny/event-handler-aws": ["../event-handler-aws/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/kernel-aws/*": ["../kernel-aws/src/*"],
+      "@webiny/kernel-aws": ["../kernel-aws/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

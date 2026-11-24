@@ -1,6 +1,6 @@
 import { convertException } from "@webiny/utils";
 import { PluginsContainer } from "@webiny/plugins";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import { SyncWorkerEventHandler } from "./SyncWorkerEventHandler.js";
 import type { ISyncWorkerEvent, ISyncWorkerResult } from "./SyncWorkerEventHandler.js";
 import { SyncWorkerConfig } from "./SyncWorkerConfig.js";

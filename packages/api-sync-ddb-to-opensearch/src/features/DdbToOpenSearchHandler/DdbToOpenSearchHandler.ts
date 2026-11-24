@@ -3,9 +3,9 @@ import type { DynamoDBStreamEvent } from "@webiny/aws-sdk/types/index.js";
 import {
     DynamoDBEventHandler,
     type DynamoDBResult
-} from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
-import { RequestContainer } from "@webiny/event-handler-core";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+} from "@webiny/kernel-aws/abstractions/handlers/DynamoDBEventHandler.js";
+import { RequestContainer } from "@webiny/kernel-core";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import { OperationsBuilder } from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
 import { ExecuteSyncWithRetry } from "@webiny/api-sync-to-opensearch/features/ExecuteSyncWithRetry/abstraction.js";
 

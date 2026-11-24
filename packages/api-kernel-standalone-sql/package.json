@@ -1,0 +1,56 @@
+{
+  "name": "@webiny/api-kernel-standalone-sql",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
+  "description": "EXPERIMENTAL: Webiny API handler for the Node server transport on a SQL storage (SQLite or Postgres).",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-core-sql": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
+    "@webiny/api-kernel-standalone": "0.0.0",
+    "@webiny/api-mailer": "0.0.0",
+    "@webiny/di": "^2.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/self-hosted-auth": "0.0.0",
+    "@webiny/self-hosted-auth-sql": "0.0.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "@electric-sql/pglite-socket": "^0.2.20",
+    "@types/ws": "^8.18.2",
+    "@webiny/api-aco": "0.0.0",
+    "@webiny/api-aco-pg": "0.0.0",
+    "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-pg": "0.0.0",
+    "@webiny/api-storage-pg": "0.0.0",
+    "@webiny/api-storage-sqlite": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "knex": "^3.3.0",
+    "rimraf": "^6.1.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1",
+    "ws": "^8.23.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

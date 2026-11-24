@@ -1,10 +1,6 @@
 import type { Container } from "@webiny/di";
-import {
-    HttpRouteDefinition,
-    HttpRouteHandler,
-    RequestContainer
-} from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, RequestContainer } from "@webiny/kernel-core";
+import type { IHttpRequest, IHttpResponse } from "@webiny/kernel-core";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";

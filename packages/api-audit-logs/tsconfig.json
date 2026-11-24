@@ -18,8 +18,8 @@
     { "path": "../api-core-testing" },
     { "path": "../api-headless-cms-testing" },
     { "path": "../db-dynamodb" },
-    { "path": "../event-handler-core" },
     { "path": "../handler" },
+    { "path": "../kernel-core" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -61,10 +61,10 @@
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

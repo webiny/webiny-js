@@ -1,7 +1,7 @@
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/kernel-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { toBuffer } from "../utils.js";

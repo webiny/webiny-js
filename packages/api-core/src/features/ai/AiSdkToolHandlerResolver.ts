@@ -1,5 +1,5 @@
 import type { Container, Constructor } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core/features/events/RequestContainer.js";
+import { RequestContainer } from "@webiny/kernel-core/features/events/RequestContainer.js";
 import { AiSdkToolHandler, AiSdkToolHandlerResolver as Abstraction } from "./abstractions.js";
 
 class ContainerAiSdkToolHandlerResolver implements Abstraction.Interface {

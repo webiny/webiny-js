@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-import type { EventDispatcher } from "@webiny/event-handler-core";
+import type { EventDispatcher } from "@webiny/kernel-core";
 import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
 import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { WriteConnectionRowsHandler } from "~/rows/WriteConnectionRowsHandler.js";

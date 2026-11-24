@@ -1,5 +1,5 @@
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
+import { EventType } from "@webiny/kernel-core";
+import type { IEventType } from "@webiny/kernel-core";
 import {
     WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER,
     WebsocketsConnectionRowsEventHandler,

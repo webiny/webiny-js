@@ -3,13 +3,13 @@ import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import {
     EventBridgeEventHandler,
     type EventBridgeResult
-} from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
-import { RequestContainer } from "@webiny/event-handler-core";
+} from "@webiny/kernel-aws/abstractions/handlers/EventBridgeEventHandler.js";
+import { RequestContainer } from "@webiny/kernel-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";

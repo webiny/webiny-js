@@ -4,9 +4,9 @@
   "references": [
     { "path": "../api-core" },
     { "path": "../background-tasks" },
-    { "path": "../event-handler-core" },
-    { "path": "../event-handler-standalone" },
     { "path": "../feature" },
+    { "path": "../kernel-core" },
+    { "path": "../kernel-standalone" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -20,12 +20,12 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
-      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
-      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
+      "@webiny/kernel-standalone/*": ["../kernel-standalone/src/*"],
+      "@webiny/kernel-standalone": ["../kernel-standalone/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

@@ -5,9 +5,9 @@
     { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../background-tasks" },
-    { "path": "../event-handler-aws" },
-    { "path": "../event-handler-core" },
     { "path": "../feature" },
+    { "path": "../kernel-aws" },
+    { "path": "../kernel-core" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -23,12 +23,12 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
-      "@webiny/event-handler-aws": ["../event-handler-aws/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/kernel-aws/*": ["../kernel-aws/src/*"],
+      "@webiny/kernel-aws": ["../kernel-aws/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

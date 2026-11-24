@@ -9,7 +9,7 @@ import { getTemplatesFolderPath } from "~/utils/index.js";
 
 /**
  * With `<Infra.AuroraPostgres />`, the api workspace gets the Postgres entry file: it exports the
- * handlers from `@webiny/api-event-handler-aws-pg` instead of the DynamoDB ones. Every API function
+ * handlers from `@webiny/api-kernel-aws-pg` instead of the DynamoDB ones. Every API function
  * runs this one bundle, so this puts all of them on Postgres.
  */
 class ReplaceApiLambdaFnHandlersDecorator implements BuildAppWorkspaceService.Interface {

@@ -1,0 +1,152 @@
+import type { Container } from "@webiny/di";
+import { EventDispatcher } from "@webiny/kernel-core";
+import { ScheduledActionEventType } from "@webiny/kernel-core";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/kernel-core";
+import type { IScheduledActionEvent } from "@webiny/kernel-core";
+import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
+import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
+import { TimerSchedulerService } from "@webiny/api-scheduler-standalone";
+import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
+import { ScheduledActionRecoverEventType } from "./ScheduledActionRecoverEventType.js";
+import { SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER } from "./ScheduledActionRecoverEventType.js";
+import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEventType.js";
+import { RecoverScheduledActionsHandler } from "./RecoverScheduledActionsHandler.js";
+import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
+import { RunScheduledActionOnceDecorator } from "./RunScheduledActionOnceDecorator.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+
+/**
+ * ROOT wiring for the standalone (in-process timers) scheduler. Unlike AWS (per-request EventBridge
+ * binding), the server holds ONE long-lived scheduler for all tenants, started once at boot —
+ * the counterpart of the WebSockets connection manager. Registered as `SchedulerService` so
+ * per-request create/update/delete (during GraphQL mutations) manipulate that single live timer set.
+ *
+ * When a timer fires (outside any request), the singleton dispatches a `ScheduledActionEvent`. The
+ * handler is the one AWS runs for an EventBridge Scheduler invocation, in a fresh request container.
+ */
+export function registerSchedulerServer(rootContainer: Container): void {
+    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
+
+    const service = new TimerSchedulerService({
+        logger,
+        runAction: async (id, namespace, tenant) => {
+            /*
+             * `scheduleFor` is the time it fired. The event type needs one to recognise the event,
+             * and nothing downstream reads it.
+             */
+            const event: IScheduledActionEvent = {
+                [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
+                    id,
+                    namespace,
+                    tenant,
+                    scheduleFor: new Date().toISOString()
+                }
+            };
+            // A failure is logged by the scheduler, which runs the action.
+            await dispatcher.dispatch(event);
+        }
+    });
+
+    // Register the ONE scheduler instance under TWO tokens — two views of the same object:
+    //
+    //   - SchedulerService: the hosting-agnostic contract (create/update/delete/exists) that AWS
+    //     implements too. This is what per-request GraphQL mutations resolve to schedule/reschedule.
+    //   - SchedulerSingleton: typed as the CONCRETE TimerSchedulerService, so it also exposes the
+    //     methods that aren't on that contract — start() and recover(). Those are standalone-only: AWS's
+    //     EventBridge is managed infra (nothing to start) and persists its own schedules (nothing to
+    //     recover), so they don't belong on the shared interface. The boot step + recover handler
+    //     resolve this token precisely because they need start()/recover().
+    //
+    // registerInstance (not register) because it's a single live object holding all tenants' timers —
+    // every caller must get the SAME instance, not a per-scope construction. Registered at root, so
+    // per-request child containers inherit it via the parent chain; nothing registers a per-request
+    // SchedulerService default that would shadow it (unlike e.g. the WS transport's Null default).
+    rootContainer.registerInstance(SchedulerSingleton, service);
+    rootContainer.registerInstance(SchedulerService, service);
+
+    rootContainer.register(ScheduledActionEventType);
+    rootContainer.register(ScheduledActionLambdaHandler);
+    // Every process holds timers for the same actions; this lets only one of them run each action.
+    rootContainer.registerDecorator(RunScheduledActionOnceDecorator);
+
+    rootContainer.register(ScheduledActionRecoverEventType);
+    rootContainer.register(RecoverScheduledActionsHandler);
+}
+
+// How often each process re-arms pending actions and fires overdue ones.
+const RECOVER_EVERY_MS = 60_000;
+
+async function recoverPendingSchedules(
+    dispatcher: EventDispatcher.Interface,
+    logger: Logger.Interface,
+    atBoot: boolean
+): Promise<void> {
+    const event: IScheduledActionRecoverEvent = {
+        [SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER]: true
+    };
+
+    try {
+        const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
+        if (atBoot) {
+            logger.info(
+                { recovered: result.recovered },
+                "[scheduler] boot recovery re-armed pending actions"
+            );
+        }
+        if (result.failedTenants.length > 0) {
+            logger.error(
+                { tenants: result.failedTenants },
+                "[scheduler] recovery failed for some tenants"
+            );
+        }
+    } catch (err) {
+        logger.error({ error: err }, "[scheduler] recovery failed");
+    }
+}
+
+/**
+ * Boot step (onServer): start the timers, then re-arm the persisted schedules, at boot and then every
+ * minute. Recovery runs in the background: it executes overdue actions one by one, and the server
+ * should not wait for that before it starts listening. A failure is logged and never crashes startup.
+ *
+ * Running it every minute is what makes several processes work. Each holds its own timers, so an
+ * action scheduled or moved through one process reaches the others' timers within a minute, and an
+ * action whose process died is still fired, as an overdue one. `RunScheduledActionOnceDecorator`
+ * keeps the processes from all running it. Runs never overlap.
+ *
+ * Returns a function for the shutdown: it stops the timers and recovery, then waits up to
+ * `timeoutMs` for actions already running.
+ */
+export async function startSchedulerServer(
+    rootContainer: Container
+): Promise<(timeoutMs: number) => Promise<void>> {
+    const scheduler = rootContainer.resolve(SchedulerSingleton);
+    await scheduler.start();
+
+    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
+    let recovering = false;
+    const recover = async (atBoot: boolean) => {
+        if (recovering) {
+            return;
+        }
+        recovering = true;
+        try {
+            await recoverPendingSchedules(dispatcher, logger, atBoot);
+        } finally {
+            recovering = false;
+        }
+    };
+
+    void recover(true);
+    const everyMinute = setInterval(() => {
+        void recover(false);
+    }, RECOVER_EVERY_MS);
+
+    return async (timeoutMs: number) => {
+        clearInterval(everyMinute);
+        await scheduler.stop();
+        await scheduler.waitForRunning(timeoutMs);
+    };
+}

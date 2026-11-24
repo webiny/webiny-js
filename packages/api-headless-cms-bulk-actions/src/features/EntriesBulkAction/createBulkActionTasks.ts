@@ -22,7 +22,7 @@ import { ProcessTask } from "./internals/ProcessTask.js";
 import { CreateTasksByModel } from "./internals/CreateTasksByModel.js";
 import { ProcessTasksByModel } from "./internals/ProcessTasksByModel.js";
 import type { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export const BULK_ACTION_LIST_TASK_ID = "hcmsBulkListEntries";

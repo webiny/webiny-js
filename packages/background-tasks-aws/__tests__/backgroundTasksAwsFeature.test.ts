@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { BackgroundTasksAwsFeature } from "~/BackgroundTasksAwsFeature.js";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
+import { BackgroundTaskEventHandler } from "@webiny/kernel-core";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
+import { RequestContainer } from "@webiny/kernel-core";
+import { AwsLambdaContext } from "@webiny/kernel-aws/abstractions/AwsLambdaContext.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 

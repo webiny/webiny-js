@@ -1,7 +1,7 @@
-import { TestHttpEventHandler } from "@webiny/event-handler-core/features/testing";
+import { TestHttpEventHandler } from "@webiny/kernel-core/features/testing";
 import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import type { IHeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 

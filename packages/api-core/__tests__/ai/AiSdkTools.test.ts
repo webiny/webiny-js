@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core/features/events/RequestContainer.js";
+import { RequestContainer } from "@webiny/kernel-core/features/events/RequestContainer.js";
 import { AiSdkToolDefinition, AiSdkToolHandler, AiSdkTools } from "~/features/ai/index.js";
 import { AiSdkToolHandlerResolver } from "~/features/ai/AiSdkToolHandlerResolver.js";
 import { AiSdkTools as AiSdkToolsImpl } from "~/features/ai/AiSdkTools.js";

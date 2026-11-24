@@ -1,7 +1,7 @@
-import { ScheduledActionEventHandler } from "@webiny/event-handler-core";
-import type { IScheduledActionEvent } from "@webiny/event-handler-core";
-import type { IScheduledActionResult } from "@webiny/event-handler-core";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { ScheduledActionEventHandler } from "@webiny/kernel-core";
+import type { IScheduledActionEvent } from "@webiny/kernel-core";
+import type { IScheduledActionResult } from "@webiny/kernel-core";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 import type { IExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";

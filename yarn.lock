@@ -10432,10 +10432,10 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/lexical-converter": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
@@ -10535,9 +10535,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/shared-aco": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -10608,9 +10608,9 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -10663,8 +10663,8 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:7.0.2"
   languageName: unknown
@@ -10684,10 +10684,10 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^7.0.179"
@@ -10713,243 +10713,13 @@ __metadata:
     "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     graphql: "npm:^16.15.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
     zod: "npm:4.6.7"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-aws-ddb-os@npm:0.0.0, @webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os"
-  dependencies:
-    "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-aco-ddb": "npm:0.0.0"
-    "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-audit-logs-ddb": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-core-ddb": "npm:0.0.0"
-    "@webiny/api-event-handler-aws": "npm:0.0.0"
-    "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
-    "@webiny/api-opensearch": "npm:0.0.0"
-    "@webiny/api-opensearch-aws": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/api-websockets-aws": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cognito": "npm:0.0.0"
-    "@webiny/db": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-aws-ddb@npm:0.0.0, @webiny/api-event-handler-aws-ddb@workspace:packages/api-event-handler-aws-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-aws-ddb@workspace:packages/api-event-handler-aws-ddb"
-  dependencies:
-    "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-aco-ddb": "npm:0.0.0"
-    "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-audit-logs-ddb": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-core-ddb": "npm:0.0.0"
-    "@webiny/api-event-handler-aws": "npm:0.0.0"
-    "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-ddb": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/api-websockets-aws": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cognito": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/feature-flags": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/wcp": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-aws-pg@workspace:packages/api-event-handler-aws-pg":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-aws-pg@workspace:packages/api-event-handler-aws-pg"
-  dependencies:
-    "@electric-sql/pglite": "npm:^0.5.17"
-    "@electric-sql/pglite-socket": "npm:^0.2.20"
-    "@webiny/api-aco-pg": "npm:0.0.0"
-    "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-core-sql": "npm:0.0.0"
-    "@webiny/api-event-handler-aws": "npm:0.0.0"
-    "@webiny/api-event-handler-core": "npm:0.0.0"
-    "@webiny/api-headless-cms-pg": "npm:0.0.0"
-    "@webiny/api-storage-pg": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    knex: "npm:^3.3.0"
-    pg: "npm:^8.23.1"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-aws@npm:0.0.0, @webiny/api-event-handler-aws@workspace:packages/api-event-handler-aws":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-aws@workspace:packages/api-event-handler-aws"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-event-handler-core": "npm:0.0.0"
-    "@webiny/api-file-manager-s3": "npm:0.0.0"
-    "@webiny/api-graphql": "npm:0.0.0"
-    "@webiny/api-headless-cms-bulk-actions-aws": "npm:0.0.0"
-    "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-scheduler-aws": "npm:0.0.0"
-    "@webiny/api-websockets-aws": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/background-tasks-aws": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
-    pino: "npm:^10.4.0"
-    pino-lambda: "npm:^4.4.1"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-core@npm:0.0.0, @webiny/api-event-handler-core@workspace:packages/api-event-handler-core":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-core@workspace:packages/api-event-handler-core"
-  dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.10"
-    "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-dashboard": "npm:0.0.0"
-    "@webiny/api-file-manager": "npm:0.0.0"
-    "@webiny/api-file-manager-aco": "npm:0.0.0"
-    "@webiny/api-graphql": "npm:0.0.0"
-    "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-aco": "npm:0.0.0"
-    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
-    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
-    "@webiny/api-headless-cms-workflows": "npm:0.0.0"
-    "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/api-record-locking": "npm:0.0.0"
-    "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-website-builder": "npm:0.0.0"
-    "@webiny/api-website-builder-scheduler": "npm:0.0.0"
-    "@webiny/api-website-builder-workflows": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/api-workflows": "npm:0.0.0"
-    "@webiny/background-tasks": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    jsonwebtoken: "npm:^9.0.3"
-    pino: "npm:^10.4.0"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-standalone-sql@npm:0.0.0, @webiny/api-event-handler-standalone-sql@workspace:packages/api-event-handler-standalone-sql":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-standalone-sql@workspace:packages/api-event-handler-standalone-sql"
-  dependencies:
-    "@electric-sql/pglite": "npm:^0.5.17"
-    "@electric-sql/pglite-socket": "npm:^0.2.20"
-    "@types/ws": "npm:^8.18.2"
-    "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-aco-pg": "npm:0.0.0"
-    "@webiny/api-audit-logs": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-core-sql": "npm:0.0.0"
-    "@webiny/api-event-handler-core": "npm:0.0.0"
-    "@webiny/api-event-handler-standalone": "npm:0.0.0"
-    "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-headless-cms-pg": "npm:0.0.0"
-    "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/api-storage-pg": "npm:0.0.0"
-    "@webiny/api-storage-sqlite": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/self-hosted-auth": "npm:0.0.0"
-    "@webiny/self-hosted-auth-sql": "npm:0.0.0"
-    knex: "npm:^3.3.0"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-    ws: "npm:^8.23.0"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-event-handler-standalone@npm:0.0.0, @webiny/api-event-handler-standalone@workspace:packages/api-event-handler-standalone":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-event-handler-standalone@workspace:packages/api-event-handler-standalone"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-event-handler-core": "npm:0.0.0"
-    "@webiny/api-file-manager-standalone": "npm:0.0.0"
-    "@webiny/api-graphql": "npm:0.0.0"
-    "@webiny/api-headless-cms-bulk-actions-standalone": "npm:0.0.0"
-    "@webiny/api-scheduler": "npm:0.0.0"
-    "@webiny/api-scheduler-standalone": "npm:0.0.0"
-    "@webiny/api-websockets-standalone": "npm:0.0.0"
-    "@webiny/api-websockets-standalone-redis": "npm:0.0.0"
-    "@webiny/background-tasks-standalone": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/event-handler-standalone": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -10967,9 +10737,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -10992,10 +10762,10 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     exifreader: "npm:^4.54.0"
@@ -11017,9 +10787,9 @@ __metadata:
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
@@ -11046,9 +10816,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -11076,8 +10846,8 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.15.0"
@@ -11101,9 +10871,9 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.15.0"
@@ -11120,9 +10890,9 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
   peerDependencies:
@@ -11137,8 +10907,8 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
   peerDependencies:
@@ -11158,9 +10928,9 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -11193,9 +10963,9 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/stdlib": "npm:^0.0.21"
     "@webiny/utils": "npm:0.0.0"
@@ -11357,9 +11127,9 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -11380,7 +11150,7 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.15.0"
     rimraf: "npm:^6.1.4"
@@ -11450,9 +11220,9 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -11475,6 +11245,236 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-kernel-aws-ddb-os@npm:0.0.0, @webiny/api-kernel-aws-ddb-os@workspace:packages/api-kernel-aws-ddb-os":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-aws-ddb-os@workspace:packages/api-kernel-aws-ddb-os"
+  dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-ddb": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
+    "@webiny/api-kernel-aws": "npm:0.0.0"
+    "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-opensearch-aws": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cognito": "npm:0.0.0"
+    "@webiny/db": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    jsonwebtoken: "npm:^9.0.3"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-kernel-aws-ddb@npm:0.0.0, @webiny/api-kernel-aws-ddb@workspace:packages/api-kernel-aws-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-aws-ddb@workspace:packages/api-kernel-aws-ddb"
+  dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-ddb": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-audit-logs-ddb": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-ddb": "npm:0.0.0"
+    "@webiny/api-kernel-aws": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cognito": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature-flags": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    jsonwebtoken: "npm:^9.0.3"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-kernel-aws-pg@workspace:packages/api-kernel-aws-pg":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-aws-pg@workspace:packages/api-kernel-aws-pg"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.17"
+    "@electric-sql/pglite-socket": "npm:^0.2.20"
+    "@webiny/api-aco-pg": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-kernel-aws": "npm:0.0.0"
+    "@webiny/api-kernel-core": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    knex: "npm:^3.3.0"
+    pg: "npm:^8.23.1"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-kernel-aws@npm:0.0.0, @webiny/api-kernel-aws@workspace:packages/api-kernel-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-aws@workspace:packages/api-kernel-aws"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-file-manager-s3": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-headless-cms-bulk-actions-aws": "npm:0.0.0"
+    "@webiny/api-kernel-core": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
+    "@webiny/api-scheduler-aws": "npm:0.0.0"
+    "@webiny/api-websockets-aws": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/background-tasks-aws": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    pino: "npm:^10.4.0"
+    pino-lambda: "npm:^4.4.1"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-kernel-core@npm:0.0.0, @webiny/api-kernel-core@workspace:packages/api-kernel-core":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-core@workspace:packages/api-kernel-core"
+  dependencies:
+    "@types/jsonwebtoken": "npm:^9.0.10"
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-dashboard": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-file-manager-aco": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-aco": "npm:0.0.0"
+    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
+    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
+    "@webiny/api-headless-cms-workflows": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/api-record-locking": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-website-builder-scheduler": "npm:0.0.0"
+    "@webiny/api-website-builder-workflows": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/api-workflows": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    jsonwebtoken: "npm:^9.0.3"
+    pino: "npm:^10.4.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-kernel-standalone-sql@npm:0.0.0, @webiny/api-kernel-standalone-sql@workspace:packages/api-kernel-standalone-sql":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-standalone-sql@workspace:packages/api-kernel-standalone-sql"
+  dependencies:
+    "@electric-sql/pglite": "npm:^0.5.17"
+    "@electric-sql/pglite-socket": "npm:^0.2.20"
+    "@types/ws": "npm:^8.18.2"
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-aco-pg": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-sql": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-pg": "npm:0.0.0"
+    "@webiny/api-kernel-core": "npm:0.0.0"
+    "@webiny/api-kernel-standalone": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/api-storage-pg": "npm:0.0.0"
+    "@webiny/api-storage-sqlite": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/self-hosted-auth": "npm:0.0.0"
+    "@webiny/self-hosted-auth-sql": "npm:0.0.0"
+    knex: "npm:^3.3.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+    ws: "npm:^8.23.0"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-kernel-standalone@npm:0.0.0, @webiny/api-kernel-standalone@workspace:packages/api-kernel-standalone":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-kernel-standalone@workspace:packages/api-kernel-standalone"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-file-manager-standalone": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-headless-cms-bulk-actions-standalone": "npm:0.0.0"
+    "@webiny/api-kernel-core": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
+    "@webiny/api-scheduler-standalone": "npm:0.0.0"
+    "@webiny/api-websockets-standalone": "npm:0.0.0"
+    "@webiny/api-websockets-standalone-redis": "npm:0.0.0"
+    "@webiny/background-tasks-standalone": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    "@webiny/kernel-standalone": "npm:0.0.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-mailer@npm:0.0.0, @webiny/api-mailer@workspace:packages/api-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/api-mailer@workspace:packages/api-mailer"
@@ -11486,9 +11486,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     email-addresses: "npm:^5.0.0"
     graphql: "npm:^16.15.0"
@@ -11546,9 +11546,9 @@ __metadata:
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.15.0"
@@ -11574,10 +11574,10 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
@@ -11611,8 +11611,8 @@ __metadata:
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.15.0"
     rimraf: "npm:^6.1.4"
@@ -11725,9 +11725,9 @@ __metadata:
     "@webiny/api-sync-to-opensearch": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/stdlib": "npm:^0.0.21"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
@@ -11747,10 +11747,10 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
@@ -11852,10 +11852,10 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
@@ -11883,10 +11883,10 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
@@ -11943,9 +11943,9 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/event-handler-standalone": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    "@webiny/kernel-standalone": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.4"
@@ -11968,9 +11968,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.15.0"
     rimraf: "npm:^6.1.4"
@@ -12779,9 +12779,9 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-aws": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-aws": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"
@@ -12797,9 +12797,9 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/event-handler-standalone": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    "@webiny/kernel-standalone": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"
@@ -12822,10 +12822,10 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/error": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -12856,9 +12856,9 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
     mobx: "npm:^7.1.7"
     react: "npm:19.3.1"
@@ -13163,53 +13163,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/event-handler-aws@npm:0.0.0, @webiny/event-handler-aws@workspace:packages/event-handler-aws":
-  version: 0.0.0-use.local
-  resolution: "@webiny/event-handler-aws@workspace:packages/event-handler-aws"
-  dependencies:
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/event-handler-core@npm:0.0.0, @webiny/event-handler-core@workspace:packages/event-handler-core":
-  version: 0.0.0-use.local
-  resolution: "@webiny/event-handler-core@workspace:packages/event-handler-core"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/event-handler-standalone@npm:0.0.0, @webiny/event-handler-standalone@workspace:packages/event-handler-standalone":
-  version: 0.0.0-use.local
-  resolution: "@webiny/event-handler-standalone@workspace:packages/event-handler-standalone"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^2.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  peerDependencies:
-    "@webiny/di": ^2.0.0
-  languageName: unknown
-  linkType: soft
-
 "@webiny/feature-flags@npm:0.0.0, @webiny/feature-flags@workspace:packages/feature-flags":
   version: 0.0.0-use.local
   resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
@@ -13345,6 +13298,53 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/kernel-aws@npm:0.0.0, @webiny/kernel-aws@workspace:packages/kernel-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/kernel-aws@workspace:packages/kernel-aws"
+  dependencies:
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/kernel-core@npm:0.0.0, @webiny/kernel-core@workspace:packages/kernel-core":
+  version: 0.0.0-use.local
+  resolution: "@webiny/kernel-core@workspace:packages/kernel-core"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/kernel-standalone@npm:0.0.0, @webiny/kernel-standalone@workspace:packages/kernel-standalone":
+  version: 0.0.0-use.local
+  resolution: "@webiny/kernel-standalone@workspace:packages/kernel-standalone"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/languages@npm:0.0.0, @webiny/languages@workspace:packages/languages":
   version: 0.0.0-use.local
   resolution: "@webiny/languages@workspace:packages/languages"
@@ -13360,10 +13360,10 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -13577,10 +13577,6 @@ __metadata:
     "@webiny/api-audit-logs-ddb": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-core-sql": "npm:0.0.0"
-    "@webiny/api-event-handler-aws": "npm:0.0.0"
-    "@webiny/api-event-handler-aws-ddb": "npm:0.0.0"
-    "@webiny/api-event-handler-aws-ddb-os": "npm:0.0.0"
-    "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-file-manager-aco": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"
@@ -13592,6 +13588,10 @@ __metadata:
     "@webiny/api-headless-cms-sql": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms-workflows": "npm:0.0.0"
+    "@webiny/api-kernel-aws": "npm:0.0.0"
+    "@webiny/api-kernel-aws-ddb": "npm:0.0.0"
+    "@webiny/api-kernel-aws-ddb-os": "npm:0.0.0"
+    "@webiny/api-kernel-core": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
@@ -13711,7 +13711,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-standalone-template@workspace:packages/project-standalone-template"
   dependencies:
-    "@webiny/api-event-handler-standalone-sql": "npm:0.0.0"
+    "@webiny/api-kernel-standalone-sql": "npm:0.0.0"
     "@webiny/api-storage-pg": "npm:0.0.0"
     "@webiny/api-storage-sqlite": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
@@ -14135,10 +14135,10 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
@@ -25915,10 +25915,10 @@ __metadata:
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
+    "@webiny/kernel-core": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"

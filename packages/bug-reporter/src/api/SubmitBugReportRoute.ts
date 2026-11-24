@@ -1,8 +1,8 @@
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
-import { HttpRouteHandler } from "@webiny/event-handler-core";
-import { toSseFrame } from "@webiny/event-handler-core";
-import type { IHttpRequest } from "@webiny/event-handler-core";
-import type { IHttpResponseBuilder } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/kernel-core";
+import { HttpRouteHandler } from "@webiny/kernel-core";
+import { toSseFrame } from "@webiny/kernel-core";
+import type { IHttpRequest } from "@webiny/kernel-core";
+import type { IHttpResponseBuilder } from "@webiny/kernel-core";
 import { SubmitBugReportUseCase } from "./submitBugReport/abstractions.js";
 import { readPayload } from "./readPayload.js";
 import type { BugReportStreamEvent } from "../shared/types.js";

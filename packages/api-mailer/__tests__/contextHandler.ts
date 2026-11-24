@@ -3,7 +3,7 @@
 // and requires a POST /graphql invocation; that overhead is only warranted in graphQLHandler.ts
 // where we're testing the full request/response cycle.
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/kernel-core";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { MailerFeature } from "~/MailerFeature.js";

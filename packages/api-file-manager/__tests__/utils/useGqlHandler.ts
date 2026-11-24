@@ -1,5 +1,5 @@
 import { until } from "@webiny/api/testing/until.js";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";

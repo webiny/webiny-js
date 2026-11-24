@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/feature/api";
-import { WebSocketEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/WebSocketEventHandler.js";
-import type { IWebSocketEvent } from "@webiny/event-handler-aws/eventTypes/WebSocketEventType.js";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { WebSocketEventHandler } from "@webiny/kernel-aws/abstractions/handlers/WebSocketEventHandler.js";
+import type { IWebSocketEvent } from "@webiny/kernel-aws/eventTypes/WebSocketEventType.js";
+import { RequestContainer } from "@webiny/kernel-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -10,7 +10,7 @@ import type { IAuthenticationContext } from "@webiny/api-core/features/security/
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { WebsocketsRunner } from "@webiny/api-websockets/runner/index.js";
 import { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";

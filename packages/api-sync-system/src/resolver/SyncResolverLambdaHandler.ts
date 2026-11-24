@@ -1,6 +1,6 @@
-import { SqsEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/SqsEventHandler.js";
-import type { SqsResult } from "@webiny/event-handler-aws/abstractions/handlers/SqsEventHandler.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { SqsEventHandler } from "@webiny/kernel-aws/abstractions/handlers/SqsEventHandler.js";
+import type { SqsResult } from "@webiny/kernel-aws/abstractions/handlers/SqsEventHandler.js";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import type { SQSEvent } from "@webiny/aws-sdk/types/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WebinyError } from "@webiny/error";

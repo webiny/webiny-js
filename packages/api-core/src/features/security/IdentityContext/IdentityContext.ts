@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
-import { HandlerExecution } from "@webiny/event-handler-core";
+import { HandlerExecution } from "@webiny/kernel-core";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";

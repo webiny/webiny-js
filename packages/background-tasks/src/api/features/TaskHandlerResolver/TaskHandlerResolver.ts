@@ -1,5 +1,5 @@
 import type { Container, Constructor } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core/features/events/RequestContainer.js";
+import { RequestContainer } from "@webiny/kernel-core/features/events/RequestContainer.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskHandlerResolver as Abstraction } from "./abstractions.js";
 

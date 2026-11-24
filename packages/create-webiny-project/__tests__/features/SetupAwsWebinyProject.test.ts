@@ -6,7 +6,7 @@ import { SetupAwsWebinyProject } from "~/features/CreateWebinyProject/projects/a
 import type { CliParams } from "~/types.js";
 
 // The Postgres handlers the project's api entry imports. Only `pg` projects install them.
-const PG_HANDLER_PACKAGE = "@webiny/api-event-handler-aws-pg";
+const PG_HANDLER_PACKAGE = "@webiny/api-kernel-aws-pg";
 
 // The CMS storage and the folder catalog come with `<Infra.AuroraPostgres />`, through `webiny`.
 const PG_MODULE_PACKAGES = ["@webiny/api-aco-pg", "@webiny/api-headless-cms-pg"];

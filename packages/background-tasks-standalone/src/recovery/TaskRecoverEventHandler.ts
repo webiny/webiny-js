@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { IEventHandler } from "@webiny/event-handler-core";
+import type { IEventHandler } from "@webiny/kernel-core";
 import type { ITaskRecoverEvent } from "./TaskRecoverEventType.js";
 
 export interface ITaskRecoverResult {

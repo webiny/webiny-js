@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createImplementation } from "@webiny/feature/api";
-import { HandlerExecution } from "@webiny/event-handler-core";
+import { HandlerExecution } from "@webiny/kernel-core";
 import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";

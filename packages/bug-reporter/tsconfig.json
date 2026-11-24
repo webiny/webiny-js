@@ -6,8 +6,8 @@
     { "path": "../api-core" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../event-handler-core" },
     { "path": "../feature" },
+    { "path": "../kernel-core" },
     { "path": "../project-extensions" }
   ],
   "compilerOptions": {
@@ -25,10 +25,10 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/project-extensions/*": ["../project-extensions/src/*"],
       "@webiny/project-extensions": ["../project-extensions/src"]
     }

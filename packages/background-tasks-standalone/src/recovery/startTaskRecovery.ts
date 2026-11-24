@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/event-handler-core";
+import { EventDispatcher } from "@webiny/kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { RECOVER_EVERY_MS } from "~/claim/constants.js";
 import { TASK_RECOVER_EVENT_IDENTIFIER } from "./TaskRecoverEventType.js";

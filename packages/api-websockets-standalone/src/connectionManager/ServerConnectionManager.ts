@@ -1,5 +1,5 @@
-import { EventDispatcher } from "@webiny/event-handler-core";
-import { ProcessOwner } from "@webiny/event-handler-standalone";
+import { EventDispatcher } from "@webiny/kernel-core";
+import { ProcessOwner } from "@webiny/kernel-standalone";
 import { WebsocketsLiveSockets } from "~/liveSockets/abstractions.js";
 import {
     WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER,

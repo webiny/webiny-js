@@ -6,7 +6,7 @@
  * model resolves, the indirection works.
  */
 import { describe, expect, it } from "vitest";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";

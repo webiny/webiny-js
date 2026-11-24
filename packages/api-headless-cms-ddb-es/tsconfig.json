@@ -21,8 +21,8 @@
     { "path": "../api-search-index-tasks-ddb-os" },
     { "path": "../api-sync-ddb-to-opensearch" },
     { "path": "../background-tasks" },
-    { "path": "../event-handler-core" },
     { "path": "../handler" },
+    { "path": "../kernel-core" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -70,10 +70,10 @@
       "@webiny/api-sync-ddb-to-opensearch": ["../api-sync-ddb-to-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

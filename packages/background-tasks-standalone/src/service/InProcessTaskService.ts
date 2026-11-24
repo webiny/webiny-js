@@ -1,4 +1,4 @@
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";

@@ -20,7 +20,7 @@
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/di": "^2.0.0",
-    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/kernel-core": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.15.0"
   },

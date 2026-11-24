@@ -4,8 +4,8 @@
   "references": [
     { "path": "../api" },
     { "path": "../error" },
-    { "path": "../event-handler-core" },
     { "path": "../feature" },
+    { "path": "../kernel-core" },
     { "path": "../plugins" },
     { "path": "../utils" }
   ],
@@ -20,10 +20,10 @@
       "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
+      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],

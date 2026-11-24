@@ -1,5 +1,5 @@
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
+import { EventType } from "@webiny/kernel-core";
+import type { IEventType } from "@webiny/kernel-core";
 import { EmptyTrashBinsEventHandler } from "./EmptyTrashBinsEventHandler.js";
 
 export const EMPTY_TRASH_BINS_EVENT_IDENTIFIER = "WebinyEmptyTrashBins";

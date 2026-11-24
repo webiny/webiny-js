@@ -1,5 +1,5 @@
-import { TestHttpEventHandler } from "@webiny/event-handler-core/features/testing";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { TestHttpEventHandler } from "@webiny/kernel-core/features/testing";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 

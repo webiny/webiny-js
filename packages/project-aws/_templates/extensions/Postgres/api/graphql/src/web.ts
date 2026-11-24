@@ -6,7 +6,7 @@
  * separate bundle (`build-web/`), never part of `handler.mjs`. The web function serves the HTTP routes;
  * every other invocation still goes to the regular `graphql` Lambda built from `index.ts`.
  */
-import { startAwsPgWebApi } from "@webiny/api-event-handler-aws-pg";
+import { startAwsPgWebApi } from "@webiny/api-kernel-aws-pg";
 import { extensions } from "./extensions";
 
 startAwsPgWebApi({ extensions }).catch(err => {

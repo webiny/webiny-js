@@ -1,5 +1,5 @@
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
+import { EventType } from "@webiny/kernel-core";
+import type { IEventType } from "@webiny/kernel-core";
 import { SyncWorkerEventHandler } from "./SyncWorkerEventHandler.js";
 import type { ISyncWorkerEvent } from "./SyncWorkerEventHandler.js";
 

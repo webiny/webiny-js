@@ -1,5 +1,5 @@
-import { TestHttpEventHandler } from "@webiny/event-handler-core/features/testing";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { TestHttpEventHandler } from "@webiny/kernel-core/features/testing";
+import type { EventContext, NextFunction } from "@webiny/kernel-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IAuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";

@@ -1,6 +1,6 @@
 import { Container } from "@webiny/feature/api";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
+import { RequestContainer } from "@webiny/kernel-core";
+import { DynamoDBEventHandler } from "@webiny/kernel-aws/abstractions/handlers/DynamoDBEventHandler.js";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { DdbToOpenSearchFeature } from "./features/DdbToOpenSearchFeature.js";

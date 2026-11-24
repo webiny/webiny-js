@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { BackgroundTasksAwsFeature } from "~/BackgroundTasksAwsFeature.js";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
+import { BackgroundTaskEventHandler } from "@webiny/kernel-core";
+import { RequestContainer } from "@webiny/kernel-core";
+import { AwsLambdaContext } from "@webiny/kernel-aws/abstractions/AwsLambdaContext.js";
 import {
     RawTenantId,
     RequestTenantLoader

@@ -46,8 +46,8 @@
     "@webiny/api-core-testing": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
+    "@webiny/kernel-core": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "typescript": "^7.0.2",
     "vitest": "^5.1.1"

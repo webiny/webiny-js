@@ -14,7 +14,7 @@ import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
 import { BULK_ACTION_LIST_TASK_ID } from "~/features/EntriesBulkAction/createBulkActionTasks.js";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/kernel-core";
 import type { HcmsBulkActionsContext } from "~/types.js";
 
 class BulkActionsGraphQLSchemaImpl implements CmsGraphQLSchemaFactory.Interface {
