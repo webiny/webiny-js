@@ -5,8 +5,14 @@ import {
     createTableIfMissing,
     ensureTable,
     recordTable,
-    type TableCreator
+    type TableCreator,
+    type TableUpgrade
 } from "./schemaMemory/ensureTable.js";
+
+interface DefinedTable {
+    creator: TableCreator;
+    upgrade?: TableUpgrade;
+}
 
 export interface TableManagerOptions {
     /**
@@ -29,7 +35,7 @@ export class TableManager {
     private readonly prefix: string;
     private readonly schemaManaged: () => boolean;
     /* Tables declared by the storage operations using this manager, for schema setup. */
-    private readonly defined = new Map<string, TableCreator>();
+    private readonly defined = new Map<string, DefinedTable>();
     private memoryOfTables?: ISchemaMemory;
 
     constructor(knex: Knex, prefix: string = "", options: TableManagerOptions = {}) {
@@ -47,20 +53,25 @@ export class TableManager {
 
     /**
      * Declares a table and returns the function that ensures it on first use. Declared tables are
-     * created together by `setup()` (schema setup).
+     * created together by `setup()` (schema setup). `upgrade` brings a table that already existed up
+     * to date, for example with an index added after it was created.
      */
-    public define(tableName: string, creator: TableCreator): () => Promise<void> {
-        this.defined.set(tableName, creator);
-        return () => this.ensure(tableName, creator);
+    public define(
+        tableName: string,
+        creator: TableCreator,
+        upgrade?: TableUpgrade
+    ): () => Promise<void> {
+        this.defined.set(tableName, { creator, upgrade });
+        return () => this.ensure(tableName, creator, upgrade);
     }
 
     /* Creates every declared table that doesn't exist yet. Runs at schema setup. */
     public async setup(): Promise<void> {
-        for (const [tableName, creator] of this.defined) {
+        for (const [tableName, { creator, upgrade }] of this.defined) {
             const resolved = this.resolve(tableName);
             // Nothing checked before a reset is recorded after it (as in `ensureTable`).
             const generation = this.memory.generation;
-            await createTableIfMissing(this.knex, resolved, creator);
+            await createTableIfMissing(this.knex, resolved, creator, upgrade);
             if (this.memory.generation === generation) {
                 recordTable(this.knex, this.memory, resolved);
             }
@@ -71,7 +82,11 @@ export class TableManager {
         return `${this.prefix}${tableName}`;
     }
 
-    public async ensure(tableName: string, creator: TableCreator): Promise<void> {
+    public async ensure(
+        tableName: string,
+        creator: TableCreator,
+        upgrade?: TableUpgrade
+    ): Promise<void> {
         if (this.schemaManaged()) {
             return;
         }
@@ -79,7 +94,8 @@ export class TableManager {
             knex: this.knex,
             memory: this.memory,
             tableName: this.resolve(tableName),
-            create: creator
+            create: creator,
+            upgrade
         });
     }
 

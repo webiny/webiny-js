@@ -1,0 +1,19 @@
+/*
+ * The floating toolbar reuses the static toolbar's button styles (`.static-toolbar`); this turns
+ * the band into a panel over the selection.
+ */
+.static-toolbar.floating-toolbar,
+.floating-toolbar {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 4px;
+  border: 1px solid var(--border-color-neutral-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-base);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  white-space: nowrap;
+}

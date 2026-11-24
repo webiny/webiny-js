@@ -5,7 +5,8 @@ import type { WbRedirect } from "~/domain/redirect/abstractions.js";
 import {
     RedirectNotFoundError,
     RedirectPersistenceError,
-    RedirectNotAuthorizedError
+    RedirectNotAuthorizedError,
+    RedirectValidationError
 } from "~/domain/redirect/errors.js";
 
 // ============================================================================
@@ -26,8 +27,10 @@ export interface IMoveRedirectRepository {
 }
 
 export interface IMoveRedirectRepositoryErrors {
+    notAuthorized: RedirectNotAuthorizedError;
     notFound: RedirectNotFoundError;
     persistence: RedirectPersistenceError;
+    validation: RedirectValidationError;
 }
 
 type RepositoryError = IMoveRedirectRepositoryErrors[keyof IMoveRedirectRepositoryErrors];
@@ -56,6 +59,7 @@ export interface IMoveRedirectUseCaseErrors {
     notAuthorized: RedirectNotAuthorizedError;
     notFound: RedirectNotFoundError;
     persistence: RedirectPersistenceError;
+    validation: RedirectValidationError;
 }
 
 type UseCaseError = IMoveRedirectUseCaseErrors[keyof IMoveRedirectUseCaseErrors];

@@ -1,1 +1,4 @@
-export { CmsGenerateEntryContentUseCase } from "./abstractions.js";
+export {
+    CmsGenerateEntryContentUseCase,
+    QueueCmsGenerateEntryContentUseCase
+} from "./abstractions.js";

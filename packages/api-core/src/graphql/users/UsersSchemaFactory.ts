@@ -10,9 +10,8 @@ import {
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { AdminUser } from "~/types/users.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
-import NotAuthorizedResponse from "~/graphql/security/NotAuthorizedResponse.js";
+import { GetCurrentUserUseCase } from "~/features/users/GetCurrentUser/index.js";
 import { ListUsersUseCase } from "~/features/users/ListUsers/index.js";
-import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 
@@ -146,7 +145,8 @@ class UsersSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
             resolver:
                 (getUser: GetUserUseCase.Interface) =>
                 async ({ args }) => {
-                    const { where } = args;
+                    // `where` is optional in the schema.
+                    const where = args.where ?? {};
                     const userResult = await getUser.execute({
                         id: where.id,
                         email: where.email
@@ -173,40 +173,25 @@ class UsersSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "AdminUsersQuery.getCurrentUser",
-            dependencies: [IdentityContext, GetUserUseCase],
-            resolver:
-                (identityContext: IdentityContext.Interface, getUser: GetUserUseCase.Interface) =>
-                async () => {
-                    const identity = identityContext.getIdentity();
+            dependencies: [GetCurrentUserUseCase],
+            resolver: (getCurrentUser: GetCurrentUserUseCase.Interface) => async () => {
+                const userResult = await getCurrentUser.execute();
 
-                    if (!identity.isAdmin()) {
-                        throw new NotAuthorizedResponse();
+                if (userResult.isFail()) {
+                    const error = userResult.error;
+                    if (error.code === "AdminUser/NotFound") {
+                        return new NotFoundResponse("Current user was not found!");
                     }
 
-                    // Current user might not have permissions to execute `getUser` (this method can load any user in the system),
-                    // but loading your own user record should be allowed. For that reason, let's temporarily disable authorization.
-                    const userResponse = await identityContext.withoutAuthorization(async () => {
-                        // Get user record using the identity ID.
-                        return await getUser.execute({ id: identity.id });
+                    return new ErrorResponse({
+                        message: error.message,
+                        code: error.code,
+                        data: error.data
                     });
-
-                    if (userResponse.isFail()) {
-                        const error = userResponse.error;
-                        if (error.code === "AdminUser/NotFound") {
-                            return new NotFoundResponse(
-                                `User with ID ${identity.id} was not found!`
-                            );
-                        }
-
-                        return new ErrorResponse({
-                            message: error.message,
-                            code: error.code,
-                            data: error.data
-                        });
-                    }
-
-                    return new Response(userResponse.value);
                 }
+
+                return new Response(userResult.value);
+            }
         });
 
         builder.addResolver({

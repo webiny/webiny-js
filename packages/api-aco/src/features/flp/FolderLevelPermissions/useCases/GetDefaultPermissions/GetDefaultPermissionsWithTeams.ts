@@ -68,6 +68,11 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
          */
         const identity = this.identityContext.getIdentity();
 
+        // Anonymous identities belong to no teams.
+        if (identity.isAnonymous()) {
+            return await this.decoretee.execute(originalPermissions);
+        }
+
         // Get teams for current identity (once per instance and identity).
         if (!this.loaded || this.loaded.identityId !== identity.id) {
             this.loaded = {

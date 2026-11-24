@@ -6,6 +6,11 @@ import {
 } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { BenchmarkAbstraction } from "@webiny/api";
+import {
+    invalidRequestBodyResponse,
+    isJsonContentType,
+    unsupportedMediaTypeResponse
+} from "@webiny/api-graphql";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
@@ -29,6 +34,10 @@ export function createCmsRoute(type: ApiEndpoint) {
         constructor(public container: Container) {}
 
         async handle(request: IHttpRequest): Promise<IHttpResponse> {
+            if (!isJsonContentType(request)) {
+                return unsupportedMediaTypeResponse();
+            }
+
             /*
              * The request runs as this endpoint: the schema, reference fields and validation read
              * HeadlessCmsEndpointConfig. The feature registers a default for the whole request;
@@ -54,9 +63,18 @@ export function createCmsRoute(type: ApiEndpoint) {
                 };
             }
 
-            const result = await this.container
-                .resolve(CmsSchemaExecutor)
-                .execute(type, request.body);
+            let result: unknown;
+            try {
+                result = await this.container
+                    .resolve(CmsSchemaExecutor)
+                    .execute(type, request.body);
+            } catch (ex) {
+                const response = invalidRequestBodyResponse(ex);
+                if (response) {
+                    return response;
+                }
+                throw ex;
+            }
             // Flush benchmark measurements (no-op unless benchmarking was enabled for the request).
             await this.container.resolve(BenchmarkAbstraction).output();
             return {

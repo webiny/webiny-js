@@ -48,6 +48,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-extensions": "0.0.0",
     "@webiny/project-extensions-aws": "0.0.0",
+    "@webiny/sdk": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
@@ -142,6 +143,7 @@
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
+    "./admin/cms/field-renderers/index": "./admin/cms/field-renderers/index.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
     "./admin/cms/model": "./admin/cms/model.js",
@@ -166,7 +168,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "a140151a1fcae554a5c25c6e30c8b7aa38bf8746cba1c775f893209232313cfc",
+  "exportGenerationHash": "685f01fca1411638263078763f887d8d242ecf2f037f15979db91863641abb75",
   "webiny": {
     "publishFrom": "dist"
   }

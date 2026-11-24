@@ -5,7 +5,11 @@ import { RolesRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { RoleBeforeDeleteEvent, RoleAfterDeleteEvent } from "./events.js";
-import { NotAuthorizedError, CannotDeletePluginRolesError } from "../shared/errors.js";
+import {
+    NotAuthorizedError,
+    CannotDeletePluginRolesError,
+    CannotDeleteSystemRolesError
+} from "../shared/errors.js";
 
 class DeleteRoleUseCaseImpl implements UseCaseAbstraction.Interface {
     private repository: RolesRepository.Interface;
@@ -38,6 +42,12 @@ class DeleteRoleUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check if role is created via plugin
         if (existingRole.plugin) {
             return Result.fail(new CannotDeletePluginRolesError());
+        }
+
+        // Security: system roles (e.g. "Full Access") are managed by the system only. Installers
+        // run without authorization, so they can still roll back the roles they created.
+        if (existingRole.system && this.identityContext.isAuthorizationEnabled()) {
+            return Result.fail(new CannotDeleteSystemRolesError());
         }
 
         await this.eventPublisher.publish(new RoleBeforeDeleteEvent({ role: existingRole }));

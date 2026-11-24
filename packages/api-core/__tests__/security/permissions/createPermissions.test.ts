@@ -18,6 +18,11 @@ const schema = {
             permission: "test.entry",
             scopes: ["full", "own"],
             actions: [{ name: "rwd" }, { name: "pw" }]
+        },
+        {
+            id: "settings",
+            permission: "test.settings",
+            scopes: ["full"]
         }
     ]
 } as const;
@@ -30,8 +35,14 @@ function createMockIdentityContext(permissions: SecurityPermission[]): IIdentity
         getPermission: async (name: string) => {
             return permissions.find(p => p.name === name) ?? null;
         },
+        // Matches wildcards like the real IdentityContext: "test.*" covers "test.entry".
         getPermissions: async (name: string) => {
-            return permissions.filter(p => p.name === name);
+            return permissions.filter(p => {
+                return (
+                    p.name === name ||
+                    (p.name.endsWith("*") && name.startsWith(p.name.slice(0, -1)))
+                );
+            });
         },
         getIdentity: () => ({ id: "user-1", displayName: "Test User", type: "test" }),
         listPermissions: async () => permissions,
@@ -193,6 +204,27 @@ describe("createPermissions", () => {
 
         test("canDelete returns false", async () => {
             expect(await permissions.canDelete("entry")).toBe(false);
+        });
+    });
+
+    describe("entity without rwd actions", () => {
+        test("a wildcard restricted by rwd does not grant it", async () => {
+            const permissions = resolvePermissions(
+                createMockIdentityContext([{ name: "test.*", rwd: "r" }])
+            );
+            expect(await permissions.canAccess("settings")).toBe(false);
+        });
+
+        test("an unrestricted wildcard grants it", async () => {
+            const permissions = resolvePermissions(createMockIdentityContext([{ name: "test.*" }]));
+            expect(await permissions.canAccess("settings")).toBe(true);
+        });
+
+        test("its own permission grants it", async () => {
+            const permissions = resolvePermissions(
+                createMockIdentityContext([{ name: "test.settings" }])
+            );
+            expect(await permissions.canAccess("settings")).toBe(true);
         });
     });
 

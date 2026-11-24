@@ -1,3 +1,4 @@
+import type { SettingsNotAuthorized } from "~/api/domain/errors.js";
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { TransportSettings } from "~/api/types.js";
@@ -22,7 +23,7 @@ export namespace GetSettingsRepository {
 }
 
 export interface IGetSettingsUseCase {
-    execute(transportName: string): Promise<Result<ISettingsWithSource>>;
+    execute(transportName: string): Promise<Result<ISettingsWithSource, SettingsNotAuthorized>>;
 }
 
 export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>("GetSettingsUseCase");

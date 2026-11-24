@@ -22,7 +22,14 @@ import { UnlockEntryUseCase } from "~/features/UnlockEntry/abstractions.js";
 import { UnlockEntryRequestUseCase } from "~/features/UnlockEntryRequest/abstractions.js";
 import { resolve } from "./resolve.js";
 import { resolveList } from "./resolve.js";
-import { checkPermissions } from "./checkPermissions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import {
+    checkListAllPermissions,
+    checkPermissions,
+    checkTypePermissions,
+    createLockTypeAccess
+} from "./checkPermissions.js";
 
 interface IEntryArgs {
     id: string;
@@ -286,9 +293,11 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "RecordLockingQuery.listLockRecords",
-        dependencies: [IdentityContext, ListLockRecordsUseCase],
+        dependencies: [IdentityContext, GetModelUseCase, AccessControl, ListLockRecordsUseCase],
         resolver: (
             identityContext: IdentityContext.Interface,
+            getModel: GetModelUseCase.Interface,
+            accessControl: AccessControl.Interface,
             useCase: ListLockRecordsUseCase.Interface
         ) => {
             return ({ args }: IResolverParams<ListLockRecordsInput>) => {
@@ -298,7 +307,19 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                     if (result.isFail()) {
                         throw result.error;
                     }
-                    return result.value;
+                    // Security: hide locks on entries of models the user can't read.
+                    const canAccessType = await createLockTypeAccess({
+                        identityContext,
+                        getModel,
+                        accessControl
+                    });
+                    const items = [];
+                    for (const item of result.value.items) {
+                        if (await canAccessType(item.type)) {
+                            items.push(item);
+                        }
+                    }
+                    return { ...result.value, items };
                 });
             };
         }
@@ -313,7 +334,7 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         ) => {
             return ({ args }: IResolverParams<ListAllLockRecordsInput>) => {
                 return resolveList(async () => {
-                    checkPermissions(identityContext);
+                    await checkListAllPermissions(identityContext);
                     const result = await useCase.execute(args);
                     if (result.isFail()) {
                         throw result.error;
@@ -333,14 +354,19 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "RecordLockingMutation.lockEntry",
-        dependencies: [IdentityContext, LockEntryUseCase],
+        dependencies: [IdentityContext, GetModelUseCase, AccessControl, LockEntryUseCase],
         resolver: (
             identityContext: IdentityContext.Interface,
+            getModel: GetModelUseCase.Interface,
+            accessControl: AccessControl.Interface,
             useCase: LockEntryUseCase.Interface
         ) => {
             return ({ args }: IResolverParams<IEntryArgs>) => {
                 return resolve(async () => {
-                    checkPermissions(identityContext);
+                    await checkTypePermissions(
+                        { identityContext, getModel, accessControl },
+                        args.type
+                    );
                     const result = await useCase.execute({
                         id: args.id,
                         type: args.type
@@ -356,14 +382,19 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "RecordLockingMutation.updateEntryLock",
-        dependencies: [IdentityContext, UpdateEntryLockUseCase],
+        dependencies: [IdentityContext, GetModelUseCase, AccessControl, UpdateEntryLockUseCase],
         resolver: (
             identityContext: IdentityContext.Interface,
+            getModel: GetModelUseCase.Interface,
+            accessControl: AccessControl.Interface,
             useCase: UpdateEntryLockUseCase.Interface
         ) => {
             return ({ args }: IResolverParams<IEntryArgs>) => {
                 return resolve(async () => {
-                    checkPermissions(identityContext);
+                    await checkTypePermissions(
+                        { identityContext, getModel, accessControl },
+                        args.type
+                    );
                     const result = await useCase.execute({
                         id: args.id,
                         type: args.type
@@ -403,14 +434,19 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "RecordLockingMutation.unlockEntryRequest",
-        dependencies: [IdentityContext, UnlockEntryRequestUseCase],
+        dependencies: [IdentityContext, GetModelUseCase, AccessControl, UnlockEntryRequestUseCase],
         resolver: (
             identityContext: IdentityContext.Interface,
+            getModel: GetModelUseCase.Interface,
+            accessControl: AccessControl.Interface,
             useCase: UnlockEntryRequestUseCase.Interface
         ) => {
             return ({ args }: IResolverParams<IEntryArgs>) => {
                 return resolve(async () => {
-                    checkPermissions(identityContext);
+                    await checkTypePermissions(
+                        { identityContext, getModel, accessControl },
+                        args.type
+                    );
                     const result = await useCase.execute({
                         id: args.id,
                         type: args.type

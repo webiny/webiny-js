@@ -1,9 +1,8 @@
 import type { S3Event } from "@webiny/aws-sdk/types/index.js";
 import { S3EventHandler } from "@webiny/event-handler-aws";
-import {
-    RawTenantId,
-    RequestTenantLoader
-} from "@webiny/api-core/features/requestContext/index.js";
+import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
+import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
+import { TenantNotFoundError } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
@@ -23,7 +22,15 @@ class S3TenantLoaderDecoratorImpl implements S3EventHandler.Interface {
     async execute(ctx: EventContext<S3Event>, next: NextFunction): Promise<any> {
         const bucket = ctx.event?.Records?.[0]?.s3?.bucket?.name;
         this.rawTenantId.set(bucket ? (bucket.split("-")[0] ?? null) : null);
-        await this.tenantLoader.establish();
+        try {
+            await this.tenantLoader.establish();
+        } catch (error) {
+            /* The bucket-name prefix isn't always a tenant id, so an unknown one leaves the tenant
+               unset and lets the event through, as before. */
+            if (!(error instanceof TenantNotFoundError)) {
+                throw error;
+            }
+        }
         return this.decoratee.execute(ctx, next);
     }
 }

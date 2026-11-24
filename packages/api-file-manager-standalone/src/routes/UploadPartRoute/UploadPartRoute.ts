@@ -6,6 +6,7 @@ import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { toBuffer } from "../utils.js";
 import { isPathContained } from "~/utils/isPathContained.js";
+import { isValidUploadId } from "~/utils/storagePaths.js";
 
 class UploadPartRouteImpl implements HttpRouteHandler.Interface {
     public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}
@@ -21,6 +22,10 @@ class UploadPartRouteImpl implements HttpRouteHandler.Interface {
 
         if (!uploadId || !partNumberStr || !token) {
             return response.status(400).json({ error: "Missing uploadId, partNumber, or token." });
+        }
+
+        if (!isValidUploadId(uploadId)) {
+            return response.status(400).json({ error: "Invalid uploadId." });
         }
 
         const partNumber = parseInt(partNumberStr, 10);

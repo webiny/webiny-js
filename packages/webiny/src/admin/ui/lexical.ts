@@ -10,6 +10,14 @@ export { useTextAlignmentAction } from "@webiny/lexical-editor/hooks/index.js";
 export { useTypographyAction } from "@webiny/lexical-editor/hooks/index.js";
 export { useIsMounted } from "@webiny/lexical-editor/hooks/index.js";
 export { FontColorAction } from "@webiny/lexical-editor/components/ToolbarActions/FontColorAction.js";
+export { StaticToolbar } from "@webiny/lexical-editor/components/Toolbar/StaticToolbar.js";
+export { FloatingToolbar } from "@webiny/lexical-editor/components/Toolbar/FloatingToolbar.js";
+export type { FloatingToolbarProps } from "@webiny/lexical-editor/components/Toolbar/FloatingToolbar.js";
+export { FloatingLinkEditorPlugin } from "@webiny/lexical-editor/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin.js";
+export type {
+    LinkFormProps,
+    LinkData
+} from "@webiny/lexical-editor/plugins/FloatingLinkEditorPlugin/types.js";
 export { Divider } from "@webiny/lexical-editor/ui/Divider.js";
 export { DropDownItem } from "@webiny/lexical-editor/ui/DropDown.js";
 export { DropDown } from "@webiny/lexical-editor/ui/DropDown.js";

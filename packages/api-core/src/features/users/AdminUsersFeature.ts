@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { AdminUsersRepository } from "./shared/AdminUsersRepository.js";
 import { GetUserFeature } from "./GetUser/feature.js";
+import { GetCurrentUserFeature } from "./GetCurrentUser/feature.js";
 import { GetIdentityProfileFeature } from "./GetIdentityProfile/feature.js";
 import { ListUsersFeature } from "./ListUsers/feature.js";
 import { CreateUserFeature } from "./CreateUser/feature.js";
@@ -11,6 +12,7 @@ import { AdminUsersStorageOperations } from "./shared/storageAbstractions.js";
 import { ExternalIdpUserSyncFeature } from "./ExternalIdpUserSync/index.js";
 import { NotifyUserChangeFeature } from "./NotifyUserChange/index.js";
 import { UsersAiToolsFeature } from "./ai/feature.js";
+import { FindUserRecordsFeature } from "./FindUserRecords/feature.js";
 
 export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Interface>({
     name: "AdminUsers",
@@ -20,6 +22,7 @@ export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Inter
 
         // Register all use cases
         GetUserFeature.register(container);
+        GetCurrentUserFeature.register(container);
         GetIdentityProfileFeature.register(container);
         ListUsersFeature.register(container);
         ListUserTeamsFeature.register(container);
@@ -29,6 +32,7 @@ export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Inter
         ExternalIdpUserSyncFeature.register(container);
         NotifyUserChangeFeature.register(container);
         UsersAiToolsFeature.register(container);
+        FindUserRecordsFeature.register(container);
 
         // Legacy storage ops
         container.registerInstance(AdminUsersStorageOperations, storageOperations);

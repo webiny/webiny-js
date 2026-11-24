@@ -2352,7 +2352,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:10.0.9, @graphql-tools/merge@npm:^10.0.9":
+"@graphql-tools/merge@npm:^10.0.9":
   version: 10.0.9
   resolution: "@graphql-tools/merge@npm:10.0.9"
   dependencies:
@@ -2364,7 +2364,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/resolvers-composition@npm:8.0.9":
+"@graphql-tools/resolvers-composition@npm:^8.0.9":
   version: 8.0.9
   resolution: "@graphql-tools/resolvers-composition@npm:8.0.9"
   dependencies:
@@ -2378,7 +2378,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:11.0.9":
+"@graphql-tools/schema@npm:^11.0.9":
   version: 11.0.9
   resolution: "@graphql-tools/schema@npm:11.0.9"
   dependencies:
@@ -2391,7 +2391,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:13.2.2, @graphql-tools/utils@npm:^13.2.2":
+"@graphql-tools/utils@npm:^13.2.2":
   version: 13.2.2
   resolution: "@graphql-tools/utils@npm:13.2.2"
   dependencies:
@@ -11084,10 +11084,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-graphql@workspace:packages/api-graphql"
   dependencies:
-    "@graphql-tools/merge": "npm:10.0.9"
-    "@graphql-tools/resolvers-composition": "npm:8.0.9"
-    "@graphql-tools/schema": "npm:11.0.9"
-    "@graphql-tools/utils": "npm:13.2.2"
+    "@graphql-tools/merge": "npm:^10.0.9"
+    "@graphql-tools/resolvers-composition": "npm:^8.0.9"
+    "@graphql-tools/schema": "npm:^11.0.9"
+    "@graphql-tools/utils": "npm:^13.2.2"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
@@ -11115,6 +11115,8 @@ __metadata:
     "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
@@ -11167,6 +11169,7 @@ __metadata:
   resolution: "@webiny/api-headless-cms-bulk-actions@workspace:packages/api-headless-cms-bulk-actions"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -11455,8 +11458,8 @@ __metadata:
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
     "@babel/code-frame": "npm:^8.0.6"
-    "@graphql-tools/merge": "npm:10.0.9"
-    "@graphql-tools/schema": "npm:11.0.9"
+    "@graphql-tools/merge": "npm:^10.0.9"
+    "@graphql-tools/schema": "npm:^11.0.9"
     "@types/pluralize": "npm:^0.0.33"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -11542,6 +11545,7 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
@@ -12585,7 +12589,6 @@ __metadata:
     "@lexical/utils": "npm:^0.53.0"
     "@monaco-editor/react": "npm:^4.7.0"
     "@testing-library/react": "npm:^16.3.3"
-    "@types/deep-equal": "npm:^1.0.4"
     "@types/is-hotkey": "npm:^0.1.10"
     "@types/react": "npm:19.3.0"
     "@webiny/admin-ui": "npm:0.0.0"
@@ -12613,7 +12616,6 @@ __metadata:
     "@webiny/validation": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     classnames: "npm:^2.5.1"
-    deep-equal: "npm:^2.2.3"
     execa: "npm:^10.2.1"
     graphql: "npm:^16.15.0"
     is-hotkey: "npm:^0.2.1"
@@ -12961,7 +12963,7 @@ __metadata:
     execa: "npm:^10.2.1"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
-    humanize-duration: "npm:^3.35.1"
+    humanize-duration: "npm:3.35.1"
     inquirer: "npm:^14.3.0"
     load-json-file: "npm:^7.0.1"
     open: "npm:^11.0.4"
@@ -13028,10 +13030,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cms-vue@npm:0.0.0, @webiny/cms-vue@workspace:packages/cms-vue":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cms-vue@workspace:packages/cms-vue"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-sdk": "npm:0.0.0"
+    happy-dom: "npm:^21.0.4"
+    mobx: "npm:^7.1.7"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^5.1.1"
+    vue: "npm:^3.5.46"
+  peerDependencies:
+    vue: ">=3.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cognito@npm:0.0.0, @webiny/cognito@workspace:packages/cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/cognito@workspace:packages/cognito"
   dependencies:
+    "@smithy/signature-v4": "npm:^5.7.5"
+    "@smithy/types": "npm:^4.20.0"
     "@types/react": "npm:19.3.0"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -13040,6 +13060,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
@@ -13053,6 +13074,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     mobx: "npm:^7.1.7"
     mobx-react-lite: "npm:^5.1.3"
+    qrcode.react: "npm:^4.2.0"
     react: "npm:19.3.1"
     vitest: "npm:^5.1.1"
     zod: "npm:4.6.7"
@@ -13072,6 +13094,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
@@ -13081,6 +13104,7 @@ __metadata:
     react-dom: "npm:19.3.1"
     rimraf: "npm:^6.1.4"
     typescript: "npm:7.0.2"
+    vitest: "npm:^5.1.1"
     zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
@@ -13467,6 +13491,7 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     lexical: "npm:^0.53.0"
     react: "npm:19.3.1"
+    secure-json-parse: "npm:^4.1.1"
   languageName: unknown
   linkType: soft
 
@@ -13842,7 +13867,7 @@ __metadata:
     find-up: "npm:^8.0.0"
     get-tsconfig: "npm:^4.14.3"
     graphql-request: "npm:^7.4.0"
-    humanize-duration: "npm:^3.35.1"
+    humanize-duration: "npm:3.35.1"
     load-json-file: "npm:^7.0.1"
     mobx: "npm:^7.1.7"
     mobx-react-lite: "npm:^5.1.3"
@@ -13975,6 +14000,22 @@ __metadata:
   peerDependencies:
     next: ">=15.0.0 <16.0.0"
     react: ">=19.0.0 <20.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk-nuxt@workspace:packages/sdk-nuxt":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk-nuxt@workspace:packages/sdk-nuxt"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-vue": "npm:0.0.0"
+    "@webiny/sdk-frontend": "npm:0.0.0"
+    "@webiny/website-builder-nuxt": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^5.1.1"
+  peerDependencies:
+    nuxt: ">=3"
+    vue: ">=3.3"
   languageName: unknown
   linkType: soft
 
@@ -14138,6 +14179,7 @@ __metadata:
     nanoid-dictionary: "npm:^5.0.0"
     p-retry: "npm:^9.0.0"
     rimraf: "npm:^6.1.4"
+    secure-json-parse: "npm:^4.1.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
     zod: "npm:4.6.7"
@@ -14152,6 +14194,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.4"
+    secure-json-parse: "npm:^4.1.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
   languageName: unknown
@@ -14222,21 +14265,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/website-builder-nuxt@workspace:packages/website-builder-nuxt":
+"@webiny/website-builder-nuxt@npm:0.0.0, @webiny/website-builder-nuxt@workspace:packages/website-builder-nuxt":
   version: 0.0.0-use.local
   resolution: "@webiny/website-builder-nuxt@workspace:packages/website-builder-nuxt"
   dependencies:
     "@types/postcss-import": "npm:^14.0.3"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-vue": "npm:0.0.0"
+    h3: "npm:^1.15.11"
     postcss: "npm:^8.5.33"
     postcss-import: "npm:^17.0.1"
     typescript: "npm:^7.0.2"
     vite: "npm:^8.3.8"
+    vitest: "npm:^5.1.1"
     vue: "npm:^3.5.46"
   peerDependencies:
+    h3: ">=1.10.0 <2"
     nuxt: ">=3"
     vue: ">=3.3"
+  peerDependenciesMeta:
+    h3:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -14245,11 +14294,12 @@ __metadata:
   resolution: "@webiny/website-builder-react@workspace:packages/website-builder-react"
   dependencies:
     "@testing-library/react": "npm:^16.3.3"
+    "@types/lodash": "npm:^4.17.27"
     "@types/react": "npm:19.3.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
-    deep-equal: "npm:^2.2.3"
+    lodash: "npm:^4.18.1"
     mobx: "npm:^7.1.7"
     mobx-react-lite: "npm:^5.1.3"
     react: "npm:19.3.1"
@@ -14290,6 +14340,7 @@ __metadata:
   resolution: "@webiny/website-builder-vue@workspace:packages/website-builder-vue"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^7.1.7"
@@ -15962,6 +16013,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-es@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "cookie-es@npm:1.2.3"
+  checksum: 10/899f72d6354de72522ccf01c990c4f6caf8dd3180bd3cb426ea4be495af5acab6e74631e319b969285001ddecf9ea8a0657f71bf4dcd433238f2acc638f36d6f
+  languageName: node
+  linkType: hard
+
 "cookie-signature@npm:^1.2.1":
   version: 1.2.2
   resolution: "cookie-signature@npm:1.2.2"
@@ -16103,6 +16161,15 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10/0d52657d7ae36eb130999dffff1168ec348687b48dd38e2ff59992ed916c88d328cf1d07ff4a4a10bc78de5e1c23f04b306d569e42f7a2293915c081e4dfee86
+  languageName: node
+  linkType: hard
+
+"crossws@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "crossws@npm:0.3.5"
+  dependencies:
+    uncrypto: "npm:^0.1.3"
+  checksum: 10/70a38525543293f88381b64650324c9de4a7e8a4dd86edf29e702b317d0d9fed2fb128a176242c90aa58d83acc64e62d35c919029f698a9868766b465430cd99
   languageName: node
   linkType: hard
 
@@ -16432,6 +16499,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"defu@npm:^6.1.6":
+  version: 6.1.7
+  resolution: "defu@npm:6.1.7"
+  checksum: 10/09480a5fbe6318f622f30017f9386df6ae92ed895fb1ccc61e1ff0d5016b28a321c751749fdd52c996ddd4eafc2c95b77dc0c8cc109881a231c23c7fd630deb9
+  languageName: node
+  linkType: hard
+
 "depd@npm:^2.0.0, depd@npm:~2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
@@ -16443,6 +16517,13 @@ __metadata:
   version: 2.0.3
   resolution: "dequal@npm:2.0.3"
   checksum: 10/6ff05a7561f33603df87c45e389c9ac0a95e3c056be3da1a0c4702149e3a7f6fe5ffbb294478687ba51a9e95f3a60e8b6b9005993acd79c292c7d15f71964b6b
+  languageName: node
+  linkType: hard
+
+"destr@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "destr@npm:2.0.5"
+  checksum: 10/0e4fba62a55a4188c7ab13eed5ebeeda037ead1ab21cf6be40ca39828b258475ad9eb1e7de50a5ea8041705d454a4d090caf9f92b89f03b04d2e229716f7da0a
   languageName: node
   linkType: hard
 
@@ -18112,6 +18193,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"h3@npm:^1.15.11":
+  version: 1.15.11
+  resolution: "h3@npm:1.15.11"
+  dependencies:
+    cookie-es: "npm:^1.2.3"
+    crossws: "npm:^0.3.5"
+    defu: "npm:^6.1.6"
+    destr: "npm:^2.0.5"
+    iron-webcrypto: "npm:^1.2.1"
+    node-mock-http: "npm:^1.0.4"
+    radix3: "npm:^1.1.2"
+    ufo: "npm:^1.6.3"
+    uncrypto: "npm:^0.1.3"
+  checksum: 10/8a13eef49f076eedf1aa6b32ab9190c647cbae517ed2945c951905ef018e2949dd0baa73d0954dc17eaf432d1657e3a09a10ebe5ac5532365083d3560d17d8b5
+  languageName: node
+  linkType: hard
+
 "handlebars@npm:4.7.10":
   version: 4.7.10
   resolution: "handlebars@npm:4.7.10"
@@ -18342,7 +18440,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"humanize-duration@npm:^3.35.1":
+"humanize-duration@npm:3.35.1":
   version: 3.35.1
   resolution: "humanize-duration@npm:3.35.1"
   checksum: 10/7c4bc42243ea1c6ab5a11340db743005f7bc378d20dc070538963cb28383eb56c280f2d31b091f7ef98a3037c36efd4cc33b69651771bb38c667656c4a2fe6f5
@@ -18564,6 +18662,13 @@ __metadata:
   version: 1.9.1
   resolution: "ipaddr.js@npm:1.9.1"
   checksum: 10/864d0cced0c0832700e9621913a6429ccdc67f37c1bd78fb8c6789fff35c9d167cb329134acad2290497a53336813ab4798d2794fd675d5eb33b5fdf0982b9ca
+  languageName: node
+  linkType: hard
+
+"iron-webcrypto@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "iron-webcrypto@npm:1.2.1"
+  checksum: 10/c1f52ccfe2780efa5438c134538ee4b26c96a87d22f351d896781219efbce25b4fe716d1cb7f248e02da96881760541135acbcc7c0622ffedf71cb0e227bebf9
   languageName: node
   linkType: hard
 
@@ -20632,6 +20737,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-mock-http@npm:^1.0.4":
+  version: 1.0.5
+  resolution: "node-mock-http@npm:1.0.5"
+  checksum: 10/d77b51a3c7f60a1979bc606282930f199a9249d6631e8cfe9fd823c3847237abfd7db05831646f259828302a791953a5d8e40da7664f9a1bc1a9e5266d71aa5c
+  languageName: node
+  linkType: hard
+
 "node-releases@npm:^2.0.64":
   version: 2.0.65
   resolution: "node-releases@npm:2.0.65"
@@ -22348,6 +22460,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qrcode.react@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "qrcode.react@npm:4.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/665036d88b160e6d5de4e24d101bc63bd2b76712802e874bbffe56c6b6e5fe50c63f02c3cba2975b2e2b555c1f1e112cbb42987f8cb3a626ce2d17023cfde6ac
+  languageName: node
+  linkType: hard
+
 "qs@npm:^6.12.3, qs@npm:^6.16.0, qs@npm:^6.16.1":
   version: 6.17.1
   resolution: "qs@npm:6.17.1"
@@ -22442,6 +22563,13 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10/3ee336c61d584a7fba44e354f41280187a111fd46dc90c457b4669398bd1e96e2a70f13f24720548848a4ade143e8e873c67410c82570510acfbb9a700017c4b
+  languageName: node
+  linkType: hard
+
+"radix3@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "radix3@npm:1.1.2"
+  checksum: 10/5ed01a8e4b753e325c6ecb01d993de77f690e548ef9e149e7dc403ee7b109c2cb41e3d09bc3ce004d872c67c8dca1d556dbf7808b1ac7df9f86994e57d757557
   languageName: node
   linkType: hard
 
@@ -23740,7 +23868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"secure-json-parse@npm:^4.1.0":
+"secure-json-parse@npm:^4.1.0, secure-json-parse@npm:^4.1.1":
   version: 4.1.1
   resolution: "secure-json-parse@npm:4.1.1"
   checksum: 10/07bb878c09d11bf74750356c014f44a3ec15511745d356088caef91a74efce66209d84d24e114f0518ebc58f6fce085f418d3d47a62e3da329f3c3ef0dc14f17
@@ -25359,6 +25487,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ufo@npm:^1.6.3":
+  version: 1.6.4
+  resolution: "ufo@npm:1.6.4"
+  checksum: 10/dbf85425e00dd106abb852c0ea4cef6e58b395b9a43858049a8be0b0825e5cc4b53cf58a41da695c3c2a9ab4f8605923b64812be1358c39a56b3920504759d3a
+  languageName: node
+  linkType: hard
+
 "uglify-js@npm:^3.1.4":
   version: 3.19.3
   resolution: "uglify-js@npm:3.19.3"
@@ -25381,6 +25516,13 @@ __metadata:
   bin:
     ulid: bin/cli.js
   checksum: 10/409ad0a703ea9f25d2a35cf790b767030a2c7b5ca0df6acb73669628156ab63bb97925a3fd7aaaf0b2384d39bd3ed2f7cd2c2de9f1171df6bc79b8c097865d92
+  languageName: node
+  linkType: hard
+
+"uncrypto@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "uncrypto@npm:0.1.3"
+  checksum: 10/0020f74b0ce34723196d8982a73bb7f40cff455a41b8f88ae146b86885f4e66e41a1241fe80a887505c3bd2c7f07ed362b6ed041968370073c40a98496e6a737
   languageName: node
   linkType: hard
 
@@ -25975,6 +26117,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
     "@webiny/project-extensions-aws": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"

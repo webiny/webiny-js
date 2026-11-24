@@ -1,5 +1,6 @@
 import { compress, decompress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ProjectFileCache as Abstraction, ProjectFileContent } from "./abstractions.js";
 
 const CACHE_TTL_DAYS = 30;
@@ -9,14 +10,17 @@ interface CachedProjectContext {
 }
 
 class ProjectFileCacheImpl implements Abstraction.Interface {
-    constructor(private keyValueStore: GlobalKeyValueStore.Interface) {}
+    constructor(
+        private tenantContext: TenantContext.Interface,
+        private keyValueStore: GlobalKeyValueStore.Interface
+    ) {}
 
     async get(
         projectId: string,
         version: number
     ): Promise<{ files: ProjectFileContent[]; hit: boolean }> {
         const key = this.cacheKey(projectId, version);
-        const cached = await this.keyValueStore.get<string>(key);
+        const cached = await this.keyValueStore.get<string>(key, { scope: this.scope() });
 
         if (!cached.isFail() && cached.value) {
             try {
@@ -42,10 +46,21 @@ class ProjectFileCacheImpl implements Abstraction.Interface {
             const compressed = await compress(JSON.stringify(payload));
             const expiresAt = new Date();
             expiresAt.setDate(expiresAt.getDate() + CACHE_TTL_DAYS);
-            await this.keyValueStore.set(key, compressed.toString("base64"), { expiresAt });
+            await this.keyValueStore.set(key, compressed.toString("base64"), {
+                scope: this.scope(),
+                expiresAt
+            });
         } catch (error) {
             console.warn("ProjectFileCache: cache write failed", { key, error });
         }
+    }
+
+    /**
+     * `projectId` comes from the client, so the cache is scoped to the current tenant (the same
+     * scope the tenant `KeyValueStore` uses), to never serve file contents of another tenant.
+     */
+    private scope(): string {
+        return this.tenantContext.getTenant().id;
     }
 
     private cacheKey(projectId: string, version: number): string {
@@ -55,5 +70,5 @@ class ProjectFileCacheImpl implements Abstraction.Interface {
 
 export const ProjectFileCache = Abstraction.createImplementation({
     implementation: ProjectFileCacheImpl,
-    dependencies: [GlobalKeyValueStore]
+    dependencies: [TenantContext, GlobalKeyValueStore]
 });

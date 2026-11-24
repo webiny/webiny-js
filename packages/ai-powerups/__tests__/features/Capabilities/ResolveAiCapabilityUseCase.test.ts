@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
@@ -91,16 +91,26 @@ function resolver(value: IAiPowerUpsSettings) {
         AiCapability.createImplementation({ implementation: RolelessCapability, dependencies: [] })
     );
     // Closes over `value`, so it has to be built per call rather than hoisted like the others.
-    class StubGetSettings implements GetSettingsUseCase.Interface {
+    class StubGetDecryptedSettings implements GetDecryptedSettingsUseCase.Interface {
+        constructor(private encryption: Encryption.Interface) {}
+
         async execute() {
-            return Result.ok(value);
+            const presets = await Promise.all(
+                value.connections.presets.map(async preset => ({
+                    ...preset,
+                    apiKey: preset.apiKeyEncrypted
+                        ? await this.encryption.decrypt(preset.apiKeyEncrypted)
+                        : undefined
+                }))
+            );
+            return Result.ok({ ...value, connections: { ...value.connections, presets } });
         }
     }
 
     container.register(
-        GetSettingsUseCase.createImplementation({
-            implementation: StubGetSettings,
-            dependencies: []
+        GetDecryptedSettingsUseCase.createImplementation({
+            implementation: StubGetDecryptedSettings,
+            dependencies: [Encryption]
         })
     );
     container.register(

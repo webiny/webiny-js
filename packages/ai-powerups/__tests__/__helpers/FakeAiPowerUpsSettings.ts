@@ -1,6 +1,9 @@
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetSettingsRepository } from "~/api/features/GetSettings/abstractions.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
@@ -48,8 +51,10 @@ export const createAiPowerUpsSettings = (
 };
 
 /**
- * Registers a `GetSettingsUseCase` answering `settings`, or failing when given an `Error`. Call it
- * after the features under test so it wins over their own registration.
+ * Registers a `GetSettingsUseCase`, a `GetSettingsRepository` and a `GetDecryptedSettingsUseCase`
+ * answering `settings`, or failing when given an `Error`. The decrypted one decrypts each stored key
+ * with the container's `Encryption`. Call it after the features under test so it wins over their
+ * own registration.
  */
 export const registerFakeAiPowerUpsSettings = (
     container: Container,
@@ -64,10 +69,45 @@ export const registerFakeAiPowerUpsSettings = (
             return Result.ok(settings);
         }
     }
+    class FakeGetSettingsRepository implements GetSettingsRepository.Interface {
+        public async get(): Promise<Result<IAiPowerUpsSettings>> {
+            return new FakeGetSettings().execute();
+        }
+    }
+    class FakeGetDecryptedSettings implements GetDecryptedSettingsUseCase.Interface {
+        public constructor(private encryption: Encryption.Interface) {}
+
+        public async execute(): Promise<Result<IAiPowerUpsSettings, Error>> {
+            if (settings instanceof Error) {
+                return Result.fail(settings);
+            }
+            const presets = await Promise.all(
+                (settings.connections?.presets ?? []).map(async preset => ({
+                    ...preset,
+                    apiKey: preset.apiKeyEncrypted
+                        ? await this.encryption.decrypt(preset.apiKeyEncrypted)
+                        : undefined
+                }))
+            );
+            return Result.ok({ ...settings, connections: { ...settings.connections, presets } });
+        }
+    }
     container.register(
         GetSettingsUseCase.createImplementation({
             implementation: FakeGetSettings,
             dependencies: []
+        })
+    );
+    container.register(
+        GetSettingsRepository.createImplementation({
+            implementation: FakeGetSettingsRepository,
+            dependencies: []
+        })
+    );
+    container.register(
+        GetDecryptedSettingsUseCase.createImplementation({
+            implementation: FakeGetDecryptedSettings,
+            dependencies: [Encryption]
         })
     );
 };

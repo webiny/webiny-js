@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import useGqlHandler from "./utils/useGqlHandler";
-import { fileAData } from "./mocks/files";
+import { fileAData, fileBData } from "./mocks/files";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const extraFields = ["createdBy {id displayName type}", "modifiedBy {id displayName type}"];
@@ -45,7 +45,7 @@ describe("file custom identities", () => {
         const [createCustomIdentityResponse] = await createFile(
             {
                 data: {
-                    ...fileAData,
+                    ...fileBData,
                     createdBy: mockIdentityOne,
                     modifiedBy: mockIdentityTwo
                 }
@@ -57,7 +57,7 @@ describe("file custom identities", () => {
                 fileManager: {
                     createFile: {
                         data: {
-                            ...fileAData,
+                            ...fileBData,
                             createdBy: mockIdentityOne,
                             modifiedBy: mockIdentityTwo
                         },

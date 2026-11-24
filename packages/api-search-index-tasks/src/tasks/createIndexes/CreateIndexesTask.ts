@@ -2,6 +2,9 @@ import {
     TaskDefinition,
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { ensureCanTriggerSystemTask } from "~/tasks/ensureCanTriggerSystemTask.js";
 import { CreateIndexesRunner } from "./abstractions/CreateIndexesRunner.js";
 import { OnBeforeTrigger } from "./abstractions/OnBeforeTrigger.js";
 import { IndexManagerFactory } from "~/abstractions/IndexManagerFactory.js";
@@ -10,7 +13,9 @@ class CreateIndexesTaskHandlerImpl implements TaskHandler.Interface<CreateIndexe
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: CreateIndexesRunner.Interface,
-        private readonly onBeforeTriggerRunner: OnBeforeTrigger.Interface
+        private readonly onBeforeTriggerRunner: OnBeforeTrigger.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly tenantContext: TenantContext.Interface
     ) {}
 
     async run({ input, controller }: TaskHandler.RunParams<CreateIndexesRunner.Input>) {
@@ -26,6 +31,11 @@ class CreateIndexesTaskHandlerImpl implements TaskHandler.Interface<CreateIndexe
     }
 
     async onBeforeTrigger() {
+        await ensureCanTriggerSystemTask({
+            identityContext: this.identityContext,
+            tenantContext: this.tenantContext
+        });
+
         const indexManager = this.indexManagerFactory.createIndexManager({
             settings: {}
         });
@@ -36,7 +46,13 @@ class CreateIndexesTaskHandlerImpl implements TaskHandler.Interface<CreateIndexe
 
 const CreateIndexesTaskHandler = TaskHandler.createImplementation({
     implementation: CreateIndexesTaskHandlerImpl,
-    dependencies: [IndexManagerFactory, CreateIndexesRunner, OnBeforeTrigger]
+    dependencies: [
+        IndexManagerFactory,
+        CreateIndexesRunner,
+        OnBeforeTrigger,
+        IdentityContext,
+        TenantContext
+    ]
 });
 
 class CreateIndexesTaskImpl implements TaskDefinition.Interface {

@@ -3,6 +3,7 @@
 import type { IncomingMessage } from "node:http";
 import type { IHttpRequest } from "~/index.js";
 import { RequestBodyTooLargeError } from "./RequestBodyTooLargeError.js";
+import { parseJsonBody } from "~/features/http/parseJsonBody.js";
 
 /*
  * The whole body is held in memory, so it needs a ceiling: without one, a single large request to
@@ -24,7 +25,7 @@ function decodeBody(req: IncomingMessage, buffer: Buffer): unknown {
     if (ct.includes("application/json")) {
         const text = buffer.toString("utf8");
         try {
-            return JSON.parse(text);
+            return parseJsonBody(text);
         } catch {
             return text;
         }

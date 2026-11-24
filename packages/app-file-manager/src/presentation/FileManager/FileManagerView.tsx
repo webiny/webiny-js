@@ -67,6 +67,11 @@ export interface FileManagerViewProps {
     multiple?: boolean;
     accept?: string[];
     scope?: string;
+    /**
+     * Keep the folder and search in the File Manager route's address (its own screen). Off for a
+     * File Manager embedded in another screen, which must not write to (or navigate to) that route.
+     */
+    syncRoute?: boolean;
     children?: React.ReactNode;
 }
 
@@ -301,6 +306,7 @@ const FileManagerViewInner = observer(
         multiple,
         accept,
         scope,
+        syncRoute = true,
         children
     }: FileManagerViewProps) => {
         const { presenter } = useFeature(FileManagerPresenterFeature);
@@ -346,8 +352,8 @@ const FileManagerViewInner = observer(
                     <FileManagerPresenterProvider presenter={presenter}>
                         <FileManagerViewLayout />
                         {children}
-                        {!overlayConfig && <RouteParamsSync />}
-                        {!overlayConfig && <FileManagerBreadcrumbs />}
+                        {!overlayConfig && syncRoute && <RouteParamsSync />}
+                        {!overlayConfig && syncRoute && <FileManagerBreadcrumbs />}
                     </FileManagerPresenterProvider>
                 </FileManagerViewWithConfig>
             </DialogsProvider>

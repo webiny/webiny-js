@@ -1,7 +1,10 @@
 import type { Result } from "@webiny/feature/api";
 import { createAbstraction } from "@webiny/feature/api";
 import type { CollabThreadType, ICollabThread } from "~/api/domain/thread/abstractions.js";
-import type { CollabThreadPersistenceError } from "~/api/domain/thread/errors.js";
+import type {
+    CollabThreadNotAuthorizedError,
+    CollabThreadPersistenceError
+} from "~/api/domain/thread/errors.js";
 import type { ICollabThreadView } from "~/api/features/thread/shared/abstractions.js";
 import type { IMeta } from "~/api/types.js";
 
@@ -55,8 +58,14 @@ export interface IListThreadsViewResult {
     meta: IMeta;
 }
 
+export interface IListThreadsUseCaseErrors {
+    notAuthorized: CollabThreadNotAuthorizedError;
+}
+
+type UseCaseError = RepositoryError | IListThreadsUseCaseErrors[keyof IListThreadsUseCaseErrors];
+
 export interface IListThreadsUseCase {
-    execute(params: IListThreadsParams): Promise<Result<IListThreadsViewResult, RepositoryError>>;
+    execute(params: IListThreadsParams): Promise<Result<IListThreadsViewResult, UseCaseError>>;
 }
 
 export const ListThreadsUseCase = createAbstraction<IListThreadsUseCase>("ListThreadsUseCase");
@@ -64,6 +73,6 @@ export const ListThreadsUseCase = createAbstraction<IListThreadsUseCase>("ListTh
 export namespace ListThreadsUseCase {
     export type Interface = IListThreadsUseCase;
     export type Params = IListThreadsParams;
-    export type Return = Promise<Result<IListThreadsViewResult, RepositoryError>>;
-    export type Error = RepositoryError;
+    export type Return = Promise<Result<IListThreadsViewResult, UseCaseError>>;
+    export type Error = UseCaseError;
 }

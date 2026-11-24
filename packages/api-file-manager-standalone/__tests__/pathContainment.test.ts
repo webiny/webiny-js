@@ -1,4 +1,5 @@
 import { promises as fs } from "node:fs";
+import { Result } from "@webiny/feature/api";
 import path from "node:path";
 import { afterEach } from "vitest";
 import { beforeEach } from "vitest";
@@ -44,12 +45,17 @@ const traversalKeyTo = (target: string) => {
 };
 
 const makeAsset = (key: string) => ({
+    getTenant: () => TENANT_ID,
     getKey: () => key,
     getContentType: () => "text/plain"
 });
 
 const makeDeleteHandler = () => {
-    const keyValueStore = { delete: async () => {} } as any;
+    // No stored metadata, so the handler's tenant check on it has nothing to compare.
+    const keyValueStore = {
+        get: async () => Result.fail(new Error("Not found.")),
+        delete: async () => {}
+    } as any;
     const tenantContext = makeTenantContext();
     const config = makeConfig();
     return new DeleteFileFromDiskHandler(tenantContext, keyValueStore, config);
@@ -97,7 +103,7 @@ describe("local contents reader", () => {
         const reader = LocalContentsReader.create(getStoragePath());
         const asset = makeAsset(bucketKey) as any;
 
-        await expect(reader.read(asset)).rejects.toThrow("outside of the storage directory");
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant files folder");
     });
 });
 

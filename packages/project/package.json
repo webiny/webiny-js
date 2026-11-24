@@ -32,7 +32,7 @@
     "find-up": "^8.0.0",
     "get-tsconfig": "^4.14.3",
     "graphql-request": "^7.4.0",
-    "humanize-duration": "^3.35.1",
+    "humanize-duration": "3.35.1",
     "load-json-file": "^7.0.1",
     "mobx": "^7.1.7",
     "mobx-react-lite": "^5.1.3",

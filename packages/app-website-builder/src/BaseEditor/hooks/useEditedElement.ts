@@ -1,6 +1,6 @@
 import { autorun, toJS } from "mobx";
 import { useEffect, useState } from "react";
-import deepEqual from "deep-equal";
+import isEqual from "lodash/isEqual.js";
 import { type DocumentElement, GlobalElementId } from "@webiny/website-builder-sdk";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { $getEditableElement } from "~/editorSdk/utils/$getEditableElement.js";
@@ -27,7 +27,7 @@ export const useEditedElement = () => {
                 : null;
             const newElement = id ? (toJS($getEditableElement(documentState, id)) ?? null) : null;
 
-            if (!deepEqual(newElement, editedElement)) {
+            if (!isEqual(newElement, editedElement)) {
                 setEditedElement(newElement);
             }
         });

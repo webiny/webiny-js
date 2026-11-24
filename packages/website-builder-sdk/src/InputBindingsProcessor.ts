@@ -7,6 +7,7 @@ import { DocumentOperations, type IDocumentOperation } from "~/documentOperation
 import type { ElementFactory } from "~/ElementFactory.js";
 import { InputsUpdater } from "~/InputsUpdater.js";
 import { generateElementId } from "./generateElementId.js";
+import { generateListItemId, isListItemId } from "./listItemId.js";
 type DeepBindings = Record<string, any>;
 
 export type ElementInputsBindings = {
@@ -220,6 +221,13 @@ export class InputsBindingsProcessor {
 
                     // Get current new value from deep inputs
                     let newValue = getValue(inputs, flatKey);
+
+                    // An object list item without an id (added by a renderer or an `onChange`, or saved
+                    // before items had ids) gets one; an item's id is never taken from the binding that
+                    // was at its index, which may have been another item's.
+                    if (node.listItemId && !isListItemId(newValue)) {
+                        newValue = generateListItemId();
+                    }
 
                     // Get original binding entry for this path
                     const originalEntry = originalInputs[flatKey];

@@ -39,6 +39,11 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
 
         const identity = this.identityContext.getIdentity();
 
+        // FLPs only work with authenticated identities (logged-in users).
+        if (identity.isAnonymous()) {
+            return false;
+        }
+
         // At the moment, we only want FLP to be used with identities of type "admin".
         // This temporarily addresses the issue of API keys not being able to access content, because
         // FLPs doesn't work with them. Once we start adding FLPs to API keys, we can remove this check.

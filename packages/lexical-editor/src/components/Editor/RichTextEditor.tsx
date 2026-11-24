@@ -87,6 +87,19 @@ const BaseRichTextEditor = ({
         width: width || ""
     };
 
+    // A container set in config takes the place of the `staticToolbar` and `toolbar` props.
+    const container = config.toolbarContainer;
+    const staticToolbarElement = container
+        ? container.type === "static"
+            ? container.element
+            : null
+        : staticToolbar;
+    const floatingToolbarElement = container
+        ? container.type === "floating"
+            ? container.element
+            : null
+        : toolbar;
+
     const configNodes = config.nodes.map(node => node.node);
     const configPlugins = config.plugins.map(plugin => (
         <Fragment key={plugin.name}>{plugin.element}</Fragment>
@@ -129,7 +142,7 @@ const BaseRichTextEditor = ({
                     theme={props.theme}
                     toolbarActionPlugins={props.toolbarActionPlugins}
                 >
-                    {staticToolbar && !disabled ? staticToolbar : null}
+                    {staticToolbarElement && !disabled ? staticToolbarElement : null}
                     <div
                         /* This className is necessary for targeting of editor container from CSS files. */
                         className={"editor-shell"}
@@ -174,7 +187,7 @@ const BaseRichTextEditor = ({
                             fallbackClassName={defaultParagraphClassName}
                         />
                         {/* Toolbar. */}
-                        {disabled ? null : floatingAnchorElem && toolbar}
+                        {disabled ? null : floatingAnchorElem && floatingToolbarElement}
                     </div>
                 </RichTextEditorProvider>
             </LexicalComposer>

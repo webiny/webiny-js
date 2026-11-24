@@ -72,7 +72,8 @@ describe("Tenant manager permissions", () => {
 
         expect(response.data.tenantManager.installTenant).toMatchObject({
             data: null,
-            error: { code: "SECURITY_NOT_AUTHORIZED" }
+            // The check lives in the use case (TenantAccess), so its error is returned as is.
+            error: { code: "NOT_AUTHORIZED" }
         });
     });
 });

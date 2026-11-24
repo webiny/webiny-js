@@ -1,6 +1,12 @@
 export { LexicalEditorConfig } from "~/inputRenderers/LexicalInput/LexicalEditorConfig.js";
 export { LexicalEditor } from "~/inputRenderers/LexicalInput/LexicalEditor.js";
-export type { LexicalEditorProps } from "~/inputRenderers/LexicalInput/LexicalEditor.js";
+export type {
+    LexicalEditorProps,
+    ScopedLexicalEditorProps
+} from "~/inputRenderers/LexicalInput/LexicalEditor.js";
+// The page's theme (typography, colours, font sizes) for an editor outside the page editor.
+export { ThemeProvider } from "~/BaseEditor/components/ThemeProvider.js";
+export type { WebsiteBuilderTheme } from "@webiny/website-builder-sdk";
 
 // Re-export hooks and components from the base lexical package
 export { useLexicalEditorConfig } from "@webiny/lexical-editor/exports/admin/ui/lexical.js";
