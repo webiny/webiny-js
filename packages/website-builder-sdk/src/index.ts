@@ -41,6 +41,7 @@ export * from "./StylesBindingsProcessor.js";
 export * from "./ElementFactory.js";
 export * from "./ConstraintEvaluator.js";
 export * from "./generateElementId.js";
+export * from "./listItemId.js";
 export * from "./globalElements.js";
 export * from "./ElementBindings.js";
 export * from "./GlobalComponentLanguage.js";

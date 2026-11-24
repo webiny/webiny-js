@@ -26,7 +26,11 @@ export const createGlobalElementDocument = (
     componentName: string,
     components: Record<string, ComponentManifest>
 ): GlobalDocument => {
-    const factory = new ElementFactory(components, createDefaultIdGenerator(componentName));
+    const factory = new ElementFactory(
+        components,
+        createDefaultIdGenerator(componentName),
+        createDefaultIdGenerator(`${componentName}/item`)
+    );
     const { operations } = factory.createGlobalElement(componentName);
 
     const document = { elements: {}, bindings: {} } as Document;
