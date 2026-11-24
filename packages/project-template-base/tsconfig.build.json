@@ -9,7 +9,8 @@
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../notifications/tsconfig.build.json" },
     { "path": "../notifications-integrations/tsconfig.build.json" },
-    { "path": "../tenant-manager/tsconfig.build.json" }
+    { "path": "../tenant-manager/tsconfig.build.json" },
+    { "path": "../webhooks/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -33,7 +34,9 @@
       "@webiny/notifications-integrations/*": ["../notifications-integrations/src/*"],
       "@webiny/notifications-integrations": ["../notifications-integrations/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
-      "@webiny/tenant-manager": ["../tenant-manager/src"]
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
+      "@webiny/webhooks/*": ["../webhooks/src/*"],
+      "@webiny/webhooks": ["../webhooks/src"]
     }
   }
 }

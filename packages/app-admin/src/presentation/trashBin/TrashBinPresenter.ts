@@ -120,14 +120,22 @@ class TrashBinPresenterImpl implements ITrashBinPresenter {
 
         this._dataSource = new TrashBinDataSource(this.listGateway);
 
+        const { assistant } = config;
+
         this.listPresenter.init({
             dataSource: this._dataSource,
-            initialSort: config.initialSort ?? { field: "deletedOn", direction: "DESC" }
+            initialSort: config.initialSort ?? { field: "deletedOn", direction: "DESC" },
+            assistant: assistant && {
+                view: () => assistant.view,
+                rowTitle: item => item.title,
+                details: () => ({ ...assistant.details })
+            }
         });
     }
 
     dispose(): void {
         this._dataSource = null;
+        this.listPresenter.dispose();
     }
 }
 

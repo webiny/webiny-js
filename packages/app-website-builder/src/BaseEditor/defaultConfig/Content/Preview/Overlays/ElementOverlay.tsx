@@ -9,6 +9,7 @@ import { $highlightElement, $selectElement } from "~/editorSdk/utils/index.js";
 import { Draggable } from "~/BaseEditor/components/Draggable.js";
 import { useIsDragging } from "~/BaseEditor/defaultConfig/Content/Preview/useIsDragging.js";
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
+import { useCanDragElement } from "~/BaseEditor/hooks/useCanDragElement.js";
 import { useElementOverlay } from "./ElementOverlayProvider.js";
 
 export const ElementOverlay = React.memo(() => {
@@ -45,6 +46,7 @@ export const ElementOverlay = React.memo(() => {
     }, []);
 
     const dnd = useIsDragging();
+    const canDrag = useCanDragElement({ elementId, componentManifest });
 
     // Only the document's own elements are dragged: not a global's instance (its placements are), and
     // not the elements of a page's layout.
@@ -65,7 +67,7 @@ export const ElementOverlay = React.memo(() => {
         <Draggable
             type="ELEMENT"
             item={{ id: elementId, componentName: componentManifest.name }}
-            canDrag={componentManifest.canDrag !== false && !isFixed}
+            canDrag={canDrag && !isFixed}
         >
             {({ isDragging, dragRef }) =>
                 dragRef(

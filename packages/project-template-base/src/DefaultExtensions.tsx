@@ -7,6 +7,7 @@ import { BugReporter } from "@webiny/bug-reporter";
 import { Collaboration } from "@webiny/collaboration";
 import { Notifications } from "@webiny/notifications";
 import { NotificationsIntegrations } from "@webiny/notifications-integrations";
+import { Webhooks } from "@webiny/webhooks";
 
 /**
  * Default feature extensions every Webiny project gets, shared across hosting types (aws + server). The
@@ -25,6 +26,7 @@ export const DefaultExtensions = () => {
             <Collaboration />
             <Notifications />
             <NotificationsIntegrations />
+            <Webhooks />
         </>
     );
 };

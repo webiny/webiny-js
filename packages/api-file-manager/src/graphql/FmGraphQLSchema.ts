@@ -20,6 +20,7 @@ import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
 import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
+import { DefaultSrcPrefix } from "~/features/settings/DefaultSrcPrefix/index.js";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
 import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
@@ -98,6 +99,8 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
                 uploadMinFileSize: Number
                 uploadMaxFileSize: Number
                 srcPrefix: String
+                # What srcPrefix is when no custom one is set: the API's public URL plus /files/.
+                defaultSrcPrefix: String
             }
 
             input FmSettingsInput {
@@ -356,6 +359,16 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
                     }
 
                     return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "FmSettings.defaultSrcPrefix",
+            dependencies: [DefaultSrcPrefix],
+            resolver: (defaultSrcPrefix: DefaultSrcPrefix.Interface) => {
+                return () => {
+                    return defaultSrcPrefix.get();
                 };
             }
         });

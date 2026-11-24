@@ -11,6 +11,8 @@ import { UserMenu } from "@webiny/app-admin";
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 import { CommandPalette } from "./CommandPalette/CommandPalette.js";
+import { AiChatsPanel } from "./AiChats/AiChatsPanel.js";
+import { AiChatsButton } from "./AiChats/AiChatsButton.js";
 import { Breadcrumbs } from "./Breadcrumbs/Breadcrumbs.js";
 
 const SIDEBAR_STATE_KEY = "navigation/state";
@@ -86,11 +88,22 @@ const LayoutContent = ({
                             <DebuggerIndicator />
                             <TenantSelector />
                             <AssumedPermissionsSelector />
+                            <AiChatsButton />
                             <UserMenu />
                         </div>
                     }
                 />
-                <main className={"relative overflow-y-auto h-main-content"}>{children}</main>
+                {/*
+                 * The AI chats panel docks beside the view rather than over it, so the view narrows
+                 * while it is open and stays usable. Positioned, because below 1024px the panel
+                 * covers the view instead.
+                 */}
+                <div className={"relative flex"}>
+                    <main className={"relative overflow-y-auto h-main-content min-w-0 flex-1"}>
+                        {children}
+                    </main>
+                    <AiChatsPanel />
+                </div>
             </div>
         </>
     );

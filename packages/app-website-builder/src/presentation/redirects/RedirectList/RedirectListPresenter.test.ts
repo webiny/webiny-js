@@ -3,6 +3,9 @@ import { observable } from "mobx";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/ListPresenter.js";
+import { AssistantPageContext } from "@webiny/app-admin/features/assistantPageContext/AssistantPageContext.js";
+import { AssistantPageContext as AssistantPageContextAbstraction } from "@webiny/app-admin/features/assistantPageContext/abstractions.js";
+import { FoldersContext } from "@webiny/app-aco/features/folders/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Redirect } from "~/domain/Redirect/Redirect.js";
@@ -205,9 +208,11 @@ describe("RedirectListPresenter", () => {
         container.register(UpdateRedirectRepository).inSingletonScope();
         container.register(UpdateRedirectUseCase);
 
+        container.register(AssistantPageContext).inSingletonScope();
         container.register(ListPresenter);
         container.registerInstance(FolderTreePresenter, createFolderTreePresenter());
         container.registerInstance(GetDescendantFoldersUseCase, { execute: () => [] });
+        container.registerInstance(FoldersContext, { type: "WbRedirect" });
         container.registerInstance(CreateRedirectPresenter, {
             vm: {},
             init: vi.fn(),
@@ -222,6 +227,31 @@ describe("RedirectListPresenter", () => {
         container.register(RedirectListPresenter);
 
         presenter = container.resolve(Abstraction);
+    });
+
+    describe("assistant page context", () => {
+        it("tells the assistant the redirects and folders on screen, until disposed", async () => {
+            const pageContext = container.resolve(AssistantPageContextAbstraction);
+            await initAndWait();
+
+            const context = pageContext.get();
+            expect(context?.view).toBe("Redirects in Website Builder");
+            expect(context?.details).toMatchObject({
+                items: "redirects",
+                totalCount: TOTAL_REDIRECTS,
+                folderType: "WbRedirect",
+                currentFolder: null,
+                visibleFolders: []
+            });
+            const visibleRows = context?.details["visibleRows"] as unknown[];
+            expect(visibleRows[0]).toEqual({
+                id: "redirect-119",
+                title: "/from-119 -> /to-119"
+            });
+
+            presenter.dispose();
+            expect(pageContext.get()).toBeNull();
+        });
     });
 
     describe("pagination", () => {

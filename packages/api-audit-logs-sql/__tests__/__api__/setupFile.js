@@ -11,6 +11,7 @@ setStorageOps("auditLogs", () => {
 
     return {
         storageOperations: {},
-        plugins: [registerAuditLogsSqlStorageOperations({ knex })]
+        // The storage runs on the connection the SQL preset registers (`KnexClient`).
+        plugins: [registerAuditLogsSqlStorageOperations()]
     };
 });

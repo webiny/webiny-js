@@ -48,11 +48,13 @@ describe("ModelDeleteWorkflowError (UI-18, QBZ-38)", () => {
         hoisted.editor = true;
         renderError(BOUND);
 
-        expect(await screen.findByText("Article has a workflow")).toBeTruthy();
         expect(
-            screen.getByText("Delete the workflow “Article review” first, then delete the model.")
+            await screen.findByText(
+                "Article has a workflow. Delete the workflow “Article review” first, then delete the model."
+            )
         ).toBeTruthy();
-        expect(screen.getByText("Open workflow →").closest("a")?.getAttribute("href")).toBe(
+        expect(screen.queryByRole("heading")).toBeNull();
+        expect(screen.getByText("Open workflow").closest("a")?.getAttribute("href")).toBe(
             "/cms/workflows"
         );
         expect(screen.queryByText(BOUND.message)).toBeNull();
@@ -67,7 +69,7 @@ describe("ModelDeleteWorkflowError (UI-18, QBZ-38)", () => {
                 "Ask someone with Manage workflows to delete the workflow “Article review” first, then delete the model."
             )
         ).toBeTruthy();
-        expect(screen.queryByText("Open workflow →")).toBeNull();
+        expect(screen.queryByText("Open workflow")).toBeNull();
     });
 
     it("leaves every other delete error as it was", async () => {

@@ -83,11 +83,11 @@ describe("getReviewActions", () => {
         expect(actions.map(action => [action.kind, action.emphasis])).toEqual([
             ["cancel", "ghost"],
             ["reassign", "tertiary"],
-            ["reject", "tertiary"],
+            ["reject", "secondary"],
             ["takeOver", "secondary"],
             ["start", "primary"],
             ["approve", "primary"],
-            ["restart", "primary"]
+            ["restart", "secondary"]
         ]);
         const labels = actions.map(action => action.label);
         expect(labels).toEqual([
@@ -131,7 +131,7 @@ describe("getReviewActions", () => {
                 label: "Restart",
                 icon: "refresh",
                 stepId: "step-3",
-                emphasis: "primary",
+                emphasis: "secondary",
                 disabledReason: null
             }
         ]);

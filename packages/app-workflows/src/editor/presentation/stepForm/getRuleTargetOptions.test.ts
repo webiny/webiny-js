@@ -42,19 +42,19 @@ describe("getRuleTargetOptions: the list (R307)", () => {
         const { options } = getRuleTargetOptions(createParams());
 
         expect(options).toEqual([
-            createPickerOption({ id: "team:team-1", label: "Legal team pool", icon: "groups" }),
-            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: "groups" }),
+            createPickerOption({ id: "team:team-1", label: "Legal team pool", icon: null }),
+            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: null }),
             createPickerOption({
                 id: "user:user-1",
                 label: "Ivan Horvat",
                 description: "Legal",
-                icon: "person"
+                icon: null
             }),
             createPickerOption({
                 id: "user:user-2",
                 label: "Ana Kovač",
                 description: "Legal, Marketing",
-                icon: "person"
+                icon: null
             })
         ]);
     });
@@ -83,7 +83,7 @@ describe("getRuleTargetOptions: a saved team target", () => {
         );
 
         expect(selected).toEqual(
-            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: "groups" })
+            createPickerOption({ id: "team:team-2", label: "Marketing team pool", icon: null })
         );
     });
 
@@ -100,7 +100,7 @@ describe("getRuleTargetOptions: a saved team target", () => {
             createPickerOption({
                 id: "team:team-3",
                 label: "Press (not in reviewing teams)",
-                icon: "group"
+                icon: null
             })
         );
         expect(options.map(option => option.id)).not.toContain("team:team-3");
@@ -171,7 +171,7 @@ describe("getRuleTargetOptions: a saved user target", () => {
                 id: "user:user-2",
                 label: "Ana Kovač",
                 description: "Legal, Marketing",
-                icon: "person"
+                icon: null
             })
         );
     });
@@ -192,6 +192,28 @@ describe("getRuleTargetOptions: a saved user target", () => {
         expect(selected?.label).toBe("Luka Perić (not in reviewing teams)");
     });
 
+    it("keeps the mark when the member search still lists a target who left the reviewing teams", () => {
+        const left = createWorkflowUserSummary({
+            id: "user-3",
+            displayName: "Luka Perić",
+            teamIds: ["team-9"]
+        });
+        const listed = createWorkflowUserSummary({
+            id: "user-3",
+            displayName: "Luka Perić",
+            teamIds: ["team-1"]
+        });
+        const members = createTargetMembersSlice({ items: [IVAN, listed], selected: [left] });
+
+        const { options, selected } = getRuleTargetOptions(
+            createParams({ members, target: { type: "user", id: "user-3" } })
+        );
+
+        const option = options.find(item => item.id === "user:user-3");
+        expect(selected?.label).toBe("Luka Perić (not in reviewing teams)");
+        expect(option?.label).toBe("Luka Perić (not in reviewing teams)");
+    });
+
     it("resolves a user nobody listed through the references and flags it by its known teams", () => {
         const references = createReferencesSlice({
             users: [createReferenceLabel({ id: "user-4", label: "Maja Kos" })],
@@ -206,7 +228,7 @@ describe("getRuleTargetOptions: a saved user target", () => {
             createPickerOption({
                 id: "user:user-4",
                 label: "Maja Kos (not in reviewing teams)",
-                icon: "person"
+                icon: null
             })
         );
     });

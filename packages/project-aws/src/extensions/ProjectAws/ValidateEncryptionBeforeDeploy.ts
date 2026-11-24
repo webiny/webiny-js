@@ -1,9 +1,7 @@
-import {
-    BeforeDeploy,
-    GetProductionEnvironments,
-    GetProjectConfig,
-    ProjectSdkParamsService
-} from "@webiny/project/abstractions/index.js";
+import { BeforeDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { GetProductionEnvironments } from "@webiny/project/abstractions/index.js";
+import { GetProjectConfig } from "@webiny/project/abstractions/index.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class ValidateEncryptionBeforeDeployImpl implements BeforeDeploy.Interface {

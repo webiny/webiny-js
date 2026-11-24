@@ -1,66 +1,79 @@
 /**
- * Webiny API handler for the standalone Node server transport with SQL storage.
+ * Webiny API handler for the standalone Node server transport on a SQL storage.
  *
- * Thin variant over the transport base (@webiny/api-event-handler-standalone): supplies the SQL storage
- * wiring AND the self-hosted identity provider (JWT IdP + SQL credential storage). CMS, core, and
- * websockets storage are DI Features registered directly on the container. ACO and audit-logs
- * remain legacy RegisterExtensionPlugins applied via `registerExtensions`.
+ * Thin variant over the transport base (@webiny/api-event-handler-standalone): takes the storage
+ * (`createSqliteStorage` from @webiny/api-storage-sqlite, or `createPgStorage` from
+ * @webiny/api-storage-pg, each built from its connection) and adds the self-hosted identity provider
+ * (JWT IdP + SQL credential storage) on the storage's connection.
  *
- * The caller supplies the Knex client (there is no single canonical connection for a standalone DB).
- * The JWT signing secret is read from `WEBINY_SELF_HOSTED_AUTH_SECRET` when the handler is created.
+ * At start, before the server accepts a request, it runs the storage's schema setup
+ * (`SqlSchemaSetupRunner`) on a container built the way a request's is, so the storage, the login
+ * tables and the modules among the project's extensions set up theirs. Then the storage is
+ * schema-managed: no request checks for or creates tables. The JWT signing secret is read from
+ * `WEBINY_SELF_HOSTED_AUTH_SECRET` when the handler is created.
  */
-import type { Knex } from "knex";
-import { registerExtensions } from "@webiny/handler";
+import type { Container } from "@webiny/di";
+import { RequestStorage } from "@webiny/api-core";
+import { SqlSchemaSetupRunner, type SqlStorage } from "@webiny/api-core-sql";
+import { ApiRequestRegistration } from "@webiny/api-event-handler-core";
 import {
     createWebinyApiHandler as createBaseHandler,
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-standalone";
-import { ApiCoreSqlFeature, registerSQLCore } from "@webiny/api-core-sql";
-import { HeadlessCmsSqlFeature } from "@webiny/api-headless-cms-sql";
-import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
-import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
-import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
 import { SelfHostedAuthApiFeature } from "@webiny/self-hosted-auth";
-import { readSigningSecret } from "~/readSigningSecret.js";
 import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
+import { readSigningSecret } from "~/readSigningSecret.js";
 
 export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
-    /**
-     * Knex client for the SQL database. Required — the caller owns the connection (there is no single
-     * canonical standalone DB connection to default to).
-     */
-    knex: Knex;
-    /**
-     * Optional table-name prefix, threaded to every SQL storage operation.
-     */
-    tableNamePrefix?: string;
+    /** The SQL storage of the API, built from its connection. */
+    storage: SqlStorage;
 };
 
+/*
+ * The login storage of a request: the credentials and reset codes, on the storage's connection and
+ * table settings (`KnexClient`, `SqlSchemaConfig`, in the root).
+ */
+const SelfHostedAuthRequestStorage: RequestStorage.Interface = {
+    register(container) {
+        SelfHostedAuthSqlFeature.register(container);
+    }
+};
+
+/**
+ * What the handler puts in the root container, once per process: the storage (the connection and
+ * its settings, its `RequestStorage` and its schema setup runner), the login storage's
+ * `RequestStorage`, and the self-hosted JWT identity provider. The IdP is in the root so the
+ * RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can resolve it; it only needs the
+ * token issuer, and the login use cases it registers resolve the credential storage from the
+ * request's container.
+ */
+export function registerSqlApiRoot(
+    container: Container,
+    params: { storage: SqlStorage; signingSecret: string }
+): void {
+    params.storage.register(container);
+    container.registerInstance(RequestStorage, SelfHostedAuthRequestStorage);
+    SelfHostedAuthApiFeature.register(container, { signingSecret: params.signingSecret });
+}
+
 export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
-    const { knex, tableNamePrefix } = config;
+    const { storage } = config;
     // Read once, so a missing secret stops the server at boot instead of failing the first login.
     const signingSecret = readSigningSecret(process.env);
 
     return createBaseHandler({
         extensions: config.extensions,
         registerRootStorage: async container => {
-            // Clean DI Features: SQL core storage-ops factory + websockets storage.
-            ApiCoreSqlFeature.register(container, { knex, tableNamePrefix });
-            WebsocketsSqlFeature.register(container, { tableNamePrefix });
-
-            // Identity provider: the self-hosted JWT IdP + its SQL credential storage. Registered in
-            // the root so the RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can
-            // resolve it. SelfHostedAuthSqlFeature supplies the credential storage operations over Knex.
-            SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
-            SelfHostedAuthApiFeature.register(container, { signingSecret });
-
-            HeadlessCmsSqlFeature.register(container, { knex, tableNamePrefix });
-
-            await registerExtensions(container, [
-                registerSQLCore({ knex }),
-                registerAcoSqlStorageOperations({ knex, tableNamePrefix }),
-                registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
-            ]);
+            registerSqlApiRoot(container, { storage, signingSecret });
+            /*
+             * Before the server takes traffic: `root` runs before the server is handed back to
+             * listen. The setup's container is built as a request's (`ApiRequestRegistration`), so
+             * the login storage's `RequestStorage` adds the login tables. A failure (a missing
+             * module, a database that's down) stops the server here.
+             */
+            await container.resolve(SqlSchemaSetupRunner).run({
+                request: container.resolve(ApiRequestRegistration)
+            });
         }
     });
 }

@@ -9,6 +9,7 @@ import { updateTeamValidation } from "./schema.js";
 import { TeamBeforeUpdateEvent, TeamAfterUpdateEvent } from "./events.js";
 import type { Team, UpdateTeamInput } from "../shared/types.js";
 import { descriptionOnUpdate } from "../../shared/description.js";
+import { definedOnly } from "../../shared/definedOnly.js";
 import { resolveRoleIdentifiers } from "../shared/resolveRoleIdentifiers.js";
 import {
     NotAuthorizedError,
@@ -69,7 +70,7 @@ export class UpdateTeamUseCase {
         const { description, ...rest } = validation.data;
 
         const changes: UpdateTeamInput = {
-            ...rest,
+            ...definedOnly(rest),
             ...descriptionOnUpdate(description)
         };
 

@@ -32,6 +32,9 @@ import { ListCustomIconsFeature } from "~/features/iconPicker/listCustomIcons/fe
 import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIcons/feature.js";
 import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
 import { AdminAssistantFeature } from "~/features/adminAssistant/index.js";
+import { AssistantPageContextFeature } from "~/features/assistantPageContext/index.js";
+import { AiChatsFeature } from "~/features/aiChats/index.js";
+import { AiChatsPanelFeature } from "~/presentation/aiChats/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
 import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
 import { readPasswordPolicyRules } from "~/features/adminUsers/passwordPolicy/index.js";
@@ -74,7 +77,10 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     ListPresenterFeature.register(container);
     ListCustomIconsFeature.register(container);
     CustomIconsPresenterFeature.register(container);
+    AiChatsFeature.register(container);
+    AssistantPageContextFeature.register(container);
     AdminAssistantFeature.register(container);
+    AiChatsPanelFeature.register(container);
     CommandPaletteFeature.register(container);
     AdminCommandsFeature.register(container);
     SortableFeature.register(container);

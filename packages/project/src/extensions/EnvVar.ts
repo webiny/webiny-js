@@ -6,7 +6,7 @@ import { defineExtension } from "~/defineExtension/index.js";
  */
 export const EnvVar = defineExtension({
     type: "Project/EnvVar",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Set an environment variable in the project context.",
     multiple: true,
     paramsSchema: z.object({

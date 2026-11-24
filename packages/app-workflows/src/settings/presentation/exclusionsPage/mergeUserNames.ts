@@ -12,10 +12,15 @@ export const mergeUserNames = (
 ): Map<string, ExclusionUserName> => {
     const names = new Map(known);
     for (const user of result.users) {
-        names.set(user.id, { userId: user.id, label: user.displayName, state: "found" });
+        names.set(user.id, {
+            userId: user.id,
+            label: user.displayName,
+            state: "found",
+            teamNames: user.teams.map(team => team.name)
+        });
     }
     for (const userId of result.missingIds) {
-        names.set(userId, { userId, label: DELETED_USER_LABEL, state: "deleted" });
+        names.set(userId, { userId, label: DELETED_USER_LABEL, state: "deleted", teamNames: [] });
     }
     return names;
 };

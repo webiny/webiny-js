@@ -29,7 +29,7 @@ export interface ReviewMessage {
 }
 
 const NO_REVIEW: ReviewMessage = {
-    message: "This content needs review before publishing",
+    message: "This content needs a review before it can be published.",
     lockText: "Publishing needs an approved review."
 };
 
@@ -46,7 +46,7 @@ const LOCK_APPROVED =
     "Editing is locked. To make changes, create a new revision; it needs a new review.";
 
 const LOCK_REJECTED =
-    "This revision is locked for good. Create a new revision to fix it, then request a new review.";
+    "This revision is locked. Create a new revision to fix it, then request a new review.";
 
 /*
  * The viewer's own teams among the step's candidate teams joined with " and " (QBZ-25); a viewer
@@ -65,37 +65,38 @@ const getInProgressMessage = (
     flags: ReviewViewerFlags | null,
     viewerTeamIds: string[]
 ): ReviewMessage => {
+    const lockInReview = LOCK_IN_REVIEW;
     const display = getDisplayStep(review);
     if (!display) {
-        return { message: "Review in progress", lockText: LOCK_IN_REVIEW };
+        return { message: "Review in progress", lockText: lockInReview };
     }
 
     const step = display.step;
     if (step.state === StepState.Awaiting && step.owner === null) {
         const names = getPoolNames(step, viewerTeamIds);
         if (names === "") {
-            return { message: "Waiting in the team pool", lockText: LOCK_IN_REVIEW };
+            return { message: "Waiting in the team pool.", lockText: lockInReview };
         }
-        return { message: `Waiting in the ${names} team pool`, lockText: LOCK_IN_REVIEW };
+        return { message: `Waiting in the ${names} team pool.`, lockText: lockInReview };
     }
 
     // A running or failed step says so, before any owner wording (R263).
     const runMessage = getStepRunMessage(step);
     if (runMessage !== null) {
-        return { message: runMessage, lockText: LOCK_IN_REVIEW };
+        return { message: runMessage, lockText: lockInReview };
     }
 
     if (step.owner === null) {
-        return { message: "Review in progress", lockText: LOCK_IN_REVIEW };
+        return { message: "Review in progress", lockText: lockInReview };
     }
 
     // Approving is owner-only on the server, so the flag tells us the viewer owns the step.
     if (flags && flags.canApprove) {
-        return { message: "You are reviewing this step", lockText: LOCK_IN_REVIEW };
+        return { message: "You are reviewing this step.", lockText: lockInReview };
     }
 
     const ownerLabel = getStepOwnerLabel(step);
-    return { message: `${ownerLabel} is reviewing`, lockText: LOCK_IN_REVIEW };
+    return { message: `${ownerLabel} is reviewing this step.`, lockText: lockInReview };
 };
 
 /*
@@ -105,6 +106,7 @@ const getInProgressMessage = (
 export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => {
     const { status, failureKind, review, flags, isPublished, isUnpublished, viewerTeamIds } =
         params;
+    const lockApproved = LOCK_APPROVED;
 
     if (status === "loading") {
         return { message: "Loading review status…", lockText: null };
@@ -133,15 +135,15 @@ export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => 
 
     if (review.state === ReviewState.Approved) {
         if (isPublished) {
-            return { message: "Approved and published", lockText: LOCK_APPROVED };
+            return { message: "Approved and published", lockText: lockApproved };
         }
         if (isUnpublished) {
             return {
                 message: "Approved and unpublished. Publishing again needs no new review.",
-                lockText: LOCK_APPROVED
+                lockText: lockApproved
             };
         }
-        return { message: "Approved, ready to publish", lockText: LOCK_APPROVED };
+        return { message: "Every step approved. Ready to publish.", lockText: lockApproved };
     }
 
     if (review.state === ReviewState.Rejected) {

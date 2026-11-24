@@ -1,6 +1,8 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { dropActor } from "~/domain/notifications/dropActor.js";
 import { getActorName } from "~/domain/notifications/getActorName.js";
+import { groupPoolRecipients } from "~/domain/notifications/groupPoolRecipients.js";
+import { joinTeamNames } from "~/domain/notifications/joinTeamNames.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildAssignedMessage } from "~/domain/notifications/messages/buildAssignedMessage.js";
 import { buildPoolReachedMessage } from "~/domain/notifications/messages/buildPoolReachedMessage.js";
@@ -8,6 +10,7 @@ import { getAssignmentReason } from "~/domain/notifications/messages/getAssignme
 import { ReviewStepReachedEventHandler } from "~/features/review/ReviewStepReacher/events.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/abstractions.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";
+import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
 
 /**
  * Tells the owner of a reached step that it is theirs, or the pool that a step is waiting (R181,
@@ -17,6 +20,7 @@ class ReviewStepReachedNotificationsImpl implements ReviewStepReachedEventHandle
     public constructor(
         private notifier: ReviewNotifierService.Interface,
         private recipients: NotificationRecipientService.Interface,
+        private listCandidateTeams: ListReviewCandidateTeamsUseCase.Interface,
         private logger: Logger.Interface
     ) {}
 
@@ -48,16 +52,20 @@ class ReviewStepReachedNotificationsImpl implements ReviewStepReachedEventHandle
                     review,
                     stepId: step.id,
                     event: "assigned",
-                    recipients,
-                    message: buildAssignedMessage({
-                        contentTitle: review.title,
-                        stepTitle: step.title,
-                        reason: getAssignmentReason(
-                            fact.assignment?.source,
-                            getActorName(review.createdBy, step.title)
-                        ),
-                        reassignedBy: null
-                    })
+                    deliveries: [
+                        {
+                            recipients,
+                            message: buildAssignedMessage({
+                                contentTitle: review.title,
+                                stepTitle: step.title,
+                                reason: getAssignmentReason(
+                                    fact.assignment?.source,
+                                    getActorName(review.createdBy, step.title)
+                                ),
+                                reassignedBy: null
+                            })
+                        }
+                    ]
                 });
                 return;
             }
@@ -83,16 +91,60 @@ class ReviewStepReachedNotificationsImpl implements ReviewStepReachedEventHandle
             if (recipients.length === 0) {
                 return;
             }
+
+            // One lookup for the names of the step's candidate teams. Without names (a failed
+            // lookup, which the use case logs, or deleted teams) the text says "the team pool".
+            const teamNames = new Map<string, string>();
+            try {
+                const teams = await this.listCandidateTeams.execute({
+                    teamIds: step.candidateTeamIds
+                });
+                if (teams.isOk()) {
+                    for (const team of teams.value) {
+                        teamNames.set(team.id, team.name);
+                    }
+                }
+            } catch (error) {
+                this.logger.error(
+                    { ...getErrorLogFields(error), reviewId: review.id, stepId: step.id },
+                    "Could not look up the names of the step's teams."
+                );
+            }
+
+            // One message per distinct text (D158 follow-up): recipients are grouped by their
+            // team set, and sets whose names read the same (unknown teams left out) share one.
+            const requester = getActorName(review.createdBy, step.title);
+            const byNames = new Map<string, ReviewNotifierService.Delivery>();
+            for (const group of groupPoolRecipients(recipients)) {
+                const names = joinTeamNames(
+                    group.teamIds.flatMap(teamId => {
+                        const name = teamNames.get(teamId);
+                        return name ? [name] : [];
+                    })
+                );
+                const groupRecipients = group.recipients.map(item => {
+                    return { id: item.id, displayName: item.displayName };
+                });
+                const existing = byNames.get(names);
+                if (existing) {
+                    existing.recipients.push(...groupRecipients);
+                    continue;
+                }
+                byNames.set(names, {
+                    recipients: groupRecipients,
+                    message: buildPoolReachedMessage({
+                        contentTitle: review.title,
+                        stepTitle: step.title,
+                        requester,
+                        teamNames: names === "" ? null : names
+                    })
+                });
+            }
             await this.notifier.notify({
                 review,
                 stepId: step.id,
                 event: "poolReached",
-                recipients,
-                message: buildPoolReachedMessage({
-                    contentTitle: review.title,
-                    stepTitle: step.title,
-                    requester: getActorName(review.createdBy, step.title)
-                })
+                deliveries: [...byNames.values()]
             });
         } catch (error) {
             this.logger.error(
@@ -105,5 +157,10 @@ class ReviewStepReachedNotificationsImpl implements ReviewStepReachedEventHandle
 
 export const ReviewStepReachedNotifications = ReviewStepReachedEventHandler.createImplementation({
     implementation: ReviewStepReachedNotificationsImpl,
-    dependencies: [ReviewNotifierService, NotificationRecipientService, Logger]
+    dependencies: [
+        ReviewNotifierService,
+        NotificationRecipientService,
+        ListReviewCandidateTeamsUseCase,
+        Logger
+    ]
 });

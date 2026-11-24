@@ -8,6 +8,7 @@ import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentMode
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { Response } from "@webiny/api-graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { HeadlessCmsEndpointConfig } from "@webiny/api-headless-cms/HeadlessCmsEndpointConfig.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
@@ -119,7 +120,9 @@ class BulkActionsGraphQLSchemaImpl implements CmsGraphQLSchemaFactory.Interface 
                     }
                 },
                 isApplicable: context =>
-                    context.container.resolve(TenantContext).getTenant().id === tenant.id
+                    context.container.resolve(TenantContext).getTenant().id === tenant.id &&
+                    // Bulk actions change entries: manage endpoint only.
+                    context.container.resolve(HeadlessCmsEndpointConfig).type === "manage"
             });
 
             modelPlugin.name = `headless-cms.graphql.schema.bulkAction.${model.modelId}`;

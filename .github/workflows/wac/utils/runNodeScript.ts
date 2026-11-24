@@ -1,4 +1,5 @@
 import { addToOutputs } from "./addToOutputs.js";
+import { nodeScriptPath } from "./nodeScriptPath.js";
 
 interface RunNodeScriptOptions {
     outputAs?: string;
@@ -9,8 +10,7 @@ export const runNodeScript = (
     params: string = "",
     options: RunNodeScriptOptions = {}
 ) => {
-    const scriptPath = `.github/workflows/wac/utils/runNodeScripts/${name}.js`;
-    let cmd = `node ${scriptPath} '${params}'`;
+    let cmd = `node ${nodeScriptPath(name)} '${params}'`;
     if (options.outputAs) {
         cmd = addToOutputs(options.outputAs, `$(${cmd})`);
     }

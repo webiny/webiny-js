@@ -1,6 +1,6 @@
 import { WebinyError } from "@webiny/error";
-import { KnexClient } from "@webiny/api-core-sql";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { KnexClient, SqlSchemaConfig, SqlSchemaSetup } from "@webiny/api-core-sql";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { TableName } from "~/TableName/abstractions.js";
 import { toIsoString } from "~/toIsoString.js";
 
@@ -47,7 +47,11 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
     private readonly knex;
     private readonly tableName;
 
-    public constructor(knex: KnexClient.Interface, tableName: TableName.Interface) {
+    public constructor(
+        knex: KnexClient.Interface,
+        tableName: TableName.Interface,
+        private readonly schemaConfig?: SqlSchemaConfig.Interface
+    ) {
         this.knex = knex;
         this.tableName = tableName.resolve(BASE_TABLE_NAME);
     }
@@ -218,7 +222,16 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         }
     }
 
+    /* At runtime: nothing when the schema is managed (`SqlSchemaConfig`). */
     private async prepareTable(): Promise<void> {
+        if (this.schemaConfig?.isManaged()) {
+            return;
+        }
+        await this.setupSchema();
+    }
+
+    /* Creates and migrates the table, whatever the mode (deploy-time schema setup). */
+    public async setupSchema(): Promise<void> {
         await this.ensureTable();
         await this.migrateTable();
         await this.migrateLastSeen();
@@ -313,5 +326,24 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
 export const WebsocketsConnectionRegistry = ConnectionRegistry.createImplementation({
     implementation: WebsocketsConnectionRegistryImpl,
+    dependencies: [KnexClient, TableName, [SqlSchemaConfig, { optional: true }]]
+});
+
+/** The `websockets` schema setup step: the connections table, created and migrated. */
+class WebsocketsSchemaSetupImpl implements SqlSchemaSetup.Interface {
+    public readonly name = "websockets";
+
+    public constructor(
+        private readonly knex: KnexClient.Interface,
+        private readonly tableName: TableName.Interface
+    ) {}
+
+    public setup(): Promise<void> {
+        return new WebsocketsConnectionRegistryImpl(this.knex, this.tableName).setupSchema();
+    }
+}
+
+export const WebsocketsSchemaSetup = SqlSchemaSetup.createImplementation({
+    implementation: WebsocketsSchemaSetupImpl,
     dependencies: [KnexClient, TableName]
 });

@@ -3,10 +3,6 @@ import { observer } from "mobx-react-lite";
 import { useDrop } from "react-dnd";
 import styled from "@emotion/styled";
 
-import type { SlotInput } from "@webiny/website-builder-sdk";
-import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
-import { findMatchingAstNode, LayoutContentArea } from "@webiny/website-builder-sdk";
-
 import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { ElementOverlay } from "./ElementOverlay.js";
@@ -18,8 +14,8 @@ import { ElementDropLines } from "./ElementDropLines.js";
 import { DropBox } from "./DropBox.js";
 import { useDropZoneManager } from "../DropZoneManagerProvider.js";
 import { mergeRefs } from "../mergeRefs.js";
-import { Commands, EditorConfig } from "~/BaseEditor/index.js";
-import type { Editor } from "~/editorSdk/Editor.js";
+import { EditorConfig } from "~/BaseEditor/index.js";
+import { dropElement } from "./dropElement.js";
 import { ElementOverlayProvider } from "~/BaseEditor/defaultConfig/Content/Preview/Overlays/ElementOverlayProvider.js";
 
 const OverlayContainer = styled("div")({
@@ -65,66 +61,7 @@ export const ElementOverlays = observer(() => {
 
     drop(dropRef);
 
-    const canDropComponentIntoTarget = (
-        editor: Editor,
-        componentName: string,
-        target: DropEvent["target"]
-    ) => {
-        // Determine component manifest from drop target.
-        const document = editor.getDocumentState().read();
-        const parent = document.elements[target.parentId];
-        if (!parent || !target.slot) {
-            return false;
-        }
-        const componentManifest = editor.getEditorState().read().components[parent.component.name];
-        if (!componentManifest) {
-            return false;
-        }
-
-        // Find target input using AST.
-        const inputsAst = ComponentManifestToAstConverter.convert(componentManifest.inputs ?? []);
-        const targetInputNode = findMatchingAstNode(
-            LayoutContentArea.slotInputPath(target.parentId, target.slot),
-            inputsAst
-        );
-
-        let canAcceptComponent = targetInputNode !== undefined;
-        if (targetInputNode) {
-            const slotInput = targetInputNode.input as SlotInput;
-            const whitelistedComponents = slotInput.components;
-            if (whitelistedComponents && whitelistedComponents.length > 0) {
-                canAcceptComponent = whitelistedComponents.includes(componentName);
-            }
-        }
-        return canAcceptComponent;
-    };
-
-    const onDrop = useCallback(
-        ({ item, target }: DropEvent) => {
-            if (!canDropComponentIntoTarget(editor, item.componentName, target)) {
-                return;
-            }
-
-            if (item.id) {
-                // We're moving an existing element.
-                editor.executeCommand(Commands.MoveElement, {
-                    elementId: item.id,
-                    parentId: target.parentId,
-                    slot: target.slot,
-                    index: target.index
-                });
-            } else {
-                // We're creating a new element.
-                editor.executeCommand(Commands.CreateElement, {
-                    componentName: item.componentName,
-                    parentId: target.parentId,
-                    slot: target.slot,
-                    index: target.index
-                });
-            }
-        },
-        [editor]
-    );
+    const onDrop = useCallback((event: DropEvent) => dropElement(editor, event), [editor]);
 
     const viewportContainer: React.CSSProperties = {
         display: "block",

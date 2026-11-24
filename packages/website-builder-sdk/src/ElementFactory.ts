@@ -282,13 +282,19 @@ export class ElementFactory {
                 }
             } else if (isObject && isList) {
                 return;
+            } else if (ignoreDefaultValues && value === undefined) {
+                // A breakpoint override only holds the values supplied for it: an empty binding would
+                // replace the inherited value with undefined.
+                return;
             } else {
                 ops.push(
                     operations.setInputBinding(elementId, path, {
                         id: this.generateId(),
-                        static: ignoreDefaultValues
-                            ? undefined
-                            : (value ?? node.input.defaultValue),
+                        // A supplied null (a cleared value) is kept; only a missing value gets the default.
+                        static:
+                            value !== undefined
+                                ? value
+                                : (node.input.defaultValue ?? (isList ? [] : undefined)),
                         type: node.type,
                         list: node.list,
                         translatable: node.input.translatable

@@ -26,7 +26,7 @@ const federationSchema = z.object({
 
 export const Cognito = defineExtension({
     type: "Project/Cognito",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable and configure Cognito authentication.",
     paramsSchema: z.object({
         apiConfig: z.string().describe("Path to API configuration.").optional(),

@@ -1,21 +1,11 @@
 import { createImplementation, Container } from "@webiny/di";
-import {
-    GetProjectService,
-    GetProjectConfig,
-    InitProjectSdkService
-} from "~/abstractions/index.js";
-import {
-    buildAppWithHooks,
-    deployAppClearWatchedLambdaFunctions,
-    deployAppRefreshStackOutputCache,
-    deployAppWithHooks,
-    deployAppWithWatchedLambdaReplacement,
-    destroyAppClearStackOutputCache,
-    watchWithHooks,
-    getPulumiServiceWithDownloadInfo
-} from "~/decorators/index.js";
+import { GetProjectService } from "~/abstractions/index.js";
+import { GetProjectConfig } from "~/abstractions/index.js";
+import { InitHostingSdkService } from "~/abstractions/index.js";
+import { InitProjectSdkService } from "~/abstractions/index.js";
+import { buildAppWithHooks } from "~/decorators/index.js";
+import { watchWithHooks } from "~/decorators/index.js";
 import { registerHooks } from "./registerHooks.js";
-import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
 import { registerDecorators } from "./registerDecorators.js";
 import { traceAsync } from "~/utils/trace/index.js";
@@ -23,7 +13,8 @@ import { traceAsync } from "~/utils/trace/index.js";
 export class DefaultInitProjectSdkService implements InitProjectSdkService.Interface {
     constructor(
         private getProjectService: GetProjectService.Interface,
-        private getProjectConfig: GetProjectConfig.Interface
+        private getProjectConfig: GetProjectConfig.Interface,
+        private initHostingSdkServices: InitHostingSdkService.Interface[]
     ) {}
 
     async execute(container: Container) {
@@ -40,20 +31,16 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
             return registerHooks(container, projectExtensions, project);
         });
 
-        // Register Pulumi extensions.
-        await traceAsync("register Pulumi extensions", () => {
-            return registerPulumiExtensions(container, projectExtensions, project);
+        // Let the hosting package register what it needs from the config.
+        await traceAsync("init hosting SDK", async () => {
+            for (const initHostingSdkService of this.initHostingSdkServices) {
+                await initHostingSdkService.execute({ container, projectExtensions, project });
+            }
         });
 
         // Decorators that must be applied last on top of potentially custom ones.
         container.registerDecorator(buildAppWithHooks);
-        container.registerDecorator(deployAppWithWatchedLambdaReplacement);
-        container.registerDecorator(deployAppClearWatchedLambdaFunctions);
-        container.registerDecorator(deployAppRefreshStackOutputCache);
-        container.registerDecorator(destroyAppClearStackOutputCache);
-        container.registerDecorator(deployAppWithHooks);
         container.registerDecorator(watchWithHooks);
-        container.registerDecorator(getPulumiServiceWithDownloadInfo);
 
         // Register custom implementations first (they replace existing implementations).
         await traceAsync("register implementations", () => {
@@ -70,5 +57,5 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
 export const initProjectSdkService = createImplementation({
     abstraction: InitProjectSdkService,
     implementation: DefaultInitProjectSdkService,
-    dependencies: [GetProjectService, GetProjectConfig]
+    dependencies: [GetProjectService, GetProjectConfig, [InitHostingSdkService, { multiple: true }]]
 });

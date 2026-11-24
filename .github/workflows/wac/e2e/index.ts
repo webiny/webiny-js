@@ -1,5 +1,7 @@
 export * from "./constants.js";
 export * from "./statusComment.js";
+export * from "./statusRowStep.js";
+export * from "./prFeature.js";
 export * from "./sharedSteps.js";
 export * from "./createAwsJobs.js";
 export * from "./createStandaloneJobs.js";
@@ -9,5 +11,6 @@ export * from "./unlicensedE2e.js";
 export * from "./verdaccio.js";
 export * from "./e2eReport.js";
 export * from "./reportStatus.js";
+export * from "./createFinalStatusCommentJob.js";
 export * from "./replayRecordings.js";
 export * from "./variants.js";

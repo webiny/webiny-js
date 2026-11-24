@@ -244,6 +244,34 @@ describe("evaluateConstraints", () => {
         expect(result.violation!.message).toBe("Only one Hero per page");
     });
 
+    it("should not count the moved element itself in countInstances", () => {
+        const root = makeElement("root", "Page");
+        const hero = makeElement("hero-1", "Hero", { id: "root", slot: "children" });
+        const doc = makeDocument([root, hero]);
+        const components: Record<string, ComponentManifest> = {
+            Page: makeManifest("Page"),
+            Hero: makeManifest("Hero", {
+                constraints: [
+                    (ctx: ConstraintContext) => {
+                        if (ctx.countInstances("Hero") > 0) {
+                            return ctx.block("Only one Hero per page");
+                        }
+                    }
+                ]
+            })
+        };
+        const params = {
+            componentName: "Hero",
+            parentId: "root",
+            slot: "children",
+            document: doc,
+            components
+        };
+
+        expect(evaluateConstraints({ ...params, movedElementId: "hero-1" }).allowed).toBe(true);
+        expect(evaluateConstraints(params).allowed).toBe(false);
+    });
+
     it("should not evaluate parent's constraints against the placed component", () => {
         const parent = makeElement("parent-1", "Tabs");
         const doc = makeDocument([parent]);

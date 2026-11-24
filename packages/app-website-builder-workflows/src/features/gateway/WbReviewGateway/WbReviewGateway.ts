@@ -135,11 +135,10 @@ class WbReviewGatewayImpl implements GatewayAbstraction.Interface {
         >({
             query: LIST_WEBSITE_BUILDER_PAGE_REVIEWS,
             variables: {
-                list: params.list,
+                scope: params.scope,
                 where: {
                     titleContains: params.where.titleContains,
-                    reviewState: params.where.reviewState,
-                    stepState: params.where.stepState
+                    state: params.where.state
                 },
                 sort: params.sort,
                 limit: params.limit,

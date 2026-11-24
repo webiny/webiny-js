@@ -11,7 +11,8 @@ export const Routes = {
             path: "/website-builder/pages/content-reviews",
             params: zod => {
                 return {
-                    tab: zod.string().optional()
+                    scope: zod.string().optional(),
+                    state: zod.string().optional()
                 };
             }
         })

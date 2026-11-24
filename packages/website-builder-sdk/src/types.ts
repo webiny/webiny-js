@@ -548,6 +548,26 @@ export interface IContentSdk {
 // Input types
 
 // inputTypes.ts
+/**
+ * An input's renderer with settings for it. The settings belong to the named renderer: Webiny passes
+ * them to it untouched (`ElementInputRendererProps.settings`) and never reads them itself. `name` is
+ * required, so an input factory that spreads the author's input over its default renderer can't end
+ * up with settings and no renderer.
+ */
+export type InputRendererConfig = {
+    name: string;
+    settings?: Record<string, any>;
+};
+
+/**
+ * The renderer as the editor resolves it (`InputAstNode.renderer`): always an object, `name` is `""`
+ * when the input names no renderer, `settings` is `{}` when it has none.
+ */
+export type ResolvedInputRenderer = {
+    name: string;
+    settings: Record<string, any>;
+};
+
 export type BaseInput<T = any> = {
     name: string;
     type: string;
@@ -562,7 +582,11 @@ export type BaseInput<T = any> = {
     responsive?: boolean;
     required?: boolean;
     hideFromUi?: boolean;
-    renderer?: string;
+    /**
+     * The editor's renderer for this input: its name, or `{ name, settings }` to give the renderer
+     * settings (e.g. `{ name: "Webiny/Textarea", settings: { maxLength: 54 } }`).
+     */
+    renderer?: string | InputRendererConfig;
     list?: boolean;
     translatable?: boolean;
 };
@@ -617,9 +641,23 @@ export type SelectInput = BaseInput<string> & {
     showResetAction?: boolean;
 };
 
+/**
+ * A radio option. `image` is a URL or a data URI, for renderers that draw options as pictures.
+ * `inputs` are shown while the option is selected. When any option has `inputs`, the radio is
+ * stored as an object: `<radio>/value` holds the selected option, and the options' inputs are its
+ * other children, merged by name (see `ComponentManifestToAstConverter`).
+ */
+export type RadioOption = {
+    value: string;
+    label?: string;
+    description?: string;
+    image?: string;
+    inputs?: ComponentInput[];
+};
+
 export type RadioInput = BaseInput<string> & {
     type: "radio";
-    options: { label: string; value: string }[];
+    options: RadioOption[];
 };
 
 export interface ContentEntryReference {

@@ -1,7 +1,7 @@
 ---
 name: webiny-api-mailer-catalog
 description: >
-  api/mailer — 11 abstractions.
+  api/mailer — 13 abstractions.
 ---
 
 # api/mailer
@@ -29,6 +29,12 @@ description: >
 
 ---
 
+**Name:** `IsMailerConfiguredUseCase`
+**Import:** `import { IsMailerConfiguredUseCase } from "webiny/api/mailer"`
+**Source:** `@webiny/api-mailer/features/IsMailerConfigured/index.ts`
+
+---
+
 **Name:** `MailAfterSendEventHandler`
 **Import:** `import { MailAfterSendEventHandler } from "webiny/api/mailer"`
 **Source:** `@webiny/api-mailer/features/SendMail/index.ts`
@@ -38,12 +44,6 @@ description: >
 **Name:** `MailBeforeSendEventHandler`
 **Import:** `import { MailBeforeSendEventHandler } from "webiny/api/mailer"`
 **Source:** `@webiny/api-mailer/features/SendMail/index.ts`
-
----
-
-**Name:** `MailerService`
-**Import:** `import { MailerService } from "webiny/api/mailer"`
-**Source:** `@webiny/api-mailer/domain/MailerService/abstractions.ts`
 
 ---
 
@@ -62,6 +62,18 @@ description: >
 **Name:** `MailSendErrorEventHandler`
 **Import:** `import { MailSendErrorEventHandler } from "webiny/api/mailer"`
 **Source:** `@webiny/api-mailer/features/SendMail/index.ts`
+
+---
+
+**Name:** `MailTransport`
+**Import:** `import { MailTransport } from "webiny/api/mailer"`
+**Source:** `@webiny/api-mailer/domain/MailTransport/abstractions.ts`
+
+---
+
+**Name:** `MailTransportFactory`
+**Import:** `import { MailTransportFactory } from "webiny/api/mailer"`
+**Source:** `@webiny/api-mailer/domain/MailTransport/abstractions.ts`
 
 ---
 

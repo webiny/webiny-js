@@ -1,9 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
 import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("websockets runner", () => {
     it("should run and fail the route action - missing route", async () => {
@@ -92,6 +94,69 @@ describe("websockets runner", () => {
         const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
+        });
+    });
+
+    it("should refuse a connect from an identity with no permissions in the tenant", async () => {
+        const handler = useHandler({ permissions: [] });
+
+        const context = await handler.handle();
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+        const registry = context.container.resolve(ConnectionRegistry);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                connectionId: "myConnectionIdAbcdefg",
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+            },
+            body: JSON.stringify({
+                token: "aToken",
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 403,
+            message: "No access to this tenant."
+        });
+        expect(await registry.listViaIdentity("id-12345678")).toHaveLength(0);
+    });
+
+    // The runner answers a thrown error with a 200, which would open the socket.
+    it("should refuse a connect with a 500 when accepting it fails", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+        const registry = context.container.resolve(ConnectionRegistry);
+        vi.spyOn(registry, "register").mockRejectedValue(new Error("database unreachable"));
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                connectionId: "myConnectionIdAbcdefg",
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+            },
+            body: JSON.stringify({
+                token: "aToken",
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 500,
+            message: "Could not accept the connection."
         });
     });
 
@@ -257,6 +322,109 @@ describe("websockets runner", () => {
         const result = await runner.run(event);
         expect(result).toEqual({
             statusCode: 200
+        });
+    });
+
+    it("should not register a connection without a signed-in identity - connect route", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+        const registry = context.container.resolve(ConnectionRegistry);
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                connectionId: "anonymousConnectionId",
+                route: "connect",
+                endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+            },
+            body: JSON.stringify({
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 401,
+            error: {
+                message: "Missing identity."
+            }
+        });
+
+        const connections = await registry.listViaTenant("root");
+        expect(connections).toHaveLength(0);
+    });
+
+    it("should return error status without a signed-in identity - default route", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                route: "default"
+            },
+            body: JSON.stringify({
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            error: {
+                message: "Missing identity."
+            }
+        });
+    });
+
+    it("should give a custom route handler the anonymous identity, not null", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+        context.container.registerInstance(WebsocketsRouteHandler, {
+            route: "whoami",
+            async run({ response, identity }) {
+                return response.ok({
+                    data: {
+                        id: identity.id,
+                        anonymous: identity.isAnonymous()
+                    }
+                });
+            }
+        });
+        const validator = new MockWebsocketsEventValidator();
+        const response = context.container.resolve(WebsocketsResponse);
+
+        const runner = new WebsocketsRunner(context, response);
+
+        const rawEvent = {
+            context: {
+                route: "whoami"
+            },
+            body: JSON.stringify({
+                tenant: "root"
+            })
+        };
+
+        const event = await validator.validate(rawEvent);
+        const result = await runner.run(event);
+        expect(result).toMatchObject({
+            statusCode: 200,
+            data: {
+                anonymous: true
+            }
         });
     });
 });

@@ -1,4 +1,4 @@
-import { GetApp, Watch } from "@webiny/project/abstractions/index.js";
+import { GetApp, GetProjectConfigService, Watch } from "@webiny/project/abstractions/index.js";
 import {
     ServersWatcher,
     type IServerProcessSpec
@@ -6,6 +6,8 @@ import {
 import { spawnApiServer } from "../../serve/spawnApiServer.js";
 import { spawnDevProxy } from "../../serve/spawnDevProxy.js";
 import { isDevProxyEnabled } from "../../serve/devProxy/index.js";
+import { createPgliteProcess } from "../../serve/spawnPglite.js";
+import { getStandaloneDatabase } from "../../deploy/getStandaloneDbDriver.js";
 
 /**
  * Standalone hosting-type counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
@@ -67,6 +69,7 @@ import { isDevProxyEnabled } from "../../serve/devProxy/index.js";
 export class StandaloneWatch implements Watch.Interface {
     constructor(
         private getApp: GetApp.Interface,
+        private getProjectConfigService: GetProjectConfigService.Interface,
         private decoratee: Watch.Interface
     ) {}
 
@@ -78,7 +81,7 @@ export class StandaloneWatch implements Watch.Interface {
             return result;
         }
 
-        const specs = this.serverProcessSpecs(params.app);
+        const specs = await this.serverProcessSpecs(params.app);
 
         if (specs.length === 0) {
             return result;
@@ -88,8 +91,22 @@ export class StandaloneWatch implements Watch.Interface {
     }
 
     /** Everything this hosting type runs alongside the given app's build watchers. */
-    private serverProcessSpecs(appName: GetApp.AppName): IServerProcessSpec[] {
-        return [...this.apiServerSpecs(appName), ...this.devProxySpecs(appName)];
+    private async serverProcessSpecs(appName: GetApp.AppName): Promise<IServerProcessSpec[]> {
+        if (appName !== "api") {
+            return [];
+        }
+        /*
+         * `<Infra.Pglite>`: the database runs next to the api, as a process of its own so an
+         * api restart on rebuild leaves it running. The api starts once it accepts connections.
+         */
+        const { pglite } = await getStandaloneDatabase(this.getProjectConfigService);
+        const db = pglite ? createPgliteProcess(pglite) : null;
+
+        return [
+            ...(db ? [db.spec] : []),
+            ...this.apiServerSpecs(appName, db?.ready),
+            ...this.devProxySpecs(appName)
+        ];
     }
 
     /**
@@ -100,14 +117,25 @@ export class StandaloneWatch implements Watch.Interface {
      * A name match rather than a question asked of the app, because `IAppModel` carries no capability
      * flag to ask. Worth swapping when it does.
      */
-    private apiServerSpecs(appName: GetApp.AppName): IServerProcessSpec[] {
+    private apiServerSpecs(
+        appName: GetApp.AppName,
+        databaseReady?: Promise<void>
+    ): IServerProcessSpec[] {
         if (appName !== "api") {
             return [];
         }
 
         const app = this.getApp.execute(appName);
 
-        return [{ name: "api", spawn: () => spawnApiServer(app, { watch: true }) }];
+        return [
+            {
+                name: "api",
+                spawn: async () => {
+                    await databaseReady;
+                    return spawnApiServer(app, { watch: true });
+                }
+            }
+        ];
     }
 
     /**
@@ -128,5 +156,5 @@ export class StandaloneWatch implements Watch.Interface {
 
 export const standaloneWatch = Watch.createDecorator({
     decorator: StandaloneWatch,
-    dependencies: [GetApp]
+    dependencies: [GetApp, GetProjectConfigService]
 });

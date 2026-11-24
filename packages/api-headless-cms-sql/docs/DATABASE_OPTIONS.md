@@ -2,6 +2,8 @@
 
 Date: 2026-06-08
 
+> **Superseded.** The generic SQL CMS no longer runs on Postgres, in tests or in projects: its test preset is SQLite only. Postgres always uses `@webiny/api-headless-cms-pg`, tested with `WEBINY_STORAGE=pg,sql` (on PGlite in CI). The Postgres options below are kept as a record.
+
 ## Current State
 
 Tests run against **SQLite in-memory** via `better-sqlite3`. A single shared Knex instance is created in `setupFile.js` with `{ client: "better-sqlite3", connection: { filename: ":memory:" } }`. Every `beforeEach` drops all tables and resets schema managers, so each test starts with a clean database.

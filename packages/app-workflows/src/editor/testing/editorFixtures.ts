@@ -129,6 +129,7 @@ export const createAutomationDefinition = (
         name: "Check links",
         models: ["*"],
         settingsSchema: null,
+        keySetting: null,
         ...overrides
     };
 };
@@ -141,6 +142,7 @@ export const createAutomationDefinitionDto = (
         name: "Check links",
         models: ["*"],
         settingsSchema: null,
+        keySetting: null,
         ...overrides
     };
 };
@@ -160,7 +162,13 @@ export const createWorkflowTeamSummary = (
 export const createWorkflowUserSummary = (
     overrides: Partial<WorkflowUserSummary> = {}
 ): WorkflowUserSummary => {
-    return { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"], ...overrides };
+    return {
+        id: "user-1",
+        displayName: "Ivan Horvat",
+        teamIds: ["team-1"],
+        teams: [],
+        ...overrides
+    };
 };
 
 export const createWorkflowUserDto = (

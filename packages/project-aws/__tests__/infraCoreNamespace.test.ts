@@ -9,4 +9,12 @@ describe("Infra.Core namespace", () => {
         expect(Infra.Core.DynamoDb.Pitr).toBe(Infra.DynamoDb.Pitr);
         expect(Infra.Core.S3Bucket.Versioning).toBe(Infra.S3Bucket.Versioning);
     });
+
+    it("has Infra.AuroraPostgres at the top level only, and no RdsProxy or AWS Infra.Postgres", () => {
+        expect(Infra.AuroraPostgres).toBeDefined();
+        expect(Infra).not.toHaveProperty("Postgres");
+        expect(Infra).not.toHaveProperty("RdsProxy");
+        expect(Infra.Core).not.toHaveProperty("RdsProxy");
+        expect(Infra.Core).not.toHaveProperty("AuroraPostgres");
+    });
 });

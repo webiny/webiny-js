@@ -17,8 +17,8 @@ import { ReviewRepository as RepositoryAbstraction } from "./abstractions.js";
 import { ReviewRepository } from "./ReviewRepository.js";
 
 const LIST_QUERY: ListReviewsParams = {
-    list: "myRequests",
-    where: { modelId: "article", titleContains: "launch", reviewState: "inProgress" },
+    scope: "myRequests",
+    where: { modelId: "article", titleContains: "launch", state: "inReview" },
     sort: "lastChangedOn_DESC",
     limit: 20,
     after: "cursor-1"
@@ -64,7 +64,8 @@ describe("ReviewRepository", () => {
                             description: null,
                             type: "review",
                             allowManualPick: true,
-                            assignedAutomatically: false
+                            assignedAutomatically: false,
+                            candidateTeamNames: []
                         }
                     ]
                 }

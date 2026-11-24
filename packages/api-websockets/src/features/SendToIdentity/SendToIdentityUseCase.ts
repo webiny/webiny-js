@@ -3,9 +3,8 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { WebsocketsSendToIdentityUseCase } from "./abstractions.js";
-import type { WebsocketsError } from "~/features/shared/errors.js";
-import { WebsocketServiceError } from "~/features/shared/errors.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
+import { WebsocketServiceError } from "@webiny/api-core/features/websockets/index.js";
 
 class SendToIdentityUseCaseImpl implements WebsocketsSendToIdentityUseCase.Interface {
     public constructor(
@@ -17,7 +16,7 @@ class SendToIdentityUseCaseImpl implements WebsocketsSendToIdentityUseCase.Inter
     public async execute<T extends GenericRecord = GenericRecord>(
         identity: WebsocketsSendToIdentityUseCase.Identity,
         data: WebsocketsSendToIdentityUseCase.Data<T>
-    ): Promise<Result<void, WebsocketsError>> {
+    ): Promise<Result<void, WebsocketServiceError>> {
         const result = await this.listConnections.execute({
             where: {
                 identityId: identity.id
@@ -25,7 +24,8 @@ class SendToIdentityUseCaseImpl implements WebsocketsSendToIdentityUseCase.Inter
         });
 
         if (result.isFail()) {
-            return Result.fail(result.error);
+            // The send declares one error, so a listing failure is carried inside it.
+            return Result.fail(new WebsocketServiceError(result.error));
         }
 
         if (result.value.length === 0) {

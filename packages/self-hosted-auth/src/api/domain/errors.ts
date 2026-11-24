@@ -114,6 +114,30 @@ export class PasswordResetPersistenceError extends BaseError {
 }
 
 /**
+ * The task that mails the code could not be started. Happens before anything is known about the
+ * account, so it can be reported: it says the installation is struggling, not who is registered.
+ */
+export class PasswordResetTaskError extends BaseError {
+    override readonly code = "PASSWORD_RESET_TASK_ERROR" as const;
+
+    constructor() {
+        super({ message: "The password reset could not be completed. Try again later." });
+    }
+}
+
+/**
+ * The mail transport refused the reset code. Only ever raised in the task that sends it, never to
+ * the person who asked: a delivery failure only happens for an address with an account.
+ */
+export class PasswordResetDeliveryError extends BaseError {
+    override readonly code = "PASSWORD_RESET_DELIVERY_ERROR" as const;
+
+    constructor() {
+        super({ message: "Could not deliver a password reset code." });
+    }
+}
+
+/**
  * Too many codes have been requested for this address lately. Counted for every address that is
  * asked about, including addresses with no account, so that arriving at this error reveals nothing
  * beyond the fact that somebody has been typing it in.

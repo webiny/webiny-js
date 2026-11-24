@@ -1,7 +1,9 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
+import { STANDALONE_API_URL } from "./constants.js";
 import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
+import { E2E_TAG_ARGS } from "./e2eTagArgs.js";
 
 /**
  * The AI tests need AI Power-Ups, which is license-gated: without a WCP license the settings screen
@@ -28,6 +30,11 @@ interface CreateAiE2eStepsParams {
     recordCacheArtifactName?: string;
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`.
     shard: string;
+    /*
+     * Expression for the area tags to run, comma-separated and already validated (`/e2e <area>`,
+     * selectE2eAreas.ts). Empty, or unset, runs every test the other filters leave.
+     */
+    tags?: string;
 }
 
 /**
@@ -38,10 +45,11 @@ export const createAiE2eSteps = ({
     workingDirectory,
     artifactName,
     recordCacheArtifactName,
-    shard
+    shard,
+    tags
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => {
     const record = recordCacheArtifactName !== undefined;
-    const steps = createRunSteps({ workingDirectory, artifactName, shard, record });
+    const steps = createRunSteps({ workingDirectory, artifactName, shard, record, tags });
 
     if (recordCacheArtifactName) {
         const uploadSteps = createUploadRecordingsSteps({
@@ -58,16 +66,19 @@ const createRunSteps = ({
     workingDirectory,
     artifactName,
     shard,
-    record
+    record,
+    tags
 }: {
     workingDirectory: string;
     artifactName: string;
     shard: string;
     record: boolean;
+    tags?: string;
 }): NonNullable<NormalJob["steps"]> => {
     const env: Record<string, string> = {
         ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
         E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
+        E2E_API_URL: STANDALONE_API_URL,
         E2E_TELEMETRY_DISABLED: "1"
     };
     /*
@@ -77,20 +88,26 @@ const createRunSteps = ({
     if (record) {
         env.E2E_CACHE_MODE = "read-write";
     }
+    if (tags) {
+        env.E2E_TAGS = tags;
+    }
 
-    return createRunStepList({ workingDirectory, artifactName, shard, env });
+    return createRunStepList({ workingDirectory, artifactName, shard, env, tags: Boolean(tags) });
 };
 
 const createRunStepList = ({
     workingDirectory,
     artifactName,
     shard,
-    env
+    env,
+    tags
 }: {
     workingDirectory: string;
     artifactName: string;
     shard: string;
     env: Record<string, string>;
+    // Pass `E2E_TAGS` to `--tag`.
+    tags: boolean;
 }): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
@@ -107,7 +124,11 @@ const createRunStepList = ({
             "fi",
             // A shard can select nothing when there are fewer test files than shards, which is not
             // a failure.
-            `yarn e2e --exclude-tag installation --shard ${shard} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
+            [
+                "yarn e2e --exclude-tag installation",
+                ...(tags ? [E2E_TAG_ARGS] : []),
+                `--shard ${shard} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
+            ].join(" ")
         ].join("\n")
     },
     createE2eSummaryStep({ workingDirectory, title: "AI E2E - tests", runStepId: "ai-e2e-tests" }),

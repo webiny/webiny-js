@@ -22,6 +22,7 @@ function createSettings(overrides?: Partial<FmSettings>): FmSettings {
         uploadMinFileSize: "0",
         uploadMaxFileSize: "26214400",
         srcPrefix: "https://cdn.example.com/files/",
+        defaultSrcPrefix: "https://api.example.com/files/",
         ...overrides
     };
 }

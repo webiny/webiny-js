@@ -3,7 +3,7 @@ import { defineExtension } from "../defineExtension/index.js";
 
 export const ProjectId = defineExtension({
     type: "Project/ProjectId",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "An extension for defining the project ID.",
     paramsSchema: z.object({
         id: z.string().refine(

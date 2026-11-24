@@ -6,6 +6,10 @@ export {
     ListGlobalComponentsUseCase,
     ListGlobalComponentsRepository
 } from "@webiny/api-website-builder/features/globals/ListGlobalComponents/abstractions.js";
+export {
+    ListAllGlobalComponentsUseCase,
+    ListAllGlobalComponentsRepository
+} from "@webiny/api-website-builder/features/globals/ListAllGlobalComponents/abstractions.js";
 export { ListPageGlobalComponentsUseCase } from "@webiny/api-website-builder/features/globals/ListPageGlobalComponents/abstractions.js";
 export {
     SaveGlobalComponentUseCase,

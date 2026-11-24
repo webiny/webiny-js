@@ -1,3 +1,4 @@
+import { startsWithQuery } from "@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/operators/startsWithQuery.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
@@ -53,11 +54,7 @@ describe("convert where to elasticsearch query", () => {
                 }
             ],
             filter: [
-                {
-                    match_phrase_prefix: {
-                        "values.title": "CMS"
-                    }
-                },
+                startsWithQuery("values.title", "CMS"),
                 {
                     range: {
                         "values.date": {
@@ -96,11 +93,7 @@ describe("convert where to elasticsearch query", () => {
                         query: "*server*"
                     }
                 },
-                {
-                    match_phrase_prefix: {
-                        "values.title": "test"
-                    }
-                },
+                startsWithQuery("values.title", "test"),
                 {
                     range: {
                         "values.date": {

@@ -7,7 +7,7 @@ export interface ILambdaResponseStream {
 
 /**
  * The per-invocation response stream handed over by the Lambda runtime, bound into the request
- * container by {@link awsLambdaStreamTransport} so the terminal handler can write to it.
+ * container by `AwsLambdaStreamHandlerPlatform` so the terminal handler can write to it.
  */
 export const LambdaResponseStream = new Abstraction<ILambdaResponseStream>("LambdaResponseStream");
 

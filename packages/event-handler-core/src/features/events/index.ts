@@ -9,5 +9,6 @@ export * from "./abstractions.js";
 export * from "./HandlerApp.js";
 export * from "./RootContainerFactory.js";
 export * from "./ChildContainerFactory.js";
-export * from "./Transport.js";
+export { HandlerPlatform } from "./HandlerPlatform.js";
+export * from "./NoopHandlerPlatform.js";
 export * from "./types.js";

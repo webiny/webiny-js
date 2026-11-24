@@ -10,6 +10,16 @@ import { CodeFlpMerger } from "~/features/flp/shared/index.js";
 import { CodeFlpsProvider } from "~/features/flp/shared/index.js";
 import { Path } from "~/utils/Path.js";
 
+/**
+ * The rules set on the folder itself. Inherited and code-defined rules are added on read, and the
+ * update refuses either kind when it is submitted.
+ */
+const getOwnPermissions = (folder: Folder): FolderPermission[] => {
+    return (folder.permissions ?? []).filter(
+        permission => !permission.inheritedFrom && !permission.plugin
+    );
+};
+
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
     private readonly decoretee: UpdateFolderUseCase.Interface;
@@ -43,15 +53,16 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             rwd: "w"
         });
 
+        // An update without `permissions` leaves the stored rules in place, so the check and the
+        // returned folder use those, not an empty list.
+        const ownPermissions = params.permissions ?? getOwnPermissions(original);
+
         // The guard below asks whether the user keeps access once the update is saved. A new slug or
         // a new parent changes the path, and code-defined rules match on the path, so resolve them
         // against where the folder is going rather than where it is now.
         const targetFolder = await this.getTargetFolder(original, params);
 
-        const submittedPermissions = await this.withCodePermissions(
-            targetFolder,
-            params.permissions ?? []
-        );
+        const submittedPermissions = await this.withCodePermissions(targetFolder, ownPermissions);
 
         const permissions =
             await this.folderLevelPermissions.getDefaultPermissions(submittedPermissions);
@@ -126,10 +137,7 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
 
         // Resolved again against the updated folder: a rename or a move changes the path, and with
         // it which code-defined rules apply.
-        const updatedPermissions = await this.withCodePermissions(
-            result.value,
-            params.permissions ?? []
-        );
+        const updatedPermissions = await this.withCodePermissions(result.value, ownPermissions);
 
         const updatedPermissionsWithDefaults =
             await this.folderLevelPermissions.getDefaultPermissions(updatedPermissions);

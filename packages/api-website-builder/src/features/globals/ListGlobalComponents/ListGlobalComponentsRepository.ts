@@ -17,20 +17,22 @@ class ListGlobalComponentsRepositoryImpl implements RepositoryAbstraction.Interf
         private listEntries: ListLatestEntriesUseCase.Interface
     ) {}
 
-    async execute({ language }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+    async execute({ language, scope }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         const model = await this.modelProvider.get();
-        // Only the records of the language are read: each holds a full element document.
+        // Only the records of the language and scope are read: each holds a full element document. Without a
+        // scope, `scope: null` matches the records that have none.
         const result = await listAllEntries(
             params => this.listEntries.execute<CmsEntryWbGlobalComponent>(model, params),
-            { where: { values: { language } } }
+            { where: { values: { language, scope: scope || null } } }
         );
 
         if (result.isFail()) {
             return Result.fail(new GlobalComponentPersistenceError(result.error));
         }
 
-        // A record lives at the fixed entry id of its name and language, where saves and single reads go;
+        // A record lives at the fixed entry id of its name, language and scope, where saves and single reads go;
         // any other entry is a stray. An entry without a name or a language has no fixed id, so it is a stray too.
+        // Records of another scope (or with one, when listing without) are left out.
         const globalComponents = result.value
             .filter(entry => {
                 const name = entry.values.name;
@@ -38,7 +40,8 @@ class ListGlobalComponentsRepositoryImpl implements RepositoryAbstraction.Interf
                 return (
                     typeof name === "string" &&
                     !!entryLanguage?.equals(language) &&
-                    GlobalComponentEntryId.from(name, entryLanguage).matches(entry.entryId)
+                    (entry.values.scope || undefined) === (scope || undefined) &&
+                    GlobalComponentEntryId.from(name, entryLanguage, scope).matches(entry.entryId)
                 );
             })
             .map(entry => EntryToGlobalComponentMapper.toGlobalComponent(entry));

@@ -1,5 +1,5 @@
 import type { NormalJob } from "github-actions-wac";
-import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createConfigureTestProjectSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { createJob } from "../jobs/index.js";
 import { ACTION } from "../utils/index.js";
@@ -16,6 +16,7 @@ import {
 } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createReportStatusJob } from "./reportStatus.js";
+import type { PrFeature } from "./prFeature.js";
 import { AI_E2E_LICENSE_ENV } from "./aiE2e.js";
 import { createAiE2eSteps } from "./aiE2e.js";
 import { createInstallationTestSteps } from "./installationTest.js";
@@ -104,6 +105,10 @@ interface StandaloneProjectParams {
     workingDirectory: string;
     // Build with a WCP license and run with it. The regular variants stay unlicensed.
     wcp?: boolean;
+    // Configure the bug reporter only when this expression holds. Unset, it always is.
+    bugReporterIf?: string;
+    // Add the E2E API route only when this expression holds. Unset, it always is added.
+    apiRouteIf?: string;
 }
 
 /*
@@ -198,7 +203,7 @@ const createNginxConfig = (apiProcesses: number) => {
  */
 const createBuildStandaloneProjectSteps = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, wcp }: StandaloneProjectParams
+    { workingDirectory, wcp, bugReporterIf, apiRouteIf }: StandaloneProjectParams
 ): NonNullable<NormalJob["steps"]> => [
     {
         name: "Disable Webiny telemetry",
@@ -208,9 +213,11 @@ const createBuildStandaloneProjectSteps = (
         name: "Create a new standalone Webiny project",
         run: `npx create-webiny-project@local-npm ${DIR_STANDALONE_PROJECT} --tag local-npm --no-interactive --hosting-type standalone --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
     },
-    ...createConfigureBugReporterSteps({
+    ...createConfigureTestProjectSteps({
         workingDirectory,
-        projectPath: PATH_STANDALONE_PROJECT
+        projectPath: PATH_STANDALONE_PROJECT,
+        bugReporterIf,
+        apiRouteIf
     }),
     {
         name: "Print CLI version",
@@ -469,6 +476,7 @@ const createProjectTestSteps = (
     return createUnlicensedE2eSteps({
         workingDirectory,
         adminUrl: STANDALONE_ADMIN_URL,
+        apiUrl: STANDALONE_API_URL,
         artifactName: `e2e-test-results-standalone-${storageOps}`
     });
 };
@@ -550,6 +558,24 @@ export interface StandaloneVariantJobsContext {
     report: boolean;
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
+    /*
+     * The feature the variant needs from the PR's code. The build runs only when the PR has it, so
+     * the shards are skipped with it otherwise, and the report job writes "Not supported" into the
+     * variant's row instead of a failure. Unset, the variant always runs.
+     */
+    feature?: PrFeature;
+    // Configure the bug reporter only when the PR's code has it. Unset, it always is configured.
+    bugReporter?: PrFeature;
+    /*
+     * Add the E2E API route only when the PR's code builds `<Api.Route>` on standalone. Unset, it
+     * always is added.
+     */
+    apiRoute?: PrFeature;
+    /*
+     * Expression for the area tags the shards run (`/e2e <area>`); empty runs every test. See
+     * createUnlicensedE2eSteps and createAiE2eSteps. Unset on `push`.
+     */
+    tags?: string;
 }
 
 /**
@@ -573,7 +599,11 @@ export const createStandaloneVariantJobs = (
         testsNeeds,
         setupSteps,
         report,
-        savePlaywrightCache
+        savePlaywrightCache,
+        feature,
+        bugReporter,
+        apiRoute,
+        tags
     }: StandaloneVariantJobsContext
 ) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
@@ -597,9 +627,20 @@ export const createStandaloneVariantJobs = (
     const buildArchive = `standalone-build-${id}.tzst`;
     const buildArtifactName = `standalone-build-${id}`;
     const shard = `\${{ matrix.shard }}/${shards}`;
+    // The jobs whose outputs the build's `if` reads have to be among its `needs`.
+    const buildJobNeeds: [string, ...string[]] = [...buildNeeds];
+    if (feature && !buildJobNeeds.includes(feature.needs)) {
+        buildJobNeeds.push(feature.needs);
+    }
+    if (bugReporter && !buildJobNeeds.includes(bugReporter.needs)) {
+        buildJobNeeds.push(bugReporter.needs);
+    }
+    if (apiRoute && !buildJobNeeds.includes(apiRoute.needs)) {
+        buildJobNeeds.push(apiRoute.needs);
+    }
 
     const buildJob = createJob({
-        needs: buildNeeds,
+        needs: buildJobNeeds,
         name: `E2E - ${label} - Build`,
         checkout: { path: workingDirectory },
         services: buildServices,
@@ -609,7 +650,9 @@ export const createStandaloneVariantJobs = (
             ...createRestoreVerdaccioSteps({ workingDirectory }),
             ...createBuildStandaloneProjectSteps(storageOps, {
                 workingDirectory,
-                wcp
+                wcp,
+                bugReporterIf: bugReporter?.has,
+                apiRouteIf: apiRoute?.has
             }),
             {
                 name: "Compress API and Admin builds",
@@ -629,6 +672,10 @@ export const createStandaloneVariantJobs = (
             }
         ]
     });
+
+    if (feature) {
+        buildJob.if = feature.has;
+    }
 
     const testsJob = createJob({
         needs: [jobKeys.build, ...testsNeeds],
@@ -663,13 +710,16 @@ export const createStandaloneVariantJobs = (
                 ? createAiE2eSteps({
                       workingDirectory,
                       artifactName: `ai-e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
-                      shard
+                      shard,
+                      tags
                   })
                 : createUnlicensedE2eSteps({
                       workingDirectory,
                       adminUrl: STANDALONE_ADMIN_URL,
+                      apiUrl: STANDALONE_API_URL,
                       artifactName: `e2e-test-results-standalone-${id}-shard-\${{ matrix.shard }}`,
-                      shard
+                      shard,
+                      tags
                   })),
             printServerLogsStep
         ]
@@ -683,7 +733,8 @@ export const createStandaloneVariantJobs = (
         jobs[jobKeys.report] = createReportStatusJob({
             label,
             buildJobKey: jobKeys.build,
-            testsJobKey: jobKeys.tests
+            testsJobKey: jobKeys.tests,
+            feature
         });
     }
     return jobs;

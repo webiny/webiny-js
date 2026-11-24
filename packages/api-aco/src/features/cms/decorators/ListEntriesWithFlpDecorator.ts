@@ -5,18 +5,13 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import { ListEntriesFactory } from "~/utils/decorators/ListEntriesFactory.js";
+import { FolderAccessListFilter } from "~/features/flp/FolderAccessListFilter/index.js";
 
 class ListEntriesWithFlpDecoratorImpl implements ListEntriesUseCase.Interface {
-    private readonly listEntriesHandler: ListEntriesFactory;
-
     constructor(
-        folderLevelPermissions: FolderLevelPermissions.Interface,
+        private folderAccessListFilter: FolderAccessListFilter.Interface,
         private decoratee: ListEntriesUseCase.Interface
-    ) {
-        this.listEntriesHandler = new ListEntriesFactory(folderLevelPermissions);
-    }
+    ) {}
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
@@ -30,10 +25,10 @@ class ListEntriesWithFlpDecoratorImpl implements ListEntriesUseCase.Interface {
             return result.value;
         };
 
-        const { entries, meta } = await this.listEntriesHandler.execute<T>({
+        const { entries, meta } = await this.folderAccessListFilter.listEntries<T>({
             model,
-            dataLoader: loader,
-            initialParams: params
+            params,
+            loader
         });
 
         return Result.ok({ entries, meta });
@@ -43,5 +38,5 @@ class ListEntriesWithFlpDecoratorImpl implements ListEntriesUseCase.Interface {
 export const ListEntriesWithFlpDecorator = createDecorator({
     abstraction: ListEntriesUseCase,
     decorator: ListEntriesWithFlpDecoratorImpl,
-    dependencies: [FolderLevelPermissions]
+    dependencies: [FolderAccessListFilter]
 });

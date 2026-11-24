@@ -7,7 +7,8 @@ const mapWorkflowUser = (dto: WorkflowUserDto): WorkflowUserSummary => {
     return {
         id: dto.id,
         displayName: dto.displayName,
-        teamIds: [...(dto.teamIds ?? [])]
+        teamIds: [...(dto.teamIds ?? [])],
+        teams: (dto.teams ?? []).map(team => ({ id: team.id, name: team.name }))
     };
 };
 

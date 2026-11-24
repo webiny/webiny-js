@@ -9,6 +9,8 @@ import { IdentityContextFeature } from "./IdentityContext/index.js";
 import { ApiKeysFeature } from "./apiKeys/feature.js";
 import { TeamsFeature } from "./teams/feature.js";
 import { RolesFeature } from "~/features/security/roles/feature.js";
+import { SecurityAiToolsFeature } from "./ai/feature.js";
+import { CanAccessCurrentTenantFeature } from "./CanAccessCurrentTenant/index.js";
 
 /**
  * Setup all security features in the DI container.
@@ -26,9 +28,11 @@ export const SecurityFeature = createFeature({
         AuthorizationContextFeature.register(container);
         AuthenticationContextFeature.register(container);
         IdentityContextFeature.register(container);
+        CanAccessCurrentTenantFeature.register(container);
         ApiKeysFeature.register(container);
         RolesFeature.register(container);
         TeamsFeature.register(container);
         GroupsTeamsAuthorizerFeature.register(container);
+        SecurityAiToolsFeature.register(container);
     }
 });

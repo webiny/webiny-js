@@ -55,7 +55,7 @@ describe("ReviewToasts", () => {
         expect(input.link).toEqual({ label: "Open Content Reviews", url: "/cms/content-reviews" });
     });
 
-    it("omits the description when the text has none", () => {
+    it("shows the owner text for a take over without notify", () => {
         toasts.show({
             kind: "tookOver",
             stepTitle: "Draft check",
@@ -64,7 +64,7 @@ describe("ReviewToasts", () => {
         });
 
         const input = notifications.success.mock.calls[0][0];
-        expect(input).not.toHaveProperty("description");
+        expect(input.description).toBe("You’re now the owner of this step.");
         expect(input.title).toBe("Took over “Draft check”");
     });
 

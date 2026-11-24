@@ -18,6 +18,8 @@ export const OpenInNewTab = () => {
                         window.open(link, "_blank");
                     }}
                     variant={"ghost"}
+                    // No link while the preview URL is being prepared, or when that failed.
+                    disabled={!link}
                 />
             }
         />

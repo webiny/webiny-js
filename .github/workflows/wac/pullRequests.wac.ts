@@ -23,6 +23,7 @@ import {
     AbstractStorageOps,
     DdbOsStorageOps,
     DdbStorageOps,
+    PgStorageOps,
     SqlStorageOps
 } from "./storageOps/index.js";
 
@@ -39,6 +40,7 @@ const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBI
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 const sqlStorageOps = new SqlStorageOps();
+const pgStorageOps = new PgStorageOps();
 
 const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const jobNames = {
@@ -97,6 +99,11 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
+
+        // An in-process PGlite: no Postgres service.
+        if (storageOps instanceof PgStorageOps) {
+            env["WEBINY_SQL_CLIENT"] = "pglite";
+        }
     }
 
     const runJob: NormalJob = createJob({
@@ -325,6 +332,7 @@ export const pullRequests = createWorkflow({
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
-        ...createVitestTestsJobs(sqlStorageOps)
+        ...createVitestTestsJobs(sqlStorageOps),
+        ...createVitestTestsJobs(pgStorageOps)
     }
 });

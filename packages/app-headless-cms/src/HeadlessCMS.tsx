@@ -20,6 +20,7 @@ import { CmsIconPickerRenderer } from "~/presentation/fieldRenderers/CmsIconPick
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { ContentEntryFeature } from "~/features/contentEntry/feature.js";
+import { EntryEventsFeature } from "~/features/contentEntry/entryEvents/index.js";
 import { CmsRefInputRenderer } from "~/presentation/fieldRenderers/ref/CmsRefInputRenderer.js";
 import { CmsRefInputsRenderer } from "~/presentation/fieldRenderers/ref/CmsRefInputsRenderer.js";
 import { CmsRefSimpleSingleRenderer } from "~/presentation/fieldRenderers/ref/CmsRefSimpleSingleRenderer.js";
@@ -64,6 +65,9 @@ const HeadlessCMSExtension = () => {
             <RegisterFeature feature={FormModelFeature} />
             <RegisterFeature feature={CmsFormModelFeature} />
             <RegisterFeature feature={ContentEntryFeature} />
+            {/* Once, in the container the websocket bridge publishes from; not inside
+                ContentEntryFeature, which drawers also register into child containers. */}
+            <RegisterFeature feature={EntryEventsFeature} />
             <RegisterFeature feature={LivePreviewFeature} />
             <RegisterFeature feature={CmsFieldRendererFeature} />
             <RegisterFeature feature={CmsFieldTypeFeature} />

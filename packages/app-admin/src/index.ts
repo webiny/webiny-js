@@ -127,6 +127,30 @@ export type {
     IAdminAssistantPresenter,
     IAdminAssistantViewModel
 } from "./features/adminAssistant/index.js";
+export {
+    AssistantPageContext,
+    AssistantPageContextFeature
+} from "./features/assistantPageContext/index.js";
+
+/*
+ * AI chats: the saved assistant conversations and the side panel that lists them. Stored through the
+ * aiPowerUps GraphQL operations, so they exist only where the admin assistant does.
+ */
+export { AiChatsFeature, AiChatsRepository, AiChatsGateway } from "./features/aiChats/index.js";
+export type {
+    AiChat,
+    AiChatSummary,
+    AiChatsPage,
+    AiChatSaveFailure
+} from "./features/aiChats/index.js";
+export { AiChatsPanelFeature, AiChatsPanelPresenter } from "./presentation/aiChats/index.js";
+
+/*
+ * Where AI settings are changed, for the assistant's "Choose a model". Implemented by the package
+ * that owns the settings screen; nothing is registered without it.
+ */
+export { AiSettingsLocation } from "./features/aiSettings/index.js";
+export type { IAiSettingsLocation } from "./features/aiSettings/index.js";
 
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
 // anywhere in a view; the header renders every mounted one as the trail.

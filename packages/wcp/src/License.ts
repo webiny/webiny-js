@@ -163,17 +163,12 @@ export class License implements ILicense {
             this.canUseAiAdminAssistant() ||
             this.canUseAiEntryGeneration() ||
             this.canUseAiEntryComparison() ||
-            this.canUseAiEntryTranslation() ||
-            this.canUseRemoteComponents()
+            this.canUseAiEntryTranslation()
         );
     }
 
     canUseAbTesting(): boolean {
         return this.canUseFeature("abTesting");
-    }
-
-    canUseRemoteComponents(): boolean {
-        return this.license.package.features.aiPowerups?.options?.remoteComponents === true;
     }
 
     canUseCollaboration(): boolean {

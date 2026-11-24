@@ -1,8 +1,6 @@
-import {
-    AdminBeforeBuild,
-    GetAppStackOutput,
-    ProjectSdkParamsService
-} from "@webiny/project/abstractions/index.js";
+import { AdminBeforeBuild } from "@webiny/project/abstractions/index.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";

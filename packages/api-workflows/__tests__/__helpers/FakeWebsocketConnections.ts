@@ -1,8 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import {
-    WebsocketsListConnectionsUseCase,
-    type WebsocketsError
-} from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 import { FakeWebsocketFailure } from "./FakeWebsocketFailure.js";
 
 export type WebsocketFakeMode = "ok" | "fail" | "throw";

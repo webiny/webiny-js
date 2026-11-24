@@ -28,49 +28,40 @@ class DdbEsDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOper
             ids: entries
         });
         /**
-         * Then we need to construct the queries for all the revisions and entries.
+         * The Elasticsearch records that exist: an entry that was never published (or was
+         * unpublished) has no published record, and deleting a missing record is an error in the
+         * stream handling. As DdbEsDeleteEntry does, only the stored records are deleted.
          */
+        const esItems = (
+            await Promise.all(
+                entries.map(id =>
+                    this.esEntity.queryAll({
+                        partitionKey: createPartitionKey({
+                            id,
+                            tenant: model.tenant
+                        }),
+                        options: {
+                            gte: " "
+                        }
+                    })
+                )
+            )
+        ).flat();
 
         const entityBatch = this.entity.createEntityWriter();
-        const elasticsearchEntityBatch = this.esEntity.createEntityWriter();
+        const elasticsearchEntityBatch = this.esEntity.createEntityWriter({
+            delete: esItems.map(item => ({ PK: item.PK, SK: item.SK }))
+        });
         for (const id of entries) {
+            const partitionKey = createPartitionKey({
+                id,
+                tenant: model.tenant
+            });
             /**
-             * Latest item.
+             * Latest and published items.
              */
-            entityBatch.delete({
-                PK: createPartitionKey({
-                    id,
-                    tenant: model.tenant
-                }),
-                SK: "L"
-            });
-
-            elasticsearchEntityBatch.delete({
-                PK: createPartitionKey({
-                    id,
-                    tenant: model.tenant
-                }),
-                SK: "L"
-            });
-
-            /**
-             * Published item.
-             */
-            entityBatch.delete({
-                PK: createPartitionKey({
-                    id,
-                    tenant: model.tenant
-                }),
-                SK: "P"
-            });
-
-            elasticsearchEntityBatch.delete({
-                PK: createPartitionKey({
-                    id,
-                    tenant: model.tenant
-                }),
-                SK: "P"
-            });
+            entityBatch.delete({ PK: partitionKey, SK: "L" });
+            entityBatch.delete({ PK: partitionKey, SK: "P" });
         }
         /**
          * Exact revisions of all the entries

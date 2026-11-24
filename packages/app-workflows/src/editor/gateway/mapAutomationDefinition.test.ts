@@ -22,8 +22,15 @@ describe("mapAutomationDefinition", () => {
             id: "automation-7",
             name: "Check links",
             models: ["cms.*", "wb.page"],
-            settingsSchema
+            settingsSchema,
+            keySetting: null
         });
+    });
+
+    it("maps the key setting", () => {
+        const dto = createAutomationDefinitionDto({ keySetting: "url" });
+
+        expect(mapAutomationDefinition(dto).keySetting).toBe("url");
     });
 
     it("maps a null settings schema to null (an automation without settings)", () => {

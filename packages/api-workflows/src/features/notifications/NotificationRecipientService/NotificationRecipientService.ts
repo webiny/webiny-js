@@ -48,10 +48,19 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
             return Result.fail(new WorkflowPersistenceError(listed.error));
         }
 
-        const pool: Abstraction.Recipient[] = [];
+        // The member's teams that are the step's candidates, in the step's order: the pool
+        // message names them.
+        const pool: Abstraction.PoolRecipient[] = [];
         for (const member of listed.value) {
             if (!member.exclusion && member.canRead) {
-                pool.push({ id: member.id, displayName: member.displayName });
+                const teamIds = membersParams.teamIds.filter(teamId =>
+                    member.teamIds.includes(teamId)
+                );
+                pool.push({
+                    id: member.id,
+                    displayName: member.displayName,
+                    teamIds: [...new Set(teamIds)]
+                });
             }
         }
         return Result.ok(pool);

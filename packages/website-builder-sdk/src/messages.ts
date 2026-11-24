@@ -11,3 +11,4 @@ export const PREVIEW_ELEMENT_ENTER = "preview.element.enter";
 export const PREVIEW_ELEMENT_LEAVE = "preview.element.leave";
 export const ELEMENT_SELECTED = "element.selected";
 export const ELEMENT_DESELECTED = "element.deselected";
+export const PREVIEW_DATA = "preview.data";

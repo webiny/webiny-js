@@ -11,6 +11,7 @@ setStorageOps("aco", () => {
 
     return {
         storageOperations: {},
-        plugins: [registerAcoSqlStorageOperations({ knex })]
+        // The storage runs on the connection the SQL preset registers (`KnexClient`).
+        plugins: [registerAcoSqlStorageOperations()]
     };
 });

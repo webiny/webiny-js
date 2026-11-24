@@ -36,9 +36,9 @@ export class AboutCommand implements CliCommandFactory.Interface<IAboutCommandPa
                     return;
                 }
 
-                const { pulumi, host, wcp, webiny } = data;
+                const { host, wcp, webiny } = data;
 
-                const sections = [
+                const sections: Array<{ sectionName: string; data: Record<string, string> }> = [
                     {
                         sectionName: "Webiny Project",
                         data: {
@@ -70,27 +70,22 @@ export class AboutCommand implements CliCommandFactory.Interface<IAboutCommandPa
                             "Is CI": host.isCI ? "Yes" : "No"
                         }
                     },
-                    {
-                        sectionName: "Pulumi",
-                        data: {
-                            "@pulumi/pulumi": pulumi["@pulumi/pulumi"],
-                            "@pulumi/aws": pulumi["@pulumi/aws"],
-                            "Secrets Provider": pulumi.secretsProvider,
-                            "Using Password": pulumi.usingPassword ? "Yes" : "No"
-                        }
-                    }
+                    ...data.sections.map(section => ({
+                        sectionName: section.name,
+                        data: section.data
+                    }))
                 ];
 
                 sections.forEach(({ sectionName, data }, index) => {
                     ui.text(chalk.bold(sectionName));
 
-                    for (const key of Object.keys(data) as Array<keyof typeof data>) {
+                    for (const key of Object.keys(data)) {
                         ui.raw(key.padEnd(36));
                         ui.raw(data[key] || NO_VALUE);
                         ui.emptyLine();
                     }
 
-                    const isLastSection = index === 3;
+                    const isLastSection = index === sections.length - 1;
                     if (!isLastSection) {
                         ui.emptyLine();
                     }

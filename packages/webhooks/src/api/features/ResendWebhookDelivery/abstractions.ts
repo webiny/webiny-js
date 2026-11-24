@@ -7,6 +7,7 @@ import type {
     WebhookNotAuthorizedError,
     WebhookValidationError
 } from "~/api/domain/errors.js";
+import type { WebhookDeliveryNotQueuedError } from "~/api/domain/errors.js";
 
 type IError =
     | WebhookDeliveryNotFoundError
@@ -14,7 +15,8 @@ type IError =
     | WebhookPersistenceError
     | WebhookModelNotFoundError
     | WebhookNotAuthorizedError
-    | WebhookValidationError;
+    | WebhookValidationError
+    | WebhookDeliveryNotQueuedError;
 
 export interface IResendWebhookDeliveryUseCase {
     execute(deliveryId: string): Promise<Result<boolean, IError>>;

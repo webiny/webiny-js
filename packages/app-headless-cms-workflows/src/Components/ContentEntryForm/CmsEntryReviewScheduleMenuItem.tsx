@@ -17,8 +17,10 @@ const ReviewGatedMenuItem = createReactiveComponent((props: ReviewGatedMenuItemP
     const session = useCmsEntryReview();
     const { entry, model } = formPresenter.vm;
     const isReviewed = entry !== null && isReviewableModel(model);
+    // A published entry offers "Schedule unpublish", which no review blocks.
+    const schedulesPublish = entry?.meta.status !== "published";
 
-    if (isReviewed && !session.presenter.vm.allowsPublishing) {
+    if (isReviewed && schedulesPublish && !session.presenter.vm.allowsPublishing) {
         return null;
     }
 
@@ -26,8 +28,10 @@ const ReviewGatedMenuItem = createReactiveComponent((props: ReviewGatedMenuItemP
 });
 
 /*
- * There is a possibility that this decorator will not do anything, because the scheduler is not
- * turned on.
+ * "Schedule publish" needs what publishing needs (the API refuses the schedule with
+ * `Workflows/Review/PublishBlocked` otherwise), so it is hidden rather than disabled (R226) unless
+ * the review allows publishing; "Schedule unpublish" of a published entry is left alone. There is
+ * a possibility that this decorator will not do anything, because the scheduler is not turned on.
  */
 export const CmsEntryReviewScheduleMenuItem = MenuItemAction.createDecorator(Original => {
     return function CmsEntryReviewScheduleMenuItemDecorator(props) {

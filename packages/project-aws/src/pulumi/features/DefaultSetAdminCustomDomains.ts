@@ -1,4 +1,4 @@
-import { SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import { SetAdminCustomDomains } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { applyCustomDomain, type CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 import type { AdminPulumiApp } from "~/pulumi/apps/admin/createAdminPulumiApp.js";
 

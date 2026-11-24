@@ -1,10 +1,15 @@
-import { type IStackOutput } from "@webiny/project";
-import type { IApiStackOutputPasswordPolicy } from "~/abstractions/index.js";
+import { type GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
 
 // TODO: split into this per-app stack outputs.
-export interface IDefaultStackOutput extends IStackOutput {
+export interface IDefaultStackOutput extends GetAppStackOutput.StackOutput {
     deploymentId: string;
     region: string;
+    /*
+     * The core's DynamoDB table, and the `primaryDynamodbTable*` outputs below. Absent with
+     * `<Infra.AuroraPostgres />`: the core creates no DynamoDB table. The types stay non-optional
+     * so existing code that reads them keeps compiling.
+     */
     dynamoDbTable: string;
     iotAuthorizerName: string;
     apiDomain: string;
@@ -17,7 +22,7 @@ export interface IDefaultStackOutput extends IStackOutput {
     cognitoUserPoolArn: string;
     cognitoAppClientId: string;
     cognitoUserPoolId: string;
-    cognitoUserPoolPasswordPolicy: IApiStackOutputPasswordPolicy;
+    cognitoUserPoolPasswordPolicy: ApiStackOutputService.PasswordPolicy;
     websocketApiUrl: string;
     fileManagerBucketId: string;
     fileManagerBucketArn: string;
@@ -39,4 +44,9 @@ export interface IDefaultStackOutput extends IStackOutput {
     appStorage: string;
     appDomain?: string;
     deliveryDomain?: string;
+    /**
+     * The api app's `schema-setup` function. Set with `<Infra.AuroraPostgres />` only: other apps'
+     * deploys invoke it to store their service manifests in the database.
+     */
+    schemaSetupLambdaArn?: string;
 }

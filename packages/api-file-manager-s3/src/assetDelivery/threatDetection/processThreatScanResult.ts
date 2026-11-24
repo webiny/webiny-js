@@ -1,11 +1,9 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
-import {
-    WebsocketsListConnectionsUseCase,
-    WebsocketsSendToConnectionsUseCase,
-    ConnectionRegistry
-} from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import type { GuardDutyEvent } from "./types.js";
 import { ObjectKey } from "./ObjectKey.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
@@ -13,7 +11,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 
 export const processThreatScanResult = async (
     context: ApiCoreContext,
-    eventDetail: GuardDutyEvent
+    eventDetail: GuardDutyEvent,
+    tenant: string | null
 ) => {
     const listConnections = context.container.resolve(WebsocketsListConnectionsUseCase);
     const sendToConnections = context.container.resolve(WebsocketsSendToConnectionsUseCase);
@@ -34,10 +33,14 @@ export const processThreatScanResult = async (
 
         const file = fileResult.value;
 
+        // Only the file's own tenant hears about it: the handler made it the current tenant, and the
+        // list is scoped to the current tenant. Without a tenant, nobody does.
         let allConnections: ConnectionRegistry.Data[] = [];
-        const connectionsResult = await listConnections.execute();
-        if (connectionsResult.isOk()) {
-            allConnections = connectionsResult.value;
+        if (tenant) {
+            const connectionsResult = await listConnections.execute();
+            if (connectionsResult.isOk()) {
+                allConnections = connectionsResult.value;
+            }
         }
 
         if (scanStatus === "NO_THREATS_FOUND") {

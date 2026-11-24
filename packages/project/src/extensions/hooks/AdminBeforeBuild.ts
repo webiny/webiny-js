@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const AdminBeforeBuild = defineExtension({
     type: "Admin/BeforeBuild",
-    tags: { runtimeContext: "project", application: "admin" },
+    tags: { runtimeContext: "project", application: "admin", hosting: "all" },
     description: "Add custom logic to be executed before the ADMIN build process.",
     multiple: true,
     paramsSchema: ({ project }) => {

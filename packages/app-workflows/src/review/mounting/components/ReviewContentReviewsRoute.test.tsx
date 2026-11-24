@@ -124,7 +124,7 @@ describe("ReviewContentReviewsRoute registered before the content types load", (
             />,
             { wrapper }
         );
-        expect(screen.queryByRole("tablist")).toBeNull();
+        expect(screen.queryByRole("radiogroup", { name: "Whose reviews" })).toBeNull();
         expect(listReviews.execute).not.toHaveBeenCalled();
 
         runInAction(() => {
@@ -136,6 +136,6 @@ describe("ReviewContentReviewsRoute registered before the content types load", (
         });
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(1));
-        expect(screen.getByRole("tablist")).toBeTruthy();
+        expect(screen.getByRole("radiogroup", { name: "Whose reviews" })).toBeTruthy();
     });
 });

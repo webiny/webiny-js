@@ -1,50 +1,45 @@
 import React from "react";
-import { Command, useCommandState } from "cmdk";
-import { cn } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
+import { Command } from "cmdk";
+import { useCommandState } from "cmdk";
+import { Kbd } from "@webiny/admin-ui";
 import type { CommandRow } from "../types.js";
-import { Kbd } from "./Kbd.js";
+import { CommandRowLayout } from "./CommandRowLayout.js";
 
 export const CommandItemRow = ({ row }: { row: CommandRow }) => {
     const selected = useCommandState(state => (state.value || "") === row.value);
-
-    let tile = "border-neutral-dimmed bg-neutral-subtle";
-    if (selected) {
-        tile = "border-primary bg-primary-subtle";
-    }
 
     return (
         <Command.Item
             value={row.value}
             onSelect={row.onRun}
-            className="flex cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus data-[selected=true]:bg-neutral-dimmed"
+            className="group/row cursor-pointer rounded-md transition-colors duration-120 hover:bg-neutral-subtle data-[selected=true]:bg-neutral-light"
         >
-            <div className={cn("grid size-xl shrink-0 place-items-center rounded-md border", tile)}>
-                {row.icon ?? null}
-            </div>
-            <div className="min-w-0 flex-1">
-                <Text as="div" size="md" className="truncate font-medium text-neutral-primary">
-                    {row.label}
-                </Text>
-                {row.sub ? (
-                    <Text as="div" size="sm" className="truncate text-neutral-muted">
-                        {row.sub}
-                    </Text>
-                ) : null}
-            </div>
-            <div className="ml-auto flex shrink-0 items-center gap-xs">
-                {row.shortcut?.map((key, index) => (
-                    <Kbd key={index}>{key}</Kbd>
-                ))}
-                {selected ? (
-                    <span className="inline-flex items-center gap-xs rounded-sm bg-primary px-xs py-xs text-sm font-medium text-neutral-base">
-                        {row.verb}
-                        <Icon icon={<ReturnIcon />} color={"neutral-base"} size={"xs"} label={""} />
-                    </span>
-                ) : null}
-            </div>
+            <CommandRowLayout
+                icon={row.icon}
+                accent={row.accent}
+                title={row.label}
+                description={row.sub}
+                trailing={<CommandRowTrailing row={row} selected={selected} />}
+            />
         </Command.Item>
     );
+};
+
+/*
+ * The selected row says what Enter does, in words and a key cap, rather than in an orange pill: orange
+ * is kept for the one primary action. Other rows show their own shortcut, if they have one.
+ */
+const CommandRowTrailing = ({ row, selected }: { row: CommandRow; selected: boolean }) => {
+    if (selected) {
+        return (
+            <>
+                <span className="text-sm text-neutral-strong">{row.verb}</span>
+                <Kbd keys={["↵"]} />
+            </>
+        );
+    }
+    if (row.shortcut) {
+        return <Kbd keys={row.shortcut} />;
+    }
+    return null;
 };

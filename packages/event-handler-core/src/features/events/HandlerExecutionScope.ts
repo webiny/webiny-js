@@ -1,6 +1,6 @@
 import { Abstraction } from "@webiny/di";
 
-/** One handler execution, as the scope sees it. `HandlerApp.handle()` generates the id. */
+/** One handler execution, as the scope sees it. `HandlerExecutionRunner` creates its id. */
 export interface HandlerExecutionFrame {
     readonly executionId: string;
 }

@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React from "react";
+import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
-import orderBy from "lodash/orderBy.js";
 import { useFeature } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useSnackbar, useConfirmationDialog, SearchUI, useRouter } from "@webiny/app-admin";
@@ -18,6 +18,8 @@ import { ModelGroupPresenterFeature } from "~/presentation/modelGroup/feature.js
 import { usePermission } from "~/admin/hooks/index.js";
 import { Routes } from "~/routes.js";
 import type { ModelGroupDto } from "~/features/modelGroup/listModelGroups/abstractions.js";
+import { toSortOption } from "@webiny/app-admin/presentation/listPresenter/sortOption.js";
+import { fromSortOption } from "@webiny/app-admin/presentation/listPresenter/sortOption.js";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
@@ -27,11 +29,6 @@ const SORTERS = [
     { label: "Name A-Z", sorter: "name_ASC" },
     { label: "Name Z-A", sorter: "name_DESC" }
 ];
-
-const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
-    const [field, order] = data.split("_");
-    return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
-};
 
 export const ContentModelGroupsDataList = observer(
     ({ activeId }: { activeId: string | undefined }) => {
@@ -43,27 +40,12 @@ export const ContentModelGroupsDataList = observer(
         });
         const { canCreate, canDelete } = usePermission();
 
-        const [filter, setFilter] = useState("");
-        const [sort, setSort] = useState(SORTERS[0].sorter);
-
-        const groups = presenter.list.vm.rows;
-        const loading = presenter.list.vm.pagination.loading;
-
-        const filteredData = useMemo(() => {
-            if (filter === "") {
-                return groups;
-            }
-            const lc = filter.toLowerCase();
-            return groups.filter((g: ModelGroupDto) => g.name.toLowerCase().includes(lc));
-        }, [groups, filter]);
-
-        const sortedData = useMemo(() => {
-            if (!sort) {
-                return filteredData;
-            }
-            const [key, order] = deserializeSorters(sort);
-            return orderBy(filteredData, [key], [order]);
-        }, [filteredData, sort]);
+        const { list } = presenter;
+        const sort = toSortOption(list.vm.sort);
+        const setSort = (value: string) => {
+            const option = fromSortOption(value);
+            list.actions.sort.set(option.field, option.direction);
+        };
 
         const deleteItem = useCallback(
             (item: ModelGroupDto) => {
@@ -98,12 +80,12 @@ export const ContentModelGroupsDataList = observer(
                         />
                     ) : null
                 }
-                data={sortedData}
-                loading={loading}
+                data={list.vm.rows}
+                loading={list.vm.pagination.loading}
                 search={
                     <SearchUI
-                        value={filter}
-                        onChange={setFilter}
+                        value={list.vm.search}
+                        onChange={list.actions.search.set}
                         inputPlaceholder={t`Search content model group...`}
                     />
                 }

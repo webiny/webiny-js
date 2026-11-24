@@ -10,6 +10,11 @@ export interface FakeEditorViewPresenter extends WorkflowEditorViewPresenter {
     retryModels: Mock<WorkflowEditorViewPresenter["retryModels"]>;
     retryOptions: Mock<WorkflowEditorViewPresenter["retryOptions"]>;
     setSearch: Mock<WorkflowEditorViewPresenter["setSearch"]>;
+    setWorkflowFilter: Mock<WorkflowEditorViewPresenter["setWorkflowFilter"]>;
+    createWorkflowForModel: Mock<WorkflowEditorViewPresenter["createWorkflowForModel"]>;
+    requestDeleteWorkflowForModel: Mock<
+        WorkflowEditorViewPresenter["requestDeleteWorkflowForModel"]
+    >;
     loadMore: Mock<WorkflowEditorViewPresenter["loadMore"]>;
     selectModel: Mock<WorkflowEditorViewPresenter["selectModel"]>;
     createWorkflow: Mock<WorkflowEditorViewPresenter["createWorkflow"]>;
@@ -43,6 +48,9 @@ export const createFakeEditorViewPresenter = (
         retryModels: vi.fn(),
         retryOptions: vi.fn(),
         setSearch: vi.fn(),
+        setWorkflowFilter: vi.fn(),
+        createWorkflowForModel: vi.fn(),
+        requestDeleteWorkflowForModel: vi.fn(),
         loadMore: vi.fn(),
         selectModel: vi.fn(),
         createWorkflow: vi.fn(),

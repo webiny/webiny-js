@@ -1,47 +1,22 @@
 import type { NormalJob } from "github-actions-wac";
+import { createStatusRowStep } from "./statusRowStep.js";
+import type { StatusRow } from "./statusRowStep.js";
 
-interface CreateStatusRowUpdateStepsParams {
-    // The row's label in the status comment's first column, e.g. "DDB" or "Standalone (SQLite)".
-    label: string;
-    // Shell expression producing the "Admin URL" cell. Defaults to "-" for variants that have no
-    // URL anyone outside the job could open.
-    urlExpression?: string;
-    // Extra env the URL expression needs (e.g. ADMIN_URL from an earlier step's output).
-    env?: Record<string, string>;
+interface CreateStatusRowUpdateStepsParams extends StatusRow {
+    // An expression both steps must also meet, besides their outcome.
+    if?: string;
 }
-
-// Matches the row by its label and replaces the WHOLE line, rather than matching the exact text it
-// currently holds. The row's contents change during a run - "🔄 Deploying..." becomes "✅ Ready"
-// with a URL once the deploy finishes - so an exact-match substitution silently stops matching
-// depending on how far the job got.
-//
-// The labels are not regex-safe: "DDB+OS" contains a quantifier and "Standalone (SQLite)" contains a
-// group, and this is an EXTENDED regular expression (`sed -E`), so both would otherwise match
-// something other than themselves - "Standalone (SQLite)" would only match the literal text
-// "Standalone SQLite" and silently never fire.
-const rowPattern = (label: string) => label.replace(/[\\.[\]{}()*+?^$|]/g, String.raw`\$&`);
 
 const updateStep = (
     params: CreateStatusRowUpdateStepsParams,
     { outcome, status }: { outcome: "success" | "failure"; status: string }
-) => {
-    const url = params.urlExpression ?? "-";
-
-    return {
+) =>
+    createStatusRowStep(params, {
+        id: `status-row-${outcome}`,
         name: `Update PR comment - ${params.label} ${outcome === "success" ? "passed" : "failed"}`,
-        if: `${outcome}()`,
-        env: {
-            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
-            COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
-            ...params.env
-        },
-        run: [
-            `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-            `sed -i -E "s@^\\| ${rowPattern(params.label)} \\|.*@| ${params.label} | ${status} | ${url} |@" /tmp/comment.txt`,
-            `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
-        ].join("\n")
-    };
-};
+        condition: params.if ? `${outcome}() && ${params.if}` : `${outcome}()`,
+        status
+    });
 
 /**
  * The pair of steps that write a variant's final result into the `/e2e` status comment.

@@ -5,8 +5,37 @@ import { readFileSync } from "node:fs";
 import { describe } from "@e2e-dev/web";
 import { test } from "@e2e-dev/web";
 import { expect } from "e2e";
+import type { App } from "e2e";
+import type { Screen } from "e2e";
 
 const FIXTURE = "fixtures/sample.jpeg";
+
+/*
+ * Each load of the file manager fetches the list once. With OpenSearch (DDB+OS) a new file is
+ * listed only after it has been indexed, which can take longer than a load, so waiting on one page
+ * can miss it for good. This loads the page again until the file is listed.
+ */
+const LIST_TIMEOUT = 90_000;
+const PER_LOAD_TIMEOUT = 10_000;
+
+const expectListedAfterLoad = async (app: App, screen: Screen, fileName: string) => {
+    const isListedAfterLoad = async () => {
+        await app.open("/file-manager");
+        try {
+            await screen.getByText(fileName).first().waitFor({ timeout: PER_LOAD_TIMEOUT });
+            return true;
+        } catch {
+            return false;
+        }
+    };
+    await expect
+        .poll(isListedAfterLoad, {
+            timeout: LIST_TIMEOUT,
+            interval: 1_000,
+            message: `${fileName} was not listed in the file manager after reloading it`
+        })
+        .toBe(true);
+};
 
 /*
  * No tags and no agent steps, so it runs in every variant, unlicensed ones included. With several
@@ -41,13 +70,11 @@ describe(
             await expect(screen.getByText(fileName).first()).toBeVisible({ timeout: 60_000 });
 
             // A fresh load lists the files from the API again, not from the state the upload left.
-            await app.open("/file-manager");
-            await expect(screen.getByText(fileName).first()).toBeVisible({ timeout: 30_000 });
+            await expectListedAfterLoad(app, screen, fileName);
         });
 
         test("the uploaded file downloads byte for byte", async ({ app, screen, browser }) => {
-            await app.open("/file-manager");
-            await expect(screen.getByText(fileName).first()).toBeVisible({ timeout: 30_000 });
+            await expectListedAfterLoad(app, screen, fileName);
 
             /*
              * The card's thumbnail is the file's delivery URL with resize parameters. Dropping them and

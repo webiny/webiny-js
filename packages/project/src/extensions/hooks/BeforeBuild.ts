@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const BeforeBuild = defineExtension({
     type: "Project/BeforeBuild",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Add custom logic to be executed before the PROJECT build process.",
     multiple: true,
     paramsSchema: ({ project }) => {

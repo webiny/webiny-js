@@ -10,6 +10,7 @@ import {
 import { GetFolderRepository } from "../GetFolder/abstractions.js";
 import { FolderAfterUpdateEvent, FolderBeforeUpdateEvent } from "./events.js";
 import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
+import { FolderValidationError } from "~/domain/folder/errors.js";
 
 class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -32,6 +33,14 @@ class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const original = originalResult.value;
+
+        if (input.parentId && input.parentId !== original.parentId) {
+            const moveResult = await this.ensureCanMoveInto(original, input.parentId);
+
+            if (moveResult.isFail()) {
+                return Result.fail(moveResult.error);
+            }
+        }
 
         // Publish before update event
         const beforeUpdateEvent = new FolderBeforeUpdateEvent({
@@ -60,6 +69,41 @@ class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
         await this.eventPublisher.publish(afterUpdateEvent);
 
         return Result.ok(folder);
+    }
+
+    /*
+     * Either move would cut the folder's subtree off from the root. The admin's tree never offers
+     * them, but any caller can pass an arbitrary parent id.
+     *
+     * The subtree check compares stored paths. A move writes the moved folder's own path at once
+     * and its descendants' paths later, from the FLP update task, so a second move made before
+     * that task finishes is checked against the old paths.
+     */
+    private async ensureCanMoveInto(
+        folder: Folder,
+        parentId: string
+    ): Promise<Result<void, UseCaseAbstraction.Error>> {
+        if (parentId === folder.id) {
+            return Result.fail(new FolderValidationError("A folder cannot be moved into itself."));
+        }
+
+        const parentResult = await this.getFolderRepository.execute(parentId);
+
+        if (parentResult.isFail()) {
+            return Result.fail(parentResult.error);
+        }
+
+        const parent = parentResult.value;
+
+        if (parent.path.startsWith(`${folder.path}/`)) {
+            return Result.fail(
+                new FolderValidationError(
+                    `Folder "${parent.title}" is inside the folder being moved, so it cannot be its new parent.`
+                )
+            );
+        }
+
+        return Result.ok();
     }
 }
 

@@ -59,7 +59,7 @@ export interface IDeletePageUseCaseErrors {
 
 type UseCaseError = IDeletePageUseCaseErrors[keyof IDeletePageUseCaseErrors];
 
-/** Delete a page. */
+/** Delete a page permanently, whether or not it is in the trash bin. */
 export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("Wb/DeletePageUseCase");
 
 export namespace DeletePageUseCase {

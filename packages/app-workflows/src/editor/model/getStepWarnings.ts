@@ -26,23 +26,32 @@ function getReviewWarnings(step: EditorStep, context: StepContext): StepWarningL
     }
 
     const config = readReviewConfig(step.config);
-    const lines: StepWarningLine[] = [];
-    for (const id of config.teams) {
-        const team = context.teams.find(item => item.id === id);
-        if (team && team.memberCount === 0) {
-            lines.push({ text: `${team.name} has no members.`, severity: "warning" });
-        }
-    }
 
-    // Rule warnings and the live rule errors, prefixed with the rule's position (R299, R312).
+    // Rule lines first, by rule position and errors before warnings within a rule; the step's own
+    // lines (empty teams) after them. The order is the same before and after a Save attempt.
     const assignment = readAssignment(config.assignment);
     const issues = getRuleIssues(assignment.rules, {
         stepTeamIds: config.teams,
         references: context.references
     });
-    for (const issue of issues) {
+    const orderedIssues = [...issues].sort((a, b) => {
+        if (a.index !== b.index) {
+            return a.index - b.index;
+        }
+        return Number(a.kind === "warning") - Number(b.kind === "warning");
+    });
+    const lines: StepWarningLine[] = [];
+    // Rule warnings and the live rule errors, prefixed with the rule's position (R299, R312).
+    for (const issue of orderedIssues) {
         const text = `Rule ${issue.index + 1}: ${issue.message}`;
         lines.push({ text, severity: issue.kind, ruleId: issue.ruleId });
+    }
+
+    for (const id of config.teams) {
+        const team = context.teams.find(item => item.id === id);
+        if (team && team.memberCount === 0) {
+            lines.push({ text: `${team.name} has no members.`, severity: "warning" });
+        }
     }
 
     return lines;

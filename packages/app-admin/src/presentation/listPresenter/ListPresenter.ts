@@ -1,8 +1,10 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
+import { makeAutoObservable, runInAction, computed, reaction, compareStructural } from "mobx";
+import type { IReactionDisposer } from "mobx";
 import {
     ListPresenter as Abstraction,
     type IListPresenter,
     type IListPresenterConfig,
+    type IListAssistantConfig,
     type IListViewModel,
     type IListActions,
     type IListError,
@@ -10,6 +12,11 @@ import {
     type IDataSourceQuery
 } from "./abstractions.js";
 import { SelectionController } from "./SelectionController.js";
+import { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
+
+/** Enough rows to resolve one named in a question, and to keep the details under the server's limit. */
+const MAX_ASSISTANT_ROWS = 30;
+const MAX_ASSISTANT_TITLE = 60;
 
 class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _sort: { field: string; direction: "ASC" | "DESC" } | null = null;
@@ -31,15 +38,23 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         singular: "item",
         plural: "items"
     };
+    private _disposeAssistant: IReactionDisposer | null = null;
+    private _assistantOwner: AssistantPageContext.Owner | null = null;
 
-    constructor() {
+    constructor(private pageContext: AssistantPageContext.Interface) {
         this._selection = new SelectionController<TRow>(
             () => this._dataSource?.rows ?? [],
             row => this.getRowId(row)
         );
 
-        makeAutoObservable<ListPresenterImpl<TRow>, "_debounceTimer">(this, {
+        makeAutoObservable<
+            ListPresenterImpl<TRow>,
+            "_debounceTimer" | "_disposeAssistant" | "_assistantOwner" | "pageContext"
+        >(this, {
             _debounceTimer: false,
+            _disposeAssistant: false,
+            _assistantOwner: false,
+            pageContext: false,
             vm: computed
         });
     }
@@ -176,7 +191,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._sort = config.initialSort ?? null;
         this._filters = config.initialFilters ?? {};
         this._initialFilterKeys = new Set(Object.keys(this._filters));
-        this._debounceMs = config.debounceMs ?? 300;
+        this._debounceMs = config.debounceMs ?? config.dataSource.searchDebounceMs ?? 300;
         this._limit = config.limit;
         this._itemLabel = config.itemLabel ?? { singular: "item", plural: "items" };
         this._search = config.initialSearch ?? "";
@@ -184,6 +199,70 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         this._selection.reset();
         this._initialized = true;
         this.executeQuery();
+        this.describeToAssistant(config.assistant);
+    }
+
+    dispose(): void {
+        if (this._disposeAssistant) {
+            this._disposeAssistant();
+            this._disposeAssistant = null;
+        }
+        if (this._assistantOwner) {
+            this.pageContext.clear(this._assistantOwner);
+            this._assistantOwner = null;
+        }
+    }
+
+    /**
+     * Keeps the assistant's page context in step with the list. The first describe sets it; later
+     * ones replace it in place, so a drawer that set its own context over the list stays on top.
+     */
+    private describeToAssistant(config: IListAssistantConfig<TRow> | undefined): void {
+        this.dispose();
+        if (!config) {
+            return;
+        }
+
+        this._disposeAssistant = reaction(
+            () => this.assistantContext(config),
+            context => {
+                if (this._assistantOwner) {
+                    this.pageContext.update(this._assistantOwner, context);
+                } else {
+                    this._assistantOwner = this.pageContext.set(context);
+                }
+            },
+            { fireImmediately: true, equals: compareStructural }
+        );
+    }
+
+    private assistantContext(config: IListAssistantConfig<TRow>): AssistantPageContext.Data {
+        const rows = this._dataSource?.rows ?? [];
+        const rowId = config.rowId ?? ((row: TRow) => this.getRowId(row));
+
+        const visibleRows = rows.slice(0, MAX_ASSISTANT_ROWS).map(row => ({
+            id: rowId(row),
+            title: config.rowTitle(row).slice(0, MAX_ASSISTANT_TITLE)
+        }));
+
+        const selectedRows = rows
+            .filter(row => this._selection.isSelected(this.getRowId(row)))
+            .slice(0, MAX_ASSISTANT_ROWS)
+            .map(rowId);
+
+        const details: Record<string, unknown> = {
+            items: this._itemLabel.plural,
+            totalCount: this._dataSource?.meta.totalCount ?? rows.length,
+            visibleRows
+        };
+        if (selectedRows.length > 0) {
+            details["selectedRows"] = selectedRows;
+        }
+        if (this._search) {
+            details["search"] = this._search;
+        }
+
+        return { view: config.view(), details: { ...details, ...config.details?.() } };
     }
 
     private buildQuery(cursor?: string | null): IDataSourceQuery {
@@ -268,5 +347,5 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
 
 export const ListPresenter = Abstraction.createImplementation({
     implementation: ListPresenterImpl,
-    dependencies: []
+    dependencies: [AssistantPageContext]
 });

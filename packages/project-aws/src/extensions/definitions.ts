@@ -1,14 +1,12 @@
 import { ApiLambdaFunction } from "./ApiLambdaFunction.js";
-import { ApiRoute } from "./ApiRoute.js";
 import { OpenSearch } from "./OpenSearch.js";
-import { Smtp as MailerSmtp } from "./Mailer/Smtp.js";
+import { AuroraPostgresCluster } from "./AuroraPostgresCluster.js";
 import { type ExtensionDefinitionModel } from "@webiny/project/defineExtension";
 
 const definitions = [
     ApiLambdaFunction.def,
-    ApiRoute.def,
     OpenSearch.def,
-    MailerSmtp.def
+    AuroraPostgresCluster.def
 ] as unknown as ExtensionDefinitionModel<any>[];
 
 export default definitions;

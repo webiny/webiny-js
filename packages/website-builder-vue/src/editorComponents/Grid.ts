@@ -23,7 +23,7 @@ type GridProps = ComponentProps<{
  * The children of each column are VNodes resolved by the SDK (ElementSlot).
  */
 export const GridComponent = (props: GridProps) => {
-    const { inputs, styles, breakpoint } = props;
+    const { inputs, styles, breakpoint, breakpoints } = props;
     const {
         gridLayout = "12",
         columns = [],
@@ -40,7 +40,9 @@ export const GridComponent = (props: GridProps) => {
     }
 
     const cellWidthReduction = columnGap ? columnGap - columnGap / rowConfig.length : 0;
-    const stackColumns = breakpoint === stackAtBreakpoint;
+    // Stack at the chosen breakpoint and every narrower one.
+    const stackFrom = stackAtBreakpoint ? breakpoints.indexOf(stackAtBreakpoint) : -1;
+    const stackColumns = stackFrom !== -1 && breakpoints.indexOf(breakpoint) >= stackFrom;
 
     const gridStyles = { ...styles };
     if (stackColumns) {

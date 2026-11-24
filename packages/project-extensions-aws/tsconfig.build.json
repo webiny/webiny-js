@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-aco-pg/tsconfig.build.json" },
+    { "path": "../api-headless-cms-pg/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-aco-pg/*": ["../api-aco-pg/src/*"],
+      "@webiny/api-aco-pg": ["../api-aco-pg/src"],
+      "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
+      "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
+    }
+  }
+}

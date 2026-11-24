@@ -32,7 +32,9 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const { where: initialWhere, fieldId } = params;
 
+        // As the list use cases: entries in the bin are left out unless asked for.
         const where = {
+            ...(initialWhere.wbyDeleted === true ? {} : { wbyDeleted_not: true }),
             ...initialWhere
         };
 

@@ -1,6 +1,7 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
-import type { IApiStackOutputPasswordPolicy } from "~/abstractions/index.js";
+import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
+import type { ServiceManifest } from "~/pulumi/utils/addServiceManifestTableItem.js";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -12,9 +13,13 @@ export interface ICoreOutput {
     cognitoUserPoolArn: string;
     cognitoAppClientId: string;
     cognitoUserPoolId: string;
-    cognitoUserPoolPasswordPolicy: IApiStackOutputPasswordPolicy;
+    cognitoUserPoolPasswordPolicy: ApiStackOutputService.PasswordPolicy;
     fileManagerBucketId: string;
     fileManagerBucketArn: string;
+    /*
+     * The core's DynamoDB tables. Absent with `<Infra.AuroraPostgres />`: the core creates none.
+     * The types stay non-optional so existing `CorePulumi` / `ApiPulumi` code keeps compiling.
+     */
     primaryDynamodbTableArn: string;
     primaryDynamodbTableName: string;
     primaryDynamodbTableHashKey: string;
@@ -34,7 +39,43 @@ export interface ICoreOutput {
     opensearchDynamodbTableRangeKey: string;
     opensearchDynamodbTableArn: string | undefined;
     opensearchDynamodbTableName: string | undefined;
+    /*
+     * Set with `<Infra.AuroraPostgres />`. The password is in the `pgSecretArn` secret, never here.
+     * `pgProxyHost` is set with `<Infra.AuroraPostgres rdsProxy />` only.
+     */
+    pgWriterHost: string | undefined;
+    pgReaderHost: string | undefined;
+    pgProxyHost: string | undefined;
+    pgPort: number | undefined;
+    pgDatabase: string | undefined;
+    pgUser: string | undefined;
+    pgSecretArn: string | undefined;
+    /*
+     * Set with `<Infra.AuroraPostgres />`: the core's service manifests (`core`, and any a
+     * `CorePulumi` extension adds). The core deploys before the api's schema-setup function exists,
+     * so the api deploy stores them in the database.
+     */
+    serviceManifests: ServiceManifest[] | undefined;
 }
+
+const POSTGRES_OUTPUTS = [
+    "pgWriterHost",
+    "pgReaderHost",
+    "pgProxyHost",
+    "pgPort",
+    "pgDatabase",
+    "pgUser",
+    "pgSecretArn"
+] as const;
+
+export type PostgresOutputs = Pick<ICoreOutput, (typeof POSTGRES_OUTPUTS)[number]>;
+
+/* The Postgres connection outputs of the core stack, for the API app. No password among them. */
+export const pickPostgresOutputs = (output: Record<string, unknown>): PostgresOutputs => {
+    return Object.fromEntries(
+        POSTGRES_OUTPUTS.map(name => [name, output[name]])
+    ) as unknown as PostgresOutputs;
+};
 
 export const CoreOutput = createAppModule({
     name: "CoreOutput",
@@ -71,7 +112,10 @@ export const CoreOutput = createAppModule({
                 opensearchDomainArn: output["opensearchDomainArn"],
                 opensearchDomainEndpoint: output["opensearchDomainEndpoint"],
                 opensearchDynamodbTableArn: output["opensearchDynamodbTableArn"],
-                opensearchDynamodbTableName: output["opensearchDynamodbTableName"]
+                opensearchDynamodbTableName: output["opensearchDynamodbTableName"],
+                // These outputs are optional, since Postgres is not always enabled.
+                ...pickPostgresOutputs(output),
+                serviceManifests: output["serviceManifests"]
             } as ICoreOutput;
         });
     }

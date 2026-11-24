@@ -176,6 +176,23 @@ export const HttpRouteDefinition = new Abstraction<IHttpRouteDefinition>("HttpRo
 export const HttpRouteHandler = new Abstraction<IHttpRoute>("HttpRouteHandler");
 export const HttpRouter = new Abstraction<IHttpRouter>("HttpRouter");
 
+/**
+ * Request headers an extension's clients send, added to the ones the API allows in its CORS preflight
+ * response. A browser fails the preflight for a header missing there and never sends the request, so
+ * a custom header sent cross-origin must be registered here.
+ */
+export interface IHttpAllowedRequestHeaders {
+    readonly headers: string[];
+}
+
+export const HttpAllowedRequestHeaders = new Abstraction<IHttpAllowedRequestHeaders>(
+    "HttpAllowedRequestHeaders"
+);
+
+export namespace HttpAllowedRequestHeaders {
+    export type Interface = IHttpAllowedRequestHeaders;
+}
+
 export namespace HttpRouteDefinition {
     export type Interface = IHttpRouteDefinition;
 }

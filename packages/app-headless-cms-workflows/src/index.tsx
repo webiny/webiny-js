@@ -11,6 +11,9 @@ import { CmsContentReviewsSidebarItem } from "~/Components/ContentReviews/CmsCon
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 import { CmsReviewMoveEntryAction } from "~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js";
 import { CmsReviewScheduleEntryAction } from "~/Components/CmsEntriesList/CmsReviewScheduleEntryAction.js";
+import { CmsReviewPublishEntryAction } from "~/Components/CmsEntriesList/CmsReviewPublishEntryAction.js";
+import { CmsReviewBulkPublishAction } from "~/Components/CmsEntriesList/CmsReviewBulkPublishAction.js";
+import { CmsEntryFormFieldLockFeature } from "~/features/formFieldLock/feature.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowEditorMountingFeature } from "~/features/editorMounting/feature.js";
@@ -37,6 +40,7 @@ export const CmsWorkflows = () => {
             <RegisterFeature feature={CmsWorkflowEditorMountingFeature} />
             <RegisterFeature feature={CmsEntryReviewFeature} />
             <RegisterFeature feature={CmsReviewTrashFeature} />
+            <RegisterFeature feature={CmsEntryFormFieldLockFeature} />
             <CmsContentReviews />
             <CmsContentReviewsSidebarItem />
             <CmsWorkflowEditor />
@@ -47,6 +51,8 @@ export const CmsWorkflows = () => {
             <CmsEntryReviewNewRevision />
             <CmsReviewMoveEntryAction />
             <CmsReviewScheduleEntryAction />
+            <CmsReviewPublishEntryAction />
+            <CmsReviewBulkPublishAction />
             <ModelDeleteWorkflowError />
         </>
     );

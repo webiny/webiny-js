@@ -118,19 +118,14 @@ export const buildTargetReviewViewModel = (
     let ownerName: string | null = null;
     let stepStateTag: TargetReviewTag | null = null;
     let stepStateTooltip: string | null = null;
-    // An approved review has no step left to describe; a rejected one keeps its rejecting step.
-    if (display && review && review.state !== ReviewState.Approved) {
+    // A finished review has no step line, step tag or owner: its message and tag say it all.
+    if (display && review && review.state === ReviewState.InProgress) {
         const running = isStepRunning(display.step);
         stepMeta = `Step ${display.index + 1} of ${display.total}: ${display.step.title}`;
         ownerName = getStepOwnerLabel(display.step);
-        if (review.state === ReviewState.InProgress) {
-            stepColor = display.step.color;
-        }
-        // A rejected review's own tag already says "Rejected"; the step tag would repeat it.
-        if (review.state !== ReviewState.Rejected) {
-            stepStateTag = getStepStateTag(display.step.state, running);
-            stepStateTooltip = getStepTagTooltip(display.step);
-        }
+        stepColor = display.step.color;
+        stepStateTag = getStepStateTag(display.step.state, running);
+        stepStateTooltip = getStepTagTooltip(display.step);
     }
 
     return {

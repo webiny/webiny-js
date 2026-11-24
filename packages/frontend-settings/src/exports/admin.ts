@@ -1,2 +1,10 @@
 export { usePreviewDomain } from "~/admin/usePreviewDomain.js";
 export { PreviewDomainMenu } from "~/admin/presentation/PreviewDomainMenu.js";
+export { FrontendPermissions } from "~/admin/features/permissions/abstractions.js";
+export { GetFrontendSettingsUseCase } from "~/admin/features/getSettings/abstractions.js";
+export { GetFrontendSettingsGateway } from "~/admin/features/getSettings/abstractions.js";
+export { UpdateFrontendSettingsUseCase } from "~/admin/features/updateSettings/abstractions.js";
+export { UpdateFrontendSettingsGateway } from "~/admin/features/updateSettings/abstractions.js";
+export type { IFrontendSettings } from "~/shared/types.js";
+export type { IStarterKit } from "~/shared/types.js";
+export { FrontendDomain } from "~/shared/FrontendDomain.js";

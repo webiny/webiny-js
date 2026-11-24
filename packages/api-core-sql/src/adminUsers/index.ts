@@ -41,17 +41,15 @@ export const createStorageOperations = (
 ): AdminUsersStorageOperations => {
     const { knex, tableManager } = params;
 
-    const ensureTable = () => {
-        return tableManager.ensure(TABLE_NAME, table => {
-            table.text("id").notNullable();
-            table.text("tenant").notNullable();
-            table.text("email").notNullable();
-            table.text("data").notNullable();
+    const ensureTable = tableManager.define(TABLE_NAME, table => {
+        table.text("id").notNullable();
+        table.text("tenant").notNullable();
+        table.text("email").notNullable();
+        table.text("data").notNullable();
 
-            table.primary(["tenant", "id"]);
-            table.unique(["tenant", "email"]);
-        });
-    };
+        table.primary(["tenant", "id"]);
+        table.unique(["tenant", "email"]);
+    });
 
     const query = () => {
         return knex<IAdminUserRow>(tableManager.resolve(TABLE_NAME));

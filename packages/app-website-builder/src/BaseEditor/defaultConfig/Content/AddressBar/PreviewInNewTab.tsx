@@ -17,7 +17,14 @@ export const PreviewInNewTab = () => {
             content={<Text size="md">Copy preview link</Text>}
             side="bottom"
             trigger={
-                <CopyButton size="md" value={link} onCopy={confirmClipboard} variant={"ghost"} />
+                <CopyButton
+                    size="md"
+                    value={link}
+                    onCopy={confirmClipboard}
+                    variant={"ghost"}
+                    // No link while the preview URL is being prepared, or when that failed.
+                    disabled={!link}
+                />
             }
         />
     );

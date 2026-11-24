@@ -20,16 +20,6 @@ export interface ApprovalDecision {
     reason?: string;
 }
 
-/**
- * A tool runs unattended only if it says, in its own declaration, that it does not change anything.
- *
- * The default is deliberately the safe one: a tool with no annotations requires approval. Tools are
- * registered by extensions as well as by Webiny, so an author who forgets to annotate gets a confirm
- * prompt rather than silent write access.
- */
-export const isReadOnly = (tool: AiSdkToolDefinition.Interface): boolean =>
-    tool.annotations?.readOnlyHint === true;
-
 export const toPendingApproval = (
     approvalId: string,
     toolName: string,

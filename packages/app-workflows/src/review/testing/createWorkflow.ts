@@ -14,7 +14,8 @@ export const createWorkflow = (overrides: Partial<ReviewWorkflow> = {}): ReviewW
                 description: null,
                 type: "review",
                 allowManualPick: false,
-                assignedAutomatically: false
+                assignedAutomatically: false,
+                candidateTeamNames: []
             }
         ],
         ...overrides

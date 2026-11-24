@@ -18,9 +18,14 @@ describe("collectNameLookupIds (R321)", () => {
 
     it("skips found and deleted users and keeps unknown ones", () => {
         const known = new Map<string, ExclusionUserName>();
-        known.set("user-a", { userId: "user-a", label: "Ana", state: "found" });
-        known.set("user-b", { userId: "user-b", label: "Deleted user", state: "deleted" });
-        known.set("user-c", { userId: "user-c", label: "user-c", state: "unknown" });
+        known.set("user-a", { userId: "user-a", label: "Ana", state: "found", teamNames: [] });
+        known.set("user-b", {
+            userId: "user-b",
+            label: "Deleted user",
+            state: "deleted",
+            teamNames: []
+        });
+        known.set("user-c", { userId: "user-c", label: "user-c", state: "unknown", teamNames: [] });
         const list = [entry("user-a"), entry("user-b"), entry("user-c"), entry("user-d")];
 
         expect(collectNameLookupIds(list, known)).toEqual(["user-c", "user-d"]);

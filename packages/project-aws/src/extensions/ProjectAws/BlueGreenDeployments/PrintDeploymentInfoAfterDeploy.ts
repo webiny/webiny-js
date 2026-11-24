@@ -1,9 +1,7 @@
-import {
-    AfterDeploy,
-    GetAppStackOutput,
-    ProjectSdkParamsService,
-    UiService
-} from "@webiny/project/abstractions/index.js";
+import { AfterDeploy } from "@webiny/project-extensions-aws/abstractions/index.js";
+import { GetAppStackOutput } from "~/abstractions/features/GetAppStackOutput.js";
+import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
+import { UiService } from "@webiny/project/abstractions/index.js";
 import { IBlueGreenStackOutput } from "~/pulumi/apps/blueGreen/types.js";
 import chalk from "chalk";
 

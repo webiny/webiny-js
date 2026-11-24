@@ -157,13 +157,13 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
             </div>
             <div className={"flex items-start justify-between gap-md"}>
                 <div className={"flex flex-col"}>
-                    <Heading level={6} id={TITLE_ID}>
+                    <Heading level={6} id={TITLE_ID} className={"text-neutral-primary"}>
                         {ASSIGNMENT_FORM_MESSAGES.rulesLabel}
                     </Heading>
                     <FormComponentDescription text={ASSIGNMENT_FORM_MESSAGES.rulesHint} />
                 </div>
                 <Button
-                    variant={"tertiary"}
+                    variant={"secondary"}
                     size={"sm"}
                     text={ASSIGNMENT_FORM_MESSAGES.addRule}
                     icon={<AddIcon />}
@@ -171,7 +171,13 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
                     onClick={handleAdd}
                 />
             </div>
-            {rules.length === 0 && <RulesEmptyNote strategy={options.assignment.strategy} />}
+            {rules.length === 0 && (
+                <RulesEmptyNote
+                    strategy={options.assignment.strategy}
+                    disabled={readOnly}
+                    onAdd={handleAdd}
+                />
+            )}
             {rules.map((rule, index) => (
                 <RuleCard
                     key={rule.id}

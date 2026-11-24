@@ -243,6 +243,13 @@ export const WithSwatchColorNoSwatchIcon: Story = {
     }
 };
 
+export const Small: Story = {
+    args: {
+        ...Info.args,
+        size: "sm"
+    }
+};
+
 export const Documentation: Story = {
     args: {
         type: "info",
@@ -269,6 +276,12 @@ export const Documentation: Story = {
             control: "select",
             options: ["subtle", "strong"],
             defaultValue: "subtle"
+        },
+        size: {
+            description: "Size, md (default) or sm (compact padding, small text).",
+            control: "select",
+            options: ["md", "sm"],
+            defaultValue: "md"
         },
         showCloseButton: {
             description:

@@ -11,4 +11,5 @@ export {
     MailerSettingsAfterSaveEventHandler,
     MailerSettingsBeforeSaveEventHandler
 } from "~/features/SaveSettings/index.js";
-export { MailerService } from "~/domain/MailerService/abstractions.js";
+export { IsMailerConfiguredUseCase } from "~/features/IsMailerConfigured/index.js";
+export { MailTransport, MailTransportFactory } from "~/domain/MailTransport/abstractions.js";

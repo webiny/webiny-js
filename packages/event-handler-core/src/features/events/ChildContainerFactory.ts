@@ -4,12 +4,13 @@ import { RequestContainer } from "./RequestContainer.js";
 import { HandlerExecution } from "./HandlerExecution.js";
 import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
-import { noopTransport } from "./Transport.js";
+import { HandlerPlatform } from "./HandlerPlatform.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
     constructor(
         private config: HandlerConfig.Interface,
-        private scope: HandlerExecutionScope.Interface
+        private scope: HandlerExecutionScope.Interface,
+        private platform: HandlerPlatform.Interface
     ) {}
 
     async create(root: Container, rawArgs: any[]): Promise<Container> {
@@ -27,10 +28,8 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
         const handlerExecution = new DefaultHandlerExecution(frame, this.scope);
         child.registerInstance(HandlerExecution, handlerExecution);
 
-        // Transport-specific bind: register the raw platform arguments into the request container
-        // before request setup runs. The default transport binds nothing.
-        const transport = this.config.transport ?? noopTransport;
-        await transport.bind(child, ...rawArgs);
+        // Register the raw platform arguments into the container before request setup runs.
+        await this.platform.bind(child, rawArgs);
 
         if (this.config.child) {
             await this.config.child(child);
@@ -42,5 +41,5 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
 
 export const DefaultChildContainerFactory = ChildContainerFactory.createImplementation({
     implementation: ChildContainerFactoryImpl,
-    dependencies: [HandlerConfig, HandlerExecutionScope]
+    dependencies: [HandlerConfig, HandlerExecutionScope, HandlerPlatform]
 });

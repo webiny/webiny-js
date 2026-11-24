@@ -17,18 +17,12 @@ export {
     GlobalKeyValueStore,
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
-export { WebsocketsTransport } from "@webiny/api-websockets/transport/index.js";
+export { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
-export { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 export { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
 export { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js";
-export { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-export { WebsocketsEventValidator } from "@webiny/api-websockets/validator/index.js";
-export { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner.js";
-export { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
-export { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
-export type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 export {
+    HttpAllowedRequestHeaders,
     HttpRouteDefinition,
     HttpRouteHandler
 } from "@webiny/event-handler-core/features/http/abstractions.js";

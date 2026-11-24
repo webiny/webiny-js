@@ -1,6 +1,8 @@
+import type { NormalJob } from "github-actions-wac";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS } from "./utils/index.js";
+import { nodeScriptPath } from "./utils/index.js";
 import {
     createPublishToVerdaccioSteps,
     createUploadVerdaccioStorageSteps,
@@ -16,12 +18,69 @@ import {
     AWS_VARIANTS,
     SERVER_VARIANTS,
     WCP_VARIANTS,
+    createPrFeature,
+    createFinalStatusCommentJob,
+    type AwsVariantJobsContext,
     type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
 // Every variant is three jobs: build (or deploy), a matrix of test shards, and a status report.
 // The variant lists (e2e/variants.ts) drive both the PR status comment and the job list, so the two
 // cannot drift apart.
+
+/*
+ * What the `baseBranch` job checks the PR's code for (see "Check what the PR's code supports"): each
+ * feature's name, which is also its job output, and a path the feature can't work without.
+ */
+const PR_FEATURE_PATHS = {
+    standalone: "packages/create-webiny-project/_templates/standalone",
+    /*
+     * Also gates the bug-report-ai extension step. The extension came in with the bug reporter
+     * (#5746) and is pulled from S3, so nothing in the PR's tree says whether it fits the branch;
+     * this script stands in for "the branch has the bug reporter".
+     */
+    "bug-reporter": nodeScriptPath("configureBugReporter"),
+    /*
+     * Gates adding the E2E API route. The script came in with the fix that makes `<Api.Route>` build
+     * on standalone, and so did e2e/tests/api/apiRoute.e2e.ts, so a branch without it has neither.
+     */
+    "api-route": nodeScriptPath("configureApiRoute")
+};
+
+/*
+ * The area tags the comment asks for (`/e2e workflows fm`), comma-separated, read and validated by
+ * the `baseBranch` job (./e2e/selectE2eAreas.ts). Empty for `/e2e` alone, which runs every test.
+ */
+const E2E_TAGS = "${{ needs.baseBranch.outputs.e2e-tags }}";
+
+const STANDALONE = createPrFeature("baseBranch", "standalone");
+const BUG_REPORTER = createPrFeature("baseBranch", "bug-reporter");
+const API_ROUTE = createPrFeature("baseBranch", "api-route");
+
+const PR_FEATURE_OUTPUTS: Record<string, string> = {};
+const PR_FEATURE_CHECKS: string[] = [];
+for (const [name, path] of Object.entries(PR_FEATURE_PATHS)) {
+    PR_FEATURE_OUTPUTS[name] = `\${{ steps.features.outputs.${name} }}`;
+    // A plain assignment, so `set -e` stops the step when `has_path` fails.
+    PR_FEATURE_CHECKS.push(
+        `found=$(has_path ${path})`,
+        `echo "${name}: $found"`,
+        `echo "${name}=$found" >> $GITHUB_OUTPUT`
+    );
+}
+
+const AWS_VARIANT_JOBS_CONTEXT: AwsVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2e-aws",
+    deployNeeds: ["baseBranch", "publish", "checkComment"],
+    // The checkout path comes from the base branch.
+    testsNeeds: ["baseBranch"],
+    setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
+    report: true,
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE,
+    tags: E2E_TAGS
+};
 
 const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     workingDirectory: DIR_WEBINY_JS,
@@ -30,8 +89,35 @@ const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     // The checkout path comes from the base branch.
     testsNeeds: ["baseBranch"],
     setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
-    report: true
+    report: true,
+    feature: STANDALONE,
+    bugReporter: BUG_REPORTER,
+    apiRoute: API_ROUTE,
+    tags: E2E_TAGS
 };
+
+// Every variant's build (or deploy), test and report jobs.
+const VARIANT_JOBS: Record<string, NormalJob> = {
+    ...AWS_VARIANTS.reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createAwsJobs(variant, AWS_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    ),
+    ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    )
+};
+
+const REPORT_JOB_KEYS = Object.keys(VARIANT_JOBS).filter(key => key.endsWith("-report")) as [
+    string,
+    ...string[]
+];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
@@ -57,13 +143,55 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     jobs: {
         baseBranch: createJob({
             needs: "checkComment",
-            name: "Get base branch",
-            permissions: { "pull-requests": "read" },
+            name: "Get areas, base branch, PR head and PR features",
+            /*
+             * `contents` for the feature checks, which read the PR's tree. `pull-requests: write`
+             * to write the areas into the status comment.
+             */
+            permissions: { "pull-requests": "write", contents: "read" },
             outputs: {
+                "e2e-tags": "${{ steps.areas.outputs.tags }}",
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
-                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
+                ...PR_FEATURE_OUTPUTS
             },
             steps: [
+                {
+                    /*
+                     * First, so an unknown area stops the run before anything is built. The
+                     * comment is untrusted: it reaches the script only through the environment,
+                     * and only known area tags come out. The script and e2e/areas.ts are read from
+                     * this checkout, the workflow's own branch (`next`), so an area a PR adds can
+                     * be selected once it is merged.
+                     */
+                    name: "Select E2E areas",
+                    id: "areas",
+                    env: { COMMENT_BODY: "${{ github.event.comment.body }}" },
+                    run: "node .github/workflows/wac/e2e/selectE2eAreas.ts"
+                },
+                {
+                    // The areas, or why the comment was refused, under the status comment's intro.
+                    name: "Write the areas into the status comment",
+                    if: "${{ always() && steps.areas.outputs.comment-line != '' && needs.checkComment.outputs.comment-id != '' }}",
+                    "continue-on-error": true,
+                    env: {
+                        GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+                        COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
+                        COMMENT_LINE: "${{ steps.areas.outputs.comment-line }}"
+                    },
+                    run: [
+                        "set -euo pipefail",
+                        'comment="repos/${{ github.repository }}/issues/comments/$COMMENT_ID"',
+                        'gh api "$comment" --jq .body > /tmp/comment.txt',
+                        "{",
+                        "  head -n 1 /tmp/comment.txt",
+                        "  echo",
+                        '  printf "%s\\n" "$COMMENT_LINE"',
+                        "  tail -n +2 /tmp/comment.txt",
+                        "} > /tmp/comment-with-areas.txt",
+                        'gh api "$comment" -X PATCH --field body=@/tmp/comment-with-areas.txt > /dev/null'
+                    ].join("\n")
+                },
                 {
                     name: "Get base branch",
                     id: "base-branch",
@@ -80,6 +208,36 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     id: "pr-sha",
                     env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    /*
+                     * A slash command always runs this workflow as it is on `next`, but the jobs
+                     * build the PR's code. A PR into an older release branch can lack what newer
+                     * jobs and steps need, and they would fail before running a single test. Each
+                     * check names a path the feature can't work without; a 404 means the PR's code
+                     * predates it. Any other error fails the job, so a flaky API call can't quietly
+                     * switch half of the run off.
+                     */
+                    name: "Check what the PR's code supports",
+                    id: "features",
+                    env: {
+                        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+                        PR_SHA: "${{ steps.pr-sha.outputs.pr-sha }}"
+                    },
+                    run: [
+                        "set -euo pipefail",
+                        "has_path() {",
+                        '  if gh api "repos/${{ github.repository }}/contents/$1?ref=$PR_SHA" --silent 2> /tmp/gh-api-error.txt; then',
+                        "    echo true",
+                        '  elif grep -q "HTTP 404" /tmp/gh-api-error.txt; then',
+                        "    echo false",
+                        "  else",
+                        "    cat /tmp/gh-api-error.txt >&2",
+                        "    return 1",
+                        "  fi",
+                        "}",
+                        ...PR_FEATURE_CHECKS
+                    ].join("\n")
                 }
             ]
         }),
@@ -125,13 +283,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
             ]
         }),
-        ...AWS_VARIANTS.reduce((jobs, variant) => ({ ...jobs, ...createAwsJobs(variant) }), {}),
-        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
-            (jobs, variant) => ({
-                ...jobs,
-                ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
-            }),
-            {}
-        )
+        ...VARIANT_JOBS,
+        "e2e-final-status-comment": createFinalStatusCommentJob({ reportJobKeys: REPORT_JOB_KEYS })
     }
 });

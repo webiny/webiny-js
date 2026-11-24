@@ -3,7 +3,7 @@ import knexLib from "knex";
 import type { Knex } from "knex";
 import { Container } from "@webiny/di";
 import { KnexClient } from "@webiny/api-core-sql";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { TableName } from "../src/TableName/abstractions.js";
 import { TableName as TableNameImpl } from "../src/TableName/TableName.js";
 import { WebsocketsConnectionRegistry } from "../src/WebsocketsConnectionRegistry.js";

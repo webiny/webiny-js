@@ -5,6 +5,7 @@ import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstraction
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
+import type { WebhookDeliveryNotQueuedError } from "~/api/domain/errors.js";
 
 describe("TriggerWebhookUseCase", () => {
     const handler = useHandler();
@@ -67,6 +68,35 @@ describe("TriggerWebhookUseCase", () => {
         expect(getResult.isOk()).toBe(true);
         expect(getResult.value.webhookId).toBe(webhook.id);
         expect(getResult.value.status).toBe("pending");
+    });
+
+    it("should fail when the send task can't be queued", async () => {
+        const context = await handler.handle();
+        const createUseCase = context.container.resolve(CreateWebhookUseCase);
+        const triggerUseCase = context.container.resolve(TriggerWebhookUseCase);
+
+        const webhookResult = await createUseCase.execute({
+            name: "Unqueued Test",
+            endpointUrl: "https://example.com/hook",
+            events: ["cms.entry.product.published"],
+            signingSecret: "whsec_dGVzdHNlY3JldA=="
+        });
+        handler.noopTaskService.nextFailure = new Error("Task definition not found.");
+
+        const result = await triggerUseCase.execute(webhookResult.value.id, {});
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("WEBHOOK_DELIVERY_NOT_QUEUED");
+        expect(result.error.message).toBe(
+            "Could not queue the webhook delivery: Task definition not found."
+        );
+
+        const notQueued = result.error as WebhookDeliveryNotQueuedError;
+        expect(notQueued.data.markedFailed).toBe(true);
+        const stored = await context.container
+            .resolve(GetWebhookDeliveryUseCase)
+            .execute(notQueued.data.deliveryId);
+        expect(stored.value.status).toBe("failed");
     });
 
     it("should fail when webhook does not exist", async () => {

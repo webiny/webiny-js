@@ -39,6 +39,7 @@ export const EDITOR_AUTOMATION_DEFINITION_FIELDS = /* GraphQL */ `
     name
     models
     settingsSchema
+    keySetting
 `;
 
 export const EDITOR_NOTIFICATION_TRANSPORT_FIELDS = /* GraphQL */ `
@@ -57,12 +58,16 @@ export const EDITOR_TEAM_LIST_FIELDS = /* GraphQL */ `
     missingIds
 `;
 
-// The `WorkflowsUserListResult` selection (R286): id, display name and team ids only (D104).
+// The `WorkflowsUserListResult` selection (R286): id, display name, team ids and the teams by name only (D104, D170).
 export const EDITOR_USER_LIST_FIELDS = /* GraphQL */ `
     users {
         id
         displayName
         teamIds
+        teams {
+            id
+            name
+        }
     }
     missingIds
 `;

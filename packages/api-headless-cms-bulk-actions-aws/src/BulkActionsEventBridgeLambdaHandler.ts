@@ -25,11 +25,17 @@ class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler
             };
         }
 
-        await this.tenantContext.withRootTenant(async () => {
+        const result = await this.tenantContext.withRootTenant(async () => {
             return await this.taskService.trigger({
                 definition: "hcmsEntriesEmptyTrashBins"
             });
         });
+        if (result.isFail()) {
+            return {
+                success: false,
+                message: result.error.message
+            };
+        }
 
         return { success: true };
     }

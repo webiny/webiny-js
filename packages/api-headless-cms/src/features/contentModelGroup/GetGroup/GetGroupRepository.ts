@@ -69,7 +69,7 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         const filteredCacheKey = createCacheKey({
             dbCacheKey: dbCacheKey.get(),
             identity: this.identityContext.isAuthorizationEnabled()
-                ? this.identityContext.getIdentity()?.id
+                ? this.identityContext.getIdentity().id
                 : undefined
         });
 

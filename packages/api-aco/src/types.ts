@@ -51,7 +51,7 @@ export interface AdvancedContentOrganisation {
 
 export interface CreateAcoParams {
     getTenant: () => Tenant;
-    storageOperations: AcoStorageOperations;
+    storageOperations: Pick<AcoStorageOperations, "filter">;
     folderLevelPermissions: FolderLevelPermissions.Interface;
     container: Container;
 }

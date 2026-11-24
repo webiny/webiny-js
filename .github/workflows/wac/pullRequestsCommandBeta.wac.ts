@@ -1,3 +1,4 @@
+import type { Permissions } from "github-actions-wac";
 import { DEFAULT_RUNNER } from "./utils/index.js";
 import { createJob, createSlackFailureJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
@@ -29,7 +30,7 @@ const latestInstallCommand = installCommand("${RELEASE_VERSION}");
 const releaseLink = "https://github.com/${REPO}/releases/tag/v${RELEASE_VERSION}";
 
 // Jobs that edit the run's comment and the PR body. Merged on top of createJob's baseline.
-const statusPermissions = { "pull-requests": "write", issues: "write" };
+const statusPermissions: Permissions = { "pull-requests": "write", issues: "write" };
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
 const yarnCacheSteps = createYarnCacheSteps({

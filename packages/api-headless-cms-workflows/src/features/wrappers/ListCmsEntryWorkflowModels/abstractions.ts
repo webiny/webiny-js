@@ -12,6 +12,8 @@ import type { ListCmsEntryWorkflowsUseCase } from "../ListCmsEntryWorkflows/inde
 export interface ListCmsEntryWorkflowModelsInput {
     /** Case-insensitive, on the model name and the model id. */
     search?: string | null;
+    /** `true`: only models with a workflow, `false`: only without, unset: all. */
+    hasWorkflow?: boolean | null;
     /** Default 20, max 100. */
     limit?: number | null;
     /** `meta.cursor` of the previous page. */

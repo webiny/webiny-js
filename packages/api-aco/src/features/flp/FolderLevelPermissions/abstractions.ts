@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CanAccessFolderContentParams, CanAccessFolderParams } from "./useCases/index.js";
-import type { FolderLevelPermission, FolderPermission, ListFlpsParams } from "~/types.js";
+import type { FolderLevelPermission, FolderPermission } from "~/types.js";
+import type { ListFolderPermissionsParams } from "~/features/flp/FolderPermissionsRepository/abstractions.js";
 
 export interface IFolderLevelPermissions {
     canUseFolderLevelPermissions(enabled?: boolean): boolean;
@@ -15,7 +16,14 @@ export interface IFolderLevelPermissions {
     canManageFolderStructure(flp: FolderLevelPermission): Promise<boolean>;
     canManageFolderPermissions(flp: FolderLevelPermission): Promise<boolean>;
     getDefaultPermissions(permissions: FolderPermission[]): Promise<FolderPermission[]>;
-    listFolderLevelPermissions(params: ListFlpsParams): Promise<
+    /**
+     * `getDefaultPermissions` for many folders at once: the identity's teams and permissions are
+     * looked up once, not once per folder. Results are in the order of the input.
+     */
+    getDefaultPermissionsBatch(
+        permissionsList: FolderPermission[][]
+    ): Promise<FolderPermission[][]>;
+    listFolderLevelPermissions(params: ListFolderPermissionsParams): Promise<
         Array<{
             id: string;
             permissions: FolderPermission[];

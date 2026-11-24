@@ -4,6 +4,7 @@ import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import { ManifestPublicUrlsFeature } from "~/publicUrls/feature.js";
+import { CloudFrontCdnCacheFeature } from "~/cdnCache/feature.js";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**
@@ -21,9 +22,11 @@ export async function registerWebinyApiChild(
         extensions: config.extensions,
         transports: {
             // Public URLs: written to the service manifest by the `api` and `admin` Pulumi apps.
+            // CDN cache: the API's CloudFront distribution, invalidated through a background task.
             // Encryption and hashing keep api-core's build-param defaults.
             hostingConfig: c => {
                 ManifestPublicUrlsFeature.register(c);
+                CloudFrontCdnCacheFeature.register(c);
             },
             // Real AWS WebSocket transport (API Gateway Management API), registered right after
             // WebsocketsFeature so it overrides the NullWebsocketsTransport.

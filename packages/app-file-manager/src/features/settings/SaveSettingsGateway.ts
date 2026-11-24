@@ -1,5 +1,6 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FmSettings } from "../shared/types.js";
+import type { FmSettingsInput } from "../shared/types.js";
 import { SaveSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 
 const UPDATE_SETTINGS = /* GraphQL */ `
@@ -8,6 +9,7 @@ const UPDATE_SETTINGS = /* GraphQL */ `
             updateSettings(data: $data) {
                 data {
                     srcPrefix
+                    defaultSrcPrefix
                     uploadMinFileSize
                     uploadMaxFileSize
                 }
@@ -33,7 +35,7 @@ interface UpdateSettingsResponse {
 class SaveSettingsGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(data: FmSettings): Promise<FmSettings> {
+    async execute(data: FmSettingsInput): Promise<FmSettings> {
         const response = await this.client.execute<UpdateSettingsResponse>({
             query: UPDATE_SETTINGS,
             variables: {

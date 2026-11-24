@@ -126,7 +126,13 @@ describe("WbWorkflowEditorFeature", () => {
             });
             const useCase = container.resolve(ListWorkflowModelsUseCase);
 
-            const page = await useCase.execute({ app: "wb", search: "", limit: 20, after: null });
+            const page = await useCase.execute({
+                app: "wb",
+                search: "",
+                hasWorkflow: null,
+                limit: 20,
+                after: null
+            });
 
             expect(page.rows).toEqual([
                 {

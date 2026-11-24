@@ -17,8 +17,7 @@ export class AppModel implements IAppModel {
     private constructor(dto: IAppModelDto) {
         this.name = dto.name;
         this.paths = {
-            workspaceFolder: PathModel.from(dto.paths.workspaceFolder),
-            localPulumiStateFilesFolder: PathModel.from(dto.paths.localPulumiStateFilesFolder)
+            workspaceFolder: PathModel.from(dto.paths.workspaceFolder)
         };
     }
 

@@ -15,7 +15,6 @@ const createManager = (
     return {
         add: vi.fn(),
         remove: vi.fn(),
-        groupByOwner: vi.fn(),
         getSocket: id => live.get(id),
         getMetadata: vi.fn(),
         updateLastSeen: vi.fn(),
@@ -36,7 +35,6 @@ const createManager = (
 const createAdapter = (): WebsocketsServerAdapter.Interface<unknown> => ({
     start: vi.fn(),
     stop: vi.fn(),
-    onConnection: vi.fn(),
     onMessage: vi.fn(),
     onClose: vi.fn(),
     onError: vi.fn(),

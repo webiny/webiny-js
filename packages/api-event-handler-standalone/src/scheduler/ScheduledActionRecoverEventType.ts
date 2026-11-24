@@ -6,7 +6,7 @@ export const SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER = "WebinyScheduledActionR
 
 /**
  * Asks the scheduler to re-arm the root tenant's pending scheduled actions. Dispatched once at
- * boot: Bree keeps its timers in memory, so a restart loses every schedule that has not fired yet.
+ * boot: the scheduler keeps its timers in memory, so a restart loses every schedule that has not fired yet.
  */
 export interface IScheduledActionRecoverEvent {
     [SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER]: true;

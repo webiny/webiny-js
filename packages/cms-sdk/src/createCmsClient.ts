@@ -21,6 +21,7 @@ export function createCmsClient(config: CmsSdkConfig): CmsClient {
         endpoint: config.apiHost,
         token: config.apiKey,
         tenant: config.apiTenant ?? "root",
+        headers: config.headers,
         fetch: config.fetch
     });
     const client = new ContentSdk();

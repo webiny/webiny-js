@@ -1,6 +1,6 @@
 import { ListFlpsUseCase } from "../abstractions.js";
 import { CodeFlpMerger, CodeFlpsProvider } from "~/features/flp/shared/index.js";
-import type { FolderLevelPermission, ListFlpsParams } from "~/flp/flp.types.js";
+import type { FolderLevelPermission } from "~/flp/flp.types.js";
 
 class ListFlpsWithCodeFlpsImpl implements ListFlpsUseCase.Interface {
     constructor(
@@ -8,7 +8,7 @@ class ListFlpsWithCodeFlpsImpl implements ListFlpsUseCase.Interface {
         private decoratee: ListFlpsUseCase.Interface
     ) {}
 
-    async execute(params: ListFlpsParams): Promise<FolderLevelPermission[]> {
+    async execute(params: ListFlpsUseCase.Params): Promise<FolderLevelPermission[]> {
         const flps = await this.decoratee.execute(params);
 
         return Promise.all(

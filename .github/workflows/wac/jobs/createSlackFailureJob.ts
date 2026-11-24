@@ -4,7 +4,7 @@ import { createJob } from "./createJob.js";
 interface CreateSlackFailureJobParams {
     // Every job that publishing depends on. `failure()` only fires when one of these failed, so a
     // job left out here fails silently.
-    needs: string[];
+    needs: [string, ...string[]];
     // What to call the thing that broke, in the message. e.g. "Beta release".
     label: string;
 }

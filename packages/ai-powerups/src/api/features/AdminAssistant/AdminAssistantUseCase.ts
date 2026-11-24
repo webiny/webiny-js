@@ -1,3 +1,4 @@
+import { hasToolCall } from "ai";
 import { stepCountIs } from "ai";
 import type { ModelMessage } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
@@ -9,21 +10,32 @@ import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
+import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
+import { GetAiChatUseCase } from "~/api/features/AiChats/GetAiChat/index.js";
+import { SaveAiChatUseCase } from "~/api/features/AiChats/SaveAiChat/index.js";
+import { canRetrySave } from "~/api/features/AiChats/domain/canRetrySave.js";
 import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
 import type { AdminAssistantParams } from "./abstractions.js";
-import { isReadOnly } from "./approvals.js";
+import { isReadOnlyTool } from "@webiny/api-core/features/ai/index.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
+import { FOLLOW_UPS_TOOL } from "./followUps.js";
+import { followUpsTool } from "./followUps.js";
+import { readFollowUps } from "./followUps.js";
+import { unansweredApprovals } from "./unansweredApprovals.js";
+import { decidesExactly } from "./decidesExactly.js";
+import { describePageContext } from "./describePageContext.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
     type: string;
     text?: string;
     toolName?: string;
+    input?: unknown;
     approvalId?: string;
     toolCall?: {
         toolName: string;
@@ -34,6 +46,25 @@ interface StreamPart {
 
 const toMessage = (error: unknown): string => {
     return error instanceof Error ? error.message : String(error);
+};
+
+type ErrorEvent = Extract<AdminAssistantEvent, { type: "error" }>;
+type SaveEvent = Extract<AdminAssistantEvent, { type: "saved" | "not-saved" }>;
+
+/** Said to the model for an approval left unanswered when the user asked something else instead. */
+const SUPERSEDED_REASON = "The user asked something else instead of deciding.";
+
+/**
+ * The terminal error event. Only a project with no model set up gets a code: it is the one failure
+ * the client handles on its own. Codes from provider SDKs or Node (`ECONNRESET`) stay out, so the
+ * client has a known set to handle.
+ */
+const toErrorEvent = (error: unknown): ErrorEvent => {
+    const event: ErrorEvent = { type: "error", message: toMessage(error) };
+    if (error instanceof AiCapabilityNotConfiguredError) {
+        event.code = error.code;
+    }
+    return event;
 };
 
 interface ApprovalRequestPart {
@@ -86,7 +117,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         private readonly declarations: AiSdkToolDefinition.Interface[],
         private readonly identityContext: IdentityContext.Interface,
         private readonly config: AdminAssistantConfig.Interface,
-        private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface
+        private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface,
+        private readonly getChat: GetAiChatUseCase.Interface,
+        private readonly saveChat: SaveAiChatUseCase.Interface
     ) {}
 
     async *stream(params: AdminAssistantParams): AsyncIterable<AdminAssistantEvent> {
@@ -100,23 +133,58 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         try {
             prepared = await this.prepare(params);
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
             return;
         }
 
-        const { request, appended } = prepared;
+        const { request, history } = prepared;
         const pending: PendingApproval[] = [];
+        /*
+         * Each step's text arrives with no separator, so the line before a tool call and the answer
+         * after it ran together ("I'll look that up.3 products are on sale."). Text that resumes after
+         * tool work starts a new paragraph instead.
+         */
+        let wroteText = false;
+        let toolsSinceText = false;
+        /*
+         * Held until the run ends. Suggestions made alongside a proposed change would be about the
+         * moment before the user decided, and would still be on screen after they ran or rejected it.
+         */
+        let followUps: string[] = [];
+
+        yield { type: "start", model: request.model };
 
         try {
             const result = await this.ai.streamText(request);
 
             for await (const part of result.fullStream as AsyncIterable<StreamPart>) {
                 if (part.type === "text-delta" && part.text) {
-                    yield { type: "text", text: part.text };
+                    const text = wroteText && toolsSinceText ? `\n\n${part.text}` : part.text;
+                    wroteText = true;
+                    toolsSinceText = false;
+                    yield { type: "text", text };
+                    continue;
+                }
+
+                /*
+                 * The follow-ups call is how the model passes suggestions, not work the user asked
+                 * for, so it gets no chip. Its result is skipped below for the same reason.
+                 */
+                if (part.type === "tool-call" && part.toolName === FOLLOW_UPS_TOOL) {
+                    followUps = readFollowUps(part.input);
+                    continue;
+                }
+
+                // A rejected follow-ups call has no bearing on the answer, so it is not a failed step.
+                if (
+                    (part.type === "tool-result" || part.type === "tool-error") &&
+                    part.toolName === FOLLOW_UPS_TOOL
+                ) {
                     continue;
                 }
 
                 if (part.type === "tool-call" && part.toolName) {
+                    toolsSinceText = true;
                     yield { type: "tool-call", name: part.toolName };
                     continue;
                 }
@@ -155,51 +223,122 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 }
 
                 if (part.type === "error") {
-                    yield { type: "error", message: toMessage(part.error) };
+                    yield toErrorEvent(part.error);
                     return;
                 }
             }
 
             if (pending.length > 0) {
                 yield { type: "approval", approvals: pending };
+            } else if (followUps.length > 0) {
+                yield { type: "follow-ups", questions: followUps };
             }
 
             /*
              * `responseMessages`, not `response.messages`: the former is the ACCUMULATED history of
              * every step, the latter only the final step's. Resuming after an approval needs the step
              * that carried the approval request, so the narrower one silently broke every write —
-             * the client replayed a single message, the SDK could not match the approvalId, and the
-             * model simply proposed the change again.
+             * the SDK could not match the approvalId, and the model simply proposed the change again.
              *
              * Awaited only after the stream drains: these settle when the run finishes, so reading
              * them earlier would block the loop above and defeat the point of streaming.
+             *
+             * A run paused on an approval is saved too: the decision resumes it from storage.
              */
-            yield {
-                type: "done",
-                messages: [...appended, ...(await result.responseMessages)],
-                steps: (await result.steps).length
-            };
+            const messages = [...history, ...(await result.responseMessages)];
+            yield await this.save(params.chatId, messages);
+            yield { type: "done", steps: (await result.steps).length };
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
         }
     }
 
     /**
-     * Everything both entry points need: the identity check, which tools may run unattended, and the
-     * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
+     * Stores the conversation after a run, as a new chat on the first question. Failing to store it
+     * does not undo the answer, which the user has already read, so it is reported, not thrown.
+     * Whether asking again could save it is for the chats feature to say.
+     */
+    private async save(chatId: string | undefined, messages: ModelMessage[]): Promise<SaveEvent> {
+        const input: SaveAiChatUseCase.Input = { messages };
+        if (chatId) {
+            input.id = chatId;
+        }
+
+        try {
+            const result = await this.saveChat.execute(input);
+            if (result.isFail()) {
+                const retryable = canRetrySave(result.error);
+                return { type: "not-saved", message: result.error.message, retryable };
+            }
+
+            const { id, title, createdOn, savedOn } = result.value;
+            return { type: "saved", chat: { id, title, createdOn, savedOn } };
+        } catch (error) {
+            // Every failure the save expects is a result, so a throw is a bug that would repeat.
+            return { type: "not-saved", message: toMessage(error), retryable: false };
+        }
+    }
+
+    /**
+     * The conversation the model sees: the saved chat, then either the decision on its paused run or
+     * the new question. A new question on a chat still paused rejects what was waiting first, since a
+     * request with no answer is something the provider refuses.
+     */
+    private async history(params: AdminAssistantParams): Promise<ModelMessage[]> {
+        const stored: ModelMessage[] = [];
+        if (params.chatId) {
+            const chat = await this.getChat.execute(params.chatId);
+            if (chat.isFail()) {
+                throw chat.error;
+            }
+            stored.push(...chat.value.messages);
+        }
+
+        const waiting = unansweredApprovals(stored);
+
+        if (!params.prompt) {
+            if (waiting.length === 0) {
+                throw new Error("Nothing in this chat is waiting for a decision.");
+            }
+            if (!decidesExactly(params.decisions, waiting)) {
+                throw new Error("This decision is not for the changes waiting in this chat.");
+            }
+            return [...stored, toApprovalMessage(params.decisions)];
+        }
+
+        const history = [...stored];
+        if (waiting.length > 0) {
+            const superseded = waiting.map(approvalId => ({
+                approvalId,
+                approved: false,
+                reason: SUPERSEDED_REASON
+            }));
+            const rejection = toApprovalMessage(superseded);
+            history.push(rejection);
+        }
+        history.push({ role: "user", content: params.prompt });
+        return history;
+    }
+
+    /**
+     * Everything a run needs: the identity check, the conversation so far, which tools may run
+     * unattended, and the fully-formed model request.
      */
     private async prepare(params: AdminAssistantParams): Promise<{
         request: Ai.GenerateTextParams;
-        appended: ModelMessage[];
+        history: ModelMessage[];
     }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
         }
 
-        const tools = this.aiSdkTools.getToolSet();
-        const readOnlyNames = new Set(
-            this.declarations.filter(isReadOnly).map(declaration => declaration.name)
-        );
+        const history = await this.history(params);
+
+        const tools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
+        const readOnlyNames = new Set([
+            ...this.declarations.filter(isReadOnlyTool).map(declaration => declaration.name),
+            FOLLOW_UPS_TOOL
+        ]);
 
         /*
          * Every tool is offered. The controls are the caller's own permissions — each tool runs through
@@ -207,18 +346,6 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
          * until a human has seen its exact arguments.
          */
         const activeTools = Object.keys(tools);
-
-        /*
-         * Anything added here has to come back to the caller. The client replays the history on the
-         * next turn, and an approval response that never reached it would leave a `tool_result` with
-         * no preceding `tool_use` — which the provider rejects outright.
-         */
-        const appended: ModelMessage[] = [];
-        if (params.decisions.length > 0) {
-            appended.push(toApprovalMessage(params.decisions));
-        }
-
-        const messages = [...params.messages, ...appended];
 
         const resolution = await this.resolveCapability.execute(ADMIN_ASSISTANT_CAPABILITY);
 
@@ -233,21 +360,36 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
         const capability = resolution.value;
 
+        /*
+         * The screen goes after our guidance and before the project's instructions, which say they
+         * take precedence over everything above them and so have to stay last.
+         */
+        let guidance = capability.guidance;
+        if (params.pageContext) {
+            const where = describePageContext(params.pageContext);
+            guidance = `${guidance}\n\n${where}`;
+        }
+        const system = withAdditionalInstructions(capability, guidance);
+
         const request: Ai.GenerateTextParams = {
             model: capability.model,
             connection: capability.connection,
-            system: withAdditionalInstructions(capability),
-            messages,
+            system,
+            messages: history,
             tools,
             activeTools,
             toolChoice: "auto",
             toolApproval: ({ toolCall }: { toolCall: { toolName: string } }) => {
                 return readOnlyNames.has(toolCall.toolName) ? "not-applicable" : "user-approval";
             },
-            stopWhen: stepCountIs(this.config.maxSteps)
+            /*
+             * The follow-ups call comes last, after the answer. Stopping on it saves the step the
+             * SDK would otherwise spend letting the model react to its own suggestions.
+             */
+            stopWhen: [stepCountIs(this.config.maxSteps), hasToolCall(FOLLOW_UPS_TOOL)]
         };
 
-        return { request, appended };
+        return { request, history };
     }
 
     /**
@@ -300,6 +442,8 @@ export const AdminAssistantUseCase = Abstraction.createImplementation({
         [AiSdkToolDefinition, { multiple: true }],
         IdentityContext,
         AdminAssistantConfig,
-        ResolveAiCapabilityUseCase
+        ResolveAiCapabilityUseCase,
+        GetAiChatUseCase,
+        SaveAiChatUseCase
     ]
 });

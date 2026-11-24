@@ -1,5 +1,4 @@
 import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
 import { createPulumiApp, type PulumiAppParamCallback } from "@webiny/pulumi";
 import { addDomainsUrlsOutputs } from "~/pulumi/utils/index.js";
 import { createPrivateAppBucket } from "../createAppBucket.js";
@@ -9,6 +8,8 @@ import { ApiOutput, CoreOutput } from "~/pulumi/apps/index.js";
 import { type AppName } from "@webiny/project";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
+import { projectUsesPostgres } from "~/pulumi/apps/extensions/projectUsesPostgres.js";
+import { addAdminSettingsItem } from "./adminSettingsItem.js";
 
 export type ReactPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
@@ -144,31 +145,12 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             // Applies internal and user-defined AWS tags.
             await applyAwsResourceTags(name);
 
-            /**
-             * We need to store the appUrl to the admin settings item in the dynamodb
-             */
-            app.addResource(aws.dynamodb.TableItem, {
-                name: "adminSettings",
-                config: {
-                    tableName: core.primaryDynamodbTableName,
-                    hashKey: core.primaryDynamodbTableHashKey,
-                    rangeKey: pulumi
-                        .output(core.primaryDynamodbTableRangeKey)
-                        .apply(key => key || "SK"),
-                    item: pulumi.interpolate`{
-                          "PK": {"S": "ADMIN#SETTINGS"},
-                          "SK": {"S": "default"},
-                          "data": {
-                            "M": {
-                              "appUrl": {
-                                "S": "${cloudfront.output.domainName.apply(
-                                    value => `https://${value}`
-                                )}"
-                              }
-                            }
-                          }
-                        }`
-                }
+            // Stores the app's URL in the core's DynamoDB table (none with
+            // `<Infra.AuroraPostgres />`).
+            addAdminSettingsItem(app, {
+                core,
+                cloudfront,
+                usesPostgres: await projectUsesPostgres()
             });
 
             return {

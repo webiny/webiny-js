@@ -1,22 +1,23 @@
 import React from "react";
 import {
-    AdminAfterDeploy,
     AdminBeforeBuild,
     AdminBeforeWatch,
-    AfterDeploy,
-    ApiAfterDeploy,
-    ApiBeforeDeploy,
     ApiBeforeWatch,
-    BeforeDeploy,
-    CoreBeforeDeploy,
     DatabaseSetup,
     ExtensionDefinitions,
     Project,
     ProjectImplementation
 } from "@webiny/project/extensions/index.js";
+import { AdminAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiAfterDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { BeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CorePulumi } from "~/pulumi/extensions/CorePulumi.js";
+import "./registerExtensionImplementations.js";
 
 const p = createPathResolver(import.meta.dirname);
 
@@ -50,11 +51,14 @@ export const ProjectAws = () => {
             <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
 
             {/* Deployment gates — AWS-only (there is no Pulumi stack output to check off-AWS) */}
+            {/* First, so its message wins: watch can't reach Aurora, deployed or not. */}
+            <ApiBeforeWatch src={p("ProjectAws/RefuseApiWatchWithPostgres.js")} />
             <ApiBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeWatch.js")} />
             <AdminBeforeBuild src={p("ProjectAws/EnsureApiDeployedBeforeAdminBuild.js")} />
             <AdminBeforeWatch src={p("ProjectAws/EnsureApiDeployedBeforeAdminWatch.js")} />
             <ApiBeforeDeploy src={p("ProjectAws/EnsureCoreDeployedBeforeApiDeploy.js")} />
             <CoreBeforeDeploy src={p("ProjectAws/ValidateProductionPulumiState.js")} />
+            <CoreBeforeDeploy src={p("ProjectAws/EnsurePostgresSetupUnchanged.js")} />
 
             {/* Deploy-time hooks — standalone hosting type has no deploy command, so these are AWS-only */}
             <BeforeDeploy src={p("ProjectAws/EnsureTelemetryEnabledForOss.js")} />

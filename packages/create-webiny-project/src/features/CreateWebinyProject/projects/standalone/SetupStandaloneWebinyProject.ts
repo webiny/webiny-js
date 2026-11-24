@@ -29,7 +29,7 @@ export class SetupStandaloneWebinyProject {
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
         // Standalone hosting-type dependencies. The `webiny` CLI (server bin) sets
-        // WEBINY_HOSTING_TYPE=standalone; `@webiny/project-standalone` provides the server `Infra.*` extensions
+        // WEBINY_HOSTING_TYPE=standalone; `@webiny/project-standalone` registers the standalone hosting type
         // and resolves `@webiny/project-standalone-template` (the workspace base config) at build time;
         // `@webiny/self-hosted-auth` is the built-in JWT identity provider (replaces Cognito).
         addProjectDependencies(projectRootFolderPath, {
@@ -38,6 +38,15 @@ export class SetupStandaloneWebinyProject {
             "@webiny/project-standalone-template": "latest",
             "@webiny/self-hosted-auth": "latest"
         });
+
+        // On Postgres, the CMS storage and the folder catalog are modules `webiny.config.tsx` adds
+        // (`<HeadlessCmsPg />`, `<AcoPg />`).
+        if (standaloneArgs.storageOps !== "sqlite") {
+            addProjectDependencies(projectRootFolderPath, {
+                "@webiny/api-aco-pg": "latest",
+                "@webiny/api-headless-cms-pg": "latest"
+            });
+        }
 
         // Standalone watches every default app in a single process, so `yarn dev` is all a developer
         // needs to get the whole project running locally. Standalone-only — on AWS the apps are watched

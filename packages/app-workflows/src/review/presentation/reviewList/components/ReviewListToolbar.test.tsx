@@ -9,9 +9,9 @@ import { act } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { renderWithAdminUi as render } from "~/review/testing/renderWithAdminUi.js";
 import { screen } from "@testing-library/react";
-import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { ReviewListPresenter } from "../abstractions.js";
-import { REVIEW_LIST_TABS } from "../reviewListTabs.js";
+import { getReviewListStates } from "../getReviewListStates.js";
+import { REVIEW_LIST_SCOPES } from "../reviewListScopes.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
@@ -19,8 +19,10 @@ const createVm = (
     overrides: Partial<ReviewListPresenter.ViewModel> = {}
 ): ReviewListPresenter.ViewModel => {
     return {
-        tab: "assignedToMe",
-        tabs: REVIEW_LIST_TABS,
+        scope: "assignedToMe",
+        scopes: REVIEW_LIST_SCOPES,
+        state: "inReview",
+        states: getReviewListStates("assignedToMe"),
         rows: [],
         status: "ready",
         loadingMore: false,
@@ -29,8 +31,6 @@ const createVm = (
         search: "",
         searchDraft: "",
         contentTypeId: null,
-        reviewState: null,
-        stepState: null,
         notice: null,
         error: null,
         empty: null,
@@ -44,15 +44,16 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
     return {
         vm,
         init: vi.fn(),
-        setTab: vi.fn(),
+        applyRoute: vi.fn(),
+        setScope: vi.fn(),
+        setState: vi.fn(),
         setSearchDraft: vi.fn(),
         setSearch: vi.fn(),
         setContentType: vi.fn(),
-        setReviewState: vi.fn(),
-        setStepState: vi.fn(),
         toggleSort: vi.fn(),
         loadMore: vi.fn(),
         refresh: vi.fn(),
+        reload: vi.fn(),
         showNewReviews: vi.fn(),
         clearFilters: vi.fn(),
         openRowAction: vi.fn(),
@@ -81,7 +82,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={null}
             />
         );
-        const input = screen.getByPlaceholderText("Search by title");
+        const input = screen.getByPlaceholderText("Search...");
 
         fireEvent.change(input, { target: { value: "bud" } });
         fireEvent.change(input, { target: { value: "budget" } });
@@ -104,7 +105,7 @@ describe("ReviewListToolbar", () => {
             />
         );
 
-        const input = screen.getByPlaceholderText("Search by title") as HTMLInputElement;
+        const input = screen.getByPlaceholderText("Search...") as HTMLInputElement;
 
         expect(input.value).toBe("typing");
     });
@@ -121,7 +122,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
-        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
         hidden.unmount();
 
         const noFilter = render(
@@ -131,7 +132,7 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={null}
             />
         );
-        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
         noFilter.unmount();
 
         render(
@@ -141,79 +142,49 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
+        expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
     });
 
-    it("adds the review state and step state selects on My requests only", () => {
+    it("has no review state or step state select on any scope (B2 design 1)", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
 
-        const other = render(
-            <ReviewListToolbar
-                presenter={createPresenter(createVm({ tab: "pool" }))}
-                showContentType={true}
-                contentTypeFilter={filter}
-            />
-        );
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
-        other.unmount();
-
-        render(
-            <ReviewListToolbar
-                presenter={createPresenter(
-                    createVm({ tab: "myRequests", reviewState: ReviewState.Approved })
-                )}
-                showContentType={true}
-                contentTypeFilter={filter}
-            />
-        );
-        expect(screen.getAllByRole("combobox")).toHaveLength(3);
-    });
-
-    it("lays the search and every filter out as cells of one toolbar row on every tab", () => {
-        const filter: IReviewContentTypeFilter = {
-            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
-        };
-
-        for (const tab of ["pool", "myRequests"] as const) {
+        for (const scope of ["pool", "myRequests", "all"] as const) {
             const view = render(
                 <ReviewListToolbar
-                    presenter={createPresenter(createVm({ tab }))}
+                    presenter={createPresenter(createVm({ scope, state: "all" }))}
                     showContentType={true}
                     contentTypeFilter={filter}
                 />
             );
-
-            const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
-            const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
-            const expected = ["toolbar-search", "toolbar-filter"];
-            if (tab === "myRequests") {
-                expected.push("toolbar-filter", "toolbar-filter");
-            }
-            expect(cells).toEqual(expected);
+            expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
+            expect(screen.queryByText("Any review state")).toBeNull();
+            expect(screen.queryByText("Any step state")).toBeNull();
             view.unmount();
         }
     });
 
-    it("shows the search and the content type filter only on Failed steps (QBZ-29)", () => {
+    it("lays the search and the content type filter out as cells of one toolbar row", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
 
         render(
             <ReviewListToolbar
-                presenter={createPresenter(createVm({ tab: "failedSteps" }))}
+                presenter={createPresenter(createVm({ scope: "myRequests" }))}
                 showContentType={true}
                 contentTypeFilter={filter}
             />
         );
 
-        expect(screen.getByPlaceholderText("Search by title")).toBeTruthy();
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
+        const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
+        const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
+        expect(cells).toEqual(["toolbar-search", "toolbar-refresh", "toolbar-filter"]);
+        expect(screen.getByPlaceholderText("Search...")).toBeTruthy();
     });
 
-    it("renders the content type filter as a picker with the filter icon and no clear button", () => {
+    it("opens the content type picker with a visible label from the Filter button", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         };
@@ -226,12 +197,67 @@ describe("ReviewListToolbar", () => {
             />
         );
 
+        expect(screen.queryByPlaceholderText("All content models")).toBeNull();
+
+        fireEvent.click(screen.getByRole("button", { name: "Filter" }));
+
+        // The autocomplete also renders the label for screen readers; the span is the visible one.
+        expect(screen.getByText("Content model", { selector: "span" })).toBeTruthy();
         expect(document.querySelector('[data-picker-field-icon="filter_list"]')).not.toBeNull();
-        expect(screen.getByPlaceholderText("All content types")).toBeTruthy();
+        expect(screen.getByPlaceholderText("All content models")).toBeTruthy();
         expect(screen.queryByLabelText("Clear")).toBeNull();
     });
 
-    it("lists the content types with their app and icon and filters them by search", () => {
+    it("renders Filter as an icon button that names an active filter (B13)", () => {
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+
+        const none = render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm({ contentTypeId: null }))}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+        const idle = screen.getByRole("button", { name: "Filter" });
+        expect(idle.textContent).toBe("");
+        expect(idle.querySelector("svg")).not.toBeNull();
+        none.unmount();
+
+        render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm({ contentTypeId: "article" }))}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+        const button = screen.getByRole("button", { name: "Filter, 1 active" });
+        expect(button.textContent).toBe("");
+    });
+
+    it("reloads the list from the Refresh icon button, with or without the filter (B13)", () => {
+        const presenter = createPresenter(createVm());
+        render(
+            <ReviewListToolbar
+                presenter={presenter}
+                showContentType={false}
+                contentTypeFilter={null}
+            />
+        );
+
+        const refresh = screen.getByRole("button", { name: "Refresh" });
+        expect(refresh.textContent).toBe("");
+        expect(refresh.querySelector("svg")).not.toBeNull();
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
+
+        fireEvent.click(refresh);
+
+        expect(presenter.reload).toHaveBeenCalledTimes(1);
+        expect(presenter.refresh).not.toHaveBeenCalled();
+    });
+
+    it("lists the content types with their app and icon, filters them by search and closes on pick", () => {
         const filter: IReviewContentTypeFilter = {
             options: [
                 { label: "Article", value: "article", app: "cms", icon: "devices_other" },
@@ -246,7 +272,8 @@ describe("ReviewListToolbar", () => {
                 contentTypeFilter={filter}
             />
         );
-        const input = screen.getByPlaceholderText("All content types");
+        fireEvent.click(screen.getByRole("button", { name: "Filter" }));
+        const input = screen.getByPlaceholderText("All content models");
 
         fireEvent.focus(input);
         fireEvent.click(input);
@@ -260,21 +287,20 @@ describe("ReviewListToolbar", () => {
         fireEvent.click(screen.getByText("Press release"));
 
         expect(presenter.setContentType).toHaveBeenCalledWith("press");
+        expect(screen.queryByPlaceholderText("All content models")).toBeNull();
     });
 
-    it("gives the search input a search icon and shows the state selects", () => {
+    it("gives the search input a search icon", () => {
         render(
             <ReviewListToolbar
-                presenter={createPresenter(createVm({ tab: "myRequests" }))}
+                presenter={createPresenter(createVm({ scope: "myRequests" }))}
                 showContentType={false}
                 contentTypeFilter={null}
             />
         );
 
         expect(
-            screen.getByPlaceholderText("Search by title").parentElement?.querySelector("svg")
+            screen.getByPlaceholderText("Search...").parentElement?.querySelector("svg")
         ).not.toBeNull();
-        expect(screen.getByText("Any review state")).toBeTruthy();
-        expect(screen.getByText("Any step state")).toBeTruthy();
     });
 });

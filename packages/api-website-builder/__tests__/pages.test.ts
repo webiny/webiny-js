@@ -29,7 +29,10 @@ import {
 import { EntryBeforeUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
-import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import {
+    DeletePageUseCase,
+    PageAfterDeleteEventHandler
+} from "~/features/pages/DeletePage/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 import { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/index.js";
@@ -449,16 +452,10 @@ describe("Pages Use Cases (Authorized)", () => {
 
         const page = createResult.value;
 
+        // Not in the trash bin: deleted permanently all the same.
         const deletePage = context.container.resolve(DeletePageUseCase);
-        const triedToDeleteAPageBeforeTrashResult = await deletePage.execute({ id: page.id });
-        expect(triedToDeleteAPageBeforeTrashResult.isFail()).toBeTrue();
-
-        const trashPage = context.container.resolve(TrashPageUseCase);
-        const trashed = await trashPage.execute({ id: page.id });
-        expect(trashed.isOk()).toBeTrue();
-
-        const triedToDeleteAPageAfterTrashResult = await deletePage.execute({ id: page.id });
-        expect(triedToDeleteAPageAfterTrashResult.isOk()).toBeTrue();
+        const deleted = await deletePage.execute({ id: page.id });
+        expect(deleted.isOk()).toBeTrue();
 
         // Wait for deletion to be indexed
         const getPageById = context.container.resolve(GetPageByIdUseCase);
@@ -549,6 +546,52 @@ describe("Pages Use Cases (Authorized)", () => {
         const getDeletedPageById = context.container.resolve(GetDeletedPageByIdUseCase);
         const resultGetDeletedAfterDelete = await getDeletedPageById.execute(page.id);
         expect(resultGetDeletedAfterDelete.isFail()).toBeTrue();
+    });
+
+    it("should delete a page permanently, trashed or not, with the delete events", async () => {
+        const deletedEvents: string[] = [];
+        const handler = useHandler({
+            legacyPlugins: [
+                (container: Container) => {
+                    container.registerFactory(PageAfterDeleteEventHandler, () => ({
+                        async handle(event: PageAfterDeleteEventHandler.Event) {
+                            deletedEvents.push(event.payload.page.id);
+                        }
+                    }));
+                }
+            ]
+        });
+        const ctx = await handler.handler();
+        const createPage = ctx.container.resolve(CreatePageUseCase);
+        const deletePage = ctx.container.resolve(DeletePageUseCase);
+        const getPageById = ctx.container.resolve(GetPageByIdUseCase);
+        const getDeletedPageById = ctx.container.resolve(GetDeletedPageByIdUseCase);
+
+        // A live page: never in the trash bin.
+        const live = await createPage.execute(pageMocks.pageA);
+        if (live.isFail()) {
+            throw live.error;
+        }
+        const liveDeleted = await deletePage.execute({ id: live.value.id });
+        expect(liveDeleted.isOk()).toBeTrue();
+        expect((await getPageById.execute(live.value.id)).isFail()).toBeTrue();
+        expect((await getDeletedPageById.execute(live.value.id)).isFail()).toBeTrue();
+
+        // A trashed page.
+        const trashed = await createPage.execute(pageMocks.pageB);
+        if (trashed.isFail()) {
+            throw trashed.error;
+        }
+        await ctx.container.resolve(TrashPageUseCase).execute({ id: trashed.value.id });
+        const trashedDeleted = await deletePage.execute({ id: trashed.value.id });
+        expect(trashedDeleted.isOk()).toBeTrue();
+        expect((await getDeletedPageById.execute(trashed.value.id)).isFail()).toBeTrue();
+
+        expect(deletedEvents).toEqual([live.value.id, trashed.value.id]);
+
+        // Neither live nor trashed.
+        const missing = await deletePage.execute({ id: live.value.id });
+        expect(missing.isFail()).toBeTrue();
     });
 
     it("should update page revision description", async () => {

@@ -38,7 +38,7 @@ function toPoolOption(teamId: string, teamNames: ReadonlyMap<string, string>): P
         warning: null,
         muted: false,
         disabled: false,
-        icon: "groups",
+        icon: null,
         note: null
     };
 }
@@ -149,6 +149,19 @@ export const getRuleTargetOptions = (params: RuleTargetOptionsParams): RuleTarge
     }
     if (target !== null && target.type === "user") {
         selected = getSelectedUserTarget(params, target);
+    }
+
+    /*
+     * The picker shows the listed option of the chosen id, so a member search that still lists a
+     * target who left the reviewing teams would hide the mark: the listed entry takes the selected
+     * option's label.
+     */
+    const chosen = selected;
+    if (chosen !== null) {
+        const listed = options.findIndex(option => option.id === chosen.id);
+        if (listed !== -1) {
+            options[listed] = chosen;
+        }
     }
 
     return { options, selected };

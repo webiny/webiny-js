@@ -6,26 +6,40 @@ import {
     GetProjectService,
     LoggerService
 } from "@webiny/project/abstractions/index.js";
-import { getStandaloneDbDriver } from "./getStandaloneDbDriver.js";
+import { getStandaloneDatabase } from "./getStandaloneDbDriver.js";
 
 /**
- * Generate the api composition root's database connection from the DB infra extension declared in
- * webiny.config.tsx (`<Infra.Sqlite>` / `<Infra.Postgres>`). The api entry template ships with
- * `{DB_FACTORY}` / `{DB_FACTORY_PATH}` placeholders; after the base workspace build copies it in, this
- * decorator resolves the configured database and substitutes the matching connection factory (imported
- * from its own module path).
+ * Generate the api composition root's database connection and storage from the DB infra extension
+ * declared in webiny.config.tsx (`<Infra.Sqlite>` / `<Infra.Postgres>` / `<Infra.Pglite>`).
+ * The api entry template ships with `__WEBINY_DB_CONNECTION__` / `__WEBINY_STORAGE__` placeholders;
+ * after the base workspace build copies it in, this decorator resolves the configured database and
+ * substitutes the matching connection factory and storage (each imported from its own module path,
+ * so only the chosen driver and storage are traced into the bundle). The handler stays the same
+ * (`createSqlApiHandler`): SQLite runs the SQLite storage, Postgres and PGlite the Postgres storage.
  *
  * This decorates the workspace build (rather than an ApiBeforeBuild hook) so it runs right after the
  * template is copied — the entry file must exist to substitute — and in both `build` and `watch`.
  */
-const FACTORIES = {
+const DATABASES = {
     sqlite: {
-        name: "createSqliteConnection",
-        modulePath: "@webiny/api-event-handler-standalone-sql/createSqliteConnection.js"
+        connection: {
+            name: "createSqliteConnection",
+            modulePath: "@webiny/api-storage-sqlite/createSqliteConnection.js"
+        },
+        storage: {
+            name: "createSqliteStorage",
+            modulePath: "@webiny/api-storage-sqlite/createSqliteStorage.js"
+        }
     },
     postgres: {
-        name: "createPostgresConnection",
-        modulePath: "@webiny/api-event-handler-standalone-sql/createPostgresConnection.js"
+        connection: {
+            name: "createPgConnection",
+            modulePath: "@webiny/api-storage-pg/createPgConnection.js"
+        },
+        storage: {
+            name: "createPgStorage",
+            modulePath: "@webiny/api-storage-pg/createPgStorage.js"
+        }
     }
 } as const;
 
@@ -46,31 +60,38 @@ class GenerateApiDbConnectionImpl implements BuildAppWorkspaceService.Interface 
             return;
         }
 
-        const driver = await getStandaloneDbDriver(this.getProjectConfigService);
-        const factory = FACTORIES[driver];
+        const { driver } = await getStandaloneDatabase(this.getProjectConfigService);
+        const { connection, storage } = DATABASES[driver];
 
         const project = this.getProjectService.execute();
         const entryFile = project.paths.workspaceFolder
             .join("apps", "api", "graphql", "src", "index.ts")
             .toString();
 
-        // The template imports the placeholder from the real package (so it parses, lints, and passes
-        // dependency checks). Rewrite that import to the chosen factory's own module path — so nft
-        // traces only the selected driver into the bundle — then swap the call site. replaceInPath
-        // treats `find` as a regex, so the literal patterns are escaped.
+        // The template imports the placeholders from the real package (so it parses, lints, and passes
+        // dependency checks). Rewrite those imports to the chosen connection's and storage's own
+        // module paths — so nft traces only the selected driver into the bundle — then swap the call
+        // sites. replaceInPath treats `find` as a regex, so the literal patterns are escaped.
         const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const placeholderImport =
-            'import { __WEBINY_DB_FACTORY__ } from "@webiny/api-event-handler-standalone-sql";';
+        const placeholderConnectionImport =
+            'import { __WEBINY_DB_CONNECTION__ } from "@webiny/api-storage-sqlite";';
+        const placeholderStorageImport =
+            'import { __WEBINY_STORAGE__ } from "@webiny/api-storage-sqlite";';
 
         replaceInPath(entryFile, [
             {
-                find: escapeRegExp(placeholderImport),
-                replaceWith: `import { ${factory.name} } from "${factory.modulePath}";`
+                find: escapeRegExp(placeholderConnectionImport),
+                replaceWith: `import { ${connection.name} } from "${connection.modulePath}";`
             },
-            { find: escapeRegExp("__WEBINY_DB_FACTORY__("), replaceWith: `${factory.name}(` }
+            { find: escapeRegExp("__WEBINY_DB_CONNECTION__("), replaceWith: `${connection.name}(` },
+            {
+                find: escapeRegExp(placeholderStorageImport),
+                replaceWith: `import { ${storage.name} } from "${storage.modulePath}";`
+            },
+            { find: escapeRegExp("__WEBINY_STORAGE__("), replaceWith: `${storage.name}(` }
         ]);
 
-        this.logger.debug("Generated api database connection (%s).", driver);
+        this.logger.debug("Generated api database connection and storage (%s).", driver);
     }
 }
 

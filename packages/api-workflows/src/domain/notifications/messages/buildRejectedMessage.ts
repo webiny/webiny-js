@@ -1,5 +1,6 @@
 import { clampComment } from "~/domain/notifications/clampComment.js";
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { REQUESTER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface RejectedMessageParams {
     /** `review.title`. */
@@ -26,14 +27,18 @@ export const buildRejectedMessage = (params: RejectedMessageParams): Notificatio
             body: line,
             subject: `Rejected: ${contentTitle} (${stepTitle})`,
             text: line,
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: REQUESTER_FOOTER
         };
     }
     return {
         title: `“${contentTitle}” was rejected at ${stepTitle}`,
-        body: `${decider}: “${comment}”. Create a new revision to fix it, then request a new review.`,
+        body: `${decider}: “${comment}”. Create a new revision to fix it.`,
         subject: `Rejected: ${contentTitle} (${stepTitle})`,
-        text: `${decider} rejected this revision at ${stepTitle}: “${comment}”. Create a new revision to fix it, then request a new review.`,
-        linkLabel: "Open content"
+        text: `${decider} rejected this revision at ${stepTitle}: “${comment}”. Create a new revision, fix it and request a new review.`,
+        linkLabel: "Open content",
+        link: "content",
+        footer: REQUESTER_FOOTER
     };
 };

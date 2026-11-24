@@ -15,6 +15,8 @@ export interface IWebhookListViewModel {
 export interface IWebhookListPresenter {
     vm: IWebhookListViewModel;
     init(): void;
+    /** Stops telling the assistant about the webhooks list. */
+    dispose(): void;
     search: { set(query: string): void; clear(): void };
     sort: { set(field: string, direction: "ASC" | "DESC"): void; toggle(field: string): void };
     filter: { set(key: string, value: unknown): void; clear(key: string): void; clearAll(): void };

@@ -1,6 +1,8 @@
 import type { Knex } from "knex";
 import { createAbstraction } from "@webiny/feature/api";
+import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
 import { TableManager } from "@webiny/api-core-sql/TableManager.js";
+import { createTableManager } from "~/createTableManager.js";
 import type { StorageCredential } from "@webiny/self-hosted-auth";
 
 const TABLE_NAME = "webiny_self_hosted_credentials";
@@ -58,3 +60,15 @@ export class KnexCredentialsTable implements ICredentialsTable {
         return this.knex<ICredentialRow>(this.tableManager.resolve(TABLE_NAME));
     }
 }
+
+/** The credentials table on the container's connection and table settings. */
+class SqlCredentialsTableImpl extends KnexCredentialsTable implements CredentialsTable.Interface {
+    public constructor(knex: KnexClient.Interface, schemaConfig?: SqlSchemaConfig.Interface) {
+        super(knex.client, createTableManager(knex, schemaConfig));
+    }
+}
+
+export const SqlCredentialsTable = CredentialsTable.createImplementation({
+    implementation: SqlCredentialsTableImpl,
+    dependencies: [KnexClient, [SqlSchemaConfig, { optional: true }]]
+});

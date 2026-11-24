@@ -7,7 +7,7 @@ export interface DuplicatePageParams {
 }
 
 export interface IDuplicatePageUseCase {
-    execute(params: DuplicatePageParams): Promise<void>;
+    execute(params: DuplicatePageParams): Promise<Page>;
 }
 
 export const DuplicatePageUseCase = createAbstraction<IDuplicatePageUseCase>(
@@ -19,7 +19,7 @@ export namespace DuplicatePageUseCase {
 }
 
 export interface IDuplicatePageRepository {
-    execute(page: Page): Promise<void>;
+    execute(page: Page): Promise<Page>;
 }
 
 export const DuplicatePageRepository = createAbstraction<IDuplicatePageRepository>(

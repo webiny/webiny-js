@@ -1,10 +1,6 @@
 import React from "react";
-import { afterEach } from "vitest";
-import { describe } from "vitest";
-import { expect } from "vitest";
-import { it } from "vitest";
-import { cleanup } from "@testing-library/react";
-import { screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, screen } from "@testing-library/react";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { RulesEmptyNote } from "./RulesEmptyNote.js";
 
@@ -14,25 +10,46 @@ describe("RulesEmptyNote (design 4.2)", () => {
     });
 
     it("says reviews wait in the team pool for the strategy none", () => {
-        renderWithAdminUi(<RulesEmptyNote strategy={"none"} />);
+        renderWithAdminUi(<RulesEmptyNote strategy={"none"} disabled={false} onAdd={vi.fn()} />);
 
-        expect(screen.getByText("No rules. Reviews wait in the team pool.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. Every review waits in the team pool.")
+        ).toBeDefined();
     });
 
-    it("says the strategy picks the reviewer for any other strategy", () => {
-        renderWithAdminUi(<RulesEmptyNote strategy={"roundRobin"} />);
+    it("names the strategy for any other strategy", () => {
+        renderWithAdminUi(
+            <RulesEmptyNote strategy={"roundRobin"} disabled={false} onAdd={vi.fn()} />
+        );
 
-        expect(screen.getByText("No rules. The strategy picks the reviewer.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. Round-robin assigns every review on this step.")
+        ).toBeDefined();
 
         cleanup();
-        renderWithAdminUi(<RulesEmptyNote strategy={"leastLoaded"} />);
+        renderWithAdminUi(
+            <RulesEmptyNote strategy={"leastLoaded"} disabled={false} onAdd={vi.fn()} />
+        );
 
-        expect(screen.getByText("No rules. The strategy picks the reviewer.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. Least-loaded assigns every review on this step.")
+        ).toBeDefined();
     });
 
-    it("treats an unknown strategy like a picking one", () => {
-        renderWithAdminUi(<RulesEmptyNote strategy={null} />);
+    it("treats an unknown strategy generically", () => {
+        renderWithAdminUi(<RulesEmptyNote strategy={null} disabled={false} onAdd={vi.fn()} />);
 
-        expect(screen.getByText("No rules. The strategy picks the reviewer.")).toBeDefined();
+        expect(
+            screen.getByText("No routing rules. The strategy assigns every review on this step.")
+        ).toBeDefined();
+    });
+
+    it("adds a rule from the empty state", () => {
+        const onAdd = vi.fn();
+        renderWithAdminUi(<RulesEmptyNote strategy={"none"} disabled={false} onAdd={onAdd} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
+
+        expect(onAdd).toHaveBeenCalledTimes(1);
     });
 });

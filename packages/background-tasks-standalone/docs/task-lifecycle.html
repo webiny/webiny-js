@@ -217,11 +217,11 @@ const SCENARIOS = [
     steps: [
       { clock: "0 s", caption: "Seven tasks are triggered at once in process A.", code: PKG + "service/InProcessTaskService.ts",
         apply: s => { for (let i = 1; i <= 7; i++) { s.db["t" + i] = task("task-" + i, { owner: "A", expires: "60 s" }); } } },
-      { clock: "0 s", caption: "Each gets a TaskExecution. Five take the five slots and run; two wait in line, first come first served.", code: PKG + "loop/IterationSlots.ts",
+      { clock: "0 s", caption: "Each gets a TaskExecution. Five take the five slots and run; two wait in line, first come first served.", code: "packages/utils/src/ConcurrencySlots.ts",
         apply: s => { for (let i = 1; i <= 7; i++) { s.procs.A.tasks["t" + i] = i <= 5 ? "running" : "queued"; if (i <= 5) { s.db["t" + i].status = "running"; } } } },
-      { clock: "4 s", caption: "task-2's iteration ends with continue, wait 30 s. It gives its slot back and sleeps; the slot goes straight to task-6.", code: PKG + "loop/TaskExecution.ts · loop/IterationSlots.ts (release)",
+      { clock: "4 s", caption: "task-2's iteration ends with continue, wait 30 s. It gives its slot back and sleeps; the slot goes straight to task-6.", code: PKG + "loop/TaskExecution.ts · packages/utils/src/ConcurrencySlots.ts (release)",
         apply: s => { s.procs.A.tasks.t2 = "sleeping"; s.procs.A.tasks.t6 = "running"; s.db.t6.status = "running"; s.db.t2.expires = "94 s"; } },
-      { clock: "9 s", caption: "task-1 finishes. Its slot goes to task-7.", code: PKG + "loop/IterationSlots.ts (release)",
+      { clock: "9 s", caption: "task-1 finishes. Its slot goes to task-7.", code: "packages/utils/src/ConcurrencySlots.ts (release)",
         apply: s => { delete s.procs.A.tasks.t1; Object.assign(s.db.t1, { status: "success", owner: null, expires: null }); s.procs.A.tasks.t7 = "running"; s.db.t7.status = "running"; } },
       { clock: "34 s", caption: "task-2's wait is over. Its next iteration queues for a slot behind the running ones, so long tasks take turns with new ones.", code: PKG + "loop/TaskExecution.ts (slots.acquire)",
         apply: s => { s.procs.A.tasks.t2 = "queued"; } }

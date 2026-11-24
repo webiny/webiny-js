@@ -124,7 +124,8 @@ function createMockSettingsRepository(): GetSettingsRepository.Interface {
         settings: {
             uploadMinFileSize: "0",
             uploadMaxFileSize: "10485760",
-            srcPrefix: "https://cdn.example.com/"
+            srcPrefix: "https://cdn.example.com/",
+            defaultSrcPrefix: "https://api.example.com/files/"
         }
     };
 }

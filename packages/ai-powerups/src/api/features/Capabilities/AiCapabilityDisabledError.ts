@@ -1,9 +1,9 @@
 /**
  * A capability someone switched off in settings.
  *
- * Typed, rather than a plain `Error` like the resolver's other failures, because it is the one
- * failure that is not a problem. Every other reason a capability cannot resolve (no model on the
- * role, a deleted connection, a missing key) is a misconfiguration someone should hear about. This
+ * Typed apart from `AiCapabilityNotConfiguredError` because it is the one failure that is not a
+ * problem. Every other reason a capability cannot resolve (no model on the role, a deleted
+ * connection, a missing key) is a misconfiguration someone should hear about. This
  * one is a decision someone already made, and a caller that runs automatically, on an upload or a
  * page save, should skip quietly instead of reporting it as a failure every time.
  *

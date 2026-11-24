@@ -83,6 +83,11 @@ const tagVariants = cva(
                     "hover:bg-success-muted",
                     "aria-disabled:bg-success-subtle aria-disabled:text-neutral-muted"
                 ],
+                "warning-light": [
+                    "bg-warning-disabled text-neutral-primary",
+                    "hover:bg-warning-muted",
+                    "aria-disabled:bg-warning-disabled aria-disabled:text-neutral-muted"
+                ],
                 warning: [
                     "bg-warning-muted text-neutral-primary",
                     "hover:bg-warning",
@@ -92,6 +97,11 @@ const tagVariants = cva(
                     "bg-destructive text-neutral-light",
                     "hover:bg-destructive-strong",
                     "aria-disabled:bg-destructive-disabled"
+                ],
+                "destructive-light": [
+                    "bg-destructive-subtle text-neutral-primary",
+                    "hover:bg-destructive-disabled",
+                    "aria-disabled:bg-destructive-subtle aria-disabled:text-neutral-muted"
                 ]
             }
         },

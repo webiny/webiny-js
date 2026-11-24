@@ -22,26 +22,31 @@ const createProps = (overrides: Partial<WorkflowHeaderVm> = {}): EditorHeaderPro
 };
 
 describe("EditorHeader", () => {
-    it("shows the name, the applies-to line and the note under Save", () => {
+    it("shows the name and the applies-to line", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
         expect(screen.getByText("Article review")).toBeTruthy();
-        expect(screen.getByText("Applies to Article · Headless CMS model")).toBeTruthy();
         expect(
             screen.getByText(
-                "Changes apply to new review requests; reviews already running are not affected."
+                "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
             )
         ).toBeTruthy();
     });
 
-    it("keeps the hint out of the actions column, under the More actions menu trigger area", () => {
+    it("gives the applies-to line a title with the full text for hover", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
+        const line = "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026";
+        expect(screen.getByText(line).getAttribute("title")).toBe(line);
+    });
+
+    it("does not show the changes note: it sits below the add button", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        expect(screen.queryByText(/Changes apply to new review requests/)).toBeNull();
         const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
-        const hint = document.querySelector('[data-role="changes-hint"]') as HTMLElement;
-        expect(actions.contains(hint)).toBe(false);
-        expect(actions.querySelector('[aria-label="More actions"]')).toBeTruthy();
-        expect(hint.textContent).toContain("Changes apply to new review requests");
+        expect(actions.querySelector('[aria-label="More actions"]')).toBeNull();
+        expect(actions.querySelector('[aria-label="Delete workflow"]')).toBeTruthy();
     });
 
     it("shows the Unsaved changes tag only while dirty", () => {
@@ -97,6 +102,27 @@ describe("EditorHeader", () => {
         expect(actions.contains(tag)).toBe(false);
     });
 
+    it("lays the row out itself: the name block grows, the actions and the tag never shrink", () => {
+        renderWithAdminUi(<EditorHeader {...createProps({ dirty: true })} />);
+
+        const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
+        const tag = screen.getByText("Unsaved changes");
+        const block = (document.querySelector('[data-role="title-row"]') as HTMLElement)
+            .parentElement as HTMLElement;
+        const line = screen.getByText(
+            "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
+        );
+        expect(actions.className).toContain("shrink-0");
+        expect(tag.closest(".shrink-0")).toBeTruthy();
+        expect(block.className).toContain("grow");
+        expect(block.className).toContain("min-w-0");
+        expect(block.contains(actions)).toBe(false);
+        expect(line.className).toContain("truncate");
+        expect(line.getAttribute("title")).toBe(line.textContent);
+        // The actions are no children of the header: they share the title column's row.
+        expect(actions.parentElement).toBe(block.parentElement);
+    });
+
     it("reaches the title with the keyboard and opens the input with Enter or F2", () => {
         const props = createProps();
         renderWithAdminUi(<EditorHeader {...props} />);
@@ -140,10 +166,28 @@ describe("EditorHeader", () => {
         expect(screen.queryByText("Enter a workflow name.", { selector: "div" })).not.toBeNull();
     });
 
-    it("shows the save icon on the Save button", () => {
+    it("shows no icon on the Save button", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
-        expect(screen.getByRole("button", { name: "Save" }).querySelector("svg")).not.toBeNull();
+        expect(screen.getByRole("button", { name: "Save" }).querySelector("svg")).toBeNull();
+    });
+
+    it("deletes through the visible Delete workflow icon button", () => {
+        const props = createProps();
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
+
+        expect(props.onDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it("disables the Delete workflow icon button for a draft that was never saved", () => {
+        const props = createProps({ canDelete: false });
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
+
+        expect(props.onDelete).not.toHaveBeenCalled();
     });
 
     it("saves on click when Save is enabled", () => {
@@ -174,27 +218,23 @@ describe("EditorHeader", () => {
         expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
     });
 
-    it("deletes through the menu", async () => {
+    it("deletes through the Delete workflow button", () => {
         const props = createProps();
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        fireEvent.keyDown(screen.getByRole("button", { name: "More actions" }), { key: "Enter" });
-        await screen.findByRole("menuitem", { name: "Delete workflow" });
-        // The item's onClick sits on its inner element, so click the label.
-        fireEvent.click(screen.getByText("Delete workflow"));
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
 
         expect(props.onDelete).toHaveBeenCalledTimes(1);
     });
 
-    it("disables Delete workflow for a draft that was never saved", async () => {
+    it("disables Delete workflow for a draft that was never saved", () => {
         const props = createProps({ canDelete: false });
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        fireEvent.keyDown(screen.getByRole("button", { name: "More actions" }), { key: "Enter" });
-        const item = await screen.findByRole("menuitem", { name: "Delete workflow" });
+        const button = screen.getByRole("button", { name: "Delete workflow" });
 
-        expect(item.getAttribute("data-disabled")).not.toBeNull();
-        fireEvent.click(screen.getByText("Delete workflow"));
+        expect(button.getAttribute("aria-disabled")).toBe("true");
+        fireEvent.click(button);
         expect(props.onDelete).not.toHaveBeenCalled();
     });
 

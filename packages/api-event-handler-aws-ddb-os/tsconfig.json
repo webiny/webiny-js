@@ -10,14 +10,15 @@
     { "path": "../api-opensearch" },
     { "path": "../api-opensearch-aws" },
     { "path": "../api-websockets-aws" },
+    { "path": "../aws-sdk" },
     { "path": "../db" },
+    { "path": "../db-dynamodb" },
     { "path": "../api-aco" },
     { "path": "../api-audit-logs" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../api-websockets" },
     { "path": "../cognito" },
-    { "path": "../db-dynamodb" },
     { "path": "../handler" }
   ],
   "compilerOptions": {
@@ -43,8 +44,12 @@
       "@webiny/api-opensearch-aws": ["../api-opensearch-aws/src"],
       "@webiny/api-websockets-aws/*": ["../api-websockets-aws/src/*"],
       "@webiny/api-websockets-aws": ["../api-websockets-aws/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
@@ -57,8 +62,6 @@
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/cognito/*": ["../cognito/src/*"],
       "@webiny/cognito": ["../cognito/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { ElementFactory } from "./ElementFactory.js";
 import { DocumentOperations } from "./documentOperations/index.js";
+import { BindingsProcessor } from "./BindingsProcessor.js";
 import type { ComponentManifest, Document } from "~/types.js";
 
 const components: Record<string, ComponentManifest> = {
@@ -317,14 +318,23 @@ describe("ElementFactory", () => {
                 inputs: {
                     highlights: ["Fast", "Cheap"],
                     plans: [
-                        { name: "Hobby", features: ["Autocomplete", "Limited AI integration"] },
-                        { name: "Enterprise", features: ["Everything in Hobby", "24/7 Support"] }
+                        {
+                            name: "Hobby",
+                            features: ["Autocomplete", "Limited AI integration"]
+                        },
+                        {
+                            name: "Enterprise",
+                            features: ["Everything in Hobby", "24/7 Support"]
+                        }
                     ]
                 }
             }
         };
 
-        const factory = new ElementFactory({ ...components, [pricing.name]: pricing });
+        const factory = new ElementFactory({
+            ...components,
+            [pricing.name]: pricing
+        });
         const result = factory.createElementFromComponent({
             componentName: pricing.name,
             parentId: "root",
@@ -355,5 +365,136 @@ describe("ElementFactory", () => {
             "Limited AI integration"
         ]);
         expect(inputs["plans/1/features"]?.static).toEqual(["Everything in Hobby", "24/7 Support"]);
+    });
+
+    it("should write a primitive list's (tags) defaultValue when the component has no defaults for it", () => {
+        const card: ComponentManifest = {
+            name: "Custom/TagsDefault",
+            label: "Tags Default",
+            tags: [],
+            inputs: [
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "categoryIds",
+                    defaultValue: ["101", "201", "301"]
+                },
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "aircraftTypes",
+                    defaultValue: []
+                },
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "noDefault"
+                }
+            ]
+        };
+
+        const factory = new ElementFactory({ ...components, [card.name]: card });
+        const result = factory.createElementFromComponent({
+            componentName: card.name,
+            parentId: "root",
+            slot: "children",
+            bindings: {
+                overrides: { mobile: { inputs: { aircraftTypes: ["A320"] } } }
+            } as any
+        });
+
+        const document = {
+            state: {},
+            elements: {
+                root: {
+                    type: "Webiny/Element",
+                    id: "root",
+                    component: { name: "Webiny/Root" }
+                }
+            },
+            bindings: {}
+        } as unknown as Document;
+
+        for (const op of result.operations) {
+            op.apply(document);
+        }
+
+        const inputs = document.bindings[result.element.id]!.inputs!;
+        expect(inputs["categoryIds"]?.static).toEqual(["101", "201", "301"]);
+        expect(inputs["categoryIds"]?.list).toBe(true);
+        expect(inputs["aircraftTypes"]?.static).toEqual([]);
+        expect(inputs["noDefault"]?.static).toEqual([]);
+
+        // Defaults belong to the base bindings; a breakpoint override doesn't repeat them.
+        const mobileInputs = document.bindings[result.element.id]!.overrides?.mobile?.inputs ?? {};
+        expect(mobileInputs["categoryIds"]?.static).toBeUndefined();
+        expect(mobileInputs["noDefault"]?.static).toBeUndefined();
+        // A value supplied for the breakpoint is kept, and only that one is overridden.
+        expect(mobileInputs["aircraftTypes"]?.static).toEqual(["A320"]);
+        expect(Object.keys(mobileInputs)).toEqual(["aircraftTypes"]);
+
+        // Mobile inherits the base values of the inputs its override doesn't supply.
+        const mobile = new BindingsProcessor(["desktop", "mobile"]).getBindings(
+            document.bindings[result.element.id]!,
+            "mobile"
+        ).inputs;
+        expect(mobile["categoryIds"]?.static).toEqual(["101", "201", "301"]);
+        expect(mobile["aircraftTypes"]?.static).toEqual(["A320"]);
+    });
+
+    it("keeps a supplied null, a cleared value, instead of the default", () => {
+        const card: ComponentManifest = {
+            name: "Custom/Cleared",
+            label: "Cleared",
+            tags: [],
+            inputs: [
+                {
+                    type: "text",
+                    name: "image",
+                    renderer: "Webiny/Input",
+                    defaultValue: "a.png"
+                },
+                {
+                    type: "text",
+                    name: "icon",
+                    renderer: "Webiny/Input",
+                    defaultValue: "b.png"
+                }
+            ]
+        };
+
+        const factory = new ElementFactory({ ...components, [card.name]: card });
+        const result = factory.createElementFromComponent({
+            componentName: card.name,
+            parentId: "root",
+            slot: "children",
+            bindings: {
+                inputs: { image: null },
+                overrides: { mobile: { inputs: { icon: null } } }
+            } as any
+        });
+
+        const document = {
+            state: {},
+            elements: {
+                root: {
+                    type: "Webiny/Element",
+                    id: "root",
+                    component: { name: "Webiny/Root" }
+                }
+            },
+            bindings: {}
+        } as unknown as Document;
+        for (const op of result.operations) {
+            op.apply(document);
+        }
+
+        const bindings = document.bindings[result.element.id]!;
+        expect(bindings.inputs!["image"]?.static).toBeNull();
+        expect(bindings.inputs!["icon"]?.static).toBe("b.png");
+        expect(bindings.overrides!.mobile.inputs!["icon"]?.static).toBeNull();
     });
 });

@@ -19,7 +19,6 @@
  * way and its callers treat a failed trigger as a no-op (ACO's FLP handlers, for one, swallow it),
  * so writes land while their projections never update.
  */
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { FunctionUrlStreamIdentityLoaderDecorator } from "~/handlers/FunctionUrlStreamIdentityLoaderDecorator.js";
@@ -60,14 +59,7 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             // Step Functions invokes the buffered function, never this one.
             BackgroundTasksAwsFeature.register(container);
 
-            // Resolved here rather than at factory time: one bundle exports BOTH this handler and the
-            // buffered one, so building the client eagerly would open a second DynamoDB client on every
-            // cold start of whichever function isn't streaming. `root` runs once, lazily.
-            await registerWebinyApiRoot(
-                container,
-                config,
-                config.documentClient ?? getDocumentClient()
-            );
+            await registerWebinyApiRoot(container, config);
         },
 
         child: async container => {

@@ -19,11 +19,19 @@ class GetGlobalComponentRepositoryImpl implements RepositoryAbstraction.Interfac
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface
     ) {}
 
-    async execute({ name, language }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+    async execute({
+        name,
+        language,
+        scope
+    }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         const model = await this.modelProvider.get();
         // Read by the record's fixed entry id: a search-backed list can lag a save that just happened.
         const result = await this.getLatestRevision.execute<CmsEntryWbGlobalComponent>(model, {
-            id: GlobalComponentEntryId.from(name, GlobalComponentLanguage.from(language)).toString()
+            id: GlobalComponentEntryId.from(
+                name,
+                GlobalComponentLanguage.from(language),
+                scope
+            ).toString()
         });
 
         if (result.isFail()) {

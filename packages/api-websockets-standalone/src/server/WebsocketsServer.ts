@@ -5,18 +5,17 @@ import { mdbid } from "@webiny/utils";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
 import type { WebsocketsUpgradeHandler } from "~/upgradeHandler/abstractions.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import { DefaultUpgradeHandlerImpl } from "~/upgradeHandler/DefaultUpgradeHandler.js";
 import { HeartbeatManager } from "~/heartbeat/HeartbeatManager.js";
+import { WEBSOCKETS_PATH } from "./constants.js";
 import type {
     CreateWebsocketsServerParams,
     AttachWebsocketsServerParams,
     IWebsocketsServer,
     WebsocketsConnectionAuthenticator
 } from "./types.js";
-
-const ANONYMOUS_IDENTITY: ConnectionRegistry.Identity = { id: "", displayName: "", type: "" };
 
 const DEFAULT_HEARTBEAT_INTERVAL = 60_000;
 // Three admin ping intervals (5 minutes each): one late ping is not enough to evict a live tab.
@@ -32,13 +31,27 @@ const toHeaders = (raw: IncomingMessage["headers"]): Record<string, string> => {
     return headers;
 };
 
+// What the upgrade step learned about a connection, used to register it once the socket is open.
+interface IHandshake {
+    identity: ConnectionRegistry.Identity;
+    tenant: string;
+}
+
+// Answers an upgrade with an HTTP error. `end` rather than `destroy`, so the response is flushed first.
+const refuse = (socket: Duplex, statusCode: number, reason: string): void => {
+    socket.once("finish", () => socket.destroy());
+    socket.end(
+        `HTTP/1.1 ${statusCode} ${reason}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`
+    );
+};
+
 interface WebsocketsServerParams {
     httpServer: HttpServer;
     ownsHttpServer: boolean;
     adapter: WebsocketsServerAdapter.Interface<unknown>;
     upgradeHandler: WebsocketsUpgradeHandler.Interface;
     connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
-    authenticate?: WebsocketsConnectionAuthenticator;
+    authenticate: WebsocketsConnectionAuthenticator;
     heartbeatInterval: number;
     staleAfter: number;
     debug: boolean;
@@ -52,7 +65,7 @@ class WebsocketsServer implements IWebsocketsServer {
     private readonly adapter: WebsocketsServerAdapter.Interface<unknown>;
     private readonly upgradeHandler: WebsocketsUpgradeHandler.Interface;
     private readonly connectionManager: WebsocketsConnectionManager.Interface<unknown> | undefined;
-    private readonly authenticate: WebsocketsConnectionAuthenticator | undefined;
+    private readonly authenticate: WebsocketsConnectionAuthenticator;
     private readonly heartbeat: HeartbeatManager | undefined;
     private readonly debug: boolean;
     private readonly requestedPort: number;
@@ -86,7 +99,6 @@ class WebsocketsServer implements IWebsocketsServer {
     public async start(): Promise<void> {
         this.adapter.start(this.httpServer);
         this.wireUpgradeHandler();
-        this.wireConnectionHandler();
 
         if (this.ownsHttpServer) {
             await this.listen();
@@ -145,129 +157,159 @@ class WebsocketsServer implements IWebsocketsServer {
                     console.error("WebSocket upgrade socket error:", error.message);
                 });
 
+                /*
+                 * Checked here and not in the upgrade handler, which is meant to be replaceable. The
+                 * server shares its HTTP server with the API, so no other path may ever upgrade.
+                 */
+                const url = new URL(request.url ?? "/", "http://localhost");
+                if (url.pathname !== WEBSOCKETS_PATH) {
+                    refuse(socket, 404, "Not Found");
+                    return;
+                }
+
                 try {
                     const decision = await this.upgradeHandler.shouldUpgrade(request);
                     if (!decision.allowed) {
-                        socket.write(`HTTP/1.1 ${decision.statusCode} ${decision.reason}\r\n\r\n`);
-                        socket.destroy();
+                        refuse(socket, decision.statusCode, decision.reason);
                         return;
                     }
 
-                    this.adapter.handleUpgrade(request, socket, head);
+                    /*
+                     * Authenticated before the socket opens, not after: an anonymous connection
+                     * would still write a registry row, and nothing would stop a client opening
+                     * as many of them as it likes.
+                     */
+                    const handshake = await this.authenticateUpgrade(url);
+                    if (!handshake) {
+                        refuse(socket, 401, "Unauthorized");
+                        return;
+                    }
+
+                    this.adapter.handleUpgrade(request, socket, head, opened => {
+                        this.acceptConnection(opened, request, handshake);
+                    });
                 } catch (error) {
                     console.error("WebSocket upgrade failed:", error);
-                    socket.destroy();
+                    refuse(socket, 500, "Internal Server Error");
                 }
             }
         );
     }
 
-    private wireConnectionHandler(): void {
-        this.adapter.onConnection((socket, request) => {
+    // Called with each socket an authenticated upgrade opened.
+    private acceptConnection(
+        socket: unknown,
+        request: IncomingMessage,
+        handshake: IHandshake
+    ): void {
+        if (this.shuttingDown) {
+            return;
+        }
+
+        const connectionId = mdbid();
+        const connectedAt = Date.now();
+        const host = request.headers.host || "localhost";
+        const headers = toHeaders(request.headers);
+
+        // The registry write is async, so we kick it off without awaiting it and wire the socket
+        // handlers below synchronously — that way we don't miss a close or message that arrives
+        // during the gap. If a message does arrive before registration finishes, the
+        // `getMetadata` guard below just drops it, which is fine since the client doesn't send
+        // anything meaningful right at connect time.
+        const registration = this.registerConnection({
+            connectionId,
+            socket,
+            handshake,
+            connectedAt,
+            host,
+            headers
+        });
+
+        this.adapter.onMessage(socket, data => {
             if (this.shuttingDown) {
                 return;
             }
 
-            const connectionId = mdbid();
-            const connectedAt = Date.now();
-            const host = request.headers.host || "localhost";
-            const headers = toHeaders(request.headers);
+            const metadata = this.connectionManager?.getMetadata(connectionId);
+            if (!metadata) {
+                return;
+            }
 
-            // Register the connection under its real identity, decoded from the `?token` JWT. Both
-            // the authentication and the registry write are async, so we kick this off without
-            // awaiting it and wire the socket handlers below synchronously — that way we don't miss a
-            // close or message that arrives during the gap. If a message does arrive before
-            // registration finishes, the `getMetadata` guard below just drops it, which is fine since
-            // the client doesn't send anything meaningful right at connect time.
-            const registration = this.registerConnection({
-                connectionId,
-                socket,
-                request,
-                connectedAt,
-                host,
-                headers
+            try {
+                JSON.parse(data.toString());
+            } catch {
+                return;
+            }
+
+            this.connectionManager?.updateLastSeen(connectionId).catch(error => {
+                console.error(
+                    `Failed to update last seen for WebSocket connection "${connectionId}":`,
+                    error
+                );
             });
+        });
 
-            this.adapter.onMessage(socket, data => {
-                if (this.shuttingDown) {
-                    return;
-                }
+        this.adapter.onClose(socket, () => {
+            if (this.shuttingDown) {
+                return;
+            }
+            /*
+             * Wait for registration: a socket that closes while it is still being registered
+             * would otherwise be removed first and then registered, leaving a dead entry.
+             */
+            void registration.then(() => this.removeConnection(connectionId));
+        });
 
-                const metadata = this.connectionManager?.getMetadata(connectionId);
-                if (!metadata) {
-                    return;
-                }
-
-                try {
-                    JSON.parse(data.toString());
-                } catch {
-                    return;
-                }
-
-                this.connectionManager?.updateLastSeen(connectionId).catch(error => {
-                    console.error(
-                        `Failed to update last seen for WebSocket connection "${connectionId}":`,
-                        error
-                    );
-                });
-            });
-
-            this.adapter.onClose(socket, () => {
-                if (this.shuttingDown) {
-                    return;
-                }
-                /*
-                 * Wait for registration: a socket that closes while it is still authenticating
-                 * would otherwise be removed first and then registered, leaving a dead entry.
-                 */
-                void registration.then(() => this.removeConnection(connectionId));
-            });
-
-            this.adapter.onError(socket, error => {
-                console.error(`WebSocket error for connection "${connectionId}":`, error.message);
-            });
+        this.adapter.onError(socket, error => {
+            console.error(`WebSocket error for connection "${connectionId}":`, error.message);
         });
     }
 
     /**
-     * Authenticates the upgrade using the `?token`/`?tenant` query the app-websockets client sends,
-     * then registers the live socket in the shared connection manager under the resolved identity and
-     * tenant. Getting both right matters for targeted server→client sends: `SendToIdentity` finds
-     * connections by identity id in the registry, so a connection that's anonymous (or never made it
-     * into the registry) can't be reached. Everything here is guarded — if something goes wrong we
-     * don't crash the server or the upgrade, the connection just ends up unaddressable.
+     * Reads the `?token`/`?tenant` query the app-websockets client sends and resolves the token to an
+     * identity in that tenant. Returns `null` when there is no token, or the token doesn't resolve to
+     * an identity that can access the tenant, and the upgrade is refused.
+     */
+    private async authenticateUpgrade(url: URL): Promise<IHandshake | null> {
+        const token = url.searchParams.get("token") ?? "";
+        if (!token) {
+            return null;
+        }
+
+        // The same default as the request tenant loader and the AWS transport.
+        const tenant = url.searchParams.get("tenant") || "root";
+        const identity = await this.authenticate(token, tenant);
+        if (!identity?.id) {
+            return null;
+        }
+
+        return { identity, tenant };
+    }
+
+    /**
+     * Registers the live socket in the shared connection manager under the identity and tenant the
+     * upgrade resolved. Getting both right matters for targeted server→client sends:
+     * `SendToIdentity` finds connections by identity id in the registry, so a connection that never
+     * made it into the registry can't be reached. A failure is logged rather than thrown, so it
+     * doesn't crash the server; the connection just ends up unaddressable.
      */
     private async registerConnection(params: {
         connectionId: string;
         socket: unknown;
-        request: IncomingMessage;
+        handshake: IHandshake;
         connectedAt: number;
         host: string;
         headers: Record<string, string>;
     }): Promise<void> {
-        const { connectionId, socket, request, connectedAt, host, headers } = params;
-
-        let identity: ConnectionRegistry.Identity = ANONYMOUS_IDENTITY;
-        let tenant = "";
+        const { connectionId, socket, handshake, connectedAt, host, headers } = params;
 
         try {
-            const url = new URL(request.url ?? "", `http://${host}`);
-            tenant = url.searchParams.get("tenant") ?? "";
-            const token = url.searchParams.get("token") ?? "";
-
-            if (this.authenticate && token) {
-                const authenticated = await this.authenticate(token);
-                if (authenticated?.id) {
-                    identity = authenticated;
-                }
-            }
-
             await this.connectionManager?.add({
                 connectionId,
                 socket,
                 endpoint: this.endpoint,
-                identity,
-                tenant,
+                identity: handshake.identity,
+                tenant: handshake.tenant,
                 connectedAt,
                 host,
                 headers
@@ -348,7 +390,7 @@ export const attachWebsocketsServer = (params: AttachWebsocketsServerParams): IW
     const server = new WebsocketsServer({
         httpServer: params.server,
         ownsHttpServer: false,
-        adapter: new NodeWsAdapterImpl(),
+        adapter: params.adapter,
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
         authenticate: params.authenticate,

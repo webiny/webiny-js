@@ -34,20 +34,20 @@ export class ComponentInputTraverser {
         visitor: InputVisitor
     ): void {
         if (node.list) {
+            // A list of primitives (e.g. tags) is a single leaf: its value is the whole array.
+            // Visiting each item would write every item to the same path, leaving only the last.
+            // A missing value is passed on as `undefined` (not `[]`), so the visitor can apply the
+            // input's `defaultValue` (ElementFactory: `value ?? node.input.defaultValue`).
+            // Slot lists are still visited per item, as each item creates its own element.
+            if (node.children.length === 0 && node.type !== "slot") {
+                visitor(node, currentPath, value);
+                return;
+            }
+
             value = value ?? [];
 
             if (value.length === 0) {
                 visitor(node, currentPath, value);
-            }
-
-            // A list of primitives (e.g. tags) is a single leaf: its value is the whole array.
-            // Visiting each item would write every item to the same path, leaving only the last.
-            // Slot lists are still visited per item, as each item creates its own element.
-            if (node.children.length === 0 && node.type !== "slot") {
-                if (value.length > 0) {
-                    visitor(node, currentPath, value);
-                }
-                return;
             }
 
             value.forEach((item: any, index: number) => {

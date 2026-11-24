@@ -27,4 +27,3 @@ export { ResetPasswordWithCodeUseCase } from "./api/features/ResetPasswordWithCo
 
 // Reset-code seams — override to change the code format or how the code is delivered.
 export { PasswordResetCodeGenerator } from "./api/domain/crypto/PasswordResetCodeGenerator.js";
-export { PasswordResetMailer } from "./api/domain/mail/PasswordResetMailer.js";

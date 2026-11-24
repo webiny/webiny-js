@@ -96,7 +96,9 @@ export function $moveElement(document: Document, params: MoveParams): Constraint
         parentId,
         slot,
         document,
-        components
+        components,
+        // The moved element is in the document already: "one per page" constraints must not count it.
+        movedElementId: elementId
     });
 
     if (!result.allowed) {
