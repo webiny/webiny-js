@@ -1,5 +1,6 @@
-import { KernelExecution } from "./KernelExecution.js";
+import type { KernelExecution } from "./KernelExecution.js";
 import type { KernelExecutionScope } from "./KernelExecutionScope.js";
+import { DefaultNestedKernelExecution } from "./DefaultNestedKernelExecution.js";
 
 /**
  * The kernel execution a container was built in. `ChildContainerFactory` registers one per
@@ -16,7 +17,15 @@ export class DefaultKernelExecution implements KernelExecution.Interface {
         return this.frame.executionId;
     }
 
+    getScopeId(): string | undefined {
+        return undefined;
+    }
+
     assertCurrent(service?: string): void {
         this.scope.assertOwner(this.frame, service);
+    }
+
+    createNested(scopeId: string): KernelExecution.Nested {
+        return DefaultNestedKernelExecution.create(this.frame, scopeId, this.scope);
     }
 }
