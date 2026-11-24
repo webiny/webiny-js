@@ -7,10 +7,10 @@ import { Container } from "@webiny/di";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { TaskRecoveries } from "~/domain/TaskRecoveries.js";
-import { ProcessOwner } from "@webiny/kernel-standalone";
+import { ProcessOwner } from "@webiny/api-kernel-core";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
-import { RandomProcessOwner } from "@webiny/kernel-standalone";
+import { RandomProcessOwner } from "@webiny/api-kernel-core";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
 const TTL_MS = 60_000;

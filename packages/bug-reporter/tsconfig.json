@@ -4,10 +4,10 @@
   "references": [
     { "path": "../admin-ui" },
     { "path": "../api-core" },
+    { "path": "../api-kernel-core" },
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../feature" },
-    { "path": "../kernel-core" },
     { "path": "../project-extensions" }
   ],
   "compilerOptions": {
@@ -21,14 +21,14 @@
       "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/project-extensions/*": ["../project-extensions/src/*"],
       "@webiny/project-extensions": ["../project-extensions/src"]
     }

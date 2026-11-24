@@ -3,10 +3,9 @@
   "include": ["src"],
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-kernel-core/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../kernel-core/tsconfig.build.json" },
-    { "path": "../kernel-standalone/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -18,14 +17,12 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
-      "@webiny/kernel-standalone/*": ["../kernel-standalone/src/*"],
-      "@webiny/kernel-standalone": ["../kernel-standalone/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

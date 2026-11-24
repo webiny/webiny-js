@@ -1,5 +1,5 @@
-import { TestHttpInputHandler } from "@webiny/kernel-core/features/testing";
-import type { InputContext, NextFunction } from "@webiny/kernel-core";
+import { TestHttpInputHandler } from "@webiny/api-kernel-core/features/testing";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { AuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import type { IAuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";

@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayInputHandler } from "@webiny/kernel-aws/abstractions/handlers/ApiGatewayInputHandler.js";
+import { ApiGatewayInputHandler } from "@webiny/api-kernel-aws/abstractions/handlers/ApiGatewayInputHandler.js";
 import { PluginsContainer } from "@webiny/plugins";
-import type { InputContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { SyncSystemConfig } from "./SyncSystemConfig.js";
 import type { ISyncSystemConfig } from "./SyncSystemConfig.js";
 import { createHandler } from "~/sync/createHandler.js";

@@ -19,8 +19,8 @@ export interface IPublicUrls {
 /**
  * Public URLs of this deployment's API and Admin app. Each hosting type supplies its own
  * implementation: AWS reads the service manifest written at deploy time
- * (`@webiny/api-kernel-aws`), standalone reads the `WEBINY_API_URL` / `WEBINY_ADMIN_URL`
- * build params (`@webiny/api-kernel-standalone`).
+ * (`@webiny/api-runtime-aws`), standalone reads the `WEBINY_API_URL` / `WEBINY_ADMIN_URL`
+ * build params (`@webiny/api-runtime-standalone`).
  *
  * Resolve per request and don't cache the result globally: values are "for the current tenant".
  */

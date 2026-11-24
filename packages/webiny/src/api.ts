@@ -26,12 +26,12 @@ export {
     HttpAllowedRequestHeaders,
     HttpRouteDefinition,
     HttpRouteHandler
-} from "@webiny/kernel-core/features/http/abstractions.js";
+} from "@webiny/api-kernel-core/features/http/abstractions.js";
 export type {
     IHttpRequest,
     IHttpResponse,
     IHttpResponseBuilder,
     IMatchedRouteDefinition
-} from "@webiny/kernel-core/features/http/abstractions.js";
+} from "@webiny/api-kernel-core/features/http/abstractions.js";
 export { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 export { Compression } from "@webiny/utils/features/compression/abstractions/Compression.js";

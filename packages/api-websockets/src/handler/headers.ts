@@ -1,4 +1,4 @@
-import { parseJsonBody } from "@webiny/kernel-core";
+import { parseJsonBody } from "@webiny/api-kernel-core";
 import type { IWebsocketsEventData, IWebsocketsIncomingEvent } from "~/handler/types.js";
 
 const getEventBody = (event: IWebsocketsIncomingEvent): IWebsocketsEventData => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { Container } from "@webiny/feature/api";
-import { RequestContainer } from "@webiny/kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { OpenSearchClient } from "@webiny/api-opensearch/features/OpenSearchClient/abstraction.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
@@ -10,7 +10,7 @@ import { OperationsFactoryFeature } from "@webiny/api-sync-to-opensearch/feature
 import { marshall as baseMarshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { DdbOperationsBuilderFeature } from "~/features/DdbOperationsBuilder/feature";
 import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/DdbToOpenSearchHandler";
-import { DynamoDBInputHandler } from "@webiny/kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
+import { DynamoDBInputHandler } from "@webiny/api-kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 
 const marshall = (item: Record<string, any>): any => {

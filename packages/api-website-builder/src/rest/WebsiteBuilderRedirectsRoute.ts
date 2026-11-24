@@ -1,5 +1,5 @@
-import { HttpRouteDefinition } from "@webiny/kernel-core";
-import { HttpRouteHandler } from "@webiny/kernel-core";
+import { HttpRouteDefinition } from "@webiny/api-kernel-core";
+import { HttpRouteHandler } from "@webiny/api-kernel-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";

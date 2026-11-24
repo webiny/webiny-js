@@ -1,7 +1,7 @@
 /**
  * Server-sent event payloads emitted by `AiImageEnrichmentStreamRoute` — this feature's stream
  * protocol, not a shared one. The SSE wire format itself (`toSseFrame`) is transport-level and lives
- * in `@webiny/kernel-core`; what the events are called and what they carry is per feature,
+ * in `@webiny/api-kernel-core`; what the events are called and what they carry is per feature,
  * since the next streaming route will want a different set.
  *
  * A small domain protocol rather than the AI SDK's UI message stream: the client

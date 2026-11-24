@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { GraphQLSchemaComposer as Abstraction } from "./abstractions.js";
 import { GraphQLSchemaFactory, CoreGraphQLSchemaFactory } from "~/graphql/abstractions.js";
 import { GraphQLSchemaKeyVerification } from "~/engine/abstractions.js";

@@ -1,4 +1,4 @@
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/kernel-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/api-kernel-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import {

@@ -131,14 +131,14 @@ describe("Api.Route", () => {
         await expect(second).rejects.toThrow(`resolve to the route name "orders-get"`);
     });
 
-    it("adds createHttpRouteDefinition to an existing @webiny/kernel-core import", async () => {
-        const extensionsTs = `import { HttpRouteHandler } from "@webiny/kernel-core";\n${EXTENSIONS_TS}`;
+    it("adds createHttpRouteDefinition to an existing @webiny/api-kernel-core import", async () => {
+        const extensionsTs = `import { HttpRouteHandler } from "@webiny/api-kernel-core";\n${EXTENSIONS_TS}`;
         const { build, extensions } = createProject(extensionsTs);
 
         await build({ method: "GET", path: "/orders", src: "/extensions/Orders.ts" });
 
         expect(extensions()).toContain(
-            `import { HttpRouteHandler, createHttpRouteDefinition } from "@webiny/kernel-core";`
+            `import { HttpRouteHandler, createHttpRouteDefinition } from "@webiny/api-kernel-core";`
         );
     });
 

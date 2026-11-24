@@ -1,6 +1,6 @@
 import { Container } from "@webiny/feature/api";
-import { RequestContainer } from "@webiny/kernel-core";
-import { DynamoDBInputHandler } from "@webiny/kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import { DynamoDBInputHandler } from "@webiny/api-kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { DdbToOpenSearchFeature } from "./features/DdbToOpenSearchFeature.js";

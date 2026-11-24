@@ -3,11 +3,11 @@
   "include": ["src"],
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-kernel-aws/tsconfig.build.json" },
+    { "path": "../api-kernel-core/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../kernel-aws/tsconfig.build.json" },
-    { "path": "../kernel-core/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -19,16 +19,16 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-kernel-aws/*": ["../api-kernel-aws/src/*"],
+      "@webiny/api-kernel-aws": ["../api-kernel-aws/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/kernel-aws/*": ["../kernel-aws/src/*"],
-      "@webiny/kernel-aws": ["../kernel-aws/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

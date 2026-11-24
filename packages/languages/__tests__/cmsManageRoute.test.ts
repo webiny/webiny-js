@@ -9,7 +9,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms/graphql/CmsGraphQLSchemaFactory.js";
-import { createTestHttpHandler } from "@webiny/kernel-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { createRegisterExtensionPlugin, registerExtensions } from "@webiny/handler";

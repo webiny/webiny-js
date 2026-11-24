@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 
 /**
  * Drives the background tasks of this process to completion. For each task it runs one iteration,

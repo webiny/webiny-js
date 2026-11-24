@@ -6,8 +6,8 @@
     { "path": "../api-core" },
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
+    { "path": "../api-kernel-core" },
     { "path": "../feature" },
-    { "path": "../kernel-core" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -25,10 +25,10 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

@@ -4,7 +4,7 @@ import os from "node:os";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import type { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import type { IHttpRequest } from "@webiny/kernel-core";
+import type { IHttpRequest } from "@webiny/api-kernel-core";
 
 export const SECRET = "test-upload-secret";
 export const TENANT_ID = "t1";

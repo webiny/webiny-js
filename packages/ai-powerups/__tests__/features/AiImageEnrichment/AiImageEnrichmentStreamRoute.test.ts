@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { HttpRouteHandler, HttpStreamBody, invokeHttpRoute } from "@webiny/kernel-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/kernel-core";
+import { HttpRouteHandler, HttpStreamBody, invokeHttpRoute } from "@webiny/api-kernel-core";
+import type { IHttpRequest, IHttpResponse } from "@webiny/api-kernel-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import {
     AiImageEnrichmentStreamRoute,

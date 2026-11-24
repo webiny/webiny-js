@@ -2,7 +2,7 @@ import { graphql } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { GraphQLEngine as GraphQLEngineAbstraction } from "./abstractions.js";
 import { GraphQLSchemaCache } from "./abstractions.js";
 import { createSchemaCacheKey } from "./createSchemaCacheKey.js";

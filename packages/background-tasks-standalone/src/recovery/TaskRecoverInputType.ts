@@ -1,4 +1,4 @@
-import { InputType } from "@webiny/kernel-core";
+import { InputType } from "@webiny/api-kernel-core";
 
 import { TaskRecoverInputHandler } from "./TaskRecoverInputHandler.js";
 

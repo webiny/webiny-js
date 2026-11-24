@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { InputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/api-kernel-core";
 import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 export const WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER = "WebinyWebsocketsConnectionRows";

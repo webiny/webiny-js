@@ -1,7 +1,7 @@
-import { TestHttpInputHandler } from "@webiny/kernel-core/features/testing";
+import { TestHttpInputHandler } from "@webiny/api-kernel-core/features/testing";
 import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import type { IHeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
-import type { InputContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 

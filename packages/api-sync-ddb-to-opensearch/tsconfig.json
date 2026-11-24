@@ -3,12 +3,12 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
+    { "path": "../api-kernel-aws" },
+    { "path": "../api-kernel-core" },
     { "path": "../api-opensearch" },
     { "path": "../api-sync-to-opensearch" },
     { "path": "../aws-sdk" },
     { "path": "../feature" },
-    { "path": "../kernel-aws" },
-    { "path": "../kernel-core" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -20,6 +20,10 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/api-kernel-aws/*": ["../api-kernel-aws/src/*"],
+      "@webiny/api-kernel-aws": ["../api-kernel-aws/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/api-sync-to-opensearch/*": ["../api-sync-to-opensearch/src/*"],
@@ -28,10 +32,6 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/kernel-aws/*": ["../kernel-aws/src/*"],
-      "@webiny/kernel-aws": ["../kernel-aws/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

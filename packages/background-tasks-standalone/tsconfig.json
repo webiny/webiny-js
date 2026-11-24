@@ -3,10 +3,9 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-core" },
+    { "path": "../api-kernel-core" },
     { "path": "../background-tasks" },
     { "path": "../feature" },
-    { "path": "../kernel-core" },
-    { "path": "../kernel-standalone" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -18,14 +17,12 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
-      "@webiny/kernel-standalone/*": ["../kernel-standalone/src/*"],
-      "@webiny/kernel-standalone": ["../kernel-standalone/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

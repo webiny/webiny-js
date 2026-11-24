@@ -9,7 +9,7 @@
   "description": "A Webiny standalone project template.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-kernel-standalone-sql": "0.0.0",
+    "@webiny/api-runtime-standalone-sql": "0.0.0",
     "@webiny/api-storage-pg": "0.0.0",
     "@webiny/api-storage-sqlite": "0.0.0",
     "@webiny/app": "0.0.0",

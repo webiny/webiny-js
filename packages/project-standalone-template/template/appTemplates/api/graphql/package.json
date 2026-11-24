@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
-    "@webiny/api-kernel-standalone-sql": "latest",
+    "@webiny/api-runtime-standalone-sql": "latest",
     "@webiny/api-aco": "latest",
     "@webiny/api-core": "latest",
     "@webiny/api-file-manager": "latest",

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { InputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/api-kernel-core";
 
 export interface ISyncWorkerEvent {
     action: string;

@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { BackgroundTaskInputType } from "@webiny/kernel-core";
+import { BackgroundTaskInputType } from "@webiny/api-kernel-core";
 import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
 import { InProcessTaskService } from "~/service/InProcessTaskService.js";
 import { InProcessBackgroundTaskHandler } from "~/handlers/InProcessBackgroundTaskHandler.js";

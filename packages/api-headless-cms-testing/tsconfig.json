@@ -6,7 +6,7 @@
     { "path": "../api-core-testing" },
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
-    { "path": "../kernel-core" },
+    { "path": "../api-kernel-core" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -24,8 +24,8 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/kernel-core/*": ["../kernel-core/src/*"],
-      "@webiny/kernel-core": ["../kernel-core/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

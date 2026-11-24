@@ -1,8 +1,8 @@
 import type { Container } from "@webiny/feature/api";
-import { BackgroundTaskInputHandler } from "@webiny/kernel-core";
-import { RequestContainer } from "@webiny/kernel-core";
-import type { InputContext } from "@webiny/kernel-core";
-import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
+import { BackgroundTaskInputHandler } from "@webiny/api-kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import type { InputContext } from "@webiny/api-kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";

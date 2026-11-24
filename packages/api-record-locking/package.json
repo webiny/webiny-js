@@ -26,10 +26,10 @@
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-core-testing": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
-    "@webiny/kernel-core": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.15.0",
     "rimraf": "^6.1.4",

@@ -2,10 +2,10 @@ import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import {
     EventBridgeInputHandler,
     type EventBridgeResult
-} from "@webiny/kernel-aws/abstractions/handlers/EventBridgeInputHandler.js";
+} from "@webiny/api-kernel-aws/abstractions/handlers/EventBridgeInputHandler.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
-import type { InputContext } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/api-kernel-core";
 
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 

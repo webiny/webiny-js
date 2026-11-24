@@ -1,5 +1,5 @@
-import { TestHttpInputHandler } from "@webiny/kernel-core/features/testing";
-import type { InputContext, NextFunction } from "@webiny/kernel-core";
+import { TestHttpInputHandler } from "@webiny/api-kernel-core/features/testing";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 

@@ -1,5 +1,5 @@
-import { InputDispatcher } from "@webiny/kernel-core";
-import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/api-kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";

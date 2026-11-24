@@ -5,8 +5,8 @@ import type { IAuthenticationContext } from "@webiny/api-core/features/security/
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { InputContext } from "@webiny/kernel-core";
-import type { IWebSocketEvent } from "@webiny/kernel-aws/inputTypes/WebSocketInputType.js";
+import type { InputContext } from "@webiny/api-kernel-core";
+import type { IWebSocketEvent } from "@webiny/api-kernel-aws/inputTypes/WebSocketInputType.js";
 import { WebSocketLambdaHandler } from "~/WebSocketLambdaHandler.js";
 
 describe("WebSocketLambdaHandler", () => {

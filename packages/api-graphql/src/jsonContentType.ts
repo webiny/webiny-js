@@ -1,4 +1,4 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/kernel-core";
+import type { IHttpRequest, IHttpResponse } from "@webiny/api-kernel-core";
 
 export const GRAPHQL_UNSUPPORTED_MEDIA_TYPE = "GRAPHQL_UNSUPPORTED_MEDIA_TYPE";
 

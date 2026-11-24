@@ -1,4 +1,4 @@
-import { InputType } from "@webiny/kernel-core";
+import { InputType } from "@webiny/api-kernel-core";
 
 import { SyncWorkerInputHandler } from "./SyncWorkerInputHandler.js";
 import type { ISyncWorkerEvent } from "./SyncWorkerInputHandler.js";

@@ -1,7 +1,7 @@
-import { HttpRouteHandler } from "@webiny/kernel-core";
-import { KernelExecution } from "@webiny/kernel-core";
-import type { IHttpResponse } from "@webiny/kernel-core";
-import type { IHttpResponseBuilder } from "@webiny/kernel-core";
+import { HttpRouteHandler } from "@webiny/api-kernel-core";
+import { KernelExecution } from "@webiny/api-kernel-core";
+import type { IHttpResponse } from "@webiny/api-kernel-core";
+import type { IHttpResponseBuilder } from "@webiny/api-kernel-core";
 import { Debugger } from "./abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { Logger } from "~/features/logger/index.js";
