@@ -4,7 +4,7 @@ import { Api } from "webiny/extensions";
 import { Cli } from "webiny/extensions";
 import { Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
 import { StandaloneExtensions } from "./webiny.config.standalone.js";

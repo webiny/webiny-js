@@ -2,7 +2,7 @@ import React from "react";
 import { Admin } from "webiny/extensions";
 import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single

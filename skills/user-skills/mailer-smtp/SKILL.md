@@ -10,14 +10,14 @@ description: >
 
 ## TL;DR
 
-New projects send mail over SMTP through `<MailerSmtp />` from `@webiny/mailer-smtp`, which `webiny.config.tsx` renders. Without props, the settings are entered in the Admin app under Settings > Mailer. With props, they come from code and the settings screen shows them read-only. The props are serialized into the build artifact, so always pass the password through an environment variable, never hard-code it. Deploy the API after making changes.
+New projects send mail over SMTP through `<MailerSmtp />` from `webiny/extensions`, which `webiny.config.tsx` renders. It comes with the `webiny` package, so there is nothing to install. Without props, the settings are entered in the Admin app under Settings > Mailer. With props, they come from code and the settings screen shows them read-only. The props are serialized into the build artifact, so always pass the password through an environment variable, never hard-code it. Deploy the API after making changes.
 
 To send through Resend, SendGrid or Amazon SES instead, replace `<MailerSmtp />` with that provider's component (see `webiny-mailer-providers`).
 
 ## Core Pattern
 
 ```tsx
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 
 <MailerSmtp
     host={"smtp.example.com"}
@@ -50,7 +50,7 @@ Place this inside the JSX returned by your config component in `webiny.config.ts
 
 ```tsx
 import React from "react";
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 
 const MyConfig = () => {
   return (

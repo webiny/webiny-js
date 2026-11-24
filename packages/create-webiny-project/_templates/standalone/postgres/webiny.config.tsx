@@ -4,7 +4,7 @@ import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
 import { AcoPg } from "@webiny/api-aco-pg/project";
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single

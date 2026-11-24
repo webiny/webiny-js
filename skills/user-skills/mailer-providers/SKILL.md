@@ -31,7 +31,7 @@ Installing copies the source into `extensions/mailer/<provider>/` and adds the c
 
 ```tsx
 // Before
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 <MailerSmtp />;
 
 // After `yarn webiny extension mailer/resend`

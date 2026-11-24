@@ -1,7 +1,7 @@
 import React from "react";
 import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
-import { MailerSmtp } from "@webiny/mailer-smtp";
+import { MailerSmtp } from "webiny/extensions";
 
 export const Extensions = () => {
     return (

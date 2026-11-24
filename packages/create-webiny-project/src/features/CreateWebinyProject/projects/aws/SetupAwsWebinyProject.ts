@@ -22,7 +22,7 @@ export class SetupAwsWebinyProject {
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
         /*
-         * AWS hosting-type dependencies: the `webiny` CLI (AWS bin), Cognito (AWS-managed IdP), SMTP mail,
+         * AWS hosting-type dependencies: the `webiny` CLI (AWS bin), Cognito (AWS-managed IdP),
          * `@webiny/project-aws`, the optional peer of `webiny` behind `webiny/infra` and the AWS
          * implementations of the shared `webiny/extensions` namespaces, and `@webiny/db-dynamodb`,
          * the optional peer of `webiny` behind `webiny/api/db`.
@@ -31,7 +31,6 @@ export class SetupAwsWebinyProject {
             "@webiny/cli-aws": "latest",
             "@webiny/cognito": "latest",
             "@webiny/db-dynamodb": "latest",
-            "@webiny/mailer-smtp": "latest",
             "@webiny/project-aws": "latest"
         });
 
