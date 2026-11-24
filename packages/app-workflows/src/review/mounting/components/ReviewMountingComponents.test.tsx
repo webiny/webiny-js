@@ -95,7 +95,8 @@ vi.mock("~/review/presentation/reviewList/components/ReviewListView.js", async (
                     "data-show-content-type": String(props.showContentType),
                     "data-has-filter": String(props.contentTypeFilter !== null),
                     "data-initial-scope": props.initialScope ?? "",
-                    "data-initial-state": props.initialState ?? ""
+                    "data-initial-state": props.initialState ?? "",
+                    "data-prop-names": Object.keys(props).sort().join(",")
                 },
                 React.createElement("button", {
                     "data-testid": "route-change",
@@ -242,6 +243,34 @@ describe("ReviewContentReviewsRoute", () => {
             state: "all",
             other: "kept"
         });
+    });
+
+    it("gives the list only the route's scope and state, no content model, and keeps the heading", () => {
+        routeState.scope = "all";
+        routeState.state = "all";
+        render(
+            <ReviewContentReviewsRoute
+                route={route}
+                app={"cms"}
+                rowProvider={rowProvider}
+                showContentType={true}
+                contentTypes={contentTypes(["cms.article"])}
+                breadcrumbName="cms.content-reviews"
+            />
+        );
+
+        expect(screen.getByTestId("list-view").getAttribute("data-prop-names")).toBe(
+            [
+                "app",
+                "contentTypeFilter",
+                "initialScope",
+                "initialState",
+                "namespaces",
+                "onRouteChange",
+                "rowProvider",
+                "showContentType"
+            ].join(",")
+        );
     });
 
     it("opens the scope and state named by the route parameters and ignores unknown ones", () => {

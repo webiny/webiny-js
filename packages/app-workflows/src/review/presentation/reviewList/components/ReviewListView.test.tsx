@@ -5,6 +5,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { act } from "@testing-library/react";
+import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
@@ -89,6 +90,8 @@ interface RenderOptions {
     loading?: boolean;
     teams?: ITeam[];
     onRouteChange?: (params: ReviewListRouteParams) => void;
+    fixedContentTypeId?: string;
+    title?: string | null;
 }
 
 interface RerenderOptions {
@@ -142,6 +145,8 @@ const renderView = (options: RenderOptions = {}) => {
                     initialScope={route.initialScope}
                     initialState={route.initialState}
                     onRouteChange={options.onRouteChange}
+                    fixedContentTypeId={options.fixedContentTypeId}
+                    title={options.title}
                 />
             </DiContainerProvider>
         );
@@ -905,6 +910,37 @@ describe("ReviewListView", () => {
         expect(onRouteChange).not.toHaveBeenCalled();
     });
 
+    it("keeps the content model filter on a route changed from outside", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+        const { listReviews, rerenderRoute } = renderView({
+            contentTypeFilter: filter,
+            onRouteChange
+        });
+        await screen.findByText("Nothing assigned to you");
+        fireEvent.click(screen.getByRole("button", { name: "Filter" }));
+        const input = screen.getByPlaceholderText("All content models");
+        fireEvent.focus(input);
+        fireEvent.click(input);
+        fireEvent.click(screen.getByText("Article"));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        // Picking a content model writes nothing to the route.
+        expect(onRouteChange).not.toHaveBeenCalled();
+
+        rerenderRoute({ initialScope: "all", initialState: "all" });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "all",
+                where: { modelId: "article", state: "all" }
+            })
+        );
+        expect(screen.getByRole("button", { name: "Filter, 1 active" })).toBeTruthy();
+    });
+
     it("writes the default state to the route when Clear filters resets it", async () => {
         const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
         renderView({
@@ -1082,6 +1118,36 @@ describe("ReviewListView", () => {
 
         expect(screen.queryByText("Content model")).toBeNull();
         expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
+    });
+
+    it("lists one fixed content model without its column, filter or heading (entries list overlay)", async () => {
+        const { listReviews } = renderView({
+            showContentType: false,
+            contentTypeFilter: null,
+            fixedContentTypeId: "article",
+            title: null,
+            initialScope: "all",
+            initialState: "all",
+            results: [page([createReviewListItem({ id: "r1", title: "Fixed model" })])]
+        });
+        await screen.findByText("Fixed model");
+
+        expect(listReviews.execute).toHaveBeenCalledWith(
+            expect.objectContaining({ scope: "all", where: { modelId: "article", state: "all" } })
+        );
+        expect(screen.queryByText("Content model")).toBeNull();
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
+        expect(screen.queryByRole("heading", { name: "Content Reviews" })).toBeNull();
+    });
+
+    it("shows the given heading, Content Reviews by default", async () => {
+        renderView({ title: "Content Reviews - Article" });
+        expect(
+            await screen.findByRole("heading", { name: "Content Reviews - Article" })
+        ).toBeTruthy();
+        cleanup();
+        renderView();
+        expect(await screen.findByRole("heading", { name: "Content Reviews" })).toBeTruthy();
     });
 
     it("has no separate review state or step state select on Requested by me", async () => {
