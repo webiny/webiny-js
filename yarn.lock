@@ -26067,6 +26067,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
     "@webiny/project-extensions-aws": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
