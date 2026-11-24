@@ -10855,6 +10855,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-core@workspace:packages/api-event-handler-core"
   dependencies:
+    "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -10881,6 +10882,7 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    jsonwebtoken: "npm:^9.0.3"
     pino: "npm:^10.4.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"

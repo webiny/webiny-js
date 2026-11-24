@@ -1,5 +1,7 @@
 import { HttpRouter, RouteNotFoundError } from "~/index.js";
+import { codedErrorBody } from "~/index.js";
 import type { EventContext, IHttpResponse, NextFunction } from "~/index.js";
+import type { ICodedError } from "~/index.js";
 import { NodeHttpEventHandler } from "~/nodeHttp/abstractions/NodeHttpEventHandler.js";
 import { nodeHttpRequestFromIncomingMessage } from "~/nodeHttp/translators/NodeHttpTranslator.js";
 import { RequestBodyTooLargeError } from "~/nodeHttp/translators/RequestBodyTooLargeError.js";
@@ -31,14 +33,8 @@ class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
             }
             if (e && typeof e === "object" && (e as any).code) {
                 console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);
-                return {
-                    statusCode: 500,
-                    body: {
-                        message: (e as any).message,
-                        code: (e as any).code,
-                        data: (e as any).data ?? null
-                    }
-                };
+                const body = codedErrorBody(e as ICodedError);
+                return { statusCode: 500, body };
             }
             console.error("HTTP handler error:", e);
             return { statusCode: 500, body: { message: "Internal server error" } };

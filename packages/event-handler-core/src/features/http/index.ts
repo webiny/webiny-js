@@ -5,6 +5,8 @@ export * from "./toSseFrame.js";
 export * from "./parseJsonBody.js";
 export * from "./HttpResponseBuilder.js";
 export * from "./invokeHttpRoute.js";
+export * from "./corsHeaders.js";
+export * from "./codedErrorBody.js";
 export * from "./decorators/index.js";
 export * from "./feature.js";
 export * from "./createHttpRouteDefinition.js";

@@ -1,5 +1,6 @@
 import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
+import { corsHeaders } from "~/features/http/corsHeaders.js";
 
 const ALLOWED_HEADERS = [
     "accept",
@@ -42,10 +43,7 @@ const corsOriginHeaders = (request: IHttpRequest): Record<string, string> => {
     if (PRIVATE_FILE_PATH.test(request.path || "")) {
         return { "access-control-allow-origin": "*" };
     }
-    return {
-        "access-control-allow-origin": request.headers["origin"] || "*",
-        "access-control-allow-credentials": "true"
-    };
+    return corsHeaders(request.headers["origin"]);
 };
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {
