@@ -3,6 +3,7 @@ export * from "~/zeroPad.js";
 export * from "~/exception.js";
 export * from "~/createIdentifier.js";
 export * from "~/cursor.js";
+export * from "~/parseJson.js";
 export * from "~/headers.js";
 export * from "~/generateId.js";
 export * from "~/mdbid.js";

@@ -35,23 +35,32 @@ class UpdateEntryWithFlpDecoratorImpl implements UpdateEntryUseCase.Interface {
         }
 
         const entry = entryResult.value;
-        const folderId = entry?.location?.folderId;
+        const currentFolderId = entry?.location?.folderId || ROOT_FOLDER;
 
-        if (!folderId || folderId === ROOT_FOLDER) {
-            return this.decoratee.execute(model, id, input, options);
+        if (!(await this.canWriteToFolder(currentFolderId))) {
+            return Result.fail(new EntryNotAuthorizedError());
         }
 
-        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
-        const canAccessFolder = await this.folderLevelPermissions.canAccessFolderContent({
-            permissions,
-            rwd: "w"
-        });
-
-        if (!canAccessFolder) {
+        // Updating the location moves the entry: the destination folder must allow it too.
+        const targetFolderId = input.wbyAco_location?.folderId;
+        if (
+            targetFolderId &&
+            targetFolderId !== currentFolderId &&
+            !(await this.canWriteToFolder(targetFolderId))
+        ) {
             return Result.fail(new EntryNotAuthorizedError());
         }
 
         return this.decoratee.execute<T>(model, id, input, options);
+    }
+
+    private async canWriteToFolder(folderId: string): Promise<boolean> {
+        if (folderId === ROOT_FOLDER) {
+            return true;
+        }
+
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "w" });
     }
 }
 

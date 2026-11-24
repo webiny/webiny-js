@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import type { UploadTokenPayload } from "~/types.js";
 
 export const createUploadToken = (payload: UploadTokenPayload, secret: string): string => {
@@ -20,7 +20,10 @@ export const verifyUploadToken = (token: string, secret: string): UploadTokenPay
 
     const expectedSignature = createHmac("sha256", secret).update(encoded).digest("base64url");
 
-    if (signature !== expectedSignature) {
+    // Security: constant-time comparison of the signatures.
+    const actual = Buffer.from(signature);
+    const expected = Buffer.from(expectedSignature);
+    if (actual.length !== expected.length || !timingSafeEqual(actual, expected)) {
         throw new Error("Invalid token signature.");
     }
 

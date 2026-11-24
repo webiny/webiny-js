@@ -2,6 +2,7 @@ import { mdbid } from "@webiny/utils";
 import type { FileData, PresignedPostPayloadData } from "~/features/upload/types.js";
 import { FileKey } from "./FileKey.js";
 import { validateFileKey } from "~/domain/file/validateFileKey.js";
+import { InvalidFileKeyError } from "~/domain/file/errors.js";
 import { FileMimeType } from "~/domain/file/FileMimeType.js";
 import type { FileModifier } from "./FileUploadModifier.js";
 
@@ -11,6 +12,9 @@ export interface FileToSign {
     type: string;
     size: number;
 }
+
+// Security: a client id becomes a storage path segment; allow only CMS-style ids.
+const FILE_ID_PATTERN = /^([a-zA-Z0-9])([a-zA-Z0-9-]+)([a-zA-Z0-9])$/;
 
 /*
  * FileNormalizer normalizes file data, before it's signed for upload.
@@ -24,8 +28,23 @@ export class FileNormalizer {
     }
 
     async normalizeFile(payload: PresignedPostPayloadData): Promise<FileData> {
+        const keyPrefix = (payload.keyPrefix ?? "").trim();
+        const segments = keyPrefix.split("/").map(segment => segment.trim());
+        if (
+            keyPrefix.startsWith("/") ||
+            keyPrefix.includes("\\") ||
+            segments.some(segment => segment === ".." || segment === ".")
+        ) {
+            throw new InvalidFileKeyError({ key: keyPrefix, id: payload.id });
+        }
+
+        if (payload.id && !FILE_ID_PATTERN.test(payload.id)) {
+            throw new InvalidFileKeyError({ key: keyPrefix, id: payload.id });
+        }
+
         const data = {
             ...payload,
+            keyPrefix: keyPrefix || undefined,
             id: payload.id || mdbid(),
             type: payload.type || FileMimeType.fromName(payload.name).toString()
         };

@@ -69,6 +69,15 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
                 return rows.map(row => this.fromRow(row));
             }
 
+            // All folder level permissions of a folder type.
+            if (type) {
+                const rows = await this.knex<FlpRow>(this.tableName)
+                    .where("tenant", tenant)
+                    .andWhere("type", type);
+
+                return rows.map(row => this.fromRow(row));
+            }
+
             throw new WebinyError("Missing required parameters.", "LIST_FLP_MISSING_PARAMETERS", {
                 tenant,
                 type,

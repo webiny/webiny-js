@@ -6,6 +6,8 @@ import { CreateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { RolesRepository } from "../../roles/shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { canAssignRolesAndTeams } from "../../utils/canAssignRolesAndTeams.js";
+import { CANNOT_GRANT_PERMISSIONS_MESSAGE } from "../../utils/canGrantPermissions.js";
 import { createTeamValidation } from "./schema.js";
 import { TeamBeforeCreateEvent, TeamAfterCreateEvent } from "./events.js";
 import type { Team, CreateTeamInput } from "../shared/types.js";
@@ -48,6 +50,21 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
 
         if (roleIdsResult.isFail()) {
             return Result.fail(roleIdsResult.error);
+        }
+
+        // Security: a team may only carry roles whose permissions the caller holds. Checked on the
+        // resolved IDs: a slug would match no role by ID and so pass the check while granting the role.
+        const canAssign = await canAssignRolesAndTeams({
+            identityContext: this.identityContext,
+            rolesRepository: this.rolesRepository,
+            teamsRepository: this.repository,
+            roles: roleIdsResult.value,
+            teams: []
+        });
+        if (!canAssign) {
+            return Result.fail(
+                new NotAuthorizedError({ message: CANNOT_GRANT_PERMISSIONS_MESSAGE })
+            );
         }
 
         // Normalised up front so that null reaches neither the entity nor the published events.

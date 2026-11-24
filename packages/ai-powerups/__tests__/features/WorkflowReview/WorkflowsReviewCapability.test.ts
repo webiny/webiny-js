@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
     AiCapability,
     AiCapabilityDisabledError,
@@ -40,6 +41,9 @@ const createContainer = (capabilityItems: Record<string, unknown> = {}): Contain
     container.register(ListAiCapabilitiesUseCaseImplementation);
     ConfiguredAiModelsFeature.register(container);
     container.registerInstance(Encryption, new StubEncryption());
+    container.registerInstance(IdentityContext, {
+        getIdentity: () => ({ isAnonymous: () => false })
+    } as unknown as IdentityContext.Interface);
     registerRecordingLogger(container);
     registerFakeAi(container, [createAiModel("anthropic", "claude-haiku-4-5")]);
     registerFakeAiPowerUpsSettings(
@@ -84,9 +88,9 @@ describe("WorkflowsReviewCapability (R164, R174)", () => {
     });
 
     it("is listed for the settings screen without its guidance", async () => {
-        const rows = await createContainer().resolve(ListAiCapabilitiesUseCase).execute();
+        const result = await createContainer().resolve(ListAiCapabilitiesUseCase).execute();
 
-        expect(rows).toEqual([
+        expect(result.value).toEqual([
             {
                 id: "workflows.review",
                 label: "Workflow review",

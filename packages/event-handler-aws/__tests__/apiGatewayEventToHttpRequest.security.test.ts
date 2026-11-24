@@ -1,81 +1,10 @@
 /**
- * SECURITY: Prototype Pollution in apiGatewayEventToHttpRequest
- * ==============================================================
+ * SECURITY: Prototype pollution in apiGatewayEventToHttpRequest (CWE-1321)
  *
- * File:     src/translators/apiGatewayEventToHttpRequest.ts (line 17)
- * Severity: High
- * Category: CWE-1321 — Improperly Controlled Modification of Object Prototype Attributes
- *
- * Problem
- * -------
- * `JSON.parse(event.body)` is called with zero sanitization. When an attacker
- * sends a body like `{"__proto__":{"isAdmin":true}}`, JSON.parse creates an
- * object with `__proto__` as an **own property**. Any downstream code that
- * recursively merges this object (lodash.merge, deepmerge, custom config
- * builders, GraphQL context assembly) will walk into `target["__proto__"]`,
- * which resolves to `Object.prototype` via the getter — polluting **every
- * object in the runtime**.
- *
- * Attack vectors proven below:
- *   1. `__proto__` pollution — global Object.prototype poisoned via recursive merge
- *   2. `constructor.prototype` pollution — alternate path, same outcome
- *   3. No depth limit — 10k nested arrays pass through; downstream recursive
- *      processors (validators, deep-clone) stack-overflow
- *   4. No key-count limit — 100k-key objects parsed; hash-flood DoS
- *   5. Silent error swallowing — malformed JSON becomes a raw string with no
- *      error signal, causing type confusion downstream
- *
- * Fix (Option A — recommended): use `secure-json-parse`
- * -------------------------------------------------------
- * Battle-tested drop-in replacement for JSON.parse. Zero dependencies, ~2 KB.
- * Used by Fastify (handles billions of requests/day).
- * https://github.com/fastify/secure-json-parse
- *
- *   ```bash
- *   yarn workspace @webiny/event-handler-aws add secure-json-parse
- *   ```
- *
- *   ```ts
- *   import sjson from "secure-json-parse";
- *
- *   // In apiGatewayEventToHttpRequest:
- *   if (event.body) {
- *       try {
- *           body = sjson.parse(event.body, undefined, {
- *               protoAction: "remove",       // strips __proto__ keys
- *               constructorAction: "remove"  // strips constructor keys
- *           });
- *       } catch {
- *           body = event.body;
- *       }
- *   }
- *   ```
- *
- * `protoAction` / `constructorAction` accept "remove" (silent strip),
- * "error" (throw on detection), or "ignore" (default, current behavior).
- *
- *
- * Fix (Option B — zero dependencies): JSON.parse reviver
- * -------------------------------------------------------
- * If adding a dependency is undesirable, a reviver callback achieves the same:
- *
- *   ```ts
- *   function safeParse(raw: string): unknown {
- *       return JSON.parse(raw, (key, value) => {
- *           if (key === "__proto__" || key === "constructor") {
- *               return undefined; // stripped from output
- *           }
- *           return value;
- *       });
- *   }
- *   ```
- *
- * The reviver runs bottom-up for every key, so nested pollution paths like
- * `{"a":{"__proto__":{"x":1}}}` are also caught.
- *
- * Caveat: the reviver approach strips ALL `constructor` keys, including
- * legitimate ones. `secure-json-parse` only strips `constructor` when it
- * contains a `prototype` sub-key, which is more precise.
+ * The translator parses request bodies with `parseJsonBody`, which refuses a `__proto__` or
+ * `constructor.prototype` key. Such a body is not parsed: it stays the raw string, so a recursive
+ * merge further down can't reach `Object.prototype` through it. The GraphQL route then answers 400
+ * for a body that isn't a JSON object.
  */
 
 import { describe, it, expect, afterEach } from "vitest";
@@ -127,7 +56,7 @@ describe("apiGatewayEventToHttpRequest — security", () => {
     });
 
     describe("prototype pollution via __proto__", () => {
-        it("v1: __proto__ key in body pollutes Object.prototype through recursive merge", () => {
+        it("v1: a __proto__ key leaves the body unparsed, so a recursive merge can't pollute", () => {
             // Must construct JSON manually — JS literal `{ __proto__: ... }` sets
             // the prototype instead of creating an own property, so JSON.stringify
             // would drop it. An attacker sends raw JSON, not a JS literal.
@@ -137,35 +66,32 @@ describe("apiGatewayEventToHttpRequest — security", () => {
                 body: payload
             });
 
-            // Step 1: __proto__ key passes through JSON.parse as own property.
-            expect(Object.prototype.hasOwnProperty.call(request.body, "__proto__")).toBe(true);
+            expect(request.body).toBe(payload);
 
-            // Step 2: recursive merge (lodash.merge, deepmerge, etc.) triggers pollution.
             deepMerge({}, request.body);
 
-            // Step 3: every object in the runtime now has isAdmin === true.
-            expect((Object.prototype as any).isAdmin).toBe(true);
-            expect(({} as any).isAdmin).toBe(true);
+            expect((Object.prototype as any).isAdmin).toBeUndefined();
+            expect(({} as any).isAdmin).toBeUndefined();
         });
 
-        it("v2: __proto__ key in body pollutes Object.prototype through recursive merge", () => {
+        it("v2: a __proto__ key leaves the body unparsed, so a recursive merge can't pollute", () => {
             const payload = '{"__proto__":{"polluted":"yes"}}';
             const request = apiGatewayEventToHttpRequest({
                 ...baseV2Event,
                 body: payload
             });
 
-            expect(Object.prototype.hasOwnProperty.call(request.body, "__proto__")).toBe(true);
+            expect(request.body).toBe(payload);
 
             deepMerge({}, request.body);
 
-            expect((Object.prototype as any).polluted).toBe("yes");
-            expect(({} as any).polluted).toBe("yes");
+            expect((Object.prototype as any).polluted).toBeUndefined();
+            expect(({} as any).polluted).toBeUndefined();
         });
     });
 
     describe("prototype pollution via constructor.prototype", () => {
-        it("parsed body with constructor.prototype key enables pollution", () => {
+        it("a constructor.prototype key leaves the body unparsed", () => {
             const payload = JSON.stringify({
                 constructor: { prototype: { pwned: true } }
             });
@@ -174,32 +100,28 @@ describe("apiGatewayEventToHttpRequest — security", () => {
                 body: payload
             });
 
-            expect(request.body).toHaveProperty("constructor");
-            expect(request.body.constructor).toHaveProperty("prototype");
-            expect(request.body.constructor.prototype).toEqual({ pwned: true });
+            expect(request.body).toBe(payload);
+        });
+
+        it("still parses a constructor key without a prototype", () => {
+            const request = apiGatewayEventToHttpRequest({
+                ...baseV1Event,
+                body: JSON.stringify({ constructor: "Ford" })
+            });
+
+            expect(request.body).toEqual({ constructor: "Ford" });
         });
     });
 
     describe("no body size or depth limit", () => {
-        it("accepts arbitrarily deeply nested JSON without error", () => {
+        it("doesn't throw on arbitrarily deeply nested JSON", () => {
             const depth = 10_000;
-            const open = "[".repeat(depth);
-            const close = "]".repeat(depth);
-            const payload = `${open}1${close}`;
+            const payload = `${"[".repeat(depth)}1${"]".repeat(depth)}`;
 
-            const request = apiGatewayEventToHttpRequest({
-                ...baseV1Event,
-                body: payload
-            });
-
-            // V8 handles this, but downstream recursive visitors will stack-overflow.
-            expect(request.body).toBeDefined();
-
-            let cursor = request.body;
-            for (let i = 0; i < depth; i++) {
-                cursor = cursor[0];
-            }
-            expect(cursor).toBe(1);
+            // Parsing this deep may exceed the call stack; the body then stays the raw string.
+            expect(() => {
+                apiGatewayEventToHttpRequest({ ...baseV1Event, body: payload });
+            }).not.toThrow();
         });
 
         it("accepts payload with excessive key count (hash-flood vector)", () => {

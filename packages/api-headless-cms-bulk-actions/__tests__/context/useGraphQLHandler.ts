@@ -15,6 +15,8 @@ export interface UseGQLHandlerParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
+    /** CMS endpoint type the handler serves. Defaults to "manage". */
+    cmsType?: "manage" | "read" | "preview";
 }
 
 interface InvokeParams {
@@ -41,6 +43,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         identity: params.identity ?? createIdentity(),
         permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
         testProjectLicense: params.testProjectLicense,
+        cmsType: params.cmsType,
         extraCmsPlugins,
         legacyPlugins: fnPlugins,
         setup: container => {
@@ -65,6 +68,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         until,
         handler,
         invoke: (p: InvokeParams) => invoke(p),
+        invokeCms,
         introspect
     };
 };

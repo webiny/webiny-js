@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
-import { GetSettingsUseCase } from "~/features/GetSettings/index.js";
+import { GetSettingsUseCase, GetSettingsRepository } from "~/features/GetSettings/index.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/index.js";
 import { TransportSendData } from "~/types";
 
@@ -126,19 +126,19 @@ describe("Settings Transporter CRUD", () => {
         delete removedPasswordInput["password"];
 
         const updateResult = await saveSettings.execute({
-            host: "dummy-host2.webiny",
+            host: input.host,
             user: input.user,
-            from: input.from,
+            from: "from2@dummy-host.webiny",
             port: 587
         });
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
-            host: "dummy-host2.webiny",
+            host: input.host,
             port: 587,
             secure: false,
             user: input.user,
-            from: input.from,
+            from: "from2@dummy-host.webiny",
             replyTo: input.replyTo
         });
         expect(updateResult.value).not.toHaveProperty("password");
@@ -153,13 +153,33 @@ describe("Settings Transporter CRUD", () => {
                 password: input.password,
                 port: 587,
                 secure: false,
-                host: "dummy-host2.webiny"
+                from: "from2@dummy-host.webiny"
             },
             source: "storage"
         });
     });
 
-    it("should be possible to access settings when no permissions", async () => {
+    it("should require the password when the host changes", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute(input);
+
+        const updateResult = await saveSettings.execute({
+            host: "attacker-host.webiny",
+            user: input.user,
+            from: input.from
+        });
+
+        expect(updateResult.isFail()).toBe(true);
+        expect(updateResult.error?.code).toBe("Mailer/Settings/Validation");
+
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const afterUpdate = await getSettings.execute("Mailer/SmtpTransport");
+        expect(afterUpdate.value?.settings.host).toBe(input.host);
+    });
+
+    it("should not be possible to read settings without permissions", async () => {
         const fullCtx = await handle();
 
         const saveSettings = fullCtx.container.resolve(SaveSettingsUseCase);
@@ -174,8 +194,15 @@ describe("Settings Transporter CRUD", () => {
         const getSettings = context.container.resolve(GetSettingsUseCase);
         const result = await getSettings.execute("Mailer/SmtpTransport");
 
-        expect(result.isOk()).toBe(true);
-        expect(result.value).toEqual({
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/Settings/NotAuthorized");
+
+        /* Internal callers (sending mail) read the settings through the repository. */
+        const repository = context.container.resolve(GetSettingsRepository);
+        const repositoryResult = await repository.get("Mailer/SmtpTransport");
+
+        expect(repositoryResult.isOk()).toBe(true);
+        expect(repositoryResult.value).toEqual({
             settings: {
                 ...input,
                 port: 587,

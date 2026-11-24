@@ -10,3 +10,14 @@ export class CreateTenantError extends BaseError {
         });
     }
 }
+
+export class TenantAlreadyExistsError extends BaseError<{ id: string }> {
+    override readonly code = "TENANT_ALREADY_EXISTS" as const;
+
+    constructor(id: string) {
+        super({
+            message: `Tenant "${id}" already exists.`,
+            data: { id }
+        });
+    }
+}

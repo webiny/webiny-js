@@ -2,11 +2,26 @@ import { Result } from "@webiny/feature/api";
 import { RolesRepository } from "../abstractions.js";
 import type { Role, GetRoleInput, ListRolesInput } from "../types.js";
 import { ListCache } from "./ListCache.js";
+import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 
 class RolesRepositoryCachingDecoratorImpl implements RolesRepository.Interface {
-    private readonly cache = new ListCache<Role>();
+    // Security: roles are per tenant, so the cache is too (keyed by tenant ID).
+    private readonly caches = new Map<string, ListCache<Role>>();
 
-    constructor(private decoratee: RolesRepository.Interface) {}
+    constructor(
+        private tenantContext: TenantContext.Interface,
+        private decoratee: RolesRepository.Interface
+    ) {}
+
+    private get cache(): ListCache<Role> {
+        const tenantId = this.tenantContext.getTenant().id;
+        let cache = this.caches.get(tenantId);
+        if (!cache) {
+            cache = new ListCache<Role>();
+            this.caches.set(tenantId, cache);
+        }
+        return cache;
+    }
 
     async get(params: GetRoleInput): Promise<Result<Role, RolesRepository.Error>> {
         // Check cache first
@@ -82,5 +97,5 @@ class RolesRepositoryCachingDecoratorImpl implements RolesRepository.Interface {
 
 export const RolesRepositoryCachingDecorator = RolesRepository.createDecorator({
     decorator: RolesRepositoryCachingDecoratorImpl,
-    dependencies: []
+    dependencies: [TenantContext]
 });

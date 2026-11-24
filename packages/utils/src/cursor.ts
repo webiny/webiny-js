@@ -1,3 +1,4 @@
+import { parseJson } from "~/parseJson.js";
 export type CursorInput = string | number | (string | number)[] | null;
 export type CursorOutput = string | null;
 
@@ -25,7 +26,7 @@ export const decodeCursor = (cursor?: CursorOutput): CursorInput => {
         if (!value) {
             return null;
         }
-        return JSON.parse(value);
+        return parseJson(value);
     } catch (ex) {
         console.log("Utils decode cursor.");
         console.log(ex.message);

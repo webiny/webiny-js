@@ -141,6 +141,7 @@
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
+    "./admin/cms/field-renderers/index": "./admin/cms/field-renderers/index.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
     "./admin/cms/model": "./admin/cms/model.js",
@@ -165,7 +166,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "a61c79ebd88fe8da21054a30f2ecd1765e63f8582e9a7cc4f807292e6dae43b4",
+  "exportGenerationHash": "ab7d1c0e4b8d9ae3802a264caf8d9d8d89bc7397bcabd7c1cd8f5827fdd7b2fe",
   "webiny": {
     "publishFrom": "dist"
   }

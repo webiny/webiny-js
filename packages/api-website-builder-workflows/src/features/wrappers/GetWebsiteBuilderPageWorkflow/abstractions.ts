@@ -1,6 +1,10 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { Workflow } from "@webiny/api-workflows/domain/workflow/types.js";
-import type { WorkflowsNotAuthenticatedError } from "@webiny/api-workflows/domain/permissions/errors.js";
+import type {
+    WorkflowsNotAuthenticatedError,
+    WorkflowsNotAuthorizedError
+} from "@webiny/api-workflows/domain/permissions/errors.js";
+import type { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import type { GetWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetWorkflow/index.js";
 
 export interface GetWebsiteBuilderPageWorkflowInput {
@@ -10,6 +14,8 @@ export interface GetWebsiteBuilderPageWorkflowInput {
 export interface IGetWebsiteBuilderPageWorkflowUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     get: GetWorkflowUseCase.Error;
+    notAuthorized: WorkflowsNotAuthorizedError;
+    persistence: WorkflowPersistenceError;
 }
 
 type UseCaseError =

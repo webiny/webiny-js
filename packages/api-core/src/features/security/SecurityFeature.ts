@@ -11,6 +11,8 @@ import { TeamsFeature } from "./teams/feature.js";
 import { RolesFeature } from "~/features/security/roles/feature.js";
 import { SecurityAiToolsFeature } from "./ai/feature.js";
 import { CanAccessCurrentTenantFeature } from "./CanAccessCurrentTenant/index.js";
+import { ResolveIdentityTenantsFeature } from "./ResolveIdentityTenants/feature.js";
+import { LogInFeature } from "./login/feature.js";
 
 /**
  * Setup all security features in the DI container.
@@ -34,5 +36,7 @@ export const SecurityFeature = createFeature({
         TeamsFeature.register(container);
         GroupsTeamsAuthorizerFeature.register(container);
         SecurityAiToolsFeature.register(container);
+        ResolveIdentityTenantsFeature.register(container);
+        LogInFeature.register(container);
     }
 });

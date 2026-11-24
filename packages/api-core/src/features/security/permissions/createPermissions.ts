@@ -55,7 +55,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -80,7 +80,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return false;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -95,7 +95,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -115,7 +115,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -135,7 +135,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -163,7 +163,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -187,7 +187,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -204,7 +204,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -221,7 +221,7 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
-        const permissions = await this.getEntityPermissions(entity.permission);
+        const permissions = await this.getEntityPermissions(entity);
         if (!permissions.length) {
             return false;
         }
@@ -230,14 +230,24 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
         });
     }
 
-    private async getEntityPermissions(entityPermission: string): Promise<any[]> {
-        const permissions = await this.identityContext.getPermissions(entityPermission);
-        if (permissions.length) {
+    private async getEntityPermissions(entity: EntityLookup): Promise<any[]> {
+        const matching = await this.identityContext.getPermissions(entity.permission);
+        // Fall back to the schema wildcard (e.g. "test.*") — its flags apply to all entities.
+        const wildcard = matching.length
+            ? null
+            : await this.identityContext.getPermission(this.fullAccessName);
+        const permissions = matching.length ? matching : wildcard ? [wildcard] : [];
+
+        if (entity.actions.has("rwd")) {
             return permissions;
         }
-        // Fall back to the schema wildcard (e.g. "test.*") — its flags apply to all entities.
-        const wildcard = await this.identityContext.getPermission(this.fullAccessName);
-        return wildcard ? [wildcard] : [];
+        /* A wildcard restricted by rwd (e.g. { name: "wb.*", rwd: "r" }) says nothing about an
+           entity that has no rwd action, such as settings. Granting it would turn a read-only
+           wildcard into access to that entity, so it needs its own permission or an
+           unrestricted wildcard. */
+        return permissions.filter(permission => {
+            return permission.name === entity.permission || permission.rwd === undefined;
+        });
     }
 
     private async hasFullSchemaAccess(): Promise<boolean> {

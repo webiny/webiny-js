@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
+import { resolveTenantFilePath } from "~/utils/storagePaths.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstraction.Interface {
     private readonly metadataReader: MetadataReader.Interface;
@@ -30,10 +30,19 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
             return Result.fail(new FileNotFoundError(fileId));
         }
 
-        const storagePath = this.config.storagePath;
+        let filePath: string;
+        try {
+            // Security: the key comes from the file record, never read outside the tenant's files.
+            filePath = resolveTenantFilePath(
+                this.config.storagePath,
+                metadata.tenant,
+                metadata.bucketKey
+            );
+        } catch {
+            return Result.fail(new FileNotFoundError(fileId));
+        }
 
         try {
-            const filePath = resolveStoragePath(storagePath, metadata.bucketKey);
             const buffer = await fs.readFile(filePath);
             return Result.ok({ buffer, contentType: metadata.contentType });
         } catch (error) {

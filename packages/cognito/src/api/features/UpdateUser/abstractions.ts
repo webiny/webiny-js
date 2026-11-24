@@ -7,7 +7,13 @@ import type {
     UserValidationError
 } from "@webiny/api-core/features/users/shared/errors.js";
 import { UpdateUserUseCase as CoreUpdateUserUseCase } from "@webiny/api-core/features/users/UpdateUser/index.js";
-import type { CognitoUpdateUserError } from "~/api/domain/errors.js";
+import type { FindUserRecordsUseCase } from "@webiny/api-core/features/users/FindUserRecords/index.js";
+import type { RepositoryError } from "@webiny/api-core/features/users/shared/abstractions.js";
+import type {
+    CognitoSharedAccountError,
+    CognitoUpdateRollbackError,
+    CognitoUpdateUserError
+} from "~/api/domain/errors.js";
 
 export interface UpdateAdminUserInput {
     displayName?: string;
@@ -26,6 +32,10 @@ export interface IUpdateUserUseCaseErrors {
     emailTaken: EmailTakenError;
     updateAdminUser: CoreUpdateUserUseCase.Error;
     cognitoUpdateUser: CognitoUpdateUserError;
+    updateRollback: CognitoUpdateRollbackError;
+    sharedAccount: CognitoSharedAccountError;
+    findUserRecords: FindUserRecordsUseCase.Error;
+    repository: RepositoryError;
 }
 
 type IUpdateAdminUserError = IUpdateUserUseCaseErrors[keyof IUpdateUserUseCaseErrors];

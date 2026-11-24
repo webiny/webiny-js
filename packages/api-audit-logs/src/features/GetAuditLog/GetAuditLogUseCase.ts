@@ -12,6 +12,13 @@ class GetAuditLogUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     public async execute(id: string): Promise<Result<IAuditLog, UseCaseAbstraction.Error>> {
+        // Checked before the record is loaded, so the response does not reveal whether the ID exists.
+        if (!(await this.permissions.canAccessAll())) {
+            return Result.fail(
+                new NotAuthorizedError({ message: "You cannot access audit logs." })
+            );
+        }
+
         const result = await this.repository.get(id);
         if (result.isFail()) {
             return Result.fail(result.error);

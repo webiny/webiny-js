@@ -213,7 +213,9 @@ const getContentEntries = async (
 
     const method = getFetchMethod(type, context);
 
-    const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+    const modelsResult = await context.container
+        .resolve(ListModelsUseCase)
+        .execute({ includePrivate: false });
     if (modelsResult.isFail()) {
         throw modelsResult.error;
     }
@@ -279,6 +281,10 @@ interface GetContentEntryParams {
     type: "latest" | "published" | "exact";
 }
 
+/**
+ * The generic entry queries in this file take any model ID. Private models are internal (system
+ * data, no GraphQL schema of their own), so these queries treat them as unknown models.
+ */
 const getContentEntry = async (
     params: GetContentEntryParams
 ): Promise<Response<CmsEntryRecord | null> | NotAuthorizedResponse> => {
@@ -287,7 +293,9 @@ const getContentEntry = async (
     const method = getFetchMethod(type, context);
 
     const { modelId, id } = args.entry;
-    const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+    const modelsResult = await context.container
+        .resolve(ListModelsUseCase)
+        .execute({ includePrivate: false });
     if (modelsResult.isFail()) {
         throw modelsResult.error;
     }
@@ -315,7 +323,9 @@ const getContentEntry = async (
  */
 const createResolveDescription = (): GraphQLFieldResolver<any, any, CmsContext> => {
     return async (parent, _, context) => {
-        const modelsResult = await context.container.resolve(ListModelsUseCase).execute();
+        const modelsResult = await context.container
+            .resolve(ListModelsUseCase)
+            .execute({ includePrivate: false });
         if (modelsResult.isFail()) {
             return null;
         }
@@ -440,7 +450,7 @@ export const createContentEntriesSchema = ({
                     try {
                         const modelsResult = await context.container
                             .resolve(ListModelsUseCase)
-                            .execute();
+                            .execute({ includePrivate: false });
                         if (modelsResult.isFail()) {
                             return null;
                         }
@@ -475,7 +485,7 @@ export const createContentEntriesSchema = ({
                     const { modelIds, fields, query, limit = 10 } = args;
                     const modelsResult = await context.container
                         .resolve(ListModelsUseCase)
-                        .execute();
+                        .execute({ includePrivate: false });
                     if (modelsResult.isFail()) {
                         return new ErrorResponse(modelsResult.error);
                     }

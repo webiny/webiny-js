@@ -3,6 +3,7 @@ import { WebsocketsDisconnectUseCase } from "./abstractions.js";
 import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketForceDisconnectError } from "~/features/shared/errors.js";
 import { WebsocketForceDisconnectNotificationError } from "~/features/shared/errors.js";
+import { validateDisconnectWhere } from "./validateDisconnectWhere.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsTransport } from "~/transport/index.js";
@@ -18,6 +19,11 @@ class DisconnectUseCaseImpl implements WebsocketsDisconnectUseCase.Interface {
         params?: WebsocketsDisconnectUseCase.Params,
         notify = true
     ): Promise<Result<WebsocketsListConnectionsUseCase.RegistryData[], WebsocketsError>> {
+        const validationError = validateDisconnectWhere(params?.where);
+        if (validationError) {
+            return Result.fail(validationError);
+        }
+
         const result = await this.listConnections.execute(params);
         if (result.isFail()) {
             return Result.fail(result.error);

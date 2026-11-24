@@ -1,9 +1,21 @@
 import { createAbstraction } from "@webiny/feature/api";
 
+export interface ISchedulerPermissionsParams {
+    /**
+     * The namespace being accessed.
+     */
+    namespace: string;
+    /**
+     * `true` when `namespace` is only a prefix (listing with `namespace_startsWith`), so the
+     * check must cover every namespace starting with it.
+     */
+    startsWith?: boolean;
+}
+
 export interface ISchedulerPermissions {
     canHandle(namespace: string): boolean;
-    canRead(): Promise<boolean>;
-    onlyOwnRecords(): Promise<boolean>;
+    canRead(params: ISchedulerPermissionsParams): Promise<boolean>;
+    onlyOwnRecords(params: ISchedulerPermissionsParams): Promise<boolean>;
 }
 
 export const SchedulerPermissions =
@@ -11,6 +23,7 @@ export const SchedulerPermissions =
 
 export namespace SchedulerPermissions {
     export type Interface = ISchedulerPermissions;
+    export type Params = ISchedulerPermissionsParams;
 }
 
 export interface ISchedulerPermissionsResolver {

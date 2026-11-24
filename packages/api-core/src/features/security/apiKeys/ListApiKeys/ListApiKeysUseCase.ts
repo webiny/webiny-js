@@ -3,8 +3,9 @@ import { ListApiKeysUseCase as ListApiKeysUseCaseAbstraction } from "./abstracti
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { listApiKeysInputSchema } from "../shared/schemas.js";
-import type { ApiKey, ListApiKeysInput } from "../shared/types.js";
+import type { ListApiKeysInput, ReadableApiKey } from "../shared/types.js";
 import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { hideTokenUnlessFullAccess } from "../shared/hideToken.js";
 
 class ListApiKeysUseCaseImpl implements ListApiKeysUseCaseAbstraction.Interface {
     private repository: ApiKeysRepository.Interface;
@@ -20,7 +21,7 @@ class ListApiKeysUseCaseImpl implements ListApiKeysUseCaseAbstraction.Interface 
 
     async execute(
         params: ListApiKeysInput = {}
-    ): Promise<Result<ApiKey[], ListApiKeysUseCaseAbstraction.Error>> {
+    ): Promise<Result<ReadableApiKey[], ListApiKeysUseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new ApiKeyNotAuthorizedError());
@@ -31,7 +32,12 @@ class ListApiKeysUseCaseImpl implements ListApiKeysUseCaseAbstraction.Interface 
             return Result.fail(new ApiKeyValidationError(validation.error.issues[0].message));
         }
 
-        return this.repository.list(validation.data);
+        const result = await this.repository.list(validation.data);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        return Result.ok(await hideTokenUnlessFullAccess(this.identityContext, result.value));
     }
 }
 

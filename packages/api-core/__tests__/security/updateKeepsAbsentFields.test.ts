@@ -44,8 +44,12 @@ const setup = () => {
     const saved: { role?: Role; team?: Team } = {};
     const container = new Container();
 
+    // A full-access caller, so the grant rules on roles and teams pass.
     container.registerInstance(IdentityContext, {
-        getPermission: async () => ({ name: "*" })
+        getPermission: async () => ({ name: "*" }),
+        listPermissions: async () => [{ name: "*" }],
+        hasFullAccess: async () => true,
+        isAuthorizationEnabled: () => true
     } as unknown as IdentityContext.Interface);
     container.registerInstance(EventPublisher, {
         publish: async () => undefined
