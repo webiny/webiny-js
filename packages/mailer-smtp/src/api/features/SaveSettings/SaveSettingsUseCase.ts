@@ -34,7 +34,7 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
             return Result.fail(new SettingsValidationError(validationResult.error.issues));
         }
 
-        // Settings from `<MailerSmtp>` props win over stored ones, so saving would change nothing.
+        // Settings from `<Api.Mailer.Smtp>` props win over stored ones, so saving would change nothing.
         if (this.codeSettings.get(SMTP_TRANSPORT_NAME) !== null) {
             return Result.fail(new SettingsLockedByCode());
         }

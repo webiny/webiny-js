@@ -25,7 +25,8 @@
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
     { "path": "../feature" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../mailer-smtp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -81,7 +82,9 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
+      "@webiny/mailer-smtp": ["../mailer-smtp/src"]
     }
   }
 }

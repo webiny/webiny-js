@@ -24,6 +24,7 @@
     { "path": "../background-tasks" },
     { "path": "../lexical-editor-actions" },
     { "path": "../lexical-theme" },
+    { "path": "../mailer-smtp" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -77,6 +78,8 @@
       "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
       "@webiny/lexical-theme": ["../lexical-theme/src"],
+      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
+      "@webiny/mailer-smtp": ["../mailer-smtp/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

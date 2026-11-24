@@ -9,6 +9,7 @@ import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { CmsSchedulerFeature } from "@webiny/api-headless-cms-scheduler";
 import { MailerFeature } from "@webiny/api-mailer";
+import { MailerSmtpFeature } from "@webiny/mailer-smtp/api/index.js";
 import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
 import { DashboardAppFeature } from "@webiny/api-dashboard";
@@ -135,6 +136,8 @@ export async function registerApiRequestStack(
 
     // ── Supporting services ────────────────────────────────────
     MailerFeature.register(container);
+    // SMTP is the default transport. A transport registered by a project extension takes over when configured.
+    MailerSmtpFeature.register(container);
     RecordLockingAppFeature.register(container, {});
     AuditLogsFeature.register(container, {});
     DashboardAppFeature.register(container);

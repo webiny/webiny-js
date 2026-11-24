@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./index.js",
     "./api": "./api/index.js",
     "./admin/*": "./admin/*",
     "./*": "./*"
@@ -29,9 +28,6 @@
     "@webiny/app-mailer": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/project": "0.0.0",
-    "@webiny/project-extensions": "0.0.0",
-    "email-addresses": "^5.0.0",
     "mobx": "^7.1.7",
     "nodemailer": "^10.6.1",
     "react": "19.3.1",
