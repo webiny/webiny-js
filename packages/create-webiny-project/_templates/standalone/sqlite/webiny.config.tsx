@@ -53,8 +53,9 @@ export const Extensions = () => {
                 }
             />
             {/* Mail: SMTP, set in Settings > Mailer. To set it in code, pass host, port, user,
-                password and from. Replace it with <MailerResend />, <MailerSendGrid /> or
-                <MailerSes /> to send through one of those instead. */}
+                password and from. For Resend, SendGrid or Amazon SES, run
+                `yarn webiny extension mailer/resend` (or mailer/sendgrid, mailer/ses) and remove
+                <MailerSmtp />. */}
             <MailerSmtp />
         </>
     );

@@ -551,7 +551,7 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ## Mailer Features
 
-Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration. `@webiny/api-mailer` has no transport of its own. Each provider is its own package with one component the project renders in `webiny.config.tsx`: `<MailerSmtp />` (`@webiny/mailer-smtp`, which the project templates add), `<MailerResend />` (`@webiny/mailer-resend`), `<MailerSendGrid />` (`@webiny/mailer-sendgrid`) and `<MailerSes />` (`@webiny/mailer-ses`). Replacing SMTP means replacing that component. Resend, SendGrid and SES read `WEBINY_API_*` environment variables when mail is sent; see `skills/user-skills/mailer-providers`. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
+Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration. `@webiny/api-mailer` has no transport of its own. SMTP is the `@webiny/mailer-smtp` package: the project templates render `<MailerSmtp />` in `webiny.config.tsx`, and replacing SMTP means replacing that component. Other providers are extensions from the webiny/extensions repository, installed with `yarn webiny extension mailer/resend` (also `mailer/sendgrid`, `mailer/ses`); each renders an `Api.Extension` that registers a `MailTransportFactory` reading `WEBINY_API_*` environment variables when mail is sent. The same code is in this repository under `extensions/mailer/`. See `skills/user-skills/mailer-providers`. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
 
 `webiny/api/mailer` merges exports from both packages, so the settings use cases below are imported from the same path as before.
 
@@ -571,7 +571,7 @@ Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` 
 
 - **Import:** `import { MailTransportFactory, MailTransport } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
-- **Usage:** Register a custom mail transport (SES, an HTTP API). `createTransport()` takes no arguments, reads the transport's own configuration (env vars, stored settings, anything) and returns a `MailTransport`, or `null` when not configured. The last registered factory that returns a transport is used. Examples: `packages/mailer-resend`, `packages/mailer-sendgrid` and `packages/mailer-ses`.
+- **Usage:** Register a custom mail transport (SES, an HTTP API). `createTransport()` takes no arguments, reads the transport's own configuration (env vars, stored settings, anything) and returns a `MailTransport`, or `null` when not configured. The last registered factory that returns a transport is used. Examples: `extensions/mailer/resend`, `extensions/mailer/sendgrid` and `extensions/mailer/ses`.
 
 ### GetSettingsUseCase (Mailer)
 

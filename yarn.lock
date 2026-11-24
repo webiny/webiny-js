@@ -12764,7 +12764,6 @@ __metadata:
     "@aws-sdk/client-s3": "npm:^3.1175.0"
     "@aws-sdk/client-scheduler": "npm:^3.1175.0"
     "@aws-sdk/client-secrets-manager": "npm:^3.1175.0"
-    "@aws-sdk/client-sesv2": "npm:^3.1175.0"
     "@aws-sdk/client-sfn": "npm:^3.1175.0"
     "@aws-sdk/client-sqs": "npm:^3.1175.0"
     "@aws-sdk/client-sts": "npm:^3.1175.0"
@@ -13477,57 +13476,6 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     lexical: "npm:^0.53.0"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/mailer-resend@workspace:packages/mailer-resend":
-  version: 0.0.0-use.local
-  resolution: "@webiny/mailer-resend@workspace:packages/mailer-resend"
-  dependencies:
-    "@types/react": "npm:19.3.0"
-    "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
-    "@webiny/project-extensions": "npm:0.0.0"
-    react: "npm:19.3.1"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/mailer-sendgrid@workspace:packages/mailer-sendgrid":
-  version: 0.0.0-use.local
-  resolution: "@webiny/mailer-sendgrid@workspace:packages/mailer-sendgrid"
-  dependencies:
-    "@types/react": "npm:19.3.0"
-    "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
-    "@webiny/project-extensions": "npm:0.0.0"
-    react: "npm:19.3.1"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/mailer-ses@workspace:packages/mailer-ses":
-  version: 0.0.0-use.local
-  resolution: "@webiny/mailer-ses@workspace:packages/mailer-ses"
-  dependencies:
-    "@pulumi/aws": "npm:^7.55.0"
-    "@types/react": "npm:19.3.0"
-    "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
-    "@webiny/project-extensions": "npm:0.0.0"
-    "@webiny/project-extensions-aws": "npm:0.0.0"
-    react: "npm:19.3.1"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
   languageName: unknown
   linkType: soft
 
@@ -23271,6 +23219,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@aws-sdk/client-sesv2": "npm:^3.1175.0"
     "@babel/code-frame": "npm:^8.0.6"
     "@commitlint/cli": "npm:^21.2.4"
     "@commitlint/config-conventional": "npm:^21.2.4"
