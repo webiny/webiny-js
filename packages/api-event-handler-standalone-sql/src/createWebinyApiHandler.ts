@@ -43,7 +43,7 @@ const SelfHostedAuthRequestStorage: RequestStorage.Interface = {
  * What the handler puts in the root container, once per process: the storage (the connection and
  * its settings, its `RequestStorage` and its schema setup runner), the login storage's
  * `RequestStorage`, and the self-hosted JWT identity provider. The IdP is in the root so the
- * RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can resolve it; it only needs the
+ * RequestIdentityLoader (driven by HttpIdentityLoaderDecorator) can resolve it; it only needs the
  * token issuer, and the login use cases it registers resolve the credential storage from the
  * request's container.
  */

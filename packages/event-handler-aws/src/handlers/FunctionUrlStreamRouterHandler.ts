@@ -1,13 +1,15 @@
-import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
-import { codedErrorBody } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
-import type { ICodedError } from "@webiny/event-handler-core";
 import { FunctionUrlStreamEventHandler } from "~/abstractions/handlers/FunctionUrlStreamEventHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
 import { writeHttpResponseToStream } from "~/streaming/writeHttpResponseToStream.js";
 
-const JSON_HEADERS = { "content-type": "application/json" };
+const INTERNAL_SERVER_ERROR: IHttpResponse = {
+    statusCode: 500,
+    headers: { "content-type": "application/json" },
+    body: { message: "Internal server error" }
+};
 
 /**
  * Terminal handler for the Lambda Function URL response-streaming transport. Routes through the same
@@ -31,8 +33,9 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
         try {
             response = await this.router.route(request);
         } catch (e) {
-            const errorResponse = this.errorResponse(e);
-            await writeHttpResponseToStream(raw, errorResponse);
+            // The router turns its own errors into responses (`HttpErrorDecorator`), so this is rare.
+            console.error("HTTP handler error:", e);
+            await writeHttpResponseToStream(raw, INTERNAL_SERVER_ERROR);
             return;
         }
 
@@ -49,23 +52,6 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
                 raw.end();
             }
         }
-    }
-
-    private errorResponse(e: unknown): IHttpResponse {
-        if (e instanceof RouteNotFoundError) {
-            return { statusCode: 404, headers: JSON_HEADERS, body: { message: e.message } };
-        }
-        if (e && typeof e === "object" && (e as any).code) {
-            console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);
-            const body = codedErrorBody(e as ICodedError);
-            return { statusCode: 500, headers: JSON_HEADERS, body };
-        }
-        console.error("HTTP handler error:", e);
-        return {
-            statusCode: 500,
-            headers: JSON_HEADERS,
-            body: { message: "Internal server error" }
-        };
     }
 }
 

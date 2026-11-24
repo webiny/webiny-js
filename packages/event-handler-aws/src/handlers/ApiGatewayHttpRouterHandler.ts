@@ -1,12 +1,14 @@
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
-import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
-import { codedErrorBody } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import type { ICodedError } from "@webiny/event-handler-core";
 import { apiGatewayEventToHttpRequest } from "~/translators/apiGatewayEventToHttpRequest.js";
 import { httpResponseToApiGatewayResult } from "~/translators/httpResponseToApiGatewayResult.js";
 
+/*
+ * The router turns its own errors into responses (`HttpErrorDecorator`), so the catch below only sees
+ * an error from translating the response.
+ */
 class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interface {
     constructor(private router: HttpRouter.Interface) {}
 
@@ -16,20 +18,10 @@ class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interfac
             const response = await this.router.route(request);
             return httpResponseToApiGatewayResult(response);
         } catch (e) {
-            if (e instanceof RouteNotFoundError) {
-                return httpResponseToApiGatewayResult({
-                    statusCode: 404,
-                    body: { message: e.message }
-                });
-            }
-            if (e && typeof e === "object" && (e as any).code) {
-                console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);
-                const body = codedErrorBody(e as ICodedError);
-                return httpResponseToApiGatewayResult({ statusCode: 500, body });
-            }
             console.error("HTTP handler error:", e);
             return httpResponseToApiGatewayResult({
                 statusCode: 500,
+                headers: { "content-type": "application/json" },
                 body: { message: "Internal server error" }
             });
         }

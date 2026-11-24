@@ -21,10 +21,8 @@
  */
 import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { FunctionUrlStreamIdentityLoaderDecorator } from "~/handlers/FunctionUrlStreamIdentityLoaderDecorator.js";
-import { FunctionUrlStreamTenantLoaderDecorator } from "~/handlers/FunctionUrlStreamTenantLoaderDecorator.js";
-import { FunctionUrlStreamAssumePermissionsDecorator } from "~/handlers/FunctionUrlStreamAssumePermissionsDecorator.js";
 import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
+import { HttpRequestContextFeature } from "@webiny/api-event-handler-core";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type CreateWebinyStreamApiHandlerConfig = WebinyApiCompositionConfig;
@@ -32,24 +30,17 @@ export type CreateWebinyStreamApiHandlerConfig = WebinyApiCompositionConfig;
 export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandlerConfig) {
     return createStreamLambdaHandler({
         root: async container => {
+            // ── Tenant, identity, preview-as ───────────────────────────
+            // Registered BEFORE the transport, which registers HttpFeature, so these decorate
+            // HttpRouter from the inside and their responses and errors get the CORS headers. The
+            // order inside is in HttpRequestContextFeature.
+            HttpRequestContextFeature.register(container);
+
             // ── Transport ──────────────────────────────────────────────
             // Registers the Function URL event type + router + the streaming terminal handler.
             // Deliberately NOT alongside ApiGatewayFeature: both event types match the same payload
             // shape, so they must never share a container.
             FunctionUrlStreamFeature.register(container);
-
-            // ── Tenant + auth (extract → shared load) ──────────────────
-            // registerDecorator applies LATER registrations as the OUTER wrapper (whose execute() runs
-            // first). TENANT must be established before IDENTITY: API-key authentication resolves the
-            // key by tenant partition (ApiKeysRepository reads TenantContext.getTenant()), so identity
-            // establishment depends on the tenant. The reverse is not true. So register identity first
-            // (inner) and tenant last (outer) → tenant runs, then identity, then the router. Mirrors
-            // the buffered handler.
-            container.registerDecorator(FunctionUrlStreamIdentityLoaderDecorator);
-            container.registerDecorator(FunctionUrlStreamTenantLoaderDecorator);
-
-            // Preview-as. Mirrors the buffered handler.
-            container.registerDecorator(FunctionUrlStreamAssumePermissionsDecorator);
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Registers StepFunctionService, which is what a `TaskService.trigger()` resolves to

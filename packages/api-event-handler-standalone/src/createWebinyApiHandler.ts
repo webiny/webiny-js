@@ -20,12 +20,10 @@ import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
+import { HttpRequestContextFeature } from "@webiny/api-event-handler-core";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
-import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
-import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
-import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
 import {
     WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
@@ -162,22 +160,15 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             rootContainer.register(RandomProcessOwner).inSingletonScope();
             mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
+            // ── Tenant, identity, preview-as ───────────────────────────
+            // Registered BEFORE the transport, which registers HttpFeature, so these decorate
+            // HttpRouter from the inside and their responses and errors get the CORS headers. The
+            // order inside is in HttpRequestContextFeature.
+            HttpRequestContextFeature.register(rootContainer);
+
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
             NodeHttpFeature.register(rootContainer);
-
-            // ── Tenant + auth (extract → shared load) ──────────────────
-            // registerDecorator applies LATER registrations as the OUTER wrapper (whose execute()
-            // runs first). TENANT must be established before IDENTITY: API-key authentication resolves
-            // the key by tenant partition (ApiKeysRepository reads TenantContext.getTenant()), so
-            // identity depends on the tenant; the reverse is not true (RequestTenantLoader has no
-            // identity dependency). Register identity first (inner) and tenant last (outer) → tenant
-            // runs, then identity, then the router.
-            rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
-            rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
-
-            // Preview-as. Mirrors the AWS handler.
-            rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
 
             rootContainer.registerInstance(ApiRequestRegistration, { register: registerRequest });
 

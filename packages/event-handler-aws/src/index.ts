@@ -11,7 +11,6 @@ export { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform
 export type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamHandlerPlatform.js";
 export { LambdaWebHandlerPlatform } from "./LambdaWebHandlerPlatform.js";
 export * from "./streaming/awslambda.js";
-export * from "./streaming/writeHttpResponseToStream.js";
 
 export * from "./abstractions/index.js";
 export * from "./eventTypes/index.js";
