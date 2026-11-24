@@ -7,12 +7,14 @@ import { LexicalPreset } from "./Base/LexicalPreset.js";
 import { DefaultFieldRenderers } from "./Base/DefaultFieldRenderers.js";
 import { DefaultLayoutRenderers } from "./Base/DefaultLayoutRenderers.js";
 import { DefaultLexicalEditorConfig } from "~/components/LexicalEditor/DefaultLexicalEditorConfig.js";
+import { ThemeModeApplier } from "./Base/ThemeMode/ThemeModeApplier.js";
 import { AccessManagementExtension } from "~/modules/AccessManagementExtension.js";
 import { DebuggerExtension } from "~/modules/DebuggerExtension.js";
 
 const BaseExtension = () => {
     return (
         <>
+            <ThemeModeApplier />
             <Tenant />
             <Menus />
             <UserMenu />
