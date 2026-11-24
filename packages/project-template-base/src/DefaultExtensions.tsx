@@ -8,7 +8,6 @@ import { Collaboration } from "@webiny/collaboration";
 import { Notifications } from "@webiny/notifications";
 import { NotificationsIntegrations } from "@webiny/notifications-integrations";
 import { Webhooks } from "@webiny/webhooks";
-import { MailerSmtp } from "@webiny/mailer-smtp";
 
 /**
  * Default feature extensions every Webiny project gets, shared across hosting types (aws + server). The
@@ -28,7 +27,6 @@ export const DefaultExtensions = () => {
             <Notifications />
             <NotificationsIntegrations />
             <Webhooks />
-            <MailerSmtp />
         </>
     );
 };

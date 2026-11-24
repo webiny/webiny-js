@@ -730,6 +730,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-sesv2@npm:^3.1175.0":
+  version: 3.1175.0
+  resolution: "@aws-sdk/client-sesv2@npm:3.1175.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.981.1"
+    "@aws-sdk/credential-provider-node": "npm:^3.972.98"
+    "@aws-sdk/signature-v4-multi-region": "npm:^3.996.52"
+    "@aws-sdk/types": "npm:^3.975.1"
+    "@smithy/core": "npm:^3.40.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.1"
+    "@smithy/node-http-handler": "npm:^4.14.2"
+    "@smithy/types": "npm:^4.20.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/4593dd0c2b0721804bd5acc4b45c0554099ab223204dba109caabd7f6ab82ae53ce767c25f51991398963cd1cbe1dbf7017a0a68ddc1b68ea50f95d30ad765f2
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sfn@npm:^3.1175.0":
   version: 3.1175.0
   resolution: "@aws-sdk/client-sfn@npm:3.1175.0"
@@ -12747,6 +12764,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:^3.1175.0"
     "@aws-sdk/client-scheduler": "npm:^3.1175.0"
     "@aws-sdk/client-secrets-manager": "npm:^3.1175.0"
+    "@aws-sdk/client-sesv2": "npm:^3.1175.0"
     "@aws-sdk/client-sfn": "npm:^3.1175.0"
     "@aws-sdk/client-sqs": "npm:^3.1175.0"
     "@aws-sdk/client-sts": "npm:^3.1175.0"
@@ -13462,6 +13480,57 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/mailer-resend@workspace:packages/mailer-resend":
+  version: 0.0.0-use.local
+  resolution: "@webiny/mailer-resend@workspace:packages/mailer-resend"
+  dependencies:
+    "@types/react": "npm:19.3.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-extensions": "npm:0.0.0"
+    react: "npm:19.3.1"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/mailer-sendgrid@workspace:packages/mailer-sendgrid":
+  version: 0.0.0-use.local
+  resolution: "@webiny/mailer-sendgrid@workspace:packages/mailer-sendgrid"
+  dependencies:
+    "@types/react": "npm:19.3.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-extensions": "npm:0.0.0"
+    react: "npm:19.3.1"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/mailer-ses@workspace:packages/mailer-ses":
+  version: 0.0.0-use.local
+  resolution: "@webiny/mailer-ses@workspace:packages/mailer-ses"
+  dependencies:
+    "@pulumi/aws": "npm:^7.55.0"
+    "@types/react": "npm:19.3.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-extensions": "npm:0.0.0"
+    "@webiny/project-extensions-aws": "npm:0.0.0"
+    react: "npm:19.3.1"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/mailer-smtp@npm:0.0.0, @webiny/mailer-smtp@workspace:packages/mailer-smtp":
   version: 0.0.0-use.local
   resolution: "@webiny/mailer-smtp@workspace:packages/mailer-smtp"
@@ -13485,7 +13554,9 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/project-extensions": "npm:0.0.0"
+    email-addresses: "npm:^5.0.0"
     graphql: "npm:^16.15.0"
     mobx: "npm:^7.1.7"
     nodemailer: "npm:^10.6.1"
@@ -13786,7 +13857,6 @@ __metadata:
     "@webiny/collaboration": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
-    "@webiny/mailer-smtp": "npm:0.0.0"
     "@webiny/notifications": "npm:0.0.0"
     "@webiny/notifications-integrations": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
@@ -13819,7 +13889,6 @@ __metadata:
     debounce: "npm:^4.0.0"
     deepmerge: "npm:^4.3.1"
     dotenv: "npm:^18.0.10"
-    email-addresses: "npm:^5.0.0"
     exit-hook: "npm:^5.1.0"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"

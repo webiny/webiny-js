@@ -5,3 +5,6 @@ export { MailTransport } from "./domain/MailTransport/abstractions.js";
 export { MailTransportFactory } from "./domain/MailTransport/abstractions.js";
 export { MAILER_SETTINGS_PERMISSION } from "./constants.js";
 export { isMailboxAddress } from "./utils/isMailboxAddress.js";
+export { parseMailbox } from "./utils/parseMailbox.js";
+export type { Mailbox } from "./utils/parseMailbox.js";
+export type { TransportSendData, TransportSendResponse } from "./types.js";

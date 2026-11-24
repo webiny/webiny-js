@@ -31,9 +31,11 @@ export class SetupStandaloneWebinyProject {
         // Standalone hosting-type dependencies. The `webiny` CLI (server bin) sets
         // WEBINY_HOSTING_TYPE=standalone; `@webiny/project-standalone` registers the standalone hosting type
         // and resolves `@webiny/project-standalone-template` (the workspace base config) at build time;
-        // `@webiny/self-hosted-auth` is the built-in JWT identity provider (replaces Cognito).
+        // `@webiny/self-hosted-auth` is the built-in JWT identity provider (replaces Cognito);
+        // `@webiny/mailer-smtp` is the default mail transport the templates mount.
         addProjectDependencies(projectRootFolderPath, {
             "@webiny/cli-standalone": "latest",
+            "@webiny/mailer-smtp": "latest",
             "@webiny/project-standalone": "latest",
             "@webiny/project-standalone-template": "latest",
             "@webiny/self-hosted-auth": "latest"

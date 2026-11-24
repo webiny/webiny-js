@@ -4,6 +4,7 @@ import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
 import { AcoPg } from "@webiny/api-aco-pg/project";
+import { MailerSmtp } from "@webiny/mailer-smtp";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
@@ -64,6 +65,10 @@ export const Extensions = () => {
                     process.env.WEBINY_SELF_HOSTED_AUTH_SECRET || "dev-only-insecure-secret"
                 }
             />
+            {/* Mail: SMTP, set in Settings > Mailer. To set it in code, pass host, port, user,
+                password and from. Replace it with <MailerResend />, <MailerSendGrid /> or
+                <MailerSes /> to send through one of those instead. */}
+            <MailerSmtp />
         </>
     );
 };

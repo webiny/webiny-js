@@ -4,6 +4,7 @@ import { Api } from "webiny/extensions";
 import { Cli } from "webiny/extensions";
 import { Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
+import { MailerSmtp } from "@webiny/mailer-smtp";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
 import { StandaloneExtensions } from "./webiny.config.standalone.js";
@@ -128,7 +129,7 @@ export const Extensions = () => {
             <Api.Cms.ModelFieldCompression enabled={false} />
 
             {/* Mailer 👇 */}
-            <Api.Mailer.Smtp
+            <MailerSmtp
                 host={"smtp.webiny.com"}
                 port={587}
                 user={"smtp-user"}

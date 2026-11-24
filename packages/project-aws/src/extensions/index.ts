@@ -5,5 +5,4 @@ export { AwsDefaultRegion, AutoInstall } from "@webiny/project-extensions-aws/ex
 export * from "./ProjectAws.js";
 export * from "./ApiLambdaFunction.js";
 export * from "./ApiRoute.js";
-export { Smtp as MailerSmtp } from "@webiny/project/extensions/api/index.js";
 export { ApiWebFunction } from "@webiny/project-extensions-aws/extensions/index.js";

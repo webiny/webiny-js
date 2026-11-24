@@ -9,7 +9,7 @@ class SmtpMailTransportFactoryImpl implements MailTransportFactory.Interface {
 
     constructor(private getSettingsRepository: GetSettingsRepository.Interface) {}
 
-    // The settings come from code when `Api.Mailer.Smtp` sets them, otherwise from the settings form.
+    // The settings come from code when `<MailerSmtp>` props set them, otherwise from the settings form.
     async createTransport(): MailTransportFactory.Return {
         const result = await this.getSettingsRepository.get(this.name);
         const { settings } = result.value;
