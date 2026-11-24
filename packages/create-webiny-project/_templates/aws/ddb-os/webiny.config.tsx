@@ -1,7 +1,7 @@
 import React from "react";
 import { Infra } from "webiny/extensions";
+import { Api } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
-import { MailerSmtp } from "webiny/extensions";
 
 export const Extensions = () => {
     return (
@@ -16,8 +16,8 @@ export const Extensions = () => {
             {/* Mail: SMTP, set in Settings > Mailer. To set it in code, pass host, port, user,
                 password and from. For Resend, SendGrid or Amazon SES, run
                 `yarn webiny extension mailer/resend` (or mailer/sendgrid, mailer/ses) and remove
-                <MailerSmtp />. */}
-            <MailerSmtp />
+                <Api.Mailer.Smtp />. */}
+            <Api.Mailer.Smtp />
         </>
     );
 };

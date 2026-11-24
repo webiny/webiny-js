@@ -1,10 +1,10 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
 import { Infra } from "webiny/extensions";
+import { Api } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 import { HeadlessCmsPg } from "@webiny/api-headless-cms-pg/project";
 import { AcoPg } from "@webiny/api-aco-pg/project";
-import { MailerSmtp } from "webiny/extensions";
 
 /**
  * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
@@ -68,8 +68,8 @@ export const Extensions = () => {
             {/* Mail: SMTP, set in Settings > Mailer. To set it in code, pass host, port, user,
                 password and from. For Resend, SendGrid or Amazon SES, run
                 `yarn webiny extension mailer/resend` (or mailer/sendgrid, mailer/ses) and remove
-                <MailerSmtp />. */}
-            <MailerSmtp />
+                <Api.Mailer.Smtp />. */}
+            <Api.Mailer.Smtp />
         </>
     );
 };

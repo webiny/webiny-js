@@ -1,8 +1,9 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { ExtensionDefinitions } from "@webiny/project/extensions/index.js";
-import { Api } from "@webiny/project-extensions";
-import { Admin } from "@webiny/project-extensions";
+import { ApiExtension } from "@webiny/project/extensions/index.js";
+import { AdminExtension } from "@webiny/project/extensions/index.js";
+import { BuildParam } from "@webiny/project/extensions/index.js";
 import { MailerSmtpParamsSchema } from "./SmtpParamsSchema.js";
 
 /**
@@ -12,7 +13,7 @@ import { MailerSmtpParamsSchema } from "./SmtpParamsSchema.js";
  * A transport the project registers itself takes over from SMTP when it is configured.
  */
 export const MailerSmtp = defineExtension({
-    type: "Project/MailerSmtp",
+    type: "Api/Mailer/Smtp",
     tags: { runtimeContext: "project", hosting: "all" },
     description:
         "Send mail over SMTP. Pass host, port, user, password and from to set the settings in code, or leave them out to set them in the Mailer settings screen. Always pass the password through a build-time env var, e.g. `password={process.env.SMTP_PASSWORD!}`: the value is serialized into the build artifact, so hard-coding it would commit the secret to source control.",
@@ -22,9 +23,9 @@ export const MailerSmtp = defineExtension({
             <>
                 <ExtensionDefinitions src={import.meta.dirname + "/definitions.js"} />
                 {/* Api extensions. */}
-                <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
+                <ApiExtension src={import.meta.dirname + "/api/Extension.js"} />
                 {params.host ? (
-                    <Api.BuildParam
+                    <BuildParam
                         paramName={"Mailer.SmtpSettings"}
                         value={{
                             host: params.host,
@@ -38,7 +39,7 @@ export const MailerSmtp = defineExtension({
                 ) : null}
 
                 {/* Admin extensions. */}
-                <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
+                <AdminExtension src={import.meta.dirname + "/admin/Extension.js"} />
             </>
         );
     }

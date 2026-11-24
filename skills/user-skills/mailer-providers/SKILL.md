@@ -12,17 +12,17 @@ description: >
 ## TL;DR
 
 Webiny sends its mail (password reset codes, workflow notifications, the test email) through one
-mail transport. New projects render `<MailerSmtp />` in `webiny.config.tsx`. Resend, SendGrid and
-Amazon SES are extensions: install one with the CLI, then remove `<MailerSmtp />`. Each is
+mail transport. New projects render `<Api.Mailer.Smtp />` in `webiny.config.tsx`. Resend, SendGrid and
+Amazon SES are extensions: install one with the CLI, then remove `<Api.Mailer.Smtp />`. Each is
 configured with environment variables that the API reads when it sends mail, so API keys never go
 into the build.
 
-| Provider   | Install                                 | Component            |
-| ---------- | --------------------------------------- | -------------------- |
-| SMTP       | in the project template                 | `<MailerSmtp />`     |
-| Resend     | `yarn webiny extension mailer/resend`   | `<ResendMailer />`   |
-| SendGrid   | `yarn webiny extension mailer/sendgrid` | `<SendGridMailer />` |
-| Amazon SES | `yarn webiny extension mailer/ses`      | `<SesMailer />`      |
+| Provider   | Install                                 | Component             |
+| ---------- | --------------------------------------- | --------------------- |
+| SMTP       | in the project template                 | `<Api.Mailer.Smtp />` |
+| Resend     | `yarn webiny extension mailer/resend`   | `<ResendMailer />`    |
+| SendGrid   | `yarn webiny extension mailer/sendgrid` | `<SendGridMailer />`  |
+| Amazon SES | `yarn webiny extension mailer/ses`      | `<SesMailer />`       |
 
 Installing copies the source into `extensions/mailer/<provider>/` and adds the component to
 `webiny.config.tsx`. The code is the project's own from then on: it can be read and changed.
@@ -31,15 +31,15 @@ Installing copies the source into `extensions/mailer/<provider>/` and adds the c
 
 ```tsx
 // Before
-import { MailerSmtp } from "webiny/extensions";
-<MailerSmtp />;
+import { Api } from "webiny/extensions";
+<Api.Mailer.Smtp />;
 
 // After `yarn webiny extension mailer/resend`
 import { ResendMailer } from "./extensions/mailer/resend/ResendMailer.js";
 <ResendMailer />;
 ```
 
-Remove `<MailerSmtp />` and its import yourself. If both are rendered, the provider is used while
+Remove `<Api.Mailer.Smtp />` and its import yourself. If both are rendered, the provider is used while
 it is configured, and SMTP is the fallback.
 
 ## Environment variables
@@ -128,11 +128,11 @@ unverified sender or a missing permission only shows up when the provider is cal
 
 ## Common mistakes
 
-| Mistake                                         | Fix                                                                             |
-| ----------------------------------------------- | ------------------------------------------------------------------------------- |
-| Both `<MailerSmtp />` and the provider rendered | Remove `<MailerSmtp />` unless you want SMTP as a fallback                      |
-| Test email says no transport is configured      | Set the provider's required variables and redeploy the API                      |
-| BCC-only mail arrives in the sender's inbox     | Expected for Resend and SendGrid: they require `to`, so it is set to the sender |
+| Mistake                                              | Fix                                                                             |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Both `<Api.Mailer.Smtp />` and the provider rendered | Remove `<Api.Mailer.Smtp />` unless you want SMTP as a fallback                 |
+| Test email says no transport is configured           | Set the provider's required variables and redeploy the API                      |
+| BCC-only mail arrives in the sender's inbox          | Expected for Resend and SendGrid: they require `to`, so it is set to the sender |
 
 ## Related skills
 
