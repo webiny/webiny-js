@@ -30,7 +30,10 @@ export interface CorePostgresParams {
     readers: number;
     rdsProxy: boolean;
     network: PostgresNetwork;
-    /* On in production: deletion protection, a week of backups and a final snapshot. */
+    /*
+     * On in production: deletion protection, 35 days of backups that outlive the cluster, and a
+     * final snapshot.
+     */
     protect: boolean;
     /*
      * The engine version a new cluster gets: the latest 17.x. Replaced in tests, where there is no
@@ -151,7 +154,16 @@ export const CorePostgres = createAppModule({
                 enabledCloudwatchLogsExports: ["postgresql"],
                 copyTagsToSnapshot: true,
                 deletionProtection: protect,
-                backupRetentionPeriod: protect ? 7 : 1,
+                // Point-in-time restore is always on in Aurora; this is its window. Production
+                // keeps the maximum, 35 days, the same as DynamoDB's point-in-time recovery.
+                // Backup storage up to the cluster volume's size is free. Elsewhere, 1 day.
+                backupRetentionPeriod: protect ? 35 : 1,
+                // Production keeps its automated backups when the cluster is deleted, so it can
+                // still be restored to a point in time until the window runs out. The first day is
+                // free, later days are billed, and a region holds at most 40 retained automated
+                // backups. Elsewhere the default (true) applies: a destroyed environment leaves
+                // nothing behind.
+                deleteAutomatedBackups: protect ? false : undefined,
                 skipFinalSnapshot: !protect,
                 finalSnapshotIdentifier: finalSnapshotSuffix
                     ? pulumi.interpolate`webiny-pg-final-${finalSnapshotSuffix.output.hex}`
