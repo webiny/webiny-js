@@ -367,7 +367,7 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 
 - The `webiny` package files are at `packages/webiny/src/api/**/*.ts`
 - Each file is a pure re-export barrel — no logic, just `export { X } from "..."` statements
-- Event handlers follow the pattern `*Before*EventHandler` / `*After*EventHandler`
+- Event handlers follow the pattern `*Before*InputHandler` / `*After*InputHandler`
 - Use cases follow the pattern `*UseCase`
 - Repositories follow the pattern `*Repository`
 - Factories follow the pattern `*Factory`

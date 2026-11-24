@@ -6,7 +6,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import { NodeHttpEventHandler } from "@webiny/kernel-core/nodeHttp/index.js";
+import { NodeHttpInputHandler } from "@webiny/kernel-core/nodeHttp/index.js";
 import type { IHttpResponse } from "@webiny/kernel-core";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/RawAuthToken.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/RequestIdentityLoader.js";
@@ -74,15 +74,15 @@ const setup = (params: ISetupParams = {}) => {
     container.registerInstance(IdentityContext, {
         setIdentity: () => {}
     } as unknown as IdentityContext.Interface);
-    container.registerInstance(NodeHttpEventHandler, { execute: route });
+    container.registerInstance(NodeHttpInputHandler, { execute: route });
     container.registerDecorator(NodeHttpIdentityLoaderDecorator);
 
-    const handler = container.resolve(NodeHttpEventHandler);
+    const handler = container.resolve(NodeHttpInputHandler);
 
     return { handler, route };
 };
 
-const execute = (handler: NodeHttpEventHandler.Interface, token: string) => {
+const execute = (handler: NodeHttpInputHandler.Interface, token: string) => {
     const request = {
         headers: {
             authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ const execute = (handler: NodeHttpEventHandler.Interface, token: string) => {
         }
     } as unknown as IncomingMessage;
 
-    return handler.execute({ event: request, metadata: {} }, async () => undefined);
+    return handler.execute({ input: request, metadata: {} }, async () => undefined);
 };
 
 const unauthorized = (code: string, message: string): IHttpResponse => {

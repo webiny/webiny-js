@@ -1,8 +1,8 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import { EventHandler } from "~/features/events/EventHandler.js";
-import { EventType } from "~/features/events/EventType.js";
+import { InputHandler } from "~/features/events/InputHandler.js";
+import { InputType } from "~/features/events/InputType.js";
 import { Kernel } from "~/features/events/Kernel.js";
 import { KernelExecution } from "~/features/events/KernelExecution.js";
 import { StaleKernelExecutionError } from "~/features/events/StaleKernelExecutionError.js";
@@ -37,22 +37,22 @@ const retryingPlatform = KernelPlatform.createImplementation({
     dependencies: []
 });
 
-class AnyEventType implements EventType.Interface {
-    canHandle(_event: any): _event is any {
+class AnyInputType implements InputType.Interface {
+    matches(_input: any): _input is any {
         return true;
     }
     getHandlerAbstraction() {
-        return EventHandler;
+        return InputHandler;
     }
 }
 
-const anyEventType = EventType.createImplementation({
-    implementation: AnyEventType,
+const anyInputType = InputType.createImplementation({
+    implementation: AnyInputType,
     dependencies: []
 });
 
 describe("KernelExecution", () => {
-    class ReadExecutionHandler implements EventHandler.Interface {
+    class ReadExecutionHandler implements InputHandler.Interface {
         constructor(private kernelExecution: KernelExecution.Interface) {}
 
         async execute() {
@@ -61,7 +61,7 @@ describe("KernelExecution", () => {
         }
     }
 
-    const readExecutionHandler = EventHandler.createImplementation({
+    const readExecutionHandler = InputHandler.createImplementation({
         implementation: ReadExecutionHandler,
         dependencies: [KernelExecution]
     });
@@ -69,7 +69,7 @@ describe("KernelExecution", () => {
     it("passes inside its own execution, with a generated id per execution", async () => {
         const app = Kernel.init({
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(readExecutionHandler);
             }
         });
@@ -84,7 +84,7 @@ describe("KernelExecution", () => {
         const app = Kernel.init({
             platform: secondArgumentIdPlatform,
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(readExecutionHandler);
             }
         });
@@ -98,7 +98,7 @@ describe("KernelExecution", () => {
     it("tells two executions apart even when the platform gives them the same id", async () => {
         const kept: KernelExecution.Interface[] = [];
 
-        class KeepFirstExecutionHandler implements EventHandler.Interface {
+        class KeepFirstExecutionHandler implements InputHandler.Interface {
             constructor(private kernelExecution: KernelExecution.Interface) {}
 
             async execute() {
@@ -108,7 +108,7 @@ describe("KernelExecution", () => {
             }
         }
 
-        const keepFirstExecutionHandler = EventHandler.createImplementation({
+        const keepFirstExecutionHandler = InputHandler.createImplementation({
             implementation: KeepFirstExecutionHandler,
             dependencies: [KernelExecution]
         });
@@ -116,7 +116,7 @@ describe("KernelExecution", () => {
         const app = Kernel.init({
             platform: retryingPlatform,
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(keepFirstExecutionHandler);
             }
         });
@@ -132,7 +132,7 @@ describe("KernelExecution", () => {
 
         const app = Kernel.init({
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(readExecutionHandler);
             },
             child: container => {
@@ -149,7 +149,7 @@ describe("KernelExecution", () => {
     it("throws when a later kernel execution uses an earlier one's instance", async () => {
         const kept: KernelExecution.Interface[] = [];
 
-        class KeepExecutionHandler implements EventHandler.Interface {
+        class KeepExecutionHandler implements InputHandler.Interface {
             constructor(private kernelExecution: KernelExecution.Interface) {}
 
             async execute() {
@@ -159,14 +159,14 @@ describe("KernelExecution", () => {
             }
         }
 
-        const keepExecutionHandler = EventHandler.createImplementation({
+        const keepExecutionHandler = InputHandler.createImplementation({
             implementation: KeepExecutionHandler,
             dependencies: [KernelExecution]
         });
 
         const app = Kernel.init({
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(keepExecutionHandler);
             }
         });

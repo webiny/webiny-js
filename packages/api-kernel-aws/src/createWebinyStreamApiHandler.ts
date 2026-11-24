@@ -54,7 +54,7 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             // ── Background tasks: outbound dispatch only ───────────────
             // Registers StepFunctionService, which is what a `TaskService.trigger()` resolves to
             // actually start an execution. Without it the trigger throws deep inside the container
-            // and every caller that ignores the failure just carries on. `BackgroundTaskEventType`
+            // and every caller that ignores the failure just carries on. `BackgroundTaskInputType`
             // is deliberately left out, so the handler this also registers stays unreachable here:
             // Step Functions invokes the buffered function, never this one.
             BackgroundTasksAwsFeature.register(container);

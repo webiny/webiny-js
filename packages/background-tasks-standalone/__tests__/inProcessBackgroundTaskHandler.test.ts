@@ -5,7 +5,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import { BackgroundTaskEventHandler } from "@webiny/kernel-core";
+import { BackgroundTaskInputHandler } from "@webiny/kernel-core";
 import { RequestContainer } from "@webiny/kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
@@ -86,9 +86,10 @@ const createHandler = () => {
     other.register(RandomProcessOwner).inSingletonScope();
     other.register(KeyValueTaskClaim);
 
-    const handler = container.resolve(BackgroundTaskEventHandler);
+    const handler = container.resolve(BackgroundTaskInputHandler);
     const next = async () => undefined;
-    const run = () => handler.execute({ event } as any, next) as Promise<Record<string, unknown>>;
+    const run = () =>
+        handler.execute({ input: event } as any, next) as Promise<Record<string, unknown>>;
 
     return {
         run,

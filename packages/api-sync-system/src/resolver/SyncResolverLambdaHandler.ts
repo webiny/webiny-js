@@ -1,6 +1,6 @@
-import { SqsEventHandler } from "@webiny/kernel-aws/abstractions/handlers/SqsEventHandler.js";
-import type { SqsResult } from "@webiny/kernel-aws/abstractions/handlers/SqsEventHandler.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import { SqsInputHandler } from "@webiny/kernel-aws/abstractions/handlers/SqsInputHandler.js";
+import type { SqsResult } from "@webiny/kernel-aws/abstractions/handlers/SqsInputHandler.js";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import type { SQSEvent } from "@webiny/aws-sdk/types/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WebinyError } from "@webiny/error";
@@ -96,10 +96,10 @@ async function processResolverEvent(
     await app.resolve({ records });
 }
 
-class SyncResolverLambdaHandlerImpl implements SqsEventHandler.Interface {
+class SyncResolverLambdaHandlerImpl implements SqsInputHandler.Interface {
     constructor(private config: ISyncResolverConfig) {}
 
-    async execute(eventCtx: EventContext<SQSEvent>, _next: NextFunction): Promise<SqsResult> {
+    async execute(inputCtx: InputContext<SQSEvent>, _next: NextFunction): Promise<SqsResult> {
         const { createLambdaClient, createS3Client, createCognitoIdentityProviderClient } =
             this.config;
 
@@ -179,7 +179,7 @@ class SyncResolverLambdaHandlerImpl implements SqsEventHandler.Interface {
         ]);
 
         try {
-            await processResolverEvent(eventCtx.event.Records, this.config, plugins);
+            await processResolverEvent(inputCtx.input.Records, this.config, plugins);
             return { success: true };
         } catch (ex) {
             const error = convertException(ex);
@@ -189,7 +189,7 @@ class SyncResolverLambdaHandlerImpl implements SqsEventHandler.Interface {
     }
 }
 
-export const SyncResolverLambdaHandler = SqsEventHandler.createImplementation({
+export const SyncResolverLambdaHandler = SqsInputHandler.createImplementation({
     implementation: SyncResolverLambdaHandlerImpl,
     dependencies: [SyncResolverConfig]
 });

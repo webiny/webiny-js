@@ -4,8 +4,8 @@ import { KernelExecutionRunner } from "./abstractions.js";
 import { RootContainerFactory } from "./abstractions.js";
 import { KernelExecutionScope } from "./KernelExecutionScope.js";
 import { KernelPlatform } from "./KernelPlatform.js";
-import { EventType } from "./EventType.js";
-import { NoMatchingEventTypeError } from "./NoMatchingEventTypeError.js";
+import { InputType } from "./InputType.js";
+import { NoMatchingInputTypeError } from "./NoMatchingInputTypeError.js";
 import { executeChain } from "./chain.js";
 
 class KernelExecutionRunnerImpl implements KernelExecutionRunner.Interface {
@@ -32,19 +32,19 @@ class KernelExecutionRunnerImpl implements KernelExecutionRunner.Interface {
         // Everything from here on, building the execution's container included, runs in its scope.
         return this.scope.run(executionId, async () => {
             const child = await this.childContainerFactory.create(root, rawArgs);
-            // The event to match on is always the first raw argument (platforms never change this).
-            const event = rawArgs[0];
-            const eventTypes = child.resolveAll(EventType);
-            const matched = eventTypes.find(eventType => eventType.canHandle(event));
+            // The input to match on is always the first raw argument (platforms never change this).
+            const input = rawArgs[0];
+            const inputTypes = child.resolveAll(InputType);
+            const matched = inputTypes.find(inputType => inputType.matches(input));
 
             if (!matched) {
-                throw new NoMatchingEventTypeError(event, eventTypes);
+                throw new NoMatchingInputTypeError(input, inputTypes);
             }
 
             const abstraction = matched.getHandlerAbstraction();
             const handlers = child.resolveAll(abstraction);
 
-            return executeChain(handlers, event);
+            return executeChain(handlers, input);
         });
     }
 }

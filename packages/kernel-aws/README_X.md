@@ -28,13 +28,13 @@ Each handler receives `(event, next)`. Call `next()` to pass the event to the ne
 
 ```typescript
 import {
-  ApiGatewayEventHandler,
+  ApiGatewayInputHandler,
   type APIGatewayEvent,
   type APIGatewayProxyResult
 } from "@cloudi/aws";
 import type { NextFunction } from "@cloudi/aws";
 
-class ListUsersHandler implements ApiGatewayEventHandler.Interface {
+class ListUsersHandler implements ApiGatewayInputHandler.Interface {
   constructor(private userService: IUserService) {}
 
   async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
@@ -51,7 +51,7 @@ class ListUsersHandler implements ApiGatewayEventHandler.Interface {
   }
 }
 
-export const listUsersHandler = ApiGatewayEventHandler.createImplementation({
+export const listUsersHandler = ApiGatewayInputHandler.createImplementation({
   implementation: ListUsersHandler,
   dependencies: [UserService]
 });
@@ -115,13 +115,13 @@ Each AWS event type has a dedicated namespace with `.Interface` for type-safe im
 
 | Namespace                 | Event type            | Result type             |
 | ------------------------- | --------------------- | ----------------------- |
-| `ApiGatewayEventHandler`  | `APIGatewayEvent`     | `APIGatewayProxyResult` |
-| `SnsEventHandler`         | `SNSEvent`            | `SnsResult`             |
-| `SqsEventHandler`         | `SQSEvent`            | `SqsResult`             |
-| `S3EventHandler`          | `S3Event`             | `S3Result`              |
-| `DynamoDBEventHandler`    | `DynamoDBStreamEvent` | `DynamoDBResult`        |
-| `EventBridgeEventHandler` | `EventBridgeEvent`    | `EventBridgeResult`     |
-| `RawEventHandler`         | `any`                 | `any`                   |
+| `ApiGatewayInputHandler`  | `APIGatewayEvent`     | `APIGatewayProxyResult` |
+| `SnsInputHandler`         | `SNSEvent`            | `SnsResult`             |
+| `SqsInputHandler`         | `SQSEvent`            | `SqsResult`             |
+| `S3InputHandler`          | `S3Event`             | `S3Result`              |
+| `DynamoDBInputHandler`    | `DynamoDBStreamEvent` | `DynamoDBResult`        |
+| `EventBridgeInputHandler` | `EventBridgeEvent`    | `EventBridgeResult`     |
+| `RawInputHandler`         | `any`                 | `any`                   |
 
 All namespaces register under the shared `CloudHandler` abstraction so `createEventHandler` can resolve the full chain from the container.
 
@@ -194,7 +194,7 @@ export const handler = createEventHandler(async container => {
 Because handlers are middleware, you can wrap logic around the rest of the chain:
 
 ```typescript
-const timingHandler = ApiGatewayEventHandler.createImplementation({
+const timingHandler = ApiGatewayInputHandler.createImplementation({
   implementation: class {
     async execute(event: APIGatewayEvent, next: NextFunction) {
       const start = Date.now();
@@ -219,7 +219,7 @@ Mock dependencies for easy unit testing:
 ```typescript
 import { describe, it, expect } from "vitest";
 import { createEventHandler } from "@cloudi/aws";
-import { ApiGatewayEventHandler } from "@cloudi/aws";
+import { ApiGatewayInputHandler } from "@cloudi/aws";
 
 describe("ListUsersHandler", () => {
   it("should list users", async () => {
@@ -311,7 +311,7 @@ Return result to Lambda
 ```
 src/
 ├── abstractions/
-│   ├── functions/          # event handler namespaces (ApiGatewayEventHandler, SnsEventHandler, etc.)
+│   ├── functions/          # event handler namespaces (ApiGatewayInputHandler, SnsInputHandler, etc.)
 │   ├── CloudHandler.ts     # Base abstraction + ICloudHandler interface
 │   ├── AwsLambdaContext.ts
 │   └── AwsLambdaEvent.ts
@@ -340,7 +340,7 @@ Each namespace exposes:
 
 ```typescript
 // Type for implementing the handler
-namespace ApiGatewayEventHandler {
+namespace ApiGatewayInputHandler {
   type Interface = ICloudHandler<APIGatewayEvent, APIGatewayProxyResult>;
 
   function createImplementation<I extends Constructor<Interface>>(params: {
@@ -353,13 +353,13 @@ namespace ApiGatewayEventHandler {
 Usage:
 
 ```typescript
-class MyHandler implements ApiGatewayEventHandler.Interface {
+class MyHandler implements ApiGatewayInputHandler.Interface {
   async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
     // ...
   }
 }
 
-export const myHandler = ApiGatewayEventHandler.createImplementation({
+export const myHandler = ApiGatewayInputHandler.createImplementation({
   implementation: MyHandler,
   dependencies: [SomeDependency]
 });
@@ -391,7 +391,7 @@ Call `next()` from within `execute` to pass the event to the next handler in the
 - Keep handlers focused — one responsibility per handler
 - Guard early with `if (!matches) return next()` at the top of `execute`
 - Register services in singleton scope when they hold no per-request state
-- Use `ApiGatewayEventHandler`, `SnsEventHandler`, etc. for type safety even if the event type overlaps
+- Use `ApiGatewayInputHandler`, `SnsInputHandler`, etc. for type safety even if the event type overlaps
 
 ### ❌ Don't
 

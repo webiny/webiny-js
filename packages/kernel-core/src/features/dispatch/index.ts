@@ -1,1 +1,1 @@
-export { EventDispatcher } from "./EventDispatcher.js";
+export { InputDispatcher } from "./InputDispatcher.js";

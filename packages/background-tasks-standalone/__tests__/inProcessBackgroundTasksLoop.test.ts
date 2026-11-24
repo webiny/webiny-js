@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
@@ -38,7 +38,7 @@ const createLoop = (answers: Answer[]) => {
         finish = resolve;
     });
 
-    const dispatcher: EventDispatcher.Interface = {
+    const dispatcher: InputDispatcher.Interface = {
         dispatch: async <TResult>(event: unknown): Promise<TResult> => {
             const taskEvent = event as IBackgroundTaskEvent;
             received.push(taskEvent);
@@ -55,7 +55,7 @@ const createLoop = (answers: Answer[]) => {
 
     const logger = createMockLogger();
     const container = new Container();
-    container.registerInstance(EventDispatcher, dispatcher);
+    container.registerInstance(InputDispatcher, dispatcher);
     container.registerInstance(Logger, logger);
     container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(InProcessBackgroundTasksLoop).inSingletonScope();

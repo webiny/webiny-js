@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { BackgroundTasksAwsFeature } from "~/BackgroundTasksAwsFeature.js";
-import { BackgroundTaskEventHandler } from "@webiny/kernel-core";
+import { BackgroundTaskInputHandler } from "@webiny/kernel-core";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { RequestContainer } from "@webiny/kernel-core";
 import { AwsLambdaContext } from "@webiny/kernel-aws/abstractions/AwsLambdaContext.js";
@@ -21,7 +21,7 @@ const createNoopLogger = () => {
 };
 
 describe("BackgroundTasksAwsFeature", () => {
-    it("should register BackgroundTaskLambdaHandler under BackgroundTaskEventHandler", () => {
+    it("should register BackgroundTaskLambdaHandler under BackgroundTaskInputHandler", () => {
         const container = new Container();
 
         /* Provide required dependencies so DI resolution doesn't fail. */
@@ -37,7 +37,7 @@ describe("BackgroundTasksAwsFeature", () => {
 
         BackgroundTasksAwsFeature.register(container);
 
-        const handlers = container.resolveAll(BackgroundTaskEventHandler);
+        const handlers = container.resolveAll(BackgroundTaskInputHandler);
         expect(handlers.length).toBeGreaterThanOrEqual(1);
     });
 

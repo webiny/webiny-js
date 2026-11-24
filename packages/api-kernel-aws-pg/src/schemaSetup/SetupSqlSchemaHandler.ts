@@ -1,7 +1,7 @@
-import type { EventContext } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/kernel-core";
 import { AwsLambdaContext } from "@webiny/kernel-aws/abstractions/AwsLambdaContext.js";
 import {
-    SqlSchemaSetupEventHandler,
+    SqlSchemaSetupInputHandler,
     SqlSchemaSetupService,
     SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
     type ISqlSchemaSetupEvent,
@@ -14,15 +14,15 @@ import {
  * step fails, so the deploy fails with it. On Lambda it tells the service when the function will be
  * stopped, so the setup can fail with its own error before then.
  */
-class SetupSqlSchemaHandlerImpl implements SqlSchemaSetupEventHandler.Interface {
+class SetupSqlSchemaHandlerImpl implements SqlSchemaSetupInputHandler.Interface {
     public constructor(
         private readonly service: SqlSchemaSetupService.Interface,
         private readonly lambdaContext: AwsLambdaContext.Interface
     ) {}
 
-    public async execute(ctx: EventContext<ISqlSchemaSetupEvent>): Promise<ISqlSchemaSetupResult> {
+    public async execute(ctx: InputContext<ISqlSchemaSetupEvent>): Promise<ISqlSchemaSetupResult> {
         const serviceManifests =
-            ctx.event[SQL_SCHEMA_SETUP_EVENT_IDENTIFIER].serviceManifests ?? [];
+            ctx.input[SQL_SCHEMA_SETUP_EVENT_IDENTIFIER].serviceManifests ?? [];
         if (!Array.isArray(serviceManifests)) {
             throw new Error("`serviceManifests` must be a list of { name, manifest }.");
         }
@@ -36,7 +36,7 @@ class SetupSqlSchemaHandlerImpl implements SqlSchemaSetupEventHandler.Interface 
     }
 }
 
-export const SetupSqlSchemaHandler = SqlSchemaSetupEventHandler.createImplementation({
+export const SetupSqlSchemaHandler = SqlSchemaSetupInputHandler.createImplementation({
     implementation: SetupSqlSchemaHandlerImpl,
     dependencies: [SqlSchemaSetupService, AwsLambdaContext]
 });

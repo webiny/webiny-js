@@ -15,7 +15,7 @@ import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentity
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 import { ApiGatewayAssumePermissionsDecorator } from "~/handlers/ApiGatewayAssumePermissionsDecorator.js";
 import {
-    registerInboundEventTypes,
+    registerInboundInputTypes,
     registerWebinyApiChild,
     registerWebinyApiRoot
 } from "~/composition/index.js";
@@ -53,7 +53,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
             // WebSockets) with its handler. Kept in one function so the set is testable and an
             // inbound transport can't be half-wired.
-            registerInboundEventTypes(container);
+            registerInboundInputTypes(container);
 
             await registerWebinyApiRoot(container, config);
         },

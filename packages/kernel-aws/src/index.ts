@@ -14,15 +14,15 @@ export * from "./streaming/awslambda.js";
 export * from "./streaming/writeHttpResponseToStream.js";
 
 export * from "./abstractions/index.js";
-export * from "./eventTypes/index.js";
+export * from "./inputTypes/index.js";
 
-export { EventHandler, EventType, Container, Abstraction } from "@webiny/kernel-core";
+export { InputHandler, InputType, Container, Abstraction } from "@webiny/kernel-core";
 export type {
     IHttpRequest,
     IHttpResponse,
     NextFunction,
     KernelSetup,
-    EventContext
+    InputContext
 } from "@webiny/kernel-core";
 export * from "./translators/apiGatewayEventToHttpRequest.js";
 export * from "./translators/httpResponseToApiGatewayResult.js";

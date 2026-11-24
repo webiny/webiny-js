@@ -13,7 +13,7 @@ const REQUEST_ID_HEADER = "lambda-web-request-id";
  * The request id comes in a request header instead, and is used as the execution id, so a log line
  * or an error can be matched to the response the caller got.
  *
- * Events dispatched through `EventDispatcher` are executions too, and get a generated id: they are
+ * Events dispatched through `InputDispatcher` are executions too, and get a generated id: they are
  * not requests, so they have no header to read.
  */
 class LambdaWebKernelPlatformImpl implements KernelPlatform.Interface {

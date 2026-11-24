@@ -5,7 +5,7 @@ import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
-import { S3EventHandler } from "@webiny/kernel-aws";
+import { S3InputHandler } from "@webiny/kernel-aws";
 import { S3TenantLoaderDecorator } from "~/handlers/S3TenantLoaderDecorator.js";
 
 function s3Event(bucketName: string): any {
@@ -31,7 +31,7 @@ function setup() {
     });
 
     let innerCalled = false;
-    container.registerInstance(S3EventHandler, {
+    container.registerInstance(S3InputHandler, {
         async execute() {
             innerCalled = true;
         }
@@ -39,7 +39,7 @@ function setup() {
     container.registerDecorator(S3TenantLoaderDecorator);
 
     return {
-        handler: container.resolve(S3EventHandler),
+        handler: container.resolve(S3InputHandler),
         rawTenantId: () => container.resolve(RawTenantId).get(),
         establishCalled: () => establishCalled,
         innerCalled: () => innerCalled
@@ -50,7 +50,7 @@ describe("S3TenantLoaderDecorator", () => {
     it("extracts tenant from the bucket name into RawTenantId, runs the load, then the inner handler", async () => {
         const t = setup();
         await t.handler.execute(
-            { event: s3Event("acme-uploads"), metadata: {} } as any,
+            { input: s3Event("acme-uploads"), metadata: {} } as any,
             async () => undefined
         );
 
@@ -62,7 +62,7 @@ describe("S3TenantLoaderDecorator", () => {
     it("takes only the first bucket-name segment", async () => {
         const t = setup();
         await t.handler.execute(
-            { event: s3Event("acme-eu-central-1-uploads"), metadata: {} } as any,
+            { input: s3Event("acme-eu-central-1-uploads"), metadata: {} } as any,
             async () => undefined
         );
         expect(t.rawTenantId()).toBe("acme");
@@ -71,7 +71,7 @@ describe("S3TenantLoaderDecorator", () => {
     it("sets null when there is no bucket (loader then defaults to root)", async () => {
         const t = setup();
         await t.handler.execute(
-            { event: { Records: [] }, metadata: {} } as any,
+            { input: { Records: [] }, metadata: {} } as any,
             async () => undefined
         );
         expect(t.rawTenantId()).toBeNull();

@@ -1,4 +1,4 @@
-import type { EventDispatcher } from "@webiny/kernel-core";
+import type { InputDispatcher } from "@webiny/kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
 import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { ShutdownSignal } from "~/domain/ShutdownSignal.js";
@@ -12,7 +12,7 @@ const MAX_TASK_DURATION_MS = 86_400_000;
 
 interface ITaskExecutionParams {
     event: IBackgroundTaskEvent;
-    dispatcher: EventDispatcher.Interface;
+    dispatcher: InputDispatcher.Interface;
     slots: ConcurrencySlots;
     shutdown: ShutdownSignal.Interface;
     logger: Logger.Interface;

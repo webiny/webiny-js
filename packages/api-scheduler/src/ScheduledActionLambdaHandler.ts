@@ -1,14 +1,14 @@
-import { ScheduledActionEventHandler } from "@webiny/kernel-core";
+import { ScheduledActionInputHandler } from "@webiny/kernel-core";
 import type { IScheduledActionEvent } from "@webiny/kernel-core";
 import type { IScheduledActionResult } from "@webiny/kernel-core";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 import type { IExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 
-class ScheduledActionLambdaHandlerImpl implements ScheduledActionEventHandler.Interface {
+class ScheduledActionLambdaHandlerImpl implements ScheduledActionInputHandler.Interface {
     constructor(
         private executeScheduledAction: IExecuteScheduledActionUseCase,
         private tenantContext: TenantContext.Interface,
@@ -16,10 +16,10 @@ class ScheduledActionLambdaHandlerImpl implements ScheduledActionEventHandler.In
     ) {}
 
     async execute(
-        eventCtx: EventContext<IScheduledActionEvent>,
+        inputCtx: InputContext<IScheduledActionEvent>,
         _next: NextFunction
     ): Promise<IScheduledActionResult> {
-        const input = eventCtx.event[SCHEDULED_ACTION_EVENT_IDENTIFIER];
+        const input = inputCtx.input[SCHEDULED_ACTION_EVENT_IDENTIFIER];
 
         /**
          * Use the current tenant if the payload doesn't carry one — keeps backward compatibility
@@ -50,7 +50,7 @@ class ScheduledActionLambdaHandlerImpl implements ScheduledActionEventHandler.In
     }
 }
 
-export const ScheduledActionLambdaHandler = ScheduledActionEventHandler.createImplementation({
+export const ScheduledActionLambdaHandler = ScheduledActionInputHandler.createImplementation({
     implementation: ScheduledActionLambdaHandlerImpl,
     dependencies: [ExecuteScheduledActionUseCase, TenantContext, GetTenantByIdUseCase]
 });

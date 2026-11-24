@@ -3,11 +3,11 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { Container } from "@webiny/di";
 import type { Constructor } from "@webiny/di";
 import { Kernel } from "~/index.js";
-import { EventDispatcher } from "~/index.js";
+import { InputDispatcher } from "~/index.js";
 import type { KernelSetup } from "~/index.js";
 import type { KernelPlatform } from "~/index.js";
 import { createNodeHttpServer } from "~/nodeHttp/server/createNodeHttpServer.js";
-import { KernelEventDispatcher } from "~/nodeHttp/server/KernelEventDispatcher.js";
+import { KernelInputDispatcher } from "~/nodeHttp/server/KernelInputDispatcher.js";
 import { handleShutdownSignals } from "~/nodeHttp/server/handleShutdownSignals.js";
 import { InFlightRequests } from "~/nodeHttp/server/InFlightRequests.js";
 
@@ -16,7 +16,7 @@ export interface CreateServerHandlerOptions {
     child?: KernelSetup;
     /**
      * The platform the server runs on. Each request is invoked with the `http.IncomingMessage` as
-     * its only raw argument, and events dispatched through `EventDispatcher` with the event, so a
+     * its only raw argument, and events dispatched through `InputDispatcher` with the event, so a
      * platform reading request headers has to check which one it got. Defaults to
      * `NoopKernelPlatform`: every execution gets a generated id.
      */
@@ -60,8 +60,8 @@ export async function createServerHandler(
     const app = Kernel.init({
         root: async container => {
             // Registered first, so everything `root` registers can depend on it.
-            const dispatcher = new KernelEventDispatcher(app, runInBootContext);
-            container.registerInstance(EventDispatcher, dispatcher);
+            const dispatcher = new KernelInputDispatcher(app, runInBootContext);
+            container.registerInstance(InputDispatcher, dispatcher);
 
             await options.root(container);
         },

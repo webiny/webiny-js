@@ -5,7 +5,7 @@ import { Container } from "@webiny/di";
 import { RawAuthToken as RawAuthTokenImpl } from "@webiny/api-core/features/requestContext/RawAuthToken.js";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
-import { NodeHttpEventHandler } from "@webiny/kernel-core/nodeHttp/index.js";
+import { NodeHttpInputHandler } from "@webiny/kernel-core/nodeHttp/index.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/nodeHttp/NodeHttpIdentityLoaderDecorator.js";
 
 function setup() {
@@ -20,7 +20,7 @@ function setup() {
     });
 
     let innerCalled = false;
-    container.registerInstance(NodeHttpEventHandler, {
+    container.registerInstance(NodeHttpInputHandler, {
         async execute() {
             innerCalled = true;
             return { statusCode: 200, headers: {}, body: "" };
@@ -28,12 +28,12 @@ function setup() {
     });
     container.registerDecorator(NodeHttpIdentityLoaderDecorator);
 
-    const handler = container.resolve(NodeHttpEventHandler);
+    const handler = container.resolve(NodeHttpInputHandler);
 
     return {
         run: async (headers: Record<string, string>) => {
             const event = { headers } as any;
-            await handler.execute({ event, metadata: {} } as any, async () => undefined);
+            await handler.execute({ input: event, metadata: {} } as any, async () => undefined);
         },
         token: () => container.resolve(RawAuthToken).get(),
         establishCalled: () => establishCalled,

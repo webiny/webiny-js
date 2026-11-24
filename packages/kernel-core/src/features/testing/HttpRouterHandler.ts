@@ -1,15 +1,15 @@
-import { TestHttpEventHandler } from "./TestHttpEventHandler.js";
+import { TestHttpInputHandler } from "./TestHttpInputHandler.js";
 import { HttpRouter, RouteNotFoundError } from "~/features/http/abstractions.js";
-import type { EventContext } from "~/features/events/EventHandler.js";
+import type { InputContext } from "~/features/events/InputHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 import type { IHttpRouter } from "~/features/http/abstractions.js";
 
-class HttpRouterHandlerImpl implements TestHttpEventHandler.Interface {
+class HttpRouterHandlerImpl implements TestHttpInputHandler.Interface {
     constructor(private router: IHttpRouter) {}
 
-    async execute(ctx: EventContext, _next: NextFunction): Promise<any> {
+    async execute(ctx: InputContext, _next: NextFunction): Promise<any> {
         try {
-            return await this.router.route(ctx.event);
+            return await this.router.route(ctx.input);
         } catch (e) {
             if (e instanceof RouteNotFoundError) {
                 return { statusCode: 404, body: { message: e.message } };
@@ -30,7 +30,7 @@ class HttpRouterHandlerImpl implements TestHttpEventHandler.Interface {
     }
 }
 
-export const HttpRouterHandler = TestHttpEventHandler.createImplementation({
+export const HttpRouterHandler = TestHttpInputHandler.createImplementation({
     implementation: HttpRouterHandlerImpl,
     dependencies: [HttpRouter]
 });

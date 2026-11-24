@@ -159,7 +159,7 @@ return async (event: any, context: Context): Promise<any> => {
 
 - Don't store references to context/event across invocations
 - Don't modify the context or event objects
-- Don't use when typed event handlers (ApiGatewayEventHandler, etc.) are more appropriate
+- Don't use when typed event handlers (ApiGatewayInputHandler, etc.) are more appropriate
 
 ## See Also
 

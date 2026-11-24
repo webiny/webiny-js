@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
@@ -44,7 +44,7 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
     container.register(ProcessShutdownSignal).inSingletonScope();
     const shutdown = container.resolve(ShutdownSignal);
 
-    const dispatcher: EventDispatcher.Interface = {
+    const dispatcher: InputDispatcher.Interface = {
         dispatch: <TResult>(event: unknown): Promise<TResult> => {
             const taskEvent = event as IBackgroundTaskEvent;
             return new Promise<TResult>(resolve => {
@@ -57,7 +57,7 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
         }
     };
 
-    container.registerInstance(EventDispatcher, dispatcher);
+    container.registerInstance(InputDispatcher, dispatcher);
     const logger = createMockLogger();
     container.registerInstance(Logger, logger);
     container.register(InProcessBackgroundTasksLoop).inSingletonScope();

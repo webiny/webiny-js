@@ -22,7 +22,7 @@ import { RECOVER_GRACE_MS } from "~/claim/constants.js";
 import { RecoverTasksHandler } from "~/recovery/RecoverTasksHandler.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
-import { TaskRecoverEventHandler } from "~/recovery/TaskRecoverEventHandler.js";
+import { TaskRecoverInputHandler } from "~/recovery/TaskRecoverInputHandler.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
 const TTL_MS = 60_000;
@@ -96,7 +96,7 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(RecoverTasksHandler);
 
-    const handler = container.resolve(TaskRecoverEventHandler);
+    const handler = container.resolve(TaskRecoverInputHandler);
     const claim = container.resolve(TaskClaim);
     const next = async () => undefined;
     const recover = () => handler.execute({} as any, next);

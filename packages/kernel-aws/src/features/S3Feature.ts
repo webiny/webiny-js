@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { S3EventType } from "../eventTypes/S3EventType.js";
+import { S3InputType } from "../inputTypes/S3InputType.js";
 
 /**
  * Registers transport-only S3 event handling: the event type (recognises S3 Lambda events).
@@ -11,6 +11,6 @@ import { S3EventType } from "../eventTypes/S3EventType.js";
 export const S3Feature = createFeature({
     name: "S3",
     register(container) {
-        container.register(S3EventType);
+        container.register(S3InputType);
     }
 });

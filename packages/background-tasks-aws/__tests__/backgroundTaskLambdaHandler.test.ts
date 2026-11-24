@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { BackgroundTasksAwsFeature } from "~/BackgroundTasksAwsFeature.js";
-import { BackgroundTaskEventHandler } from "@webiny/kernel-core";
+import { BackgroundTaskInputHandler } from "@webiny/kernel-core";
 import { RequestContainer } from "@webiny/kernel-core";
 import { AwsLambdaContext } from "@webiny/kernel-aws/abstractions/AwsLambdaContext.js";
 import {
@@ -52,12 +52,12 @@ const createHandler = () => {
 
     BackgroundTasksAwsFeature.register(container);
 
-    const handler = container.resolve(BackgroundTaskEventHandler);
+    const handler = container.resolve(BackgroundTaskInputHandler);
     return { handler, container };
 };
 
 describe("BackgroundTaskLambdaHandler", () => {
-    it("should resolve from container via BackgroundTaskEventHandler", () => {
+    it("should resolve from container via BackgroundTaskInputHandler", () => {
         const { handler } = createHandler();
 
         expect(handler).toBeDefined();
@@ -83,7 +83,7 @@ describe("BackgroundTaskLambdaHandler", () => {
         };
 
         try {
-            await handler.execute({ event } as any, async () => {});
+            await handler.execute({ input: event } as any, async () => {});
         } catch {
             /* Expected — TaskRunner will fail without full context. */
         }
@@ -103,7 +103,7 @@ describe("BackgroundTaskLambdaHandler", () => {
 
         /* The handler should not throw during timer creation — it falls back to Date.now(). */
         try {
-            await handler.execute({ event } as any, async () => {});
+            await handler.execute({ input: event } as any, async () => {});
         } catch (err) {
             /* TaskRunner fails downstream (no task definitions), but the timer was created. */
             expect(err).toBeDefined();
@@ -133,7 +133,7 @@ describe("BackgroundTaskLambdaHandler", () => {
         };
 
         try {
-            await handler.execute({ event } as any, async () => {});
+            await handler.execute({ input: event } as any, async () => {});
         } catch {
             /* Expected. */
         }
@@ -161,7 +161,7 @@ describe("BackgroundTaskLambdaHandler", () => {
 
         BackgroundTasksAwsFeature.register(container);
 
-        const handler = container.resolve(BackgroundTaskEventHandler);
+        const handler = container.resolve(BackgroundTaskInputHandler);
 
         const event = {
             webinyTaskId: "task-3",
@@ -174,7 +174,7 @@ describe("BackgroundTaskLambdaHandler", () => {
          * The factory is lazy — called when TaskRunner polls the timer.
          * We verify the AwsLambdaContext was resolved (handler reached the timer creation). */
         try {
-            await handler.execute({ event } as any, async () => {});
+            await handler.execute({ input: event } as any, async () => {});
         } catch {
             /* TaskRunner fails downstream — expected. */
         }

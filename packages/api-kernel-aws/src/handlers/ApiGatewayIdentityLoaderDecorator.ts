@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayEventHandler } from "@webiny/kernel-aws";
+import { ApiGatewayInputHandler } from "@webiny/kernel-aws";
 import { httpResponseToApiGatewayResult } from "@webiny/kernel-aws";
 import {
     RawAuthToken,
@@ -7,7 +7,7 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { extractAuthToken } from "@webiny/api-kernel-core";
 import { rejectedTokenResponse } from "@webiny/api-kernel-core";
 
@@ -22,15 +22,15 @@ import { rejectedTokenResponse } from "@webiny/api-kernel-core";
  * Registered BEFORE ApiGatewayTenantLoaderDecorator so identity is established before tenant
  * (see ApiGatewayFeature).
  */
-class ApiGatewayIdentityLoaderDecoratorImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewayIdentityLoaderDecoratorImpl implements ApiGatewayInputHandler.Interface {
     constructor(
         private rawAuthToken: RawAuthToken.Interface,
         private identityLoader: IRequestIdentityLoader,
-        private decoratee: ApiGatewayEventHandler.Interface
+        private decoratee: ApiGatewayInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
-        const headers = ctx.event?.headers as Record<string, string>;
+    async execute(ctx: InputContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
+        const headers = ctx.input?.headers as Record<string, string>;
         const authToken = extractAuthToken(headers);
 
         this.rawAuthToken.set(authToken);
@@ -48,7 +48,7 @@ class ApiGatewayIdentityLoaderDecoratorImpl implements ApiGatewayEventHandler.In
     }
 }
 
-export const ApiGatewayIdentityLoaderDecorator = ApiGatewayEventHandler.createDecorator({
+export const ApiGatewayIdentityLoaderDecorator = ApiGatewayInputHandler.createDecorator({
     decorator: ApiGatewayIdentityLoaderDecoratorImpl,
     dependencies: [RawAuthToken, RequestIdentityLoader]
 });

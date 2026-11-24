@@ -1,4 +1,4 @@
-import { FunctionUrlStreamEventHandler } from "@webiny/kernel-aws";
+import { FunctionUrlStreamInputHandler } from "@webiny/kernel-aws";
 import { LambdaResponseStream } from "@webiny/kernel-aws";
 import { writeHttpResponseToStream } from "@webiny/kernel-aws";
 import {
@@ -7,7 +7,7 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { extractAuthToken } from "@webiny/api-kernel-core";
 import { rejectedTokenResponse } from "@webiny/api-kernel-core";
 import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
@@ -21,17 +21,17 @@ import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
  * Registered BEFORE FunctionUrlStreamTenantLoaderDecorator so identity is established before tenant.
  */
 class FunctionUrlStreamIdentityLoaderDecoratorImpl
-    implements FunctionUrlStreamEventHandler.Interface
+    implements FunctionUrlStreamInputHandler.Interface
 {
     constructor(
         private rawAuthToken: RawAuthToken.Interface,
         private identityLoader: IRequestIdentityLoader,
         private responseStream: LambdaResponseStream.Interface,
-        private decoratee: FunctionUrlStreamEventHandler.Interface
+        private decoratee: FunctionUrlStreamInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<any>, next: NextFunction): Promise<void> {
-        const headers = headersFromFunctionUrlEvent(ctx.event);
+    async execute(ctx: InputContext<any>, next: NextFunction): Promise<void> {
+        const headers = headersFromFunctionUrlEvent(ctx.input);
         const authToken = extractAuthToken(headers);
 
         this.rawAuthToken.set(authToken);
@@ -52,7 +52,7 @@ class FunctionUrlStreamIdentityLoaderDecoratorImpl
 }
 
 export const FunctionUrlStreamIdentityLoaderDecorator =
-    FunctionUrlStreamEventHandler.createDecorator({
+    FunctionUrlStreamInputHandler.createDecorator({
         decorator: FunctionUrlStreamIdentityLoaderDecoratorImpl,
         dependencies: [RawAuthToken, RequestIdentityLoader, LambdaResponseStream]
     });

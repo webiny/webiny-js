@@ -4,30 +4,30 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { Abstraction } from "@webiny/di";
 import type { Container } from "@webiny/di";
-import { EventDispatcher } from "~/index.js";
-import { EventType } from "~/index.js";
-import type { IEventHandler } from "~/index.js";
-import type { IEventType } from "~/index.js";
+import { InputDispatcher } from "~/index.js";
+import { InputType } from "~/index.js";
+import type { IInputHandler } from "~/index.js";
+import type { IInputType } from "~/index.js";
 import { createServerHandler } from "~/nodeHttp/createServerHandler.js";
 
 interface IPingEvent {
     ping: string;
 }
 
-const PingEventHandler = new Abstraction<IEventHandler<IPingEvent, unknown>>("PingEventHandler");
+const PingInputHandler = new Abstraction<IInputHandler<IPingEvent, unknown>>("PingInputHandler");
 
-class PingEventTypeImpl implements IEventType<IPingEvent> {
-    canHandle(event: any): event is IPingEvent {
-        return typeof event?.ping === "string";
+class PingInputTypeImpl implements IInputType<IPingEvent> {
+    matches(input: any): input is IPingEvent {
+        return typeof input?.ping === "string";
     }
 
     getHandlerAbstraction() {
-        return PingEventHandler;
+        return PingInputHandler;
     }
 }
 
-const PingEventType = EventType.createImplementation({
-    implementation: PingEventTypeImpl,
+const PingInputType = InputType.createImplementation({
+    implementation: PingInputTypeImpl,
     dependencies: []
 });
 
@@ -39,10 +39,10 @@ const createDispatcher = async () => {
 
     await createServerHandler({
         root: container => {
-            container.register(PingEventType);
-            container.registerInstance(PingEventHandler, {
+            container.register(PingInputType);
+            container.registerInstance(PingInputHandler, {
                 execute: async ctx => {
-                    return { pong: ctx.event.ping, override: requestOverride.getStore() };
+                    return { pong: ctx.input.ping, override: requestOverride.getStore() };
                 }
             });
         },
@@ -51,10 +51,10 @@ const createDispatcher = async () => {
         }
     });
 
-    return rootContainer!.resolve(EventDispatcher);
+    return rootContainer!.resolve(InputDispatcher);
 };
 
-describe("EventDispatcher on the Node server", () => {
+describe("InputDispatcher on the Node server", () => {
     it("runs a dispatched event through its handler and returns the result", async () => {
         const dispatcher = await createDispatcher();
 
@@ -77,7 +77,7 @@ describe("EventDispatcher on the Node server", () => {
         const dispatcher = await createDispatcher();
 
         await expect(dispatcher.dispatch({ unknown: true })).rejects.toThrow(
-            "No event type matched"
+            "No input type matched"
         );
     });
 });

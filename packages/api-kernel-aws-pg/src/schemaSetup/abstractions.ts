@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
 import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/kernel-core";
+import type { IInputHandler } from "@webiny/kernel-core";
 import type { IServiceManifest } from "@webiny/api-core/features/serviceDiscovery/index.js";
 
 export const SQL_SCHEMA_SETUP_EVENT_IDENTIFIER = "WebinySqlSchemaSetup";
@@ -28,17 +28,17 @@ export interface ISqlSchemaSetupResult {
     done: string[];
 }
 
-export interface ISqlSchemaSetupEventHandler extends IEventHandler<
+export interface ISqlSchemaSetupInputHandler extends IInputHandler<
     ISqlSchemaSetupEvent,
     ISqlSchemaSetupResult
 > {}
 
-export const SqlSchemaSetupEventHandler = createAbstraction<ISqlSchemaSetupEventHandler>(
+export const SqlSchemaSetupInputHandler = createAbstraction<ISqlSchemaSetupInputHandler>(
     "Db/Sql/SchemaSetupEventHandler"
 );
 
-export namespace SqlSchemaSetupEventHandler {
-    export type Interface = ISqlSchemaSetupEventHandler;
+export namespace SqlSchemaSetupInputHandler {
+    export type Interface = ISqlSchemaSetupInputHandler;
 }
 
 export interface ISqlSchemaSetupConnection {

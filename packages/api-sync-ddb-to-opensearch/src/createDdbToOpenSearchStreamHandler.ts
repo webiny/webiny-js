@@ -1,6 +1,6 @@
 import { Container } from "@webiny/feature/api";
 import { RequestContainer } from "@webiny/kernel-core";
-import { DynamoDBEventHandler } from "@webiny/kernel-aws/abstractions/handlers/DynamoDBEventHandler.js";
+import { DynamoDBInputHandler } from "@webiny/kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { DdbToOpenSearchFeature } from "./features/DdbToOpenSearchFeature.js";
@@ -26,9 +26,9 @@ export const createDdbToOpenSearchStreamHandler = (
 
     DdbToOpenSearchFeature.register(container, { client });
 
-    const handler = container.resolve(DynamoDBEventHandler);
+    const handler = container.resolve(DynamoDBInputHandler);
 
     return async (event: DynamoDBStreamEvent): Promise<void> => {
-        await handler.execute({ event, metadata: {} }, () => Promise.resolve());
+        await handler.execute({ input: event, metadata: {} }, () => Promise.resolve());
     };
 };

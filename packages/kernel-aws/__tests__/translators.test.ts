@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
-import { ApiGatewayEventType } from "~/index.js";
+import { ApiGatewayInputType } from "~/index.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
 import { HttpFeature, HttpRouteDefinition, HttpRouteHandler } from "@webiny/kernel-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/kernel-core";
@@ -41,7 +41,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
     it("should translate APIGatewayProxyEvent, route, and translate back", async () => {
         const handler = createLambdaHandler({
             root: container => {
-                container.register(ApiGatewayEventType);
+                container.register(ApiGatewayInputType);
                 HttpFeature.register(container);
                 const route = makeRoute(200, { ok: true });
                 container.registerInstance(HttpRouteDefinition, route.definition);
@@ -57,7 +57,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
     it("should return 404 for unknown routes", async () => {
         const handler = createLambdaHandler({
             root: container => {
-                container.register(ApiGatewayEventType);
+                container.register(ApiGatewayInputType);
                 HttpFeature.register(container);
                 container.register(ApiGatewayHttpRouterHandler);
             }
@@ -92,7 +92,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
 
         const handler = createLambdaHandler({
             root: container => {
-                container.register(ApiGatewayEventType);
+                container.register(ApiGatewayInputType);
                 HttpFeature.register(container);
                 container.registerInstance(HttpRouteDefinition, bufferRoute.definition);
                 container.register(ApiGatewayHttpRouterHandler);

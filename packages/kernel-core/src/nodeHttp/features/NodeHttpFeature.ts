@@ -1,12 +1,12 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { HttpFeature } from "~/index.js";
-import { NodeHttpEventType } from "~/nodeHttp/eventTypes/NodeHttpEventType.js";
+import { NodeHttpInputType } from "~/nodeHttp/inputTypes/NodeHttpInputType.js";
 import { NodeHttpRouterHandler } from "~/nodeHttp/handlers/NodeHttpRouterHandler.js";
 
 /**
  * Registers the transport-only Node HTTP server infrastructure:
- * - NodeHttpEventType (recognises an `IncomingMessage`)
+ * - NodeHttpInputType (recognises an `IncomingMessage`)
  * - HttpFeature (HttpRouter + SecureHeadersDecorator)
  * - NodeHttpRouterHandler (terminal: translates IncomingMessage → IHttpRequest, routes via HttpRouter)
  *
@@ -17,7 +17,7 @@ import { NodeHttpRouterHandler } from "~/nodeHttp/handlers/NodeHttpRouterHandler
 export const NodeHttpFeature = createFeature({
     name: "NodeHttp",
     register(container: Container) {
-        container.register(NodeHttpEventType);
+        container.register(NodeHttpInputType);
         HttpFeature.register(container);
         container.register(NodeHttpRouterHandler);
     }

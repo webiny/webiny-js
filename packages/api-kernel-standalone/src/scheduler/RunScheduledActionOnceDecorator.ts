@@ -1,10 +1,10 @@
 import { hostname } from "node:os";
-import { ScheduledActionEventHandler } from "@webiny/kernel-core";
+import { ScheduledActionInputHandler } from "@webiny/kernel-core";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/kernel-core";
 import type { IScheduledActionEvent } from "@webiny/kernel-core";
 import type { IScheduledActionEventPayload } from "@webiny/kernel-core";
 import type { IScheduledActionResult } from "@webiny/kernel-core";
-import type { EventContext } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/kernel-core";
 import type { NextFunction } from "@webiny/kernel-core";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -50,21 +50,21 @@ const expiresIn = (ms: number): Date => {
  * action at its due time, and only the process that gets it runs the action. Rescheduling changes
  * the due time, so a moved action gets a fresh claim.
  */
-class RunScheduledActionOnceDecoratorImpl implements ScheduledActionEventHandler.Interface {
+class RunScheduledActionOnceDecoratorImpl implements ScheduledActionInputHandler.Interface {
     public constructor(
         private readonly getTenantById: GetTenantByIdUseCase.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly getScheduledAction: GetScheduledActionUseCase.Interface,
         private readonly store: GlobalKeyValueStore.Interface,
-        private readonly decoratee: ScheduledActionEventHandler.Interface
+        private readonly decoratee: ScheduledActionInputHandler.Interface
     ) {}
 
     public async execute(
-        eventCtx: EventContext<IScheduledActionEvent>,
+        inputCtx: InputContext<IScheduledActionEvent>,
         next: NextFunction
     ): Promise<IScheduledActionResult> {
-        const input = eventCtx.event[SCHEDULED_ACTION_EVENT_IDENTIFIER];
+        const input = inputCtx.input[SCHEDULED_ACTION_EVENT_IDENTIFIER];
         const tenantId = input.tenant || this.tenantContext.getTenant().id;
 
         const dueAt = await this.findDueTime(tenantId, input);
@@ -82,7 +82,7 @@ class RunScheduledActionOnceDecoratorImpl implements ScheduledActionEventHandler
         }
 
         try {
-            return await this.decoratee.execute(eventCtx, next);
+            return await this.decoratee.execute(inputCtx, next);
         } catch (error) {
             await this.holdAfterFailure(key);
             throw error;
@@ -143,7 +143,7 @@ class RunScheduledActionOnceDecoratorImpl implements ScheduledActionEventHandler
     }
 }
 
-export const RunScheduledActionOnceDecorator = ScheduledActionEventHandler.createDecorator({
+export const RunScheduledActionOnceDecorator = ScheduledActionInputHandler.createDecorator({
     decorator: RunScheduledActionOnceDecoratorImpl,
     dependencies: [
         GetTenantByIdUseCase,

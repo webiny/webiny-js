@@ -1,8 +1,8 @@
 import { HttpRouter, RouteNotFoundError } from "~/index.js";
 import { codedErrorBody } from "~/index.js";
-import type { EventContext, IHttpResponse, NextFunction } from "~/index.js";
+import type { InputContext, IHttpResponse, NextFunction } from "~/index.js";
 import type { ICodedError } from "~/index.js";
-import { NodeHttpEventHandler } from "~/nodeHttp/abstractions/NodeHttpEventHandler.js";
+import { NodeHttpInputHandler } from "~/nodeHttp/abstractions/NodeHttpInputHandler.js";
 import { nodeHttpRequestFromIncomingMessage } from "~/nodeHttp/translators/NodeHttpTranslator.js";
 import { RequestBodyTooLargeError } from "~/nodeHttp/translators/RequestBodyTooLargeError.js";
 
@@ -12,12 +12,12 @@ import { RequestBodyTooLargeError } from "~/nodeHttp/translators/RequestBodyTooL
  * `createServerHandler` writes to the Node response). Mirrors AWS's `ApiGatewayHttpRouterHandler`,
  * minus the transport-specific response translation (the server writes IHttpResponse directly).
  */
-class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
+class NodeHttpRouterHandlerImpl implements NodeHttpInputHandler.Interface {
     constructor(private router: HttpRouter.Interface) {}
 
-    async execute(ctx: EventContext<any>, _next: NextFunction): Promise<IHttpResponse> {
+    async execute(ctx: InputContext<any>, _next: NextFunction): Promise<IHttpResponse> {
         try {
-            const request = await nodeHttpRequestFromIncomingMessage(ctx.event);
+            const request = await nodeHttpRequestFromIncomingMessage(ctx.input);
             return await this.router.route(request);
         } catch (e) {
             if (e instanceof RequestBodyTooLargeError) {
@@ -42,7 +42,7 @@ class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
     }
 }
 
-export const NodeHttpRouterHandler = NodeHttpEventHandler.createImplementation({
+export const NodeHttpRouterHandler = NodeHttpInputHandler.createImplementation({
     implementation: NodeHttpRouterHandlerImpl,
     dependencies: [HttpRouter]
 });

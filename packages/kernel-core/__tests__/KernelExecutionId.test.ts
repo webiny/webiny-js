@@ -1,9 +1,9 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import { EventHandler } from "~/features/events/EventHandler.js";
-import type { EventContext } from "~/features/events/EventHandler.js";
-import { EventType } from "~/features/events/EventType.js";
+import { InputHandler } from "~/features/events/InputHandler.js";
+import type { InputContext } from "~/features/events/InputHandler.js";
+import { InputType } from "~/features/events/InputType.js";
 import { Kernel } from "~/features/events/Kernel.js";
 import { KernelExecutionId } from "~/features/events/KernelExecutionId.js";
 import { KernelPlatform } from "~/features/events/KernelPlatform.js";
@@ -22,17 +22,17 @@ const eventIdPlatform = KernelPlatform.createImplementation({
     dependencies: []
 });
 
-class AnyEventType implements EventType.Interface {
-    canHandle(_event: any): _event is any {
+class AnyInputType implements InputType.Interface {
+    matches(_input: any): _input is any {
         return true;
     }
     getHandlerAbstraction() {
-        return EventHandler;
+        return InputHandler;
     }
 }
 
-const anyEventType = EventType.createImplementation({
-    implementation: AnyEventType,
+const anyInputType = InputType.createImplementation({
+    implementation: AnyInputType,
     dependencies: []
 });
 
@@ -46,18 +46,18 @@ interface ITestEvent {
  * Reads the current id through a service registered in the ROOT container (as the logger does),
  * before and after waiting, so another execution can run in between.
  */
-class ReadIdsHandler implements EventHandler.Interface<ITestEvent> {
+class ReadIdsHandler implements InputHandler.Interface<ITestEvent> {
     constructor(private executionId: KernelExecutionId.Interface) {}
 
-    async execute(ctx: EventContext<ITestEvent>) {
+    async execute(ctx: InputContext<ITestEvent>) {
         const before = this.executionId.getId();
-        await ctx.event.resume;
+        await ctx.input.resume;
         const after = this.executionId.getId();
         return [before, after];
     }
 }
 
-const readIdsHandler = EventHandler.createImplementation({
+const readIdsHandler = InputHandler.createImplementation({
     implementation: ReadIdsHandler,
     dependencies: [KernelExecutionId]
 });
@@ -66,7 +66,7 @@ const createApp = () => {
     return Kernel.init({
         platform: eventIdPlatform,
         root: container => {
-            container.register(anyEventType);
+            container.register(anyInputType);
             container.register(readIdsHandler);
         }
     });

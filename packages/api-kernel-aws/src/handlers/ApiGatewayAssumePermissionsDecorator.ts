@@ -1,8 +1,8 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayEventHandler } from "@webiny/kernel-aws";
+import { ApiGatewayInputHandler } from "@webiny/kernel-aws";
 import { RawAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 import { extractAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
-import type { EventContext } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/kernel-core";
 import type { NextFunction } from "@webiny/kernel-core";
 
 /**
@@ -13,14 +13,14 @@ import type { NextFunction } from "@webiny/kernel-core";
  *
  * A missing header leaves RawAssumePermissions null, which is the normal case.
  */
-class ApiGatewayAssumePermissionsDecoratorImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewayAssumePermissionsDecoratorImpl implements ApiGatewayInputHandler.Interface {
     constructor(
         private rawAssumePermissions: RawAssumePermissions.Interface,
-        private decoratee: ApiGatewayEventHandler.Interface
+        private decoratee: ApiGatewayInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
-        const headers = ctx.event?.headers;
+    async execute(ctx: InputContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
+        const headers = ctx.input?.headers;
         const requested = extractAssumePermissions(headers);
 
         this.rawAssumePermissions.set(requested);
@@ -29,7 +29,7 @@ class ApiGatewayAssumePermissionsDecoratorImpl implements ApiGatewayEventHandler
     }
 }
 
-export const ApiGatewayAssumePermissionsDecorator = ApiGatewayEventHandler.createDecorator({
+export const ApiGatewayAssumePermissionsDecorator = ApiGatewayInputHandler.createDecorator({
     decorator: ApiGatewayAssumePermissionsDecoratorImpl,
     dependencies: [RawAssumePermissions]
 });

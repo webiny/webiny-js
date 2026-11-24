@@ -218,7 +218,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // ── Background tasks (root) ────────────────────────────────
             // Mirrors the AWS handler registering its background-task transport at root. Where AWS
             // has Step Functions invoke the Lambda once per iteration, a root task loop dispatches a
-            // BackgroundTaskEvent per iteration through the EventDispatcher (registered by
+            // BackgroundTaskEvent per iteration through the InputDispatcher (registered by
             // createServerHandler), and each one runs in a fresh request container.
             BackgroundTasksStandaloneFeature.register(rootContainer);
 

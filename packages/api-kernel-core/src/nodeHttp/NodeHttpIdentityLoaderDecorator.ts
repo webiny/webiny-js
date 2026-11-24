@@ -1,12 +1,12 @@
 import type { IncomingMessage } from "node:http";
-import { NodeHttpEventHandler } from "@webiny/kernel-core/nodeHttp/index.js";
+import { NodeHttpInputHandler } from "@webiny/kernel-core/nodeHttp/index.js";
 import {
     RawAuthToken,
     RequestIdentityLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { extractAuthToken } from "~/auth/extractAuthToken.js";
 import { rejectedTokenResponse } from "~/auth/rejectedTokenResponse.js";
 import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
@@ -29,15 +29,15 @@ import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
  * makes it the inner wrapper: the tenant is loaded first, because API-key authentication looks the key up
  * in the tenant's partition.
  */
-class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interface {
+class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpInputHandler.Interface {
     constructor(
         private rawAuthToken: RawAuthToken.Interface,
         private identityLoader: IRequestIdentityLoader,
-        private decoratee: NodeHttpEventHandler.Interface
+        private decoratee: NodeHttpInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
-        const headers = headersFromIncomingMessage(ctx.event);
+    async execute(ctx: InputContext<IncomingMessage>, next: NextFunction): Promise<any> {
+        const headers = headersFromIncomingMessage(ctx.input);
         const authToken = extractAuthToken(headers);
         this.rawAuthToken.set(authToken);
         try {
@@ -52,7 +52,7 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
     }
 }
 
-export const NodeHttpIdentityLoaderDecorator = NodeHttpEventHandler.createDecorator({
+export const NodeHttpIdentityLoaderDecorator = NodeHttpInputHandler.createDecorator({
     decorator: NodeHttpIdentityLoaderDecoratorImpl,
     dependencies: [RawAuthToken, RequestIdentityLoader]
 });

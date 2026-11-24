@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/kernel-core";
 import { SchedulerSingleton } from "~/scheduler/abstractions/SchedulerSingleton.js";
 import { startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -19,7 +19,7 @@ const createServer = () => {
     const dispatch = vi.fn(async () => ({ recovered: 0, failedTenants: [] }));
     const container = new Container();
     container.registerInstance(SchedulerSingleton, scheduler as any);
-    container.registerInstance(EventDispatcher, { dispatch } as any);
+    container.registerInstance(InputDispatcher, { dispatch } as any);
     const logger = createMockLogger();
     container.registerInstance(Logger, logger);
     return { container, scheduler, dispatch };

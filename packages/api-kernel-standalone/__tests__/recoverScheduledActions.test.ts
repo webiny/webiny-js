@@ -12,7 +12,7 @@ import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import type { IPendingAction } from "@webiny/api-scheduler-standalone";
 import { RecoverScheduledActionsHandler } from "~/scheduler/RecoverScheduledActionsHandler.js";
-import { ScheduledActionRecoverEventHandler } from "~/scheduler/ScheduledActionRecoverEventHandler.js";
+import { ScheduledActionRecoverInputHandler } from "~/scheduler/ScheduledActionRecoverInputHandler.js";
 import { SchedulerSingleton } from "~/scheduler/abstractions/SchedulerSingleton.js";
 
 const createTenant = (id: string, overrides: Partial<Tenant> = {}): Tenant => {
@@ -105,10 +105,10 @@ const createHandler = (setup: ISetup) => {
     container.registerInstance(SchedulerSingleton, scheduler as any);
     container.registerInstance(Logger, logger as any);
     container.register(RecoverScheduledActionsHandler);
-    const handler = container.resolve(ScheduledActionRecoverEventHandler);
+    const handler = container.resolve(ScheduledActionRecoverInputHandler);
 
     const run = () => {
-        return handler.execute({ event: {} as any }, async () => undefined);
+        return handler.execute({ input: {} as any }, async () => undefined);
     };
 
     return { run, recovered, logged };

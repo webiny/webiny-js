@@ -1,35 +1,35 @@
 import { describe, it, expect } from "vitest";
-import { EventHandler } from "~/features/events/EventHandler.js";
-import { EventType } from "~/features/events/EventType.js";
-import type { IEventType } from "~/features/events/EventType.js";
+import { InputHandler } from "~/features/events/InputHandler.js";
+import { InputType } from "~/features/events/InputType.js";
+import type { IInputType } from "~/features/events/InputType.js";
 import { ChildContainerFactory, RootContainerFactory } from "~/features/events/abstractions.js";
-import type { IEventHandler } from "~/features/events/EventHandler.js";
+import type { IInputHandler } from "~/features/events/InputHandler.js";
 import { Kernel } from "~/features/events/Kernel.js";
 
 describe("Kernel (DI-native handler app)", () => {
-    class HttpEventType implements IEventType {
-        canHandle(e: any): e is any {
-            return !!e.method;
+    class HttpInputType implements IInputType {
+        matches(input: any): input is any {
+            return !!input.method;
         }
         getHandlerAbstraction() {
-            return EventHandler;
+            return InputHandler;
         }
     }
 
-    const httpType = EventType.createImplementation({
-        implementation: HttpEventType,
+    const httpType = InputType.createImplementation({
+        implementation: HttpInputType,
         dependencies: []
     });
 
     const httpEvent = { method: "GET", path: "/" };
 
     const okHandler = () => {
-        class OkHandler implements IEventHandler {
+        class OkHandler implements IInputHandler {
             async execute() {
                 return "ok";
             }
         }
-        return EventHandler.createImplementation({ implementation: OkHandler, dependencies: [] });
+        return InputHandler.createImplementation({ implementation: OkHandler, dependencies: [] });
     };
 
     it("dispatches an event like the previous closure", async () => {

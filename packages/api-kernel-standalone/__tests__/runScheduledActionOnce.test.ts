@@ -5,7 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { ScheduledActionEventHandler } from "@webiny/kernel-core";
+import { ScheduledActionInputHandler } from "@webiny/kernel-core";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/kernel-core";
 import type { IScheduledActionEvent } from "@webiny/kernel-core";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
@@ -97,12 +97,12 @@ const createProcess = (store: GlobalKeyValueStore.Interface, action: IActionStat
         }
     } as unknown as GetScheduledActionUseCase.Interface);
     container.registerInstance(GlobalKeyValueStore, store);
-    container.registerInstance(ScheduledActionEventHandler, { execute: runs });
+    container.registerInstance(ScheduledActionInputHandler, { execute: runs });
     container.registerDecorator(RunScheduledActionOnceDecorator);
 
-    const handler = container.resolve(ScheduledActionEventHandler);
+    const handler = container.resolve(ScheduledActionInputHandler);
     const next = async () => undefined;
-    const fire = () => handler.execute({ event } as any, next);
+    const fire = () => handler.execute({ input: event } as any, next);
 
     return { fire, runs };
 };

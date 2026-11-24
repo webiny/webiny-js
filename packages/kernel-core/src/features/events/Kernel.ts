@@ -19,7 +19,7 @@ import { NoopKernelPlatform } from "./NoopKernelPlatform.js";
  * {@link ChildContainerFactory} (create + set up the per-request child) — and to the
  * {@link KernelPlatform} it runs on (`config.platform`), so platforms and composition layers extend
  * it by configuration and decoration (`config.app`) instead of this class
- * growing new branches. `Kernel` is distinct from {@link EventHandler}, which is a single
+ * growing new branches. `Kernel` is distinct from {@link InputHandler}, which is a single
  * handler IN the dispatch chain.
  */
 export class Kernel {

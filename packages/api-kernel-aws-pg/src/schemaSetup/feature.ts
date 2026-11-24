@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
-import { SqlSchemaSetupEventType } from "./SqlSchemaSetupEventType.js";
+import { SqlSchemaSetupInputType } from "./SqlSchemaSetupInputType.js";
 import { SetupSqlSchemaHandler } from "./SetupSqlSchemaHandler.js";
 import { SqlSchemaSetupServiceImplementation } from "./SqlSchemaSetupService.js";
 
@@ -12,7 +12,7 @@ import { SqlSchemaSetupServiceImplementation } from "./SqlSchemaSetupService.js"
 export const SqlSchemaSetupFeature = createFeature({
     name: "SqlSchemaSetupFeature",
     register(container: Container) {
-        container.register(SqlSchemaSetupEventType);
+        container.register(SqlSchemaSetupInputType);
         container.register(SetupSqlSchemaHandler);
         container.register(SqlSchemaSetupServiceImplementation).inSingletonScope();
     }

@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { EMPTY_TRASH_BINS_EVENT_IDENTIFIER } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import type { IEmptyTrashBinsEvent } from "@webiny/api-headless-cms-bulk-actions-standalone";
@@ -15,7 +15,7 @@ const FIRST_RUN_DELAY_MS = 5000;
  * counterpart of the EventBridge rule that does it on AWS.
  */
 export function startBulkActionsServer(rootContainer: Container): void {
-    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const dispatcher = rootContainer.resolve(InputDispatcher);
     const logger = rootContainer.resolve(Logger);
     const event: IEmptyTrashBinsEvent = { [EMPTY_TRASH_BINS_EVENT_IDENTIFIER]: true };
 

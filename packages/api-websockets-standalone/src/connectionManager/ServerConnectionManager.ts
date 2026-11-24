@@ -1,4 +1,4 @@
-import { EventDispatcher } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/kernel-core";
 import { ProcessOwner } from "@webiny/kernel-standalone";
 import { WebsocketsLiveSockets } from "~/liveSockets/abstractions.js";
 import {
@@ -37,7 +37,7 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
 
     public constructor(
         private readonly sockets: WebsocketsLiveSockets.Interface,
-        private readonly dispatcher: EventDispatcher.Interface,
+        private readonly dispatcher: InputDispatcher.Interface,
         private readonly owner: ProcessOwner.Interface
     ) {}
 
@@ -199,5 +199,5 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
 
 export const ServerConnectionManager = WebsocketsConnectionManager.createImplementation({
     implementation: ServerConnectionManagerImpl,
-    dependencies: [WebsocketsLiveSockets, EventDispatcher, ProcessOwner]
+    dependencies: [WebsocketsLiveSockets, InputDispatcher, ProcessOwner]
 });

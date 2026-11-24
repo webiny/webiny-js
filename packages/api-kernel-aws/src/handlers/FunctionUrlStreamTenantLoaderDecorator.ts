@@ -1,10 +1,10 @@
-import { FunctionUrlStreamEventHandler } from "@webiny/kernel-aws";
+import { FunctionUrlStreamInputHandler } from "@webiny/kernel-aws";
 import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { extractTenantId } from "@webiny/api-kernel-core";
 import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
 
@@ -16,16 +16,16 @@ import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
  * Registered AFTER FunctionUrlStreamIdentityLoaderDecorator.
  */
 class FunctionUrlStreamTenantLoaderDecoratorImpl
-    implements FunctionUrlStreamEventHandler.Interface
+    implements FunctionUrlStreamInputHandler.Interface
 {
     constructor(
         private rawTenantId: RawTenantId.Interface,
         private tenantLoader: IRequestTenantLoader,
-        private decoratee: FunctionUrlStreamEventHandler.Interface
+        private decoratee: FunctionUrlStreamInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<any>, next: NextFunction): Promise<void> {
-        const headers = headersFromFunctionUrlEvent(ctx.event);
+    async execute(ctx: InputContext<any>, next: NextFunction): Promise<void> {
+        const headers = headersFromFunctionUrlEvent(ctx.input);
         const tenantId = extractTenantId(headers);
 
         this.rawTenantId.set(tenantId);
@@ -35,7 +35,7 @@ class FunctionUrlStreamTenantLoaderDecoratorImpl
     }
 }
 
-export const FunctionUrlStreamTenantLoaderDecorator = FunctionUrlStreamEventHandler.createDecorator(
+export const FunctionUrlStreamTenantLoaderDecorator = FunctionUrlStreamInputHandler.createDecorator(
     {
         decorator: FunctionUrlStreamTenantLoaderDecoratorImpl,
         dependencies: [RawTenantId, RequestTenantLoader]

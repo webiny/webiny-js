@@ -1,8 +1,8 @@
 import { HttpRouter, RouteNotFoundError } from "@webiny/kernel-core";
 import { codedErrorBody } from "@webiny/kernel-core";
-import type { EventContext, IHttpResponse, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, IHttpResponse, NextFunction } from "@webiny/kernel-core";
 import type { ICodedError } from "@webiny/kernel-core";
-import { FunctionUrlStreamEventHandler } from "~/abstractions/handlers/FunctionUrlStreamEventHandler.js";
+import { FunctionUrlStreamInputHandler } from "~/abstractions/handlers/FunctionUrlStreamInputHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
 import { writeHttpResponseToStream } from "~/streaming/writeHttpResponseToStream.js";
@@ -17,15 +17,15 @@ const JSON_HEADERS = { "content-type": "application/json" };
  * Mirrors `ApiGatewayHttpRouterHandler`, except nothing is returned: the response leaves through the
  * stream, so once the prelude is written the status code can no longer change.
  */
-class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandler.Interface {
+class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamInputHandler.Interface {
     constructor(
         private router: HttpRouter.Interface,
         private responseStream: LambdaResponseStream.Interface
     ) {}
 
-    async execute(ctx: EventContext<any>, _next: NextFunction): Promise<void> {
+    async execute(ctx: InputContext<any>, _next: NextFunction): Promise<void> {
         const raw = this.responseStream.get();
-        const request = functionUrlEventToHttpRequest(ctx.event);
+        const request = functionUrlEventToHttpRequest(ctx.input);
 
         let response: IHttpResponse;
         try {
@@ -69,7 +69,7 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
     }
 }
 
-export const FunctionUrlStreamRouterHandler = FunctionUrlStreamEventHandler.createImplementation({
+export const FunctionUrlStreamRouterHandler = FunctionUrlStreamInputHandler.createImplementation({
     implementation: FunctionUrlStreamRouterHandlerImpl,
     dependencies: [HttpRouter, LambdaResponseStream]
 });

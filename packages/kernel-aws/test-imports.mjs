@@ -6,13 +6,13 @@ import {
   Abstraction,
 
   // Handlers
-  ApiGatewayEventHandler,
-  DynamoDBEventHandler,
-  EventBridgeEventHandler,
-  RawEventHandler,
-  S3EventHandler,
-  SnsEventHandler,
-  SqsEventHandler,
+  ApiGatewayInputHandler,
+  DynamoDBInputHandler,
+  EventBridgeInputHandler,
+  RawInputHandler,
+  S3InputHandler,
+  SnsInputHandler,
+  SqsInputHandler,
 
   // Qualifiers
   ApiGatewayEventQualifier,
@@ -38,13 +38,13 @@ import {
 console.log("✅ All imports successful!");
 console.log("✅ Core:", { createFunction, Container, Abstraction });
 console.log("✅ Handlers:", {
-  ApiGatewayEventHandler,
-  DynamoDBEventHandler,
-  EventBridgeEventHandler,
-  RawEventHandler,
-  S3EventHandler,
-  SnsEventHandler,
-  SqsEventHandler
+  ApiGatewayInputHandler,
+  DynamoDBInputHandler,
+  EventBridgeInputHandler,
+  RawInputHandler,
+  S3InputHandler,
+  SnsInputHandler,
+  SqsInputHandler
 });
 console.log("✅ Qualifiers:", {
   ApiGatewayEventQualifier,

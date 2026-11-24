@@ -1,11 +1,11 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayEventHandler } from "@webiny/kernel-aws";
+import { ApiGatewayInputHandler } from "@webiny/kernel-aws";
 import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { extractTenantId } from "@webiny/api-kernel-core";
 
 /**
@@ -16,15 +16,15 @@ import { extractTenantId } from "@webiny/api-kernel-core";
  *
  * Registered AFTER ApiGatewayIdentityLoaderDecorator (see ApiGatewayFeature).
  */
-class ApiGatewayTenantLoaderDecoratorImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewayTenantLoaderDecoratorImpl implements ApiGatewayInputHandler.Interface {
     constructor(
         private rawTenantId: RawTenantId.Interface,
         private tenantLoader: IRequestTenantLoader,
-        private decoratee: ApiGatewayEventHandler.Interface
+        private decoratee: ApiGatewayInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
-        const headers = ctx.event?.headers as Record<string, string>;
+    async execute(ctx: InputContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
+        const headers = ctx.input?.headers as Record<string, string>;
         const tenantId = extractTenantId(headers);
         this.rawTenantId.set(tenantId);
         await this.tenantLoader.establish();
@@ -32,7 +32,7 @@ class ApiGatewayTenantLoaderDecoratorImpl implements ApiGatewayEventHandler.Inte
     }
 }
 
-export const ApiGatewayTenantLoaderDecorator = ApiGatewayEventHandler.createDecorator({
+export const ApiGatewayTenantLoaderDecorator = ApiGatewayInputHandler.createDecorator({
     decorator: ApiGatewayTenantLoaderDecoratorImpl,
     dependencies: [RawTenantId, RequestTenantLoader]
 });

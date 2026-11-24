@@ -1,7 +1,7 @@
-import { FunctionUrlStreamEventHandler } from "@webiny/kernel-aws";
+import { FunctionUrlStreamInputHandler } from "@webiny/kernel-aws";
 import { RawAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 import { extractAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
-import type { EventContext } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/kernel-core";
 import type { NextFunction } from "@webiny/kernel-core";
 import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
 
@@ -10,15 +10,15 @@ import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
  * event into RawAssumePermissions. Function URL mirror of ApiGatewayAssumePermissionsDecorator.
  */
 class FunctionUrlStreamAssumePermissionsDecoratorImpl
-    implements FunctionUrlStreamEventHandler.Interface
+    implements FunctionUrlStreamInputHandler.Interface
 {
     constructor(
         private rawAssumePermissions: RawAssumePermissions.Interface,
-        private decoratee: FunctionUrlStreamEventHandler.Interface
+        private decoratee: FunctionUrlStreamInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<any>, next: NextFunction): Promise<void> {
-        const headers = headersFromFunctionUrlEvent(ctx.event);
+    async execute(ctx: InputContext<any>, next: NextFunction): Promise<void> {
+        const headers = headersFromFunctionUrlEvent(ctx.input);
         const requested = extractAssumePermissions(headers);
 
         this.rawAssumePermissions.set(requested);
@@ -28,7 +28,7 @@ class FunctionUrlStreamAssumePermissionsDecoratorImpl
 }
 
 export const FunctionUrlStreamAssumePermissionsDecorator =
-    FunctionUrlStreamEventHandler.createDecorator({
+    FunctionUrlStreamInputHandler.createDecorator({
         decorator: FunctionUrlStreamAssumePermissionsDecoratorImpl,
         dependencies: [RawAssumePermissions]
     });

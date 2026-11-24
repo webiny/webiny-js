@@ -4,8 +4,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { ApiGatewayEventHandler } from "@webiny/kernel-aws";
-import { FunctionUrlStreamEventHandler } from "@webiny/kernel-aws";
+import { ApiGatewayInputHandler } from "@webiny/kernel-aws";
+import { FunctionUrlStreamInputHandler } from "@webiny/kernel-aws";
 import { LambdaResponseStream } from "@webiny/kernel-aws";
 import { LambdaResponseStreamValue } from "@webiny/kernel-aws";
 import type { IRawResponseStream } from "@webiny/kernel-aws";
@@ -54,8 +54,8 @@ function setup(establishError: Error): ISetupResult {
             return { statusCode: 200, body: "" };
         }
     };
-    container.registerInstance(ApiGatewayEventHandler, inner);
-    container.registerInstance(FunctionUrlStreamEventHandler, inner);
+    container.registerInstance(ApiGatewayInputHandler, inner);
+    container.registerInstance(FunctionUrlStreamInputHandler, inner);
     container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
     container.registerDecorator(FunctionUrlStreamIdentityLoaderDecorator);
 
@@ -65,10 +65,13 @@ function setup(establishError: Error): ISetupResult {
 describe("ApiGatewayIdentityLoaderDecorator", () => {
     it("answers 401 with the error code and CORS headers when the token is rejected", async () => {
         const t = setup(new TokenExpiredError());
-        const handler = t.container.resolve(ApiGatewayEventHandler);
+        const handler = t.container.resolve(ApiGatewayInputHandler);
         const event = { headers: HEADERS };
 
-        const result = await handler.execute({ event, metadata: {} } as any, async () => undefined);
+        const result = await handler.execute(
+            { input: event, metadata: {} } as any,
+            async () => undefined
+        );
 
         expect(result.statusCode).toBe(401);
         expect(result.headers["access-control-allow-origin"]).toBe(ORIGIN);
@@ -83,10 +86,10 @@ describe("ApiGatewayIdentityLoaderDecorator", () => {
 
     it("lets an error that is not a rejected token propagate", async () => {
         const t = setup(new Error("JWKS request timed out"));
-        const handler = t.container.resolve(ApiGatewayEventHandler);
+        const handler = t.container.resolve(ApiGatewayInputHandler);
         const event = { headers: HEADERS };
 
-        const run = handler.execute({ event, metadata: {} } as any, async () => undefined);
+        const run = handler.execute({ input: event, metadata: {} } as any, async () => undefined);
 
         await expect(run).rejects.toThrow("JWKS request timed out");
     });
@@ -117,10 +120,10 @@ describe("FunctionUrlStreamIdentityLoaderDecorator", () => {
         const stream = new FakeResponseStream();
         const streamValue = new LambdaResponseStreamValue(stream);
         t.container.registerInstance(LambdaResponseStream, streamValue);
-        const handler = t.container.resolve(FunctionUrlStreamEventHandler);
+        const handler = t.container.resolve(FunctionUrlStreamInputHandler);
         const event = { headers: HEADERS };
 
-        await handler.execute({ event, metadata: {} } as any, async () => undefined);
+        await handler.execute({ input: event, metadata: {} } as any, async () => undefined);
 
         expect(prelude?.statusCode).toBe(401);
         expect(prelude?.headers?.["access-control-allow-origin"]).toBe(ORIGIN);
@@ -138,10 +141,10 @@ describe("FunctionUrlStreamIdentityLoaderDecorator", () => {
         const stream = new FakeResponseStream();
         const streamValue = new LambdaResponseStreamValue(stream);
         t.container.registerInstance(LambdaResponseStream, streamValue);
-        const handler = t.container.resolve(FunctionUrlStreamEventHandler);
+        const handler = t.container.resolve(FunctionUrlStreamInputHandler);
         const event = { headers: HEADERS };
 
-        const run = handler.execute({ event, metadata: {} } as any, async () => undefined);
+        const run = handler.execute({ input: event, metadata: {} } as any, async () => undefined);
 
         await expect(run).rejects.toThrow("JWKS request timed out");
         expect(prelude).toBeNull();

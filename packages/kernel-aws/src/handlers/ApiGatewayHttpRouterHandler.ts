@@ -1,17 +1,17 @@
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
+import { ApiGatewayInputHandler } from "~/abstractions/handlers/ApiGatewayInputHandler.js";
 import { HttpRouter, RouteNotFoundError } from "@webiny/kernel-core";
 import { codedErrorBody } from "@webiny/kernel-core";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import type { ICodedError } from "@webiny/kernel-core";
 import { apiGatewayEventToHttpRequest } from "~/translators/apiGatewayEventToHttpRequest.js";
 import { httpResponseToApiGatewayResult } from "~/translators/httpResponseToApiGatewayResult.js";
 
-class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayInputHandler.Interface {
     constructor(private router: HttpRouter.Interface) {}
 
-    async execute(ctx: EventContext<any>, _next: NextFunction): Promise<APIGatewayProxyResult> {
-        const request = apiGatewayEventToHttpRequest(ctx.event);
+    async execute(ctx: InputContext<any>, _next: NextFunction): Promise<APIGatewayProxyResult> {
+        const request = apiGatewayEventToHttpRequest(ctx.input);
         try {
             const response = await this.router.route(request);
             return httpResponseToApiGatewayResult(response);
@@ -36,7 +36,7 @@ class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interfac
     }
 }
 
-export const ApiGatewayHttpRouterHandler = ApiGatewayEventHandler.createImplementation({
+export const ApiGatewayHttpRouterHandler = ApiGatewayInputHandler.createImplementation({
     implementation: ApiGatewayHttpRouterHandlerImpl,
     dependencies: [HttpRouter]
 });

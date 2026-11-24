@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/feature/api";
-import { BackgroundTaskEventHandler } from "@webiny/kernel-core";
+import { BackgroundTaskInputHandler } from "@webiny/kernel-core";
 import { RequestContainer } from "@webiny/kernel-core";
-import type { EventContext } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/kernel-core";
 import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
@@ -45,7 +45,7 @@ const handedBack = () => {
  * When the process starts shutting down, the running iteration's time runs out at once, so the task saves
  * its progress and hands back control. The task is then left to another process.
  */
-class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.Interface {
+class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskInputHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly rawTenantId: RawTenantId.Interface,
@@ -55,8 +55,8 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
         private readonly logger: Logger.Interface
     ) {}
 
-    public async execute(eventCtx: EventContext<IBackgroundTaskEvent>): Promise<unknown> {
-        const taskEvent = eventCtx.event;
+    public async execute(inputCtx: InputContext<IBackgroundTaskEvent>): Promise<unknown> {
+        const taskEvent = inputCtx.input;
 
         // The process started shutting down after this iteration was dispatched: leave the task be.
         if (this.shutdown.isShuttingDown()) {
@@ -172,7 +172,7 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
     }
 }
 
-export const InProcessBackgroundTaskHandler = BackgroundTaskEventHandler.createImplementation({
+export const InProcessBackgroundTaskHandler = BackgroundTaskInputHandler.createImplementation({
     implementation: InProcessBackgroundTaskHandlerImpl,
     dependencies: [
         RequestContainer,

@@ -1,10 +1,10 @@
 export {
-    ScheduledActionEventType,
+    ScheduledActionInputType,
     SCHEDULED_ACTION_EVENT_IDENTIFIER
-} from "./ScheduledActionEventType.js";
+} from "./ScheduledActionInputType.js";
 export type {
     IScheduledActionEvent,
     IScheduledActionEventPayload
-} from "./ScheduledActionEventType.js";
-export { ScheduledActionEventHandler } from "./ScheduledActionEventHandler.js";
-export type { IScheduledActionResult } from "./ScheduledActionEventHandler.js";
+} from "./ScheduledActionInputType.js";
+export { ScheduledActionInputHandler } from "./ScheduledActionInputHandler.js";
+export type { IScheduledActionResult } from "./ScheduledActionInputHandler.js";

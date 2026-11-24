@@ -1,15 +1,15 @@
 import type { Container } from "@webiny/feature/api";
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import {
-    EventBridgeEventHandler,
+    EventBridgeInputHandler,
     type EventBridgeResult
-} from "@webiny/kernel-aws/abstractions/handlers/EventBridgeEventHandler.js";
+} from "@webiny/kernel-aws/abstractions/handlers/EventBridgeInputHandler.js";
 import { RequestContainer } from "@webiny/kernel-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
@@ -19,7 +19,7 @@ import type { GuardDutyEvent } from "./types.js";
 
 const DETAIL_TYPE = "GuardDuty Malware Protection Object Scan Result";
 
-class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
+class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeInputHandler.Interface {
     constructor(
         private container: Container,
         private tenantCtx: ITenantContext,
@@ -27,10 +27,10 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
     ) {}
 
     async execute(
-        eventCtx: EventContext<EventBridgeEvent<string, GuardDutyEvent>>,
+        inputCtx: InputContext<EventBridgeEvent<string, GuardDutyEvent>>,
         _next: NextFunction
     ): Promise<EventBridgeResult> {
-        const payload = eventCtx.event;
+        const payload = inputCtx.input;
         if (payload["detail-type"] !== DETAIL_TYPE) {
             return { success: true };
         }
@@ -69,7 +69,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
     }
 }
 
-export const ThreatDetectionEventBridgeLambdaHandler = EventBridgeEventHandler.createImplementation(
+export const ThreatDetectionEventBridgeLambdaHandler = EventBridgeInputHandler.createImplementation(
     {
         implementation: ThreatDetectionEventBridgeLambdaHandlerImpl,
         dependencies: [RequestContainer, TenantContext, GetTenantByIdUseCase]

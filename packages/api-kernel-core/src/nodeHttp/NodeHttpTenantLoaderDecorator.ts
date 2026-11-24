@@ -1,11 +1,11 @@
 import type { IncomingMessage } from "node:http";
-import { NodeHttpEventHandler } from "@webiny/kernel-core/nodeHttp/index.js";
+import { NodeHttpInputHandler } from "@webiny/kernel-core/nodeHttp/index.js";
 import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { extractTenantId } from "~/auth/extractTenantId.js";
 import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
 
@@ -17,15 +17,15 @@ import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
  *
  * Node mirror of ApiGatewayTenantLoaderDecorator. Registered AFTER the identity loader.
  */
-class NodeHttpTenantLoaderDecoratorImpl implements NodeHttpEventHandler.Interface {
+class NodeHttpTenantLoaderDecoratorImpl implements NodeHttpInputHandler.Interface {
     constructor(
         private rawTenantId: RawTenantId.Interface,
         private tenantLoader: IRequestTenantLoader,
-        private decoratee: NodeHttpEventHandler.Interface
+        private decoratee: NodeHttpInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
-        const headers = headersFromIncomingMessage(ctx.event);
+    async execute(ctx: InputContext<IncomingMessage>, next: NextFunction): Promise<any> {
+        const headers = headersFromIncomingMessage(ctx.input);
         const tenantId = extractTenantId(headers);
         this.rawTenantId.set(tenantId);
         await this.tenantLoader.establish();
@@ -33,7 +33,7 @@ class NodeHttpTenantLoaderDecoratorImpl implements NodeHttpEventHandler.Interfac
     }
 }
 
-export const NodeHttpTenantLoaderDecorator = NodeHttpEventHandler.createDecorator({
+export const NodeHttpTenantLoaderDecorator = NodeHttpInputHandler.createDecorator({
     decorator: NodeHttpTenantLoaderDecoratorImpl,
     dependencies: [RawTenantId, RequestTenantLoader]
 });

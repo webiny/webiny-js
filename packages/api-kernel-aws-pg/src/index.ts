@@ -4,7 +4,7 @@ export { startAwsPgWebApi } from "./startAwsPgWebApi.js";
 export {
     SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
     SqlSchemaSetupConnection,
-    SqlSchemaSetupEventHandler,
+    SqlSchemaSetupInputHandler,
     SqlSchemaSetupService
 } from "./schemaSetup/index.js";
 export type {

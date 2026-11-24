@@ -1,3 +1,3 @@
-export { BackgroundTaskEventType } from "./BackgroundTaskEventType.js";
-export type { IBackgroundTaskEvent } from "./BackgroundTaskEventType.js";
-export { BackgroundTaskEventHandler } from "./BackgroundTaskEventHandler.js";
+export { BackgroundTaskInputType } from "./BackgroundTaskInputType.js";
+export type { IBackgroundTaskEvent } from "./BackgroundTaskInputType.js";
+export { BackgroundTaskInputHandler } from "./BackgroundTaskInputHandler.js";

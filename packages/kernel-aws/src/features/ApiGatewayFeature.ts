@@ -1,12 +1,12 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { HttpFeature } from "@webiny/kernel-core";
-import { ApiGatewayEventType } from "~/eventTypes/ApiGatewayEventType.js";
+import { ApiGatewayInputType } from "~/inputTypes/ApiGatewayInputType.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
 
 /**
  * Registers the transport-only API Gateway infrastructure for a Lambda handler:
- * - ApiGatewayEventType (recognises API GW Lambda events)
+ * - ApiGatewayInputType (recognises API GW Lambda events)
  * - HttpFeature (HttpRouter + SecureHeadersDecorator)
  * - ApiGatewayHttpRouterHandler (terminal: translates APIGw ↔ IHttpRequest, routes via HttpRouter)
  *
@@ -17,7 +17,7 @@ import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHand
 export const ApiGatewayFeature = createFeature({
     name: "ApiGateway",
     register(container: Container) {
-        container.register(ApiGatewayEventType);
+        container.register(ApiGatewayInputType);
         HttpFeature.register(container);
         container.register(ApiGatewayHttpRouterHandler);
     }

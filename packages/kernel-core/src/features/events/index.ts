@@ -1,10 +1,10 @@
-export * from "./EventHandler.js";
-export * from "./EventType.js";
+export * from "./InputHandler.js";
+export * from "./InputType.js";
 export * from "./RequestContainer.js";
 export { KernelExecution } from "./KernelExecution.js";
 export { KernelExecutionId } from "./KernelExecutionId.js";
 export * from "./StaleKernelExecutionError.js";
-export * from "./NoMatchingEventTypeError.js";
+export * from "./NoMatchingInputTypeError.js";
 export * from "./chain.js";
 export * from "./abstractions.js";
 export * from "./Kernel.js";

@@ -12,37 +12,37 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { createLambdaHandler } from "@webiny/kernel-aws";
-import { EventHandler } from "@webiny/kernel-core";
-import { EventType } from "@webiny/kernel-core";
-import type { EventContext } from "@webiny/kernel-core";
+import { InputHandler } from "@webiny/kernel-core";
+import { InputType } from "@webiny/kernel-core";
+import type { InputContext } from "@webiny/kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { registerWebinyApiRoot } from "~/composition/registerWebinyApiRoot.js";
 
-class AnyEventType implements EventType.Interface {
-    canHandle(_event: any): _event is any {
+class AnyInputType implements InputType.Interface {
+    matches(_input: any): _input is any {
         return true;
     }
     getHandlerAbstraction() {
-        return EventHandler;
+        return InputHandler;
     }
 }
 
-const anyEventType = EventType.createImplementation({
-    implementation: AnyEventType,
+const anyInputType = InputType.createImplementation({
+    implementation: AnyInputType,
     dependencies: []
 });
 
-class LogHandler implements EventHandler.Interface {
+class LogHandler implements InputHandler.Interface {
     constructor(private logger: Logger.Interface) {}
 
-    async execute(ctx: EventContext) {
+    async execute(ctx: InputContext) {
         // An event with fields is logged as the line's fields, so a test can pass `awsRequestId`.
-        const fields = ctx.event;
+        const fields = ctx.input;
         this.logger.info(fields, "Handled the event.");
     }
 }
 
-const logHandler = EventHandler.createImplementation({
+const logHandler = InputHandler.createImplementation({
     implementation: LogHandler,
     dependencies: [Logger]
 });
@@ -50,7 +50,7 @@ const logHandler = EventHandler.createImplementation({
 const createHandler = () => {
     return createLambdaHandler({
         root: async container => {
-            container.register(anyEventType);
+            container.register(anyInputType);
             container.register(logHandler);
             await registerWebinyApiRoot(container, {
                 extensions: () => [],

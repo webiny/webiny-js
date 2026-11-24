@@ -1,34 +1,34 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import { EventHandler } from "~/features/events/EventHandler.js";
-import { EventType } from "~/features/events/EventType.js";
+import { InputHandler } from "~/features/events/InputHandler.js";
+import { InputType } from "~/features/events/InputType.js";
 import { Kernel } from "~/features/events/Kernel.js";
 import { KernelExecutionRunner } from "~/features/events/abstractions.js";
 import { RootContainerFactory } from "~/features/events/abstractions.js";
 import { KernelExecutionScope } from "~/features/events/KernelExecutionScope.js";
 
-class AnyEventType implements EventType.Interface {
-    canHandle(_event: any): _event is any {
+class AnyInputType implements InputType.Interface {
+    matches(_input: any): _input is any {
         return true;
     }
     getHandlerAbstraction() {
-        return EventHandler;
+        return InputHandler;
     }
 }
 
-class OkHandler implements EventHandler.Interface {
+class OkHandler implements InputHandler.Interface {
     async execute() {
         return "ok";
     }
 }
 
-const anyEventType = EventType.createImplementation({
-    implementation: AnyEventType,
+const anyInputType = InputType.createImplementation({
+    implementation: AnyInputType,
     dependencies: []
 });
 
-const okHandler = EventHandler.createImplementation({
+const okHandler = InputHandler.createImplementation({
     implementation: OkHandler,
     dependencies: []
 });
@@ -57,7 +57,7 @@ describe("KernelExecutionRunner", () => {
 
         const app = Kernel.init({
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(okHandler);
             },
             app: container => {
@@ -90,7 +90,7 @@ describe("KernelExecutionRunner", () => {
 
         const app = Kernel.init({
             root: container => {
-                container.register(anyEventType);
+                container.register(anyInputType);
                 container.register(okHandler);
             },
             app: container => {

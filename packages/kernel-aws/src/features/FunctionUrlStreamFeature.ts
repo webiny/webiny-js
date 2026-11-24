@@ -1,12 +1,12 @@
 import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { HttpFeature } from "@webiny/kernel-core";
-import { FunctionUrlStreamEventType } from "~/eventTypes/FunctionUrlStreamEventType.js";
+import { FunctionUrlStreamInputType } from "~/inputTypes/FunctionUrlStreamInputType.js";
 import { FunctionUrlStreamRouterHandler } from "~/handlers/FunctionUrlStreamRouterHandler.js";
 
 /**
  * Registers the transport-only Lambda Function URL response-streaming infrastructure:
- * - FunctionUrlStreamEventType (recognises a Function URL HTTP invocation)
+ * - FunctionUrlStreamInputType (recognises a Function URL HTTP invocation)
  * - HttpFeature (HttpRouter + SecureHeadersDecorator)
  * - FunctionUrlStreamRouterHandler (terminal: routes via HttpRouter, writes to the response stream)
  *
@@ -20,7 +20,7 @@ import { FunctionUrlStreamRouterHandler } from "~/handlers/FunctionUrlStreamRout
 export const FunctionUrlStreamFeature = createFeature({
     name: "FunctionUrlStream",
     register(container: Container) {
-        container.register(FunctionUrlStreamEventType);
+        container.register(FunctionUrlStreamInputType);
         HttpFeature.register(container);
         container.register(FunctionUrlStreamRouterHandler);
     }

@@ -1,7 +1,7 @@
 import { HttpFeature } from "~/features/http/feature.js";
 import { HttpRouterHandler } from "./HttpRouterHandler.js";
 import { Kernel } from "~/features/events/Kernel.js";
-import { TestHttpEventType } from "./TestHttpEventType.js";
+import { TestHttpInputType } from "./TestHttpInputType.js";
 import type { KernelSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
 export interface createTestHttpHandlerOptions {
@@ -11,13 +11,13 @@ export interface createTestHttpHandlerOptions {
 
 /**
  * Test handler that accepts IHttpRequest directly and returns IHttpResponse.
- * Registers HttpRouterHandler as the base TestHttpEventHandler implementation.
+ * Registers HttpRouterHandler as the base TestHttpInputHandler implementation.
  * Callers layer middleware on top via container.registerDecorator() in options.root.
  */
 export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
     const app = Kernel.init({
         root: async container => {
-            container.register(TestHttpEventType);
+            container.register(TestHttpInputType);
             container.register(HttpRouterHandler);
             HttpFeature.register(container);
             await options.root(container);

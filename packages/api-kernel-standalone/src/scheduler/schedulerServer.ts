@@ -1,17 +1,17 @@
 import type { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/kernel-core";
-import { ScheduledActionEventType } from "@webiny/kernel-core";
+import { InputDispatcher } from "@webiny/kernel-core";
+import { ScheduledActionInputType } from "@webiny/kernel-core";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/kernel-core";
 import type { IScheduledActionEvent } from "@webiny/kernel-core";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
 import { TimerSchedulerService } from "@webiny/api-scheduler-standalone";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
-import { ScheduledActionRecoverEventType } from "./ScheduledActionRecoverEventType.js";
-import { SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER } from "./ScheduledActionRecoverEventType.js";
-import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEventType.js";
+import { ScheduledActionRecoverInputType } from "./ScheduledActionRecoverInputType.js";
+import { SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER } from "./ScheduledActionRecoverInputType.js";
+import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverInputType.js";
 import { RecoverScheduledActionsHandler } from "./RecoverScheduledActionsHandler.js";
-import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
+import { ScheduledActionRecoverInputHandler } from "./ScheduledActionRecoverInputHandler.js";
 import { RunScheduledActionOnceDecorator } from "./RunScheduledActionOnceDecorator.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
@@ -25,7 +25,7 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
  * handler is the one AWS runs for an EventBridge Scheduler invocation, in a fresh request container.
  */
 export function registerSchedulerServer(rootContainer: Container): void {
-    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const dispatcher = rootContainer.resolve(InputDispatcher);
     const logger = rootContainer.resolve(Logger);
 
     const service = new TimerSchedulerService({
@@ -65,12 +65,12 @@ export function registerSchedulerServer(rootContainer: Container): void {
     rootContainer.registerInstance(SchedulerSingleton, service);
     rootContainer.registerInstance(SchedulerService, service);
 
-    rootContainer.register(ScheduledActionEventType);
+    rootContainer.register(ScheduledActionInputType);
     rootContainer.register(ScheduledActionLambdaHandler);
     // Every process holds timers for the same actions; this lets only one of them run each action.
     rootContainer.registerDecorator(RunScheduledActionOnceDecorator);
 
-    rootContainer.register(ScheduledActionRecoverEventType);
+    rootContainer.register(ScheduledActionRecoverInputType);
     rootContainer.register(RecoverScheduledActionsHandler);
 }
 
@@ -78,7 +78,7 @@ export function registerSchedulerServer(rootContainer: Container): void {
 const RECOVER_EVERY_MS = 60_000;
 
 async function recoverPendingSchedules(
-    dispatcher: EventDispatcher.Interface,
+    dispatcher: InputDispatcher.Interface,
     logger: Logger.Interface,
     atBoot: boolean
 ): Promise<void> {
@@ -87,7 +87,7 @@ async function recoverPendingSchedules(
     };
 
     try {
-        const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
+        const result = await dispatcher.dispatch<ScheduledActionRecoverInputHandler.Result>(event);
         if (atBoot) {
             logger.info(
                 { recovered: result.recovered },
@@ -124,7 +124,7 @@ export async function startSchedulerServer(
     const scheduler = rootContainer.resolve(SchedulerSingleton);
     await scheduler.start();
 
-    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const dispatcher = rootContainer.resolve(InputDispatcher);
     const logger = rootContainer.resolve(Logger);
     let recovering = false;
     const recover = async (atBoot: boolean) => {

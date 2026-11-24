@@ -1,0 +1,19 @@
+import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
+import { InputType } from "@webiny/kernel-core";
+import { EventBridgeInputHandler } from "../abstractions/handlers/EventBridgeInputHandler.js";
+import type { IInputType } from "@webiny/kernel-core";
+
+class EventBridgeInputTypeImpl implements IInputType<EventBridgeEvent<string, any>> {
+    matches(input: any): input is EventBridgeEvent<string, any> {
+        return !!(input?.source && input?.["detail-type"] && input?.detail);
+    }
+
+    getHandlerAbstraction() {
+        return EventBridgeInputHandler;
+    }
+}
+
+export const EventBridgeInputType = InputType.createImplementation({
+    implementation: EventBridgeInputTypeImpl,
+    dependencies: []
+});

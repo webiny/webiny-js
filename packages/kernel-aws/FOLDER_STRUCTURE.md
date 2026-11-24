@@ -13,13 +13,13 @@ src/
 │   ├── index.ts                  # Re-exports from handlers/ and qualifiers/
 │   │
 │   ├── handlers/
-│   │   ├── ApiGatewayEventHandler.ts
-│   │   ├── DynamoDBEventHandler.ts
-│   │   ├── EventBridgeEventHandler.ts
-│   │   ├── RawEventHandler.ts
-│   │   ├── S3EventHandler.ts
-│   │   ├── SnsEventHandler.ts
-│   │   ├── SqsEventHandler.ts
+│   │   ├── ApiGatewayInputHandler.ts
+│   │   ├── DynamoDBInputHandler.ts
+│   │   ├── EventBridgeInputHandler.ts
+│   │   ├── RawInputHandler.ts
+│   │   ├── S3InputHandler.ts
+│   │   ├── SnsInputHandler.ts
+│   │   ├── SqsInputHandler.ts
 │   │   └── index.ts
 │   │
 │   └── qualifiers/
@@ -61,8 +61,8 @@ src/
 
 - Contains all event handler **abstractions**
 - Each handler file defines:
-  - Interface (e.g., `IApiGatewayEventHandler`)
-  - Abstraction (e.g., `ApiGatewayEventHandler`)
+  - Interface (e.g., `IApiGatewayInputHandler`)
+  - Abstraction (e.g., `ApiGatewayInputHandler`)
   - Namespace with type aliases
 - Imports `createAbstraction` from `../createAbstraction.js`
 
@@ -109,8 +109,8 @@ Nothing changes! All imports still work:
 
 ```typescript
 import {
-  ApiGatewayEventHandler,
-  SnsEventHandler,
+  ApiGatewayInputHandler,
+  SnsInputHandler,
   ApiGatewayEventQualifier,
   AwsLambdaContext,
   apiGatewayEventQualifier
@@ -152,9 +152,9 @@ import { ApiGatewayEventQualifier } from "../../abstractions/qualifiers/ApiGatew
 
 ## File Naming Convention
 
-- **Handler Abstractions**: `[EventType]EventHandler.ts` (in `abstractions/handlers/`)
-- **Qualifier Abstractions**: `[EventType]EventQualifier.ts` (in `abstractions/qualifiers/`)
-- **Qualifier Implementations**: `[EventType]EventQualifier.ts` (in `features/qualifiers/`)
+- **Handler Abstractions**: `[InputType]InputHandler.ts` (in `abstractions/handlers/`)
+- **Qualifier Abstractions**: `[InputType]EventQualifier.ts` (in `abstractions/qualifiers/`)
+- **Qualifier Implementations**: `[InputType]EventQualifier.ts` (in `features/qualifiers/`)
 - **Note**: Qualifier abstractions and implementations share the same filename but live in different directories
 - All handler implementations are created by users
 
@@ -165,19 +165,19 @@ If you were directly importing from internal paths (not recommended), update:
 ### Old
 
 ```typescript
-import { ApiGatewayEventHandler } from "@cloudi/aws/abstractions/ApiGatewayEventHandler";
+import { ApiGatewayInputHandler } from "@cloudi/aws/abstractions/ApiGatewayInputHandler";
 import { apiGatewayEventQualifier } from "@cloudi/aws/features/ApiGatewayEventQualifier";
 ```
 
 ### New
 
 ```typescript
-import { ApiGatewayEventHandler } from "@cloudi/aws/abstractions/handlers/ApiGatewayEventHandler";
+import { ApiGatewayInputHandler } from "@cloudi/aws/abstractions/handlers/ApiGatewayInputHandler";
 import { apiGatewayEventQualifier } from "@cloudi/aws/features/qualifiers/ApiGatewayEventQualifier";
 ```
 
 ### Recommended (unchanged)
 
 ```typescript
-import { ApiGatewayEventHandler, apiGatewayEventQualifier } from "@cloudi/aws";
+import { ApiGatewayInputHandler, apiGatewayEventQualifier } from "@cloudi/aws";
 ```

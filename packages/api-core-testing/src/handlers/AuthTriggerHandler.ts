@@ -1,5 +1,5 @@
-import { TestHttpEventHandler } from "@webiny/kernel-core/features/testing";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import { TestHttpInputHandler } from "@webiny/kernel-core/features/testing";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IAuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
@@ -9,15 +9,15 @@ import type { IIdentityContext } from "@webiny/api-core/features/security/Identi
  * Test-only decorator on the HTTP event handler: authenticates the `authorization` header and sets
  * the resulting identity before the request is dispatched (mirrors the prod identity loader).
  */
-class AuthTriggerHandlerImpl implements TestHttpEventHandler.Interface {
+class AuthTriggerHandlerImpl implements TestHttpInputHandler.Interface {
     constructor(
         private authCtx: IAuthenticationContext,
         private identityCtx: IIdentityContext,
-        private inner: TestHttpEventHandler.Interface
+        private inner: TestHttpInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext, next: NextFunction): Promise<any> {
-        const headers = ctx.event?.headers ?? {};
+    async execute(ctx: InputContext, next: NextFunction): Promise<any> {
+        const headers = ctx.input?.headers ?? {};
         const token = headers["authorization"] ?? "";
         const identity = await this.authCtx.authenticate(token);
         this.identityCtx.setIdentity(identity);
@@ -25,7 +25,7 @@ class AuthTriggerHandlerImpl implements TestHttpEventHandler.Interface {
     }
 }
 
-export const AuthTriggerHandler = TestHttpEventHandler.createDecorator({
+export const AuthTriggerHandler = TestHttpInputHandler.createDecorator({
     decorator: AuthTriggerHandlerImpl,
     dependencies: [AuthenticationContext, IdentityContext]
 });

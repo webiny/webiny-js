@@ -4,7 +4,7 @@ import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
-import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
+import { ScheduledActionRecoverInputHandler } from "./ScheduledActionRecoverInputHandler.js";
 import type { IPendingAction } from "@webiny/api-scheduler-standalone";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 
@@ -28,7 +28,7 @@ function canRecover(tenant: Tenant): boolean {
  * Each tenant is recovered on its own: one that fails is logged and reported in the result, and the
  * rest are still recovered. A fresh install has no tenants yet and recovers nothing.
  */
-class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventHandler.Interface {
+class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverInputHandler.Interface {
     public constructor(
         private readonly listTenants: ListTenantsUseCase.Interface,
         private readonly tenantContext: TenantContext.Interface,
@@ -38,7 +38,7 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventH
         private readonly logger: Logger.Interface
     ) {}
 
-    public async execute(): Promise<ScheduledActionRecoverEventHandler.Result> {
+    public async execute(): Promise<ScheduledActionRecoverInputHandler.Result> {
         // A failed lookup is not a fresh install: it throws, so the boot step reports it.
         const tenantsResult = await this.listTenants.execute();
         if (tenantsResult.isFail()) {
@@ -119,7 +119,7 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventH
 }
 
 export const RecoverScheduledActionsHandler =
-    ScheduledActionRecoverEventHandler.createImplementation({
+    ScheduledActionRecoverInputHandler.createImplementation({
         implementation: RecoverScheduledActionsHandlerImpl,
         dependencies: [
             ListTenantsUseCase,

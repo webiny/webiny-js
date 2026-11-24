@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { executeChain } from "~/features/events/chain.js";
-import type { EventContext, IEventHandler } from "~/features/events/EventHandler.js";
+import type { InputContext, IInputHandler } from "~/features/events/InputHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
 
 const makeHandler = (
-    fn: (ctx: EventContext, next: NextFunction) => Promise<any>
-): IEventHandler => ({
+    fn: (ctx: InputContext, next: NextFunction) => Promise<any>
+): IInputHandler => ({
     execute: fn
 });
 
@@ -35,10 +35,10 @@ describe("executeChain", () => {
     it("should pass translated event via next(newCtx)", async () => {
         const handlers = [
             makeHandler(async (ctx, next) => {
-                return next({ event: { ...ctx.event, translated: true }, metadata: ctx.metadata });
+                return next({ input: { ...ctx.input, translated: true }, metadata: ctx.metadata });
             }),
             makeHandler(async (ctx, _next) => {
-                return ctx.event;
+                return ctx.input;
             })
         ];
 
@@ -65,7 +65,7 @@ describe("executeChain", () => {
         const handlers = [makeHandler(async (_ctx, next) => next())];
 
         await expect(executeChain(handlers, {})).rejects.toThrow(
-            "No registered handler claimed this event"
+            "No registered handler claimed this input"
         );
     });
 

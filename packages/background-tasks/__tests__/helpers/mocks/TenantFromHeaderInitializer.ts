@@ -1,16 +1,16 @@
-import { TestHttpEventHandler } from "@webiny/kernel-core/features/testing";
-import type { EventContext, NextFunction } from "@webiny/kernel-core";
+import { TestHttpInputHandler } from "@webiny/kernel-core/features/testing";
+import type { InputContext, NextFunction } from "@webiny/kernel-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 
-class TenantFromHeaderInitializerImpl implements TestHttpEventHandler.Interface {
+class TenantFromHeaderInitializerImpl implements TestHttpInputHandler.Interface {
     constructor(
         private tenantCtx: ITenantContext,
-        private inner: TestHttpEventHandler.Interface
+        private inner: TestHttpInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext, next: NextFunction): Promise<any> {
-        const tenantId: string = ctx.event?.headers?.["x-tenant"] ?? "root";
+    async execute(ctx: InputContext, next: NextFunction): Promise<any> {
+        const tenantId: string = ctx.input?.headers?.["x-tenant"] ?? "root";
         this.tenantCtx.setTenant({
             id: tenantId,
             name: tenantId === "root" ? "Root" : tenantId,
@@ -32,7 +32,7 @@ class TenantFromHeaderInitializerImpl implements TestHttpEventHandler.Interface 
     }
 }
 
-export const TenantFromHeaderInitializer = TestHttpEventHandler.createDecorator({
+export const TenantFromHeaderInitializer = TestHttpInputHandler.createDecorator({
     decorator: TenantFromHeaderInitializerImpl,
     dependencies: [TenantContext]
 });

@@ -1,13 +1,13 @@
 export {
     SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
     SqlSchemaSetupConnection,
-    SqlSchemaSetupEventHandler,
+    SqlSchemaSetupInputHandler,
     SqlSchemaSetupService
 } from "./abstractions.js";
 export type {
     ISqlSchemaSetupConnection,
     ISqlSchemaSetupEvent,
-    ISqlSchemaSetupEventHandler,
+    ISqlSchemaSetupInputHandler,
     ISqlSchemaSetupEventPayload,
     ISqlSchemaSetupResult,
     ISqlSchemaSetupService,

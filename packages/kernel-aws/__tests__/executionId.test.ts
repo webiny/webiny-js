@@ -6,7 +6,7 @@ import { HttpRouteHandler } from "@webiny/kernel-core";
 import { KernelExecution } from "@webiny/kernel-core";
 import { createHttpRouteDefinition } from "@webiny/kernel-core";
 import type { IHttpResponse } from "@webiny/kernel-core";
-import { ApiGatewayEventType, ApiGatewayHttpRouterHandler, type APIGatewayEvent } from "~/index.js";
+import { ApiGatewayInputType, ApiGatewayHttpRouterHandler, type APIGatewayEvent } from "~/index.js";
 
 const event = {
     httpMethod: "GET",
@@ -28,7 +28,7 @@ class ExecutionIdRoute implements HttpRouteHandler.Interface {
 const createHandler = () => {
     return createLambdaHandler({
         root: container => {
-            container.register(ApiGatewayEventType);
+            container.register(ApiGatewayInputType);
             HttpFeature.register(container);
             container.register(ApiGatewayHttpRouterHandler);
             container.register(
