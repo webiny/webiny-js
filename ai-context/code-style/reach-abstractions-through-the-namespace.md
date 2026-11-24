@@ -23,8 +23,8 @@ The `I`-prefixed interface still has to exist and be exported from the file that
 
 **Do not re-export it from the package.** An `index.ts` exposing both gives callers two names for the
 same type, and they will drift: some files import one, some the other, and a reader has to check
-whether the two are actually the same thing. `kernel-core` gets this right — it exports
-`HttpRouteDefinition` and `HttpRouteHandler`, and `IHttpRouteDefinition` is visible only inside the
+whether the two are actually the same thing. `kernel-core/src/features/kernel/index.ts` gets this
+right: it exports `InputType` and `InputHandler`, and `IInputType` is visible only inside the
 package.
 
 ```ts

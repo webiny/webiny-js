@@ -4,7 +4,7 @@ import { Container } from "@webiny/di";
 import { HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
+import { RequestContainer } from "~/features/kernel/RequestContainer.js";
 import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
 import type {
     IHttpRequest,

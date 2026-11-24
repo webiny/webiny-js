@@ -1,12 +1,12 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import { InputHandler } from "~/features/events/InputHandler.js";
-import { InputType } from "~/features/events/InputType.js";
-import { Kernel } from "~/features/events/Kernel.js";
-import { KernelExecution } from "~/features/events/KernelExecution.js";
-import { StaleKernelExecutionError } from "~/features/events/StaleKernelExecutionError.js";
-import { KernelPlatform } from "~/features/events/KernelPlatform.js";
+import { InputHandler } from "~/features/kernel/InputHandler.js";
+import { InputType } from "~/features/kernel/InputType.js";
+import { Kernel } from "~/features/kernel/Kernel.js";
+import { KernelExecution } from "~/features/kernel/KernelExecution.js";
+import { StaleKernelExecutionError } from "~/features/kernel/StaleKernelExecutionError.js";
+import { KernelPlatform } from "~/features/kernel/KernelPlatform.js";
 
 // A platform whose invocation id is the second raw argument's `requestId`, like Lambda's context.
 class SecondArgumentIdPlatform implements KernelPlatform.Interface {

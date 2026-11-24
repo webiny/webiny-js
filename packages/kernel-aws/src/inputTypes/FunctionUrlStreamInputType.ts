@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import { FunctionUrlStreamInputHandler } from "~/abstractions/handlers/FunctionUrlStreamInputHandler.js";
 
 /**
@@ -11,7 +11,7 @@ import { FunctionUrlStreamInputHandler } from "~/abstractions/handlers/FunctionU
  * entry point is fixed per function and a streamified handler is only valid under RESPONSE_STREAM),
  * so the streaming composition root registers this one and never `ApiGatewayFeature`.
  */
-class FunctionUrlStreamInputTypeImpl implements IInputType<any> {
+class FunctionUrlStreamInputTypeImpl implements InputType.Interface<any> {
     matches(input: any): input is any {
         return Boolean(input?.rawPath && input?.requestContext?.http?.method);
     }

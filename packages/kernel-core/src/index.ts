@@ -1,4 +1,4 @@
-export * from "./features/events/index.js";
+export * from "./features/kernel/index.js";
 export * from "./features/http/index.js";
 export * from "./features/backgroundTask/index.js";
 export * from "./features/scheduledAction/index.js";

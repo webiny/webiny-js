@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import { TaskRecoverInputHandler } from "./TaskRecoverInputHandler.js";
 
 export const TASK_RECOVER_EVENT_IDENTIFIER = "WebinyBackgroundTaskRecover";
@@ -12,7 +12,7 @@ export interface ITaskRecoverEvent {
     [TASK_RECOVER_EVENT_IDENTIFIER]: true;
 }
 
-class TaskRecoverInputTypeImpl implements IInputType<ITaskRecoverEvent> {
+class TaskRecoverInputTypeImpl implements InputType.Interface<ITaskRecoverEvent> {
     matches(input: any): input is ITaskRecoverEvent {
         return input?.[TASK_RECOVER_EVENT_IDENTIFIER] === true;
     }

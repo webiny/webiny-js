@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
+import { RequestContainer } from "~/features/kernel/RequestContainer.js";
 import { SecureHeadersDecorator } from "~/features/http/decorators/SecureHeadersDecorator.js";
 import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/features/http/abstractions.js";
 import { registerHttpRouteInstance } from "~/features/testing/index.js";

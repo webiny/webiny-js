@@ -1,6 +1,6 @@
 import type { SQSEvent, SQSRecord } from "@webiny/aws-sdk/types/index.js";
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 
 export interface SqsResult {
     success: boolean;
@@ -8,7 +8,7 @@ export interface SqsResult {
     message?: string;
 }
 
-export interface ISqsInputHandler extends IInputHandler<SQSEvent, SqsResult> {}
+export interface ISqsInputHandler extends InputHandler.Interface<SQSEvent, SqsResult> {}
 
 export const SqsInputHandler = new Abstraction<ISqsInputHandler>("SqsInputHandler");
 

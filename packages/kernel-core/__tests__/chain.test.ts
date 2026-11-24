@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { executeChain } from "~/features/events/chain.js";
-import type { InputContext, IInputHandler } from "~/features/events/InputHandler.js";
-import type { NextFunction } from "~/features/events/types.js";
+import { executeChain } from "~/features/kernel/chain.js";
+import type { InputContext, InputHandler } from "~/features/kernel/InputHandler.js";
+import type { NextFunction } from "~/features/kernel/types.js";
 
 const makeHandler = (
     fn: (ctx: InputContext, next: NextFunction) => Promise<any>
-): IInputHandler => ({
+): InputHandler.Interface => ({
     execute: fn
 });
 

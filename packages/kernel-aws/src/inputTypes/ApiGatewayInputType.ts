@@ -1,9 +1,8 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
 import { InputType } from "@webiny/kernel-core";
 import { ApiGatewayInputHandler } from "../abstractions/handlers/ApiGatewayInputHandler.js";
-import type { IInputType } from "@webiny/kernel-core";
 
-class ApiGatewayInputTypeImpl implements IInputType<APIGatewayProxyEvent> {
+class ApiGatewayInputTypeImpl implements InputType.Interface<APIGatewayProxyEvent> {
     matches(input: any): input is APIGatewayProxyEvent {
         // v1 / HTTP API v1 payload format: httpMethod + path
         // requestContext.requestId is present in real API GW invocations but absent in

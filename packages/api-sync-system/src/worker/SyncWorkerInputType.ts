@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import { SyncWorkerInputHandler } from "./SyncWorkerInputHandler.js";
 import type { ISyncWorkerEvent } from "./SyncWorkerInputHandler.js";
 
@@ -11,7 +11,7 @@ const SYNC_WORKER_ACTIONS = [
     "deleteUser"
 ] as const;
 
-class SyncWorkerInputTypeImpl implements IInputType<ISyncWorkerEvent> {
+class SyncWorkerInputTypeImpl implements InputType.Interface<ISyncWorkerEvent> {
     matches(input: any): input is ISyncWorkerEvent {
         return (
             typeof input?.action === "string" &&

@@ -1,6 +1,6 @@
 import { HttpFeature } from "~/features/http/feature.js";
 import { HttpRouterHandler } from "./HttpRouterHandler.js";
-import { Kernel } from "~/features/events/Kernel.js";
+import { Kernel } from "~/features/kernel/Kernel.js";
 import { TestHttpInputType } from "./TestHttpInputType.js";
 import type { KernelSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 

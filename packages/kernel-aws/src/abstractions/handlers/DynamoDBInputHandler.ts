@@ -1,6 +1,6 @@
 import type { DynamoDBStreamEvent, DynamoDBRecord } from "@webiny/aws-sdk/types/index.js";
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 
 export interface DynamoDBResult {
     success: boolean;
@@ -8,7 +8,10 @@ export interface DynamoDBResult {
     message?: string;
 }
 
-export interface IDynamoDBInputHandler extends IInputHandler<DynamoDBStreamEvent, DynamoDBResult> {}
+export interface IDynamoDBInputHandler extends InputHandler.Interface<
+    DynamoDBStreamEvent,
+    DynamoDBResult
+> {}
 
 export const DynamoDBInputHandler = new Abstraction<IDynamoDBInputHandler>("DynamoDBInputHandler");
 

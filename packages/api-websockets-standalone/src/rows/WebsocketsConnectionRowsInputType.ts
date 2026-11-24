@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import {
     WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER,
     WebsocketsConnectionRowsInputHandler,
@@ -7,7 +7,7 @@ import {
 } from "./abstractions.js";
 
 /** Recognizes the connection-rows event and routes it to `WebsocketsConnectionRowsInputHandler`. */
-class WebsocketsConnectionRowsInputTypeImpl implements IInputType<IWebsocketsConnectionRowsEvent> {
+class WebsocketsConnectionRowsInputTypeImpl implements InputType.Interface<IWebsocketsConnectionRowsEvent> {
     matches(input: any): input is IWebsocketsConnectionRowsEvent {
         return input?.[WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER] === true;
     }

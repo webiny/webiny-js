@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import { WebSocketInputHandler } from "~/abstractions/handlers/WebSocketInputHandler.js";
 
 export interface IWebSocketEvent {
@@ -17,7 +17,7 @@ export interface IWebSocketEvent {
     body?: string | Record<string, unknown>;
 }
 
-class WebSocketInputTypeImpl implements IInputType<IWebSocketEvent> {
+class WebSocketInputTypeImpl implements InputType.Interface<IWebSocketEvent> {
     matches(input: any): input is IWebSocketEvent {
         return !!(
             input?.requestContext?.routeKey &&

@@ -2,13 +2,13 @@ import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
 import { Container } from "@webiny/di";
-import { ChildContainerFactory } from "~/features/events/abstractions.js";
-import { KernelConfig } from "~/features/events/abstractions.js";
-import { DefaultChildContainerFactory } from "~/features/events/ChildContainerFactory.js";
-import { KernelExecutionScope } from "~/features/events/KernelExecutionScope.js";
-import { DefaultKernelExecutionScope } from "~/features/events/DefaultKernelExecutionScope.js";
-import { KernelExecution } from "~/features/events/KernelExecution.js";
-import { NoopKernelPlatform } from "~/features/events/NoopKernelPlatform.js";
+import { ChildContainerFactory } from "~/features/kernel/abstractions.js";
+import { KernelConfig } from "~/features/kernel/abstractions.js";
+import { DefaultChildContainerFactory } from "~/features/kernel/ChildContainerFactory.js";
+import { KernelExecutionScope } from "~/features/kernel/KernelExecutionScope.js";
+import { DefaultKernelExecutionScope } from "~/features/kernel/DefaultKernelExecutionScope.js";
+import { KernelExecution } from "~/features/kernel/KernelExecution.js";
+import { NoopKernelPlatform } from "~/features/kernel/NoopKernelPlatform.js";
 
 const createAppContainer = () => {
     const appContainer = new Container();

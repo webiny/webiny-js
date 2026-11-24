@@ -3,9 +3,9 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { KernelExecutionScope } from "~/features/events/KernelExecutionScope.js";
-import { DefaultKernelExecutionScope } from "~/features/events/DefaultKernelExecutionScope.js";
-import { StaleKernelExecutionError } from "~/features/events/StaleKernelExecutionError.js";
+import { KernelExecutionScope } from "~/features/kernel/KernelExecutionScope.js";
+import { DefaultKernelExecutionScope } from "~/features/kernel/DefaultKernelExecutionScope.js";
+import { StaleKernelExecutionError } from "~/features/kernel/StaleKernelExecutionError.js";
 
 const owner = { executionId: "execution-1" };
 

@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 import type { ITaskRecoverEvent } from "./TaskRecoverInputType.js";
 
 export interface ITaskRecoverResult {
@@ -11,7 +11,7 @@ export interface ITaskRecoverResult {
     failedTenants: string[];
 }
 
-export interface ITaskRecoverInputHandler extends IInputHandler<
+export interface ITaskRecoverInputHandler extends InputHandler.Interface<
     ITaskRecoverEvent,
     ITaskRecoverResult
 > {}

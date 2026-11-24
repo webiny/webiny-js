@@ -1,8 +1,11 @@
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 import type { IEmptyTrashBinsEvent } from "./EmptyTrashBinsInputType.js";
 
-export interface IEmptyTrashBinsInputHandler extends IInputHandler<IEmptyTrashBinsEvent, void> {}
+export interface IEmptyTrashBinsInputHandler extends InputHandler.Interface<
+    IEmptyTrashBinsEvent,
+    void
+> {}
 
 export const EmptyTrashBinsInputHandler = new Abstraction<IEmptyTrashBinsInputHandler>(
     "EmptyTrashBinsInputHandler"

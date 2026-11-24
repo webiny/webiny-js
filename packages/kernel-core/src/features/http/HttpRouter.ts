@@ -6,7 +6,7 @@ import {
 } from "~/features/http/abstractions.js";
 import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
 import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
+import { RequestContainer } from "~/features/kernel/RequestContainer.js";
 import type {
     IHttpRouteDefinition,
     IHttpRequest,

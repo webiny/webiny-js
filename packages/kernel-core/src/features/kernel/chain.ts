@@ -1,6 +1,6 @@
-import type { IInputHandler, InputContext } from "~/features/events/InputHandler.js";
+import type { InputHandler, InputContext } from "~/features/kernel/InputHandler.js";
 
-export function executeChain(handlers: IInputHandler[], input: any): Promise<any> {
+export function executeChain(handlers: InputHandler.Interface[], input: any): Promise<any> {
     if (handlers.length === 0) {
         throw new Error("No handlers registered in container");
     }

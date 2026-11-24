@@ -1,8 +1,8 @@
 import type { APIGatewayEvent, APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 
-export interface IApiGatewayInputHandler extends IInputHandler<
+export interface IApiGatewayInputHandler extends InputHandler.Interface<
     APIGatewayEvent,
     APIGatewayProxyResult
 > {}

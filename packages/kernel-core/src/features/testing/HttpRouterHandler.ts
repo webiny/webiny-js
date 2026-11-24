@@ -1,7 +1,7 @@
 import { TestHttpInputHandler } from "./TestHttpInputHandler.js";
 import { HttpRouter, RouteNotFoundError } from "~/features/http/abstractions.js";
-import type { InputContext } from "~/features/events/InputHandler.js";
-import type { NextFunction } from "~/features/events/types.js";
+import type { InputContext } from "~/features/kernel/InputHandler.js";
+import type { NextFunction } from "~/features/kernel/types.js";
 import type { IHttpRouter } from "~/features/http/abstractions.js";
 
 class HttpRouterHandlerImpl implements TestHttpInputHandler.Interface {

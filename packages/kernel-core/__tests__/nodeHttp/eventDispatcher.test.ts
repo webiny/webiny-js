@@ -6,17 +6,19 @@ import { Abstraction } from "@webiny/di";
 import type { Container } from "@webiny/di";
 import { InputDispatcher } from "~/index.js";
 import { InputType } from "~/index.js";
-import type { IInputHandler } from "~/index.js";
-import type { IInputType } from "~/index.js";
+import type { InputHandler } from "~/index.js";
+
 import { createServerHandler } from "~/nodeHttp/createServerHandler.js";
 
 interface IPingEvent {
     ping: string;
 }
 
-const PingInputHandler = new Abstraction<IInputHandler<IPingEvent, unknown>>("PingInputHandler");
+const PingInputHandler = new Abstraction<InputHandler.Interface<IPingEvent, unknown>>(
+    "PingInputHandler"
+);
 
-class PingInputTypeImpl implements IInputType<IPingEvent> {
+class PingInputTypeImpl implements InputType.Interface<IPingEvent> {
     matches(input: any): input is IPingEvent {
         return typeof input?.ping === "string";
     }

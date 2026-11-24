@@ -1,9 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 import type { IWebSocketEvent } from "~/inputTypes/WebSocketInputType.js";
 
-export interface IWebSocketInputHandler extends IInputHandler<
+export interface IWebSocketInputHandler extends InputHandler.Interface<
     IWebSocketEvent,
     APIGatewayProxyResult
 > {}

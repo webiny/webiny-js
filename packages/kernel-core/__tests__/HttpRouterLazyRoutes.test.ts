@@ -11,7 +11,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
 import { HttpRouteDefinition, HttpRouteHandler, HttpRouter } from "~/features/http/abstractions.js";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
+import { RequestContainer } from "~/features/kernel/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 

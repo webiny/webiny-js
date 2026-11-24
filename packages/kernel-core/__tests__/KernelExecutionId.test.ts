@@ -1,12 +1,12 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import { InputHandler } from "~/features/events/InputHandler.js";
-import type { InputContext } from "~/features/events/InputHandler.js";
-import { InputType } from "~/features/events/InputType.js";
-import { Kernel } from "~/features/events/Kernel.js";
-import { KernelExecutionId } from "~/features/events/KernelExecutionId.js";
-import { KernelPlatform } from "~/features/events/KernelPlatform.js";
+import { InputHandler } from "~/features/kernel/InputHandler.js";
+import type { InputContext } from "~/features/kernel/InputHandler.js";
+import { InputType } from "~/features/kernel/InputType.js";
+import { Kernel } from "~/features/kernel/Kernel.js";
+import { KernelExecutionId } from "~/features/kernel/KernelExecutionId.js";
+import { KernelPlatform } from "~/features/kernel/KernelPlatform.js";
 
 // A platform whose invocation id is the event's `id`.
 class EventIdPlatform implements KernelPlatform.Interface {

@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { InputHandler } from "~/features/events/InputHandler.js";
-import { InputType } from "~/features/events/InputType.js";
-import type { IInputType } from "~/features/events/InputType.js";
-import { ChildContainerFactory, RootContainerFactory } from "~/features/events/abstractions.js";
-import type { IInputHandler } from "~/features/events/InputHandler.js";
-import { Kernel } from "~/features/events/Kernel.js";
+import { InputHandler } from "~/features/kernel/InputHandler.js";
+import { InputType } from "~/features/kernel/InputType.js";
+
+import { ChildContainerFactory, RootContainerFactory } from "~/features/kernel/abstractions.js";
+
+import { Kernel } from "~/features/kernel/Kernel.js";
 
 describe("Kernel (DI-native handler app)", () => {
-    class HttpInputType implements IInputType {
+    class HttpInputType implements InputType.Interface {
         matches(input: any): input is any {
             return !!input.method;
         }
@@ -24,7 +24,7 @@ describe("Kernel (DI-native handler app)", () => {
     const httpEvent = { method: "GET", path: "/" };
 
     const okHandler = () => {
-        class OkHandler implements IInputHandler {
+        class OkHandler implements InputHandler.Interface {
             async execute() {
                 return "ok";
             }

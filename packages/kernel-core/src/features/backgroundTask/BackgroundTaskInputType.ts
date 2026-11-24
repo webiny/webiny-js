@@ -1,5 +1,5 @@
-import { InputType } from "~/features/events/InputType.js";
-import type { IInputType } from "~/features/events/InputType.js";
+import { InputType } from "~/features/kernel/InputType.js";
+
 import { BackgroundTaskInputHandler } from "./BackgroundTaskInputHandler.js";
 
 export interface IBackgroundTaskEvent {
@@ -12,7 +12,7 @@ export interface IBackgroundTaskEvent {
     delay?: number;
 }
 
-class BackgroundTaskInputTypeImpl implements IInputType<IBackgroundTaskEvent> {
+class BackgroundTaskInputTypeImpl implements InputType.Interface<IBackgroundTaskEvent> {
     matches(input: any): input is IBackgroundTaskEvent {
         // The Step Functions / EventBridge transport delivers the task wrapped as
         // `{ name: "background-task", payload: { webinyTaskId, ... } }` (see the bg-task SFN ASL

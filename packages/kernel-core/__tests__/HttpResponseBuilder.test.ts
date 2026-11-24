@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { HttpRouteHandler, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
+import { RequestContainer } from "~/features/kernel/RequestContainer.js";
 import { HttpResponseBuilder, serializeCookie } from "~/features/http/HttpResponseBuilder.js";
 import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
 import type {

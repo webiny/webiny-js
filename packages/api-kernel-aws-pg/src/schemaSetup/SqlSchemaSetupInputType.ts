@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import {
     SQL_SCHEMA_SETUP_EVENT_IDENTIFIER,
     SqlSchemaSetupInputHandler,
@@ -7,7 +7,7 @@ import {
 } from "./abstractions.js";
 
 /** Recognizes the schema-setup event and routes it to `SqlSchemaSetupInputHandler`. */
-class SqlSchemaSetupInputTypeImpl implements IInputType<ISqlSchemaSetupEvent> {
+class SqlSchemaSetupInputTypeImpl implements InputType.Interface<ISqlSchemaSetupEvent> {
     matches(input: any): input is ISqlSchemaSetupEvent {
         const payload = input?.[SQL_SCHEMA_SETUP_EVENT_IDENTIFIER];
         return typeof payload === "object" && payload !== null;

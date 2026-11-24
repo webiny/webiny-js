@@ -1,6 +1,6 @@
 import type { SNSEvent, SNSEventRecord } from "@webiny/aws-sdk/types/index.js";
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 
 export interface SnsResult {
     success: boolean;
@@ -8,7 +8,7 @@ export interface SnsResult {
     message?: string;
 }
 
-export interface ISnsInputHandler extends IInputHandler<SNSEvent, SnsResult> {}
+export interface ISnsInputHandler extends InputHandler.Interface<SNSEvent, SnsResult> {}
 
 export const SnsInputHandler = new Abstraction<ISnsInputHandler>("SnsInputHandler");
 

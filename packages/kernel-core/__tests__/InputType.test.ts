@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { InputHandler } from "~/features/events/InputHandler.js";
-import { InputType } from "~/features/events/InputType.js";
-import type { IInputHandler, InputContext } from "~/features/events/InputHandler.js";
-import type { NextFunction } from "~/features/events/types.js";
-import { Kernel } from "~/features/events/Kernel.js";
+import { InputHandler } from "~/features/kernel/InputHandler.js";
+import { InputType } from "~/features/kernel/InputType.js";
+import type { InputContext } from "~/features/kernel/InputHandler.js";
+import type { NextFunction } from "~/features/kernel/types.js";
+import { Kernel } from "~/features/kernel/Kernel.js";
 
 describe("InputType dispatch", () => {
     it("should route to correct handler based on canHandle", async () => {
@@ -20,7 +20,7 @@ describe("InputType dispatch", () => {
             dependencies: []
         });
 
-        class HttpHandler implements IInputHandler {
+        class HttpHandler implements InputHandler.Interface {
             async execute(ctx: InputContext, _next: NextFunction) {
                 return { handled: true, event: ctx.input };
             }
@@ -75,7 +75,7 @@ describe("InputType dispatch", () => {
 
     it("should isolate handler pools between event types", async () => {
         const { Abstraction } = await import("@webiny/di");
-        const OtherHandler = new Abstraction<IInputHandler>("OtherHandler");
+        const OtherHandler = new Abstraction<InputHandler.Interface>("OtherHandler");
 
         class HttpInputType implements InputType.Interface {
             matches(input: any): input is any {
@@ -103,7 +103,7 @@ describe("InputType dispatch", () => {
             dependencies: []
         });
 
-        class HttpEventHandler implements IInputHandler {
+        class HttpEventHandler implements InputHandler.Interface {
             async execute(_ctx: InputContext, _next: NextFunction) {
                 return "http";
             }
@@ -113,7 +113,7 @@ describe("InputType dispatch", () => {
             dependencies: []
         });
 
-        class OtherEventHandler implements IInputHandler {
+        class OtherEventHandler implements InputHandler.Interface {
             async execute(_ctx: InputContext, _next: NextFunction) {
                 return "other";
             }

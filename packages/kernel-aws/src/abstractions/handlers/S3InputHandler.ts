@@ -1,8 +1,8 @@
 import type { S3Event, S3EventRecord } from "@webiny/aws-sdk/types/index.js";
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 
-export interface IS3InputHandler extends IInputHandler<S3Event, void> {}
+export interface IS3InputHandler extends InputHandler.Interface<S3Event, void> {}
 
 export const S3InputHandler = new Abstraction<IS3InputHandler>("S3InputHandler");
 

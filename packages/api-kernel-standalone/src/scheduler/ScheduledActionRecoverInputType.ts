@@ -1,5 +1,5 @@
 import { InputType } from "@webiny/kernel-core";
-import type { IInputType } from "@webiny/kernel-core";
+
 import { ScheduledActionRecoverInputHandler } from "./ScheduledActionRecoverInputHandler.js";
 
 export const SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER = "WebinyScheduledActionRecover";
@@ -12,7 +12,7 @@ export interface IScheduledActionRecoverEvent {
     [SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER]: true;
 }
 
-class ScheduledActionRecoverInputTypeImpl implements IInputType<IScheduledActionRecoverEvent> {
+class ScheduledActionRecoverInputTypeImpl implements InputType.Interface<IScheduledActionRecoverEvent> {
     matches(input: any): input is IScheduledActionRecoverEvent {
         return input?.[SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER] === true;
     }

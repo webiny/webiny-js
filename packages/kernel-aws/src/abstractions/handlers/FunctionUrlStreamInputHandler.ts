@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 
 /**
  * Terminal-handler abstraction for the Lambda Function URL response-streaming transport.
@@ -9,7 +9,7 @@ import type { IInputHandler } from "@webiny/kernel-core";
  * whereas an API Gateway handler returns a buffered `APIGatewayProxyResult`. Keeping them apart also
  * means the auth/tenant decorators for one transport can't silently apply to the other.
  */
-export interface IFunctionUrlStreamInputHandler extends IInputHandler<any, void> {}
+export interface IFunctionUrlStreamInputHandler extends InputHandler.Interface<any, void> {}
 
 export const FunctionUrlStreamInputHandler = new Abstraction<IFunctionUrlStreamInputHandler>(
     "FunctionUrlStreamInputHandler"

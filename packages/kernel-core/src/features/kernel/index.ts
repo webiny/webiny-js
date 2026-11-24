@@ -1,12 +1,18 @@
-export * from "./InputHandler.js";
-export * from "./InputType.js";
+export { InputHandler } from "./InputHandler.js";
+export type { InputContext } from "./InputHandler.js";
+export { InputType } from "./InputType.js";
 export * from "./RequestContainer.js";
 export { KernelExecution } from "./KernelExecution.js";
 export { KernelExecutionId } from "./KernelExecutionId.js";
 export * from "./StaleKernelExecutionError.js";
 export * from "./NoMatchingInputTypeError.js";
 export * from "./chain.js";
-export * from "./abstractions.js";
+export {
+    KernelConfig,
+    RootContainerFactory,
+    ChildContainerFactory,
+    KernelExecutionRunner
+} from "./abstractions.js";
 export * from "./Kernel.js";
 export * from "./RootContainerFactory.js";
 export * from "./ChildContainerFactory.js";

@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di";
-import type { IInputHandler } from "@webiny/kernel-core";
+import type { InputHandler } from "@webiny/kernel-core";
 import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverInputType.js";
 
 export interface IScheduledActionRecoverResult {
@@ -8,7 +8,7 @@ export interface IScheduledActionRecoverResult {
     failedTenants: string[];
 }
 
-export interface IScheduledActionRecoverInputHandler extends IInputHandler<
+export interface IScheduledActionRecoverInputHandler extends InputHandler.Interface<
     IScheduledActionRecoverEvent,
     IScheduledActionRecoverResult
 > {}

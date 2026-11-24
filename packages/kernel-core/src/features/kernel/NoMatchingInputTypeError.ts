@@ -1,5 +1,5 @@
 import type { InputType } from "./InputType.js";
-import { EventShape } from "./EventShape.js";
+import { InputShape } from "./InputShape.js";
 
 /*
  * Name each registered type by the handler abstraction it dispatches to, NOT by `constructor.name`:
@@ -24,7 +24,7 @@ function nameInputTypes(inputTypes: InputType.Interface[]): string[] {
  */
 export class NoMatchingInputTypeError extends Error {
     constructor(input: unknown, inputTypes: InputType.Interface[]) {
-        const shape = EventShape.from(input);
+        const shape = InputShape.from(input);
         const registered = nameInputTypes(inputTypes);
         const registeredList = JSON.stringify(registered);
         const message = `No input type matched the incoming input. Input shape: ${shape}; registered input types: ${registeredList}`;

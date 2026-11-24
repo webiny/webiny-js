@@ -1,12 +1,12 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import { InputHandler } from "~/features/events/InputHandler.js";
-import { InputType } from "~/features/events/InputType.js";
-import { Kernel } from "~/features/events/Kernel.js";
-import { KernelExecutionRunner } from "~/features/events/abstractions.js";
-import { RootContainerFactory } from "~/features/events/abstractions.js";
-import { KernelExecutionScope } from "~/features/events/KernelExecutionScope.js";
+import { InputHandler } from "~/features/kernel/InputHandler.js";
+import { InputType } from "~/features/kernel/InputType.js";
+import { Kernel } from "~/features/kernel/Kernel.js";
+import { KernelExecutionRunner } from "~/features/kernel/abstractions.js";
+import { RootContainerFactory } from "~/features/kernel/abstractions.js";
+import { KernelExecutionScope } from "~/features/kernel/KernelExecutionScope.js";
 
 class AnyInputType implements InputType.Interface {
     matches(_input: any): _input is any {
