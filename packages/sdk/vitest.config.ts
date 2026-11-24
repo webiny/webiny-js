@@ -1,3 +1,7 @@
-import { configureVitest } from "@webiny/build-tools";
+import { createTestConfig } from "../../testing";
 
-export default configureVitest();
+export default async () => {
+    return createTestConfig({
+        path: import.meta.dirname
+    });
+};
