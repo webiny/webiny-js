@@ -12187,6 +12187,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-file-manager@workspace:packages/app-file-manager"
   dependencies:
+    "@testing-library/react": "npm:^16.3.3"
     "@types/react": "npm:19.3.0"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
