@@ -78,7 +78,14 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
                 hasMore: meta.hasMoreItems,
                 loading: loading && !this._loadingMore,
                 loadingMore: this._loadingMore,
-                totalCount: meta.totalCount,
+                // Rows added or removed in the browser after the fetch (an upload, a delete) change
+                // `rows` but not the fetched total. With every item loaded, the rows are the total;
+                // otherwise it's at least what's shown.
+                totalCount: meta.hasMoreItems
+                    ? Math.max(meta.totalCount, rows.length)
+                    : loading
+                      ? meta.totalCount
+                      : rows.length,
                 currentCount: rows.length
             },
             selection: {
