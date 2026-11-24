@@ -1,4 +1,5 @@
 import type { Container } from "@webiny/di";
+import { HandlerExecutionId } from "@webiny/event-handler-core";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
@@ -21,7 +22,16 @@ export async function registerWebinyApiRoot(
     // One per Lambda instance, in CloudWatch's structured format. Every request container inherits it.
     const formatter = new StructuredLogFormatter();
     const destination = pinoLambdaDestination({ formatter });
-    const logger = createLogger(destination);
+    /*
+     * The formatter writes `awsRequestId` as the line's `requestId`. The execution id is the
+     * invocation's request id (`context.awsRequestId` on a Lambda, the `lambda-web-request-id` header on
+     * a web function). Read per line, not set per invocation as pino-lambda's `lambdaRequestTracker`
+     * does: that keeps one id in a global, and a web function runs several requests at once.
+     */
+    const executionId = container.resolve(HandlerExecutionId);
+    const logger = createLogger(destination, () => {
+        return { awsRequestId: executionId.getId() };
+    });
     container.registerInstance(Logger, logger);
 
     // Identity providers are not registered here. Each one comes from its project extension (e.g.

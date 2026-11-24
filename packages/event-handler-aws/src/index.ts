@@ -9,6 +9,7 @@ export type {
 } from "./createStreamLambdaHandler.js";
 export { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform.js";
 export type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamHandlerPlatform.js";
+export { LambdaWebHandlerPlatform } from "./LambdaWebHandlerPlatform.js";
 export * from "./streaming/awslambda.js";
 export * from "./streaming/writeHttpResponseToStream.js";
 

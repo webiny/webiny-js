@@ -1,9 +1,11 @@
 import type http from "node:http";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { Container } from "@webiny/di";
+import type { Constructor } from "@webiny/di";
 import { HandlerApp } from "~/index.js";
 import { EventDispatcher } from "~/index.js";
 import type { HandlerSetup } from "~/index.js";
+import type { HandlerPlatform } from "~/index.js";
 import { createNodeHttpServer } from "~/nodeHttp/server/createNodeHttpServer.js";
 import { HandlerAppEventDispatcher } from "~/nodeHttp/server/HandlerAppEventDispatcher.js";
 import { handleShutdownSignals } from "~/nodeHttp/server/handleShutdownSignals.js";
@@ -12,6 +14,13 @@ import { InFlightRequests } from "~/nodeHttp/server/InFlightRequests.js";
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
     child?: HandlerSetup;
+    /**
+     * The platform the server runs on. Each request is invoked with the `http.IncomingMessage` as
+     * its only raw argument, and events dispatched through `EventDispatcher` with the event, so a
+     * platform reading request headers has to check which one it got. Defaults to
+     * `NoopHandlerPlatform`: every execution gets a generated id.
+     */
+    platform?: Constructor<HandlerPlatform.Interface>;
     /**
      * Called once, at startup, after the root container is built and the HTTP server is created —
      * before it starts listening. Lets a transport attach to the raw server (e.g. a WebSockets
@@ -56,7 +65,8 @@ export async function createServerHandler(
 
             await options.root(container);
         },
-        child: options.child
+        child: options.child,
+        platform: options.platform
     });
 
     const inFlight = new InFlightRequests();

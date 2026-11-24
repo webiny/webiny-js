@@ -13,6 +13,7 @@
  * types are registered here.
  */
 import { createServerHandler } from "@webiny/event-handler-core/nodeHttp/index.js";
+import { LambdaWebHandlerPlatform } from "@webiny/event-handler-aws";
 import { NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
@@ -31,6 +32,8 @@ export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfi
     return createServerHandler({
         // Lambda sends SIGTERM before it shuts an environment down.
         exitOnShutdownSignal: true,
+        // Takes each request's execution id from the `lambda-web-request-id` header.
+        platform: LambdaWebHandlerPlatform,
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
             NodeHttpFeature.register(container);
