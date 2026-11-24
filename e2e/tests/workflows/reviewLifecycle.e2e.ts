@@ -246,7 +246,8 @@ describe(
             const bar = reviewBar(browser);
             await expect(bar.getByText("Every step approved. Ready to publish.")).toBeVisible();
 
-            await screen.getByRole("button", "Save & Publish").tap();
+            // An approved revision is locked for editing, so the button only publishes.
+            await screen.getByRole("button", "Publish").tap();
             const confirm = screen.getByRole("dialog", "Publish entry");
             await confirm.getByRole("button", "Yes, publish!").tap();
             await expect(confirm).toBeHidden();
