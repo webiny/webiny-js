@@ -100,7 +100,7 @@ describe("Services used after their kernel execution", () => {
         const [anonymous] = await query("whoAmIFromConstructor", ANONYMOUS);
         expect(anonymous.data.whoAmIFromConstructor).toBeNull();
         expect(anonymous.errors[0].message).toContain(
-            "IdentityContext belongs to kernel execution"
+            `IdentityContext belongs to scope "tenant:root" of kernel execution`
         );
     });
 
@@ -111,7 +111,9 @@ describe("Services used after their kernel execution", () => {
 
         const [admin] = await query("whoAmIFromConstructor");
         expect(admin.data.whoAmIFromConstructor).toBeNull();
-        expect(admin.errors[0].message).toContain("IdentityContext belongs to kernel execution");
+        expect(admin.errors[0].message).toContain(
+            `IdentityContext belongs to scope "tenant:root" of kernel execution`
+        );
     });
 
     test("a request can't use the TenantContext of an earlier request", async () => {
@@ -121,6 +123,8 @@ describe("Services used after their kernel execution", () => {
 
         const [second] = await query("tenantFromConstructor");
         expect(second.data.tenantFromConstructor).toBeNull();
-        expect(second.errors[0].message).toContain("TenantContext belongs to kernel execution");
+        expect(second.errors[0].message).toContain(
+            `TenantContext belongs to scope "tenant:root" of kernel execution`
+        );
     });
 });

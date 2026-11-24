@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { TenancyStorageOperations } from "~/types/tenancy.js";
 
 /**
  * Builds the api-core storage operations. Resolved + built synchronously inside
@@ -33,3 +34,38 @@ export const registerApiCoreStorageOperations = (
         create: () => storageOperations
     });
 };
+
+/**
+ * Builds the storage operations of the tenant registry (the tenant records) on their own, without
+ * the rest of the core storage. The request container builds the registry before the request's
+ * tenant is known, and the core storage's other parts (security, users, the key-value store) belong
+ * to a tenant scope. Registered in the root by a storage adapter (ApiCoreDdbFeature,
+ * SqlConnectionFeature). When none is, the registry takes the tenancy part of
+ * `ApiCoreStorageOperationsFactory` (tests register only that one).
+ */
+export interface ITenancyStorageOperationsFactory {
+    create(): TenancyStorageOperations;
+}
+
+export const TenancyStorageOperationsFactory = createAbstraction<ITenancyStorageOperationsFactory>(
+    "TenancyStorageOperationsFactory"
+);
+
+export namespace TenancyStorageOperationsFactory {
+    export type Interface = ITenancyStorageOperationsFactory;
+}
+
+/**
+ * Picks the tenant registry's storage: its own `TenancyStorageOperationsFactory`, or the tenancy
+ * part of `ApiCoreStorageOperationsFactory`.
+ */
+export interface ITenancyStorageOperationsProvider {
+    create(): TenancyStorageOperations;
+}
+
+export const TenancyStorageOperationsProvider =
+    createAbstraction<ITenancyStorageOperationsProvider>("TenancyStorageOperationsProvider");
+
+export namespace TenancyStorageOperationsProvider {
+    export type Interface = ITenancyStorageOperationsProvider;
+}

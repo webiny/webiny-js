@@ -80,6 +80,12 @@ describe("KeyValueStore Feature", () => {
     let keyValueStore: KeyValueStore.Interface;
     let globalKeyValueStore: GlobalKeyValueStore.Interface;
 
+    /*
+     * A container's tenant is set once, so each tenant gets its own container, on the same storage
+     * (as each tenant's scope of a request does).
+     */
+    let storeFor: (tenant: Tenant) => KeyValueStore.Interface;
+
     beforeEach(() => {
         container = new Container();
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
@@ -91,6 +97,14 @@ describe("KeyValueStore Feature", () => {
         // Register real TenancyFeature with mock storage
         TenancyFeature.register(container, mockTenancyStorage);
         KeyValueStoreFeature.register(container, keyValueStorageOperations);
+
+        storeFor = tenant => {
+            const tenantContainer = new Container();
+            TenancyFeature.register(tenantContainer, mockTenancyStorage);
+            KeyValueStoreFeature.register(tenantContainer, keyValueStorageOperations);
+            tenantContainer.resolve(TenantContext).setTenant(tenant);
+            return tenantContainer.resolve(KeyValueStore);
+        };
 
         // Resolve services
         tenantContext = container.resolve(TenantContext);
@@ -726,21 +740,21 @@ describe("KeyValueStore Feature", () => {
                 const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
 
                 // Set value in tenant1
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 await keyValueStore.set("config/app", { version: "1.0" });
 
                 // Set different value in tenant2
-                tenantContext.setTenant(tenant2);
+                keyValueStore = storeFor(tenant2);
                 await keyValueStore.set("config/app", { version: "2.0" });
 
                 // Verify tenant1 has its own value
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 const result1 = await keyValueStore.get("config/app");
                 expect(result1.isOk()).toBe(true);
                 expect(result1.value).toEqual({ version: "1.0" });
 
                 // Verify tenant2 has its own value
-                tenantContext.setTenant(tenant2);
+                keyValueStore = storeFor(tenant2);
                 const result2 = await keyValueStore.get("config/app");
                 expect(result2.isOk()).toBe(true);
                 expect(result2.value).toEqual({ version: "2.0" });
@@ -758,10 +772,10 @@ describe("KeyValueStore Feature", () => {
                 const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
                 const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
 
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 await keyValueStore.set("lock/x", "p1", { condition: { exists: false } });
 
-                tenantContext.setTenant(tenant2);
+                keyValueStore = storeFor(tenant2);
                 const created = await keyValueStore.set("lock/x", "p2", {
                     condition: { exists: false }
                 });
@@ -772,7 +786,7 @@ describe("KeyValueStore Feature", () => {
                 });
                 expect(notOwner.error?.code).toBe("KeyValueStore/ConditionFailed");
 
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 const owner = await keyValueStore.delete("lock/x", { condition: { equals: "p1" } });
                 expect(owner.isOk()).toBe(true);
             });
@@ -784,14 +798,14 @@ describe("KeyValueStore Feature", () => {
                 const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
 
                 // Set same key in both tenants
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 await keyValueStore.set("shared/key", { tenant: "1" });
 
-                tenantContext.setTenant(tenant2);
+                keyValueStore = storeFor(tenant2);
                 await keyValueStore.set("shared/key", { tenant: "2" });
 
                 // Delete from tenant1
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 const deleteResult = await keyValueStore.delete("shared/key");
                 expect(deleteResult.isOk()).toBe(true);
 
@@ -800,7 +814,7 @@ describe("KeyValueStore Feature", () => {
                 expect(getResult1.isFail()).toBe(true);
 
                 // Verify still exists in tenant2
-                tenantContext.setTenant(tenant2);
+                keyValueStore = storeFor(tenant2);
                 const getResult2 = await keyValueStore.get("shared/key");
                 expect(getResult2.isOk()).toBe(true);
                 expect(getResult2.value).toEqual({ tenant: "2" });
@@ -812,10 +826,10 @@ describe("KeyValueStore Feature", () => {
                 const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
                 const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
 
-                tenantContext.setTenant(tenant1);
+                keyValueStore = storeFor(tenant1);
                 await keyValueStore.set("chat:1", { tenant: "1" }, { collection: "chats" });
 
-                tenantContext.setTenant(tenant2);
+                keyValueStore = storeFor(tenant2);
                 await keyValueStore.set("chat:2", { tenant: "2" }, { collection: "chats" });
 
                 const result = await keyValueStore.list({ collection: "chats" });

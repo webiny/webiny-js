@@ -3,6 +3,7 @@ import { KernelConfig, RootContainerFactory } from "./abstractions.js";
 import { KernelExecutionId } from "./KernelExecutionId.js";
 import { DefaultKernelExecutionId } from "./DefaultKernelExecutionId.js";
 import { KernelExecutionScope } from "./KernelExecutionScope.js";
+import { DefaultInputChainRunner } from "./DefaultInputChainRunner.js";
 
 class RootContainerFactoryImpl implements RootContainerFactory.Interface {
     private rootContainer: Container | null = null;
@@ -19,6 +20,8 @@ class RootContainerFactoryImpl implements RootContainerFactory.Interface {
             // Registered first, so everything `root` registers can depend on it.
             const executionId = new DefaultKernelExecutionId(this.scope);
             this.rootContainer.registerInstance(KernelExecutionId, executionId);
+            // Registered before `root` runs, so `root` can decorate it.
+            this.rootContainer.register(DefaultInputChainRunner);
 
             await this.config.root(this.rootContainer);
         }

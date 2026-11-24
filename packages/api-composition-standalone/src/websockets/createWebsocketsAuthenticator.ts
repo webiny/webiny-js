@@ -10,7 +10,7 @@ import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js"
 import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { TenantNotFoundError } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CanAccessCurrentTenantUseCase } from "@webiny/api-core/features/security/CanAccessCurrentTenant/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -33,7 +33,7 @@ const refuseOnAuthenticationError = (logger: Logger.Interface) => {
 
 /**
  * Builds the `authenticate` callback the server WebSocket upgrade acceptor uses to turn a
- * connection's `?token` JWT into an identity in the connection's `?tenant`.
+ * connection's `?token` JWT into an identity in the connection's `?tenant`, in that tenant's scope.
  *
  * Each new WebSocket connection (the HTTP upgrade handshake) is authenticated from its `?token` JWT
  * so the connection is registered under the real identity — targeted server→client sends need this,
@@ -71,37 +71,39 @@ export function createWebsocketsAuthenticator(
         child.resolve(RawTenantId).set(tenantId);
         child.resolve(RawAuthToken).set(token);
 
-        const tenantLoaded = await child
+        const tenant = await child
             .resolve(RequestTenantLoader)
             .establish()
-            .then(() => true)
             .catch(refuseUnknownTenant);
         // An unknown tenant refuses the handshake rather than failing it.
-        if (!tenantLoaded || !child.resolve(TenantContext).getTenant()) {
+        if (!tenant) {
             return null;
         }
 
-        const refuse = refuseOnAuthenticationError(child.resolve(Logger));
-        const authenticated = await child
-            .resolve(RequestIdentityLoader)
-            .establish()
-            .then(() => true)
-            .catch(refuse);
-        if (!authenticated) {
-            return null;
-        }
+        // Identity is the tenant's: an API key is looked up in it, and access is checked against it.
+        return child.resolve(TenantScopes).withTenant(tenant, async scope => {
+            const refuse = refuseOnAuthenticationError(scope.resolve(Logger));
+            const authenticated = await scope
+                .resolve(RequestIdentityLoader)
+                .establish()
+                .then(() => true)
+                .catch(refuse);
+            if (!authenticated) {
+                return null;
+            }
 
-        // False for the anonymous identity, which is what a token no authenticator recognises gives.
-        const canAccessTenant = await child.resolve(CanAccessCurrentTenantUseCase).execute();
-        if (!canAccessTenant) {
-            return null;
-        }
+            // False for the anonymous identity, which is what a token no authenticator recognises gives.
+            const canAccessTenant = await scope.resolve(CanAccessCurrentTenantUseCase).execute();
+            if (!canAccessTenant) {
+                return null;
+            }
 
-        const identity = child.resolve(IdentityContext).getIdentity();
-        return {
-            id: identity.id,
-            displayName: identity.displayName,
-            type: identity.type
-        };
+            const identity = scope.resolve(IdentityContext).getIdentity();
+            return {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            };
+        });
     };
 }

@@ -1,7 +1,8 @@
 import { createFeature } from "@webiny/feature/api";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { ApiCoreStorageOperationsFactory } from "@webiny/api-core";
+import { ApiCoreStorageOperationsFactory, TenancyStorageOperationsFactory } from "@webiny/api-core";
 import { createApiCoreDdb } from "./createApiCoreDdb.js";
+import { createStorageOperations as createTenancyStorageOperations } from "./tenancy/index.js";
 
 export interface ApiCoreDdbConfig {
     documentClient: DynamoDBDocument;
@@ -16,6 +17,10 @@ export const ApiCoreDdbFeature = createFeature<ApiCoreDdbConfig>({
     register(container, { documentClient }) {
         container.registerInstance(ApiCoreStorageOperationsFactory, {
             create: () => createApiCoreDdb({ documentClient })
+        });
+        // The tenant registry on its own: the request container reads the request's tenant from it.
+        container.registerInstance(TenancyStorageOperationsFactory, {
+            create: () => createTenancyStorageOperations({ documentClient })
         });
     }
 });

@@ -3,8 +3,9 @@ import type { Tenant } from "~/types/tenancy.js";
 
 export interface ITenantContext {
     /**
-     * Sets the request's tenant. Throws when called inside a `withTenant()`, `withRootTenant()` or
-     * `withEachTenant()` callback: nest another `withTenant()` call instead.
+     * Sets the container's tenant, once: setting the same tenant again refreshes its record, and
+     * another tenant throws `TenantAlreadySetError`. Throws when called inside a `withTenant()`,
+     * `withRootTenant()` or `withEachTenant()` callback: nest another `withTenant()` call instead.
      */
     setTenant(tenant: Tenant): void;
     /** The tenant switched to by the enclosing `with*` callback, or the request's tenant. */

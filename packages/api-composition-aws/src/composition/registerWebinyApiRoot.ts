@@ -8,7 +8,8 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { pinoLambdaDestination } from "pino-lambda";
 import { StructuredLogFormatter } from "pino-lambda";
 import type { WebinyApiCompositionConfig } from "./types.js";
-import { registerWebinyApiChild } from "./registerWebinyApiChild.js";
+import { registerWebinyApiInOneContainer } from "./registerWebinyApiChild.js";
+import { TenantScopesRootFeature } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 
 /**
  * ROOT container registration that is not transport-specific: logger, caches, and the storage
@@ -50,11 +51,16 @@ export async function registerWebinyApiRoot(
     // Root, so identity providers' signing keys are fetched once per process, not per request.
     JwksStoreFeature.register(container);
 
+    // ── Tenant scopes ──────────────────────────────────────────
+    // Every event's handler chain runs in its tenant's scope. The transport registers the
+    // `InputTenantSource` that names the tenant of its requests (the `x-tenant` header).
+    TenantScopesRootFeature.register(container);
+
     // ── Request registration ───────────────────────────────────
-    // What every request's container gets (`child`), for work outside a request that needs a
-    // container a request would have: the SQL schema setup builds one on its own connection.
+    // What a request has, in one container, for work outside a request that needs one: the SQL
+    // schema setup builds one on its own connection.
     container.registerInstance(ApiRequestRegistration, {
-        register: requestContainer => registerWebinyApiChild(requestContainer, config)
+        register: requestContainer => registerWebinyApiInOneContainer(requestContainer, config)
     });
 
     // ── Storage (variant-specific: database, CMS storage ops, registries, OpenSearch core) ──

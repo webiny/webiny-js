@@ -4,13 +4,7 @@ import { KernelExecution } from "@webiny/api-kernel-core";
 import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
-import { TenantIsDisabledError } from "./errors.js";
-
-function assertTenantEnabled(tenant: Tenant): void {
-    if (tenant.isInstalled && tenant.status === "disabled") {
-        throw new TenantIsDisabledError();
-    }
-}
+import { TenantAlreadySetError, assertTenantEnabled } from "./errors.js";
 
 class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: Tenant | null = null;
@@ -36,8 +30,11 @@ class TenantContextImpl implements Abstraction.Interface {
     }
 
     /*
-     * Sets the request's tenant. Inside a `with*` callback it throws: the switch would either be
-     * shared with every async branch of that callback or leak past it, so nest another `with*` call.
+     * Sets the container's tenant, once. Every service of the container was built for that tenant,
+     * so switching to another one would leave them acting on the first. Setting the same tenant
+     * again refreshes its record: the system install replaces the bootstrap root with the real one.
+     * Inside a `with*` callback it throws: the switch would either be shared with every async branch
+     * of that callback or leak past it, so nest another `with*` call.
      */
     setTenant(tenant: Tenant): void {
         this.kernelExecution?.assertCurrent("TenantContext");
@@ -48,6 +45,9 @@ class TenantContextImpl implements Abstraction.Interface {
             throw new Error(
                 "TenantContext.setTenant() was called inside a withTenant(), withRootTenant() or withEachTenant() callback. Call withTenant() instead, so the switch stays inside its own callback."
             );
+        }
+        if (this.currentTenant && this.currentTenant.id !== tenant.id) {
+            throw new TenantAlreadySetError(this.currentTenant.id, tenant.id);
         }
         this.currentTenant = tenant;
     }

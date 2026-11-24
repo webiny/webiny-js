@@ -3,7 +3,10 @@ import { Container } from "@webiny/di";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
-import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
+import {
+    TenantRegistryFeature,
+    TenantScopeTenancyFeature
+} from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import type { ApiCoreConfig } from "~/types/core.js";
 import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/abstractions.js";
@@ -26,7 +29,10 @@ import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/Nul
 import { NullSendToIdentityUseCase } from "~/features/websockets/index.js";
 import { NotifyRecordChangeFeature } from "~/features/websockets/index.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
-import { RequestContextFeature } from "~/features/requestContext/index.js";
+import {
+    TenantNeutralRequestContextFeature,
+    TenantScopeRequestContextFeature
+} from "~/features/requestContext/index.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
 import { SecuritySchemaFactory } from "~/graphql/security/SecuritySchemaFactory.js";
 import { UsersSchemaFactory } from "~/graphql/users/UsersSchemaFactory.js";
@@ -56,13 +62,21 @@ export const ApiCoreFeature = createFeature({
         EncryptionFeature.register(container);
         HasherFeature.register(container);
         FeatureFlagsFeature.register(container);
-        TenancyFeature.register(container, storageOperations.tenancyStorageOperations);
+        /*
+         * In a tenant scope, the tenant registry and the raw request values come from the request
+         * container (`TenantNeutralRequestFeature`), shared by every scope of the request.
+         */
+        if (!config.tenantScope) {
+            TenantRegistryFeature.register(container, storageOperations.tenancyStorageOperations);
+            TenantNeutralRequestContextFeature.register(container);
+        }
+        TenantScopeTenancyFeature.register(container);
         SecurityFeature.register(container, storageOperations.securityStorageOperations);
         AdminUsersFeature.register(container, storageOperations.usersStorageOperations);
         KeyValueStoreFeature.register(container, storageOperations.keyValueStorageOperations);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
-        RequestContextFeature.register(container);
+        TenantScopeRequestContextFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         container.register(NullSendToIdentityUseCase);
         NotifyRecordChangeFeature.register(container);

@@ -10,7 +10,12 @@ import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { TestAuthenticator } from "./mocks/TestAuthenticator.js";
 import { TestAuthorizer } from "./mocks/TestAuthorizer.js";
 import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler.js";
-import { RootTenantInitializer } from "./handlers/RootTenantInitializer.js";
+import { TestHttpTenantSource } from "./handlers/TestHttpTenantSource.js";
+import {
+    TenantNeutralRequestFeature,
+    TenantScopeRegistration,
+    TenantScopesRootFeature
+} from "~/features/tenancy/TenantScopes/index.js";
 
 // Graphql
 import {
@@ -52,37 +57,48 @@ type UseGqlHandlerParams = {
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
+    /*
+     * Requests run the way the API runs them: the request container is tenant-neutral, and the
+     * request continues in the scope of its `x-tenant` header's tenant, where everything below
+     * `child`'s request part is registered.
+     */
     const handler = createTestHttpHandler({
         root: container => {
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
 
             container.registerDecorator(AuthTriggerHandler);
-            container.registerDecorator(RootTenantInitializer);
+            TenantScopesRootFeature.register(container);
+            container.register(TestHttpTenantSource);
 
             for (const registration of opts.rootRegistrations ?? []) {
                 registration(container);
             }
         },
         child: async container => {
-            // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
-            // registered here become per-request singletons automatically
             const wcpLicense = await WcpLicenseLoader.load(opts.wcpLicense);
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             const logger = new NullLogger();
             container.registerInstance(Logger, logger);
-            ApiCoreFeature.register(container, { wcpLicense });
-            GraphQLEngineFeature.register(container);
+            TenantNeutralRequestFeature.register(container);
 
-            for (const registration of opts.registrations ?? []) {
-                // Arrow functions are setup callbacks; classes (which also have typeof "function")
-                // have a prototype and are DI implementations → register in container
-                if (typeof registration === "function" && !registration.prototype) {
-                    await registration(container);
-                } else {
-                    container.register(registration);
+            container.registerInstance(TenantScopeRegistration, {
+                register: async scope => {
+                    // TenantContext, IdentityContext etc. registered here are the scope's singletons.
+                    ApiCoreFeature.register(scope, { wcpLicense, tenantScope: true });
+                    GraphQLEngineFeature.register(scope);
+
+                    for (const registration of opts.registrations ?? []) {
+                        // Arrow functions are setup callbacks; classes (which also have typeof
+                        // "function") have a prototype and are DI implementations → register them.
+                        if (typeof registration === "function" && !registration.prototype) {
+                            await registration(scope);
+                        } else {
+                            scope.register(registration);
+                        }
+                    }
                 }
-            }
+            });
         }
     });
 

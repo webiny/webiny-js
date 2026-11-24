@@ -11,3 +11,9 @@ export {
     FULL_ACCESS_TEAM_ID,
     UNKNOWN_TEAM_ID
 } from "./tenancySecurity.js";
+export {
+    TestTenantScopesFeature,
+    TestHttpTenantSource,
+    createTenantScopedChild
+} from "./tenantScopes.js";
+export type { TenantScopedChildSetup } from "./tenantScopes.js";

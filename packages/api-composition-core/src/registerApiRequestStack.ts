@@ -2,6 +2,10 @@ import type { Container } from "@webiny/di";
 import { registerBuildParams, registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature, RequestStorage } from "@webiny/api-core";
+import {
+    TenantNeutralRequestFeature,
+    TenantScopeRegistration
+} from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
@@ -66,19 +70,21 @@ export interface RegisterApiRequestStackConfig {
 }
 
 /**
- * Registers the transport-AGNOSTIC Webiny API request stack: every domain feature + the GraphQL
- * engine, in the correct (order-sensitive) sequence. This is shared by all transport composition
- * packages (`@webiny/api-composition-aws`, and the future `-server`) so the feature set and its
+ * Registers the transport-AGNOSTIC Webiny API request stack. This is shared by all transport
+ * composition packages (`@webiny/api-composition-aws`, `-standalone`) so the feature set and its
  * ordering live in ONE place and can't drift between transports.
+ *
+ * The request container gets only the tenant-neutral part: build params, the raw request values,
+ * the tenant registry the request's tenant is loaded from, and `TenantScopes`. Everything else is
+ * tenant-specific and registers in each tenant scope the request enters, through the
+ * `TenantScopeRegistration` registered here ({@link registerApiTenantScope}). The request's own work
+ * runs in its tenant's scope (`TenantScopesRootFeature`, which the transport registers in the root).
  *
  * Transport- and storage-specific pieces are injected via the hooks in {@link RegisterApiRequestStackConfig}
  * at their exact interleave points. The caller is responsible for the ROOT-container transport wiring
- * (HTTP/event transport, auth/tenant loaders, identity provider, DB + storage) before dispatch reaches
+ * (HTTP/event transport, tenant sources, identity loaders, DB + storage) before dispatch reaches
  * this per-request stack. That includes the `Logger`: api-core registers none, so a root without one
  * fails the first time anything that logs is built.
- *
- * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
- * lists + caches the per-request model set; the GraphQL engine must be registered last.
  */
 export async function registerApiRequestStack(
     container: Container,
@@ -91,26 +97,61 @@ export async function registerApiRequestStack(
     // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await WcpLicenseLoader.load();
 
+    // ── Build params (before ANY feature) ──────────────────────
+    // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,
+    // Workflows, ...), and FeatureFlags is a BuildParam. Registered with the rest of the extensions,
+    // they arrived too late: those gates read `{}`, and a license-granted feature couldn't be
+    // disabled from config. In the request container, so every tenant scope reads the same ones.
+    const extensions = config.extensions();
+    await registerBuildParams(container, extensions);
+
+    // ── Tenant-neutral request: raw values, tenant registry, TenantScopes ──
+    TenantNeutralRequestFeature.register(container);
+
+    // ── Everything tenant-specific: per tenant scope ───────────
+    container.registerInstance(TenantScopeRegistration, {
+        register: scope => registerApiTenantScope(scope, config, extensions)
+    });
+}
+
+/**
+ * Registers the request stack in ONE container: the tenant-neutral part and a tenant scope's part.
+ * For work outside a request that needs everything a request has, without a tenant: the SQL schema
+ * setup, which sets up the tables of exactly the storages and modules the API runs.
+ */
+export async function registerApiRequestStackInOneContainer(
+    container: Container,
+    config: RegisterApiRequestStackConfig
+): Promise<void> {
+    await registerApiRequestStack(container, config);
+    await registerApiTenantScope(container, config);
+}
+
+/**
+ * Registers a tenant scope's part of the request stack: every domain feature + the GraphQL engine,
+ * in the correct (order-sensitive) sequence, on top of the tenant-neutral part its parent (the
+ * request container) has.
+ *
+ * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
+ * lists + caches the scope's model set; the GraphQL engine must be registered last.
+ */
+export async function registerApiTenantScope(
+    container: Container,
+    config: RegisterApiRequestStackConfig,
+    extensions: ReturnType<RegisterApiRequestStackConfig["extensions"]> = config.extensions()
+): Promise<void> {
     // ── Storage (before ANY feature) ───────────────────────────
     // Every storage that registers per request put a `RequestStorage` in the root; each registers
-    // its storages here, in this request's container. First, because `ApiCoreFeature` resolves the
+    // its storages here, in the scope's container. First, because `ApiCoreFeature` resolves the
     // core storage while it registers. A storage that keeps its storages in the root (the DynamoDB
     // variants) registers none, and this does nothing.
     for (const storage of container.resolveAll(RequestStorage)) {
         await storage.register(container);
     }
 
-    // ── Build params (before ANY feature) ──────────────────────
-    // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,
-    // Workflows, ...), and FeatureFlags is a BuildParam. Registered with the rest of the extensions
-    // below, it arrived too late: those gates read `{}`, and a license-granted feature couldn't be
-    // disabled from config.
-    const extensions = config.extensions();
-    await registerBuildParams(container, extensions);
-
-    // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
-    // request child container so per-request event handlers are resolvable) ─────────
-    ApiCoreFeature.register(container, { wcpLicense: undefined });
+    // ── Core API: tenant/identity contexts, security, users, ... (the tenant registry and the raw
+    // request values come from the request container) ─────────
+    ApiCoreFeature.register(container, { wcpLicense: undefined, tenantScope: true });
     await config.transports?.hostingConfig?.(container);
 
     // ── CMS ────────────────────────────────────────────────────

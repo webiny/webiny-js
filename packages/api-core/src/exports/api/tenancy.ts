@@ -1,5 +1,10 @@
 export { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 export {
+    TenantScope,
+    TenantScopes,
+    DEFAULT_TENANT_STORAGE
+} from "~/features/tenancy/TenantScopes/index.js";
+export {
     CreateTenantUseCase,
     CreateTenantRepository,
     TenantBeforeCreateEventHandler,
