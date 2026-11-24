@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { ChildContainerFactory } from "./abstractions.js";
 import { HandlerExecutionRunner } from "./abstractions.js";
 import { RootContainerFactory } from "./abstractions.js";
@@ -6,7 +7,6 @@ import { HandlerPlatform } from "./HandlerPlatform.js";
 import { EventType } from "./EventType.js";
 import { NoMatchingEventTypeError } from "./NoMatchingEventTypeError.js";
 import { executeChain } from "./chain.js";
-import { createExecutionId } from "./createExecutionId.js";
 
 class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
     constructor(
@@ -22,8 +22,12 @@ class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
          * scope: anything long-lived it starts must not carry the first execution's id.
          */
         const root = await this.rootContainerFactory.get();
-        const platformId = this.platform.getExecutionId(rawArgs);
-        const executionId = createExecutionId(platformId);
+        /*
+         * The platform's own id for the invocation when it has one (the AWS request id on Lambda, the
+         * `lambda-web-request-id` header on a web function), a UUID otherwise. It labels the execution
+         * in logs, errors and debug captures; the stale-execution check doesn't rely on it being unique.
+         */
+        const executionId = this.platform.getExecutionId(rawArgs) || randomUUID();
 
         // Everything from here on, building the execution's container included, runs in its scope.
         return this.scope.run(executionId, async () => {
