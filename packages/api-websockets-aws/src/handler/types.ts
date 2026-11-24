@@ -1,4 +1,4 @@
-import type { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
+import type { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { PartialDeep } from "type-fest";
 

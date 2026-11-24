@@ -13,7 +13,7 @@ import {
     type ISqlSchemaSetupRequest
 } from "@webiny/api-core-sql";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createPgStorage } from "~/index.js";
 
 /**

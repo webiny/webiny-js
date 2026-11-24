@@ -3,8 +3,8 @@ import type { PulumiApp } from "@webiny/pulumi";
 import type { CoreOutput } from "~/pulumi/apps/common/CoreOutput.js";
 
 /*
- * The api app's references to the core's DynamoDB tables. With `<Infra.Postgres />` the core has
- * neither the primary nor the audit logs table, so there is no env or output for them. The
+ * The api app's references to the core's DynamoDB tables. With `<Infra.AuroraPostgres />` the core
+ * has neither the primary nor the audit logs table, so there is no env or output for them. The
  * OpenSearch table belongs to `CoreOpenSearch` and exists whenever OpenSearch is configured, with
  * or without Postgres, so its env stays. The GraphQL policy's DynamoDB statement follows the
  * core's output instead (see `ApiGraphql`).

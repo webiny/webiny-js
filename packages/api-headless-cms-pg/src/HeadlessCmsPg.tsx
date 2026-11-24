@@ -58,8 +58,9 @@ const settingsSchema = {
 
 /**
  * The Postgres CMS storage: entries in a jsonb table with a typed search table, kept in the same
- * transaction. Add it to a project whose API runs on the Postgres SQL storage (`<Infra.Postgres>`,
- * `<Infra.Pglite>`, or Postgres on AWS); without it, that API refuses to start.
+ * transaction. Add it to a project whose API runs on the Postgres SQL storage (`<Infra.Postgres>` or
+ * `<Infra.Pglite>`); without it, that API refuses to start. `<Infra.AuroraPostgres />` on AWS
+ * renders it itself.
  */
 export const HeadlessCmsPg = defineExtension({
     type: "Project/HeadlessCmsPg",
@@ -72,13 +73,20 @@ export const HeadlessCmsPg = defineExtension({
         const value = Object.fromEntries(
             Object.entries(settings).filter(([, setting]) => setting !== undefined)
         );
+        /*
+         * Without settings there is no build param: the storage reads a missing one as all
+         * defaults. `<Infra.AuroraPostgres />` renders a `<HeadlessCmsPg />` without settings, so a
+         * project's own `<HeadlessCmsPg indexMode="lean" />` next to it is the only one that writes
+         * the param, whichever renders last. The API extension is imported once either way.
+         */
+        const hasSettings = Object.keys(value).length > 0;
         return (
             <>
                 <ApiExtension
                     src={import.meta.dirname + "/HeadlessCmsPgExtension.js"}
                     exportName={"HeadlessCmsPgExtension"}
                 />
-                <BuildParam paramName={PG_CMS_BUILD_PARAM} value={value} />
+                {hasSettings ? <BuildParam paramName={PG_CMS_BUILD_PARAM} value={value} /> : null}
             </>
         );
     }

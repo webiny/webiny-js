@@ -52,10 +52,10 @@ const assumeRolePolicy = (service: string) =>
     });
 
 /**
- * The Postgres database of a project with `<Infra.Postgres />`: an Aurora PostgreSQL 17 Serverless
- * v2 cluster with a writer and `readers` reader instances, and its credentials in a Secrets Manager
- * secret (`{ username, password }`). With `rdsProxy`, an RDS Proxy in front of it, which reads the
- * same secret.
+ * The Postgres database of a project with `<Infra.AuroraPostgres />`: an Aurora PostgreSQL 17
+ * Serverless v2 cluster with a writer and `readers` reader instances, and its credentials in a
+ * Secrets Manager secret (`{ username, password }`). With `rdsProxy`, an RDS Proxy in front of it,
+ * which reads the same secret.
  *
  * The cluster, its instances and the proxy go into `network`: the private subnets of the VPC the
  * core app creates and its default security group, which the API functions use too, or the

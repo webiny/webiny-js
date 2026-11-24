@@ -1,7 +1,8 @@
 ---
 name: webiny-api-catalog
+context: webiny-api
 description: >
-  api — 34 abstractions.
+  api — 35 abstractions.
 ---
 
 # api
@@ -30,6 +31,13 @@ description: >
 
 ---
 
+**Name:** `AiModelRegistry`
+**Import:** `import { AiModelRegistry } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** Single source of truth for available AI models. Decoratable to restrict the model list.
+
+---
+
 **Name:** `AiSdk`
 **Import:** `import { AiSdk } from "webiny/api"`
 **Source:** `@webiny/api-core/features/ai/index.ts`
@@ -44,10 +52,20 @@ description: >
 
 ---
 
-**Name:** `AiSdkTool`
-**Import:** `import { AiSdkTool } from "webiny/api"`
+**Name:** `AiSdkToolDefinition`
+**Import:** `import { AiSdkToolDefinition } from "webiny/api"`
 **Source:** `@webiny/api-core/features/ai/index.ts`
-**Description:** A single tool that can be provided to AI generateText/streamText calls.
+
+---
+
+**Name:** `AiSdkToolHandler`
+**Import:** `import { AiSdkToolHandler } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** The behaviour half of a tool, built on demand through {@link AiSdkToolHandlerResolver}.
+
+Implementations are NOT registered against this abstraction. The definition points at the class
+directly, exactly as `HttpRouteDefinition` points at its `HttpRouteHandler`. Declaring them
+through it is what attaches their dependency metadata.
 
 ---
 
@@ -83,12 +101,6 @@ description: >
 
 ---
 
-**Name:** `ConnectionRegistry`
-**Import:** `import { ConnectionRegistry } from "webiny/api"`
-**Source:** `@webiny/api-websockets/features/ConnectionRegistry/abstractions.ts`
-
----
-
 **Name:** `createAbstraction`
 **Import:** `import { createAbstraction } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
@@ -98,18 +110,6 @@ description: >
 **Name:** `createFeature`
 **Import:** `import { createFeature } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
-
----
-
-**Name:** `createWebsocketsRoutePlugin`
-**Import:** `import { createWebsocketsRoutePlugin } from "webiny/api"`
-**Source:** `@webiny/api-websockets/plugins/WebsocketsRoutePlugin.ts`
-
----
-
-**Name:** `createWebsocketsRoutePlugins`
-**Import:** `import { createWebsocketsRoutePlugins } from "webiny/api"`
-**Source:** `@webiny/api-websockets/runner/routes/index.ts`
 
 ---
 
@@ -141,6 +141,40 @@ description: >
 
 ---
 
+**Name:** `Hasher`
+**Import:** `import { Hasher } from "webiny/api"`
+**Source:** `@webiny/api-core/features/hashing/index.ts`
+**Description:** Hashes and verifies secret values (passwords, API-key secrets, tokens, …) with a slow, salted
+KDF — built for the "store a hash, later verify a presented value" pattern.
+
+NOT a general-purpose digest: output is salted and non-deterministic, so this is the wrong tool
+for checksums / cache keys / dedup (use a fast deterministic digest util for those). Swap the
+implementation to change algorithms (e.g. Argon2id); stored hashes are self-describing, so old
+hashes keep verifying after a swap.
+
+---
+
+**Name:** `HttpAllowedRequestHeaders`
+**Import:** `import { HttpAllowedRequestHeaders } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+
+---
+
+**Name:** `HttpRouteDefinition`
+**Import:** `import { HttpRouteDefinition } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+
+---
+
+**Name:** `HttpRouteHandler`
+**Import:** `import { HttpRouteHandler } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Description:** Declares a route's request handling. One shared abstraction: the router never resolves it from the
+container (that would build every route), it builds the ONE class a matched definition points at.
+Declaring implementations through it is what attaches their dependency metadata.
+
+---
+
 **Name:** `IAiConnection`
 **Kind:** type
 **Import:** `import type { IAiConnection } from "webiny/api"`
@@ -152,6 +186,50 @@ description: >
 **Kind:** type
 **Import:** `import type { IAiConnectionInline } from "webiny/api"`
 **Source:** `@webiny/api-core/features/ai/index.ts`
+
+---
+
+**Name:** `IHttpRequest`
+**Kind:** type
+**Import:** `import type { IHttpRequest } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+
+---
+
+**Name:** `IHttpResponse`
+**Kind:** type
+**Import:** `import type { IHttpResponse } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+
+---
+
+**Name:** `IHttpResponseBuilder`
+**Kind:** type
+**Import:** `import type { IHttpResponseBuilder } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Description:** The mutable response handed to every route as the second argument to `handle()` — the `res` of
+Express-style handlers. Every method returns `this`, so a route can chain and then return the
+builder directly:
+
+```ts
+async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
+    return response.status(201).cookie("sid", id, { httpOnly: true }).json({ id });
+}
+```
+
+Returning it is optional: a route that mutates it and returns nothing gets the same response.
+Routes returning a plain {@link IHttpResponse} keep working — anything set on the builder
+(headers, cookies) is merged underneath the returned object, which wins on conflicts.
+
+---
+
+**Name:** `IMatchedRouteDefinition`
+**Kind:** type
+**Import:** `import type { IMatchedRouteDefinition } from "webiny/api"`
+**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Description:** Which route the router matched, as seen from inside `handle()` — the `req.route` of Express-style
+handlers. It is the definition without its `handler`, so a route (or anything wrapping one) can
+tell WHICH route is running and act only on the one it cares about.
 
 ---
 
@@ -177,46 +255,15 @@ Inspired by functional programming constructs like `Either` or `Result` in other
 
 ---
 
-**Name:** `Route`
-**Import:** `import { Route } from "webiny/api"`
-**Source:** `@webiny/handler/abstractions/Route.ts`
-
----
-
 **Name:** `WebsocketsDisconnectUseCase`
 **Import:** `import { WebsocketsDisconnectUseCase } from "webiny/api"`
 **Source:** `@webiny/api-websockets/features/Disconnect/abstractions.ts`
 
 ---
 
-**Name:** `WebsocketsError`
-**Kind:** type
-**Import:** `import type { WebsocketsError } from "webiny/api"`
-**Source:** `@webiny/api-websockets/features/shared/errors.ts`
-
----
-
-**Name:** `WebsocketsEventValidator`
-**Import:** `import { WebsocketsEventValidator } from "webiny/api"`
-**Source:** `@webiny/api-websockets/validator/index.ts`
-
----
-
 **Name:** `WebsocketsListConnectionsUseCase`
 **Import:** `import { WebsocketsListConnectionsUseCase } from "webiny/api"`
 **Source:** `@webiny/api-websockets/features/ListConnections/abstractions.ts`
-
----
-
-**Name:** `WebsocketsResponse`
-**Import:** `import { WebsocketsResponse } from "webiny/api"`
-**Source:** `@webiny/api-websockets/response/index.ts`
-
----
-
-**Name:** `WebsocketsRunner`
-**Import:** `import { WebsocketsRunner } from "webiny/api"`
-**Source:** `@webiny/api-websockets/runner/WebsocketsRunner.ts`
 
 ---
 
@@ -228,12 +275,9 @@ Inspired by functional programming constructs like `Either` or `Result` in other
 
 **Name:** `WebsocketsSendToIdentityUseCase`
 **Import:** `import { WebsocketsSendToIdentityUseCase } from "webiny/api"`
-**Source:** `@webiny/api-websockets/features/SendToIdentity/abstractions.ts`
-
----
-
-**Name:** `WebsocketsTransport`
-**Import:** `import { WebsocketsTransport } from "webiny/api"`
-**Source:** `@webiny/api-websockets/transport/index.ts`
+**Source:** `@webiny/api-core/features/websockets/index.ts`
+**Description:** Sends a message to every open websocket connection of an identity. Declared here so that any
+package can send without depending on a websockets package; `@webiny/api-websockets` implements it.
+Without that package the send does nothing, see `NullSendToIdentityUseCase`.
 
 ---

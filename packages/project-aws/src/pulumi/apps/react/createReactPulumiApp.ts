@@ -145,7 +145,8 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             // Applies internal and user-defined AWS tags.
             await applyAwsResourceTags(name);
 
-            // Stores the app's URL in the core's DynamoDB table: none with `<Infra.Postgres />`.
+            // Stores the app's URL in the core's DynamoDB table (none with
+            // `<Infra.AuroraPostgres />`).
             addAdminSettingsItem(app, {
                 core,
                 cloudfront,

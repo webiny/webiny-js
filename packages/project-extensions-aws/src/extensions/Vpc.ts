@@ -43,7 +43,7 @@ export const Vpc = defineExtension({
                     })
                     .optional()
                     .describe(
-                        "VPC configuration for the Postgres database. Required with `<Infra.Postgres />`."
+                        "VPC configuration for the Postgres database. Required with `<Infra.AuroraPostgres />`."
                     ),
                 lambdaFunctionsVpcConfig: z
                     .object({

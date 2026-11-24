@@ -1,6 +1,6 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { postgresParamsSchema } from "@webiny/project-extensions-aws/extensions/index.js";
+import { auroraPostgresClusterParamsSchema } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreBeforeDeploy } from "@webiny/project-extensions-aws/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import {
@@ -13,15 +13,15 @@ import { CorePulumi } from "~/pulumi/extensions/CorePulumi.js";
 const p = createPathResolver(import.meta.dirname, "Postgres");
 
 /**
- * `<Infra.Postgres />` in an AWS project: the API runs on an Aurora PostgreSQL Serverless v2
- * database the core app creates (`AddCorePostgres`), which reads these params through
- * `getPostgresConfigFromExtension`.
+ * The internal `AuroraPostgresCluster` that `<Infra.AuroraPostgres />` renders: the API runs on an
+ * Aurora PostgreSQL Serverless v2 database the core app creates (`AddCorePostgres`), which reads
+ * these params through `getPostgresConfigFromExtension`.
  */
-export const Postgres = defineExtension({
-    type: "Infra/Postgres",
+export const AuroraPostgresCluster = defineExtension({
+    type: "Infra/AuroraPostgresCluster",
     tags: { runtimeContext: "project", hosting: "aws" },
-    description: "Run the API on an Aurora PostgreSQL Serverless v2 database the core app creates.",
-    paramsSchema: postgresParamsSchema,
+    description: "The Aurora PostgreSQL Serverless v2 cluster the core app creates (internal).",
+    paramsSchema: auroraPostgresClusterParamsSchema,
     render: () => {
         return (
             <>

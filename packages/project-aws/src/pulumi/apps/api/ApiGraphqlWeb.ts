@@ -176,7 +176,9 @@ export const ApiGraphqlWeb = createAppModule({
                     executionRoleArn: graphql.role.output.arn,
                     timeoutSeconds: 60,
                     // Default is 64. One environment has a fixed 2 GB, and building the GraphQL schema
-                    // is memory heavy, so start lower.
+                    // is memory heavy, so start lower. On Postgres, the web function's connection pool
+                    // matches it (`POSTGRES_DEFAULT_POOL_SIZE` in `AuroraPostgresCluster.ts`): change
+                    // both together.
                     maxConcurrencyPerEnvironment: 16,
                     environmentVariables: getWebFunctionEnvVariables(
                         graphqlEnvironment,

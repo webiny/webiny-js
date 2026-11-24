@@ -5,7 +5,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
 import { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/exports/api.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";

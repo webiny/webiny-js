@@ -13,6 +13,8 @@
   "description": "Extension definitions and abstractions for AWS Webiny projects, without the AWS or Pulumi code that implements them.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-aco-pg": "0.0.0",
+    "@webiny/api-headless-cms-pg": "0.0.0",
     "@webiny/project": "0.0.0",
     "react": "19.3.1",
     "zod": "4.6.7"

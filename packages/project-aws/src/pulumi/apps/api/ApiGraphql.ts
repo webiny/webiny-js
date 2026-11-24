@@ -152,7 +152,7 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                     Version: "2012-10-17",
                     Statement: [
                         // The core's DynamoDB tables: only the OpenSearch one, if any, with
-                        // `<Infra.Postgres />`.
+                        // `<Infra.AuroraPostgres />`.
                         ...createDynamoDbStatements(core),
                         {
                             Sid: "PermissionForS3",
@@ -219,7 +219,8 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
 
 /*
  * Every DynamoDB action on the core's tables that exist: the primary and audit logs ones (none with
- * `<Infra.Postgres />`) and the OpenSearch one (with OpenSearch). No statement when there are none.
+ * `<Infra.AuroraPostgres />`) and the OpenSearch one (with OpenSearch). No statement without
+ * tables.
  */
 function createDynamoDbStatements(core: {
     primaryDynamodbTableArn: string | undefined;

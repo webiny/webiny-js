@@ -17,7 +17,7 @@ const resolve = <T>(value: pulumi.Input<T>): Promise<T> => {
     return new Promise(done => pulumi.output(value).apply(done as (value: unknown) => void));
 };
 
-/* The core stack output of a project without `<Infra.Postgres />`. */
+/* The core stack output of a project without `<Infra.AuroraPostgres />`. */
 const DYNAMODB_CORE = {
     primaryDynamodbTableArn: "arn:aws:dynamodb:eu-central-1:123456789012:table/wby-primary",
     primaryDynamodbTableName: "wby-primary",
@@ -30,7 +30,7 @@ const DYNAMODB_CORE = {
     eventBusArn: "event-bus-arn"
 };
 
-/* The core stack output with `<Infra.Postgres />`: no DynamoDB table in it. */
+/* The core stack output with `<Infra.AuroraPostgres />`: no DynamoDB table in it. */
 const POSTGRES_CORE = {
     fileManagerBucketId: "fm-bucket",
     cognitoUserPoolArn: "user-pool-arn",
@@ -108,7 +108,7 @@ const DYNAMODB_OUTPUTS = [
 ];
 
 describe("the core's DynamoDB tables", () => {
-    it("aren't created with <Infra.Postgres />, and the core has no DynamoDB output", () => {
+    it("aren't created with <Infra.AuroraPostgres />, and the core has no DynamoDB output", () => {
         const fake = createFakeApp();
         const tables = addCoreDynamoDb(fake.app, {
             usesPostgres: true,
@@ -158,7 +158,7 @@ describe("the core's VPC endpoints", () => {
         return fake.ofType(aws.ec2.VpcEndpoint);
     };
 
-    it("have no DynamoDB endpoint with <Infra.Postgres />", async () => {
+    it("have no DynamoDB endpoint with <Infra.AuroraPostgres />", async () => {
         const created = endpoints(true);
         expect(created.map(endpoint => endpoint.name)).toEqual([
             "vpc-s3-vpc-endpoint",
@@ -196,7 +196,7 @@ describe("the api's GraphQL policy", () => {
         return (await resolve(policy.config.policy)) as aws.iam.PolicyDocument;
     };
 
-    it("has no DynamoDB statement with <Infra.Postgres />", async () => {
+    it("has no DynamoDB statement with <Infra.AuroraPostgres />", async () => {
         const policy = await policyOf(POSTGRES_CORE);
         const statements = policy.Statement as aws.iam.PolicyStatement[];
 
@@ -245,7 +245,7 @@ describe("the api's GraphQL policy", () => {
         );
     });
 
-    it("covers only the OpenSearch table with <Infra.Postgres /> and OpenSearch", async () => {
+    it("covers only the OpenSearch table with <Infra.AuroraPostgres /> and OpenSearch", async () => {
         const policy = await policyOf({
             ...POSTGRES_CORE,
             opensearchDynamodbTableArn: OPENSEARCH_TABLE_ARN
@@ -259,7 +259,7 @@ describe("the api's GraphQL policy", () => {
 });
 
 describe("the api's DynamoDB env and outputs", () => {
-    it("are none with <Infra.Postgres />", async () => {
+    it("are none with <Infra.AuroraPostgres />", async () => {
         const fake = createFakeApp(POSTGRES_CORE);
         const core = pulumi.output(POSTGRES_CORE) as never;
         const env = getDynamoDbLambdaEnv(core, true);
@@ -270,7 +270,7 @@ describe("the api's DynamoDB env and outputs", () => {
         expect(fake.outputs).toEqual({});
     });
 
-    it("keep the OpenSearch table with <Infra.Postgres /> and OpenSearch", async () => {
+    it("keep the OpenSearch table with <Infra.AuroraPostgres /> and OpenSearch", async () => {
         const core = pulumi.output({
             ...POSTGRES_CORE,
             opensearchDynamodbTableName: "wby-os"
@@ -306,7 +306,7 @@ describe("the api's DynamoDB env and outputs", () => {
 describe("the admin app's ADMIN#SETTINGS item", () => {
     const cloudfront = { output: { domainName: pulumi.output("d1.cloudfront.net") } };
 
-    it("isn't written with <Infra.Postgres />", () => {
+    it("isn't written with <Infra.AuroraPostgres />", () => {
         const fake = createFakeApp(POSTGRES_CORE);
         const item = addAdminSettingsItem(fake.app, {
             core: pulumi.output(POSTGRES_CORE) as never,
