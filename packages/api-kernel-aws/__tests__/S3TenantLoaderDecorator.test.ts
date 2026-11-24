@@ -3,7 +3,8 @@ import { Container } from "@webiny/di";
 import { RawTenantId as RawTenantIdImpl } from "@webiny/api-core/features/requestContext/RawTenantId.js";
 import {
     RawTenantId,
-    RequestTenantLoader
+    RequestTenantLoader,
+    TenantNotFoundError
 } from "@webiny/api-core/features/requestContext/index.js";
 import { S3InputHandler } from "@webiny/kernel-aws";
 import { S3TenantLoaderDecorator } from "~/handlers/S3TenantLoaderDecorator.js";
@@ -19,7 +20,7 @@ function s3Event(bucketName: string): any {
     };
 }
 
-function setup() {
+function setup(loadError?: Error) {
     const container = new Container();
     container.register(RawTenantIdImpl).inSingletonScope();
 
@@ -27,6 +28,9 @@ function setup() {
     container.registerInstance(RequestTenantLoader, {
         async establish() {
             establishCalled = true;
+            if (loadError) {
+                throw loadError;
+            }
         }
     });
 
@@ -76,5 +80,24 @@ describe("S3TenantLoaderDecorator", () => {
         );
         expect(t.rawTenantId()).toBeNull();
         expect(t.establishCalled()).toBe(true);
+    });
+
+    it("still runs the inner handler when the bucket prefix is not a known tenant", async () => {
+        const t = setup(new TenantNotFoundError("files"));
+        await t.handler.execute(
+            { event: s3Event("files-uploads"), metadata: {} } as any,
+            async () => undefined
+        );
+        expect(t.innerCalled()).toBe(true);
+    });
+
+    it("rethrows any other load error", async () => {
+        const t = setup(new Error("storage is down"));
+        const run = t.handler.execute(
+            { event: s3Event("acme-uploads"), metadata: {} } as any,
+            async () => undefined
+        );
+        await expect(run).rejects.toThrow("storage is down");
+        expect(t.innerCalled()).toBe(false);
     });
 });

@@ -30,8 +30,8 @@ export class SettingsValidationError extends BaseError<{ errors: ZodError["issue
 export class SettingsNotAuthorized extends BaseError {
     override readonly code = "Mailer/Settings/NotAuthorized" as const;
 
-    constructor() {
-        super({ message: "Not allowed to update the mailer settings." });
+    constructor(message = "Not allowed to update the mailer settings.") {
+        super({ message });
     }
 }
 

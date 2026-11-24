@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
@@ -34,7 +35,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
     constructor(
         capabilities: AiCapability.Interface[],
-        private getSettings: GetSettingsUseCase.Interface,
+        private getSettings: GetDecryptedSettingsUseCase.Interface,
         private encryption: Encryption.Interface,
         private configuredModels: ConfiguredAiModelsService.Interface
     ) {
@@ -58,6 +59,9 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
+            if (settingsResult.error instanceof NotAuthorizedError) {
+                return Result.fail(settingsResult.error);
+            }
             return Result.fail(new Error("Failed to load AI Power-Ups settings."));
         }
 
@@ -133,7 +137,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
             );
         }
 
-        if (!connection.apiKeyEncrypted) {
+        if (!connection.apiKey) {
             return Result.fail(
                 new AiCapabilityNotConfiguredError(
                     `The connection "${connection.name}" has no API key. Add one under ${SETTINGS_PATH} → Connections.`
@@ -160,7 +164,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
             model: selectedModel,
             connection: {
                 sdkName: modelSdkName || connection.sdkName,
-                apiKey: await this.encryption.decrypt(connection.apiKeyEncrypted)
+                apiKey: connection.apiKey
             },
             roleId,
             fellBackToStandard,
@@ -254,7 +258,7 @@ export const ResolveAiCapabilityUseCaseImplementation =
         implementation: ResolveAiCapabilityUseCaseImpl,
         dependencies: [
             [AiCapability, { multiple: true }],
-            GetSettingsUseCase,
+            GetDecryptedSettingsUseCase,
             Encryption,
             ConfiguredAiModelsService
         ]

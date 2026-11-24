@@ -23,7 +23,7 @@ import {
     GET_ENTRY,
     RESTORE_ENTRY
 } from "~tests/graphql/cms.gql";
-import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
+import { CREATE_FOLDER, DELETE_FOLDER, GET_FOLDER, UPDATE_FOLDER } from "~tests/graphql/folder.gql";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
@@ -139,6 +139,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const aco = {
         async createFolder(variables = {}, fields: string[] = []) {
             return invoke({ body: { query: CREATE_FOLDER(fields), variables } });
+        },
+        async updateFolder(variables = {}, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_FOLDER(fields), variables } });
         },
         async deleteFolder(variables = {}) {
             return invoke({ body: { query: DELETE_FOLDER, variables } });

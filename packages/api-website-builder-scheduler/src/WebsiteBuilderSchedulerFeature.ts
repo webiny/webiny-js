@@ -1,6 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { CancelScheduledActionOnChangeFeature } from "~/features/CancelScheduledActionOnChange/feature.js";
-import { WbSchedulerPermissions } from "~/features/permissions/WbSchedulerPermissions.js";
 import { PageNamespaceHandler } from "~/features/NamespaceHandler/PageNamespaceHandler.js";
 import { RedirectNamespaceHandler } from "~/features/NamespaceHandler/RedirectNamespaceHandler.js";
 import { PublishPageActionHandler } from "~/features/PublishActionHandler/PublishPageActionHandler.js";
@@ -11,11 +10,17 @@ import { SchedulePublishPageUseCase } from "~/features/SchedulePublishPageUseCas
 import { ScheduleUnpublishPageUseCase } from "~/features/ScheduleUnpublishPageUseCase/ScheduleUnpublishPageUseCase.js";
 import { SchedulePublishRedirectUseCase } from "~/features/SchedulePublishRedirectUseCase/SchedulePublishRedirectUseCase.js";
 import { ScheduleUnpublishRedirectUseCase } from "~/features/ScheduleUnpublishRedirectUseCase/ScheduleUnpublishRedirectUseCase.js";
+import {
+    WbPageSchedulerPermissions,
+    WbRedirectSchedulerPermissions
+} from "~/features/permissions/WbSchedulerPermissions.js";
 
 export const WebsiteBuilderSchedulerFeature = createFeature({
     name: "WebsiteBuilderScheduler",
     register(container: Container) {
         // Pure DI registration (was a request-time ContextPlugin — none of it needs ctx/post-auth).
+        container.register(WbPageSchedulerPermissions);
+        container.register(WbRedirectSchedulerPermissions);
         container.register(PageNamespaceHandler);
         container.register(RedirectNamespaceHandler);
         container.register(PublishPageActionHandler);
@@ -28,6 +33,5 @@ export const WebsiteBuilderSchedulerFeature = createFeature({
         container.register(ScheduleUnpublishRedirectUseCase);
 
         CancelScheduledActionOnChangeFeature.register(container);
-        container.register(WbSchedulerPermissions);
     }
 });

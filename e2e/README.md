@@ -149,6 +149,8 @@ tests/
     uploadAndDeliver.e2e.ts     tags: file-manager
   login/
     login.e2e.ts                tags: login
+  scheduler/
+    schedulePublish.e2e.ts      tags: scheduler
   tenancy/
     tenantFileDelivery.e2e.ts   tags: wcp, tenancy
   workflows/

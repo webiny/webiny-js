@@ -5,7 +5,8 @@ export { createPermissionsFeature } from "@webiny/app-admin/permissions/index.js
 export { createHasPermission } from "@webiny/app-admin/permissions/index.js";
 export { createUsePermissions } from "@webiny/app-admin/permissions/index.js";
 export type { Permissions } from "@webiny/app-admin/permissions/types.js";
-export { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
+export { LogInUseCase, LogInError } from "@webiny/app-admin/features/security/LogIn/index.js";
+export { LoginTenantResolver } from "@webiny/app-admin/features/security/LoginTenantResolver/index.js";
 export { LogOutUseCase } from "@webiny/app-admin/features/security/LogOut/index.js";
 export { AuthenticationContext } from "@webiny/app-admin/features/security/AuthenticationContext/index.js";
 export { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
@@ -13,3 +14,5 @@ export { useAuthentication } from "@webiny/app-admin/presentation/security/hooks
 export { useIdentity } from "@webiny/app-admin/presentation/security/hooks/useIdentity.js";
 export { HasPermissionComponent } from "@webiny/app-admin/presentation/security/components/HasPermission.js";
 export { LoginScreenComponent } from "@webiny/app-admin/base/ui/LoginScreen.js";
+export { LoginTenantPicker } from "@webiny/app-admin/presentation/security/components/LoginTenantPicker.js";
+export { LoginNoTenantAccess } from "@webiny/app-admin/presentation/security/components/LoginNoTenantAccess.js";

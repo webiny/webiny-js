@@ -1,4 +1,5 @@
 import type { IHttpRequest } from "@webiny/kernel-core";
+import { parseJsonBody } from "@webiny/kernel-core";
 
 /**
  * Translates a Lambda Function URL event (payload format 2.0) into the transport-agnostic
@@ -79,7 +80,7 @@ function getContentType(headers: Record<string, string>): string {
 
 function tryParseJson(value: string): any {
     try {
-        return JSON.parse(value);
+        return parseJsonBody(value);
     } catch {
         return value;
     }

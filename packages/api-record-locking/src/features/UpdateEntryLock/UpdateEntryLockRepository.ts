@@ -1,5 +1,6 @@
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
@@ -9,6 +10,7 @@ import { RecordLockingModelProvider } from "~/domain/abstractions.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";
+import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId.js";
 
@@ -16,9 +18,10 @@ class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private modelProvider: RecordLockingModelProvider.Interface,
         private config: RecordLockingConfig.Interface,
-        private identityContext: IdentityContext.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
-        private getEntryById: GetEntryByIdUseCase.Interface
+        private getEntryById: GetEntryByIdUseCase.Interface,
+        private createEntry: CreateEntryUseCase.Interface,
+        private deleteEntry: DeleteEntryUseCase.Interface
     ) {}
 
     async update(
@@ -34,22 +37,13 @@ class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
                 version: 1
             });
 
-            const identity = this.identityContext.getIdentity();
-            const now = new Date().toISOString();
-
-            // Build update data
-            const updateData: any = {
-                savedOn: now
-            };
-
-            // If updating owner (expired lock), also update created fields
             if (updateOwner) {
-                updateData.createdOn = now;
-                updateData.createdBy = identity;
-                updateData.savedBy = identity;
+                return await this.changeOwner(model, entryId, id);
             }
 
-            const result = await this.updateEntry.execute(model, id, updateData);
+            const result = await this.updateEntry.execute(model, id, {
+                savedOn: new Date().toISOString()
+            });
 
             if (result.isFail()) {
                 return Result.fail(new LockRecordPersistenceError(result.error));
@@ -70,6 +64,46 @@ class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new LockRecordPersistenceError(error as Error));
         }
     }
+
+    /**
+     * The lock owner is the entry owner (createdBy), which cannot be changed through an
+     * entry update. The expired lock record is deleted and created again, as the current identity.
+     */
+    private async changeOwner(
+        model: CmsModel,
+        entryId: string,
+        id: string
+    ): Promise<Result<ILockRecord, RepositoryAbstraction.Error>> {
+        const existingResult = await this.getEntryById.execute<LockRecordValues>(model, id);
+        if (existingResult.isFail()) {
+            return Result.fail(new LockRecordPersistenceError(existingResult.error));
+        }
+        const existing = existingResult.value;
+
+        const deleteResult = await this.deleteEntry.execute(model, id, {
+            permanently: true
+        });
+        if (deleteResult.isFail()) {
+            return Result.fail(new LockRecordPersistenceError(deleteResult.error));
+        }
+
+        const values: LockRecordValues = {
+            targetId: existing.values.targetId,
+            type: existing.values.type,
+            actions: existing.values.actions || []
+        };
+
+        const createResult = await this.createEntry.execute(model, {
+            id: entryId,
+            values
+        });
+        if (createResult.isFail()) {
+            return Result.fail(new LockRecordPersistenceError(createResult.error));
+        }
+
+        const entry = createResult.value as CmsEntry<LockRecordValues>;
+        return Result.ok(new LockRecord(entry, this.config.timeout));
+    }
 }
 
 export const UpdateEntryLockRepository = RepositoryAbstraction.createImplementation({
@@ -77,8 +111,9 @@ export const UpdateEntryLockRepository = RepositoryAbstraction.createImplementat
     dependencies: [
         RecordLockingModelProvider,
         RecordLockingConfig,
-        IdentityContext,
         UpdateEntryUseCase,
-        GetEntryByIdUseCase
+        GetEntryByIdUseCase,
+        CreateEntryUseCase,
+        DeleteEntryUseCase
     ]
 });

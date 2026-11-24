@@ -31,7 +31,15 @@ class ApiGatewayIdentityLoaderDecoratorImpl implements ApiGatewayInputHandler.In
 
     async execute(ctx: InputContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
         const headers = ctx.input?.headers as Record<string, string>;
-        const authToken = extractAuthToken(headers);
+        /* A request made directly to an API Gateway stage carries the stage in `path`
+           (`/default/private/...`); the resource path never does. */
+        const resourcePath = ctx.input?.requestContext?.resourcePath;
+        const isPrivateResource = resourcePath?.startsWith("/private/");
+        const path = isPrivateResource ? resourcePath : ctx.input?.path;
+        const authToken = extractAuthToken(headers, {
+            method: ctx.input?.httpMethod,
+            path
+        });
 
         this.rawAuthToken.set(authToken);
 

@@ -1,4 +1,5 @@
 import type { Container } from "@webiny/feature/api";
+import { parseJson } from "@webiny/utils";
 import { WebSocketInputHandler } from "@webiny/kernel-aws/abstractions/handlers/WebSocketInputHandler.js";
 import type { IWebSocketEvent } from "@webiny/kernel-aws/inputTypes/WebSocketInputType.js";
 import { RequestContainer } from "@webiny/kernel-core";
@@ -28,7 +29,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 const getBody = (body: GenericRecord | string | undefined) => {
     if (typeof body === "string") {
         try {
-            return JSON.parse(body) as GenericRecord;
+            return parseJson(body) as GenericRecord;
         } catch {
             return {};
         }

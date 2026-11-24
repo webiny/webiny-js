@@ -2,11 +2,16 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Role } from "../shared/types.js";
 import { RolesRepository } from "../shared/abstractions.js";
-import { NotAuthorizedError, CannotDeletePluginRolesError } from "../shared/errors.js";
+import {
+    NotAuthorizedError,
+    CannotDeletePluginRolesError,
+    CannotDeleteSystemRolesError
+} from "../shared/errors.js";
 
 export interface IDeleteRoleErrors {
     notAuthorized: NotAuthorizedError;
     cannotDeletePlugin: CannotDeletePluginRolesError;
+    cannotDeleteSystem: CannotDeleteSystemRolesError;
 }
 
 type DeleteRoleError = IDeleteRoleErrors[keyof IDeleteRoleErrors] | RolesRepository.Error;

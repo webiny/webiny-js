@@ -1,4 +1,5 @@
 import type { IHttpRequest } from "@webiny/kernel-core";
+import { parseJsonBody } from "@webiny/kernel-core";
 
 /**
  * Translates an API Gateway Lambda event into the transport-agnostic IHttpRequest.
@@ -14,7 +15,7 @@ export function apiGatewayEventToHttpRequest(event: any): IHttpRequest {
     let body: any;
     if (event.body) {
         try {
-            body = JSON.parse(event.body);
+            body = parseJsonBody(event.body);
         } catch {
             body = event.body;
         }

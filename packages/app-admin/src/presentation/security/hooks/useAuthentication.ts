@@ -1,14 +1,14 @@
 import { useFeature } from "@webiny/app";
 import { LogInFeature } from "~/features/security/LogIn/feature.js";
 import { LogOutFeature } from "~/features/security/LogOut/index.js";
-import type { ILoginParams } from "~/features/security/LogIn/abstractions.js";
+import type { ILoginParams, LogInResult } from "~/features/security/LogIn/abstractions.js";
 import { useIdentity } from "./useIdentity.js";
 import type { Identity } from "~/domain/Identity.js";
 
 export interface IUseAuthenticationReturn {
     identity: Identity;
     isAuthenticated: boolean;
-    login: (params: ILoginParams) => Promise<void>;
+    login: (params: ILoginParams) => Promise<LogInResult>;
     logout: () => Promise<void>;
 }
 

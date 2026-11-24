@@ -23,7 +23,18 @@ export class WebsocketForceDisconnectError extends BaseError<{ error: Error }> {
     }
 }
 
+export class WebsocketsValidationError extends BaseError {
+    override readonly code = "Websocket/Validation" as const;
+
+    constructor(message: string) {
+        super({
+            message
+        });
+    }
+}
+
 export type WebsocketsError =
+    | WebsocketsValidationError
     | WebsocketServiceError
     | WebsocketForceDisconnectNotificationError
     | WebsocketForceDisconnectError;

@@ -8,6 +8,7 @@ import { AuthenticationError } from "@webiny/api-core/features/security/authenti
 import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
+import { TenantNotFoundError } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -51,6 +52,13 @@ const refuseOnAuthenticationError = (logger: Logger.Interface) => {
  * only the handler — which can build a request-scoped child — can supply it. So authenticate has to be
  * a callback the handler builds, regardless of DI.
  */
+const refuseUnknownTenant = (error: unknown): false => {
+    if (error instanceof TenantNotFoundError) {
+        return false;
+    }
+    throw error;
+};
+
 export function createWebsocketsAuthenticator(
     rootContainer: Container,
     extensions: RegisterApiRequestStackConfig["extensions"]
@@ -63,9 +71,13 @@ export function createWebsocketsAuthenticator(
         child.resolve(RawTenantId).set(tenantId);
         child.resolve(RawAuthToken).set(token);
 
-        await child.resolve(RequestTenantLoader).establish();
-        // An unknown tenant is left unset rather than reported.
-        if (!child.resolve(TenantContext).getTenant()) {
+        const tenantLoaded = await child
+            .resolve(RequestTenantLoader)
+            .establish()
+            .then(() => true)
+            .catch(refuseUnknownTenant);
+        // An unknown tenant refuses the handshake rather than failing it.
+        if (!tenantLoaded || !child.resolve(TenantContext).getTenant()) {
             return null;
         }
 

@@ -7,6 +7,9 @@ import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthoriz
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
+import { ResetUserMfaUseCase } from "~/api/features/ResetUserMfa/index.js";
+import { LinkUserUseCase } from "~/api/features/LinkUser/index.js";
+import { CheckEmailUseCase } from "~/api/features/CheckEmail/index.js";
 
 class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("cognito/AdminUserSchemaImpl");
@@ -24,6 +27,16 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 lastName: String!
                 password: String!
                 avatar: JSON
+                roles: [RefInput!]
+                teams: [RefInput!]
+            }
+
+            """
+            This input type is used by administrators to give a person whose account exists in another tenant
+            access to their tenant. The person's name, email and password stay as they are.
+            """
+            input AdminUsersLinkInput {
+                email: String!
                 roles: [RefInput!]
                 teams: [RefInput!]
             }
@@ -52,14 +65,41 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 avatar: JSON
             }
 
+            enum AdminUsersEmailStatus {
+                "A new user can be created with this email."
+                AVAILABLE
+                "This tenant already has a user with this email."
+                EXISTS_HERE
+                "The email has an account in another tenant, which can be linked to this tenant."
+                EXISTS_ELSEWHERE
+            }
+
+            type AdminUsersCheckEmail {
+                status: AdminUsersEmailStatus!
+            }
+
+            type AdminUsersCheckEmailResponse {
+                data: AdminUsersCheckEmail
+                error: AdminUsersError
+            }
+
+            extend type AdminUsersQuery {
+                checkEmail(email: String!): AdminUsersCheckEmailResponse
+            }
+
             extend type AdminUsersMutation {
                 updateCurrentUser(data: AdminUsersCurrentUserInput!): AdminUsersResponse
 
                 createUser(data: AdminUsersCreateInput!): AdminUsersResponse
 
+                linkUser(data: AdminUsersLinkInput!): AdminUsersResponse
+
                 updateUser(id: ID!, data: AdminUsersUpdateInput!): AdminUsersResponse
 
                 deleteUser(id: ID!): AdminUsersBooleanResponse
+
+                "Deletes the user's TOTP software token, so they set up MFA again on their next sign-in. Succeeds when the user has no token."
+                resetUserMfa(id: ID!): AdminUsersBooleanResponse
             }
         `);
 
@@ -124,6 +164,44 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver({
+            path: "AdminUsersMutation.linkUser",
+            dependencies: [LinkUserUseCase],
+            resolver: (linkUserUseCase: LinkUserUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await linkUserUseCase.execute(args.data);
+                    if (result.isFail()) {
+                        return new ErrorResponse({
+                            message: result.error.message,
+                            code: result.error.code,
+                            data: result.error.data
+                        });
+                    }
+
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "AdminUsersQuery.checkEmail",
+            dependencies: [CheckEmailUseCase],
+            resolver: (checkEmailUseCase: CheckEmailUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await checkEmailUseCase.execute(args.email);
+                    if (result.isFail()) {
+                        return new ErrorResponse({
+                            message: result.error.message,
+                            code: result.error.code,
+                            data: result.error.data
+                        });
+                    }
+
+                    return new Response({ status: result.value });
+                };
+            }
+        });
+
+        builder.addResolver({
             path: "AdminUsersMutation.updateUser",
             dependencies: [UpdateUserUseCase, IdentityContext],
             resolver: (
@@ -158,6 +236,25 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             resolver: (deleteUserUseCase: DeleteUserUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await deleteUserUseCase.execute(args.id);
+                    if (result.isFail()) {
+                        return new ErrorResponse({
+                            message: result.error.message,
+                            code: result.error.code,
+                            data: result.error.data
+                        });
+                    }
+
+                    return new Response(true);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "AdminUsersMutation.resetUserMfa",
+            dependencies: [ResetUserMfaUseCase],
+            resolver: (resetUserMfaUseCase: ResetUserMfaUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await resetUserMfaUseCase.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,

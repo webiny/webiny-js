@@ -25,6 +25,7 @@ import { validateModelFields } from "~/domain/contentModel/validation/modelField
 import type { CmsModel } from "~/types/index.js";
 import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
 import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompression/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * Generate modelId from model following the exact logic from beforeCreate.ts
@@ -68,10 +69,12 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly createModel: CreateModelStorageOperation.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly cmsContext: CmsContext.Interface,
-        private readonly modelFieldCompression: ModelFieldCompression.Interface
+        private readonly modelFieldCompression: ModelFieldCompression.Interface,
+        private readonly runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(model: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialModel: CmsModel): Promise<Result<CmsModel, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
         try {
             const tenant = this.tenantContext.getTenant();
 
@@ -174,7 +177,7 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
             // Clear cache
             this.modelCache.clear();
 
-            return Result.ok();
+            return Result.ok(model);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }
@@ -190,6 +193,7 @@ export const CreateModelFromRepository = RepositoryAbstraction.createImplementat
         CreateModelStorageOperation,
         TenantContext,
         CmsContext,
-        ModelFieldCompression
+        ModelFieldCompression,
+        RuntimeTenant
     ]
 });

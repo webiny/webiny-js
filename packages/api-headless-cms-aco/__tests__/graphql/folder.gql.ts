@@ -46,6 +46,19 @@ export const CREATE_FOLDER = (fields: string[] = []) => {
     `;
 };
 
+export const UPDATE_FOLDER = (fields: string[] = []) => {
+    return /* GraphQL */ `
+        mutation UpdateFolder($id: ID!, $data: FolderUpdateInput!) {
+            aco {
+                updateFolder(id: $id, data: $data) {
+                    data ${DATA_FIELD(fields)}
+                    error ${ERROR_FIELD}
+                }
+            }
+        }
+    `;
+};
+
 export const DELETE_FOLDER = /* GraphQL */ `
     mutation DeleteFolder($id: ID!) {
         aco {

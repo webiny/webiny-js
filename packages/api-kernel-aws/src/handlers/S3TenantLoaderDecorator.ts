@@ -2,7 +2,8 @@ import type { S3Event } from "@webiny/aws-sdk/types/index.js";
 import { S3InputHandler } from "@webiny/kernel-aws";
 import {
     RawTenantId,
-    RequestTenantLoader
+    RequestTenantLoader,
+    TenantNotFoundError
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { InputContext, NextFunction } from "@webiny/kernel-core";
@@ -23,7 +24,15 @@ class S3TenantLoaderDecoratorImpl implements S3InputHandler.Interface {
     async execute(ctx: InputContext<S3Event>, next: NextFunction): Promise<any> {
         const bucket = ctx.input?.Records?.[0]?.s3?.bucket?.name;
         this.rawTenantId.set(bucket ? (bucket.split("-")[0] ?? null) : null);
-        await this.tenantLoader.establish();
+        try {
+            await this.tenantLoader.establish();
+        } catch (error) {
+            /* The bucket-name prefix isn't always a tenant id, so an unknown one leaves the tenant
+               unset and lets the event through, as before. */
+            if (!(error instanceof TenantNotFoundError)) {
+                throw error;
+            }
+        }
         return this.decoratee.execute(ctx, next);
     }
 }

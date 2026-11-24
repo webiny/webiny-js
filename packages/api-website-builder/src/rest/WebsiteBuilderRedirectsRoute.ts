@@ -10,6 +10,12 @@ import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
  */
 const CACHE_CONTROL = "public, max-age=0, s-maxage=31536000";
 
+/*
+ * The list depends on the caller and the tenant, so a shared cache must key it on both. CloudFront
+ * does through its cache policy; `Vary` tells any other shared cache to do the same.
+ */
+const VARY = "Authorization, X-Tenant";
+
 class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
     constructor(
         private identityCtx: IdentityContext.Interface,
@@ -28,7 +34,10 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
         }
         const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
-        return response.header("cache-control", CACHE_CONTROL).json(redirectsDto);
+        return response
+            .header("cache-control", CACHE_CONTROL)
+            .header("vary", VARY)
+            .json(redirectsDto);
     }
 }
 

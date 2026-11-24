@@ -1,8 +1,7 @@
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
-import { EventPublisher } from "~/features/eventPublisher/index.js";
-import { AfterLoginEvent } from "~/features/security/login/index.js";
-import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";
+import { LogInUseCase } from "~/features/security/login/index.js";
+import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdentityTenants/index.js";
 import type { AdminUser } from "~/types/users.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
 import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
@@ -69,10 +68,19 @@ export const addIdentitySchema = (builder: IGraphQLSchemaBuilder): void => {
             profile: SecurityIdentityProfile!
             currentTenant: SecurityIdentityTenant!
             defaultTenant: SecurityIdentityTenant!
+            "The enabled tenants in which the identity has a user record, sorted by name."
+            tenants: [SecurityIdentityTenant!]!
         }
 
+        "The identity has no user record in this tenant, but has one in these tenants."
+        type SecurityLoginTenantSelection {
+            tenants: [SecurityIdentityTenant!]!
+        }
+
+        union SecurityLoginResult = SecurityIdentity | SecurityLoginTenantSelection
+
         type SecurityIdentityLoginResponse {
-            data: SecurityIdentity
+            data: SecurityLoginResult
             error: SecurityError
         }
 
@@ -84,48 +92,35 @@ export const addIdentitySchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "SecurityMutation.login",
-        dependencies: [
-            IdentityContext,
-            EventPublisher,
-            RolesRepository,
-            TeamsRepository,
-            GetIdentityProfileUseCase
-        ],
+        dependencies: [LogInUseCase, RolesRepository, TeamsRepository],
         resolver:
             (
-                identityContext: IdentityContext.Interface,
-                eventPublisher: EventPublisher.Interface,
+                logIn: LogInUseCase.Interface,
                 rolesRepo: RolesRepository.Interface,
-                teamsRepo: TeamsRepository.Interface,
-                getProfile: GetIdentityProfileUseCase.Interface
+                teamsRepo: TeamsRepository.Interface
             ) =>
             async () => {
-                const identity = identityContext.getIdentity();
-                if (identity.isAnonymous()) {
-                    return new ErrorResponse({
-                        code: "Security/Identity/NotAuthenticated",
-                        message: "Unauthenticated!"
-                    });
-                }
-
+                let result: Awaited<LogInUseCase.Return>;
                 try {
-                    await eventPublisher.publish(new AfterLoginEvent({ identity }));
+                    result = await logIn.execute();
                 } catch (err) {
+                    // AfterLogin handlers report failures by throwing.
                     return new ErrorResponse(err);
                 }
 
-                const result = await identityContext.withoutAuthorization(async () => {
-                    return getProfile.execute(identity.id);
-                });
-
                 if (result.isFail()) {
-                    return new ErrorResponse({
-                        code: "Security/Identity/NotAuthorized",
-                        message: "Missing user profile!"
+                    return new ErrorResponse(result.error);
+                }
+
+                if (result.value.type === "tenantSelectionRequired") {
+                    return new Response({
+                        __typename: "SecurityLoginTenantSelection",
+                        tenants: result.value.tenants
                     });
                 }
 
-                const user = result.value;
+                // Roles and teams are stored in the user record.
+                const { identity, user } = result.value;
 
                 const [roles, teams] = await Promise.all([
                     getRoles(user, rolesRepo),
@@ -136,6 +131,7 @@ export const addIdentitySchema = (builder: IGraphQLSchemaBuilder): void => {
                 const profile = await profileMapper.toDTO(user);
 
                 return new Response({
+                    __typename: "SecurityIdentity",
                     ...identity.toJson(),
                     profile,
                     roles,
@@ -168,6 +164,24 @@ export const addIdentitySchema = (builder: IGraphQLSchemaBuilder): void => {
         dependencies: [IdentityContext],
         resolver: (identityContext: IdentityContext.Interface) => () =>
             identityContext.listPermissions()
+    });
+
+    builder.addResolver({
+        path: "SecurityIdentity.tenants",
+        dependencies: [IdentityContext, ResolveIdentityTenantsUseCase],
+        resolver:
+            (
+                identityContext: IdentityContext.Interface,
+                resolveIdentityTenants: ResolveIdentityTenantsUseCase.Interface
+            ) =>
+            async ({ parent }: { parent: { id: string } }) => {
+                const result = await identityContext.withoutAuthorization(() => {
+                    return resolveIdentityTenants.execute(parent.id);
+                });
+
+                // The list only drives tenant switching, so a failed lookup doesn't fail the login.
+                return result.isOk() ? result.value : [];
+            }
     });
 };
 

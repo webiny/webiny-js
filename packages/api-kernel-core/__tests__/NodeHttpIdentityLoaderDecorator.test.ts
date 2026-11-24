@@ -31,8 +31,11 @@ function setup() {
     const handler = container.resolve(NodeHttpInputHandler);
 
     return {
-        run: async (headers: Record<string, string>) => {
-            const event = { headers } as any;
+        run: async (
+            headers: Record<string, string>,
+            request: { method?: string; url?: string } = { method: "POST", url: "/graphql" }
+        ) => {
+            const event = { headers, ...request } as any;
             await handler.execute({ input: event, metadata: {} } as any, async () => undefined);
         },
         token: () => container.resolve(RawAuthToken).get(),
@@ -53,11 +56,22 @@ describe("NodeHttpIdentityLoaderDecorator", () => {
         expect(t.innerCalled()).toBe(true);
     });
 
-    it("puts the token from the wby-id-token cookie into RawAuthToken", async () => {
+    it("puts the token from the wby-id-token cookie into RawAuthToken for a private file", async () => {
         const t = setup();
-        await t.run({ cookie: "theme=dark; wby-id-token=abc" });
+        await t.run(
+            { cookie: "theme=dark; wby-id-token=abc" },
+            { method: "GET", url: "/private/file.png" }
+        );
 
         expect(t.token()).toBe("abc");
+        expect(t.innerCalled()).toBe(true);
+    });
+
+    it("ignores the wby-id-token cookie on a GraphQL request", async () => {
+        const t = setup();
+        await t.run({ cookie: "wby-id-token=abc" });
+
+        expect(t.token()).toBeNull();
         expect(t.innerCalled()).toBe(true);
     });
 });

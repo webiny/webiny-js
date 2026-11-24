@@ -4,6 +4,8 @@ import { UpdateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { RolesRepository } from "../../roles/shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { canAssignRolesAndTeams } from "../../utils/canAssignRolesAndTeams.js";
+import { CANNOT_GRANT_PERMISSIONS_MESSAGE } from "../../utils/canGrantPermissions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateTeamValidation } from "./schema.js";
 import { TeamBeforeUpdateEvent, TeamAfterUpdateEvent } from "./events.js";
@@ -86,6 +88,21 @@ export class UpdateTeamUseCase {
             }
 
             changes.roles = roleIdsResult.value;
+        }
+
+        // Security: a team may only carry roles whose permissions the caller holds. The team's
+        // current roles are checked too, so the caller can't change a team that has more access.
+        const canAssign = await canAssignRolesAndTeams({
+            identityContext: this.identityContext,
+            rolesRepository: this.rolesRepository,
+            teamsRepository: this.repository,
+            roles: [...(existingTeam.roles ?? []), ...(changes.roles ?? [])],
+            teams: []
+        });
+        if (!canAssign) {
+            return Result.fail(
+                new NotAuthorizedError({ message: CANNOT_GRANT_PERMISSIONS_MESSAGE })
+            );
         }
 
         const updatedTeam: Team = {

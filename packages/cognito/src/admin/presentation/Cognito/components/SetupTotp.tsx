@@ -1,4 +1,5 @@
 import React from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button, Grid, Input, Alert, Text } from "@webiny/admin-ui";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Form, Bind } from "@webiny/form";
@@ -37,11 +38,12 @@ export const SetupTotp = makeDecoratable("CognitoSetupTotp", (props: SetupTotpPr
                         <Grid>
                             <Grid.Column span={12}>
                                 <div className={"flex justify-center my-md"}>
-                                    <img
-                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(vm.qrCodeUri)}`}
-                                        alt={"TOTP QR Code"}
-                                        width={200}
-                                        height={200}
+                                    {/* Drawn in the browser, so the TOTP secret never leaves the page. */}
+                                    <QRCodeSVG
+                                        value={vm.qrCodeUri}
+                                        size={200}
+                                        role={"img"}
+                                        aria-label={"TOTP QR Code"}
                                     />
                                 </div>
                             </Grid.Column>

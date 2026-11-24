@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 export const encodeCursor = (cursor?: any): string | null => {
     if (!cursor) {
         return null;
@@ -11,5 +12,5 @@ export const decodeCursor = (cursor?: string | null): string | null => {
         return null;
     }
 
-    return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
+    return parseJson(Buffer.from(cursor, "base64").toString("ascii"));
 };

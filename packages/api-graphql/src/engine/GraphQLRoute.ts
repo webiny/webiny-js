@@ -2,12 +2,31 @@ import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/kernel-core";
 import { GraphQLEngine } from "./abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "@webiny/kernel-core";
 import type { IGraphQLEngine } from "./abstractions.js";
+import {
+    invalidRequestBodyResponse,
+    isJsonContentType,
+    unsupportedMediaTypeResponse
+} from "~/jsonContentType.js";
 
 class GraphQLRouteImpl implements HttpRouteHandler.Interface {
     constructor(private engine: IGraphQLEngine) {}
 
     async handle(request: IHttpRequest): Promise<IHttpResponse> {
-        const result = await this.engine.execute(request.body);
+        if (!isJsonContentType(request)) {
+            return unsupportedMediaTypeResponse();
+        }
+
+        let result: unknown;
+        try {
+            result = await this.engine.execute(request.body);
+        } catch (ex) {
+            const response = invalidRequestBodyResponse(ex);
+            if (response) {
+                return response;
+            }
+            throw ex;
+        }
+
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },

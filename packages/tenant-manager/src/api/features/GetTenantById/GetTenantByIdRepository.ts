@@ -30,6 +30,11 @@ class GetTenantByIdRepository implements RepositoryAbstraction.Interface {
             }
 
             // Get the tenant entry
+            // TODO: nested tenants. A tenant's entry lives in its parent's CMS (createTenant and
+            //  updateTenant use the current tenant), but this always reads from root, so tenants
+            //  created from a sub-tenant are never found (install/enable/disable fail with
+            //  Tenant/NotFound). Read from the core tenant's parent, or from the current tenant
+            //  when the core tenant doesn't exist yet.
             const entryResult = await this.tenantContext.withRootTenant(() => {
                 return this.getEntryUseCase.execute<TenantValues>(
                     modelResult.value,

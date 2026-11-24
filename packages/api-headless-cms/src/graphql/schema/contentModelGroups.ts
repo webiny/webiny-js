@@ -1,5 +1,4 @@
 import { ErrorResponse, NotFoundError, Response } from "@webiny/api-graphql";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { CmsContext } from "~/types/index.js";
 import type { Resolvers } from "@webiny/api-graphql/types.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
@@ -13,9 +12,24 @@ import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/index.
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 
+/**
+ * Models of a group that the current identity can read. No error when it can't read any model.
+ */
+const listGroupModels = async (context: CmsContext, groupSlug: string) => {
+    const result = await context.container
+        .resolve(ListModelsUseCase)
+        .execute({ includePrivate: false });
+    if (result.isFail()) {
+        return [];
+    }
+    // `model.group` holds the group slug.
+    return result.value.filter(model => model.group === groupSlug);
+};
+
 interface Params {
     context: CmsContext;
 }
+
 export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
     const isManage = context.container.resolve(HeadlessCmsEndpointConfig).type === "manage";
 
@@ -67,36 +81,11 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    const result = await context.container
-                        .resolve(IdentityContext)
-                        .withoutAuthorization(async () => {
-                            return context.container.resolve(ListModelsUseCase).execute();
-                        });
-                    if (result.isFail()) {
-                        return [];
-                    }
-                    return result.value.filter(model => {
-                        if (model.isPrivate === true) {
-                            return false;
-                        }
-                        return model.group === group.slug;
-                    });
+                    return listGroupModels(context, group.slug);
                 },
                 totalContentModels: async (group, _, context) => {
-                    const result = await context.container
-                        .resolve(IdentityContext)
-                        .withoutAuthorization(async () => {
-                            return context.container.resolve(ListModelsUseCase).execute();
-                        });
-                    if (result.isFail()) {
-                        return 0;
-                    }
-                    return result.value.filter(model => {
-                        if (model.isPrivate === true) {
-                            return false;
-                        }
-                        return model.group === group.slug;
-                    }).length;
+                    const models = await listGroupModels(context, group.slug);
+                    return models.length;
                 },
                 plugin: async (group, _, context) => {
                     const pluginGroups = await context.container
