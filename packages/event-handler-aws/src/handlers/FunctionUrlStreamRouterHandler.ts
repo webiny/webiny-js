@@ -1,12 +1,11 @@
-import { HttpRouter, HttpStreamBody, RouteNotFoundError } from "@webiny/event-handler-core";
+import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
 import { codedErrorBody } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
 import type { ICodedError } from "@webiny/event-handler-core";
 import { FunctionUrlStreamEventHandler } from "~/abstractions/handlers/FunctionUrlStreamEventHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
-import { getAwsLambdaGlobal } from "~/streaming/awslambda.js";
-import type { IRawResponseStream } from "~/streaming/awslambda.js";
+import { writeHttpResponseToStream } from "~/streaming/writeHttpResponseToStream.js";
 
 const JSON_HEADERS = { "content-type": "application/json" };
 
@@ -32,12 +31,13 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
         try {
             response = await this.router.route(request);
         } catch (e) {
-            await this.writeResponse(raw, this.errorResponse(e));
+            const errorResponse = this.errorResponse(e);
+            await writeHttpResponseToStream(raw, errorResponse);
             return;
         }
 
         try {
-            await this.writeResponse(raw, response);
+            await writeHttpResponseToStream(raw, response);
         } catch (e) {
             // The prelude (and probably some body) is already out, so there is no way to turn this
             // into a 500. Destroy the stream so the client sees a truncated response instead of a
@@ -66,67 +66,6 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
             headers: JSON_HEADERS,
             body: { message: "Internal server error" }
         };
-    }
-
-    private async writeResponse(raw: IRawResponseStream, response: IHttpResponse): Promise<void> {
-        const { HttpResponseStream } = getAwsLambdaGlobal();
-
-        // Sends the status code and headers as the stream prelude. Must happen before any write.
-        // Cookies ride in their own prelude field, not in `headers`: `Set-Cookie` is the one response
-        // header that can repeat, which `Record<string, string>` cannot express.
-        const stream = HttpResponseStream.from(raw, {
-            statusCode: response.statusCode,
-            headers: response.headers,
-            cookies: response.cookies
-        });
-
-        const { body } = response;
-
-        // The runtime emits the prelude LAZILY, on the first write to the stream (its
-        // `_onBeforeFirstWrite` hook). A response that writes nothing therefore sends no prelude at
-        // all, and Lambda falls back to a default 200 with `application/octet-stream` and none of the
-        // headers set above — silently, with no error. A CORS preflight (204, no body) and an empty
-        // stream both hit this, so every path below guarantees at least one write.
-        let wrote = false;
-
-        if (HttpStreamBody.is(body)) {
-            for await (const chunk of body.source) {
-                if (stream.destroyed) {
-                    // Client went away mid-stream; stop pulling from the producer.
-                    break;
-                }
-                await this.write(stream, chunk);
-                wrote = true;
-            }
-        } else if (body !== undefined && body !== null) {
-            await this.write(stream, this.serialize(body));
-            wrote = true;
-        }
-
-        if (!wrote) {
-            // Zero-length write: flushes the prelude without adding body bytes, so a 204 stays a 204.
-            await this.write(stream, "");
-        }
-
-        stream.end();
-    }
-
-    private serialize(body: any): Uint8Array | string {
-        if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
-            return body;
-        }
-        return typeof body === "string" ? body : JSON.stringify(body);
-    }
-
-    private async write(stream: IRawResponseStream, chunk: Uint8Array | string): Promise<void> {
-        const flushed = stream.write(chunk);
-
-        // The runtime hands over a Node Writable, so honour back-pressure when it signals a full
-        // buffer. Guarded by feature detection: `write` is typed as possibly returning void, and a
-        // stubbed stream (tests) need not implement `once`.
-        if (flushed === false && typeof stream.once === "function") {
-            await new Promise<void>(resolve => stream.once!("drain", resolve));
-        }
     }
 }
 

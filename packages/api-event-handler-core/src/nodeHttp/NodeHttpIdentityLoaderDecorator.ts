@@ -6,34 +6,10 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
-import { corsHeaders } from "@webiny/event-handler-core";
-import { codedErrorBody } from "@webiny/event-handler-core";
-import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { extractAuthToken } from "~/auth/extractAuthToken.js";
+import { rejectedTokenResponse } from "~/auth/rejectedTokenResponse.js";
 import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
-
-/*
- * The answer to a request whose token was rejected, for example by `verifyTokenClaims`. This runs
- * before the router, so `SecureHeadersDecorator` never sees the response and the CORS headers are
- * added here.
- */
-function authenticationErrorResponse(
-    request: IncomingMessage,
-    error: AuthenticationError
-): IHttpResponse {
-    const cors = corsHeaders(request.headers.origin);
-    const body = codedErrorBody(error);
-
-    return {
-        statusCode: 401,
-        headers: {
-            ...cors,
-            "content-type": "application/json",
-            "www-authenticate": 'Bearer error="invalid_token"'
-        },
-        body
-    };
-}
 
 /**
  * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` —
@@ -49,9 +25,8 @@ function authenticationErrorResponse(
  *
  * A token an identity provider rejects ends the request with a 401. Any other error propagates.
  *
- * Node counterpart of ApiGatewayIdentityLoaderDecorator, which does not answer 401 yet: on AWS a
- * rejected token still fails the invocation. Registered before the tenant loader, which makes
- * it the inner wrapper: the tenant is loaded first, because API-key authentication looks the key up
+ * Node counterpart of ApiGatewayIdentityLoaderDecorator. Registered before the tenant loader, which
+ * makes it the inner wrapper: the tenant is loaded first, because API-key authentication looks the key up
  * in the tenant's partition.
  */
 class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interface {
@@ -69,7 +44,7 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
             await this.identityLoader.establish();
         } catch (error) {
             if (error instanceof AuthenticationError) {
-                return authenticationErrorResponse(ctx.event, error);
+                return rejectedTokenResponse(error, headers);
             }
             throw error;
         }
