@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
-import { MailerSettingsAfterSaveEventHandler } from "@webiny/mailer-smtp/api/features/SaveSettings/index.js";
-import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
-import { AUDIT } from "~/config.js";
+import { AUDIT } from "@webiny/api-audit-logs";
+import { RecordAuditLogUseCase } from "@webiny/api-audit-logs/features/RecordAuditLog/abstractions.js";
+import { MailerSettingsAfterSaveEventHandler } from "~/api/features/SaveSettings/abstractions.js";
 
 class AuditLogMailerSettingsAfterSaveHandlerImpl
     implements MailerSettingsAfterSaveEventHandler.Interface
