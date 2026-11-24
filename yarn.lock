@@ -730,23 +730,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sesv2@npm:^3.1175.0":
-  version: 3.1175.0
-  resolution: "@aws-sdk/client-sesv2@npm:3.1175.0"
-  dependencies:
-    "@aws-sdk/core": "npm:^3.981.1"
-    "@aws-sdk/credential-provider-node": "npm:^3.972.98"
-    "@aws-sdk/signature-v4-multi-region": "npm:^3.996.52"
-    "@aws-sdk/types": "npm:^3.975.1"
-    "@smithy/core": "npm:^3.40.0"
-    "@smithy/fetch-http-handler": "npm:^5.8.1"
-    "@smithy/node-http-handler": "npm:^4.14.2"
-    "@smithy/types": "npm:^4.20.0"
-    tslib: "npm:^2.6.2"
-  checksum: 10/4593dd0c2b0721804bd5acc4b45c0554099ab223204dba109caabd7f6ab82ae53ce767c25f51991398963cd1cbe1dbf7017a0a68ddc1b68ea50f95d30ad765f2
-  languageName: node
-  linkType: hard
-
 "@aws-sdk/client-sfn@npm:^3.1175.0":
   version: 3.1175.0
   resolution: "@aws-sdk/client-sfn@npm:3.1175.0"
@@ -23347,7 +23330,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@aws-sdk/client-sesv2": "npm:^3.1175.0"
     "@babel/code-frame": "npm:^8.0.6"
     "@commitlint/cli": "npm:^21.2.4"
     "@commitlint/config-conventional": "npm:^21.2.4"
