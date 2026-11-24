@@ -64,3 +64,4 @@ CLAUDE.local.md
 .mcp.json
 docs/.reports
 tsconfig.check-tests.json
+.webiny-testing/
