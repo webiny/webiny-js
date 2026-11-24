@@ -1,6 +1,7 @@
 import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 import { corsHeaders } from "~/features/http/corsHeaders.js";
+import { getHeader } from "~/features/http/getHeader.js";
 
 const ALLOWED_HEADERS = [
     "accept",
@@ -48,7 +49,9 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
         }
 
         const response = await this.decoratee.route(request);
-        const cors = corsHeaders(request.headers["origin"]);
+        // Header names reach the router in whatever case the transport and the client used.
+        const origin = getHeader(request.headers, "origin");
+        const cors = corsHeaders(origin);
 
         return {
             ...response,
@@ -60,10 +63,11 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
     }
 
     private optionsResponse(request: IHttpRequest): IHttpResponse {
+        const origin = getHeader(request.headers, "origin");
         return {
             statusCode: 204,
             headers: {
-                "access-control-allow-origin": request.headers["origin"] || "*",
+                "access-control-allow-origin": origin || "*",
                 "access-control-allow-credentials": "true",
                 "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
                 "access-control-allow-headers": this.allowedHeaders,

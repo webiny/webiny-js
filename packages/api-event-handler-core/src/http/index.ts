@@ -1,4 +1,2 @@
-export { HttpRequestContextFeature } from "./HttpRequestContextFeature.js";
-export { HttpIdentityLoaderDecorator } from "./HttpIdentityLoaderDecorator.js";
-export { HttpTenantLoaderDecorator } from "./HttpTenantLoaderDecorator.js";
-export { HttpAssumePermissionsDecorator } from "./HttpAssumePermissionsDecorator.js";
+export { registerHttpTransport } from "./registerHttpTransport.js";
+export type { IHttpTransportFeature } from "./registerHttpTransport.js";

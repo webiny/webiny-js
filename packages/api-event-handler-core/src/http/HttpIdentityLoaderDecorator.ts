@@ -1,10 +1,8 @@
 import { HttpRouter } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse, IHttpRouter } from "@webiny/event-handler-core";
-import {
-    RawAuthToken,
-    RequestIdentityLoader
-} from "@webiny/api-core/features/requestContext/index.js";
-import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
+import type { IHttpRequest } from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
+import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js";
+import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { extractAuthToken } from "~/auth/extractAuthToken.js";
 import { rejectedTokenResponse } from "~/auth/rejectedTokenResponse.js";
@@ -17,11 +15,11 @@ import { rejectedTokenResponse } from "~/auth/rejectedTokenResponse.js";
  * A token an identity provider rejects ends the request with a 401. Any other error propagates, and
  * `HttpErrorDecorator` answers it with a 500.
  */
-class HttpIdentityLoaderDecoratorImpl implements IHttpRouter {
+class HttpIdentityLoaderDecoratorImpl implements HttpRouter.Interface {
     constructor(
         private rawAuthToken: RawAuthToken.Interface,
-        private identityLoader: IRequestIdentityLoader,
-        private decoratee: IHttpRouter
+        private identityLoader: RequestIdentityLoader.Interface,
+        private decoratee: HttpRouter.Interface
     ) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {

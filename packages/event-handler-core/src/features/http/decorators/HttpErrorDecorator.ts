@@ -1,12 +1,19 @@
-import { HttpRouter, RouteNotFoundError } from "~/features/http/abstractions.js";
-import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
+import { HttpRouter } from "~/features/http/abstractions.js";
+import { RouteNotFoundError } from "~/features/http/abstractions.js";
+import type { IHttpRequest } from "~/features/http/abstractions.js";
+import type { IHttpResponse } from "~/features/http/abstractions.js";
 import { codedErrorBody } from "~/features/http/codedErrorBody.js";
 import type { ICodedError } from "~/features/http/codedErrorBody.js";
+import { internalServerErrorResponse } from "~/features/http/internalServerErrorResponse.js";
 
 const JSON_HEADERS = { "content-type": "application/json" };
 
 function isCodedError(error: unknown): error is ICodedError {
-    return Boolean(error && typeof error === "object" && (error as ICodedError).code);
+    if (!error || typeof error !== "object") {
+        return false;
+    }
+    const candidate: Partial<ICodedError> = error;
+    return Boolean(candidate.code);
 }
 
 function errorResponse(error: unknown): IHttpResponse {
@@ -19,11 +26,7 @@ function errorResponse(error: unknown): IHttpResponse {
         return { statusCode: 500, headers: JSON_HEADERS, body };
     }
     console.error("HTTP handler error:", error);
-    return {
-        statusCode: 500,
-        headers: JSON_HEADERS,
-        body: { message: "Internal server error" }
-    };
+    return internalServerErrorResponse();
 }
 
 /**
@@ -34,8 +37,8 @@ function errorResponse(error: unknown): IHttpResponse {
  * It catches what a route throws and what the decorators inside it throw, such as the API's tenant
  * and identity loaders. Those are registered before `HttpFeature` so they sit inside this decorator.
  */
-class HttpErrorDecoratorImpl implements IHttpRouter {
-    constructor(private decoratee: IHttpRouter) {}
+class HttpErrorDecoratorImpl implements HttpRouter.Interface {
+    constructor(private decoratee: HttpRouter.Interface) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
         try {

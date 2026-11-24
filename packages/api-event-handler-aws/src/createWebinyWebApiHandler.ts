@@ -16,7 +16,7 @@ import { createServerHandler } from "@webiny/event-handler-core/nodeHttp/index.j
 import { LambdaWebHandlerPlatform } from "@webiny/event-handler-aws";
 import { NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { HttpRequestContextFeature } from "@webiny/api-event-handler-core";
+import { registerHttpTransport } from "@webiny/api-event-handler-core";
 import { registerWebinyApiChild } from "~/composition/index.js";
 import { registerWebinyApiRoot } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
@@ -33,14 +33,9 @@ export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfi
         // Takes each request's execution id from the `lambda-web-request-id` header.
         platform: LambdaWebHandlerPlatform,
         root: async container => {
-            // ── Tenant, identity, preview-as ───────────────────────────
-            // Registered BEFORE the transport, which registers HttpFeature, so these decorate
-            // HttpRouter from the inside and their responses and errors get the CORS headers. The
-            // order inside is in HttpRequestContextFeature.
-            HttpRequestContextFeature.register(container);
-
             // ── Transport ──────────────────────────────────────────────
-            NodeHttpFeature.register(container);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading.
+            registerHttpTransport(container, NodeHttpFeature);
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Same reason as the streaming handler: `TaskService.trigger()` needs the Step Functions

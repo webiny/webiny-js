@@ -11,7 +11,7 @@
  * template) is what makes it unit/integration testable.
  */
 import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
-import { HttpRequestContextFeature } from "@webiny/api-event-handler-core";
+import { registerHttpTransport } from "@webiny/api-event-handler-core";
 import {
     registerInboundEventTypes,
     registerWebinyApiChild,
@@ -24,15 +24,10 @@ export type CreateWebinyApiHandlerConfig = WebinyApiCompositionConfig;
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     return createLambdaHandler({
         root: async container => {
-            // ── Tenant, identity, preview-as ───────────────────────────
-            // Registered BEFORE the transport, which registers HttpFeature, so these decorate
-            // HttpRouter from the inside and their responses and errors get the CORS headers. The
-            // order inside is in HttpRequestContextFeature.
-            HttpRequestContextFeature.register(container);
-
             // ── Transport ──────────────────────────────────────────────
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
-            ApiGatewayFeature.register(container);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading.
+            registerHttpTransport(container, ApiGatewayFeature);
 
             // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
             // WebSockets) with its handler. Kept in one function so the set is testable and an

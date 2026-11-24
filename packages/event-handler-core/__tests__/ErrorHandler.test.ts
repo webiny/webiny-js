@@ -1,4 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
+import { beforeEach } from "vitest";
 import { createTestHttpHandler } from "~/features/testing/index.js";
 import { HttpRouteDefinition, HttpRouteHandler } from "~/features/http/abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
@@ -37,7 +41,8 @@ const OkRouteDefinition: HttpRouteDefinition.Interface = {
 
 class CodedErrorRoute implements HttpRouteHandler.Interface {
     async handle(_request: IHttpRequest): Promise<IHttpResponse> {
-        throw Object.assign(new Error("Entry is locked."), {
+        const error = new Error("Entry is locked.");
+        throw Object.assign(error, {
             code: "Entry/Locked",
             data: { id: 1 }
         });

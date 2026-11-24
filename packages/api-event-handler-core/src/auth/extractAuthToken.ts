@@ -1,4 +1,4 @@
-import { getHeader } from "./getHeader.js";
+import { getHeader } from "@webiny/event-handler-core";
 
 const WEBINY_AUTHORIZATION_HEADER = "x-webiny-authorization";
 

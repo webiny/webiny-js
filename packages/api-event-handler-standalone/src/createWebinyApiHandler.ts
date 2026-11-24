@@ -20,7 +20,7 @@ import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-core/nodeHttp/index.js";
-import { HttpRequestContextFeature } from "@webiny/api-event-handler-core";
+import { registerHttpTransport } from "@webiny/api-event-handler-core";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-event-handler-core";
@@ -160,15 +160,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             rootContainer.register(RandomProcessOwner).inSingletonScope();
             mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
-            // ── Tenant, identity, preview-as ───────────────────────────
-            // Registered BEFORE the transport, which registers HttpFeature, so these decorate
-            // HttpRouter from the inside and their responses and errors get the CORS headers. The
-            // order inside is in HttpRequestContextFeature.
-            HttpRequestContextFeature.register(rootContainer);
-
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
-            NodeHttpFeature.register(rootContainer);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading.
+            registerHttpTransport(rootContainer, NodeHttpFeature);
 
             rootContainer.registerInstance(ApiRequestRegistration, { register: registerRequest });
 

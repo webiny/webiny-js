@@ -1,5 +1,7 @@
 import { HttpRouter } from "~/index.js";
 import { corsHeaders } from "~/index.js";
+import { getHeader } from "~/index.js";
+import { internalServerErrorResponse } from "~/index.js";
 import type { EventContext, IHttpResponse, NextFunction } from "~/index.js";
 import { NodeHttpEventHandler } from "~/nodeHttp/abstractions/NodeHttpEventHandler.js";
 import { nodeHttpRequestFromIncomingMessage } from "~/nodeHttp/translators/NodeHttpTranslator.js";
@@ -27,7 +29,8 @@ class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
                  * Close the connection after answering, so Node doesn't read the rest of the body.
                  * The router never saw this request, so the CORS headers are added here.
                  */
-                const cors = corsHeaders(ctx.event?.headers?.origin);
+                const origin = getHeader(ctx.event?.headers, "origin");
+                const cors = corsHeaders(origin);
                 return {
                     statusCode: 413,
                     headers: { ...cors, "content-type": "application/json", connection: "close" },
@@ -35,11 +38,7 @@ class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
                 };
             }
             console.error("HTTP handler error:", e);
-            return {
-                statusCode: 500,
-                headers: { "content-type": "application/json" },
-                body: { message: "Internal server error" }
-            };
+            return internalServerErrorResponse();
         }
     }
 }

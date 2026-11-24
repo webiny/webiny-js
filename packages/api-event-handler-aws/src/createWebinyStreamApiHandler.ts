@@ -22,7 +22,7 @@
 import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
-import { HttpRequestContextFeature } from "@webiny/api-event-handler-core";
+import { registerHttpTransport } from "@webiny/api-event-handler-core";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type CreateWebinyStreamApiHandlerConfig = WebinyApiCompositionConfig;
@@ -30,17 +30,12 @@ export type CreateWebinyStreamApiHandlerConfig = WebinyApiCompositionConfig;
 export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandlerConfig) {
     return createStreamLambdaHandler({
         root: async container => {
-            // ── Tenant, identity, preview-as ───────────────────────────
-            // Registered BEFORE the transport, which registers HttpFeature, so these decorate
-            // HttpRouter from the inside and their responses and errors get the CORS headers. The
-            // order inside is in HttpRequestContextFeature.
-            HttpRequestContextFeature.register(container);
-
             // ── Transport ──────────────────────────────────────────────
             // Registers the Function URL event type + router + the streaming terminal handler.
             // Deliberately NOT alongside ApiGatewayFeature: both event types match the same payload
             // shape, so they must never share a container.
-            FunctionUrlStreamFeature.register(container);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading.
+            registerHttpTransport(container, FunctionUrlStreamFeature);
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Registers StepFunctionService, which is what a `TaskService.trigger()` resolves to

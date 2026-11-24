@@ -13,11 +13,11 @@ import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
 import { RawAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
-import { HttpRequestContextFeature } from "~/http/HttpRequestContextFeature.js";
+import { registerHttpTransport } from "~/http/registerHttpTransport.js";
 
 /*
- * HttpRequestContextFeature registered before HttpFeature, the way the compositions register it, with
- * the tenant and identity loaders replaced by stubs that record the order they run in.
+ * HttpFeature registered through registerHttpTransport, the way the compositions register their
+ * transport, with the tenant and identity loaders replaced by stubs that record the order they run in.
  */
 function setup() {
     const steps: string[] = [];
@@ -37,8 +37,7 @@ function setup() {
         }
     });
 
-    HttpRequestContextFeature.register(container);
-    HttpFeature.register(container);
+    registerHttpTransport(container, HttpFeature);
     container.registerInstance(HttpRouter, {
         async route() {
             steps.push("route");
@@ -55,7 +54,7 @@ function request(method: string, headers: Record<string, string>): IHttpRequest 
     return { method, path: "/graphql", headers, query: {}, pathParameters: {}, body: {} };
 }
 
-describe("HttpRequestContextFeature", () => {
+describe("registerHttpTransport", () => {
     it("reads assume-permissions, then loads the tenant, then the identity, then routes", async () => {
         const t = setup();
         const headers = {

@@ -88,13 +88,13 @@ const setup = (params: ISetupParams = {}) => {
     return { router, route };
 };
 
-const execute = (router: HttpRouter.Interface, token: string) => {
+const execute = (router: HttpRouter.Interface, token: string, originHeader = "origin") => {
     const request: IHttpRequest = {
         method: "POST",
         path: "/graphql",
         headers: {
             authorization: `Bearer ${token}`,
-            origin: ORIGIN
+            [originHeader]: ORIGIN
         },
         query: {},
         pathParameters: {},
@@ -150,6 +150,17 @@ describe("HttpIdentityLoaderDecorator inside HttpFeature", () => {
         );
         expect(response).toEqual(expected);
         expect(route).not.toHaveBeenCalled();
+    });
+
+    it("finds the origin for the CORS headers whatever case the header name arrives in", async () => {
+        const { router } = setup();
+        const expiredAt = Math.floor(Date.now() / 1000) - 60;
+        const token = signToken({ exp: expiredAt });
+
+        const response = await execute(router, token, "Origin");
+
+        const expected = unauthorized("Authentication/TokenExpired", "jwt expired");
+        expect(response).toEqual(expected);
     });
 
     it("answers 401 when the token has expired", async () => {

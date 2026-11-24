@@ -1,6 +1,7 @@
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
 import { HttpRouter } from "@webiny/event-handler-core";
+import { internalServerErrorResponse } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { apiGatewayEventToHttpRequest } from "~/translators/apiGatewayEventToHttpRequest.js";
 import { httpResponseToApiGatewayResult } from "~/translators/httpResponseToApiGatewayResult.js";
@@ -19,11 +20,8 @@ class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interfac
             return httpResponseToApiGatewayResult(response);
         } catch (e) {
             console.error("HTTP handler error:", e);
-            return httpResponseToApiGatewayResult({
-                statusCode: 500,
-                headers: { "content-type": "application/json" },
-                body: { message: "Internal server error" }
-            });
+            const response = internalServerErrorResponse();
+            return httpResponseToApiGatewayResult(response);
         }
     }
 }

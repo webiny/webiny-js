@@ -1,10 +1,8 @@
 import { HttpRouter } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse, IHttpRouter } from "@webiny/event-handler-core";
-import {
-    RawTenantId,
-    RequestTenantLoader
-} from "@webiny/api-core/features/requestContext/index.js";
-import type { IRequestTenantLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
+import type { IHttpRequest } from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
+import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
+import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { extractTenantId } from "~/auth/extractTenantId.js";
 
 /**
@@ -12,11 +10,11 @@ import { extractTenantId } from "~/auth/extractTenantId.js";
  * step, RequestTenantLoader, which resolves the Tenant and sets TenantContext. A missing header means
  * the root tenant.
  */
-class HttpTenantLoaderDecoratorImpl implements IHttpRouter {
+class HttpTenantLoaderDecoratorImpl implements HttpRouter.Interface {
     constructor(
         private rawTenantId: RawTenantId.Interface,
-        private tenantLoader: IRequestTenantLoader,
-        private decoratee: IHttpRouter
+        private tenantLoader: RequestTenantLoader.Interface,
+        private decoratee: HttpRouter.Interface
     ) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {

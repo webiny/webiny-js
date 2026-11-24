@@ -1,4 +1,4 @@
-import { getHeader } from "./getHeader.js";
+import { getHeader } from "@webiny/event-handler-core";
 
 /**
  * Reads the tenant id from the `x-tenant` header. A missing or empty header is no tenant, and the

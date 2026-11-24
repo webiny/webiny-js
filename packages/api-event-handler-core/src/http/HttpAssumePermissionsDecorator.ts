@@ -1,5 +1,6 @@
 import { HttpRouter } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse, IHttpRouter } from "@webiny/event-handler-core";
+import type { IHttpRequest } from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
 import { RawAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 import { extractAssumePermissions } from "@webiny/api-core/features/requestContext/index.js";
 
@@ -8,10 +9,10 @@ import { extractAssumePermissions } from "@webiny/api-core/features/requestConte
  * RawAssumePermissions. Nothing is checked here: AssumedPermissions checks the caller's real
  * permissions before it honours the header.
  */
-class HttpAssumePermissionsDecoratorImpl implements IHttpRouter {
+class HttpAssumePermissionsDecoratorImpl implements HttpRouter.Interface {
     constructor(
         private rawAssumePermissions: RawAssumePermissions.Interface,
-        private decoratee: IHttpRouter
+        private decoratee: HttpRouter.Interface
     ) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {

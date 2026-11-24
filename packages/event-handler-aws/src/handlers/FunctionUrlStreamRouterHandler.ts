@@ -1,15 +1,10 @@
 import { HttpRouter } from "@webiny/event-handler-core";
+import { internalServerErrorResponse } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
 import { FunctionUrlStreamEventHandler } from "~/abstractions/handlers/FunctionUrlStreamEventHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
 import { writeHttpResponseToStream } from "~/streaming/writeHttpResponseToStream.js";
-
-const INTERNAL_SERVER_ERROR: IHttpResponse = {
-    statusCode: 500,
-    headers: { "content-type": "application/json" },
-    body: { message: "Internal server error" }
-};
 
 /**
  * Terminal handler for the Lambda Function URL response-streaming transport. Routes through the same
@@ -35,7 +30,8 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
         } catch (e) {
             // The router turns its own errors into responses (`HttpErrorDecorator`), so this is rare.
             console.error("HTTP handler error:", e);
-            await writeHttpResponseToStream(raw, INTERNAL_SERVER_ERROR);
+            const errorResponse = internalServerErrorResponse();
+            await writeHttpResponseToStream(raw, errorResponse);
             return;
         }
 
