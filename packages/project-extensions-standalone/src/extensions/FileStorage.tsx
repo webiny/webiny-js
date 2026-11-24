@@ -14,7 +14,7 @@ import { DiskStorage } from "@webiny/api-object-storage-disk/project.js";
  * Nothing is baked into the build: a deployed container sets both itself, and the API refuses to
  * start without the secret or without a storage.
  *
- * Leave `path` out when another extension provides the storage, such as `<Infra.S3Storage />`: a
+ * Leave `path` out when another extension provides the storage, such as `<Infra.FileStorage.S3 />`: a
  * folder only works when every API process runs on one machine.
  *
  * A relative storage path is resolved against the project root (not the disposable app workspace), so

@@ -47,7 +47,7 @@ const OptionalEnvVar = ({ varName, value }: OptionalEnvVarProps) => {
 };
 
 /**
- * `<Infra.S3Storage />` in `webiny.config.tsx`, from `webiny/extensions`. Keeps a standalone
+ * `<Infra.FileStorage.S3 />` in `webiny.config.tsx`, from `webiny/extensions`. Keeps a standalone
  * project's objects (uploaded files and the like) in an S3-compatible bucket instead of a folder on
  * disk, so any number of API processes on any number of machines share them. Leave `path` off
  * `<Infra.FileStorage>` when this is added: with both, the API uses only one of them.

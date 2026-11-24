@@ -50,7 +50,7 @@ import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/in
 import { Vpc } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { FileStorage as StandaloneFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Postgres as StandalonePostgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
@@ -77,6 +77,12 @@ const Postgres = createHostingSwitch(
     { aws: AwsPostgres, standalone: StandalonePostgres },
     "standalone"
 );
+
+/*
+ * Standalone file storage: `<Infra.FileStorage path>` keeps files in a folder on disk, and
+ * `<Infra.FileStorage.S3 />` in an S3-compatible bucket.
+ */
+const FileStorage = Object.assign(StandaloneFileStorage, { S3: S3Storage });
 
 // Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
 const DynamoDb = {
@@ -133,7 +139,6 @@ export const Infra = {
     Sqlite,
     Pglite,
     FileStorage,
-    S3Storage,
     ApiUrl,
     AdminUrl,
 

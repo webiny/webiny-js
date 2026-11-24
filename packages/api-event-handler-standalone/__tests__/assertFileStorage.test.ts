@@ -25,7 +25,7 @@ describe("assertFileStorage", () => {
 
         expect(() => assertFileStorage(buildParams)).toThrowError(
             "No file storage is in the build. Set `path` on <Infra.FileStorage>, or add " +
-                "<Infra.S3Storage />."
+                "<Infra.FileStorage.S3 />."
         );
     });
 });

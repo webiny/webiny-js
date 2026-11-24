@@ -14,7 +14,7 @@ const getConfig = (): S3StorageConfig.Interface => {
 };
 
 /**
- * The API extension `<Infra.S3Storage />` adds to the project, registered in each request's
+ * The API extension `<Infra.FileStorage.S3 />` adds to the project, registered in each request's
  * container. Its own module, so the API bundle imports only the storage, not the project extension.
  */
 export const S3StorageExtension = createFeature({
