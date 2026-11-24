@@ -8,7 +8,7 @@ When a project needs something that only an `@webiny/*` package has, expose it t
 
 ```
 # Good (.env.example)
-# add <Infra.FileStorage.S3 bucket="..." /> to webiny.config.tsx
+# replace <Infra.FileStorage.Disk /> with <Infra.FileStorage.S3 bucket="..." /> in webiny.config.tsx
 ```
 
 ```
@@ -18,7 +18,7 @@ When a project needs something that only an `@webiny/*` package has, expose it t
 
 ```ts
 // Good (error message)
-"No file storage is in the build. Set `path` on <Infra.FileStorage>, or add <Infra.FileStorage.S3 />.";
+"No file storage is in the build. Add <Infra.FileStorage.Disk /> or <Infra.FileStorage.S3 />.";
 ```
 
 ```ts

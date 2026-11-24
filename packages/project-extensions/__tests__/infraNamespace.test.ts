@@ -2,8 +2,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Infra } from "~/namespaces/infra.js";
-import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { S3Storage } from "@webiny/api-object-storage-s3/project.js";
+import { DiskFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { S3FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 /*
  * `webiny/extensions` exports this `Infra`. The top-level names must keep resolving to the same
@@ -20,9 +20,9 @@ describe("Infra namespace", () => {
         expect(Infra.Crypto.Encryption).toBe(Infra.Encryption);
     });
 
-    it("exposes the S3 file storage as Infra.FileStorage.S3, next to the disk one", () => {
-        expect(Infra.FileStorage).toBe(FileStorage);
-        expect(Infra.FileStorage.S3).toBe(S3Storage);
+    it("exposes one file storage tag per storage under Infra.FileStorage", () => {
+        expect(Infra.FileStorage.Disk).toBe(DiskFileStorage);
+        expect(Infra.FileStorage.S3).toBe(S3FileStorage);
         expect("S3Storage" in Infra).toBe(false);
     });
 });

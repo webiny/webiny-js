@@ -13,7 +13,7 @@ const paramsSchema = z.object({
 
 /**
  * Keeps a standalone project's objects (uploaded files and the like) in a folder on disk. Projects
- * don't add it themselves: `<Infra.FileStorage path="..." />` renders it.
+ * don't add it themselves: `<Infra.FileStorage.Disk path="..." />` renders it.
  *
  * The folder becomes the `WEBINY_LOCAL_STORAGE_PATH` env var for `webiny watch` and `webiny serve`.
  * Nothing is baked into the build: a deployed container sets it itself, and the API reads it when it

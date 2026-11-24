@@ -22,7 +22,7 @@ function readSecret(env: Env, name: string): string {
  * variable, so a misconfigured container fails at boot instead of on the first upload or login.
  *
  * Nothing falls back to a default: `webiny watch` and `webiny serve` get their values from
- * `<Infra.ApiUrl>`, `<Infra.AdminUrl>`, `<Infra.FileStorage>` and `<Infra.Crypto.*>` in
+ * `<Infra.ApiUrl>`, `<Infra.AdminUrl>`, `<Infra.FileStorage.*>` and `<Infra.Crypto.*>` in
  * webiny.config, and a deployed container must set them explicitly.
  */
 export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {

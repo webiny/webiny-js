@@ -136,7 +136,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                  * asset-delivery Lambda), the server takes uploads and serves files in-process.
                  * FileManagerStandaloneFeature registers asset delivery (overriding the domain's
                  * null impls) and the upload/multipart HTTP routes; they store through
-                 * `ObjectStorage`, which a project extension registers (`<Infra.FileStorage path>`
+                 * `ObjectStorage`, which a project extension registers (`<Infra.FileStorage.Disk />`
                  * a folder on disk, `<Infra.FileStorage.S3 />` an S3-compatible bucket).
                  * `assertFileStorage` has made sure the build has one.
                  */

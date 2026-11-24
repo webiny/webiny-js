@@ -13732,6 +13732,7 @@ __metadata:
   resolution: "@webiny/project-extensions-standalone@workspace:packages/project-extensions-standalone"
   dependencies:
     "@webiny/api-object-storage-disk": "npm:0.0.0"
+    "@webiny/api-object-storage-s3": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     react: "npm:19.3.1"
@@ -13746,7 +13747,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-extensions@workspace:packages/project-extensions"
   dependencies:
-    "@webiny/api-object-storage-s3": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-extensions-aws": "npm:0.0.0"

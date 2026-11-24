@@ -113,7 +113,7 @@ export const createPgServer = async (options: CreatePgServerOptions = {}) => {
      */
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
 
-    // What `<Infra.ApiUrl>` and `<Infra.FileStorage>` put in the env of `webiny watch`.
+    // What `<Infra.ApiUrl>` and `<Infra.FileStorage.Disk>` put in the env of `webiny watch`.
     vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
     vi.stubEnv(
         "WEBINY_LOCAL_STORAGE_PATH",

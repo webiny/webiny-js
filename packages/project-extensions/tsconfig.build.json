@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api-object-storage-s3/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../project-extensions-aws/tsconfig.build.json" },
     { "path": "../project-extensions-standalone/tsconfig.build.json" }
@@ -14,8 +13,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-object-storage-s3/*": ["../api-object-storage-s3/src/*"],
-      "@webiny/api-object-storage-s3": ["../api-object-storage-s3/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],

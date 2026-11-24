@@ -50,11 +50,11 @@ import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/in
 import { Vpc } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { FileStorage as StandaloneFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { DiskFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Postgres as StandalonePostgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { S3Storage } from "@webiny/api-object-storage-s3/project.js";
+import { S3FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 export { useEnv };
 
@@ -79,10 +79,14 @@ const Postgres = createHostingSwitch(
 );
 
 /*
- * Standalone file storage: `<Infra.FileStorage path>` keeps files in a folder on disk, and
- * `<Infra.FileStorage.S3 />` in an S3-compatible bucket.
+ * Standalone file storage, one tag per storage, each with every setting it needs:
+ * `<Infra.FileStorage.Disk />` keeps files in a folder on disk, `<Infra.FileStorage.S3 />` in an
+ * S3-compatible bucket.
  */
-const FileStorage = Object.assign(StandaloneFileStorage, { S3: S3Storage });
+const FileStorage = {
+    Disk: DiskFileStorage,
+    S3: S3FileStorage
+};
 
 // Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
 const DynamoDb = {

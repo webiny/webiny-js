@@ -14,7 +14,7 @@ const getConfig = (): DiskStorageConfig.Interface => {
 };
 
 /**
- * The API extension `<DiskStorage />` adds to the project (`<Infra.FileStorage path="..." />`
+ * The API extension `<DiskStorage />` adds to the project (`<Infra.FileStorage.Disk path="..." />`
  * renders it). Its own module, so the API bundle imports only the storage, not the project
  * extension.
  */

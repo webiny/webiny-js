@@ -7,7 +7,7 @@ import { defineExtension } from "@webiny/project/extensions/index.js";
 import { OBJECT_STORAGE_BUILD_PARAM } from "@webiny/api-object-storage";
 import { S3_OBJECT_STORAGE } from "./abstractions.js";
 
-const paramsSchema = z.object({
+export const s3StorageParamsSchema = z.object({
     bucket: z.string().describe("Name of the bucket uploaded files are stored in."),
     region: z
         .string()
@@ -47,10 +47,9 @@ const OptionalEnvVar = ({ varName, value }: OptionalEnvVarProps) => {
 };
 
 /**
- * `<Infra.FileStorage.S3 />` in `webiny.config.tsx`, from `webiny/extensions`. Keeps a standalone
- * project's objects (uploaded files and the like) in an S3-compatible bucket instead of a folder on
- * disk, so any number of API processes on any number of machines share them. Leave `path` off
- * `<Infra.FileStorage>` when this is added: with both, the API uses only one of them.
+ * Keeps a standalone project's objects (uploaded files and the like) in an S3-compatible bucket
+ * instead of a folder on disk, so any number of API processes on any number of machines share them.
+ * Projects don't add it themselves: `<Infra.FileStorage.S3 bucket="..." />` renders it.
  *
  * The settings become `WEBINY_S3_*` env vars for `webiny watch` and `webiny serve`. Nothing is baked
  * into the build: a deployed container sets them itself, and the API reads them when it starts.
@@ -60,7 +59,7 @@ export const S3Storage = defineExtension({
     tags: { runtimeContext: "project", hosting: "standalone" },
     description:
         "Keep uploaded files and other objects in an S3-compatible bucket instead of a folder on disk.",
-    paramsSchema,
+    paramsSchema: s3StorageParamsSchema,
     render(params) {
         let forcePathStyle: string | undefined;
         if (params.forcePathStyle !== undefined) {
