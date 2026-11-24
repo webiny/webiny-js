@@ -5,8 +5,10 @@ import {
     RequestIdentityLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
+import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { extractAuthToken } from "~/auth/extractAuthToken.js";
+import { rejectedTokenResponse } from "~/auth/rejectedTokenResponse.js";
 import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
 
 /**
@@ -21,8 +23,11 @@ import { headersFromIncomingMessage } from "./headersFromIncomingMessage.js";
  * that header instead. Standalone has no such constraint, but it accepts the same header so one
  * client works against both deployments.
  *
- * Node mirror of ApiGatewayIdentityLoaderDecorator. Registered BEFORE the tenant loader so identity
- * is established before tenant.
+ * A token an identity provider rejects ends the request with a 401. Any other error propagates.
+ *
+ * Node counterpart of ApiGatewayIdentityLoaderDecorator. Registered before the tenant loader, which
+ * makes it the inner wrapper: the tenant is loaded first, because API-key authentication looks the key up
+ * in the tenant's partition.
  */
 class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interface {
     constructor(
@@ -35,7 +40,14 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
         const headers = headersFromIncomingMessage(ctx.event);
         const authToken = extractAuthToken(headers);
         this.rawAuthToken.set(authToken);
-        await this.identityLoader.establish();
+        try {
+            await this.identityLoader.establish();
+        } catch (error) {
+            if (error instanceof AuthenticationError) {
+                return rejectedTokenResponse(error, headers);
+            }
+            throw error;
+        }
         return this.decoratee.execute(ctx, next);
     }
 }
