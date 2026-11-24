@@ -121,6 +121,80 @@ Register it in `webiny.config.tsx` with
 `<Api.Extension src={"/extensions/mailer/myProvider/api/MyMailTransportFactory.ts"} />`. The
 Resend, SendGrid and SES extensions are complete examples.
 
+### Settings edited in the Admin app
+
+To keep a transport's settings in Settings > Mailer instead of environment variables, register a
+`TransportSettingsDefinition` next to the factory. The core mailer then stores them, encrypts the
+secrets, checks the `mailer.settings` permission, publishes the save events and records the audit
+log. The transport doesn't implement any of that.
+
+```ts
+// extensions/mailer/myProvider/api/MyMailer.ts
+import { createFeature } from "webiny/api";
+import {
+  GetSettingsRepository,
+  MailTransportFactory,
+  TransportSettingsDefinition
+} from "webiny/api/mailer";
+import { z } from "zod";
+
+interface MySettings extends TransportSettingsDefinition.Values {
+  apiKey: string;
+  from: string;
+}
+
+class MySettingsDefinition implements TransportSettingsDefinition.Interface {
+  public readonly transport = "Mailer/MyTransport"; // the factory's `name`
+  public readonly schema = z.object({ apiKey: z.string().optional(), from: z.string() });
+  public readonly secrets = ["apiKey"]; // encrypted, never returned, kept when a save leaves it out
+}
+
+class MyMailTransportFactory implements MailTransportFactory.Interface {
+  public readonly name = "Mailer/MyTransport";
+
+  constructor(private settings: GetSettingsRepository.Interface) {}
+
+  async createTransport(): MailTransportFactory.Return {
+    const result = await this.settings.get<MySettings>(this.name);
+    const settings = result.isOk() ? result.value.settings : null;
+    if (!settings?.apiKey) {
+      return null;
+    }
+    return new MyMailTransport(settings.apiKey, settings.from);
+  }
+}
+
+export default createFeature({
+  name: "MyMailer",
+  register(container) {
+    container.register(
+      TransportSettingsDefinition.createImplementation({
+        implementation: MySettingsDefinition,
+        dependencies: []
+      })
+    );
+    container.register(
+      MailTransportFactory.createImplementation({
+        implementation: MyMailTransportFactory,
+        dependencies: [GetSettingsRepository]
+      })
+    );
+  }
+});
+```
+
+The settings are read and saved through `mailer.getTransportSettings` and
+`mailer.saveTransportSettings` in the GraphQL API, with the settings as JSON. In the Admin app,
+`TransportSettingsGateway` from `@webiny/app-mailer` calls them, so the form only decorates
+`MailerTransportSettings`. Optional fields on the definition:
+
+| Field             | Purpose                                                                    |
+| ----------------- | -------------------------------------------------------------------------- |
+| `secretsBoundTo`  | Fields whose change requires the secrets again, e.g. the host for SMTP     |
+| `withDefaults()`  | Fills in defaults on read                                                  |
+| `getCodeSettings` | Settings set in code; they win over stored ones and lock the settings form |
+| `storageKey`      | Key-value store key; defaults to `Mailer/Settings/Transport/<transport>`   |
+
 ## Checking the setup
 
 Deploy the API, then open Settings > Mailer in the Admin app and send a test email. A wrong key, an

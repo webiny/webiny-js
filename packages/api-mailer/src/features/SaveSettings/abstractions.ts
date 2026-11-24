@@ -1,43 +1,36 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { TransportSettings } from "~/api/types.js";
-import {
+import type { TransportSettingsDefinition } from "~/domain/TransportSettings/abstractions.js";
+import type {
     SettingsValidationError,
     SettingsPersistenceError,
     SettingsNotAuthorized,
-    SettingsLockedByCode
-} from "~/api/domain/errors.js";
-
-export interface SaveSettingsInput {
-    host: string;
-    port?: number;
-    secure?: boolean;
-    user: string;
-    password?: string;
-    from: string;
-    replyTo?: string;
-}
+    SettingsLockedByCode,
+    UnknownTransportSettings
+} from "~/domain/errors.js";
 
 export interface ISaveSettingsErrors {
     validation: SettingsValidationError;
     persistence: SettingsPersistenceError;
     notAuthorized: SettingsNotAuthorized;
     lockedByCode: SettingsLockedByCode;
+    unknownTransport: UnknownTransportSettings;
 }
 
 type SaveSettingsError = ISaveSettingsErrors[keyof ISaveSettingsErrors];
 
 /**
- * Save-side returns are password-free. The only path that exposes the password
- * to in-process callers is GetSettingsRepository.get / GetSettingsUseCase.execute
- * (used by MailerService to authenticate SMTP). Everything else — events,
- * GraphQL responses, logs, audit trails — must use this Omit shape.
+ * Everything the save path returns or publishes leaves the transport's secrets out. Only
+ * `GetSettingsRepository.get` returns them, for the transport itself.
  */
-export type SavedTransportSettings = Omit<TransportSettings, "password">;
+export type SavedTransportSettings = TransportSettingsDefinition.Values;
 
 export interface ISaveSettingsRepository {
-    execute(input: SaveSettingsInput): Promise<Result<SavedTransportSettings, SaveSettingsError>>;
+    execute(
+        definition: TransportSettingsDefinition.Interface,
+        input: TransportSettingsDefinition.Values
+    ): Promise<Result<SavedTransportSettings, SaveSettingsError>>;
 }
 
 export const SaveSettingsRepository =
@@ -50,7 +43,10 @@ export namespace SaveSettingsRepository {
 }
 
 export interface ISaveSettings {
-    execute(input: SaveSettingsInput): Promise<Result<SavedTransportSettings, SaveSettingsError>>;
+    execute(
+        transport: string,
+        input: TransportSettingsDefinition.Values
+    ): Promise<Result<SavedTransportSettings, SaveSettingsError>>;
 }
 
 export const SaveSettingsUseCase = createAbstraction<ISaveSettings>("SaveSettingsUseCase");
@@ -61,17 +57,18 @@ export namespace SaveSettingsUseCase {
     export type Error = SaveSettingsError;
 }
 
-// Domain Events. Both payloads exclude `password` so subscribers (audit logs,
-// telemetry, etc.) cannot accidentally persist plaintext or ciphertext secrets.
+// Domain events. Both payloads leave the transport's secrets out, so subscribers (audit logs,
+// telemetry) can't persist them.
 export interface MailerSettingsBeforeSavePayload {
-    input: Omit<SaveSettingsInput, "password">;
+    transport: string;
+    input: TransportSettingsDefinition.Values;
 }
 
 export interface MailerSettingsAfterSavePayload {
-    settings: Omit<TransportSettings, "password">;
+    transport: string;
+    settings: SavedTransportSettings;
 }
 
-// Event Handler Abstractions
 export const MailerSettingsBeforeSaveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<MailerSettingsBeforeSavePayload>>
 >("MailerSettingsBeforeSaveEventHandler");

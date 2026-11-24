@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
 import { createGraphQLHandler } from "./graphQLHandler";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/abstractions.js";
-import { SaveSettingsUseCase } from "~/api/features/SaveSettings/abstractions.js";
+import { GetSettingsUseCase } from "@webiny/api-mailer";
+import { SaveSettingsUseCase } from "@webiny/api-mailer";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/abstractions.js";
 import { registerCodeSmtpSettings } from "./helpers/registerCodeSmtpSettings";
 import type { TransportSendData } from "@webiny/api-mailer/types.js";
@@ -48,9 +48,11 @@ describe("Mailer settings — code source end-to-end", () => {
         const getSettings = context.container.resolve(GetSettingsUseCase);
         const result = await getSettings.execute("Mailer/SmtpTransport");
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _password, ...withoutPassword } = codeSettings;
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual({
-            settings: codeSettings,
+            settings: { ...withoutPassword, secure: false },
             source: "code"
         });
     });
@@ -62,7 +64,7 @@ describe("Mailer settings — code source end-to-end", () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
-        const result = await saveSettings.execute({
+        const result = await saveSettings.execute("Mailer/SmtpTransport", {
             host: "ignored.webiny",
             user: "ignored",
             password: "ignored",

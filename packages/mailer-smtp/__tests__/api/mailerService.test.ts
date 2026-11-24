@@ -9,7 +9,7 @@ import { MailTransport } from "@webiny/api-mailer/domain/MailTransport/abstracti
 import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
 import { MailerServiceFeature } from "@webiny/api-mailer/features/MailerService/feature.js";
 import { SmtpTransportFeature } from "~/api/features/SmtpTransport/feature.js";
-import { GetSettingsRepository } from "~/api/features/GetSettings/abstractions.js";
+import { GetSettingsRepository } from "@webiny/api-mailer";
 import { NoTransportAvailableError } from "@webiny/api-mailer/domain/MailerService/errors.js";
 import type { TransportSettings } from "~/api/types.js";
 
@@ -54,7 +54,9 @@ const setup = ({ smtpSettings, project }: SetupParams) => {
     const container = new Container();
     const get = vi.fn(async () => Result.ok({ settings: smtpSettings, source: null }));
 
-    container.registerInstance(GetSettingsRepository, { get });
+    container.registerInstance(GetSettingsRepository, {
+        get
+    } as unknown as GetSettingsRepository.Interface);
     SmtpTransportFeature.register(container);
     if (project) {
         container.register(project).inSingletonScope();

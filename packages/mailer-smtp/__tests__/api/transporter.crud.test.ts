@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/abstractions.js";
-import { SaveSettingsUseCase } from "~/api/features/SaveSettings/abstractions.js";
+import { SaveSettingsUseCase } from "@webiny/api-mailer";
 import { TransportSendData } from "@webiny/api-mailer/types.js";
 
 vi.mock("nodemailer", () => {
@@ -38,7 +38,7 @@ const persistTransportSettings = async (
     context: Awaited<ReturnType<ReturnType<typeof createContextHandler>["handle"]>>
 ) => {
     const saveSettings = context.container.resolve(SaveSettingsUseCase);
-    const result = await saveSettings.execute({
+    const result = await saveSettings.execute("Mailer/SmtpTransport", {
         host: "dummy-host.webiny",
         user: "user",
         password: "password",

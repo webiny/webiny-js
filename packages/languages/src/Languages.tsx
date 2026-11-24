@@ -1,6 +1,6 @@
 import React from "react";
-import { ApiExtension } from "@webiny/project/extensions/index.js";
-import { AdminExtension } from "@webiny/project/extensions/index.js";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
 
 /*
  * Not wrapped in a `FeatureFlag` component: those read the license when the project is built, so a
@@ -12,10 +12,10 @@ export const Languages = () => {
     return (
         <>
             {/* Api extensions */}
-            <ApiExtension src={import.meta.dirname + "/api/Extension.js"} />
+            <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
 
             {/* Admin extensions */}
-            <AdminExtension src={import.meta.dirname + "/admin/Extension.js"} />
+            <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
         </>
     );
 };

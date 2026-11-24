@@ -9,13 +9,14 @@ export {
     MailTransport,
     MailTransportFactory
 } from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
+export { TransportSettingsDefinition } from "@webiny/api-mailer/domain/TransportSettings/abstractions.js";
 export {
     GetSettingsUseCase,
     GetSettingsRepository
-} from "@webiny/mailer-smtp/api/features/GetSettings/index.js";
+} from "@webiny/api-mailer/features/GetSettings/index.js";
 export {
     SaveSettingsUseCase,
     SaveSettingsRepository,
     MailerSettingsAfterSaveEventHandler,
     MailerSettingsBeforeSaveEventHandler
-} from "@webiny/mailer-smtp/api/features/SaveSettings/index.js";
+} from "@webiny/api-mailer/features/SaveSettings/index.js";

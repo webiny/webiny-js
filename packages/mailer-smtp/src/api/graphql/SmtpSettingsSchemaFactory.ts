@@ -2,28 +2,26 @@ import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.j
 import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse } from "@webiny/api-graphql/responses.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/abstractions.js";
-import { SaveSettingsUseCase } from "~/api/features/SaveSettings/abstractions.js";
-import type { MailerSettingsSource } from "~/api/features/GetSettings/abstractions.js";
-import type { SaveSettingsInput } from "~/api/features/SaveSettings/abstractions.js";
+import { GetSettingsUseCase, SaveSettingsUseCase } from "@webiny/api-mailer";
+import type { MailerSettingsSource } from "@webiny/api-mailer";
 import type { TransportSettings } from "~/api/types.js";
 import { SMTP_TRANSPORT_NAME } from "~/api/constants.js";
 
+type SaveSettingsInput = Partial<TransportSettings>;
+
 /*
- * Strip `password` before the settings leave the server and add `source`, so the admin UI can
- * branch on code vs storage. Accepts both the full `TransportSettings` (from getSettings) and the
- * already-stripped `Omit<TransportSettings, "password">` (from saveSettings), as a second check
- * even when the input carries no password.
+ * Add `source`, so the admin UI can branch on code vs storage. The core mailer already leaves the
+ * password out; it is stripped again here in case a definition is replaced.
  */
 const toPublicSettings = (
-    settings: TransportSettings | Omit<TransportSettings, "password"> | null,
+    settings: Record<string, unknown> | null,
     source: MailerSettingsSource
-): (Omit<TransportSettings, "password"> & { source: MailerSettingsSource }) | null => {
+): Record<string, unknown> | null => {
     if (!settings) {
         return null;
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _password, ...publicSettings } = settings as TransportSettings;
+    const { password: _password, ...publicSettings } = settings;
     return { ...publicSettings, source };
 };
 
@@ -33,7 +31,8 @@ class SmtpSettingsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaBuilder.Interface
     ): Promise<GraphQLSchemaBuilder.Interface> {
-        // `MailerMutation` and `MailerTransportSettingsError` come from the core mailer schema.
+        // `MailerQuery`, `MailerMutation` and `MailerTransportSettingsError` come from the core
+        // mailer schema. These typed fields are SMTP's; other transports use the JSON ones.
         builder.addTypeDefs(`
             type MailerTransportSettings {
                 host: String
@@ -50,7 +49,7 @@ class SmtpSettingsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 error: MailerTransportSettingsError
             }
 
-            type MailerQuery {
+            extend type MailerQuery {
                 getSettings: MailerTransportSettingsResponse!
             }
 
@@ -67,16 +66,7 @@ class SmtpSettingsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             extend type MailerMutation {
                 saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
             }
-
-            extend type Query {
-                mailer: MailerQuery
-            }
         `);
-
-        builder.addResolver({
-            path: "Query.mailer",
-            resolver: () => async () => ({})
-        });
 
         builder.addResolver({
             path: "MailerQuery.getSettings",
@@ -108,7 +98,7 @@ class SmtpSettingsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 (saveSettings: SaveSettingsUseCase.Interface) =>
                 async ({ args }) => {
                     try {
-                        const result = await saveSettings.execute(args.data);
+                        const result = await saveSettings.execute(SMTP_TRANSPORT_NAME, args.data);
 
                         if (result.isFail()) {
                             return new ErrorResponse(result.error);

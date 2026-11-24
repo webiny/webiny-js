@@ -1,12 +1,12 @@
 import React from "react";
-import { ApiExtension } from "@webiny/project/extensions/index.js";
-import { AdminExtension } from "@webiny/project/extensions/index.js";
+import { Api } from "@webiny/project-extensions";
+import { Admin } from "@webiny/project-extensions";
 
 export const FrontendSettings = () => {
     return (
         <>
-            <ApiExtension src={import.meta.dirname + "/api/Extension.js"} />
-            <AdminExtension src={import.meta.dirname + "/admin/Extension.js"} />
+            <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
+            <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
         </>
     );
 };

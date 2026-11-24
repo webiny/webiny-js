@@ -2,6 +2,7 @@ import React from "react";
 import { AdminConfig, AdminLayout, RegisterFeature, useRouter } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { SendTestMailFeature } from "~/features/sendTestMail/feature.js";
+import { TransportSettingsFeature } from "~/features/transportSettings/feature.js";
 import { TestMailPresenterFeature } from "~/presentation/testMail/feature.js";
 import { SettingsView } from "~/presentation/settings/SettingsView.js";
 import { Routes } from "~/routes.js";
@@ -14,6 +15,7 @@ export const Extension = () => {
     return (
         <>
             <RegisterFeature feature={SendTestMailFeature} />
+            <RegisterFeature feature={TransportSettingsFeature} />
             <RegisterFeature feature={TestMailPresenterFeature} />
             <AdminConfig>
                 <HasPermission name={"mailer.settings"}>

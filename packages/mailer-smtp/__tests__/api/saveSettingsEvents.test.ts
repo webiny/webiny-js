@@ -7,7 +7,7 @@ import {
     MailerSettingsAfterSaveEventHandler,
     type MailerSettingsBeforeSavePayload,
     type MailerSettingsAfterSavePayload
-} from "~/api/features/SaveSettings/abstractions.js";
+} from "@webiny/api-mailer";
 
 /**
  * Invariant: no mailer save event may carry the password to its subscribers.
@@ -65,7 +65,7 @@ describe("Save settings events — password stripping invariant", () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
-        const result = await saveSettings.execute(input);
+        const result = await saveSettings.execute("Mailer/SmtpTransport", input);
 
         expect(result.isOk()).toBe(true);
         expect(capturedBefore).toHaveLength(1);
@@ -83,7 +83,7 @@ describe("Save settings events — password stripping invariant", () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
-        const result = await saveSettings.execute(input);
+        const result = await saveSettings.execute("Mailer/SmtpTransport", input);
 
         expect(result.isOk()).toBe(true);
         expect(capturedAfter).toHaveLength(1);

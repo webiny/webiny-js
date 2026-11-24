@@ -83,7 +83,7 @@ describe("Mailer sendTestMail GraphQL, without a transport package", () => {
         expect(send).not.toHaveBeenCalled();
     });
 
-    it("has no settings fields, which come with a transport package", async () => {
+    it("has only the transport-agnostic settings fields; typed ones come with a transport package", async () => {
         const handler = createGraphQLHandler();
 
         const [response] = await handler.introspect();
@@ -93,8 +93,7 @@ describe("Mailer sendTestMail GraphQL, without a transport package", () => {
         const fieldsOf = (name: string) => {
             return types.find(type => type.name === name)?.fields?.map(field => field.name);
         };
-        expect(fieldsOf("MailerMutation")).toEqual(["sendTestMail"]);
-        expect(fieldsOf("Query")).not.toContain("mailer");
-        expect(fieldsOf("MailerQuery")).toBeUndefined();
+        expect(fieldsOf("MailerMutation")).toEqual(["sendTestMail", "saveTransportSettings"]);
+        expect(fieldsOf("MailerQuery")).toEqual(["getTransportSettings"]);
     });
 });

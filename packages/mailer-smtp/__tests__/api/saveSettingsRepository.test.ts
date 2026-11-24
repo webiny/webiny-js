@@ -8,8 +8,12 @@ import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { KeyNotFoundError } from "@webiny/api-core/features/keyValueStore/index.js";
 import { KeyValueStorageError } from "@webiny/api-core/features/keyValueStore/index.js";
-import { SaveSettingsRepository } from "~/api/features/SaveSettings/abstractions.js";
-import { SaveSettingsRepositoryImplementation } from "~/api/features/SaveSettings/SaveSettingsRepository.js";
+import { SaveSettingsRepository } from "@webiny/api-mailer";
+import { SaveSettingsRepositoryImplementation } from "@webiny/api-mailer/features/SaveSettings/SaveSettingsRepository.js";
+import { SmtpSettingsDefinition } from "~/api/features/SmtpSettings/SmtpSettingsDefinition.js";
+
+// SMTP settings without settings set in code.
+const definition = new SmtpSettingsDefinition({ get: () => null } as any);
 
 const INPUT = {
     host: "smtp.example.com",
@@ -40,7 +44,7 @@ describe("SaveSettingsRepository", () => {
             Result.fail(new KeyNotFoundError("mailer-transport-settings"))
         );
 
-        const result = await repository.execute({ ...INPUT, password: "secret" });
+        const result = await repository.execute(definition, { ...INPUT, password: "secret" });
 
         expect(result.isOk()).toBe(true);
         expect(set).toHaveBeenCalledTimes(1);
@@ -52,7 +56,7 @@ describe("SaveSettingsRepository", () => {
         );
 
         // No password: the user means "keep the stored one".
-        const result = await repository.execute(INPUT);
+        const result = await repository.execute(definition, INPUT);
 
         expect(result.isFail()).toBe(true);
         expect(set).not.toHaveBeenCalled();

@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { Result } from "@webiny/feature/api";
-import { SaveSettingsRepositoryImplementation } from "~/api/features/SaveSettings/SaveSettingsRepository.js";
+import { SaveSettingsRepositoryImplementation } from "@webiny/api-mailer/features/SaveSettings/SaveSettingsRepository.js";
+import { SmtpSettingsDefinition } from "~/api/features/SmtpSettings/SmtpSettingsDefinition.js";
 import { MAILER_TRANSPORT_SETTINGS } from "~/api/constants.js";
+
+// SMTP settings without settings set in code.
+const definition = new SmtpSettingsDefinition({ get: () => null } as any);
 
 /**
  * Pure unit test (no DynamoDB): an omitted password may only re-use the stored one while the
@@ -45,7 +49,10 @@ describe("save mailer settings without password", () => {
     it("should keep the stored password when the connection settings are unchanged", async () => {
         const { repository, getStored } = setup();
 
-        const result = await repository.execute({ ...base, from: "new-from@webiny.com" });
+        const result = await repository.execute(definition, {
+            ...base,
+            from: "new-from@webiny.com"
+        });
 
         expect(result.isOk()).toBe(true);
         expect(getStored().password).toBe("enc:stored-password");
@@ -60,7 +67,7 @@ describe("save mailer settings without password", () => {
     ])("should require the password when %s changes", async (_, change) => {
         const { repository, getStored } = setup();
 
-        const result = await repository.execute({ ...base, ...change });
+        const result = await repository.execute(definition, { ...base, ...change });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Mailer/Settings/Validation");
@@ -70,7 +77,7 @@ describe("save mailer settings without password", () => {
     it("should save changed connection settings when the password is provided", async () => {
         const { repository, getStored } = setup();
 
-        const result = await repository.execute({
+        const result = await repository.execute(definition, {
             ...base,
             host: "smtp2.webiny",
             password: "new-password"

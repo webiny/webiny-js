@@ -1,7 +1,7 @@
-import { MailTransportFactory } from "@webiny/api-mailer";
-import { GetSettingsRepository } from "~/api/features/GetSettings/abstractions.js";
+import { GetSettingsRepository, MailTransportFactory } from "@webiny/api-mailer";
 import { SmtpMailTransport } from "~/api/features/SmtpTransport/SmtpMailTransport.js";
 import { SmtpConfig } from "~/api/features/SmtpTransport/SmtpConfig.js";
+import type { TransportSettings } from "~/api/types.js";
 import { SMTP_TRANSPORT_NAME } from "~/api/constants.js";
 
 class SmtpMailTransportFactoryImpl implements MailTransportFactory.Interface {
@@ -9,13 +9,13 @@ class SmtpMailTransportFactoryImpl implements MailTransportFactory.Interface {
 
     constructor(private getSettingsRepository: GetSettingsRepository.Interface) {}
 
-    // The settings come from code when `<MailerSmtp>` props set them, otherwise from the settings form.
+    // The settings come from `<Api.Mailer.Smtp>` props in code, otherwise from the settings screen.
     async createTransport(): MailTransportFactory.Return {
-        const result = await this.getSettingsRepository.get(this.name);
-        const { settings } = result.value;
-        if (!settings) {
+        const result = await this.getSettingsRepository.get<TransportSettings>(this.name);
+        if (result.isFail() || !result.value.settings) {
             return null;
         }
+        const { settings } = result.value;
 
         return new SmtpMailTransport(
             SmtpConfig.fromTransportSettings(settings),

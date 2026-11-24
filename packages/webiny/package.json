@@ -44,7 +44,6 @@
     "@webiny/frontend-settings": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
-    "@webiny/mailer-smtp": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-extensions": "0.0.0",
     "@webiny/project-extensions-aws": "0.0.0",
@@ -168,7 +167,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "685f01fca1411638263078763f887d8d242ecf2f037f15979db91863641abb75",
+  "exportGenerationHash": "a755cae68f3b3a8280b16b8849a146b7be4744dcaf86aea51bc8706aee0141d7",
   "webiny": {
     "publishFrom": "dist"
   }

@@ -12,6 +12,7 @@
     { "path": "../app-headless-cms" },
     { "path": "../feature" },
     { "path": "../project" },
+    { "path": "../project-extensions" },
     { "path": "../api-headless-cms-testing" }
   ],
   "compilerOptions": {
@@ -41,6 +42,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
+      "@webiny/project-extensions/*": ["../project-extensions/src/*"],
+      "@webiny/project-extensions": ["../project-extensions/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"]
     }
