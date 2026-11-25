@@ -38,15 +38,13 @@ const ListViewBase = ({
     const mainContent = (
         <div className={"h-full relative overflow-hidden"}>
             {header}
-            {/* The scroll area only gets the height the bars above and below leave free. When it
-                took the full height, the bottom bar covered the last rows of the list. */}
             <div
                 style={{ top: "105px" }}
-                className={"w-full overflow-hidden absolute top-0 bottom-0 left-0 flex flex-col"}
+                className={"w-full overflow-hidden absolute top-0 bottom-0 left-0"}
             >
                 {bulkActions}
                 {filters}
-                <div className={"flex-1 min-h-0"}>{content}</div>
+                {content}
                 {bottomBar}
             </div>
         </div>
