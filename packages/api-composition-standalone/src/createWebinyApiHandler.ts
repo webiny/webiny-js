@@ -57,7 +57,7 @@ import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { createLogger, readBuildParams } from "@webiny/api-composition-core";
+import { createLogger, registerRootBuildParams } from "@webiny/api-composition-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
@@ -148,8 +148,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
              * Secrets come from env only. A build that bakes one (the shared <Infra.Crypto.*> from
              * @webiny/project) is refused here, before the server accepts a request.
              */
-            const extensions = config.extensions();
-            const buildParams = await readBuildParams(extensions);
+            // Build params come from the deploy, the same for every request and tenant: they live in
+            // the root, and every request container and tenant scope reads them from here.
+            const buildParams = await registerRootBuildParams(rootContainer, config.extensions());
             assertNoBakedSecrets(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);

@@ -21,8 +21,13 @@ import {
     TenantScopeRegistration,
     TenantScopes,
     TenantScopesRootFeature,
+    TenantScopeUsage,
     UnknownTenantStorageError
 } from "~/features/tenancy/TenantScopes/index.js";
+import { TENANT_SCOPES_IN_USE_WARNING } from "~/features/tenancy/TenantScopes/TenantScopeUsage.js";
+import { getTenantScopeCacheSize } from "~/features/tenancy/TenantScopes/tenantScopeCacheSize.js";
+import { BuildParam } from "~/features/buildParams/abstractions.js";
+import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import { AuthenticatedIdentity } from "~/features/security/IdentityContext/index.js";
 import { PermissionsProcessor } from "~/features/security/authorization/GroupsTeamsAuthorizer/abstractions.js";
@@ -99,13 +104,22 @@ type Probe = (ctx: ProbeContext) => Promise<unknown>;
  * request runs in the scope of its `x-tenant` header's tenant. The probe runs in place of the
  * router, with services resolved for the handler chain, and its result is the response.
  */
-const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}) => {
+const createProbeHandler = (
+    options: {
+        scope?: (scope: Container) => void;
+        logger?: Logger.Interface;
+        tenants?: Tenant[];
+        /** The `TenantScopeCacheSize` build param. */
+        cacheSize?: string | number;
+    } = {}
+) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const tenancy = new InMemoryTenancyStorageOperations([
         createTenant("root"),
         createTenant("acme"),
         createTenant("globex"),
-        createTenant("closed", { status: "disabled" })
+        createTenant("closed", { status: "disabled" }),
+        ...(options.tenants ?? [])
     ]);
 
     const requestContainers: Container[] = [];
@@ -139,6 +153,14 @@ const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}
             // Registered first: the inner one, so the identity is loaded before the probe runs.
             container.registerDecorator(ProbeHandler);
             container.registerDecorator(AuthTriggerHandler);
+            // Build params come from the deploy, so the root holds them, as in the API.
+            BuildParamsFeature.register(container);
+            if (options.cacheSize !== undefined) {
+                container.registerInstance(BuildParam, {
+                    key: "TenantScopeCacheSize",
+                    value: options.cacheSize
+                });
+            }
             TenantScopesRootFeature.register(container);
             container.register(TestHttpTenantSource);
         },
@@ -148,7 +170,7 @@ const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}
                 ...apiCoreStorage.storageOperations(params),
                 tenancyStorageOperations: tenancy
             }));
-            container.registerInstance(Logger, new NullLogger());
+            container.registerInstance(Logger, options.logger ?? new NullLogger());
             TenantNeutralRequestFeature.register(container);
             container.registerInstance(TenantScopeRegistration, {
                 register: async scope => {
@@ -170,6 +192,8 @@ const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}
         run,
         tenancy,
         getRequestContainer: () => requestContainers[requestContainers.length - 1],
+        getUsage: () =>
+            requestContainers[requestContainers.length - 1].resolve(TenantScopeUsage).getSummary(),
         countScopeRegistrations: () => scopeRegistrations.length
     };
 };
@@ -519,3 +543,196 @@ describe("Tenant scopes", () => {
         ]);
     });
 });
+
+const createTenants = (count: number) => {
+    return Array.from({ length: count }, (_, index) => createTenant(`tenant-${index}`));
+};
+
+class RecordingLogger extends NullLogger {
+    public readonly lines: { level: string; data: unknown; message: string }[] = [];
+
+    public override debug(data?: unknown, message?: string): void {
+        this.lines.push({ level: "debug", data, message: message ?? "" });
+    }
+
+    public override warn(data?: unknown, message?: string): void {
+        this.lines.push({ level: "warn", data, message: message ?? "" });
+    }
+
+    usageLines() {
+        return this.lines.filter(line => line.message.toLowerCase().includes("tenant scopes"));
+    }
+}
+
+describe("Tenant scope cache", () => {
+    it("keeps at most 10 idle scopes while looping over 50 tenants", async () => {
+        const tenants = createTenants(50);
+        const { run, getUsage } = createProbeHandler({ tenants });
+
+        const result = await run("acme", async ctx => {
+            await ctx.tenantScopes.withEachTenant(tenants, async scope => scope.tenant.id);
+            const afterLoop = getUsageOf(ctx);
+
+            // The last 10 tenants are still cached: entering them again builds nothing.
+            await ctx.tenantScopes.withEachTenant(tenants.slice(40), async () => null);
+            const cachedAgain = getUsageOf(ctx).built;
+            // The first tenant was released: entering it builds a fresh scope.
+            await ctx.tenantScopes.withTenant(tenants[0], async () => null);
+            return { afterLoop, cachedAgain, reentered: getUsageOf(ctx).built };
+        });
+
+        // acme's own scope, and one per tenant of the loop.
+        expect(result.afterLoop).toMatchObject({ built: 51, released: 40, peakInUse: 2 });
+        // In use: acme and the loop's tenant; idle: at most 10 (11 for a moment, before release).
+        expect(result.afterLoop.peakHeld).toBe(12);
+        expect(result.cachedAgain).toBe(51);
+        expect(result.reentered).toBe(52);
+        // Re-entering tenant-0 released one more, and acme's own went idle when the request ended.
+        expect(getUsage().released).toBe(42);
+    });
+
+    it("never releases a scope in use: the request's own, a nested one or a concurrent one", async () => {
+        const tenants = createTenants(3);
+        const { run, getUsage } = createProbeHandler({ tenants, cacheSize: 0 });
+
+        const result = await run("acme", async ctx => {
+            const globex = await getTenant(ctx, "globex");
+            const requestScope = ctx.container.resolve(TenantScope);
+
+            const nested = await ctx.tenantScopes.withTenant(globex, async outer => {
+                // Other tenants come and go (cache size 0) while globex's callback still runs.
+                await ctx.tenantScopes.withEachTenant(tenants, async () => null);
+                const inner = await ctx.tenantScopes.withTenant(globex, async scope => scope);
+                return inner === outer;
+            });
+
+            let releaseAll: () => void = () => {};
+            const barrier = new Promise<void>(resolve => {
+                releaseAll = resolve;
+            });
+            const concurrent = Promise.all(
+                [1, 2, 3].map(() =>
+                    ctx.tenantScopes.withTenant(tenants[0], async scope => {
+                        await barrier;
+                        return scope;
+                    })
+                )
+            );
+            releaseAll();
+            const [first, ...others] = await concurrent;
+
+            const acme = await ctx.tenantScopes.withTenant(
+                await getTenant(ctx, "acme"),
+                async scope => scope
+            );
+
+            return {
+                nested,
+                concurrentShareOne: others.every(scope => scope === first),
+                requestScopeKept: acme === requestScope
+            };
+        });
+
+        expect(result).toEqual({ nested: true, concurrentShareOne: true, requestScopeKept: true });
+        // acme; globex once; tenant-0 twice (the loop, then the concurrent calls); tenants 1 and 2.
+        expect(getUsage()).toMatchObject({ built: 6, peakInUse: 3 });
+    });
+
+    it("builds a fresh scope for a released tenant, and a service kept from the old one throws", async () => {
+        const { run } = createProbeHandler({ cacheSize: 0 });
+
+        const result = await run("acme", async ctx => {
+            const globex = await getTenant(ctx, "globex");
+            const [oldScope, kept] = await ctx.tenantScopes.withTenant(globex, async scope => {
+                return [scope, scope.resolve(TenantContext)] as const;
+            });
+            return ctx.tenantScopes.withTenant(globex, async scope => {
+                return {
+                    fresh: scope !== oldScope,
+                    tenant: scope.resolve(TenantContext).getTenant().id,
+                    error: await Promise.resolve()
+                        .then(() => kept.getTenant())
+                        .then(() => null)
+                        .catch(error => error)
+                };
+            });
+        });
+
+        expect(result.fresh).toBe(true);
+        expect(result.tenant).toBe("globex");
+        expect(result.error).toBeInstanceOf(StaleKernelExecutionError);
+    });
+
+    it("logs what the request's tenant scopes held as one debug line", async () => {
+        const logger = new RecordingLogger();
+        const tenants = createTenants(12);
+        const { run } = createProbeHandler({ logger, tenants });
+
+        await run("acme", async ctx => {
+            await ctx.tenantScopes.withEachTenant(tenants, async () => null);
+        });
+
+        const lines = logger.usageLines();
+        expect(lines).toHaveLength(1);
+        expect(lines[0].level).toBe("debug");
+        expect(lines[0].data).toMatchObject({
+            built: 13,
+            // Two during the loop; acme's own when the request ended, before the report.
+            released: 3,
+            peakHeld: 12,
+            peakInUse: 2
+        });
+        expect((lines[0].data as TenantScopeUsage.Summary).buildMs).toBeGreaterThan(0);
+    });
+
+    it("logs a warning when more scopes than the threshold were in use at once", async () => {
+        const logger = new RecordingLogger();
+        const tenants = createTenants(TENANT_SCOPES_IN_USE_WARNING);
+        const { run } = createProbeHandler({ logger, tenants });
+
+        await run("acme", async ctx => {
+            // Every tenant's scope in use at the same time, next to acme's own.
+            await Promise.all(
+                tenants.map(tenant => ctx.tenantScopes.withTenant(tenant, async () => null))
+            );
+        });
+
+        const lines = logger.usageLines();
+        expect(lines).toHaveLength(1);
+        expect(lines[0].level).toBe("warn");
+        expect(lines[0].message).toContain(
+            `${TENANT_SCOPES_IN_USE_WARNING + 1} tenant scopes were in use at once`
+        );
+        expect(lines[0].data).toMatchObject({ peakInUse: TENANT_SCOPES_IN_USE_WARNING + 1 });
+    });
+
+    it("takes the cache size from the TenantScopeCacheSize build param", async () => {
+        const tenants = createTenants(5);
+        const loop = async (cacheSize: string | number) => {
+            const { run, getUsage } = createProbeHandler({ tenants, cacheSize });
+            await run("acme", async ctx => {
+                await ctx.tenantScopes.withEachTenant(tenants, async () => null);
+            });
+            return getUsage().released;
+        };
+
+        // 6 idle at the end (acme and the 5 tenants).
+        expect(await loop("2")).toBe(4);
+        expect(await loop("0")).toBe(6);
+        expect(await loop(-1)).toBe(0);
+        expect(await loop("10")).toBe(0);
+
+        expect(getTenantScopeCacheSize(undefined)).toBe(10);
+        expect(getTenantScopeCacheSize(null)).toBe(10);
+        expect(getTenantScopeCacheSize("")).toBe(10);
+        expect(getTenantScopeCacheSize("abc")).toBe(10);
+        expect(getTenantScopeCacheSize("2.5")).toBe(10);
+        expect(getTenantScopeCacheSize(" 3 ")).toBe(3);
+        expect(getTenantScopeCacheSize("-1")).toBe(Infinity);
+    });
+});
+
+const getUsageOf = (ctx: ProbeContext) => {
+    // Request-level: resolved from the scope, it is the request container's one.
+    return ctx.container.resolve(TenantScopeUsage).getSummary();
+};

@@ -7,19 +7,38 @@ import {
     DEFAULT_TENANT_STORAGE,
     TenantScope,
     TenantScopeRegistration,
+    TenantScopeUsage,
     TenantScopes as Abstraction_
 } from "./abstractions.js";
 import { TenantScopeImpl } from "./TenantScopeImpl.js";
 import { TenantScopeIdentity } from "./TenantScopeIdentity.js";
 import { MissingTenantScopeRegistrationError, UnknownTenantStorageError } from "./errors.js";
+import {
+    getTenantScopeCacheSize,
+    TENANT_SCOPE_CACHE_SIZE_BUILD_PARAM
+} from "./tenantScopeCacheSize.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 import { assertTenantEnabled } from "~/features/tenancy/TenantContext/errors.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
 import { Logger } from "~/features/logger/index.js";
+import { BuildParams } from "~/features/buildParams/abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 
+/** A cached scope, and how many `withTenant` callbacks run in it now. */
+interface ScopeEntry {
+    readonly key: string;
+    readonly scope: Promise<TenantScopeImpl>;
+    inUse: number;
+}
+
 class TenantScopesImpl implements Abstraction_.Interface {
-    private readonly scopes = new Map<string, Promise<TenantScopeImpl>>();
+    /** Every scope kept: in use, being built, or idle. */
+    private readonly scopes = new Map<string, ScopeEntry>();
+    /** The idle ones among them, least recently used first. */
+    private readonly idle = new Map<string, ScopeEntry>();
+    private inUseCount = 0;
+    /** How many idle scopes stay cached; `Infinity` keeps them all until the request ends. */
+    private readonly cacheSize: number;
     /** The scope the calling code runs in, so a nested `withTenant()` knows its caller. */
     private readonly current = new AsyncLocalStorage<TenantScopeImpl>();
 
@@ -28,8 +47,14 @@ class TenantScopesImpl implements Abstraction_.Interface {
         private readonly getRootTenant: GetRootTenantUseCase.Interface,
         private readonly registration: TenantScopeRegistration.Interface | undefined,
         private readonly kernelExecution: KernelExecution.Interface | undefined,
-        private readonly logger: Logger.Interface | undefined
-    ) {}
+        private readonly usage: TenantScopeUsage.Interface | undefined,
+        private readonly logger: Logger.Interface | undefined,
+        buildParams: BuildParams.Interface
+    ) {
+        this.cacheSize = getTenantScopeCacheSize(
+            buildParams.get<string | number>(TENANT_SCOPE_CACHE_SIZE_BUILD_PARAM)
+        );
+    }
 
     async withTenant<R>(
         tenant: Tenant,
@@ -43,8 +68,14 @@ class TenantScopesImpl implements Abstraction_.Interface {
         assertTenantEnabled(tenant);
 
         const caller = this.current.getStore();
-        const scope = await this.getScope(tenant, storage);
-        return this.enter(scope, caller, cb);
+        // In use from here, before it is built: a scope being built is never released.
+        const entry = this.acquire(tenant, storage);
+        try {
+            const scope = await entry.scope;
+            return await this.enter(scope, caller, cb);
+        } finally {
+            this.release(entry);
+        }
     }
 
     async withRootTenant<R>(cb: (scope: TenantScope.Interface) => Promise<R>): Promise<R> {
@@ -105,21 +136,57 @@ class TenantScopesImpl implements Abstraction_.Interface {
         });
     }
 
-    private getScope(tenant: Tenant, storage: string): Promise<TenantScopeImpl> {
+    private acquire(tenant: Tenant, storage: string): ScopeEntry {
         const key = `${tenant.id}::${storage}`;
-        const existing = this.scopes.get(key);
-        if (existing) {
-            return existing;
+        let entry = this.scopes.get(key);
+        if (!entry) {
+            const created = this.createScope(tenant, storage);
+            const newEntry: ScopeEntry = { key, scope: created, inUse: 0 };
+            // A scope that failed to build is built again on the next call.
+            created.catch(() => {
+                if (this.scopes.get(key) === newEntry) {
+                    this.scopes.delete(key);
+                }
+            });
+            this.scopes.set(key, newEntry);
+            entry = newEntry;
         }
-        const created = this.createScope(tenant, storage);
-        this.scopes.set(key, created);
-        // A scope that failed to build is built again on the next call.
-        created.catch(() => {
-            if (this.scopes.get(key) === created) {
-                this.scopes.delete(key);
-            }
-        });
-        return created;
+
+        if (entry.inUse === 0) {
+            this.idle.delete(key);
+            this.inUseCount++;
+        }
+        entry.inUse++;
+        this.usage?.counts(this.scopes.size, this.inUseCount);
+        return entry;
+    }
+
+    private release(entry: ScopeEntry): void {
+        entry.inUse--;
+        if (entry.inUse > 0) {
+            return;
+        }
+        this.inUseCount--;
+        // A scope that failed to build is no longer kept.
+        if (this.scopes.get(entry.key) !== entry) {
+            return;
+        }
+        this.idle.set(entry.key, entry);
+        this.evictIdle();
+    }
+
+    /**
+     * Drops the least recently used idle scopes past the cache size. Nothing else references a
+     * dropped scope (a parent container keeps no reference to its children), so its container and
+     * everything built in it can be garbage collected.
+     */
+    private evictIdle(): void {
+        while (this.idle.size > this.cacheSize) {
+            const [key] = this.idle.keys();
+            this.idle.delete(key);
+            this.scopes.delete(key);
+            this.usage?.scopeReleased();
+        }
     }
 
     private async createScope(tenant: Tenant, storage: string): Promise<TenantScopeImpl> {
@@ -147,11 +214,13 @@ class TenantScopesImpl implements Abstraction_.Interface {
             container.resolve(TenantContext).setTenant(tenant);
         });
 
+        const durationMs = performance.now() - startedAt;
+        this.usage?.scopeBuilt(durationMs);
         this.logger?.debug(
             {
                 tenant: tenant.id,
                 storage,
-                durationMs: Math.round((performance.now() - startedAt) * 100) / 100
+                durationMs: Math.round(durationMs * 100) / 100
             },
             "[tenancy] Built a tenant scope."
         );
@@ -168,6 +237,8 @@ export const TenantScopes = createImplementation({
         GetRootTenantUseCase,
         [TenantScopeRegistration, { optional: true }],
         [KernelExecution, { optional: true }],
-        [Logger, { optional: true }]
+        [TenantScopeUsage, { optional: true }],
+        [Logger, { optional: true }],
+        BuildParams
     ]
 });

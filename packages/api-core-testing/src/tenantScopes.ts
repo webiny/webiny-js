@@ -8,6 +8,7 @@ import {
     TenantScopeRegistration,
     TenantScopesRootFeature
 } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
+import { BuildParamsFeature } from "@webiny/api-core/features/buildParams/feature.js";
 
 class TestHttpTenantSourceImpl implements InputTenantSource.Interface {
     getTenant(request: InputChainRunner.Request): InputTenantSource.Tenant | undefined {
@@ -33,6 +34,8 @@ export const TestHttpTenantSource = InputTenantSource.createImplementation({
 export const TestTenantScopesFeature = createFeature({
     name: "TestTenantScopes",
     register(container: Container) {
+        // Build params come from the deploy, so the root holds them, as in the API.
+        BuildParamsFeature.register(container);
         TenantScopesRootFeature.register(container);
         container.register(TestHttpTenantSource);
     }

@@ -313,6 +313,7 @@ export default ApiKeyFactory.createImplementation({
 - Use `scope.resolveAll(Abstraction)` where you would inject `[Abstraction, { multiple: true }]`.
 - Resolve services only inside the callback, and don't let them escape it. Plain values (ids, an identity, results) may cross scopes.
 - The callback runs as the caller's identity, checked against the target tenant's permissions.
+- A request caches the 10 most recently used idle scopes (set with `<Api.BuildParam paramName="TenantScopeCacheSize" value={…} />`) and releases older ones, so a loop over many tenants keeps its memory bounded. A scope with a callback still running is never released: loop over tenants one at a time (`withEachTenant`), not with `Promise.all` over every tenant.
 
 ## Container API Reference
 

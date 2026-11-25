@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
 import { InputChainRunner, RequestContainer } from "@webiny/api-kernel-core";
-import { InputTenantSource, TenantScopes } from "./abstractions.js";
+import { InputTenantSource, TenantScopeUsage, TenantScopes } from "./abstractions.js";
 import { RawTenantId, RequestTenantLoader } from "~/features/requestContext/abstractions.js";
 import { TenantNotFoundError } from "~/features/requestContext/TenantNotFoundError.js";
 import type { Tenant } from "~/types/tenancy.js";
@@ -12,7 +12,7 @@ const ROOT_TENANT_CLAIM: InputTenantSource.Tenant = { tenantId: null };
  * names the tenant (an event none knows runs as the root tenant), the request's tenant loader reads
  * it from the registry, and the chain is then resolved from, and runs in, that tenant's scope. The
  * request container stays tenant-neutral: no handler, and nothing a handler depends on, is built
- * there.
+ * there. When the chain ends, it logs what the request's tenant scopes held (`TenantScopeUsage`).
  */
 class TenantScopeChainRunnerDecoratorImpl implements InputChainRunner.Interface {
     constructor(
@@ -35,9 +35,18 @@ class TenantScopeChainRunnerDecoratorImpl implements InputChainRunner.Interface 
         rawTenantId.set(claim.tenantId);
         const tenant = await this.loadTenant(claim, rawTenantId, tenantLoader);
 
-        return tenantScopes.withTenant(tenant, async scope => {
-            return this.decoratee.run({ ...request, container: scope.resolve(RequestContainer) });
-        });
+        try {
+            return await tenantScopes.withTenant(tenant, async scope => {
+                return this.decoratee.run({
+                    ...request,
+                    container: scope.resolve(RequestContainer)
+                });
+            });
+        } finally {
+            // What the request's tenant scopes held, as one line. A test's request container may
+            // have no reporter.
+            this.requestContainer.resolveAll(TenantScopeUsage)[0]?.report();
+        }
     }
 
     private findTenant(request: InputChainRunner.Request): InputTenantSource.Tenant {

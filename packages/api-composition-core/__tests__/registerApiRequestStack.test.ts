@@ -15,10 +15,14 @@ import {
     TenantScopes
 } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
+import { BuildParam, BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { BuildParamsFeature } from "@webiny/api-core/features/buildParams/feature.js";
+import { createRegisterBuildParamPlugin } from "@webiny/handler";
 import {
     registerApiRequestStack,
     registerApiRequestStackInOneContainer
 } from "~/registerApiRequestStack.js";
+import { registerRootBuildParams } from "~/buildParams/registerRootBuildParams.js";
 
 // Registration only: nothing here runs a storage operation.
 const tenancyStorageOperations = {} as unknown as TenancyStorageOperations;
@@ -29,9 +33,13 @@ const storageOperations = {
     keyValueStorageOperations: {}
 } as unknown as ApiCoreStorageOperations;
 
-/** A root with the tenant registry's storage, as a storage adapter registers it. */
+/**
+ * A root with the build params' reader, as the transport registers it (`registerRootBuildParams`),
+ * and the tenant registry's storage, as a storage adapter registers it.
+ */
 const createRoot = () => {
     const root = new Container();
+    BuildParamsFeature.register(root);
     root.registerInstance(TenancyStorageOperationsFactory, {
         create: () => tenancyStorageOperations
     });
@@ -108,6 +116,30 @@ describe("registerApiRequestStack", () => {
                 .resolve(ApiCoreStorageOperationsFactory)
                 .create({ scopeTenant: { getId: () => "root" } })
         ).toBe(storageOperations);
+    });
+
+    it("reads the build params from the root in every request and tenant scope", async () => {
+        const root = new Container();
+        root.registerInstance(TenancyStorageOperationsFactory, {
+            create: () => tenancyStorageOperations
+        });
+        registerApiCoreStorageOperations(root, storageOperations);
+        const extensions = () => [
+            createRegisterBuildParamPlugin(ctx => {
+                ctx.container.registerInstance(BuildParam, { key: "Probe", value: "deployed" });
+            })
+        ];
+        const fromRoot = await registerRootBuildParams(root, extensions());
+        expect(fromRoot.get("Probe")).toBe("deployed");
+
+        const request = root.createChildContainer();
+        await registerApiRequestStack(request, { extensions });
+        const scope = request.createChildContainer();
+        await request.resolve(TenantScopeRegistration).register(scope);
+
+        // Registered once, in the root: neither the request nor its scope adds its own.
+        expect(scope.resolveAll(BuildParam)).toHaveLength(1);
+        expect(scope.resolve(BuildParams).get("Probe")).toBe("deployed");
     });
 
     // The SQL schema setup: everything a request has, without a tenant.

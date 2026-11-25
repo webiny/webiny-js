@@ -7,6 +7,7 @@ import { License } from "@webiny/wcp";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { Logger, NullLogger } from "@webiny/api-core/features/logger/index.js";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
+import { BuildParamsFeature } from "@webiny/api-core/features/buildParams/feature.js";
 import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import {
@@ -67,6 +68,8 @@ describe("Admin Users (Cognito): one account across tenants", () => {
         requestContainer.registerInstance(RequestContainer, requestContainer);
         registerApiCoreStorageOperations(requestContainer, storage());
         requestContainer.registerInstance(Logger, new NullLogger());
+        // No root here: the request container stands in for it, and holds the build params' reader.
+        BuildParamsFeature.register(requestContainer);
         TenantNeutralRequestFeature.register(requestContainer);
         requestContainer.registerInstance(TenantScopeRegistration, {
             register: async scope => {

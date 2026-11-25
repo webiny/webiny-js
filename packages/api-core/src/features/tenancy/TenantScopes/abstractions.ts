@@ -40,8 +40,14 @@ export interface ITenantScopesOptions {
 }
 
 /**
- * Runs code in a tenant's scope. Scopes are built on first use and kept for the rest of the
- * request, one per tenant and storage, so entering one again is cheap.
+ * Runs code in a tenant's scope. Scopes are built on first use, one per tenant and storage, and
+ * reused while they are cached, so entering one again is cheap.
+ *
+ * A scope is never dropped while a callback still runs in it (the request's own scope runs the
+ * whole request). Once idle, it stays cached among the most recently used idle scopes, up to
+ * the `TenantScopeCacheSize` build param (10 by default); older ones are dropped and their memory freed.
+ * Entering a dropped tenant builds a fresh scope: services kept from the old one throw
+ * `StaleKernelExecutionError` when used.
  *
  * The callback runs with the caller's identity and authorization state: the same user, checked
  * against the target tenant's permissions, and with authorization off if the caller turned it off.
@@ -68,6 +74,44 @@ export const TenantScopes = createAbstraction<ITenantScopes>("Tenancy/TenantScop
 export namespace TenantScopes {
     export type Interface = ITenantScopes;
     export type Options = ITenantScopesOptions;
+}
+
+/** What a request's `TenantScopes` held, for the per-request summary. */
+export interface ITenantScopeUsageSummary {
+    /** Scopes built during the request, the request's own included. */
+    built: number;
+    /** Idle scopes dropped from the cache to stay within its limit. */
+    released: number;
+    /** Most scopes kept at once: in use, being built, or idle in the cache. */
+    peakHeld: number;
+    /** Most scopes in use at once: with a `withTenant` callback still running in them. */
+    peakInUse: number;
+    /** Total time spent building scopes, in milliseconds. */
+    buildMs: number;
+}
+
+/**
+ * Counts what a request's `TenantScopes` built, held and released, and logs it as one line when the
+ * request's handler chain ends: at debug level, or as a warning when more scopes were in use at
+ * once than `TENANT_SCOPES_IN_USE_WARNING`, which no cache limit can free.
+ *
+ * Request-level, next to `TenantScopes`.
+ */
+export interface ITenantScopeUsage {
+    scopeBuilt(durationMs: number): void;
+    scopeReleased(): void;
+    /** The scopes kept and the scopes in use right now: updates the peaks. */
+    counts(held: number, inUse: number): void;
+    getSummary(): ITenantScopeUsageSummary;
+    /** Logs the summary. */
+    report(): void;
+}
+
+export const TenantScopeUsage = createAbstraction<ITenantScopeUsage>("Tenancy/TenantScopeUsage");
+
+export namespace TenantScopeUsage {
+    export type Interface = ITenantScopeUsage;
+    export type Summary = ITenantScopeUsageSummary;
 }
 
 /**

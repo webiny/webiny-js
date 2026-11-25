@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { registerBuildParams, registerExtensions } from "@webiny/handler";
+import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature, RequestStorage } from "@webiny/api-core";
 import {
@@ -74,8 +74,11 @@ export interface RegisterApiRequestStackConfig {
  * composition packages (`@webiny/api-composition-aws`, `-standalone`) so the feature set and its
  * ordering live in ONE place and can't drift between transports.
  *
- * The request container gets only the tenant-neutral part: build params, the raw request values,
- * the tenant registry the request's tenant is loaded from, and `TenantScopes`. Everything else is
+ * The request container gets only the tenant-neutral part: the raw request values, the tenant
+ * registry the request's tenant is loaded from, and `TenantScopes`. Build params come from the
+ * deploy, the same for every request and tenant, so the transport registers them once in the root
+ * (`registerRootBuildParams`), before any request registers a feature that reads them (features
+ * gate themselves on `FeatureFlags`, a build param, at register() time). Everything else is
  * tenant-specific and registers in each tenant scope the request enters, through the
  * `TenantScopeRegistration` registered here ({@link registerApiTenantScope}). The request's own work
  * runs in its tenant's scope (`TenantScopesRootFeature`, which the transport registers in the root).
@@ -97,13 +100,7 @@ export async function registerApiRequestStack(
     // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await WcpLicenseLoader.load();
 
-    // ── Build params (before ANY feature) ──────────────────────
-    // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,
-    // Workflows, ...), and FeatureFlags is a BuildParam. Registered with the rest of the extensions,
-    // they arrived too late: those gates read `{}`, and a license-granted feature couldn't be
-    // disabled from config. In the request container, so every tenant scope reads the same ones.
     const extensions = config.extensions();
-    await registerBuildParams(container, extensions);
 
     // ── Tenant-neutral request: raw values, tenant registry, TenantScopes ──
     TenantNeutralRequestFeature.register(container);

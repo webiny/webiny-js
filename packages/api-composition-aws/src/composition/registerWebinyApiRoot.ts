@@ -3,7 +3,11 @@ import { KernelExecutionId } from "@webiny/api-kernel-core";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
-import { ApiRequestRegistration, createLogger } from "@webiny/api-composition-core";
+import {
+    ApiRequestRegistration,
+    createLogger,
+    registerRootBuildParams
+} from "@webiny/api-composition-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { pinoLambdaDestination } from "pino-lambda";
 import { StructuredLogFormatter } from "pino-lambda";
@@ -12,13 +16,18 @@ import { registerWebinyApiInOneContainer } from "./registerWebinyApiChild.js";
 import { TenantScopesRootFeature } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 
 /**
- * ROOT container registration that is not transport-specific: logger, caches, and the storage
- * variant (which brings its own database). Shared by both AWS Lambda composition roots.
+ * ROOT container registration that is not transport-specific: build params, logger, caches, and
+ * the storage variant (which brings its own database). Shared by both AWS Lambda composition roots.
  */
 export async function registerWebinyApiRoot(
     container: Container,
     config: WebinyApiCompositionConfig
 ): Promise<void> {
+    // ── Build params ───────────────────────────────────────────
+    // Values from the deploy: the same for every request and tenant, so they live in the root, and
+    // every request container and tenant scope reads them from here.
+    await registerRootBuildParams(container, config.extensions());
+
     // ── Logger ─────────────────────────────────────────────────
     // One per Lambda instance, in CloudWatch's structured format. Every request container inherits it.
     const formatter = new StructuredLogFormatter();

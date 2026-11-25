@@ -2,6 +2,7 @@ export {
     TenantScope,
     TenantScopes,
     TenantScopeRegistration,
+    TenantScopeUsage,
     InputTenantSource,
     DEFAULT_TENANT_STORAGE
 } from "./abstractions.js";

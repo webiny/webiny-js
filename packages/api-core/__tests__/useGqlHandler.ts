@@ -46,6 +46,7 @@ import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
 import { Logger } from "~/features/logger/index.js";
 import { NullLogger } from "~/features/logger/index.js";
+import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 
 type UseGqlHandlerParams = {
     registrations?: any[];
@@ -68,6 +69,7 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             container.register(TestAuthorizer);
 
             container.registerDecorator(AuthTriggerHandler);
+            BuildParamsFeature.register(container);
             TenantScopesRootFeature.register(container);
             container.register(TestHttpTenantSource);
 
