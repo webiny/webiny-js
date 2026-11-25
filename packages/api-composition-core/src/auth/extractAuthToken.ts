@@ -1,4 +1,5 @@
 import { getHeader } from "@webiny/api-kernel-core";
+import type { IHttpRequest } from "@webiny/api-kernel-core";
 
 const WEBINY_AUTHORIZATION_HEADER = "x-webiny-authorization";
 
@@ -26,22 +27,19 @@ function readCookie(cookieHeader: string, name: string): string | null {
     }
 }
 
-export interface AuthTokenRequest {
-    method: string | undefined;
-    path: string | undefined;
-}
-
 /**
  * The `wby-id-token` cookie exists only for private file delivery: an `<img src>` cannot send an
  * `Authorization` header. It must not log users in anywhere else, because the browser attaches it
  * to cross-site requests too (`SameSite=None`), which would let any website call the API as the user.
  */
-export function isCookieAuthenticationAllowed(request: AuthTokenRequest): boolean {
-    const method = (request.method || "").toUpperCase();
+export function isCookieAuthenticationAllowed(
+    request: Pick<IHttpRequest, "method" | "path">
+): boolean {
+    const method = request.method.toUpperCase();
     if (method !== "GET" && method !== "HEAD") {
         return false;
     }
-    return (request.path || "").startsWith("/private/");
+    return request.path.startsWith("/private/");
 }
 
 /**
@@ -55,9 +53,9 @@ export function isCookieAuthenticationAllowed(request: AuthTokenRequest): boolea
  * and only for private file reads (see {@link isCookieAuthenticationAllowed}).
  */
 export function extractAuthToken(
-    headers: Record<string, string> | undefined,
-    request: AuthTokenRequest
+    request: Pick<IHttpRequest, "method" | "path" | "headers">
 ): string | null {
+    const headers = request.headers;
     const webinyAuth = getHeader(headers, WEBINY_AUTHORIZATION_HEADER).replace(/^Bearer\s+/i, "");
     if (webinyAuth) {
         return webinyAuth;

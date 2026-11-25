@@ -29,10 +29,7 @@ class HttpIdentityLoaderDecoratorImpl implements HttpRouter.Interface {
          * reads only). Every transport hands the router the path with any API Gateway stage prefix
          * already stripped, so this is the path the route matched on.
          */
-        const authToken = extractAuthToken(request.headers, {
-            method: request.method,
-            path: request.path
-        });
+        const authToken = extractAuthToken(request);
         this.rawAuthToken.set(authToken);
         try {
             await this.identityLoader.establish();

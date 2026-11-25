@@ -18,7 +18,7 @@ class HttpTenantLoaderDecoratorImpl implements HttpRouter.Interface {
     ) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
-        const tenantId = extractTenantId(request.headers);
+        const tenantId = extractTenantId(request);
         this.rawTenantId.set(tenantId);
         await this.tenantLoader.establish();
         return this.decoratee.route(request);
