@@ -1,25 +1,25 @@
 import type { Container } from "@webiny/feature/api";
 import type { DynamoDBStreamEvent } from "@webiny/aws-sdk/types/index.js";
 import {
-    DynamoDBEventHandler,
+    DynamoDBInputHandler,
     type DynamoDBResult
-} from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
-import { RequestContainer } from "@webiny/event-handler-core";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+} from "@webiny/api-kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { OperationsBuilder } from "@webiny/api-sync-to-opensearch/features/OperationsBuilder/abstraction.js";
 import { ExecuteSyncWithRetry } from "@webiny/api-sync-to-opensearch/features/ExecuteSyncWithRetry/abstraction.js";
 
 const MAX_RUNNING_TIME = 900;
 
-class DdbToOpenSearchHandlerImpl implements DynamoDBEventHandler.Interface {
+class DdbToOpenSearchHandlerImpl implements DynamoDBInputHandler.Interface {
     constructor(private container: Container) {}
 
     async execute(
-        eventCtx: EventContext<DynamoDBStreamEvent>,
+        inputCtx: InputContext<DynamoDBStreamEvent>,
         _next: NextFunction
     ): Promise<DynamoDBResult> {
         const builder = this.container.resolve(OperationsBuilder);
-        const operations = await builder.build({ records: eventCtx.event.Records });
+        const operations = await builder.build({ records: inputCtx.input.Records });
 
         if (operations.total === 0) {
             return { success: true, processedRecords: 0 };
@@ -36,7 +36,7 @@ class DdbToOpenSearchHandlerImpl implements DynamoDBEventHandler.Interface {
     }
 }
 
-export const DdbToOpenSearchHandler = DynamoDBEventHandler.createImplementation({
+export const DdbToOpenSearchHandler = DynamoDBInputHandler.createImplementation({
     implementation: DdbToOpenSearchHandlerImpl,
     dependencies: [RequestContainer]
 });

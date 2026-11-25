@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { EmptyTrashBinsEventType } from "./EmptyTrashBinsEventType.js";
+import { EmptyTrashBinsInputType } from "./EmptyTrashBinsInputType.js";
 import { TriggerEmptyTrashBinsHandler } from "./TriggerEmptyTrashBinsHandler.js";
 
 /**
@@ -9,7 +9,7 @@ import { TriggerEmptyTrashBinsHandler } from "./TriggerEmptyTrashBinsHandler.js"
 export const EmptyTrashBinsFeature = createFeature({
     name: "BulkActions/EmptyTrashBins",
     register: container => {
-        container.register(EmptyTrashBinsEventType);
+        container.register(EmptyTrashBinsInputType);
         container.register(TriggerEmptyTrashBinsHandler);
     }
 });

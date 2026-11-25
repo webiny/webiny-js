@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
-import { ApiGatewayEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/ApiGatewayEventHandler.js";
+import { ApiGatewayInputHandler } from "@webiny/api-kernel-aws/abstractions/handlers/ApiGatewayInputHandler.js";
 import { PluginsContainer } from "@webiny/plugins";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { SyncSystemConfig } from "./SyncSystemConfig.js";
 import type { ISyncSystemConfig } from "./SyncSystemConfig.js";
 import { createHandler } from "~/sync/createHandler.js";
@@ -9,13 +9,13 @@ import { getManifest } from "~/sync/utils/manifest.js";
 import { decorateClientWithHandler } from "~/sync/attachToDynamoDbDocument.js";
 import { createDefaultFilterOutRecordPlugins } from "~/sync/filter/createDefaultFilterOutRecordPlugins.js";
 
-class ApiGatewaySyncDecoratorImpl implements ApiGatewayEventHandler.Interface {
+class ApiGatewaySyncDecoratorImpl implements ApiGatewayInputHandler.Interface {
     constructor(
         private config: ISyncSystemConfig,
-        private inner: ApiGatewayEventHandler.Interface
+        private inner: ApiGatewayInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
+    async execute(ctx: InputContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
         const { data: manifest, error } = await getManifest();
         if (error || !manifest?.sync?.region) {
             if (process.env.DEBUG === "true") {
@@ -47,7 +47,7 @@ class ApiGatewaySyncDecoratorImpl implements ApiGatewayEventHandler.Interface {
     }
 }
 
-export const ApiGatewaySyncDecorator = ApiGatewayEventHandler.createDecorator({
+export const ApiGatewaySyncDecorator = ApiGatewayInputHandler.createDecorator({
     decorator: ApiGatewaySyncDecoratorImpl,
     dependencies: [SyncSystemConfig]
 });

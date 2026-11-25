@@ -1,0 +1,62 @@
+{
+  "name": "@webiny/api-composition-aws",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
+  "description": "Composition layer: assembles the Webiny API handler for the AWS Lambda transport.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-composition-core": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-file-manager-s3": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-headless-cms-bulk-actions-aws": "0.0.0",
+    "@webiny/api-kernel-aws": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
+    "@webiny/api-scheduler": "0.0.0",
+    "@webiny/api-scheduler-aws": "0.0.0",
+    "@webiny/api-websockets-aws": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/background-tasks-aws": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "pino": "^10.4.0",
+    "pino-lambda": "^4.4.1"
+  },
+  "peerDependencies": {
+    "@webiny/di": "^2.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^2.0.0",
+    "rimraf": "^6.1.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "pino"
+      ]
+    }
+  }
+}

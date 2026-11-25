@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-kernel-core/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
+    }
+  }
+}

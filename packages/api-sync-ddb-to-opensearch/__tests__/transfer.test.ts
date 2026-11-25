@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/feature/api";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { OpenSearchClient } from "@webiny/api-opensearch/features/OpenSearchClient/abstraction.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
@@ -11,7 +11,7 @@ import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
 import { DdbOperationsBuilderFeature } from "~/features/DdbOperationsBuilder/feature";
 import { DdbToOpenSearchHandler } from "~/features/DdbToOpenSearchHandler/DdbToOpenSearchHandler";
-import { DynamoDBEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/DynamoDBEventHandler.js";
+import { DynamoDBInputHandler } from "@webiny/api-kernel-aws/abstractions/handlers/DynamoDBInputHandler.js";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 
@@ -31,14 +31,14 @@ describe("transfer data", () => {
         container.registerInstance(OpenSearchClient, { use: () => elasticsearch });
         container.register(DdbToOpenSearchHandler);
 
-        const handler = container.resolve(DynamoDBEventHandler);
+        const handler = container.resolve(DynamoDBInputHandler);
 
         const index = "a-test-index";
         elasticsearch.indices.registerIndex(index);
 
         const result = await handler.execute(
             {
-                event: {
+                input: {
                     Records: [
                         {
                             eventName: OperationType.INSERT,

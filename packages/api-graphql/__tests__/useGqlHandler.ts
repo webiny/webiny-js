@@ -1,4 +1,4 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { GraphQLEngineFeature } from "~/engine/index.js";
 import type { Container } from "@webiny/di";
 

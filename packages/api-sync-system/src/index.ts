@@ -4,8 +4,8 @@ export { SyncResolverLambdaHandler } from "./resolver/SyncResolverLambdaHandler.
 
 export { SyncWorkerConfig } from "./worker/SyncWorkerConfig.js";
 export type { ISyncWorkerConfig } from "./worker/SyncWorkerConfig.js";
-export { SyncWorkerEventType } from "./worker/SyncWorkerEventType.js";
-export { SyncWorkerEventHandler } from "./worker/SyncWorkerEventHandler.js";
+export { SyncWorkerInputType } from "./worker/SyncWorkerInputType.js";
+export { SyncWorkerInputHandler } from "./worker/SyncWorkerInputHandler.js";
 export { SyncWorkerLambdaHandler } from "./worker/SyncWorkerLambdaHandler.js";
 
 export { SyncSystemConfig } from "./sync/SyncSystemConfig.js";

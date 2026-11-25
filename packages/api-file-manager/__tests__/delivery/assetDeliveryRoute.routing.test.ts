@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRouter } from "@webiny/event-handler-core";
-import { HttpRouterImpl } from "@webiny/event-handler-core";
-import { RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/api-kernel-core";
+import { HttpRouterImpl } from "@webiny/api-kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import type { IHttpRequest } from "@webiny/api-kernel-core";
 import { TenancyFeature } from "@webiny/api-core/features/tenancy/TenancyFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";

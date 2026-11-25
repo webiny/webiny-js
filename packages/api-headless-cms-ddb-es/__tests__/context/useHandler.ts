@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";

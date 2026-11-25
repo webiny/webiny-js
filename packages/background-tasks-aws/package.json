@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-kernel-aws": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
-    "@webiny/event-handler-aws": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0"
   },

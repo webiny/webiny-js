@@ -1,6 +1,6 @@
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/api-kernel-core";
 import { GraphQLEngine } from "./abstractions.js";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponse } from "@webiny/api-kernel-core";
 import type { IGraphQLEngine } from "./abstractions.js";
 import {
     invalidRequestBodyResponse,

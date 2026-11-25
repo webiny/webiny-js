@@ -7,8 +7,8 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-kernel-core/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -28,10 +28,10 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }
