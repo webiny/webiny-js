@@ -9,6 +9,11 @@ describe(`GraphQL "contains" operator - query normalization`, () => {
             "AE0003   VFW Post 12139 Donnersberg, Sembach Germany"
         );
 
+        expect(normalizeValue("Climbing 11/14")).toBe("Climbing 11 14");
+        expect(normalizeValue("Terms AND/OR conditions")).toBe("Terms and or conditions");
+        expect(normalizeValue("Rock NOT Roll")).toBe("Rock not Roll");
+        expect(normalizeValue("ANDROID ORBIT NOTE")).toBe("ANDROID ORBIT NOTE");
+
         // expect(normalizeValue('+ 1 - = && || > < ! ( A ) { } [ ] ^ " ~ * ? : \\ 2 /')).toEqual(
         //     "\\+ 1   \\= \&\& \\|\\| \> \< \! \\( A \\) \\{ \\} \\[ \\] \\^ \\\" \\~ \\*  \:   2 \/"
         // );
