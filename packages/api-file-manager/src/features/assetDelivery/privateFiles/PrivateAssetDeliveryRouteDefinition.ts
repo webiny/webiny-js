@@ -1,4 +1,4 @@
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/api-kernel-core";
 import { AssetDeliveryRoute } from "~/delivery/AssetDeliveryRoute.js";
 
 /*

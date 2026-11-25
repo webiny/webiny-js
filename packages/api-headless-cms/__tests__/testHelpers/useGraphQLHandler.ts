@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
 import { getIntrospectionQuery } from "graphql";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "~/HeadlessCmsFeature.js";

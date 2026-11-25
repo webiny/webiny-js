@@ -1,5 +1,5 @@
-import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/api-kernel-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/api-kernel-core";
 import { AdminAssistantUseCase } from "./abstractions.js";
 import type { AdminAssistantEvent } from "./events.js";
 import { parseChatBody } from "./parseChatBody.js";
@@ -8,7 +8,7 @@ const BAD_REQUEST_MESSAGE =
     "Provide a non-empty `prompt`, or a `chatId` with the `approvals` for its paused run.";
 
 /**
- * Frame the feature's events as SSE records. The wire format comes from `event-handler-core`; which
+ * Frame the feature's events as SSE records. The wire format comes from `api-kernel-core`; which
  * events exist, and what they carry, belongs to the feature, so the mapping lives here.
  */
 async function* toSseFrames(events: AsyncIterable<AdminAssistantEvent>): AsyncIterable<string> {

@@ -6,7 +6,7 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { invokeHttpRoute } from "@webiny/event-handler-core";
+import { invokeHttpRoute } from "@webiny/api-kernel-core";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
 import { DeleteFileFromDiskHandler } from "~/features/DeleteFileFromDisk/DeleteFileFromDiskHandler.js";
 import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFileContentsByIdUseCase.js";

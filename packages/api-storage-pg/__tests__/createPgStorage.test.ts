@@ -19,7 +19,7 @@ import { createPgStorage } from "~/index.js";
 /**
  * The Postgres storage is generic: SQL core, websockets and audit logs. The CMS and ACO on Postgres
  * are modules the project adds with its extensions; their setup tests live with the handlers that
- * run them (`@webiny/api-event-handler-aws-pg`).
+ * run them (`@webiny/api-composition-aws-pg`).
  */
 
 const startPglite = async () => {

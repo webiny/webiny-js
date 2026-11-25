@@ -1,4 +1,4 @@
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
@@ -14,7 +14,7 @@ import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
 import { RECOVER_GRACE_MS } from "~/claim/constants.js";
-import { TaskRecoverEventHandler } from "./TaskRecoverEventHandler.js";
+import { TaskRecoverInputHandler } from "./TaskRecoverInputHandler.js";
 
 // Unfinished tasks read per page.
 const PAGE_SIZE = 100;
@@ -69,7 +69,7 @@ function toEvent(task: ITask, tenant: string): IBackgroundTaskEvent {
  * each time, and the server would never stay up. A long task that keeps saving survives any number
  * of redeploys.
  */
-class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
+class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
     public constructor(
         private readonly listTenants: ListTenantsUseCase.Interface,
         private readonly tenantContext: TenantContext.Interface,
@@ -82,13 +82,13 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
         private readonly logger: Logger.Interface
     ) {}
 
-    public async execute(): Promise<TaskRecoverEventHandler.Result> {
+    public async execute(): Promise<TaskRecoverInputHandler.Result> {
         const tenantsResult = await this.listTenants.execute();
         if (tenantsResult.isFail()) {
             throw tenantsResult.error;
         }
 
-        const result: TaskRecoverEventHandler.Result = { resumed: 0, failed: 0, failedTenants: [] };
+        const result: TaskRecoverInputHandler.Result = { resumed: 0, failed: 0, failedTenants: [] };
 
         for (const tenant of tenantsResult.value) {
             if (!canRecover(tenant)) {
@@ -114,7 +114,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
         return result;
     }
 
-    private recoverTenant(tenant: Tenant, result: TaskRecoverEventHandler.Result): Promise<void> {
+    private recoverTenant(tenant: Tenant, result: TaskRecoverInputHandler.Result): Promise<void> {
         // No `withoutAuthorization`: tasks are a private model, which no permission check applies to.
         return this.tenantContext.withTenant(tenant, () => {
             return this.recoverUnfinished(tenant.id, result);
@@ -123,7 +123,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
 
     private async recoverUnfinished(
         tenant: string,
-        result: TaskRecoverEventHandler.Result
+        result: TaskRecoverInputHandler.Result
     ): Promise<void> {
         let after: string | undefined;
 
@@ -200,7 +200,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
     }
 }
 
-export const RecoverTasksHandler = TaskRecoverEventHandler.createImplementation({
+export const RecoverTasksHandler = TaskRecoverInputHandler.createImplementation({
     implementation: RecoverTasksHandlerImpl,
     dependencies: [
         ListTenantsUseCase,

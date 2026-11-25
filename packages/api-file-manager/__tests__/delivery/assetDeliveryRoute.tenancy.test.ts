@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { RequestContainer, invokeHttpRoute } from "@webiny/event-handler-core";
-import type { HttpRouteHandler, IHttpRequest } from "@webiny/event-handler-core";
+import { RequestContainer, invokeHttpRoute } from "@webiny/api-kernel-core";
+import type { HttpRouteHandler, IHttpRequest } from "@webiny/api-kernel-core";
 import { TenancyFeature } from "@webiny/api-core/features/tenancy/TenancyFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type {

@@ -4,8 +4,8 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import type { EventDispatcher } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import type { InputDispatcher } from "@webiny/api-kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 import { ConcurrencySlots } from "@webiny/utils/ConcurrencySlots.js";
@@ -36,7 +36,7 @@ const createExecution = (answers: Answer[], slotCount = 1) => {
     container.register(ProcessShutdownSignal).inSingletonScope();
     const shutdown = container.resolve(ShutdownSignal);
 
-    const dispatcher: EventDispatcher.Interface = {
+    const dispatcher: InputDispatcher.Interface = {
         dispatch: async <TResult>(dispatched: unknown): Promise<TResult> => {
             sent.push(dispatched as IBackgroundTaskEvent);
             slotsInUse.push(slots.getRunning());
@@ -110,7 +110,7 @@ describe("TaskExecution", () => {
         let finish: (answer: Record<string, unknown>) => void = () => {};
         const container = new Container();
         container.register(ProcessShutdownSignal).inSingletonScope();
-        const dispatcher: EventDispatcher.Interface = {
+        const dispatcher: InputDispatcher.Interface = {
             dispatch: <TResult>() =>
                 new Promise<TResult>(resolve => {
                     finish = answer => resolve(answer as TResult);

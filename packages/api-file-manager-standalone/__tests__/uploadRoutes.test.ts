@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { invokeHttpRoute } from "@webiny/event-handler-core";
+import { invokeHttpRoute } from "@webiny/api-kernel-core";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createUploadToken } from "~/utils/uploadToken.js";

@@ -4,7 +4,7 @@
  * graphQLHandler.ts needs, since it tests the full request and response.
  */
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { MailerFeature } from "@webiny/api-mailer";

@@ -18,7 +18,7 @@ import { toRouterPath } from "./routePath.js";
 export const HTTP_METHODS = ["DELETE", "GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS"] as const;
 
 const REGISTER_EXTENSION_PLUGIN_PATH = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
-const EVENT_HANDLER_CORE_PATH = "@webiny/event-handler-core";
+const EVENT_HANDLER_CORE_PATH = "@webiny/api-kernel-core";
 
 // Right after the last import, or at the top of a file that has none.
 const getImportInsertIndex = (source: SourceFile) => {
@@ -71,7 +71,7 @@ export const ApiRoute = defineExtension({
             path: z.string().startsWith("/"),
             method: z.enum(HTTP_METHODS),
             // The `src` file must default-export a route HANDLER, the result of
-            // `HttpRouteHandler.createImplementation` from `@webiny/event-handler-core`. It does
+            // `HttpRouteHandler.createImplementation` from `@webiny/api-kernel-core`. It does
             // NOT declare its own method/path: the `HttpRouteDefinition` the router matches on is
             // generated below from the props here, so the route the gateway forwards to and the
             // route the router matches cannot drift apart.

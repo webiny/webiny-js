@@ -156,19 +156,19 @@ hashes keep verifying after a swap.
 
 **Name:** `HttpAllowedRequestHeaders`
 **Import:** `import { HttpAllowedRequestHeaders } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 
 ---
 
 **Name:** `HttpRouteDefinition`
 **Import:** `import { HttpRouteDefinition } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 
 ---
 
 **Name:** `HttpRouteHandler`
 **Import:** `import { HttpRouteHandler } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 **Description:** Declares a route's request handling. One shared abstraction: the router never resolves it from the
 container (that would build every route), it builds the ONE class a matched definition points at.
 Declaring implementations through it is what attaches their dependency metadata.
@@ -192,21 +192,21 @@ Declaring implementations through it is what attaches their dependency metadata.
 **Name:** `IHttpRequest`
 **Kind:** type
 **Import:** `import type { IHttpRequest } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 
 ---
 
 **Name:** `IHttpResponse`
 **Kind:** type
 **Import:** `import type { IHttpResponse } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 
 ---
 
 **Name:** `IHttpResponseBuilder`
 **Kind:** type
 **Import:** `import type { IHttpResponseBuilder } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 **Description:** The mutable response handed to every route as the second argument to `handle()` — the `res` of
 Express-style handlers. Every method returns `this`, so a route can chain and then return the
 builder directly:
@@ -226,7 +226,7 @@ Routes returning a plain {@link IHttpResponse} keep working — anything set on 
 **Name:** `IMatchedRouteDefinition`
 **Kind:** type
 **Import:** `import type { IMatchedRouteDefinition } from "webiny/api"`
-**Source:** `@webiny/event-handler-core/features/http/abstractions.ts`
+**Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
 **Description:** Which route the router matched, as seen from inside `handle()` — the `req.route` of Express-style
 handlers. It is the definition without its `handler`, so a route (or anything wrapping one) can
 tell WHICH route is running and act only on the one it cares about.

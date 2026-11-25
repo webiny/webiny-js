@@ -1,5 +1,5 @@
-import { EventDispatcher } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import { InputDispatcher } from "@webiny/api-kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
@@ -23,7 +23,7 @@ class InProcessBackgroundTasksLoopImpl implements BackgroundTasksLoop.Interface 
     private readonly executions = new Map<string, TaskExecution>();
 
     public constructor(
-        private readonly dispatcher: EventDispatcher.Interface,
+        private readonly dispatcher: InputDispatcher.Interface,
         private readonly shutdown: ShutdownSignal.Interface,
         private readonly logger: Logger.Interface
     ) {}
@@ -79,5 +79,5 @@ class InProcessBackgroundTasksLoopImpl implements BackgroundTasksLoop.Interface 
 
 export const InProcessBackgroundTasksLoop = BackgroundTasksLoop.createImplementation({
     implementation: InProcessBackgroundTasksLoopImpl,
-    dependencies: [EventDispatcher, ShutdownSignal, Logger]
+    dependencies: [InputDispatcher, ShutdownSignal, Logger]
 });
