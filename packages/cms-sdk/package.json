@@ -17,13 +17,13 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/sdk": "0.0.0",
-    "fast-json-patch": "^3.1.1",
+    "fast-json-patch": "^3.1.2",
     "mobx": "^7.1.7"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "7.0.2",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "webiny": {
     "publishFrom": "dist"

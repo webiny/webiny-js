@@ -297,6 +297,103 @@ describe("SDK GraphQL - CMS Search", () => {
             expect(result.meta.totalCount).toBe(0);
         });
 
+        it("should find entries while the search term is typed past a slash", async () => {
+            await createAndPublishEntry({
+                name: "Introduction to Rope Climbing 11/14",
+                sku: "CLS-001",
+                description: "Beginner class",
+                price: 30
+            });
+            await createAndPublishEntry({
+                name: "Introduction to Bouldering",
+                sku: "CLS-002",
+                description: "Beginner class",
+                price: 30
+            });
+
+            for (const search of [
+                "Climbing 11",
+                "Climbing 11/",
+                "Climbing 11/1",
+                "Climbing 11/14"
+            ]) {
+                const searchResult = await sdk.cms.listEntries<ProductValues>({
+                    modelId: "product",
+                    search,
+                    fields: ["id", "values.name"]
+                });
+
+                expect(searchResult.isOk()).toBe(true);
+                const names = searchResult.value.data.map(item => item.values?.name);
+                expect({ search, names }).toEqual({
+                    search,
+                    names: ["Introduction to Rope Climbing 11/14"]
+                });
+            }
+        });
+
+        it("should match a contains filter with a slash in the value", async () => {
+            await createAndPublishEntry({
+                name: "Introduction to Rope Climbing 11/14",
+                sku: "CLS-001",
+                description: "Beginner class",
+                price: 30
+            });
+            await createAndPublishEntry({
+                name: "Introduction to Bouldering",
+                sku: "CLS-002",
+                description: "Beginner class",
+                price: 30
+            });
+
+            for (const value of ["Climbing 11/", "11/1", "Climbing 11/14"]) {
+                const listResult = await sdk.cms.listEntries<ProductValues>({
+                    modelId: "product",
+                    where: { "values.name_contains": value },
+                    fields: ["id", "values.name"]
+                });
+
+                expect(listResult.isOk()).toBe(true);
+                const names = listResult.value.data.map(item => item.values?.name);
+                expect({ value, names }).toEqual({
+                    value,
+                    names: ["Introduction to Rope Climbing 11/14"]
+                });
+            }
+        });
+
+        it("should search for AND, OR and NOT as words, not as query operators", async () => {
+            await createAndPublishEntry({
+                name: "Terms AND/OR conditions",
+                sku: "TRM-001",
+                description: "Legal",
+                price: 0
+            });
+            await createAndPublishEntry({
+                name: "Rock/NOT/Roll",
+                sku: "TRM-002",
+                description: "Music",
+                price: 0
+            });
+
+            const cases = [
+                { search: "Terms AND/OR conditions", expected: ["Terms AND/OR conditions"] },
+                { search: "Rock/NOT/Roll", expected: ["Rock/NOT/Roll"] }
+            ];
+
+            for (const { search, expected } of cases) {
+                const searchResult = await sdk.cms.listEntries<ProductValues>({
+                    modelId: "product",
+                    search,
+                    fields: ["id", "values.name"]
+                });
+
+                expect(searchResult.isOk()).toBe(true);
+                const names = searchResult.value.data.map(item => item.values?.name);
+                expect({ search, names }).toEqual({ search, names: expected });
+            }
+        });
+
         it("should return all entries when search is undefined", async () => {
             // Create 3 products.
             await createAndPublishEntry({
