@@ -35,16 +35,14 @@ export class SetupAwsWebinyProject {
         });
 
         /*
-         * On Postgres, the CMS storage and the folder catalog are modules `webiny.config.tsx` adds
-         * (`<HeadlessCmsPg />`, `<AcoPg />`), and the API functions run the handlers of
-         * `@webiny/api-event-handler-aws-pg`, which brings knex and pg. Only Postgres projects
-         * install them.
+         * On Postgres, the API functions run the handlers of `@webiny/api-composition-aws-pg`,
+         * which the project's api entry imports and which brings knex and pg, so only Postgres
+         * projects install it. The CMS storage and the folder catalog come with
+         * `<Infra.AuroraPostgres />`, from `webiny` itself: the api build imports them by path.
          */
         if (awsArgs.storageOps === "pg") {
             addProjectDependencies(projectRootFolderPath, {
-                "@webiny/api-aco-pg": "latest",
-                "@webiny/api-event-handler-aws-pg": "latest",
-                "@webiny/api-headless-cms-pg": "latest"
+                "@webiny/api-composition-aws-pg": "latest"
             });
         }
 

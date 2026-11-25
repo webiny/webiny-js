@@ -1,15 +1,16 @@
 import { getIntrospectionQuery } from "graphql";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { RecordLockingAppFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { createTestModelPlugins } from "./models";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
@@ -103,7 +104,10 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
-            HeadlessCmsFeature.register(container, { type: "manage" });
+            HeadlessCmsFeature.register(container, {
+                type: "manage",
+                extraPlugins: createTestModelPlugins()
+            });
 
             container.registerInstance(ConnectionRegistry, noopConnectionRegistry);
             container.registerInstance(WebsocketsSendToIdentityUseCase, {

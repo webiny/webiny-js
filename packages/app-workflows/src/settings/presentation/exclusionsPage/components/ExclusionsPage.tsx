@@ -13,7 +13,6 @@ import { ExclusionsLoadError } from "./ExclusionsLoadError.js";
 import { ExclusionsLoading } from "./ExclusionsLoading.js";
 import { ExclusionsNamesBanner } from "./ExclusionsNamesBanner.js";
 import { ExclusionsNoAccess } from "./ExclusionsNoAccess.js";
-import { ExclusionsRulesCard } from "./ExclusionsRulesCard.js";
 import { ExclusionsTable } from "./ExclusionsTable.js";
 import { ExclusionsToolbar } from "./ExclusionsToolbar.js";
 
@@ -47,27 +46,46 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     } else {
         let namesBanner: React.ReactNode = null;
         if (vm.namesFailed) {
-            namesBanner = <ExclusionsNamesBanner onRetry={() => presenter.retryNames()} />;
+            namesBanner = (
+                <div className="px-lg pb-md">
+                    <ExclusionsNamesBanner onRetry={() => presenter.retryNames()} />
+                </div>
+            );
         }
 
-        let list: React.ReactNode = <ExclusionsTable rows={vm.rows} presenter={presenter} />;
+        // The table runs edge to edge under the filters band, like the Content Reviews list; the
+        // empty state keeps the page's padding.
+        let list: React.ReactNode = <ExclusionsTable presenter={presenter} />;
         if (vm.empty !== null) {
-            list = <ExclusionsEmpty empty={vm.empty} onAdd={() => presenter.openAdd()} />;
+            list = (
+                <div className="px-lg pt-md pb-lg">
+                    <ExclusionsEmpty
+                        empty={vm.empty}
+                        onClearSearch={() => presenter.setSearch("")}
+                    />
+                </div>
+            );
         }
 
         body = (
             <>
                 {namesBanner}
-                <ExclusionsRulesCard />
                 <ExclusionsToolbar
                     tab={vm.tab}
                     tabs={vm.tabs}
-                    filter={vm.filter}
+                    search={vm.search}
+                    canAdd={vm.canAdd}
                     presenter={presenter}
                 />
                 {list}
             </>
         );
+    }
+
+    // The ready body is laid out edge to edge like the Content Reviews list; the other states
+    // keep the page's side and bottom padding.
+    if (vm.status !== "ready") {
+        body = <div className="px-lg pb-lg">{body}</div>;
     }
 
     const request = vm.dialog;
@@ -92,8 +110,8 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     }
 
     return (
-        <div data-testid="exclusions-page" className="flex flex-col gap-md p-lg">
-            <ExclusionsHeader canAdd={vm.canAdd} onAdd={() => presenter.openAdd()} />
+        <div data-testid="exclusions-page" className="flex flex-col">
+            <ExclusionsHeader />
             {body}
             {dialog}
         </div>

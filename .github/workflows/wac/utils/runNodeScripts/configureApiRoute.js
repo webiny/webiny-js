@@ -1,6 +1,7 @@
 /*
  * Adds two `<Api.Route>` entries to a scaffolded project's webiny.config.tsx, and the handler they
- * point at, so E2E can call a custom HTTP route on every hosting type (e2e/tests/apiRoute.e2e.ts).
+ * point at, so E2E can call a custom HTTP route on every hosting type
+ * (e2e/tests/api/apiRoute.e2e.ts).
  *
  * - GET  /e2e/api-route/{id}  checks a path parameter, written in API Gateway's `{id}` syntax.
  * - POST /e2e/api-route       checks a JSON body.
@@ -22,8 +23,8 @@ const HANDLER_SRC = "/extensions/E2eApiRoute.ts";
 const HANDLER = `import { HttpRouteHandler } from "webiny/api";
 
 /*
- * Added by E2E (configureApiRoute.js). Echoes the request, so e2e/tests/apiRoute.e2e.ts can check
- * what reached the handler on each hosting type.
+ * Added by E2E (configureApiRoute.js). Echoes the request, so e2e/tests/api/apiRoute.e2e.ts can
+ * check what reached the handler on each hosting type.
  */
 class E2eApiRouteImpl implements HttpRouteHandler.Interface {
     async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {

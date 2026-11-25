@@ -4,6 +4,7 @@ import type {
     DocumentElementBindings,
     InputAstNode
 } from "@webiny/website-builder-sdk";
+import { generateListItemId, isListItemId, LIST_ITEM_ID } from "@webiny/website-builder-sdk";
 import { InputField } from "./InputField.js";
 import { useInputValue } from "./useInputValue.js";
 import { buildDefaultObject } from "./buildDefaultObject.js";
@@ -51,7 +52,11 @@ export function ObjectListField({ element, node, bindings }: ObjectListFieldProp
     };
 
     const handleAdd = () => {
-        commit([...items, buildDefaultObject(node.children)]);
+        // A new item gets its own id (`_id`); moving or removing items keeps each item's id.
+        commit([
+            ...items,
+            { ...buildDefaultObject(node.children), [LIST_ITEM_ID]: generateListItemId() }
+        ]);
     };
 
     const handleRemove = (index: number) => {
@@ -88,7 +93,7 @@ export function ObjectListField({ element, node, bindings }: ObjectListFieldProp
                     <div className={"flex flex-col gap-sm"}>
                         {items.map((item, index) => (
                             <ObjectRow
-                                key={`${node.path}/${index}`}
+                                key={itemKey(node, item, index)}
                                 title={deriveItemTitle(node, item, index)}
                                 onOpen={() => openItem(index)}
                                 actions={
@@ -130,6 +135,15 @@ export function ObjectListField({ element, node, bindings }: ObjectListFieldProp
 }
 
 /**
+ * A row's React key: the item's id, so a row (and its open drawer) follows the item when items move;
+ * the index for an item saved before items had ids.
+ */
+function itemKey(node: InputAstNode, item: any, index: number): string {
+    const id = item?.[LIST_ITEM_ID];
+    return isListItemId(id) ? `${node.path}#${id}` : `${node.path}/${index}`;
+}
+
+/**
  * Derives a human-readable title for a list item: the first non-empty text value found among its
  * fields, falling back to "<label> #<n>".
  */
@@ -140,6 +154,7 @@ function deriveItemTitle(node: InputAstNode, item: any, index: number): string {
         for (const child of node.children) {
             const childValue = item[child.name];
             if (
+                !child.input.hideFromUi &&
                 (child.type === "text" || child.type === "longText") &&
                 typeof childValue === "string" &&
                 childValue.trim()

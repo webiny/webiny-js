@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetSettingsRepository } from "~/api/features/GetSettings/abstractions.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
@@ -11,7 +11,12 @@ import { ConfiguredAiModelsService as Abstraction } from "./abstractions.js";
 class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
     public constructor(
         private ai: Ai.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        /*
+         * The repository, not `GetSettingsUseCase`: the use case strips the encrypted keys for
+         * clients, and this service needs them to tell which connections have one. Callers that
+         * reach a client check access themselves (`ListWorkflowAiModelsUseCase`).
+         */
+        private settingsRepository: GetSettingsRepository.Interface,
         private logger: Logger.Interface
     ) {}
 
@@ -20,7 +25,7 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
         // text and do not log again. The returned Error carries a fixed message only.
         let settings: IAiPowerUpsSettings;
         try {
-            const settingsResult = await this.getSettings.execute();
+            const settingsResult = await this.settingsRepository.get();
             if (settingsResult.isFail()) {
                 this.logger.error(
                     { error: settingsResult.error },
@@ -80,7 +85,7 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
 
         let settings: IAiPowerUpsSettings;
         try {
-            const settingsResult = await this.getSettings.execute();
+            const settingsResult = await this.settingsRepository.get();
             if (settingsResult.isFail()) {
                 this.logger.error(
                     { error: settingsResult.error },
@@ -108,5 +113,5 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
 
 export const ConfiguredAiModelsService = Abstraction.createImplementation({
     implementation: ConfiguredAiModelsServiceImpl,
-    dependencies: [Ai, GetSettingsUseCase, Logger]
+    dependencies: [Ai, GetSettingsRepository, Logger]
 });

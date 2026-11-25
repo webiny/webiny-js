@@ -2,6 +2,54 @@
 
 End-to-end tests for Webiny, written with [TesterArmy's e2e framework](https://e2e.tester.army/docs). A test mixes plain locators (`screen`, `expect`) with AI agent steps (`agent.act`, `agent.assert`, `agent.extract`). Tests can also call REST and GraphQL routes in the same run.
 
+## What exists
+
+The live list is the source of truth. It prints every test as `file › describe › test [session] #tags` and starts nothing:
+
+```bash
+yarn e2e:list                              # every test
+yarn e2e:list --tag workflows              # one area
+yarn e2e:list --exclude-tag wcp,ai         # what runs without a licence or a model
+```
+
+The suite is split into areas, listed in `areas.ts`:
+
+| Area           | Folder               | Aliases | What it covers                                                                   | Needs         |
+| -------------- | -------------------- | ------- | -------------------------------------------------------------------------------- | ------------- |
+| `login`        | `tests/login/`       |         | The admin signs in through the sign-in form.                                     | nothing       |
+| `api`          | `tests/api/`         |         | A custom HTTP route declared with `<Api.Route>` answers GET and POST.            | `E2E_API_URL` |
+| `file-manager` | `tests/fileManager/` | `fm`    | Upload, listing and delivery of files, private files, and AI image enrichment.   | `wcp`, `ai`   |
+| `tenancy`      | `tests/tenancy/`     |         | A new tenant is created and installed, and delivers its own files.               | `wcp`         |
+| `cms`          | `tests/cms/`         |         | Headless CMS models built in the editor, and entries from draft to bulk publish. | nothing       |
+| `workflows`    | `tests/workflows/`   | `wf`    | Workflow editor, publish guard and content reviews from request to publish.      | `wcp`         |
+
+"Needs" is the union over the area's tests: `file-manager` has a test that needs nothing, two that need `wcp`, and one that needs `wcp` and `ai`.
+
+`cms` has two parts, `models` and `entries` (tags `cms-models` and `cms-entries`), so `/e2e cms-entries` runs one of them.
+
+Not covered yet: security and Website Builder. Website Builder is planned with two parts, `pages` and `redirects`, and the alias `wb`, so `/e2e wb-pages` or `/e2e wb-redirects` will run one part.
+
+## Areas
+
+An area is a folder under `tests/` and a tag of the same meaning on every test in it. An area depends only on the installation and the admin sign-in setup (`tests/auth.setup.e2e.ts`), never on another area's tests. It creates its own data, with names unique per run, and deletes it afterwards.
+
+The area tag says what is tested. The licence tags (`wcp`, `ai`) and `installation` say where a test can run, so they stay separate from area tags and a test usually has both kinds.
+
+An area can have parts. A part's tag is `<area>-<part>`, its tests live in `tests/<area folder>/<part>/`, and they carry both the area tag and the part tag. The area tag then runs every part, and the part tag runs one.
+
+Aliases are short names for an area or a part, for the `/e2e` PR comment. They are never tags: a test carries only its area tag, and its part tag if it is in a part.
+
+`tests/installation.e2e.ts` and `tests/auth.setup.e2e.ts` sit at the top level and belong to no area. The installation test is a prerequisite that CI runs on its own, and the setup runs for any test that needs the admin session.
+
+To add an area:
+
+1. Create `tests/<folder>/` and put the area tag on every `describe` in it, or on the test when there is no `describe`.
+2. Add the area to `areas.ts`: its tag, folder, aliases if any, one line on what it covers, and the licence tags its tests carry.
+3. Add its row to the table above.
+4. Run `yarn e2e:areas`.
+
+`yarn e2e:areas` (`scripts/checkAreas.ts`) fails when a test in an area folder lacks the area tag, carries another area's tag, or sits in a sub-folder that is not a part; when a test in a part folder lacks the part tag; when a folder under `tests/` has no entry in `areas.ts`, or an entry or part has no tests; when an area's `needs` differ from the licence tags its tests carry; and when a name or alias is taken twice, is a licence tag, or has characters other than `a-z`, `0-9` and `-`. Helpers that more than one area can use go in `support/`, one concern per file. Helpers for one area stay in its folder, under `support/`.
+
 ## Running
 
 ```bash
@@ -12,7 +60,7 @@ yarn e2e:headed               # watch it in a browser
 
 The tests run against the admin at `E2E_ADMIN_URL`, `https://wby3.localhost` by default. They sign in as `admin@webiny.com` unless `E2E_ADMIN_EMAIL` and `E2E_ADMIN_PASSWORD` say otherwise.
 
-`tests/apiRoute.e2e.ts` calls the API directly at `E2E_API_URL` and is skipped when that is unset. It needs the two `<Api.Route>` entries CI adds to every project before it builds (`.github/workflows/wac/utils/runNodeScripts/configureApiRoute.js`). To run it locally, run that script on your project, rebuild the API, and set `E2E_API_URL` to the API's own address, not the admin's.
+`tests/api/apiRoute.e2e.ts` calls the API directly at `E2E_API_URL` and is skipped when that is unset. It needs the two `<Api.Route>` entries CI adds to every project before it builds (`.github/workflows/wac/utils/runNodeScripts/configureApiRoute.js`). To run it locally, run that script on your project, rebuild the API, and set `E2E_API_URL` to the API's own address, not the admin's.
 
 `ANTHROPIC_API_KEY` is only needed for tests with agent steps. Without it no model is configured, and the first agent step stops the run with `MODEL_UNAVAILABLE`. Today every test with agent steps is tagged `wcp`, so `yarn e2e --exclude-tag wcp` runs without a key.
 
@@ -20,10 +68,15 @@ Anything after the script name goes to `e2e run`. File paths are relative to `e2
 
 ```bash
 yarn e2e tests/fileManager/aiImageEnrichment.e2e.ts
+yarn e2e --tag workflows                 # one area
+yarn e2e --tag login,file-manager        # several areas
+yarn e2e --tag file-manager --exclude-tag wcp,ai   # an area's tests that need no licence or model
 yarn e2e --tag wcp
 yarn e2e --exclude-tag ai
 yarn e2e --no-cache        # skip the replay cache and call the model for every agent step
 ```
+
+Run an area by its tag. Aliases only work in the `/e2e` PR comment. A selection with no runnable test fails with `NO_TESTS`: `yarn e2e --tag api` without `E2E_API_URL` skips both of its tests, so add `--pass-with-no-tests` there.
 
 A run writes its report, screenshots and traces to `e2e/.e2e/`.
 
@@ -44,7 +97,7 @@ Recordings are made by the "Record E2E replay steps" workflow (`.github/workflow
 
 A new test therefore calls the model on every run until the first recording run after it reaches `next` and that run's PR is merged. `/e2e` only reads recordings and never writes them.
 
-The `e2e/replay-recordings` branch is rebuilt from `next` on every run, so don't push to it. Entries are never deleted: an entry for a removed or renamed test stays until you delete its file. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
+The `e2e/replay-recordings` branch is rebuilt from `next` on every run, so don't push to it. Entries are never deleted: an entry for a removed or renamed test stays until you delete its file. An entry is keyed on the test's file path and titles, so moving a test file to another folder also leaves its entries behind, and the moved test calls the model until it is recorded again. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
 
 ### Recording locally
 
@@ -57,19 +110,57 @@ Positions in fixed UI, like the comboboxes on the Model roles tab, are fine. Ent
 
 ## Organizing tests
 
-Folders are for feature areas. Tags are for what a test needs from the project. A feature usually has tests of both kinds, so don't put license-gated tests in a folder of their own.
+Folders are for areas. Tags are for the area and for what a test needs from the project. An area usually has tests of both kinds, so don't put license-gated tests in a folder of their own.
 
 ```
+areas.ts                        the list of areas
+scripts/checkAreas.ts           yarn e2e:areas
+support/                        helpers any area can use
+  apiSession.ts                 the API session, read off the admin's own requests
+  callGraphql.ts                a GraphQL call with that session
+  createRunId.ts                an id unique per run, for names
+  pageErrors.ts                 page errors, recorded and taken
+  contentModel.ts               a test content model, created and deleted
+  entry.ts                      a draft entry, created, read and deleted
+  role.ts                       a role, created and deleted
+  team.ts                       a team with its role, created and deleted
+  adminUser.ts                  an admin user with a permanent password, created and deleted
+  signIn.ts                     sign in as another user
+  leavePrompt.ts                accept the entry form's and model editor's leave prompt
 tests/
   auth.setup.e2e.ts             signs in once and saves the session
-  apiRoute.e2e.ts               tags: api-route
+  installation.e2e.ts           tags: installation
+  api/
+    apiRoute.e2e.ts             tags: api
+  cms/
+    models/
+      modelLifecycle.e2e.ts     tags: cms, cms-models
+      modelValidation.e2e.ts    tags: cms, cms-models
+    entries/
+      entryLifecycle.e2e.ts     tags: cms, cms-entries
+      entryList.e2e.ts          tags: cms, cms-entries
+      entryTrash.e2e.ts         tags: cms, cms-entries
+      entryFolders.e2e.ts       tags: cms, cms-entries
+      entryBulk.e2e.ts          tags: cms, cms-entries
+    support/                    cms only: entries model, entry list, entry state, revisions, trash, folders, model lookup
   fileManager/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
     privateFileDelivery.e2e.ts  tags: wcp, file-manager
     uploadAndDeliver.e2e.ts     tags: file-manager
+  login/
+    login.e2e.ts                tags: login
+  scheduler/
+    schedulePublish.e2e.ts      tags: scheduler
   tenancy/
-    tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager
-  installation.e2e.ts           tags: installation
+    tenantFileDelivery.e2e.ts   tags: wcp, tenancy
+  workflows/
+    publishGuard.e2e.ts         tags: wcp, workflows
+    rejectAndCancel.e2e.ts      tags: wcp, workflows
+    reviewLifecycle.e2e.ts      tags: wcp, workflows
+    reviewList.e2e.ts           tags: wcp, workflows
+    smoke.e2e.ts                tags: wcp, workflows
+    workflowEditor.e2e.ts       tags: wcp, workflows
+    support/                    workflows only: workflow, review, review cast, entry form review bar, publish attempts
 ```
 
 Three tags say what a test needs:
@@ -82,7 +173,7 @@ Three tags say what a test needs:
 
 `wcp` and `ai` are separate because they vary separately. Teams needs a license and no model, and a future AI feature might ship without a license gate.
 
-Put the tags on the `describe`, so every test in it inherits them:
+Put the tags on the `describe`, so every test in it inherits them. A test without a `describe` takes them in its own options:
 
 ```ts
 describe("file manager AI image enrichment", { tags: ["wcp", "ai", "file-manager"] }, () => {
@@ -90,9 +181,46 @@ describe("file manager AI image enrichment", { tags: ["wcp", "ai", "file-manager
 });
 ```
 
-Feature tags like `file-manager` are optional, for `--tag` filtering.
+Every test carries exactly one area tag, see "Areas".
 
 A WCP test that reaches an unlicensed project should fail, not skip. That means the run is misconfigured, and a skip would hide it.
+
+## Headless CMS
+
+`tests/cms/` covers the base Headless CMS, with no licence tag:
+
+- `models/modelLifecycle.e2e.ts`: a group is created, then a model in it through the New model dialog, a required text field and a number field are dragged into the editor, the text field is made the entry title, and the model is saved, reloaded, renamed and deleted from the list with its typed confirmation.
+- `models/modelValidation.e2e.ts`: the New model dialog refuses an empty name and API name, and the API refuses an API name or a model id another model has.
+- `entries/entryLifecycle.e2e.ts`: an entry is saved as a draft in the form, edited, saved and published with its confirmation, given a new revision that is published from the revisions list, and unpublished.
+- `entries/entryList.e2e.ts`: the entry list searches by title, reverses the order of the rows when sorted by name twice, filters by status and opens an entry.
+- `entries/entryTrash.e2e.ts`: an entry is trashed from its row menu, found in the trash and restored, and another is deleted from the trash for good.
+- `entries/entryFolders.e2e.ts`: a folder is created in the entry list, an entry is moved into it, found there and moved back, and the folder is deleted.
+- `entries/entryBulk.e2e.ts`: two drafts picked by their checkboxes are published with the bulk Publish action.
+
+Each file makes its own model through the API, with names unique per run and no workflow, so no review rule gets in the way on a licensed project. The model tests make theirs in the UI and delete what is left through the API.
+
+The New model dialog does not derive the API names from the name: the user types both, and the model id is made from the name. When the API refuses a model, for example for a taken API name or model id, the dialog stays open with no message (`NewContentModelPresenter.save()` swallows the error). `modelValidation.e2e.ts` checks the API's refusal and that nothing is stored, and leaves the missing message as a `BUG:` comment.
+
+Some steps are set up through the API, not the UI: the entries' models and entries, the published entry of the list test and the entry trashed before the trash test deletes it for good. In the model editor, the first field is dragged onto the empty model with `dragTo`, but the drop zone below a row sits behind the row until a drag starts, so the number field is dragged with a pointer path (`screen.swipe`) to just below the Title row.
+
+The entry form and the model editor both raise the browser's leave prompt on reload, even when nothing changed (see "Workflows" below), so the files that reload or leave them accept it (`support/leavePrompt.ts`).
+
+## Workflows
+
+`tests/workflows/` covers the workflows app on Headless CMS:
+
+- `smoke.e2e.ts`: every workflows page opens, for Headless CMS and Website Builder, the reviewer exclusions page among them, and the Content Reviews scope and state are kept in the URL.
+- `workflowEditor.e2e.ts`: a workflow is built in the editor, refused without a step title, reordered, saved, renamed and deleted.
+- `publishGuard.e2e.ts`: a draft under a workflow is not published without a review, neither from the entry form nor through the API, immediately or scheduled.
+- `reviewLifecycle.e2e.ts`: a review of three steps and two teams runs from the request to the author publishing, with who may start, take over and approve each step.
+- `rejectAndCancel.e2e.ts`: a reviewer rejects with a reason, the author cancels a review, and a new review of the cancelled revision is accepted.
+- `reviewList.e2e.ts`: the Content Reviews list shows each person their reviews under the right scope.
+
+Each run creates its own role, teams, users, content model and workflow through the API, with names unique per run, and deletes them afterwards. Review records cannot be deleted, so they stay behind, cancelled.
+
+The users' password is generated per run in `e2e.config.ts` and registered as the framework secret `workflows-user-password`, so reports and traces show it redacted. Cognito creates a user's password as temporary, so `support/adminUser.ts` makes it permanent right away by setting it again. Signing in as such a user on standalone, which uses self-hosted auth, was read from source only and has not been run.
+
+The tests that switch users accept the browser's leave prompt of the Headless CMS entry form (`support/leavePrompt.ts`). That prompt is a known bug: `ContentEntryFormView.tsx` registers its router guard even while the form is clean, so the browser asks before leaving an unchanged entry. The Headless CMS model editor does the same (`ContentModelEditor.tsx` adds its guard on mount), even right after a save. Any other dialog fails the test.
 
 ## In CI
 
@@ -106,7 +234,7 @@ Every variant is three jobs:
 
 The installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, creates the admin user the other tests sign in with. It runs once per database: in every standalone shard, and in the AWS `Deploy` job, since all AWS shards share one deployment. Every `e2e run` writes its `summary.md` into the job summary, so a failure can be read on the run page, and uploads `e2e/.e2e/` as an artifact on failure.
 
-The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite, Postgres, and Postgres with 2 API processes) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today are the login test and `fileManager/uploadAndDeliver.e2e.ts`. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
+The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite, Postgres, and Postgres with 2 API processes) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today are the `login`, `api` and `cms` areas and `fileManager/uploadAndDeliver.e2e.ts`. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
 
 The WCP variants, "Standalone (SQLite, WCP)", "Standalone (Postgres, WCP)" and "Standalone (Postgres, 2 API processes, WCP)", run the whole suite. Like the other variants, they run on every `/e2e` comment.
 
@@ -117,3 +245,21 @@ The two "2 API processes" variants start the same API build twice, on ports 3012
 The `push` workflow still runs each variant in a single job.
 
 Tests in a shard share one database, and AWS shards share one deployment. Give anything a test creates a name that is unique per run (`unique()`, or a timestamp as `tenantFileDelivery.e2e.ts` does), and don't assert on counts or empty lists.
+
+### Running some areas
+
+`/e2e` alone runs every test. Names after it run only those areas, on the same variants:
+
+```
+/e2e workflows
+/e2e wf,fm
+/e2e login file-manager
+```
+
+A name is an area, an alias, or a part (`<area>-<part>` or `<area alias>-<part>`, such as `wb-pages` once Website Builder has tests). Case doesn't matter, names are separated by spaces, commas or both, duplicates count once, and an area named together with one of its own parts runs the whole area. Every test command then gets `--tag <areas>` next to its usual filters, and the installation test still runs first. A variant whose filters leave nothing of the selection, such as `/e2e workflows` on an unlicensed variant, passes with no tests. The status comment says which areas ran, `all` for a full run.
+
+The `Get areas, base branch, PR head and PR features` job reads the names first, with `.github/workflows/wac/e2e/selectE2eAreas.ts`. An unknown name fails that job before anything is built, and the status comment lists the valid names. The comment is untrusted input: it reaches the script only through an environment variable, and only known area tags come out of it, into `E2E_TAGS`.
+
+A slash command always runs the workflow as it is on `next`, with `next`'s `e2e/areas.ts`. So `/e2e <area>` works only once this change is on `next`, and an area a PR adds can be selected only after that PR is merged. On a PR branched before its tests had area tags, a selection finds no tests and passes.
+
+The parser's unit tests: `yarn vitest run --config .github/workflows/wac/vitest.config.ts`.

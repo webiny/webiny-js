@@ -72,6 +72,7 @@ const TypeCard = ({ option, onPick }: TypeCardProps) => {
             description={description}
             onClick={disabled ? undefined : () => onPick(option.type)}
             onKeyDown={handleKeyDown}
+            className="last:border-b-0!"
         />
     );
 };
@@ -93,11 +94,14 @@ export const StepTypePicker = ({ options, onPick, onClose }: StepTypePickerProps
             title="Add step"
             description="Choose who or what does this step. You can't change the type later."
         >
-            <List>
-                {options.map(option => (
-                    <TypeCard key={option.type} option={option} onPick={onPick} />
-                ))}
-            </List>
+            {/* The dialog has no footer, so the body keeps the footer's bottom padding itself. */}
+            <div className="pt-sm pb-lg">
+                <List>
+                    {options.map(option => (
+                        <TypeCard key={option.type} option={option} onPick={onPick} />
+                    ))}
+                </List>
+            </div>
         </Dialog>
     );
 };

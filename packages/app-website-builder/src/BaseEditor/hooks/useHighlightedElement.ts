@@ -2,7 +2,7 @@ import { autorun, toJS } from "mobx";
 import { useEffect, useState } from "react";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
-import deepEqual from "deep-equal";
+import isEqual from "lodash/isEqual.js";
 import { $getEditableElement } from "~/editorSdk/utils/$getEditableElement.js";
 
 export const useHighlightedElement = () => {
@@ -18,7 +18,7 @@ export const useHighlightedElement = () => {
 
             if (elementId) {
                 const newElement = toJS($getEditableElement(documentState, elementId));
-                if (!deepEqual(newElement, highlightedElement)) {
+                if (!isEqual(newElement, highlightedElement)) {
                     setHighlightedElement(newElement);
                 }
             } else {

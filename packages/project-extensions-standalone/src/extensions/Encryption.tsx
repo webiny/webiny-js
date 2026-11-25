@@ -8,7 +8,7 @@ const SUPPORTED_ALGORITHMS = ["aes-128-gcm", "aes-192-gcm", "aes-256-gcm"] as co
 
 /**
  * Encryption settings for a standalone project. A standalone API always encrypts: it refuses to start
- * without `WEBINY_ENCRYPTION_PASSPHRASE` (`readStandaloneConfig` in @webiny/api-event-handler-standalone).
+ * without `WEBINY_ENCRYPTION_PASSPHRASE` (`readStandaloneConfig` in @webiny/api-composition-standalone).
  *
  * The passphrase and salt are secrets that differ per environment, so they are not baked into the
  * build. This component sets them as the `WEBINY_ENCRYPTION_PASSPHRASE` and `WEBINY_ENCRYPTION_SALT`

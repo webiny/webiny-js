@@ -63,7 +63,7 @@ describe("SecurityPermissions (R333)", () => {
         expect(none.getAttribute("aria-checked")).toBe("true");
         expect(
             within(group).getByText(
-                "Reviewing is not a permission. Anyone in a step's reviewing teams who can read the content can review it."
+                "Reviewing is not a permission. Anyone in a step’s reviewing teams who can read the content can review it."
             )
         ).toBeDefined();
         expect(onChange).not.toHaveBeenCalled();

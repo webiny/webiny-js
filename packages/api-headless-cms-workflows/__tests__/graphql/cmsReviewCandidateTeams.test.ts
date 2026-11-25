@@ -110,9 +110,9 @@ const GET_TARGET_REVIEW = /* GraphQL */ `
 `;
 
 const LIST_REVIEWS = /* GraphQL */ `
-    query ListReviews($list: WorkflowsReviewListKind!) {
+    query ListReviews($scope: WorkflowsReviewListScope!) {
         cms {
-            listCmsEntryReviews(list: $list) {
+            listCmsEntryReviews(scope: $scope) {
                 data { review { ${REVIEW} } }
                 ${META}
                 ${ERROR}
@@ -241,7 +241,7 @@ describe("CMS review candidateTeams (R208, Q7)", () => {
             legacyPlugins: [registerTeams]
         });
 
-        const result = await run(reviewer, LIST_REVIEWS, { list: "pool" });
+        const result = await run(reviewer, LIST_REVIEWS, { scope: "pool" });
 
         expect(result.listCmsEntryReviews.error).toBeNull();
         expect(result.listCmsEntryReviews.data).toHaveLength(1);
@@ -260,7 +260,7 @@ describe("CMS review candidateTeams (R208, Q7)", () => {
         });
         teamLists.length = 0;
 
-        const result = await run(reviewer, LIST_REVIEWS, { list: "pool" });
+        const result = await run(reviewer, LIST_REVIEWS, { scope: "pool" });
 
         expect(result.listCmsEntryReviews.error).toBeNull();
         expect(result.listCmsEntryReviews.data).toHaveLength(3);

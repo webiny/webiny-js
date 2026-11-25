@@ -31,6 +31,22 @@ vi.mock("./PageListReviewGatedActions.js", async () => {
     };
 });
 
+vi.mock("./PageListReviewMoveAction.js", async () => {
+    const React = await import("react");
+    return {
+        PageListReviewMoveAction: () =>
+            React.createElement("div", { "data-testid": "review-move-action" })
+    };
+});
+
+vi.mock("./PageListReviewBulkPublishAction.js", async () => {
+    const React = await import("react");
+    return {
+        PageListReviewBulkPublishAction: () =>
+            React.createElement("div", { "data-testid": "review-bulk-publish-action" })
+    };
+});
+
 vi.mock("~/Components/ContentReviews/WbContentReviewsSidebarItem.js", async () => {
     const React = await import("react");
     return {
@@ -49,5 +65,7 @@ describe("PagesList", () => {
 
         expect(screen.getByTestId("wb-content-reviews-sidebar")).toBeTruthy();
         expect(screen.getByTestId("review-gated-actions")).toBeTruthy();
+        expect(screen.getByTestId("review-move-action")).toBeTruthy();
+        expect(screen.getByTestId("review-bulk-publish-action")).toBeTruthy();
     });
 });

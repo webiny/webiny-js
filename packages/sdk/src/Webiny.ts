@@ -5,6 +5,7 @@ import { FileManagerSdk } from "./FileManagerSdk.js";
 import { LanguagesSdk } from "./LanguagesSdk.js";
 import { TasksSdk } from "./TasksSdk.js";
 import { WebhooksSdk } from "./WebhooksSdk.js";
+import { WebsiteBuilderSdk } from "./WebsiteBuilderSdk.js";
 
 export class Webiny {
     public readonly cms: CmsSdk;
@@ -13,6 +14,7 @@ export class Webiny {
     public readonly languages: LanguagesSdk;
     public readonly tasks: TasksSdk;
     public readonly webhooks: WebhooksSdk;
+    public readonly websiteBuilder: WebsiteBuilderSdk;
 
     constructor(config: WebinyConfig) {
         this.cms = new CmsSdk({
@@ -36,6 +38,10 @@ export class Webiny {
             tenant: config.tenant || "root"
         });
         this.webhooks = new WebhooksSdk({
+            ...config,
+            tenant: config.tenant || "root"
+        });
+        this.websiteBuilder = new WebsiteBuilderSdk({
             ...config,
             tenant: config.tenant || "root"
         });

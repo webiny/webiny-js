@@ -15,7 +15,7 @@ export const createFakeAppAdapter = (kind: WorkflowAppKind = "cms"): FakeEditorA
     return {
         appKind: kind,
         panelLabel: kind === "cms" ? "Content models" : "Website Builder",
-        appliesToLabel: kind === "cms" ? "Headless CMS model" : "Website Builder",
+        appliesToLabel: kind === "cms" ? "Headless CMS" : "Website Builder",
         init: vi.fn().mockResolvedValue(undefined),
         renderModelIcon: vi.fn().mockReturnValue(null),
         getFolderType: vi.fn((modelId: string | null) => {

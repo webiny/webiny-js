@@ -1,22 +1,32 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
+import { DropdownMenu } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { SegmentedControl } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
+import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AccountTreeIcon } from "@webiny/icons/account_tree.svg";
-import { ReactComponent as DotIcon } from "@webiny/icons/fiber_manual_record.svg";
 import type { ModelPanelVm } from "~/editor/presentation/editor/abstractions.js";
+import type { ModelWorkflowFilter } from "~/editor/presentation/editor/abstractions.js";
 import type { ModelRowVm } from "~/editor/presentation/editor/abstractions.js";
 
 export interface ModelPanelProps {
     panel: ModelPanelVm;
     renderIcon(modelId: string): React.ReactNode;
     onSearch(search: string): void;
+    onFilter(filter: ModelWorkflowFilter): void;
     onSelect(modelId: string): void;
+    onCreateWorkflow(modelId: string): void;
+    onDeleteWorkflow(modelId: string): void;
     onLoadMore(): void;
     onRetry(): void;
 }
@@ -25,11 +35,19 @@ interface ModelRowProps {
     row: ModelRowVm;
     icon: React.ReactNode;
     onSelect(modelId: string): void;
+    onCreateWorkflow(modelId: string): void;
+    onDeleteWorkflow(modelId: string): void;
 }
+
+const FILTER_ITEMS = [
+    { value: "all", label: "All" },
+    { value: "with", label: "With" },
+    { value: "without", label: "Without" }
+];
 
 const SKELETON_ROWS = [0, 1, 2, 3];
 
-const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
+const ModelRow = ({ row, icon, onSelect, onCreateWorkflow, onDeleteWorkflow }: ModelRowProps) => {
     let ariaCurrent: "true" | undefined = undefined;
     if (row.active) {
         ariaCurrent = "true";
@@ -50,20 +68,49 @@ const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
         boundIndicator = <Icon icon={<AccountTreeIcon />} label="Has a workflow" size="sm" />;
     }
 
-    let unsavedDot: React.ReactNode = null;
+    let unsavedTag: React.ReactNode = null;
     if (row.unsaved) {
-        unsavedDot = <Icon icon={<DotIcon />} label="Unsaved changes" size="xs" color="accent" />;
+        unsavedTag = <Tag variant="warning" content="Unsaved" aria-label="Unsaved changes" />;
     }
 
-    let actions: React.ReactNode = null;
-    if (boundIndicator !== null || unsavedDot !== null) {
-        actions = (
-            <>
-                {boundIndicator}
-                {unsavedDot}
-            </>
+    let menuItem: React.ReactNode = (
+        <DropdownMenu.Item
+            icon={<AddIcon />}
+            text="Create workflow"
+            onClick={() => onCreateWorkflow(row.modelId)}
+        />
+    );
+    if (row.bound) {
+        menuItem = (
+            <DropdownMenu.Item
+                icon={<DeleteIcon />}
+                text="Delete workflow"
+                onClick={() => onDeleteWorkflow(row.modelId)}
+            />
         );
     }
+
+    const actions = (
+        <>
+            {boundIndicator}
+            {unsavedTag}
+            <DropdownMenu
+                align="end"
+                side="bottom"
+                trigger={
+                    <IconButton
+                        variant="ghost"
+                        disabled={row.actionsDisabled}
+                        aria-label={`Actions for ${row.name}`}
+                        title={`Actions for ${row.name}`}
+                        icon={<MoreVerticalIcon />}
+                    />
+                }
+            >
+                {menuItem}
+            </DropdownMenu>
+        </>
+    );
 
     return (
         <List.Item
@@ -71,6 +118,7 @@ const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
             data-testid={`model-row-${row.modelId}`}
             aria-current={ariaCurrent}
             selected={row.active}
+            sidePadding="lg"
             icon={icon}
             title={row.name}
             description={row.subLine}
@@ -82,6 +130,7 @@ const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
 };
 
 // The model panel: label, optional search, rows with icon, name, sub line and indicators, Load more.
+// The rows run edge to edge so their dividers span the panel; everything else keeps the rows' side padding.
 export const ModelPanel = (props: ModelPanelProps) => {
     const { panel } = props;
 
@@ -97,17 +146,34 @@ export const ModelPanel = (props: ModelPanelProps) => {
         );
     }
 
+    let filterControl: React.ReactNode = null;
+    if (panel.showFilter) {
+        filterControl = (
+            <SegmentedControl
+                label="Workflow"
+                items={FILTER_ITEMS}
+                value={panel.filter}
+                onChange={value => props.onFilter(value as ModelWorkflowFilter)}
+                fullWidth
+            />
+        );
+    }
+
     let list: React.ReactNode = null;
     if (panel.loading) {
         list = (
-            <div data-testid="model-panel-loading" className="flex flex-col gap-sm">
+            <div data-testid="model-panel-loading" className="flex flex-col gap-sm pr-md pl-lg">
                 {SKELETON_ROWS.map(row => (
                     <Skeleton key={row} type="text" />
                 ))}
             </div>
         );
     } else if (panel.emptyText !== null) {
-        list = <Text size="sm">{panel.emptyText}</Text>;
+        list = (
+            <Text as="div" size="sm" className="pr-md pl-lg">
+                {panel.emptyText}
+            </Text>
+        );
     } else {
         list = (
             <List>
@@ -117,6 +183,8 @@ export const ModelPanel = (props: ModelPanelProps) => {
                         row={row}
                         icon={props.renderIcon(row.modelId)}
                         onSelect={props.onSelect}
+                        onCreateWorkflow={props.onCreateWorkflow}
+                        onDeleteWorkflow={props.onDeleteWorkflow}
                     />
                 ))}
             </List>
@@ -149,15 +217,30 @@ export const ModelPanel = (props: ModelPanelProps) => {
         );
     }
 
+    let footer: React.ReactNode = null;
+    if (error !== null || loadMore !== null) {
+        footer = (
+            <div data-role="model-panel-footer" className="flex flex-col gap-sm py-md pr-md pl-lg">
+                {error}
+                {loadMore}
+            </div>
+        );
+    }
+
     return (
-        <div data-testid="model-panel" className="flex flex-col gap-sm p-md">
-            <Text as="div" size="sm">
-                {panel.label}
-            </Text>
-            {searchInput}
+        <div data-testid="model-panel" className="flex flex-col">
+            <div
+                data-role="model-panel-controls"
+                className="flex flex-col gap-sm pt-md pr-md pb-sm pl-lg"
+            >
+                <Text as="div" size="sm">
+                    {panel.label}
+                </Text>
+                {searchInput}
+                {filterControl}
+            </div>
             {list}
-            {error}
-            {loadMore}
+            {footer}
         </div>
     );
 };

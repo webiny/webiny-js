@@ -5,11 +5,13 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { act } from "@testing-library/react";
+import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { AdminUiProvider } from "@webiny/admin-ui";
 import { DiContainerProvider } from "@webiny/app";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
@@ -21,7 +23,9 @@ import { StepState } from "~/review/domain/StepState.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import type { IReviewRowProvider } from "../abstractions.js";
-import type { ReviewListTab } from "../abstractions.js";
+import type { ReviewListRouteParams } from "../abstractions.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { ReviewListPresenterFeature } from "../feature.js";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -80,15 +84,25 @@ interface RenderOptions {
     results?: ListResult[];
     showContentType?: boolean;
     contentTypeFilter?: IReviewContentTypeFilter | null;
-    initialTab?: ReviewListTab;
+    initialScope?: ReviewListScope;
+    initialState?: ReviewListState;
     permissions?: IPermission[];
     loading?: boolean;
+    teams?: ITeam[];
+    onRouteChange?: (params: ReviewListRouteParams) => void;
+    fixedContentTypeId?: string;
+    title?: string | null;
+}
+
+interface RerenderOptions {
+    initialScope?: ReviewListScope;
+    initialState?: ReviewListState;
 }
 
 const renderView = (options: RenderOptions = {}) => {
     const container = new Container();
     container.register(ReviewActivity).inSingletonScope();
-    const teams: ITeam[] = [{ id: "team-1", slug: "team-1", name: "Team 1" }];
+    const teams: ITeam[] = options.teams ?? [{ id: "team-1", slug: "team-1", name: "Team 1" }];
     const identityContext = createWorkflowsIdentityContext({
         teams,
         permissions: options.permissions
@@ -118,20 +132,32 @@ const renderView = (options: RenderOptions = {}) => {
         }
         listReviews.execute.mockResolvedValueOnce(result);
     });
-    renderWithAdminUi(
-        <DiContainerProvider container={container}>
-            <ReviewListView
-                app={"cms"}
-                rowProvider={rowProvider}
-                namespaces={["cms.article", "other.app"]}
-                showContentType={options.showContentType ?? true}
-                contentTypeFilter={options.contentTypeFilter ?? null}
-                initialTab={options.initialTab}
-            />
-        </DiContainerProvider>
-    );
+    const namespaces = ["cms.article", "other.app"];
+    const element = (route: RerenderOptions) => {
+        return (
+            <DiContainerProvider container={container}>
+                <ReviewListView
+                    app={"cms"}
+                    rowProvider={rowProvider}
+                    namespaces={namespaces}
+                    showContentType={options.showContentType ?? true}
+                    contentTypeFilter={options.contentTypeFilter ?? null}
+                    initialScope={route.initialScope}
+                    initialState={route.initialState}
+                    onRouteChange={options.onRouteChange}
+                    fixedContentTypeId={options.fixedContentTypeId}
+                    title={options.title}
+                />
+            </DiContainerProvider>
+        );
+    };
+    const rendered = renderWithAdminUi(element(options));
+    // The route changed: the page renders the view again with the new values.
+    const rerenderRoute = (route: RerenderOptions) => {
+        rendered.rerender(<AdminUiProvider>{element(route)}</AdminUiProvider>);
+    };
 
-    return { activity, listReviews, fakes };
+    return { activity, listReviews, fakes, rerenderRoute };
 };
 
 // The review a row's dialog or drawer reads: one current step, every action allowed.
@@ -159,6 +185,28 @@ const lastButton = (label: string): HTMLElement => {
 
 const rowOf = (title: string): HTMLElement => {
     return screen.getByText(title).closest("tr") as HTMLElement;
+};
+
+const isHighlighted = (title: string): boolean => {
+    return rowOf(title).querySelector("[data-highlighted]") !== null;
+};
+
+const columnHeader = (name: string): HTMLElement => {
+    return screen.getByRole("columnheader", { name: new RegExp(`^${name}`) });
+};
+
+// The table shows the sort arrow, labelled "Sort column", only in the sorted column's header.
+const isSortedBy = (name: string): boolean => {
+    return within(columnHeader(name)).queryByText("Sort column") !== null;
+};
+
+const clickHeader = (name: string): void => {
+    fireEvent.click(within(columnHeader(name)).getByText(name));
+};
+
+const openMenu = (title: string): void => {
+    const trigger = within(rowOf(title)).getByRole("button", { name: `Actions for ${title}` });
+    fireEvent.keyDown(trigger, { key: "Enter" });
 };
 
 describe("ReviewListView", () => {
@@ -199,13 +247,15 @@ describe("ReviewListView", () => {
         const link = await screen.findByRole("link", { name: "Bound review" });
         expect(link.getAttribute("href")).toBe("/cms/content-entries/article?id=e1%230001");
         expect(screen.getByText("Type article")).toBeTruthy();
-        expect(within(rowOf("Bound review")).getByRole("button", { name: "Start" })).toBeTruthy();
+        openMenu("Bound review");
+        expect(await screen.findByRole("menuitem", { name: "Start" })).toBeTruthy();
+        expect(screen.getByRole("menuitem", { name: "Open in new window" })).toBeTruthy();
+        fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
 
         expect(screen.queryByRole("link", { name: "Unbound review" })).toBeNull();
         const unbound = within(rowOf("Unbound review"));
         expect(unbound.queryByRole("button", { name: "Start" })).toBeNull();
-        expect(unbound.queryByRole("button", { name: "More actions" })).toBeNull();
-        expect(unbound.queryByRole("button", { name: "Open in new window" })).toBeNull();
+        expect(unbound.queryByRole("button", { name: "Actions for Unbound review" })).toBeNull();
     });
 
     it("shows the actions the flags allow and nothing else (D5, D54)", async () => {
@@ -229,18 +279,23 @@ describe("ReviewListView", () => {
 
         await screen.findByText("Can start");
 
-        const start = within(rowOf("Can start"));
-        expect(start.getByRole("button", { name: "Start" })).toBeTruthy();
-        expect(start.queryByRole("button", { name: "Take over" })).toBeNull();
+        openMenu("Can start");
+        expect(await screen.findByRole("menuitem", { name: "Start" })).toBeTruthy();
+        expect(screen.queryByRole("menuitem", { name: "Take over" })).toBeNull();
+        fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Start" })).toBeNull());
 
-        const take = within(rowOf("Can take"));
-        expect(take.getByRole("button", { name: "Take over" })).toBeTruthy();
-        expect(take.queryByRole("button", { name: "Start" })).toBeNull();
+        openMenu("Can take");
+        expect(await screen.findByRole("menuitem", { name: "Take over" })).toBeTruthy();
+        expect(screen.queryByRole("menuitem", { name: "Start" })).toBeNull();
+        fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+        await waitFor(() =>
+            expect(screen.queryByRole("menuitem", { name: "Take over" })).toBeNull()
+        );
 
         const none = within(rowOf("No actions"));
         expect(none.queryByRole("button", { name: "Start" })).toBeNull();
-        expect(none.queryByRole("button", { name: "Take over" })).toBeNull();
-        expect(none.getByRole("button", { name: "More actions" })).toBeTruthy();
+        expect(none.getByRole("button", { name: "Actions for No actions" })).toBeTruthy();
     });
 
     it("opens the dialog of an inline action on the row's use cases and refetches once when it is done", async () => {
@@ -262,7 +317,8 @@ describe("ReviewListView", () => {
         );
         await screen.findByText("Review one");
 
-        fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
+        openMenu("Review one");
+        fireEvent.click(await screen.findByText("Start"));
 
         expect(await screen.findByText("Start “Legal sign-off”?")).toBeTruthy();
         expect(fakes.getReview.execute).toHaveBeenCalledWith({
@@ -305,7 +361,8 @@ describe("ReviewListView", () => {
             })
         );
         await screen.findByText("Review one");
-        fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
+        openMenu("Review one");
+        fireEvent.click(await screen.findByText("Start"));
         await screen.findByText("Start “Legal sign-off”?");
         expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
@@ -333,18 +390,25 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("Review one");
 
-        const row = within(rowOf("Review one"));
-        fireEvent.click(row.getByRole("button", { name: "Open in new window" }));
+        openMenu("Review one");
+        fireEvent.click(await screen.findByText("Open in new window"));
         expect(open).toHaveBeenCalledWith(
             "/cms/content-entries/article?id=entry-r1%230001",
             "_blank",
             "noopener,noreferrer"
         );
 
-        fireEvent.keyDown(row.getByRole("button", { name: "More actions" }), { key: "Enter" });
+        await waitFor(() => expect(screen.queryByRole("menuitem")).toBeNull());
+        openMenu("Review one");
         await screen.findByRole("menuitem", { name: "Open content" });
         const names = screen.getAllByRole("menuitem").map(item => item.textContent);
-        expect(names).toEqual(["Open content", "View details", "Reassign", "Cancel review"]);
+        expect(names).toEqual([
+            "Open content",
+            "Open in new window",
+            "View details",
+            "Reassign",
+            "Cancel review"
+        ]);
     });
 
     it("opens the menu actions and View details", async () => {
@@ -365,7 +429,9 @@ describe("ReviewListView", () => {
         );
         await screen.findByText("Review one");
 
-        const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
+        const more = within(rowOf("Review one")).getByRole("button", {
+            name: "Actions for Review one"
+        });
         fireEvent.keyDown(more, { key: "Enter" });
         expect(await screen.findByRole("menuitem", { name: "Reassign" })).toBeTruthy();
         expect(screen.getByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
@@ -413,7 +479,9 @@ describe("ReviewListView", () => {
             })
         );
         await screen.findByText("Review one");
-        const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
+        const more = within(rowOf("Review one")).getByRole("button", {
+            name: "Actions for Review one"
+        });
         fireEvent.keyDown(more, { key: "Enter" });
         await screen.findByRole("menuitem", { name: "View details" });
         fireEvent.click(screen.getByText("View details"));
@@ -506,7 +574,7 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("Will change");
-        expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(false);
+        expect(isHighlighted("Will change")).toBe(false);
 
         act(() => {
             activity.notify({
@@ -518,9 +586,9 @@ describe("ReviewListView", () => {
         });
 
         await waitFor(() => {
-            expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(true);
+            expect(isHighlighted("Will change")).toBe(true);
         });
-        expect(rowOf("Stays the same").hasAttribute("data-highlighted")).toBe(false);
+        expect(isHighlighted("Stays the same")).toBe(false);
     });
 
     it("drops a row that left the tab", async () => {
@@ -608,98 +676,313 @@ describe("ReviewListView", () => {
         expect(listReviews.execute).toHaveBeenCalledTimes(2);
     });
 
-    it("shows the empty state of the tab and switches tabs", async () => {
+    const scopeControl = () => screen.getByRole("radiogroup", { name: "Whose reviews" });
+    const stateControl = () => screen.getByRole("radiogroup", { name: "Review state" });
+    const radioLabels = (group: HTMLElement) => {
+        return within(group)
+            .getAllByRole("radio")
+            .map(radio => radio.textContent);
+    };
+
+    it("shows the empty state of the scope and switches scopes", async () => {
         const { listReviews } = renderView({ results: [page([]), page([])] });
 
         expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
 
-        fireEvent.mouseDown(await screen.findByRole("tab", { name: "Team pool" }));
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "Team pool" }));
 
         expect(await screen.findByText("Your team pools are empty")).toBeTruthy();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ list: "pool", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({
+                scope: "pool",
+                where: { state: "inReview" },
+                sort: "lastChangedOn_ASC"
+            })
         );
     });
 
-    it("renders the four tabs in design order", async () => {
+    it("renders the four scopes and the five states in design order, with accessible names", async () => {
         renderView();
+        await screen.findByText("Nothing assigned to you");
 
-        const tabs = await screen.findAllByRole("tab");
-
-        expect(tabs.map(tab => tab.textContent)).toEqual([
+        expect(radioLabels(scopeControl())).toEqual([
             "Assigned to me",
             "Team pool",
             "Team in review",
-            "My requests"
+            "Requested by me",
+            "All"
         ]);
+        expect(radioLabels(stateControl())).toEqual([
+            "All",
+            "In review",
+            "Failed",
+            "Approved",
+            "Rejected"
+        ]);
+        const inReview = within(stateControl()).getByRole("radio", { name: "In review" });
+        expect(inReview.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("renders the Failed steps tab as the fifth tab for a viewer with reassign (QBZ-29)", async () => {
-        renderView({ permissions: REASSIGN });
-
-        const tabs = await screen.findAllByRole("tab");
-
-        expect(tabs.map(tab => tab.textContent)).toEqual([
-            "Assigned to me",
-            "Team pool",
-            "Team in review",
-            "My requests",
-            "Failed steps"
-        ]);
-    });
-
-    it("has no Failed steps tab for a viewer with the editor permission only", async () => {
+    it("renders All as the fifth scope for a viewer with the editor permission only (B7)", async () => {
         renderView({ permissions: [{ name: "workflows", editor: true }] });
+        await screen.findByText("Nothing assigned to you");
 
-        const tabs = await screen.findAllByRole("tab");
-
-        expect(tabs.map(tab => tab.textContent)).not.toContain("Failed steps");
-        expect(tabs).toHaveLength(4);
+        expect(radioLabels(scopeControl())).toHaveLength(5);
+        expect(radioLabels(scopeControl())).toContain("All");
     });
 
-    it("opens the tab named by the route with reassign and shows its empty state (QBZ-29)", async () => {
-        const { listReviews } = renderView({ initialTab: "failedSteps", permissions: REASSIGN });
+    it("disables the states empty by definition for the scope, without hiding them", async () => {
+        renderView({ initialScope: "pool" });
+        await screen.findByText("Your team pools are empty");
+
+        const disabled = within(stateControl())
+            .getAllByRole("radio")
+            .filter(radio => radio.hasAttribute("disabled"))
+            .map(radio => radio.textContent);
+        expect(disabled).toEqual(["Failed", "Approved", "Rejected"]);
+    });
+
+    it("tells a viewer in no team to ask a workflow manager, with no action (B17)", async () => {
+        renderView({ initialScope: "pool", teams: [] });
+
+        expect(await screen.findByText("You’re not in a reviewing team")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Ask a workflow manager to add you to a team that reviews Headless CMS content."
+            )
+        ).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    });
+
+    it("explains a disabled state in a tooltip on hover (B8)", async () => {
+        renderView({ initialScope: "pool" });
+        await screen.findByText("Your team pools are empty");
+
+        const approved = within(stateControl()).getByRole("radio", { name: "Approved" });
+        const label = approved.querySelector(
+            "[data-role='review-list-state-disabled']"
+        ) as HTMLElement;
+        fireEvent.pointerMove(label);
+        fireEvent.focus(label);
+
+        expect(
+            (await screen.findAllByText("Team pool only holds open reviews.")).length
+        ).toBeGreaterThan(0);
+        const inReview = within(stateControl()).getByRole("radio", { name: "In review" });
+        expect(inReview.querySelector("[data-role='review-list-state-disabled']")).toBeNull();
+    });
+
+    it("switches the state and keeps the scope", async () => {
+        const { listReviews } = renderView({
+            initialScope: "myRequests",
+            results: [page([]), page([])]
+        });
+        await screen.findByText("You haven’t requested any reviews");
+
+        fireEvent.click(within(stateControl()).getByRole("radio", { name: "Approved" }));
+
+        expect(await screen.findByText("No reviews match these filters")).toBeTruthy();
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { state: "approved" },
+                sort: "lastChangedOn_DESC"
+            })
+        );
+    });
+
+    it("opens the scope and state named by the route with reassign and shows their empty state (QBZ-29)", async () => {
+        const { listReviews } = renderView({
+            initialScope: "all",
+            initialState: "failed",
+            permissions: REASSIGN
+        });
 
         expect(await screen.findByText("No failed steps")).toBeTruthy();
         expect(
             screen.getByText("AI and automation steps that hit a technical error appear here.")
         ).toBeTruthy();
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({
+                scope: "all",
+                where: { state: "failed" },
+                sort: "lastChangedOn_ASC"
+            })
         );
-        const tab = screen.getByRole("tab", { name: "Failed steps" });
-        expect(tab.getAttribute("aria-selected")).toBe("true");
+        const all = within(scopeControl()).getByRole("radio", { name: "All" });
+        expect(all.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("falls back to the default tab when the route asks for Failed steps without permission", async () => {
-        const { listReviews } = renderView({ initialTab: "failedSteps" });
+    it("opens All when the route asks for it without permission (B7)", async () => {
+        const { listReviews } = renderView({ initialScope: "all", initialState: "failed" });
 
-        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
-        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(1));
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "assignedToMe" })
+            expect.objectContaining({ scope: "all", where: { state: "failed" } })
         );
-        expect(screen.queryByRole("tab", { name: "Failed steps" })).toBeNull();
+        const all = within(scopeControl()).getByRole("radio", { name: "All" });
+        expect(all.getAttribute("aria-checked")).toBe("true");
     });
 
-    it("switches to the Failed steps tab from the tab bar", async () => {
+    it("switches to All from the scope control without permission and shows its empty state", async () => {
         const { listReviews } = renderView({
-            permissions: REASSIGN,
             results: [page([]), page([])]
         });
         await screen.findByText("Nothing assigned to you");
 
-        fireEvent.mouseDown(await screen.findByRole("tab", { name: "Failed steps" }));
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "All" }));
 
-        expect(await screen.findByText("No failed steps")).toBeTruthy();
+        expect(await screen.findByText("No reviews yet")).toBeTruthy();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({ scope: "all", where: { state: "inReview" } })
         );
     });
 
-    it("lists a failed step with its tag, the step title as owner and an inline Restart (QBZ-29, QBZ-79)", async () => {
+    it("writes a scope and state change to the route and keeps the list when the route comes back", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        const { listReviews, rerenderRoute } = renderView({ onRouteChange });
+        await screen.findByText("Nothing assigned to you");
+        expect(onRouteChange).not.toHaveBeenCalled();
+
+        fireEvent.change(screen.getByPlaceholderText("Search..."), {
+            target: { value: "budget" }
+        });
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "Requested by me" }));
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "myRequests", state: "inReview" });
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+
+        rerenderRoute({ initialScope: "myRequests", initialState: "inReview" });
+        fireEvent.click(within(stateControl()).getByRole("radio", { name: "Approved" }));
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "myRequests", state: "approved" });
+        rerenderRoute({ initialScope: "myRequests", initialState: "approved" });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(4));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { titleContains: "budget", state: "approved" }
+            })
+        );
+        expect(screen.getByPlaceholderText<HTMLInputElement>("Search...").value).toBe("budget");
+        expect(onRouteChange).toHaveBeenCalledTimes(2);
+    });
+
+    it("writes the state a scope change falls back to", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        renderView({ initialScope: "myRequests", initialState: "approved", onRouteChange });
+        await screen.findByText("No reviews match these filters");
+
+        fireEvent.click(within(scopeControl()).getByRole("radio", { name: "Team pool" }));
+
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "pool", state: "inReview" });
+    });
+
+    it("writes the fallback of a route pair that is empty by definition", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        renderView({ initialScope: "pool", initialState: "failed", onRouteChange });
+        await screen.findByText("Your team pools are empty");
+
+        expect(onRouteChange).toHaveBeenCalledWith({ scope: "pool", state: "inReview" });
+    });
+
+    it("applies a route changed from outside and keeps the search", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        const { listReviews, rerenderRoute } = renderView({ onRouteChange });
+        await screen.findByText("Nothing assigned to you");
+        fireEvent.change(screen.getByPlaceholderText("Search..."), {
+            target: { value: "budget" }
+        });
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+
+        rerenderRoute({ initialScope: "all", initialState: "failed" });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "all",
+                where: { titleContains: "budget", state: "failed" }
+            })
+        );
+        const all = within(scopeControl()).getByRole("radio", { name: "All" });
+        expect(all.getAttribute("aria-checked")).toBe("true");
+        expect(onRouteChange).not.toHaveBeenCalled();
+    });
+
+    it("keeps the content model filter on a route changed from outside", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+        const { listReviews, rerenderRoute } = renderView({
+            contentTypeFilter: filter,
+            onRouteChange
+        });
+        await screen.findByText("Nothing assigned to you");
+        fireEvent.click(screen.getByRole("button", { name: "Filter" }));
+        const input = screen.getByPlaceholderText("All content models");
+        fireEvent.focus(input);
+        fireEvent.click(input);
+        fireEvent.click(screen.getByText("Article"));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        // Picking a content model writes nothing to the route.
+        expect(onRouteChange).not.toHaveBeenCalled();
+
+        rerenderRoute({ initialScope: "all", initialState: "all" });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "all",
+                where: { modelId: "article", state: "all" }
+            })
+        );
+        expect(screen.getByRole("button", { name: "Filter, 1 active" })).toBeTruthy();
+    });
+
+    it("writes the default state to the route when Clear filters resets it", async () => {
+        const onRouteChange = vi.fn<(params: ReviewListRouteParams) => void>();
         renderView({
-            initialTab: "failedSteps",
+            initialScope: "myRequests",
+            initialState: "rejected",
+            onRouteChange,
+            results: [page([]), page([])]
+        });
+        await screen.findByText("No reviews match these filters");
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+
+        expect(onRouteChange).toHaveBeenLastCalledWith({ scope: "myRequests", state: "all" });
+    });
+
+    it("shows the scope's empty text without Clear filters when nothing is filtered", async () => {
+        renderView({ initialScope: "myRequests", initialState: "inReview" });
+        expect(await screen.findByText("You haven’t requested any reviews")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    });
+
+    it("shows Clear filters only beside the filtered text", async () => {
+        const { listReviews } = renderView({ results: [page([]), page([]), page([])] });
+        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+
+        fireEvent.click(within(stateControl()).getByRole("radio", { name: "All" }));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+
+        fireEvent.change(screen.getByPlaceholderText("Search..."), {
+            target: { value: "budget" }
+        });
+        expect(await screen.findByText("No reviews match these filters")).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Clear filters" })).toBeTruthy();
+    });
+
+    it("lists a failed step with its tag, the step title as owner and a Restart menu item (QBZ-29, QBZ-79)", async () => {
+        renderView({
+            initialScope: "all",
+            initialState: "failed",
             permissions: REASSIGN,
             results: [
                 page([
@@ -719,18 +1002,20 @@ describe("ReviewListView", () => {
 
         const row = within(rowOf("Spring campaign"));
         expect(row.getByText("Failed")).toBeTruthy();
-        expect(row.getAllByText("AI tone check")).toHaveLength(2);
-        expect(row.getByRole("button", { name: "Restart" })).toBeTruthy();
+        expect(row.getByText("AI tone check")).toBeTruthy();
+        // The owner is no longer a column: it is in the hover text of the workflow status.
+        expect(row.getByTitle("AI tone check · AI tone check")).toBeTruthy();
+        expect(row.queryByRole("button", { name: "Restart" })).toBeNull();
 
-        const more = row.getByRole("button", { name: "More actions" });
-        fireEvent.keyDown(more, { key: "Enter" });
-        expect(await screen.findByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
-        expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
+        openMenu("Spring campaign");
+        expect(await screen.findByRole("menuitem", { name: "Restart" })).toBeTruthy();
+        expect(screen.getByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
     });
 
     it("opens the restart dialog on the row's use cases and refetches once when it is done (R210, R266)", async () => {
         const { listReviews, fakes } = renderView({
-            initialTab: "failedSteps",
+            initialScope: "all",
+            initialState: "failed",
             permissions: REASSIGN,
             results: [
                 page([
@@ -751,7 +1036,8 @@ describe("ReviewListView", () => {
         );
         await screen.findByText("Spring campaign");
 
-        fireEvent.click(within(rowOf("Spring campaign")).getByRole("button", { name: "Restart" }));
+        openMenu("Spring campaign");
+        fireEvent.click(await screen.findByText("Restart"));
 
         expect(await screen.findByText("Restart “AI tone check”?")).toBeTruthy();
         expect(fakes.getReview.execute).toHaveBeenCalledWith({
@@ -784,10 +1070,12 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("Plain review");
 
-        expect(within(rowOf("Plain review")).queryByRole("button", { name: "Restart" })).toBeNull();
+        openMenu("Plain review");
+        await screen.findByRole("menuitem", { name: "Open content" });
+        expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
     });
 
-    it("shows the Content type column and filter only when the app asks for them (D113)", async () => {
+    it("shows the Content model column and filter only when the app asks for them (D113)", async () => {
         const first = renderView({
             showContentType: true,
             contentTypeFilter: {
@@ -796,12 +1084,31 @@ describe("ReviewListView", () => {
             results: [page([createReviewListItem({ id: "r1", title: "With type" })])]
         });
         await screen.findByText("With type");
-        expect(screen.getByText("Content type")).toBeTruthy();
-        expect(screen.getAllByRole("combobox")).toHaveLength(1);
+        expect(screen.getByText("Content model")).toBeTruthy();
+        expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
         expect(first.listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
-    it("has neither Content type column nor filter without them (Website Builder)", async () => {
+    it("orders the columns as in the design, with a one-line Content model cell", async () => {
+        renderView({
+            showContentType: true,
+            contentTypeFilter: {
+                options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+            },
+            results: [page([createReviewListItem({ id: "r1", title: "Ordered" })])]
+        });
+        await screen.findByText("Ordered");
+
+        const headers = screen.getAllByRole("columnheader").map(header => header.textContent ?? "");
+        const positions = ["Name", "Content model", "Requested by", "Modified", "Workflow"].map(
+            name => headers.findIndex(text => text.startsWith(name))
+        );
+        expect(positions.every(position => position >= 0)).toBe(true);
+        expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+        expect(within(rowOf("Ordered")).queryByText("Headless CMS")).toBeNull();
+    });
+
+    it("has neither Content model column nor filter without them (Website Builder)", async () => {
         renderView({
             showContentType: false,
             contentTypeFilter: null,
@@ -809,41 +1116,155 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("No type");
 
-        expect(screen.queryByText("Content type")).toBeNull();
-        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByText("Content model")).toBeNull();
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
     });
 
-    it("shows the review state and step state filters on My requests", async () => {
-        renderView({ initialTab: "myRequests", showContentType: false });
+    it("lists one fixed content model without its column, filter or heading (entries list overlay)", async () => {
+        const { listReviews } = renderView({
+            showContentType: false,
+            contentTypeFilter: null,
+            fixedContentTypeId: "article",
+            title: null,
+            initialScope: "all",
+            initialState: "all",
+            results: [page([createReviewListItem({ id: "r1", title: "Fixed model" })])]
+        });
+        await screen.findByText("Fixed model");
+
+        expect(listReviews.execute).toHaveBeenCalledWith(
+            expect.objectContaining({ scope: "all", where: { modelId: "article", state: "all" } })
+        );
+        expect(screen.queryByText("Content model")).toBeNull();
+        expect(screen.queryByRole("button", { name: "Filter" })).toBeNull();
+        expect(screen.queryByRole("heading", { name: "Content Reviews" })).toBeNull();
+    });
+
+    it("shows the given heading, Content Reviews by default", async () => {
+        renderView({ title: "Content Reviews - Article" });
+        expect(
+            await screen.findByRole("heading", { name: "Content Reviews - Article" })
+        ).toBeTruthy();
+        cleanup();
+        renderView();
+        expect(await screen.findByRole("heading", { name: "Content Reviews" })).toBeTruthy();
+    });
+
+    it("has no separate review state or step state select on Requested by me", async () => {
+        renderView({ initialScope: "myRequests", showContentType: false });
         await screen.findByText("You haven’t requested any reviews");
-        expect(screen.getAllByRole("combobox")).toHaveLength(2);
+        expect(screen.queryAllByRole("combobox")).toHaveLength(0);
+        expect(screen.queryByText("Any review state")).toBeNull();
+        expect(screen.queryByText("Any step state")).toBeNull();
     });
 
-    it("uses the initial tab and the tab's default sort on the first request", async () => {
-        const { listReviews } = renderView({ initialTab: "myRequests" });
+    it("uses the initial scope, its default state and their default sort on the first request", async () => {
+        const { listReviews } = renderView({ initialScope: "myRequests" });
         await screen.findByText("You haven’t requested any reviews");
 
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "myRequests", sort: "lastChangedOn_DESC" })
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { state: "all" },
+                sort: "lastChangedOn_DESC"
+            })
         );
     });
 
-    it("toggles the sort from the Last change header", async () => {
+    it("sorts by title from the Name header, one sort at a time (B2 design 2)", async () => {
         const { listReviews } = renderView({
             results: [
+                page([createReviewListItem({ id: "r1", title: "Sortable" })]),
+                page([createReviewListItem({ id: "r1", title: "Sortable" })]),
+                page([createReviewListItem({ id: "r1", title: "Sortable" })])
+            ]
+        });
+        await screen.findByText("Sortable");
+        expect(isSortedBy("Modified")).toBe(true);
+        expect(isSortedBy("Name")).toBe(false);
+
+        clickHeader("Name");
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sort: "title_ASC" })
+        );
+        await waitFor(() => expect(isSortedBy("Name")).toBe(true));
+        expect(isSortedBy("Modified")).toBe(false);
+
+        clickHeader("Name");
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sort: "title_DESC" })
+        );
+        expect(isSortedBy("Name")).toBe(true);
+    });
+
+    it("toggles the sort from the Modified header", async () => {
+        const { listReviews } = renderView({
+            results: [
+                page([createReviewListItem({ id: "r1", title: "Sortable" })]),
                 page([createReviewListItem({ id: "r1", title: "Sortable" })]),
                 page([createReviewListItem({ id: "r1", title: "Sortable" })])
             ]
         });
         await screen.findByText("Sortable");
 
-        fireEvent.click(screen.getByTitle("Oldest change first"));
+        clickHeader("Modified");
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "lastChangedOn_DESC" })
         );
-        expect(await screen.findByTitle("Newest change first")).toBeTruthy();
+
+        // Never unsorted: a third click goes back to ascending.
+        clickHeader("Modified");
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ sort: "lastChangedOn_ASC" })
+        );
+        expect(isSortedBy("Modified")).toBe(true);
+    });
+
+    it("does not sort from the other headers", async () => {
+        const { listReviews } = renderView({
+            results: [page([createReviewListItem({ id: "r1", title: "Sortable" })])]
+        });
+        await screen.findByText("Sortable");
+
+        clickHeader("Requested by");
+        clickHeader("Workflow");
+
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+    });
+
+    it("hides and shows columns from the table settings, but never Name", async () => {
+        renderView({
+            results: [page([createReviewListItem({ id: "r1", title: "Configurable" })])]
+        });
+        await screen.findByText("Configurable");
+        expect(columnHeader("Requested by")).toBeTruthy();
+
+        const headers = screen.getAllByRole("columnheader");
+        const settings = within(headers[headers.length - 1]).getByRole("button");
+        fireEvent.keyDown(settings, { key: "Enter" });
+
+        const menu = await screen.findByRole("menu");
+        expect(within(menu).queryByText("Name")).toBeNull();
+        expect(within(menu).getByText("Content model")).toBeTruthy();
+        expect(within(menu).getByText("Workflow")).toBeTruthy();
+        expect(within(menu).getByText("Modified")).toBeTruthy();
+
+        fireEvent.click(within(menu).getByRole("checkbox", { name: "Requested by" }));
+        // The open menu hides the rest of the page from roles: close it before reading the headers.
+        fireEvent.keyDown(menu, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+
+        expect(screen.queryByRole("columnheader", { name: /^Requested by/ })).toBeNull();
+        expect(columnHeader("Name")).toBeTruthy();
+        expect(columnHeader("Workflow")).toBeTruthy();
     });
 
     it("renders the step state label of a row", async () => {

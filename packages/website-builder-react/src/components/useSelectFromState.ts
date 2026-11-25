@@ -1,4 +1,4 @@
-import deepEqual from "deep-equal";
+import isEqual from "lodash/isEqual.js";
 import { useState, useEffect, useMemo } from "react";
 import type { IReactionDisposer } from "mobx";
 import { reaction } from "mobx";
@@ -8,13 +8,14 @@ type Equals<T> = (a: T, b: T) => boolean;
 /**
  * Subscribe to part of the document state.
  * @param selector   Pick the slice of state you care about.
- * @param equals     (optional) comparator, defaults to Object.is
+ * @param equals     (optional) comparator, defaults to a strict structural compare
+ *                   (`lodash/isEqual`), cheap enough to run for every subscribed element
  */
 export function useSelectFromState<TState, T>(
     getState: () => TState,
     selector: (doc: TState) => T,
     deps: React.DependencyList = [],
-    equals: Equals<T> = deepEqual
+    equals: Equals<T> = isEqual
 ): T {
     // Pull the initial slice synchronously
     const initialValue = useMemo(() => selector(getState()), deps);

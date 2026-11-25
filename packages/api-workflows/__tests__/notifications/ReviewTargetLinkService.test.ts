@@ -147,6 +147,55 @@ describe("ReviewTargetLinkService.getUrl (R195, R196)", () => {
         expect(url).not.toContain("%2523");
     });
 
+    it("appends the review id, encoded, after the tenant when asked for the review details", async () => {
+        const { service, tenantContext } = await setup();
+        const tenantId = encodeURIComponent(tenantContext.getTenant().id);
+
+        const pageUrl = await service.getUrl({ ...PAGE_PARAMS, reviewId: "review-1" });
+        const cmsUrl = await service.getUrl({ ...CMS_PARAMS, reviewId: "review #2&x" });
+
+        expect(pageUrl).toBe(
+            `${ADMIN_URL}/website-builder/pages/editor/page-1%230002?tenantId=${tenantId}&reviewId=review-1`
+        );
+        expect(cmsUrl).toBe(
+            `${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}&reviewId=review%20%232%26x`
+        );
+    });
+
+    it("leaves the review id out when it is empty", async () => {
+        const { service, tenantContext } = await setup();
+        const tenantId = encodeURIComponent(tenantContext.getTenant().id);
+
+        const url = await service.getUrl({ ...PAGE_PARAMS, reviewId: "" });
+
+        expect(url).toBe(
+            `${ADMIN_URL}/website-builder/pages/editor/page-1%230002?tenantId=${tenantId}`
+        );
+    });
+
+    it("hands the port only the target, never the review id", async () => {
+        const seen: ReviewTargetLink.Params[] = [];
+        class RecordingPort implements ReviewTargetLink.Interface {
+            public canLink(): boolean {
+                return true;
+            }
+
+            public getPath(params: ReviewTargetLink.Params): string {
+                seen.push({ ...params });
+                return "/recorded";
+            }
+        }
+        const Recording = ReviewTargetLink.createImplementation({
+            implementation: RecordingPort,
+            dependencies: []
+        });
+        const { service } = await setup([Recording]);
+
+        await service.getUrl({ ...PAGE_PARAMS, reviewId: "review-1" });
+
+        expect(seen).toEqual([PAGE_PARAMS]);
+    });
+
     it("carries the id of a non-root tenant, encoded", async () => {
         const { service, tenantContext } = await setup();
         const child = { ...tenantContext.getTenant(), id: "child tenant/1" };

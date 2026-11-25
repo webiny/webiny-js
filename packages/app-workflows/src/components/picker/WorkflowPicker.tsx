@@ -43,7 +43,7 @@ export interface WorkflowPickerProps {
      * label), so `options` must already be the results of the `onSearch` text.
      */
     anyAsValue?: boolean;
-    // The icon in front of the field while no muted item is chosen. Defaults to "search".
+    // The icon in front of the field while no muted item is chosen; "none" for no icon. Defaults to "search".
     icon?: PickerFieldIcon;
     // Whether a chosen value can be cleared with the × button. Defaults to true.
     clearable?: boolean;
@@ -91,7 +91,10 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
      * The input holds only the label, so a chosen muted item (a deleted user or team, D117) shows
      * its muted icon in front of it, as it does in the list.
      */
-    let startIcon: IconElement = <PickerFieldIconView name={icon} />;
+    let startIcon: IconElement | undefined = undefined;
+    if (icon !== "none") {
+        startIcon = <PickerFieldIconView name={icon} />;
+    }
     const chosenOption = chosen.length > 0 ? chosen[0] : null;
     if (chosenOption !== null && chosenOption.muted && chosenOption.icon !== null) {
         startIcon = <PickerOptionIconView name={chosenOption.icon} muted={true} />;

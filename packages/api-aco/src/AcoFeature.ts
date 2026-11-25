@@ -41,6 +41,7 @@ import { ListFolderAccessFeature } from "~/features/flp/ListFolderAccess/index.j
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
 import { AcoAiToolsFeature } from "~/features/ai/index.js";
 import { NotifyFolderChangeFeature } from "~/features/folder/NotifyFolderChange/index.js";
+import { FolderTypePermissionsFeature } from "~/features/folder/FolderTypePermissions/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("api-aco/AcoSchemaFactoryImpl");
@@ -78,6 +79,8 @@ export const AcoFeature = createFeature({
         GetFolderHierarchyFeature.register(container);
         GetAncestorsFeature.register(container);
         EnsureFolderIsEmptyFeature.register(container);
+        // App permissions per folder type (each app registers FolderTypePermissions).
+        FolderTypePermissionsFeature.register(container);
         ListFlpsFeature.register(container);
         GetFlpFeature.register(container);
         ListFolderAccessFeature.register(container);

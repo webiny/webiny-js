@@ -5,43 +5,40 @@ import { userMock } from "~tests/mocks/user.mock";
 import { ROOT_FOLDER } from "~/constants";
 
 describe("`folder` CRUD", () => {
-    let folder1: Record<string, any>;
-    let folder2: Record<string, any>;
     let aco: ReturnType<typeof useGraphQlHandler>["aco"];
     let cms: ReturnType<typeof useGraphQlHandler>["cms"];
 
+    /**
+     * Creates a root-level parent folder. A child folder must have the same `type` as its
+     * parent, so tests create parents of the type they need (and only when they need them,
+     * so the parents do not show up in the per-type list assertions of other tests).
+     */
+    const createParentFolder = async (
+        title: string,
+        slug: string,
+        type: string
+    ): Promise<Record<string, any>> => {
+        const [response] = await aco.createFolder({
+            data: {
+                title,
+                slug,
+                type
+            }
+        });
+        return response.data.aco.createFolder.data;
+    };
+
     beforeEach(async () => {
         const handler = useGraphQlHandler({});
-
-        folder1 = await handler.aco
-            .createFolder({
-                data: {
-                    title: "Folder 1",
-                    slug: "folder-1",
-                    type: "xyz"
-                }
-            })
-            .then(([response]) => {
-                return response.data.aco.createFolder.data;
-            });
-
-        folder2 = await handler.aco
-            .createFolder({
-                data: {
-                    title: "Folder 2",
-                    slug: "folder-2",
-                    type: "xyz"
-                }
-            })
-            .then(([response]) => {
-                return response.data.aco.createFolder.data;
-            });
 
         aco = handler.aco;
         cms = handler.cms;
     });
 
     it("should be able to create, read, update and delete `folders`", async () => {
+        const folder1 = await createParentFolder("Folder 1", "folder-1", "page");
+        const folder2 = await createParentFolder("Folder 2", "folder-2", "cms");
+
         const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;
 
@@ -94,6 +91,12 @@ describe("`folder` CRUD", () => {
             data: [
                 {
                     parentId: null,
+                    path: `${ROOT_FOLDER}/${folder1.slug}`,
+                    slug: "folder-1",
+                    type: "page"
+                },
+                {
+                    parentId: null,
                     path: `${ROOT_FOLDER}/${folderMocks.folderA.slug}`,
                     slug: "folder-a",
                     type: "page"
@@ -115,13 +118,18 @@ describe("`folder` CRUD", () => {
             meta: {
                 cursor: null,
                 hasMoreItems: false,
-                totalCount: 3
+                totalCount: 4
             }
         });
 
         const [listFoldersResponse] = await aco.listFolders({ where: { type: "cms" } });
         expect(listFoldersResponse.data.aco.listFolders).toMatchObject({
             data: [
+                {
+                    parentId: null,
+                    slug: "folder-2",
+                    type: "cms"
+                },
                 {
                     parentId: folder2.id,
                     slug: "folder-d",
@@ -133,7 +141,7 @@ describe("`folder` CRUD", () => {
             meta: {
                 cursor: null,
                 hasMoreItems: false,
-                totalCount: 1
+                totalCount: 2
             }
         });
 
@@ -142,7 +150,7 @@ describe("`folder` CRUD", () => {
             where: { type: "page", createdBy: userMock.id }
         });
 
-        expect(existingUserResponse.data.aco.listFolders.data.length).toEqual(3);
+        expect(existingUserResponse.data.aco.listFolders.data.length).toEqual(4);
         expect(existingUserResponse.data.aco.listFolders.error).toBeNull();
 
         // TODO: enable this back once we've found the best way to support this.
@@ -157,12 +165,12 @@ describe("`folder` CRUD", () => {
         //     })
         // );
 
-        // Let's update the "folder-b".
+        // Let's update the "folder-b" and move it under "folder-c" (a parent of the same type).
         const update = {
             title: "Folder B - updated",
             slug: "folder-b-updated",
-            parentId: folder2.id,
-            path: `${ROOT_FOLDER}/${folder2.slug}/folder-b-updated`
+            parentId: folderC.id,
+            path: `${ROOT_FOLDER}/${folderC.slug}/folder-b-updated`
         };
 
         const [updateB] = await aco.updateFolder({
@@ -868,6 +876,8 @@ describe("`folder` CRUD", () => {
     });
 
     it("should allow creating a `folder` with same `slug` but different `parentId`", async () => {
+        const folder1 = await createParentFolder("Folder 1", "folder-1", "page");
+
         // Creating a folder
         await aco.createFolder({ data: folderMocks.folderA });
 
@@ -909,6 +919,8 @@ describe("`folder` CRUD", () => {
     });
 
     it("should not allow updating in case a folder with same `slug` at the same level (a.k.a. `parentId`) already exists.", async () => {
+        const folder1 = await createParentFolder("Folder 1", "folder-1", "page");
+
         // Creating "Folder A"
         const [responseA] = await aco.createFolder({ data: folderMocks.folderA });
         const folderA = responseA.data.aco.createFolder.data;

@@ -2,13 +2,18 @@ import {
     TaskDefinition,
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { ensureCanTriggerSystemTask } from "~/tasks/ensureCanTriggerSystemTask.js";
 import { ReindexRunner } from "./abstractions/ReindexRunner.js";
 import { IndexManagerFactory } from "~/abstractions/IndexManagerFactory.js";
 
 class ReindexTaskHandlerImpl implements TaskHandler.Interface<ReindexRunner.Input> {
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
-        private readonly runner: ReindexRunner.Interface
+        private readonly runner: ReindexRunner.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly tenantContext: TenantContext.Interface
     ) {}
 
     async run({ input, controller }: TaskHandler.RunParams<ReindexRunner.Input>) {
@@ -23,11 +28,23 @@ class ReindexTaskHandlerImpl implements TaskHandler.Interface<ReindexRunner.Inpu
         const cursor = input.cursor || undefined;
         return await this.runner.execute(cursor, input.limit || 100, indexManager);
     }
+
+    async onBeforeTrigger({ data }: TaskDefinition.BeforeTriggerParams<ReindexRunner.Input>) {
+        await ensureCanTriggerSystemTask({
+            identityContext: this.identityContext,
+            tenantContext: this.tenantContext
+        });
+        /**
+         * Security: index settings are internal state the task stores while it runs.
+         * Never take them from the caller.
+         */
+        delete data.input.settings;
+    }
 }
 
 const ReindexTaskHandler = TaskHandler.createImplementation({
     implementation: ReindexTaskHandlerImpl,
-    dependencies: [IndexManagerFactory, ReindexRunner]
+    dependencies: [IndexManagerFactory, ReindexRunner, IdentityContext, TenantContext]
 });
 
 class ReindexTaskImpl implements TaskDefinition.Interface {

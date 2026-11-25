@@ -6,9 +6,9 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
-import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import { createExclusionRowVm } from "~/settings/testing/createExclusionRowVm.js";
 import { createExclusionsPageViewModel } from "~/settings/testing/createExclusionsPageViewModel.js";
 import { createFakeExclusionsPagePresenter } from "~/settings/testing/fakeExclusionsPagePresenter.js";
@@ -98,19 +98,18 @@ describe("ExclusionsPage states (R322, R329)", () => {
             ).toBeTruthy();
             expect(
                 screen.getByText(
-                    "Take people out of automatic assignment for a while, e.g. during leave or when their workload is too high."
+                    "Take people out of automatic assignment for a while, e.g. during leave. Automatic assignment skips them and reviewer pickers show them as Unavailable; work they already hold stays with them."
                 )
             ).toBeTruthy();
             result.unmount();
         });
     });
 
-    it("shows five skeleton rows while loading, without the Add button, rules or toolbar", () => {
+    it("shows five skeleton rows while loading, without the Add button or toolbar", () => {
         renderPage(LOADING);
 
         expect(screen.getAllByTestId("exclusions-loading-row")).toHaveLength(5);
         expect(queryAddButtons()).toHaveLength(0);
-        expect(screen.queryByTestId("exclusions-rules")).toBeNull();
         expect(screen.queryByTestId("exclusions-toolbar")).toBeNull();
     });
 
@@ -144,7 +143,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
             screen.getByTestId("exclusions-no-access").querySelector("svg[aria-hidden]")
         ).not.toBeNull();
         expect(queryAddButtons()).toHaveLength(0);
-        expect(screen.queryByTestId("exclusions-rules")).toBeNull();
         expect(screen.queryByTestId("exclusions-toolbar")).toBeNull();
         expect(screen.queryByTestId("exclusions-table")).toBeNull();
     });
@@ -168,20 +166,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(queryAddButtons()).toHaveLength(0);
     });
 
-    it("shows the four rules with their icons when ready", () => {
-        const { result } = renderPage(READY);
-
-        expect(screen.getByText("Automatic assignment skips excluded people.")).toBeTruthy();
-        expect(screen.getByText("Reviewer pickers show them as Unavailable.")).toBeTruthy();
-        expect(screen.getByText("Work they already hold stays with them.")).toBeTruthy();
-        expect(screen.getByText("They can still start or take over work themselves.")).toBeTruthy();
-        const rules = result.container.querySelector('[data-testid="exclusions-rules"]');
-        const icons = Array.from(rules?.querySelectorAll("[data-icon]") ?? []).map(icon =>
-            icon.getAttribute("data-icon")
-        );
-        expect(icons).toEqual(["block", "person_off", "assignment_ind", "front_hand"]);
-    });
-
     it("shows the table with the rows when ready and not empty", () => {
         renderPage(READY);
 
@@ -190,13 +174,14 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(screen.queryByTestId("exclusions-empty")).toBeNull();
     });
 
-    it("shows the empty state with its icon, texts and Add exclusion", () => {
-        const { presenter, result } = renderPage(
+    it("shows the empty state with its icon and texts, and no Add button of its own", () => {
+        const { result } = renderPage(
             createExclusionsPageViewModel({
                 empty: {
                     title: "No exclusions",
-                    text: "Everyone in reviewing teams can be assigned automatically.",
-                    showAdd: true
+                    text: "Everyone in the reviewing teams can be assigned automatically.",
+                    showAdd: true,
+                    showClearSearch: false
                 }
             })
         );
@@ -204,17 +189,16 @@ describe("ExclusionsPage states (R322, R329)", () => {
         const empty = screen.getByTestId("exclusions-empty");
         expect(screen.getByText("No exclusions")).toBeTruthy();
         expect(
-            screen.getByText("Everyone in reviewing teams can be assigned automatically.")
+            screen.getByText("Everyone in the reviewing teams can be assigned automatically.")
         ).toBeTruthy();
         expect(empty.querySelector("[data-icon]")).toBeNull();
         expect(empty.querySelector("svg[aria-hidden]")).not.toBeNull();
         expect(screen.queryByTestId("exclusions-table")).toBeNull();
         expect(result.container.querySelector('[data-testid="exclusions-toolbar"]')).not.toBeNull();
 
-        const buttons = queryAddButtons();
-        expect(buttons).toHaveLength(2);
-        fireEvent.click(buttons[1]);
-        expect(presenter.openAdd).toHaveBeenCalledTimes(1);
+        // The toolbar button is the only add action.
+        expect(queryAddButtons()).toHaveLength(1);
+        expect(within(empty).queryByRole("button")).toBeNull();
     });
 
     it("shows the Expired empty state with the history icon and no button", () => {
@@ -224,7 +208,8 @@ describe("ExclusionsPage states (R322, R329)", () => {
                 empty: {
                     title: "No expired exclusions",
                     text: "Exclusions move here after their end date.",
-                    showAdd: false
+                    showAdd: false,
+                    showClearSearch: false
                 }
             })
         );
@@ -237,19 +222,25 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(queryAddButtons()).toHaveLength(1);
     });
 
-    it("shows the user-filter empty state without its button", () => {
-        renderPage(
+    it("shows the no-match empty state with Clear search, which empties the search", () => {
+        const { presenter } = renderPage(
             createExclusionsPageViewModel({
+                search: "zed",
                 empty: {
-                    title: "No exclusions for this user",
-                    text: "Everyone in reviewing teams can be assigned automatically.",
-                    showAdd: false
+                    title: "No one matches \u201czed\u201d",
+                    text: null,
+                    showAdd: false,
+                    showClearSearch: true
                 }
             })
         );
 
-        expect(screen.getByText("No exclusions for this user")).toBeTruthy();
+        expect(screen.getByText("No one matches \u201czed\u201d")).toBeTruthy();
         expect(queryAddButtons()).toHaveLength(1);
+
+        fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+
+        expect(presenter.setSearch).toHaveBeenCalledWith("");
     });
 
     it("shows the names banner with Try again, which retries the names (Q68.1)", () => {
@@ -300,66 +291,23 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
         expect(presenter.setTab).toHaveBeenCalledWith("all");
     });
 
-    it("names the user filter Filter by user without a visible label and shows All users while no user is chosen", () => {
-        renderPage(READY);
+    it("shows Search by name with its placeholder and the current text", () => {
+        renderPage(createExclusionsPageViewModel({ rows: [createExclusionRowVm()], search: "an" }));
 
-        expect(screen.queryByText("Filter by user")).toBeNull();
-        expect(screen.getByRole("group", { name: "Filter by user" })).toBeTruthy();
-        expect(screen.getByDisplayValue("All users")).toBeTruthy();
+        const input = screen.getByRole("textbox", { name: "Search by name" });
+        expect(input.getAttribute("placeholder")).toBe("Search by name");
+        expect((input as HTMLInputElement).value).toBe("an");
+        expect(screen.queryByText("All users")).toBeNull();
     });
 
-    it("lists the filter options and sets the picked user", async () => {
-        const options = [
-            createPickerOption({ id: "user-1", label: "Ana Kovač" }),
-            createPickerOption({
-                id: "user-9",
-                label: "Deleted user",
-                description: "user-9",
-                muted: true,
-                icon: "person_off"
-            })
-        ];
-        const { presenter } = renderPage(
-            createExclusionsPageViewModel({
-                rows: [createExclusionRowVm()],
-                filter: { value: null, selected: null, options }
-            })
-        );
-
-        const input = screen.getByRole("combobox");
-        fireEvent.focus(input);
-        fireEvent.keyDown(input, { key: "ArrowDown" });
-        fireEvent.click(await screen.findByText("user-9"));
-
-        expect(presenter.setUserFilter).toHaveBeenCalledWith("user-9");
-    });
-
-    it("sends the typed filter text to the presenter", () => {
+    it("sends the typed text to the presenter", () => {
         const { presenter } = renderPage(READY);
 
-        fireEvent.change(screen.getByRole("combobox"), { target: { value: "ana" } });
+        fireEvent.change(screen.getByRole("textbox", { name: "Search by name" }), {
+            target: { value: "ana" }
+        });
 
-        expect(presenter.searchUserFilter).toHaveBeenCalledWith("ana");
-    });
-
-    it("clears the filter through the All users row", async () => {
-        const selected = createPickerOption({ id: "user-1", label: "Ana Kovač" });
-        const { presenter } = renderPage(
-            createExclusionsPageViewModel({
-                rows: [createExclusionRowVm()],
-                filter: { value: "user-1", selected, options: [selected] }
-            })
-        );
-
-        const input = screen.getByRole("combobox");
-        fireEvent.focus(input);
-        fireEvent.keyDown(input, { key: "ArrowDown" });
-        // With a user chosen the input shows its name and the list filters by it, so type the
-        // clear row's label first (as `WorkflowPicker.test.tsx` does).
-        fireEvent.change(input, { target: { value: "All" } });
-        fireEvent.click(await screen.findByText("All users"));
-
-        expect(presenter.setUserFilter).toHaveBeenCalledWith(null);
+        expect(presenter.setSearch).toHaveBeenCalledWith("ana");
     });
 });
 
@@ -372,13 +320,5 @@ describe("ExclusionsPage frame and polish (C11, S2)", () => {
         renderPage(READY);
 
         expect(screen.getByRole("heading", { level: 1, name: "Reviewer exclusions" })).toBeTruthy();
-    });
-
-    it("renders the rules in an admin-ui Card", () => {
-        const { result } = renderPage(READY);
-
-        const rules = result.container.querySelector('[data-testid="exclusions-rules"]');
-
-        expect(rules?.querySelector('[data-card="body"]')).not.toBeNull();
     });
 });

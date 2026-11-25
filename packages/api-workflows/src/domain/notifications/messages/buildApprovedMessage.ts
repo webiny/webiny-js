@@ -1,4 +1,5 @@
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { REQUESTER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface ApprovedMessageParams {
     /** `review.title`. */
@@ -13,6 +14,8 @@ export const buildApprovedMessage = (params: ApprovedMessageParams): Notificatio
         body: "All steps approved. It’s ready to publish.",
         subject: `Approved: ${contentTitle}`,
         text: "Every step approved this revision. It’s ready to publish.",
-        linkLabel: "Open content"
+        linkLabel: "Open content",
+        link: "content",
+        footer: REQUESTER_FOOTER
     };
 };

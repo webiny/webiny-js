@@ -26,8 +26,6 @@ import type { RequestReviewPresenter } from "../abstractions.js";
 
 const PICK_HINT =
     "Picks are checked again when the step is reached. If the person is no longer eligible, a reviewer is assigned automatically.";
-const NOBODY_NOTE =
-    "No one other than you can review this step right now. It may wait in the team pool until someone reassigns it.";
 
 const PICK_BLOCK = "ml-lg flex flex-col gap-sm";
 
@@ -190,6 +188,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                             {step.allowManualPick && (
                                                 <div className={PICK_BLOCK}>
                                                     <RadioGroup
+                                                        orientation={"horizontal"}
                                                         items={[
                                                             {
                                                                 label: "Automatic",
@@ -215,13 +214,15 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                                     )}
                                                     {step.noCandidates && (
                                                         <Alert type={"warning"} variant={"subtle"}>
-                                                            <Text>{NOBODY_NOTE}</Text>
+                                                            <Text>{step.noCandidatesNote}</Text>
                                                         </Alert>
                                                     )}
-                                                    <FormComponentNote
-                                                        className={"mt-0"}
-                                                        text={PICK_HINT}
-                                                    />
+                                                    {step.mode === "pick" && (
+                                                        <FormComponentNote
+                                                            className={"mt-0"}
+                                                            text={PICK_HINT}
+                                                        />
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

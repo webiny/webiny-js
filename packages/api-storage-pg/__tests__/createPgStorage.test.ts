@@ -13,13 +13,13 @@ import {
     type ISqlSchemaSetupRequest
 } from "@webiny/api-core-sql";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createPgStorage } from "~/index.js";
 
 /**
  * The Postgres storage is generic: SQL core, websockets and audit logs. The CMS and ACO on Postgres
  * are modules the project adds with its extensions; their setup tests live with the handlers that
- * run them (`@webiny/api-event-handler-aws-pg`).
+ * run them (`@webiny/api-composition-aws-pg`).
  */
 
 const startPglite = async () => {

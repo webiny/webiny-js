@@ -50,6 +50,23 @@ describe("ReviewerPicker", () => {
         expect(screen.getByText("Picks are checked again.")).toBeTruthy();
     });
 
+    it("shows the label as a visible field label only with showLabel", async () => {
+        const presenter = createPresenter();
+        await presenter.init({
+            load: vi.fn().mockResolvedValue(CANDIDATES),
+            currentOwnerId: null,
+            selectedId: null
+        });
+
+        renderWithAdminUi(
+            <ReviewerPicker presenter={presenter} label={"New owner"} showLabel={true} />
+        );
+
+        // The visible field label is the only group-level name: the group itself carries no aria-label.
+        expect(screen.getByText("New owner", { selector: "span" })).toBeTruthy();
+        expect(screen.queryByRole("group", { name: "New owner" })).toBeNull();
+    });
+
     it("keeps the field on a load error and shows the error with Try again in the open list", async () => {
         const presenter = createPresenter();
         const load = vi
@@ -69,7 +86,7 @@ describe("ReviewerPicker", () => {
         await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(2));
     });
 
-    it("offers each person with initials and teams, the disabled one with its note", async () => {
+    it("offers each person with teams and no avatar, the disabled one with its note", async () => {
         const presenter = createPresenter();
         await presenter.init({
             load: vi.fn().mockResolvedValue(CANDIDATES),
@@ -83,7 +100,7 @@ describe("ReviewerPicker", () => {
         fireEvent.keyDown(input, { key: "ArrowDown" });
 
         expect(await screen.findByText("Ivan Horvat")).toBeTruthy();
-        expect(screen.getByText("IH")).toBeTruthy();
+        expect(screen.queryByText("IH")).toBeNull();
         expect(screen.getByText("Marketing")).toBeTruthy();
         expect(screen.getByText("Petra Novak")).toBeTruthy();
         expect(screen.getByText("Unavailable")).toBeTruthy();

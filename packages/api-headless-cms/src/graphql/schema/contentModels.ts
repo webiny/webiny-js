@@ -34,7 +34,8 @@ export const createModelsSchema = ({
                     if (result.isFail()) {
                         throw result.error;
                     }
-                    if (!result.value) {
+                    // Private models are internal and not exposed through the GraphQL API.
+                    if (!result.value || result.value.isPrivate) {
                         throw new NotFoundError(`Content model "${args.modelId}" was not found!`);
                     }
                     return new Response(result.value);

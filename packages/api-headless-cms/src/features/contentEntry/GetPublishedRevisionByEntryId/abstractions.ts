@@ -1,6 +1,10 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import {
+    EntryNotFoundError,
+    type EntryNotAuthorizedError,
+    type EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * GetPublishedRevisionByEntryId Use Case
@@ -13,6 +17,7 @@ export interface IGetPublishedRevisionByEntryIdUseCase {
 }
 
 export interface IGetPublishedRevisionByEntryIdUseCaseErrors {
+    notAuthorized: EntryNotAuthorizedError;
     repository: RepositoryError;
 }
 

@@ -1,10 +1,17 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { getSignedUrl, UploadPartCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import type { FileData } from "~/types.js";
+import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
 
 interface CreateMultiPartUploadParams {
     file: FileData;
     numberOfParts: number;
+    tenantId: string;
+    /**
+     * The file id, when it was provided by the client (not generated on the server).
+     */
+    clientId?: string;
 }
 
 export class CreateMultiPartUploadUseCase {
@@ -16,8 +23,10 @@ export class CreateMultiPartUploadUseCase {
         this.s3 = s3Client;
     }
 
-    async execute({ file, numberOfParts }: CreateMultiPartUploadParams) {
-        const s3Params = { Bucket: this.bucket, Key: file.key };
+    async execute({ file, numberOfParts, tenantId, clientId }: CreateMultiPartUploadParams) {
+        await ensureNewFileId({ s3: this.s3, bucket: this.bucket, file, tenantId, clientId });
+
+        const s3Params = { Bucket: this.bucket, Key: getFileStorageKey(tenantId, file.key) };
 
         const { UploadId } = await this.s3.createMultipartUpload(s3Params);
 

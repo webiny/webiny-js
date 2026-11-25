@@ -125,6 +125,7 @@ Run `yarn test` for each package below, sequentially. Count active tests first a
 - `handler-aws`
 - `api-graphql`
 - `lexical-converter`
+- `mailer-smtp`
 - `plugins`
 - `react-composition`
 - `react-properties`
@@ -163,6 +164,7 @@ Run `yarn test:os` for each package below, sequentially. Count active tests firs
 - `api-mailer`
 - `api-scheduler`
 - `api-workflows`
+- `mailer-smtp`
 - `tasks`
 
 **Packages that need ONLY `yarn test:os` (not in step 11):**

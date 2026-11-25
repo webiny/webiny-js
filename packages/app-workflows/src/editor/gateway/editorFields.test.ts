@@ -74,7 +74,8 @@ describe("editorFields", () => {
             "id",
             "name",
             "models",
-            "settingsSchema"
+            "settingsSchema",
+            "keySetting"
         ]);
         expect(words(EDITOR_NOTIFICATION_TRANSPORT_FIELDS)).toEqual(["id", "title", "description"]);
         expect(words(EDITOR_AI_MODEL_FIELDS)).toEqual(["id", "name", "providerId", "providerName"]);
@@ -110,8 +111,10 @@ describe("editorFields", () => {
         expect(words(EDITOR_TEAM_LIST_FIELDS)).toContain("missingIds");
     });
 
-    it("selects exactly id, displayName and teamIds of a user and the missing ids (R286)", () => {
-        expect(EDITOR_USER_LIST_FIELDS).toMatch(/users\s*\{\s*id\s+displayName\s+teamIds\s*\}/);
+    it("selects exactly id, displayName, teamIds and the teams by name of a user, and the missing ids (R286)", () => {
+        expect(EDITOR_USER_LIST_FIELDS).toMatch(
+            /users\s*\{\s*id\s+displayName\s+teamIds\s+teams\s*\{\s*id\s+name\s*\}\s*\}/
+        );
         expect(words(EDITOR_USER_LIST_FIELDS)).toContain("missingIds");
         expect(words(EDITOR_USER_LIST_FIELDS)).not.toContain("email");
     });

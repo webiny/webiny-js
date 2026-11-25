@@ -1,5 +1,5 @@
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
-import { HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/api-kernel-core";
+import { HttpRouteHandler } from "@webiny/api-kernel-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
@@ -9,6 +9,12 @@ import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
  * write invalidates it. `max-age=0` makes every other cache, which nothing invalidates, check back.
  */
 const CACHE_CONTROL = "public, max-age=0, s-maxage=31536000";
+
+/*
+ * The list depends on the caller and the tenant, so a shared cache must key it on both. CloudFront
+ * does through its cache policy; `Vary` tells any other shared cache to do the same.
+ */
+const VARY = "Authorization, X-Tenant";
 
 class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
     constructor(
@@ -28,7 +34,10 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
         }
         const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
-        return response.header("cache-control", CACHE_CONTROL).json(redirectsDto);
+        return response
+            .header("cache-control", CACHE_CONTROL)
+            .header("vary", VARY)
+            .json(redirectsDto);
     }
 }
 

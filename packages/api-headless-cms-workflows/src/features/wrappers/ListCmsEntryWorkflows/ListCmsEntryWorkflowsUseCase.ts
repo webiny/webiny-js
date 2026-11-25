@@ -2,7 +2,12 @@ import { Result } from "@webiny/feature/api";
 import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/CurrentReviewViewer/index.js";
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
 import type { Workflow } from "@webiny/api-workflows/domain/workflow/types.js";
+import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
+import { WorkflowsPermissions } from "@webiny/api-workflows/features/permissions/WorkflowsPermissions/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { isCmsWorkflow } from "../shared/cmsWorkflows.js";
+import { createCmsWorkflowReadCheck } from "../shared/canReadCmsWorkflow.js";
 import { ListCmsEntryWorkflowsUseCase as UseCase } from "./abstractions.js";
 
 const PAGE_SIZE = 100;
@@ -14,7 +19,10 @@ const PAGE_SIZE = 100;
 class ListCmsEntryWorkflowsUseCaseImpl implements UseCase.Interface {
     public constructor(
         private viewer: CurrentReviewViewer.Interface,
-        private listWorkflows: ListWorkflowsUseCase.Interface
+        private listWorkflows: ListWorkflowsUseCase.Interface,
+        private permissions: WorkflowsPermissions.Interface,
+        private getModel: GetModelUseCase.Interface,
+        private accessControl: AccessControl.Interface
     ) {}
 
     public async execute(): UseCase.Return {
@@ -46,11 +54,39 @@ class ListCmsEntryWorkflowsUseCaseImpl implements UseCase.Interface {
             }
         } while (after);
 
-        return Result.ok(workflows);
+        // Security: only the workflows the identity can read.
+        const canRead = createCmsWorkflowReadCheck({
+            permissions: this.permissions,
+            getModel: this.getModel,
+            accessControl: this.accessControl
+        });
+        const readable: Workflow[] = [];
+        try {
+            for (const workflow of workflows) {
+                // oxlint-disable-next-line no-await-in-loop -- model access is cached per model.
+                if (await canRead(workflow)) {
+                    readable.push(workflow);
+                }
+            }
+        } catch (error) {
+            return Result.fail(
+                new WorkflowPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
+        }
+
+        return Result.ok(readable);
     }
 }
 
 export const ListCmsEntryWorkflowsUseCase = UseCase.createImplementation({
     implementation: ListCmsEntryWorkflowsUseCaseImpl,
-    dependencies: [CurrentReviewViewer, ListWorkflowsUseCase]
+    dependencies: [
+        CurrentReviewViewer,
+        ListWorkflowsUseCase,
+        WorkflowsPermissions,
+        GetModelUseCase,
+        AccessControl
+    ]
 });

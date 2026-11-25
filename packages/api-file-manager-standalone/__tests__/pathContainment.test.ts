@@ -1,11 +1,12 @@
 import { promises as fs } from "node:fs";
+import { Result } from "@webiny/feature/api";
 import path from "node:path";
 import { afterEach } from "vitest";
 import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { invokeHttpRoute } from "@webiny/event-handler-core";
+import { invokeHttpRoute } from "@webiny/api-kernel-core";
 import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
 import { DeleteFileFromDiskHandler } from "~/features/DeleteFileFromDisk/DeleteFileFromDiskHandler.js";
 import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFileContentsByIdUseCase.js";
@@ -44,12 +45,17 @@ const traversalKeyTo = (target: string) => {
 };
 
 const makeAsset = (key: string) => ({
+    getTenant: () => TENANT_ID,
     getKey: () => key,
     getContentType: () => "text/plain"
 });
 
 const makeDeleteHandler = () => {
-    const keyValueStore = { delete: async () => {} } as any;
+    // No stored metadata, so the handler's tenant check on it has nothing to compare.
+    const keyValueStore = {
+        get: async () => Result.fail(new Error("Not found.")),
+        delete: async () => {}
+    } as any;
     const tenantContext = makeTenantContext();
     const config = makeConfig();
     return new DeleteFileFromDiskHandler(tenantContext, keyValueStore, config);
@@ -97,7 +103,7 @@ describe("local contents reader", () => {
         const reader = LocalContentsReader.create(getStoragePath());
         const asset = makeAsset(bucketKey) as any;
 
-        await expect(reader.read(asset)).rejects.toThrow("outside of the storage directory");
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant files folder");
     });
 });
 

@@ -3,7 +3,7 @@ import { REVIEW_WITH_FLAGS_FIELDS } from "@webiny/app-workflows/review/gateway/r
 
 export const LIST_WEBSITE_BUILDER_PAGE_REVIEWS = /* GraphQL */ `
     query ListWebsiteBuilderPageReviews(
-        $list: WorkflowsReviewListKind!
+        $scope: WorkflowsReviewListScope!
         $where: WbPageReviewListWhere
         $sort: WorkflowsReviewListSort
         $limit: Int
@@ -11,7 +11,7 @@ export const LIST_WEBSITE_BUILDER_PAGE_REVIEWS = /* GraphQL */ `
     ) {
         websiteBuilder {
             listWebsiteBuilderPageReviews(
-                list: $list
+                scope: $scope
                 where: $where
                 sort: $sort
                 limit: $limit

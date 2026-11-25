@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
-import type { EventDispatcher } from "@webiny/event-handler-core";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
+import type { InputDispatcher } from "@webiny/api-kernel-core";
 import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";
 import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { WriteConnectionRowsHandler } from "~/rows/WriteConnectionRowsHandler.js";
@@ -25,11 +25,11 @@ export const createMockLogger = () => ({
 export const createRowsDispatcher = (
     registry: ConnectionRegistry.Interface,
     logger: Logger.Interface = createMockLogger()
-): EventDispatcher.Interface => {
+): InputDispatcher.Interface => {
     const handler = new WriteConnectionRowsHandler(registry, logger);
     return {
         dispatch: async <TResult = unknown>(event: unknown) => {
-            const ctx = { event: event as IWebsocketsConnectionRowsEvent, metadata: {} };
+            const ctx = { input: event as IWebsocketsConnectionRowsEvent, metadata: {} };
             const result = await handler.execute(ctx, async () => null);
             return result as TResult;
         }

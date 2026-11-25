@@ -1,4 +1,4 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";

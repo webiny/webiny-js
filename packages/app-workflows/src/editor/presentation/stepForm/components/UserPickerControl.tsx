@@ -1,4 +1,6 @@
 import React from "react";
+import type { PickerFieldIcon } from "~/components/picker/PickerFieldIcon.js";
+import type { PickerSize } from "~/components/picker/PickerSize.js";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import { getReferenceSelection } from "../getReferenceSelection.js";
@@ -21,6 +23,14 @@ export interface UserPickerControlProps {
     teamNames: ReadonlyMap<string, string>;
     disabled: boolean;
     error: string | null;
+    // The leading icon of the field; the picker's default when not set.
+    icon?: PickerFieldIcon;
+    // The height of the field; the picker's default (`lg`) when not set.
+    size?: PickerSize;
+    // Show the clear row's label as the value while nothing is chosen (see `WorkflowPicker`).
+    anyAsValue?: boolean;
+    // Whether a chosen value has the × button; the picker's default (true) when not set.
+    clearable?: boolean;
     onChange(userId: string | null): void;
 }
 
@@ -64,6 +74,10 @@ export const UserPickerControl = (props: UserPickerControlProps) => {
             onChange={props.onChange}
             disabled={props.disabled}
             error={props.error}
+            icon={props.icon}
+            size={props.size}
+            anyAsValue={props.anyAsValue}
+            clearable={props.clearable}
         />
     );
 };

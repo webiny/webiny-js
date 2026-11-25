@@ -6,7 +6,10 @@ i18n.registerProcessor(defaultProcessor);
 
 describe("translate test with namespaces", () => {
     test("should translate correctly without variables", () => {
-        i18n.setTranslation("Some.Namespace.577b2243", "this is translated sample text");
+        i18n.setTranslation(
+            "Some.Namespace.FLtvaECSTEGYQxFbPN8mTAgRcD8fh58ule_a14-b-Fw",
+            "this is translated sample text"
+        );
         expect(t`this is a sample text`).toEqual("this is translated sample text");
         expect(t`this is a sample text without translation`).toEqual(
             "this is a sample text without translation"
@@ -15,7 +18,7 @@ describe("translate test with namespaces", () => {
 
     test("should translate correctly with variables", () => {
         i18n.setTranslation(
-            "Some.Namespace.1bd5ff54",
+            "Some.Namespace.IbADft8J7WKaTUjOWm7Q1Riu5xMI9zI6QUieH7hIKLo",
             "this {var1} translated {var2} text for translated {var3} professionals"
         );
         expect(

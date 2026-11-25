@@ -125,6 +125,28 @@ describe("GraphQLClient Feature", () => {
             expect(container.resolve(EventPublisher).publish).not.toHaveBeenCalled();
         });
 
+        it("should send keepalive only when the request asks for it", async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
+                json: async () => ({ data: { ok: true } })
+            });
+
+            const client = container.resolve(GraphQLClient);
+            await client.execute({
+                endpoint: "https://api.example.com/graphql",
+                query: "mutation { ping }",
+                keepalive: true
+            });
+            await client.execute({
+                endpoint: "https://api.example.com/graphql",
+                query: "mutation { ping }"
+            });
+
+            const calls = vi.mocked(global.fetch).mock.calls;
+            expect(calls[0][1]).toEqual(expect.objectContaining({ keepalive: true }));
+            expect(calls[1][1]).not.toHaveProperty("keepalive");
+        });
+
         it("should execute a mutation successfully", async () => {
             const mockResponse = {
                 data: { createUser: { id: "2", name: "Jane" } }
@@ -312,6 +334,61 @@ describe("GraphQLClient Feature", () => {
                 operationName: "GetPost",
                 extensions
             });
+        });
+
+        it("should send a keepalive request immediately, outside of any batch", async () => {
+            global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
+                json: async () => ({ data: { ok: true } })
+            });
+
+            const client = container.resolve(GraphQLClient);
+            const promise = client.execute({
+                endpoint: "https://api.example.com/graphql",
+                query: "mutation { ping }",
+                keepalive: true
+            });
+
+            // Sent synchronously, without waiting for the batch window.
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+            await promise;
+
+            const [, init] = vi.mocked(global.fetch).mock.calls[0];
+            expect(init).toEqual(expect.objectContaining({ keepalive: true }));
+            expect(JSON.parse(init!.body as string)).not.toBeInstanceOf(Array);
+        });
+
+        it("should not merge a keepalive request into a batch", async () => {
+            global.fetch = vi.fn().mockImplementation(async (_url, init) => {
+                const body = JSON.parse(init.body);
+                return {
+                    status: 200,
+                    json: async () =>
+                        Array.isArray(body) ? body.map(() => ({ data: {} })) : { data: {} }
+                };
+            });
+
+            const client = container.resolve(GraphQLClient);
+            await Promise.all([
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "mutation { ping }",
+                    keepalive: true
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { post { id } }"
+                })
+            ]);
+
+            const calls = vi.mocked(global.fetch).mock.calls;
+            expect(calls).toHaveLength(2);
+            expect(calls[0][1]).toEqual(expect.objectContaining({ keepalive: true }));
+            expect(JSON.parse(calls[1][1]!.body as string)).toHaveLength(2);
         });
 
         it("should execute single request without batching", async () => {

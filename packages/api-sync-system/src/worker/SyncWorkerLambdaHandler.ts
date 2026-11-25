@@ -1,8 +1,8 @@
 import { convertException } from "@webiny/utils";
 import { PluginsContainer } from "@webiny/plugins";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import { SyncWorkerEventHandler } from "./SyncWorkerEventHandler.js";
-import type { ISyncWorkerEvent, ISyncWorkerResult } from "./SyncWorkerEventHandler.js";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
+import { SyncWorkerInputHandler } from "./SyncWorkerInputHandler.js";
+import type { ISyncWorkerEvent, ISyncWorkerResult } from "./SyncWorkerInputHandler.js";
 import { SyncWorkerConfig } from "./SyncWorkerConfig.js";
 import type { ISyncWorkerConfig } from "./SyncWorkerConfig.js";
 import { WorkerActionHandler } from "~/worker/handler/WorkerActionHandler.js";
@@ -13,11 +13,11 @@ import { createCreateUserAction } from "~/worker/actions/createUser/createUserAc
 import { createUpdateUserAction } from "~/worker/actions/updateUser/updateUserAction.js";
 import { createDeleteUserAction } from "~/worker/actions/deleteUser/deleteUserAction.js";
 
-class SyncWorkerLambdaHandlerImpl implements SyncWorkerEventHandler.Interface {
+class SyncWorkerLambdaHandlerImpl implements SyncWorkerInputHandler.Interface {
     constructor(private config: ISyncWorkerConfig) {}
 
     async execute(
-        eventCtx: EventContext<ISyncWorkerEvent>,
+        inputCtx: InputContext<ISyncWorkerEvent>,
         _next: NextFunction
     ): Promise<ISyncWorkerResult> {
         const { createS3Client, createCognitoIdentityProviderClient } = this.config;
@@ -36,7 +36,7 @@ class SyncWorkerLambdaHandlerImpl implements SyncWorkerEventHandler.Interface {
         });
 
         try {
-            await handler.handle(eventCtx.event);
+            await handler.handle(inputCtx.input);
             return { success: true };
         } catch (ex) {
             console.error("Error while handling sync worker action.");
@@ -46,7 +46,7 @@ class SyncWorkerLambdaHandlerImpl implements SyncWorkerEventHandler.Interface {
     }
 }
 
-export const SyncWorkerLambdaHandler = SyncWorkerEventHandler.createImplementation({
+export const SyncWorkerLambdaHandler = SyncWorkerInputHandler.createImplementation({
     implementation: SyncWorkerLambdaHandlerImpl,
     dependencies: [SyncWorkerConfig]
 });

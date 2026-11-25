@@ -2,7 +2,7 @@ import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.j
 import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { Response } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
-import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { GetWebhookSettingsUseCase } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import type { IUpdateWebhookSettingsInput } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 
@@ -43,8 +43,8 @@ class WebhookSettingsSchema_ implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WebhookQuery.getSettings",
-            dependencies: [GetWebhookSettingsRepository],
-            resolver: (getSettings: GetWebhookSettingsRepository.Interface) => {
+            dependencies: [GetWebhookSettingsUseCase],
+            resolver: (getSettings: GetWebhookSettingsUseCase.Interface) => {
                 return async () => {
                     const result = await getSettings.execute();
                     if (result.isFail()) {

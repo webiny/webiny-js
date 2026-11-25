@@ -1,6 +1,6 @@
 import { jsonPatch, type JsonPatchOperation } from "~/jsonPatch.js";
 import type { Document } from "~/types.js";
-import { makeAutoObservable, runInAction, observable } from "mobx";
+import { makeAutoObservable, runInAction, observable, toJS } from "mobx";
 
 export class DocumentStore<TDocument extends Document = Document> {
     private document: TDocument | null = null;
@@ -11,10 +11,18 @@ export class DocumentStore<TDocument extends Document = Document> {
         makeAutoObservable(this);
     }
 
+    /**
+     * Puts `doc` in the store. A document already in it takes only the differences, value by
+     * value, so a subscriber (an element's bindings) is notified only when its own part changed:
+     * replacing whole objects would re-run every subscriber for any change.
+     */
     setDocument(doc: TDocument) {
         runInAction(() => {
             if (this.document) {
-                Object.assign(this.document, doc);
+                const changes = jsonPatch.compare(toJS(this.document), doc);
+                if (changes.length) {
+                    jsonPatch.applyPatch(this.document, changes, false, true);
+                }
             } else {
                 this.document = observable(doc);
             }

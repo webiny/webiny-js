@@ -8,6 +8,9 @@ const uploadMinFileSizeValidation = zod
     .min(MIN_FILE_SIZE, {
         message: `Value needs to be greater than or equal to ${MIN_FILE_SIZE}.`
     })
+    .max(MAX_FILE_SIZE, {
+        message: `Value needs to be lesser than or equal to ${MAX_FILE_SIZE}.`
+    })
     .nullish()
     .transform(value => {
         return value || MIN_FILE_SIZE;
@@ -25,6 +28,15 @@ const uploadMaxFileSizeValidation = zod
     })
     .optional();
 
+const isHttpUrl = (value: string): boolean => {
+    try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:";
+    } catch {
+        return false;
+    }
+};
+
 export const updateSettingsValidation = zod.object({
     uploadMinFileSize: uploadMinFileSizeValidation,
     uploadMaxFileSize: uploadMaxFileSizeValidation,
@@ -34,6 +46,9 @@ export const updateSettingsValidation = zod.object({
      */
     srcPrefix: zod
         .string()
+        .refine(value => !value || isHttpUrl(value), {
+            message: "Value needs to be an absolute http(s) URL."
+        })
         .optional()
         .transform(value => {
             if (!value) {
@@ -42,3 +57,17 @@ export const updateSettingsValidation = zod.object({
             return value.endsWith("/") ? value : value + "/";
         })
 });
+
+/**
+ * Validates the settings after the input has been merged with the stored settings,
+ * so rules that span fields also hold for partial updates.
+ */
+export const mergedSettingsValidation = zod
+    .object({
+        uploadMinFileSize: zod.number(),
+        uploadMaxFileSize: zod.number()
+    })
+    .refine(settings => settings.uploadMinFileSize <= settings.uploadMaxFileSize, {
+        path: ["uploadMinFileSize"],
+        message: "Value needs to be lesser than or equal to the maximum file upload size."
+    });

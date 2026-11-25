@@ -28,7 +28,13 @@ export interface ListedReviewParams {
     state?: ReviewState;
     /** Default "awaiting". */
     stepState?: StepState | null;
+    /** The current owner; also stored as the owner of the first step, as the save path would. */
     ownerId?: string | null;
+    /**
+     * User owners of the steps by index ("legal", "editorial"), `null` for none; replaces the
+     * first step's owner from `ownerId` (B9).
+     */
+    stepOwnerIds?: (string | null)[];
     /** Default `[REVIEW_TEAM_ID]`. */
     teamIds?: string[];
     /** Default "review". */
@@ -43,9 +49,17 @@ export const listedAt = (minute: number): string => {
     return `2026-10-09T10:${String(minute).padStart(2, "0")}:00.000Z`;
 };
 
+const toStepOwner = (id: string | null | undefined): Actor | null => {
+    if (!id) {
+        return null;
+    }
+    return { type: "user", id, displayName: id };
+};
+
 /**
- * A review with the list fields set directly, as the save path would store them. Lists read only
- * the top-level fields, so the steps stay those of a freshly requested review.
+ * A review with the list fields set directly, as the save path would store them. Lists read the
+ * top-level fields and the step owners; the rest of the steps stay those of a freshly requested
+ * review.
  */
 export const createListedReview = (params: ListedReviewParams): ReviewData => {
     const base = toSaveData(
@@ -62,8 +76,13 @@ export const createListedReview = (params: ListedReviewParams): ReviewData => {
     } else if (params.folderId !== undefined) {
         targetFolder = { id: params.folderId, type: folder?.type ?? "cms:article" };
     }
+    const stepOwnerIds = params.stepOwnerIds ?? [params.ownerId ?? null];
+    const steps = base.steps.map((step, index) => {
+        return { ...step, owner: toStepOwner(stepOwnerIds[index]) };
+    });
     return {
         ...base,
+        steps,
         targetContext: {
             ...base.targetContext,
             folder: targetFolder,
@@ -107,15 +126,20 @@ export const createReadFilter = (
     };
 };
 
-/** The `reviewer` fixture as viewer, member of `REVIEW_TEAM_ID`, every article readable. */
+/**
+ * The `reviewer` fixture as viewer, member of `REVIEW_TEAM_ID`, with `reassign`, every article
+ * readable: the pool in review, oldest change first by default.
+ */
 export const createListInput = (
     overrides: Partial<ListReviewsUseCase.Input> = {}
 ): ListReviewsUseCase.Input => {
     return {
-        list: "pool",
+        scope: "pool",
+        where: { state: "inReview" },
         viewerUserId: reviewer.id,
         viewerTeamIds: [REVIEW_TEAM_ID],
         readFilter: createReadFilter(),
+        viewerCanReassign: true,
         ...overrides
     };
 };

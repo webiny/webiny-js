@@ -4,6 +4,12 @@ export {
     MailBeforeSendEventHandler,
     MailAfterSendEventHandler
 } from "@webiny/api-mailer/features/SendMail/index.js";
+export { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
+export {
+    MailTransport,
+    MailTransportFactory
+} from "@webiny/api-mailer/domain/MailTransport/abstractions.js";
+export { TransportSettingsDefinition } from "@webiny/api-mailer/domain/TransportSettings/abstractions.js";
 export {
     GetSettingsUseCase,
     GetSettingsRepository
@@ -14,8 +20,3 @@ export {
     MailerSettingsAfterSaveEventHandler,
     MailerSettingsBeforeSaveEventHandler
 } from "@webiny/api-mailer/features/SaveSettings/index.js";
-export { IsMailerConfiguredUseCase } from "@webiny/api-mailer/features/IsMailerConfigured/index.js";
-export {
-    MailTransport,
-    MailTransportFactory
-} from "@webiny/api-mailer/domain/MailTransport/abstractions.js";

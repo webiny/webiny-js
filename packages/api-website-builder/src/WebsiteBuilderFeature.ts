@@ -77,6 +77,9 @@ import { EnsureWbPageFolderIsEmptyOnDeleteFeature } from "./features/folders/Ens
 import { EnsureWbRedirectFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbRedirectFolderIsEmptyOnDelete/feature.js";
 // Misc
 import { WbPermissionsFeature } from "./features/permissions/feature.js";
+import { WbFolderPermissions } from "./features/folderPermissions/WbFolderPermissions.js";
+import { GetIntegrationsFeature } from "./features/settings/GetIntegrations/index.js";
+import { UpdateIntegrationsFeature } from "./features/settings/UpdateIntegrations/index.js";
 import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
 import { NextjsFeature } from "./features/nextjs/feature.js";
 import { NuxtFeature } from "./features/nuxt/feature.js";
@@ -122,6 +125,11 @@ export const WebsiteBuilderFeature = createFeature({
 
         // Permissions.
         WbPermissionsFeature.register(container);
+        container.register(WbFolderPermissions);
+
+        // Integrations hold third-party credentials; the use cases check who may read or change them.
+        GetIntegrationsFeature.register(container);
+        UpdateIntegrationsFeature.register(container);
 
         // Redirect features + REST route.
         GetRedirectByIdFeature.register(container);

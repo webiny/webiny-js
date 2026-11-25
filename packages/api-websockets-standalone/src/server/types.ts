@@ -2,7 +2,8 @@ import type { Server as HttpServer } from "node:http";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 /**
  * Resolves a connection's identity from the `?token` JWT sent on the WebSocket upgrade — the SAME
@@ -42,6 +43,11 @@ export interface CreateWebsocketsServerParams extends BaseServerParams {
 
 export interface AttachWebsocketsServerParams extends BaseServerParams {
     server: HttpServer;
+    /**
+     * The adapter that takes upgrades. Pass the one registered in the container, so the sockets it
+     * opens are the ones sends and disconnects act on.
+     */
+    adapter: WebsocketsServerAdapter.Interface<unknown>;
 }
 
 export interface IWebsocketsServer {

@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { observable, runInAction } from "mobx";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
@@ -613,5 +614,52 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
 
         expect(unpublished).toBe(true);
         expect(fake.presenter.setContext).not.toHaveBeenCalled();
+    });
+
+    describe("canSave changing after the revision loaded", () => {
+        async function loadWithCanSaveFalse(): Promise<void> {
+            base.loadRevision.mockImplementation(async () => {
+                base.vm = observable(loadedVm({ canSave: false }));
+            });
+            await presenter.loadRevision("entry-1#0001");
+        }
+
+        function enableCanSave(): void {
+            runInAction(() => {
+                base.vm.canSave = true;
+            });
+        }
+
+        it("refreshes the review context when canSave turns true", async () => {
+            await loadWithCanSaveFalse();
+
+            expect(fake.presenter.init.mock.calls[0][0].canRequest).toBe(false);
+            expect(fake.presenter.setContext).not.toHaveBeenCalled();
+
+            enableCanSave();
+
+            expect(fake.presenter.setContext).toHaveBeenCalledTimes(1);
+            expect(fake.presenter.setContext).toHaveBeenCalledWith(
+                expect.objectContaining({ canRequest: true })
+            );
+        });
+
+        it("stops watching canSave after reset", async () => {
+            await loadWithCanSaveFalse();
+
+            presenter.reset();
+            enableCanSave();
+
+            expect(fake.presenter.setContext).not.toHaveBeenCalled();
+        });
+
+        it("stops watching canSave after newEntry", async () => {
+            await loadWithCanSaveFalse();
+
+            presenter.newEntry();
+            enableCanSave();
+
+            expect(fake.presenter.setContext).not.toHaveBeenCalled();
+        });
     });
 });

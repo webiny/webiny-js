@@ -59,7 +59,7 @@ export const getReviewActions = (params: ReviewActionsParams): TargetReviewActio
             label: "Reject",
             icon: "close",
             stepId,
-            emphasis: "tertiary",
+            emphasis: "secondary",
             disabledReason: null
         });
     }
@@ -99,7 +99,7 @@ export const getReviewActions = (params: ReviewActionsParams): TargetReviewActio
             label: "Restart",
             icon: "refresh",
             stepId,
-            emphasis: "primary",
+            emphasis: "secondary",
             disabledReason: null
         });
     }

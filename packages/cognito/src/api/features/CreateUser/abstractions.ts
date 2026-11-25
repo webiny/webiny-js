@@ -7,7 +7,11 @@ import type {
     UserValidationError
 } from "@webiny/api-core/features/users/shared/errors.js";
 import type { RepositoryError } from "@webiny/api-core/features/users/shared/abstractions.js";
-import type { CognitoAccountExistsError, CognitoCreateUserError } from "~/api/domain/errors.js";
+import type {
+    CognitoAccountExistsError,
+    CognitoAccountInOtherTenantError,
+    CognitoCreateUserError
+} from "~/api/domain/errors.js";
 
 export interface CreateAdminUserInput {
     id?: string;
@@ -27,6 +31,7 @@ export interface ICreateUserUseCaseErrors {
     emailTaken: EmailTakenError;
     repository: RepositoryError;
     cognitoAccountExists: CognitoAccountExistsError;
+    cognitoAccountInOtherTenant: CognitoAccountInOtherTenantError;
     cognitoCreateUser: CognitoCreateUserError;
 }
 
@@ -41,5 +46,6 @@ export const CreateUserUseCase = createAbstraction<ICreateUserUseCase>("CreateUs
 export namespace CreateUserUseCase {
     export type Interface = ICreateUserUseCase;
     export type Input = CreateAdminUserInput;
+    export type Output = AdminUser;
     export type Error = CreateAdminUserError;
 }

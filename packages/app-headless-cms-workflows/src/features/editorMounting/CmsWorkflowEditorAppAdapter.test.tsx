@@ -66,7 +66,7 @@ describe("CmsWorkflowEditorAppAdapter", () => {
 
         expect(adapter.appKind).toBe("cms");
         expect(adapter.panelLabel).toBe("Content models");
-        expect(adapter.appliesToLabel).toBe("Headless CMS model");
+        expect(adapter.appliesToLabel).toBe("Headless CMS");
         expect(adapter.contentAdapter).toBe(contentAdapter);
     });
 

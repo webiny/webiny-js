@@ -14,18 +14,35 @@ describe("mergeUserNames (R321, D117)", () => {
         expect(names.get("user-a")).toEqual({
             userId: "user-a",
             label: "Ana Kovač",
-            state: "found"
+            state: "found",
+            teamNames: []
         });
         expect(names.get("user-b")).toEqual({
             userId: "user-b",
             label: "Deleted user",
-            state: "deleted"
+            state: "deleted",
+            teamNames: []
         });
+    });
+
+    it("keeps the names of the user's teams", () => {
+        const ana = createWorkflowUserSummary({
+            id: "user-a",
+            displayName: "Ana Kovač",
+            teams: [
+                { id: "team-1", name: "Editors" },
+                { id: "team-2", name: "Legal" }
+            ]
+        });
+
+        const names = mergeUserNames(new Map(), { users: [ana], missingIds: [] });
+
+        expect(names.get("user-a")?.teamNames).toEqual(["Editors", "Legal"]);
     });
 
     it("keeps the known names and returns a new map", () => {
         const known = new Map<string, ExclusionUserName>();
-        known.set("user-c", { userId: "user-c", label: "Cid", state: "found" });
+        known.set("user-c", { userId: "user-c", label: "Cid", state: "found", teamNames: [] });
 
         const names = mergeUserNames(known, { users: [], missingIds: [] });
 
@@ -35,7 +52,7 @@ describe("mergeUserNames (R321, D117)", () => {
 
     it("replaces an unknown name with the answer", () => {
         const known = new Map<string, ExclusionUserName>();
-        known.set("user-a", { userId: "user-a", label: "user-a", state: "unknown" });
+        known.set("user-a", { userId: "user-a", label: "user-a", state: "unknown", teamNames: [] });
         const ana = createWorkflowUserSummary({ id: "user-a", displayName: "Ana Kovač" });
 
         const names = mergeUserNames(known, { users: [ana], missingIds: [] });

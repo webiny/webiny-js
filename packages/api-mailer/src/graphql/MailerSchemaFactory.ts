@@ -2,31 +2,14 @@ import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.j
 import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse } from "@webiny/api-graphql/responses.js";
+import { SendTestMailUseCase } from "~/features/SendTestMail/abstractions.js";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
-import { SendTestMailUseCase } from "~/features/SendTestMail/abstractions.js";
-import type { MailerSettingsSource } from "~/features/GetSettings/abstractions.js";
-import type { SaveSettingsInput } from "~/features/SaveSettings/abstractions.js";
-import type { TransportSettings } from "~/types.js";
-import { SMTP_TRANSPORT_NAME } from "~/constants.js";
 
-// Strip `password` before the settings leave the server and tack on `source`
-// so the admin UI can branch on code-vs-storage. Accepts both the full
-// `TransportSettings` (from getSettings) and the already-stripped
-// `Omit<TransportSettings, "password">` (from saveSettings) — defense in depth
-// even when the input type carries no password to begin with.
-const toPublicSettings = (
-    settings: TransportSettings | Omit<TransportSettings, "password"> | null,
-    source: MailerSettingsSource
-): (Omit<TransportSettings, "password"> & { source: MailerSettingsSource }) | null => {
-    if (!settings) {
-        return null;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _password, ...publicSettings } = settings as TransportSettings;
-    return { ...publicSettings, source };
-};
-
+/*
+ * The `mailer` namespaces, the test email, and the settings of any transport that registers a
+ * `TransportSettingsDefinition`, as JSON. Secrets are never returned.
+ */
 class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("api-mailer/MailerSchemaFactoryImpl");
 
@@ -38,48 +21,38 @@ class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 data: JSON
             }
 
-            type MailerTransportSettings {
-                host: String
-                port: Number
-                secure: Boolean
-                user: String
-                from: String
-                replyTo: String
-                source: String
-            }
-
-            type MailerTransportSettingsResponse {
-                data: MailerTransportSettings
-                error: MailerTransportSettingsError
-            }
-
-            type MailerQuery {
-                getSettings: MailerTransportSettingsResponse!
-            }
-
-            input MailerTransportSettingsInput {
-                host: String!
-                port: Number
-                secure: Boolean
-                user: String!
-                password: String
-                from: String!
-                replyTo: String
-            }
-
             type MailerSendTestMailResponse {
                 data: Boolean
                 error: MailerTransportSettingsError
             }
 
+            type MailerTransportSettingsData {
+                transport: String!
+                settings: JSON
+                source: String
+            }
+
+            type MailerTransportSettingsDataResponse {
+                data: MailerTransportSettingsData
+                error: MailerTransportSettingsError
+            }
+
+            type MailerQuery {
+                getTransportSettings(transport: String!): MailerTransportSettingsDataResponse!
+            }
+
             type MailerMutation {
-                saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
                 sendTestMail(to: String!): MailerSendTestMailResponse!
+                saveTransportSettings(
+                    transport: String!
+                    settings: JSON!
+                ): MailerTransportSettingsDataResponse!
             }
 
             extend type Query {
                 mailer: MailerQuery
             }
+
             extend type Mutation {
                 mailer: MailerMutation
             }
@@ -95,44 +68,44 @@ class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             resolver: () => async () => ({})
         });
 
-        builder.addResolver({
-            path: "MailerQuery.getSettings",
+        builder.addResolver<{ transport: string }>({
+            path: "MailerQuery.getTransportSettings",
             dependencies: [GetSettingsUseCase],
-            resolver: (getSettings: GetSettingsUseCase.Interface) => async () => {
-                try {
-                    const result = await getSettings.execute(SMTP_TRANSPORT_NAME);
-
-                    if (result.isFail()) {
-                        return new ErrorResponse(result.error);
+            resolver:
+                (getSettings: GetSettingsUseCase.Interface) =>
+                async ({ args }) => {
+                    try {
+                        const result = await getSettings.execute(args.transport);
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
+                        return {
+                            data: { transport: args.transport, ...result.value },
+                            error: null
+                        };
+                    } catch (ex) {
+                        return new ErrorResponse(ex);
                     }
-
-                    const { settings, source } = result.value;
-
-                    return {
-                        data: toPublicSettings(settings, source),
-                        error: null
-                    };
-                } catch (ex) {
-                    return new ErrorResponse(ex);
                 }
-            }
         });
 
-        builder.addResolver<{ data: SaveSettingsInput }>({
-            path: "MailerMutation.saveSettings",
+        builder.addResolver<{ transport: string; settings: Record<string, unknown> }>({
+            path: "MailerMutation.saveTransportSettings",
             dependencies: [SaveSettingsUseCase],
             resolver:
                 (saveSettings: SaveSettingsUseCase.Interface) =>
                 async ({ args }) => {
                     try {
-                        const result = await saveSettings.execute(args.data);
-
+                        const result = await saveSettings.execute(args.transport, args.settings);
                         if (result.isFail()) {
                             return new ErrorResponse(result.error);
                         }
-
                         return {
-                            data: toPublicSettings(result.value, "storage"),
+                            data: {
+                                transport: args.transport,
+                                settings: result.value,
+                                source: "storage"
+                            },
                             error: null
                         };
                     } catch (ex) {

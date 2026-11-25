@@ -1,9 +1,9 @@
 import { ErrorResponse, ListResponse, NotFoundError, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
-import { ensurePermission } from "~/utils/ensurePermission.js";
+import { GetIntegrationsUseCase } from "~/features/settings/GetIntegrations/index.js";
+import { UpdateIntegrationsUseCase } from "~/features/settings/UpdateIntegrations/index.js";
 import { resolve } from "~/utils/resolve.js";
-import { WEBSITE_BUILDER_INTEGRATIONS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
@@ -21,7 +21,6 @@ import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
-import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
@@ -215,16 +214,14 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbQuery.getIntegrations",
-        dependencies: [KeyValueStore],
-        resolver(keyValueStore) {
-            return async ({ context }) => {
-                ensureAuthentication(context);
-                const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
-                if (settings.isFail()) {
-                    return new Response({});
+        dependencies: [GetIntegrationsUseCase],
+        resolver(getIntegrations) {
+            return async () => {
+                const result = await getIntegrations.execute();
+                if (result.isFail()) {
+                    return new ErrorResponse(result.error);
                 }
-
-                return new Response(settings.value);
+                return new Response(result.value);
             };
         }
     });
@@ -504,19 +501,17 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
         }
     });
 
-    // TODO: move these settings updates into dedicated use cases
     builder.addResolver({
         path: "WbMutation.updateIntegrations",
-        dependencies: [KeyValueStore],
-        resolver(keyValueStore) {
-            return ({ args, context }) =>
-                resolve(async () => {
-                    ensureAuthentication(context);
-                    await ensurePermission(context, "wb.integrations");
-                    await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
-
-                    return true;
-                });
+        dependencies: [UpdateIntegrationsUseCase],
+        resolver(updateIntegrations) {
+            return async ({ args }) => {
+                const result = await updateIntegrations.execute(args.data);
+                if (result.isFail()) {
+                    return new ErrorResponse(result.error);
+                }
+                return new Response(true);
+            };
         }
     });
 

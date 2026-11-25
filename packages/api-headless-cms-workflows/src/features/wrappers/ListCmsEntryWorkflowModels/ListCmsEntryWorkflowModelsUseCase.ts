@@ -78,32 +78,6 @@ class ListCmsEntryWorkflowModelsUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowPersistenceError(models.error));
         }
 
-        const search = (input.search ?? "").trim().toLowerCase();
-        const matching = (models.isOk() ? models.value : [])
-            .filter(model => isBindableModel(model))
-            .filter(model => !isSingletonModel(model))
-            .filter(model => {
-                if (!search) {
-                    return true;
-                }
-                return (
-                    model.name.toLowerCase().includes(search) ||
-                    model.modelId.toLowerCase().includes(search)
-                );
-            })
-            .sort(compareModels);
-        const requested =
-            typeof input.limit === "number" && Number.isFinite(input.limit)
-                ? Math.floor(input.limit)
-                : DEFAULT_LIMIT;
-        const limit = Math.min(Math.max(requested, 1), MAX_LIMIT);
-        const page = matching.slice(cursor.offset, cursor.offset + limit);
-        const nextOffset = cursor.offset + page.length;
-        const hasMoreItems = nextOffset < matching.length;
-        if (page.length === 0) {
-            return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });
-        }
-
         // One list for every row; v1 binds one model per workflow (D15).
         const workflows = await this.listWorkflows.execute();
         if (workflows.isFail()) {
@@ -118,6 +92,39 @@ class ListCmsEntryWorkflowModelsUseCaseImpl implements UseCase.Interface {
                     stepCount: workflow.steps.length
                 });
             }
+        }
+
+        const search = (input.search ?? "").trim().toLowerCase();
+        const hasWorkflow = typeof input.hasWorkflow === "boolean" ? input.hasWorkflow : null;
+        const matching = (models.isOk() ? models.value : [])
+            .filter(model => isBindableModel(model))
+            .filter(model => !isSingletonModel(model))
+            .filter(model => {
+                if (!search) {
+                    return true;
+                }
+                return (
+                    model.name.toLowerCase().includes(search) ||
+                    model.modelId.toLowerCase().includes(search)
+                );
+            })
+            .filter(model => {
+                if (hasWorkflow === null) {
+                    return true;
+                }
+                return bound.has(toCmsNamespace(model.modelId)) === hasWorkflow;
+            })
+            .sort(compareModels);
+        const requested =
+            typeof input.limit === "number" && Number.isFinite(input.limit)
+                ? Math.floor(input.limit)
+                : DEFAULT_LIMIT;
+        const limit = Math.min(Math.max(requested, 1), MAX_LIMIT);
+        const page = matching.slice(cursor.offset, cursor.offset + limit);
+        const nextOffset = cursor.offset + page.length;
+        const hasMoreItems = nextOffset < matching.length;
+        if (page.length === 0) {
+            return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });
         }
 
         return Result.ok({

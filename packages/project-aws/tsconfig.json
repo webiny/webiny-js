@@ -4,6 +4,7 @@
   "references": [
     { "path": "../aws-sdk" },
     { "path": "../cli-core" },
+    { "path": "../mailer-smtp" },
     { "path": "../project" },
     { "path": "../project-extensions-aws" },
     { "path": "../pulumi" },
@@ -21,6 +22,8 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
+      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
+      "@webiny/mailer-smtp": ["../mailer-smtp/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],

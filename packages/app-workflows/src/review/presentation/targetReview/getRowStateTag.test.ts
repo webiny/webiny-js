@@ -10,7 +10,11 @@ describe("getRowStateTag", () => {
     it("returns the step-state tag of a row with a step state", () => {
         const row = toReviewListRow(createReviewListItem({ stepState: StepState.InReview }));
 
-        expect(getRowStateTag(row)).toEqual({ label: "In review", variant: "accent-light" });
+        expect(getRowStateTag(row)).toEqual({
+            label: "In review",
+            variant: "accent-light",
+            icon: "rate_review"
+        });
     });
 
     it("returns no label and the neutral variant without a step state", () => {
@@ -24,7 +28,7 @@ describe("getRowStateTag", () => {
 
         expect(getRowStateTag(row)).toEqual({
             label: "Failed",
-            variant: "destructive",
+            variant: "destructive-light",
             icon: "sync_problem"
         });
     });

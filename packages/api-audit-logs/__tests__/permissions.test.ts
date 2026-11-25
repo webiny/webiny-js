@@ -20,6 +20,22 @@ const LIST_AUDIT_LOGS = /* GraphQL */ `
     }
 `;
 
+const GET_AUDIT_LOG = /* GraphQL */ `
+    query GetAuditLog($id: ID!) {
+        auditLogs {
+            getAuditLog(id: $id) {
+                data {
+                    id
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
 describe("audit logs permissions", () => {
     it("should not list audit logs without access to audit logs", async () => {
         const { handler, invoke } = useHandler({
@@ -78,6 +94,30 @@ describe("audit logs permissions", () => {
                     listAuditLogs: {
                         data: [{ id: auditLog!.id }],
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not reveal whether an audit log exists without access to audit logs", async () => {
+        const { invoke } = useHandler({
+            permissions: [{ name: "cms.*" }]
+        });
+
+        const [response] = await invoke({
+            body: { query: GET_AUDIT_LOG, variables: { id: "unknown-id" } }
+        });
+
+        expect(response).toEqual({
+            data: {
+                auditLogs: {
+                    getAuditLog: {
+                        data: null,
+                        error: {
+                            code: "NOT_AUTHORIZED",
+                            message: "You cannot access audit logs."
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
@@ -8,7 +8,6 @@ import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { WebsocketsFeature } from "~/features/feature.js";
-import { WebsocketsGraphQLFactoryFeature } from "~/graphql/feature.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport.js";
 import { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
@@ -72,7 +71,6 @@ export const useHandler = (params?: UseHandlerParams) => {
                 websocketsStorage.createConnectionRegistry()
             );
             WebsocketsFeature.register(container);
-            WebsocketsGraphQLFactoryFeature.register(container);
             container.registerInstance(WebsocketsTransport, new MockWebsocketsTransport());
 
             // Built-in routes are registered by WebsocketsFeature; register any custom routes.

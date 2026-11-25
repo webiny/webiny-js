@@ -19,7 +19,7 @@ const LOCK_IN_REVIEW =
 const LOCK_APPROVED =
     "Editing is locked. To make changes, create a new revision; it needs a new review.";
 const LOCK_REJECTED =
-    "This revision is locked for good. Create a new revision to fix it, then request a new review.";
+    "This revision is locked. Create a new revision to fix it, then request a new review.";
 
 const params = (overrides: Partial<ReviewMessageParams> = {}): ReviewMessageParams => {
     return {
@@ -83,7 +83,7 @@ describe("getReviewMessage", () => {
 
     it("asks for a review when there is none", () => {
         expect(getReviewMessage(params({ status: "none" }))).toEqual({
-            message: "This content needs review before publishing",
+            message: "This content needs a review before it can be published.",
             lockText: "Publishing needs an approved review."
         });
     });
@@ -110,7 +110,7 @@ describe("getReviewMessage", () => {
             ]
         });
         expect(getReviewMessage(params({ review, flags: createFlags() }))).toEqual({
-            message: "Waiting in the Marketing, Compliance team pool",
+            message: "Waiting in the Marketing, Compliance team pool.",
             lockText: LOCK_IN_REVIEW
         });
     });
@@ -132,7 +132,7 @@ describe("getReviewMessage", () => {
         const result = getReviewMessage(
             params({ review, flags: createFlags(), viewerTeamIds: ["t1", "t3"] })
         );
-        expect(result.message).toBe("Waiting in the Marketing and Compliance team pool");
+        expect(result.message).toBe("Waiting in the Marketing and Compliance team pool.");
     });
 
     it("names all the step's teams for a viewer outside them", () => {
@@ -151,27 +151,27 @@ describe("getReviewMessage", () => {
         const result = getReviewMessage(
             params({ review, flags: createFlags(), viewerTeamIds: ["other"] })
         );
-        expect(result.message).toBe("Waiting in the Marketing, Legal team pool");
+        expect(result.message).toBe("Waiting in the Marketing, Legal team pool.");
     });
 
     it("does not invent a team name when none resolved", () => {
         const review = createReview();
         const result = getReviewMessage(params({ review, flags: createFlags() }));
-        expect(result.message).toBe("Waiting in the team pool");
+        expect(result.message).toBe("Waiting in the team pool.");
     });
 
     it("tells the owner that they are reviewing", () => {
         const flags = createFlags({ canApprove: true, canReject: true });
         const message = getReviewMessage(params({ review: inReview(), flags }));
         expect(message).toEqual({
-            message: "You are reviewing this step",
+            message: "You are reviewing this step.",
             lockText: LOCK_IN_REVIEW
         });
     });
 
-    it("names someone else who is reviewing", () => {
+    it("names someone else who is reviewing this step.", () => {
         const message = getReviewMessage(params({ review: inReview(), flags: createFlags() }));
-        expect(message.message).toBe("Luka Perić is reviewing");
+        expect(message.message).toBe("Luka Perić is reviewing this step.");
     });
 
     it("reads '{Step} failed.' for a failed step without a reason (R263, R264)", () => {
@@ -222,7 +222,7 @@ describe("getReviewMessage", () => {
             steps: [createStep({ state: StepState.Approved })]
         });
         expect(getReviewMessage(params({ review }))).toEqual({
-            message: "Approved, ready to publish",
+            message: "Every step approved. Ready to publish.",
             lockText: LOCK_APPROVED
         });
     });
@@ -273,13 +273,13 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
         });
     };
 
-    it("reads '{Step} running since {hh:mm}' for a running AI step and keeps the lock text", () => {
+    it("reads '{Step} is running.' for a running AI step and keeps the lock text", () => {
         const review = reviewWith(createRunningAiStep());
 
         const result = getReviewMessage(params({ review, flags: createFlags() }));
 
         expect(result).toEqual({
-            message: "AI tone check running since 14:20",
+            message: "AI tone check is running.",
             lockText: LOCK_IN_REVIEW
         });
     });
@@ -289,7 +289,7 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
 
         const result = getReviewMessage(params({ review, flags: createFlags() }));
 
-        expect(result.message).toBe("Notify web team running since 09:05");
+        expect(result.message).toBe("Notify web team is running.");
     });
 
     it("keeps the running message even when the viewer flags allow an approval", () => {
@@ -298,7 +298,7 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
 
         const result = getReviewMessage(params({ review, flags }));
 
-        expect(result.message).toBe("AI tone check running since 14:20");
+        expect(result.message).toBe("AI tone check is running.");
     });
 
     it("falls back to '{Step} is reviewing' for a running step without a start time", () => {
@@ -306,7 +306,7 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
 
         const result = getReviewMessage(params({ review, flags: createFlags() }));
 
-        expect(result.message).toBe("AI tone check is reviewing");
+        expect(result.message).toBe("AI tone check is reviewing this step.");
     });
 
     it("names a running AI step by its title, never by the model", () => {
@@ -315,7 +315,7 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
 
         const result = getReviewMessage(params({ review, flags: createFlags() }));
 
-        expect(result.message).toBe("AI tone check running since 09:05");
+        expect(result.message).toBe("AI tone check is running.");
         expect(result.message).not.toContain("gpt-model-9");
     });
 
@@ -348,6 +348,6 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
 
         const result = getReviewMessage(params({ review: reviewWith(step), flags: createFlags() }));
 
-        expect(result.message).toBe("Luka Perić is reviewing");
+        expect(result.message).toBe("Luka Perić is reviewing this step.");
     });
 });

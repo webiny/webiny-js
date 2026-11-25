@@ -14,9 +14,10 @@ const BUILD_FOLDERS = ["build", "build-web"];
 const WEB_BUILD_FOLDER = "build-web";
 
 /**
- * After `build api` with `<Infra.Postgres />`: put knex and pg into each bundle's `node_modules`, so
- * the functions that run it can load them, and the RDS CA bundle into `build-web`, so the web
- * function can verify the database's certificate. The api deploy uploads those folders as they are.
+ * After `build api` with `<Infra.AuroraPostgres />`: put knex and pg into each bundle's
+ * `node_modules`, so the functions that run it can load them, and the RDS CA bundle into
+ * `build-web`, so the web function can verify the database's certificate. The api deploy uploads
+ * those folders as they are.
  */
 export class CopyPgModulesAfterApiBuildImpl implements ApiAfterBuild.Interface {
     constructor(

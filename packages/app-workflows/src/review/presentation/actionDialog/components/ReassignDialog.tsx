@@ -52,6 +52,7 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
                 }
             }}
             title={vm.title}
+            description={vm.description}
             loading={vm.status === "loading" || vm.submitting}
             actions={actions}
         >
@@ -82,7 +83,8 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
                 {vm.showPicker && (
                     <ReviewerPicker
                         presenter={presenter.getPickerPresenter()}
-                        label={"Reviewer"}
+                        label={"New owner"}
+                        showLabel={true}
                         hint={vm.hint}
                     />
                 )}

@@ -37,12 +37,14 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
             | "releaseLockUseCase"
             | "forceUnlockUseCase"
             | "identityContext"
+            | "handlePageHide"
         >(this, {
             acquireLockUseCase: false,
             checkLockStatusUseCase: false,
             releaseLockUseCase: false,
             forceUnlockUseCase: false,
             identityContext: false,
+            handlePageHide: false,
             vm: computed
         });
     }
@@ -70,6 +72,8 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
 
     async init(entryId: string, type: string): Promise<void> {
         const { id } = parseIdentifier(entryId);
+
+        this.addPageHideListener();
 
         this._entryId = id;
         this._type = type;
@@ -164,8 +168,25 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
         });
     }
 
+    async release(): Promise<void> {
+        if (this._status !== "acquired" || !this._entryId || !this._type) {
+            return;
+        }
+
+        const id = this._entryId;
+        const type = this._type;
+
+        // State is cleared first so a later dispose() does not send a second unlock.
+        this.stopHeartbeat();
+        this.removePageHideListener();
+        this.resetState();
+
+        await this.releaseLockUseCase.execute({ id, type });
+    }
+
     dispose(): void {
         this.stopHeartbeat();
+        this.removePageHideListener();
 
         if (this._status === "acquired" && this._entryId && this._type) {
             this.releaseLockUseCase
@@ -173,10 +194,43 @@ class RecordLockingPresenterImpl implements IRecordLockingPresenter {
                 .catch(() => {});
         }
 
+        this.resetState();
+    }
+
+    private resetState(): void {
         this._status = null;
         this._lockRecord = null;
         this._entryId = null;
         this._type = null;
+    }
+
+    /**
+     * Only sends the unlock. Heartbeat and state stay as they are: if the browser restores the page
+     * from the back/forward cache, the heartbeat re-acquires the lock by itself.
+     */
+    private handlePageHide = (): void => {
+        if (this._status !== "acquired" || !this._entryId || !this._type) {
+            return;
+        }
+
+        this.releaseLockUseCase
+            .execute({ id: this._entryId, type: this._type, keepalive: true })
+            .catch(() => {});
+    };
+
+    private addPageHideListener(): void {
+        if (typeof window === "undefined") {
+            return;
+        }
+        window.removeEventListener("pagehide", this.handlePageHide);
+        window.addEventListener("pagehide", this.handlePageHide);
+    }
+
+    private removePageHideListener(): void {
+        if (typeof window === "undefined") {
+            return;
+        }
+        window.removeEventListener("pagehide", this.handlePageHide);
     }
 
     private startHeartbeat(entryId: string, type: string): void {

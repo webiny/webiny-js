@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import { vi } from "vitest";
 import { beforeEach } from "vitest";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createConnectionManager } from "~tests/helpers/createConnectionManager.js";
 import { InMemoryLiveSockets } from "~/liveSockets/InMemoryLiveSockets.js";
 import { ServerWebsocketsTransportImpl } from "~/transport/ServerWebsocketsTransport.js";
@@ -52,7 +52,6 @@ const createAdapter = (): WebsocketsServerAdapter.Interface<unknown> => ({
     start: vi.fn(),
     stop: vi.fn().mockResolvedValue(undefined),
     handleUpgrade: vi.fn(),
-    onConnection: vi.fn(),
     onMessage: vi.fn(),
     onClose: vi.fn(),
     onError: vi.fn(),

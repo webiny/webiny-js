@@ -3,7 +3,7 @@ import { REVIEW_WITH_FLAGS_FIELDS } from "@webiny/app-workflows/review/gateway/r
 
 export const LIST_CMS_ENTRY_REVIEWS = /* GraphQL */ `
     query ListCmsEntryReviews(
-        $list: WorkflowsReviewListKind!
+        $scope: WorkflowsReviewListScope!
         $where: CmsEntryReviewListWhere
         $sort: WorkflowsReviewListSort
         $limit: Int
@@ -11,7 +11,7 @@ export const LIST_CMS_ENTRY_REVIEWS = /* GraphQL */ `
     ) {
         cms {
             listCmsEntryReviews(
-                list: $list
+                scope: $scope
                 where: $where
                 sort: $sort
                 limit: $limit

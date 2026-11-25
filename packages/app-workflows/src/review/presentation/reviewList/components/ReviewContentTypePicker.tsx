@@ -44,13 +44,13 @@ export const ReviewContentTypePicker = (props: ReviewContentTypePickerProps) => 
             options={shown}
             onSearch={setSearch}
             onChange={onChange}
-            placeholder={"All content types"}
-            anyLabel={"All content types"}
+            placeholder={"All content models"}
+            anyLabel={"All content models"}
             anyAsValue={true}
             icon={"filter_list"}
             disabled={false}
             error={null}
-            label={""}
+            label={"Content model"}
             size={"md"}
         />
     );

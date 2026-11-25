@@ -5,15 +5,14 @@ import { RadioGroup } from "@webiny/admin-ui";
 import type { RadioGroupPrimitiveProps } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { ASSIGNMENT_STRATEGY_CARDS } from "../assignmentStrategyCards.js";
-import { StrategyCardLabel } from "./assignmentStrategy/StrategyCardLabel.js";
 import "../stepFormRendererNames.js";
 
 const LABEL_ID = "assignment-strategy-label";
 const ITEM_ID_PREFIX = "assignment-strategy";
 
 /*
- * Strategy (R297, R305, D21): three radio cards over the stock `RadioGroup`, whose item labels are
- * the cards. The field value is the stored strategy; a stored value the editor does not know is
+ * Strategy (R297, R305, D21): three radios over the stock `RadioGroup`, each item with its name as
+ * the label and the strategy's description under it. The field value is the stored strategy; a stored value the editor does not know is
  * `null` and selects no card (R314). The group is named by the visible label.
  */
 export const AssignmentStrategyRenderer = createFieldRenderer<"workflowAssignmentStrategy">(
@@ -26,7 +25,8 @@ export const AssignmentStrategyRenderer = createFieldRenderer<"workflowAssignmen
             items.push({
                 id: `${ITEM_ID_PREFIX}-${card.value}`,
                 value: card.value,
-                label: <StrategyCardLabel card={card} />
+                label: card.name,
+                description: card.description
             });
         }
 
