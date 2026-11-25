@@ -24,6 +24,7 @@ import { GetLatestRevisionByEntryIdFeature } from "./GetLatestRevisionByEntryId/
 import { GetPublishedRevisionByEntryIdFeature } from "./GetPublishedRevisionByEntryId/feature.js";
 import { UnpublishEntryFeature } from "./UnpublishEntry/feature.js";
 import { GetUniqueFieldValuesFeature } from "./GetUniqueFieldValues/feature.js";
+import { ListEntryAuthorsFeature } from "./ListEntryAuthors/feature.js";
 import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
 import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
@@ -52,6 +53,7 @@ export const ContentEntriesFeature = createFeature({
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);
         GetUniqueFieldValuesFeature.register(container);
+        ListEntryAuthorsFeature.register(container);
         GetSingletonEntryFeature.register(container);
 
         // Provider features

@@ -17,6 +17,7 @@ import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
+import { ListEntryAuthorsUseCase } from "~/features/contentEntry/ListEntryAuthors/index.js";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -412,6 +413,16 @@ export const createContentEntriesSchema = ({
                 id: ID!
             }
 
+            type CmsContentEntryAuthor {
+                id: ID!
+                displayName: String!
+            }
+
+            type CmsContentEntryAuthorsResponse {
+                data: [CmsContentEntryAuthor!]
+                error: CmsError
+            }
+
             extend type Query {
                 # Search content entries for given content models using the query string.
                 searchContentEntries(
@@ -420,6 +431,9 @@ export const createContentEntriesSchema = ({
                     fields: [String!]
                     limit: Int
                 ): CmsContentEntriesResponse!
+
+                # Users who can read the given content model's entries, to filter entries by author.
+                listContentEntryAuthors(modelId: ID!): CmsContentEntryAuthorsResponse!
 
                 # Get content entry meta data
                 getContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
@@ -519,6 +533,25 @@ export const createContentEntriesSchema = ({
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
+                },
+                async listContentEntryAuthors(_, args: any, context) {
+                    const models = await context.cms.listModels({ includePrivate: false });
+                    const model = models.find(m => m.modelId === args.modelId);
+                    if (!model) {
+                        return new NotAuthorizedResponse({
+                            data: {
+                                modelId: args.modelId
+                            }
+                        });
+                    }
+
+                    const useCase = context.container.resolve(ListEntryAuthorsUseCase);
+                    const result = await useCase.execute(model);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 },
                 async getContentEntry(_, args: any, context) {
                     return getContentEntry({
