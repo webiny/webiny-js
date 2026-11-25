@@ -1,5 +1,6 @@
 import { computed } from "mobx";
 import { makeAutoObservable } from "mobx";
+import { reaction } from "mobx";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { getCmsEntryReviewContext } from "~/presentation/getCmsEntryReviewContext.js";
@@ -23,14 +24,19 @@ interface SaveRevisionOptions {
 class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Interface {
     private phase: ReviewPhase = "idle";
     private revisionId: string | null = null;
+    private stopWatchingCanSave: (() => void) | null = null;
 
     constructor(
         private readonly session: CmsEntryReview.Interface,
         private readonly original: ContentEntryFormPresenter.Interface
     ) {
-        makeAutoObservable<CmsEntryFormPresenterWithReview, "session" | "original">(this, {
+        makeAutoObservable<
+            CmsEntryFormPresenterWithReview,
+            "session" | "original" | "stopWatchingCanSave"
+        >(this, {
             session: false,
             original: false,
+            stopWatchingCanSave: false,
             vm: computed
         });
     }
@@ -251,6 +257,32 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
     private setPhase(phase: ReviewPhase, revisionId: string | null): void {
         this.phase = phase;
         this.revisionId = revisionId;
+
+        this.stopWatchingCanSave?.();
+        this.stopWatchingCanSave = null;
+
+        if (phase === "tracking") {
+            this.stopWatchingCanSave = reaction(
+                () => this.original.vm.canSave,
+                canSave => this.refreshReviewContext(canSave)
+            );
+        }
+    }
+
+    /*
+     * `canSave` of the decorated presenter can change after the revision loaded, so the review
+     * context is refreshed whenever it does.
+     */
+    private refreshReviewContext(canSave: boolean): void {
+        const entry = this.original.vm.entry;
+        const model = this.original.vm.model;
+
+        if (!entry) {
+            return;
+        }
+
+        const context = getCmsEntryReviewContext(model, entry, canSave);
+        this.session.presenter.setContext(context);
     }
 }
 

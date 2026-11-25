@@ -4,6 +4,7 @@ import type { IRecordLockingLockRecord } from "~/types.js";
 export interface IReleaseLockParams {
     id: string;
     type: string;
+    keepalive?: boolean;
 }
 
 export interface IReleaseLockGateway {

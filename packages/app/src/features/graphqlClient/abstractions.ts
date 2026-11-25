@@ -10,6 +10,7 @@ type GraphQLRequest<TVariables = any> = {
     query: DocumentNode | string;
     variables?: TVariables;
     headers?: IHeaders;
+    keepalive?: boolean;
 };
 
 export interface IGraphQLClient {

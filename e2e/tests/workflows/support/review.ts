@@ -3,13 +3,22 @@ import { callGraphql, requireData } from "../../../support/callGraphql.ts";
 import type { TestModel } from "../../../support/contentModel.ts";
 import type { TestEntry } from "../../../support/entry.ts";
 
+/**
+ * Who holds a step. `displayName` is the name the API stored for the owner: what the identity
+ * provider calls them, which is not always the name on their user profile.
+ */
+export interface ReviewStepOwner {
+    id: string;
+    displayName: string;
+}
+
 /** A step of a review as the API returns it. */
 export interface ReviewStep {
     id: string;
     title: string;
     state: string;
     comment: string | null;
-    owner: { id: string } | null;
+    owner: ReviewStepOwner | null;
 }
 
 /** A review as the API returns it. */
@@ -77,6 +86,7 @@ const REVIEW_FIELDS = /* GraphQL */ `
         comment
         owner {
             id
+            displayName
         }
     }
 `;
