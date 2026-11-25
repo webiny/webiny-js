@@ -474,6 +474,82 @@ describe("Test Properties", () => {
         });
     });
 
+    it("should keep a shared parent while another registration of it is still mounted", async () => {
+        const onChange = vi.fn();
+
+        const view = (withExtension: boolean) => (
+            <Properties onChange={onChange}>
+                <Group name={"styleSettings"} label={"Style Settings"}>
+                    <Field name={"color"} label={"Color"} />
+                </Group>
+                {withExtension ? (
+                    <Group name={"styleSettings"}>
+                        <Field name={"link"} label={"Link"} />
+                    </Group>
+                ) : null}
+            </Properties>
+        );
+
+        const { rerender } = render(view(true));
+        await flush();
+
+        expect(toObject(getLastCall(onChange))).toEqual({
+            settingsGroup: [
+                {
+                    name: "styleSettings",
+                    label: "Style Settings",
+                    field: [
+                        { name: "color", label: "Color" },
+                        { name: "link", label: "Link" }
+                    ]
+                }
+            ]
+        });
+
+        rerender(view(false));
+        await flush();
+
+        expect(toObject(getLastCall(onChange))).toEqual({
+            settingsGroup: [
+                {
+                    name: "styleSettings",
+                    label: "Style Settings",
+                    field: [{ name: "color", label: "Color" }]
+                }
+            ]
+        });
+    });
+
+    it("should remove a shared parent once its last registration unmounts", async () => {
+        const onChange = vi.fn();
+
+        const view = (mounted: number) => (
+            <Properties onChange={onChange}>
+                <Property id={"base"} name={"base"} value={true} />
+                {mounted > 0 ? (
+                    <Group name={"styleSettings"} label={"Style Settings"}>
+                        <Field name={"color"} label={"Color"} />
+                    </Group>
+                ) : null}
+                {mounted > 1 ? (
+                    <Group name={"styleSettings"}>
+                        <Field name={"link"} label={"Link"} />
+                    </Group>
+                ) : null}
+            </Properties>
+        );
+
+        const { rerender } = render(view(2));
+        await flush();
+
+        rerender(view(1));
+        await flush();
+        rerender(view(0));
+        await flush();
+
+        expect(toObject(getLastCall(onChange))).toEqual({ base: true });
+    });
+
     it("should replace existing property with a new one", async () => {
         const onChange = vi.fn();
 
