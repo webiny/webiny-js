@@ -14,10 +14,12 @@ import type { Tenant } from "~/types/tenancy.js";
 class ContainerScope implements TenantScope.Interface {
     public readonly storage = DEFAULT_TENANT_STORAGE;
 
-    constructor(
-        public readonly tenant: Tenant,
-        private readonly container: Container
-    ) {}
+    constructor(private readonly container: Container) {}
+
+    /** The container's tenant, as its services see it. */
+    get tenant(): Tenant {
+        return this.resolve(TenantContext).getTenant();
+    }
 
     resolve<T>(abstraction: Abstraction<T>): T {
         return this.container.resolve(abstraction);
@@ -35,13 +37,18 @@ class ContainerScope implements TenantScope.Interface {
  * `NoTenantScopesError`: its services would act on the container's tenant.
  *
  * `RequestContainer` is the container that holds the whole API: `ApiCoreFeature` registers it there.
+ * The container's tenant is read through its scope, not injected: `TenantContext` depends on
+ * `TenantScopes` (for its deprecated `with*` methods).
  */
 class TenantScopesSingleContainerImpl implements Abstraction_.Interface {
+    private readonly scope: ContainerScope;
+
     constructor(
-        private readonly container: Container,
-        private readonly tenantContext: TenantContext.Interface,
+        container: Container,
         private readonly getRootTenant: GetRootTenantUseCase.Interface
-    ) {}
+    ) {
+        this.scope = new ContainerScope(container);
+    }
 
     async withTenant<R>(
         tenant: Tenant,
@@ -54,11 +61,11 @@ class TenantScopesSingleContainerImpl implements Abstraction_.Interface {
         }
         assertTenantEnabled(tenant);
 
-        const current = this.tenantContext.getTenant();
+        const current = this.scope.tenant;
         if (!current || current.id !== tenant.id) {
             throw new NoTenantScopesError(current?.id, tenant.id);
         }
-        return cb(new ContainerScope(current, this.container));
+        return cb(this.scope);
     }
 
     async withRootTenant<R>(cb: (scope: TenantScope.Interface) => Promise<R>): Promise<R> {
@@ -83,5 +90,5 @@ class TenantScopesSingleContainerImpl implements Abstraction_.Interface {
 
 export const SingleContainerTenantScopes = Abstraction_.createImplementation({
     implementation: TenantScopesSingleContainerImpl,
-    dependencies: [RequestContainer, TenantContext, GetRootTenantUseCase]
+    dependencies: [RequestContainer, GetRootTenantUseCase]
 });

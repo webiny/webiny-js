@@ -58,6 +58,18 @@ class StubTenantContext implements TenantContext.Interface {
     setTenant(tenant: Tenant): void {
         this.tenant = tenant;
     }
+
+    withRootTenant(): never {
+        throw new Error("Not used by the permission cache.");
+    }
+
+    withEachTenant(): never {
+        throw new Error("Not used by the permission cache.");
+    }
+
+    withTenant(): never {
+        throw new Error("Not used by the permission cache.");
+    }
 }
 
 const createIdentity = (id: string): AuthenticatedIdentity => {

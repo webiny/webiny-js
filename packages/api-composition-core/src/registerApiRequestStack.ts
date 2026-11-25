@@ -1,5 +1,6 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature, RequestStorage } from "@webiny/api-core";
 import {
@@ -115,11 +116,15 @@ export async function registerApiRequestStack(
  * Registers the request stack in ONE container: the tenant-neutral part and a tenant scope's part.
  * For work outside a request that needs everything a request has, without a tenant: the SQL schema
  * setup, which sets up the tables of exactly the storages and modules the API runs.
+ *
+ * The container is its own `RequestContainer`, as a request's is: services built while it
+ * registers (`TenantContext`, through `TenantScopes`) depend on it.
  */
 export async function registerApiRequestStackInOneContainer(
     container: Container,
     config: RegisterApiRequestStackConfig
 ): Promise<void> {
+    container.registerInstance(RequestContainer, container);
     await registerApiRequestStack(container, config);
     await registerApiTenantScope(container, config);
 }

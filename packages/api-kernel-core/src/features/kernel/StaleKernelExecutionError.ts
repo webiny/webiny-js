@@ -52,7 +52,8 @@ function createWrongScopeMessage(
     return [
         `${service} belongs to ${describeOwner(owner)} but was used ${describeCurrentScope(owner, current)}.`,
         `A service built in a scope acts on that scope's state, so here it would have acted on the wrong one.`,
-        `Inside a scope's callback, resolve services from the scope it passes in instead of using one captured from outside.`
+        `Inside a scope's callback, resolve services from the scope it passes in instead of using one captured from outside,`,
+        `as in scope.resolve(SomeAbstraction) inside TenantScopes.withTenant(tenant, scope => ...).`
     ].join(" ");
 }
 

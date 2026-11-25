@@ -188,6 +188,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `TenantAfterDeleteEventHandler`  | `@webiny/api-core/features/tenancy/DeleteTenant/index.js`  |
 | `TenantInstalledEventHandler`    | `@webiny/api-core/features/tenancy/InstallTenant/index.js` |
 
+`TenantContext.withTenant()`, `withRootTenant()` and `withEachTenant()` are deprecated: use `TenantScopes`, whose callback gets the tenant's `TenantScope` to resolve that tenant's services from.
+
 ### webiny/api/tenant-manager
 
 | Abstraction            | Source                                                      |

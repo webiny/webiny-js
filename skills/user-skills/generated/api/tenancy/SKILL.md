@@ -121,7 +121,7 @@ Tenant lifecycle and installation event handlers and use cases.
 **Name:** `TenantContext`
 **Import:** `import { TenantContext } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/TenantContext/index.ts`
-**Description:** The tenant of the current tenant scope.
+**Description:** The tenant of the current tenant scope. Its `withTenant()`, `withRootTenant()` and `withEachTenant()` methods are deprecated: use `TenantScopes`.
 
 ---
 

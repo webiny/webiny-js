@@ -736,3 +736,130 @@ const getUsageOf = (ctx: ProbeContext) => {
     // Request-level: resolved from the scope, it is the request container's one.
     return ctx.container.resolve(TenantScopeUsage).getSummary();
 };
+
+/*
+ * The deprecated `TenantContext.with*` methods, kept for project extensions: they run their callback
+ * in the target tenant's scope, through `TenantScopes`.
+ */
+describe("Deprecated TenantContext.with* methods", () => {
+    it("withTenant runs its callback in the tenant's scope, passes that scope, and returns the result", async () => {
+        const { run } = createProbeHandler();
+
+        const result = await run("acme", async ctx => {
+            const globex = await getTenant(ctx, "globex");
+            return ctx.tenantContext.withTenant(globex, async (tenant, scope) => {
+                return {
+                    tenant: tenant.id,
+                    scopeTenant: scope.tenant.id,
+                    resolvedTenant: scope.resolve(TenantContext).getTenant().id,
+                    // The scope TenantScopes builds for globex, not a copy.
+                    sameScope: await ctx.tenantScopes.withTenant(globex, async s => s === scope)
+                };
+            });
+        });
+
+        expect(result).toEqual({
+            tenant: "globex",
+            scopeTenant: "globex",
+            resolvedTenant: "globex",
+            sameScope: true
+        });
+    });
+
+    it("withRootTenant runs a synchronous or an asynchronous callback in the root tenant's scope", async () => {
+        const { run } = createProbeHandler();
+
+        const result = await run("acme", async ctx => {
+            const sync = await ctx.tenantContext.withRootTenant((tenant, scope) => {
+                return `${tenant.id}:${scope.resolve(TenantContext).getTenant().id}`;
+            });
+            const async = await ctx.tenantContext.withRootTenant(async (tenant, scope) => {
+                return `${tenant.id}:${scope.resolve(TenantContext).getTenant().id}`;
+            });
+            return { sync, async };
+        });
+
+        expect(result).toEqual({ sync: "root:root", async: "root:root" });
+    });
+
+    it("withEachTenant runs the callback in each tenant's own scope and returns one result per tenant", async () => {
+        const { run } = createProbeHandler();
+
+        const result = await run("acme", async ctx => {
+            const tenants = [
+                await getTenant(ctx, "root"),
+                await getTenant(ctx, "acme"),
+                await getTenant(ctx, "globex")
+            ];
+            const scopes: TenantScope.Interface[] = [];
+            const results = await ctx.tenantContext.withEachTenant(
+                tenants,
+                async (tenant, scope) => {
+                    scopes.push(scope);
+                    return `${tenant.id}:${scope.resolve(TenantContext).getTenant().id}`;
+                }
+            );
+            return {
+                results,
+                distinctScopes: new Set(scopes).size,
+                // acme is the request's own tenant: its callback ran in the request's scope.
+                requestScopeReused: scopes[1] === ctx.container.resolve(TenantScope)
+            };
+        });
+
+        expect(result).toEqual({
+            results: ["root:root", "acme:acme", "globex:globex"],
+            distinctScopes: 3,
+            requestScopeReused: true
+        });
+    });
+
+    it("throws when the callback uses the caller's services, saying to resolve them from the scope", async () => {
+        const { run } = createProbeHandler();
+
+        const error = await run("acme", async ctx => {
+            const globex = await getTenant(ctx, "globex");
+            // The old way: `ctx.tenantContext` was injected into the caller, in acme's scope.
+            return ctx.tenantContext
+                .withTenant(globex, async () => ctx.tenantContext.getTenant())
+                .then(() => null)
+                .catch(error => error);
+        });
+
+        expect(error).toBeInstanceOf(StaleKernelExecutionError);
+        expect(error.message).toContain(`but was used inside scope "tenant:globex"`);
+        expect(error.message).toContain(
+            "resolve services from the scope it passes in instead of using one captured from outside"
+        );
+        expect(error.message).toContain("scope.resolve(SomeAbstraction)");
+    });
+
+    it("runs the callback as the caller's identity, with the caller's authorization state", async () => {
+        const { run } = createProbeHandler();
+
+        const result = await run("acme", async ctx => {
+            const globex = await getTenant(ctx, "globex");
+            const withAuthorization = await ctx.tenantContext.withTenant(
+                globex,
+                async (_, scope) => {
+                    const identityContext = scope.resolve(IdentityContext);
+                    return {
+                        identity: identityContext.getIdentity().id,
+                        authorization: identityContext.isAuthorizationEnabled()
+                    };
+                }
+            );
+            const withoutAuthorization = await ctx.identityContext.withoutAuthorization(() => {
+                return ctx.tenantContext.withTenant(globex, async (_, scope) => {
+                    return scope.resolve(IdentityContext).isAuthorizationEnabled();
+                });
+            });
+            return { withAuthorization, withoutAuthorization };
+        });
+
+        expect(result).toEqual({
+            withAuthorization: { identity: "123456789", authorization: true },
+            withoutAuthorization: false
+        });
+    });
+});

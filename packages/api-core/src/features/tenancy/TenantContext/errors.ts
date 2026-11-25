@@ -33,3 +33,18 @@ export function assertTenantEnabled(tenant: Tenant): void {
         throw new TenantIsDisabledError();
     }
 }
+
+/**
+ * A deprecated `TenantContext.with*` method was called on a `TenantContext` that was built outside
+ * any API container, so there is no `TenantScopes` to run the work with.
+ */
+export class TenantScopesUnavailableError extends BaseError {
+    override readonly code = "Tenancy/TenantScopesUnavailable" as const;
+
+    constructor() {
+        super({
+            message:
+                "This TenantContext was built in a container without TenantScopes, so it can't run work in a tenant's scope. Use TenantScopes.withTenant() from a container built with registerApiRequestStack() or ApiCoreFeature."
+        });
+    }
+}

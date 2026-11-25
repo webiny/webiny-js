@@ -46,13 +46,19 @@ const createRoot = () => {
     return root;
 };
 
+/** A request's container, as the event handler builds it: it is its own `RequestContainer`. */
+const createRequest = (root: Container) => {
+    const request = root.createChildContainer();
+    request.registerInstance(RequestContainer, request);
+    return request;
+};
+
 describe("registerApiRequestStack", () => {
     it("registers only the tenant-neutral part in the request container", async () => {
         const root = createRoot();
         registerApiCoreStorageOperations(root, storageOperations);
 
-        const request = root.createChildContainer();
-        request.registerInstance(RequestContainer, request);
+        const request = createRequest(root);
         await registerApiRequestStack(request, { extensions: () => [] });
 
         // The tenant registry the request's tenant is loaded from, and the scopes.
@@ -83,7 +89,7 @@ describe("registerApiRequestStack", () => {
             root.registerInstance(RequestStorage, storage);
         }
 
-        const request = root.createChildContainer();
+        const request = createRequest(root);
         await registerApiRequestStack(request, { extensions: () => [] });
         expect(registeredIn).toEqual([]);
 
@@ -105,7 +111,7 @@ describe("registerApiRequestStack", () => {
         const root = createRoot();
         registerApiCoreStorageOperations(root, storageOperations);
 
-        const request = root.createChildContainer();
+        const request = createRequest(root);
         await registerApiRequestStack(request, { extensions: () => [] });
         const scope = request.createChildContainer();
         await request.resolve(TenantScopeRegistration).register(scope);
@@ -132,7 +138,7 @@ describe("registerApiRequestStack", () => {
         const fromRoot = await registerRootBuildParams(root, extensions());
         expect(fromRoot.get("Probe")).toBe("deployed");
 
-        const request = root.createChildContainer();
+        const request = createRequest(root);
         await registerApiRequestStack(request, { extensions });
         const scope = request.createChildContainer();
         await request.resolve(TenantScopeRegistration).register(scope);

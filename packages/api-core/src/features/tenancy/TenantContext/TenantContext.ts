@@ -2,7 +2,12 @@ import { createImplementation } from "@webiny/feature/api";
 import { KernelExecution } from "@webiny/api-kernel-core";
 import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
-import { TenantAlreadySetError, assertTenantEnabled } from "./errors.js";
+import {
+    TenantAlreadySetError,
+    TenantScopesUnavailableError,
+    assertTenantEnabled
+} from "./errors.js";
+import { type TenantScope, TenantScopes } from "~/features/tenancy/TenantScopes/abstractions.js";
 
 /**
  * The tenant of a tenant scope's container. Every service of the container is built for that
@@ -11,7 +16,10 @@ import { TenantAlreadySetError, assertTenantEnabled } from "./errors.js";
 class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: Tenant | null = null;
 
-    constructor(private kernelExecution: KernelExecution.Interface | undefined) {}
+    constructor(
+        private kernelExecution: KernelExecution.Interface | undefined,
+        private tenantScopes: TenantScopes.Interface | undefined
+    ) {}
 
     getTenant(): Tenant {
         this.kernelExecution?.assertCurrent("TenantContext");
@@ -32,10 +40,47 @@ class TenantContextImpl implements Abstraction.Interface {
         }
         this.currentTenant = tenant;
     }
+
+    /** @deprecated See the abstraction. */
+    async withRootTenant<T>(cb: (tenant: Tenant, scope: TenantScope.Interface) => T): Promise<T> {
+        // The callback may be synchronous: its value is returned as the promise's.
+        return this.getTenantScopes().withRootTenant(async scope => cb(scope.tenant, scope));
+    }
+
+    /** @deprecated See the abstraction. */
+    async withEachTenant<TReturn>(
+        tenants: Tenant[],
+        cb: (tenant: Tenant, scope: TenantScope.Interface) => Promise<TReturn>
+    ): Promise<TReturn[]> {
+        return this.getTenantScopes().withEachTenant(tenants, scope => cb(scope.tenant, scope));
+    }
+
+    /** @deprecated See the abstraction. */
+    async withTenant<TReturn>(
+        tenant: Tenant,
+        cb: (tenant: Tenant, scope: TenantScope.Interface) => Promise<TReturn>
+    ): Promise<TReturn> {
+        return this.getTenantScopes().withTenant(tenant, scope => cb(scope.tenant, scope));
+    }
+
+    private getTenantScopes(): TenantScopes.Interface {
+        this.kernelExecution?.assertCurrent("TenantContext");
+        if (!this.tenantScopes) {
+            throw new TenantScopesUnavailableError();
+        }
+        return this.tenantScopes;
+    }
 }
 
+/*
+ * In a tenant scope, `TenantScopes` comes from the request container. Optional: a bare container
+ * (no `registerApiRequestStack()` or `ApiCoreFeature`) has none, and only the `with*` methods need it.
+ */
 export const TenantContext = createImplementation({
     abstraction: Abstraction,
     implementation: TenantContextImpl,
-    dependencies: [[KernelExecution, { optional: true }]]
+    dependencies: [
+        [KernelExecution, { optional: true }],
+        [TenantScopes, { optional: true }]
+    ]
 });
