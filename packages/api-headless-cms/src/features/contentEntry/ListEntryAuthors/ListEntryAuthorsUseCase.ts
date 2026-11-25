@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { UserPermissionsProvider } from "@webiny/api-core/features/users/UserPermissionsProvider/index.js";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { AdminUser } from "@webiny/api-core/types/users.js";
+import { UserDisplayName } from "@webiny/api-core/domain/users/UserDisplayName.js";
 import { ListEntryAuthorsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
@@ -14,14 +14,6 @@ import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
-
-const getDisplayName = (user: Pick<AdminUser, "id" | "displayName" | "firstName" | "lastName">) => {
-    if (user.displayName?.trim()) {
-        return user.displayName.trim();
-    }
-    const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
-    return fullName || user.id;
-};
 
 /*
  * Runs the same entry read check the CMS runs on a request, with the user's permissions
@@ -34,7 +26,7 @@ const canUserReadEntries = (
 ) => {
     const identity = new AuthenticatedIdentity({
         id: item.user.id,
-        displayName: getDisplayName(item.user),
+        displayName: UserDisplayName.from(item.user).toString(),
         type: "admin"
     });
 
@@ -124,7 +116,7 @@ class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
                 continue;
             }
 
-            const displayName = getDisplayName(item.user);
+            const displayName = UserDisplayName.from(item.user).toString();
             authors.push({ id: item.user.id, displayName });
         }
 
