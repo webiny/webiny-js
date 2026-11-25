@@ -83,6 +83,13 @@ describe("API log lines on AWS", () => {
         vi.spyOn(process.stdout, "write").mockImplementation((chunk: any) => {
             const line = String(chunk);
             const parsed = JSON.parse(line);
+            /*
+             * This root registers no storage, so a request's services can't register when the CORS
+             * allowed headers are read at start, which logs a warning before any invocation runs.
+             */
+            if (String(parsed.message?.msg ?? "").startsWith("[cors]")) {
+                return true;
+            }
             lines.push(parsed);
             return true;
         });

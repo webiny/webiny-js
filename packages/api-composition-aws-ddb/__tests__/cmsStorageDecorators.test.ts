@@ -3,6 +3,7 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { TenantScope } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { ListModelsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import type { CmsModelStorageOperationsListParams } from "@webiny/api-headless-cms/types/index.js";
 import { createAwsDdbApiHandler } from "~/createWebinyApiHandler.js";
@@ -30,6 +31,11 @@ describe("api-composition-aws-ddb — CMS storage decorators", () => {
         const resolved: ListModelsStorageOperation.Interface[] = [];
 
         const extension = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             container.registerDecorator(ListModelsProbeDecorator);
             const listModels = container.resolve(ListModelsStorageOperation);
             resolved.push(listModels);

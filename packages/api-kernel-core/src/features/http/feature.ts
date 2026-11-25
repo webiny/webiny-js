@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
+import { HttpRouteDispatcherImpl, HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { ErrorResponseDecorator } from "~/features/http/decorators/ErrorResponseDecorator.js";
 import { CorsHeadersDecorator } from "~/features/http/decorators/CorsHeadersDecorator.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
@@ -9,6 +9,11 @@ export const HttpFeature = createFeature({
     register(container) {
         // Transient so per-request routes (e.g. GraphQLRoute) resolve from child container
         container.register(HttpRouterImpl);
+        /*
+         * The same route matcher, for a composition that replaces HttpRouter's implementation to run
+         * routes in another container (a tenant's scope): it resolves HttpRouteDispatcher there.
+         */
+        container.register(HttpRouteDispatcherImpl);
         /*
          * Decorators registered earlier sit further inside. An error thrown by a route, or by a
          * decorator registered before this feature, becomes a response here, and that response then

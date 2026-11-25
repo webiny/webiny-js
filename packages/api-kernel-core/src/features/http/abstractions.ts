@@ -177,6 +177,17 @@ export const HttpRouteHandler = new Abstraction<IHttpRoute>("HttpRouteHandler");
 export const HttpRouter = new Abstraction<IHttpRouter>("HttpRouter");
 
 /**
+ * Matches a request to its route and runs it. `HttpFeature` registers the route matcher both as
+ * `HttpRouter`'s implementation, behind its decorators (errors, CORS, compression), and as this.
+ *
+ * A composition that runs routes in another container than the one `HttpRouter` is resolved in (a
+ * tenant's scope) replaces `HttpRouter`'s implementation with a hand-off, and resolves this from
+ * that container. Decorators of this run there, inside the hand-off; decorators of `HttpRouter` run
+ * outside it.
+ */
+export const HttpRouteDispatcher = new Abstraction<IHttpRouter>("HttpRouteDispatcher");
+
+/**
  * Request headers an extension's clients send, added to the ones the API allows in its CORS preflight
  * response. A browser fails the preflight for a header missing there and never sends the request, so
  * a custom header sent cross-origin must be registered here.
@@ -185,6 +196,11 @@ export interface IHttpAllowedRequestHeaders {
     readonly headers: string[];
 }
 
+/**
+ * Add request headers your clients send to the ones the API allows in its CORS preflight answer. The
+ * list is read once per process, at start, with no tenant and no identity, so an implementation must
+ * not depend on a tenant's or an identity's services.
+ */
 export const HttpAllowedRequestHeaders = new Abstraction<IHttpAllowedRequestHeaders>(
     "HttpAllowedRequestHeaders"
 );
@@ -212,6 +228,10 @@ export namespace HttpRouteHandler {
 }
 
 export namespace HttpRouter {
+    export type Interface = IHttpRouter;
+}
+
+export namespace HttpRouteDispatcher {
     export type Interface = IHttpRouter;
 }
 

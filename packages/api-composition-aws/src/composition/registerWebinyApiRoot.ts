@@ -6,6 +6,7 @@ import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import {
     ApiRequestRegistration,
     createLogger,
+    registerRootAllowedRequestHeaders,
     registerRootBuildParams
 } from "@webiny/api-composition-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -61,8 +62,9 @@ export async function registerWebinyApiRoot(
     JwksStoreFeature.register(container);
 
     // ── Tenant scopes ──────────────────────────────────────────
-    // Every event's handler chain runs in its tenant's scope. The transport registers the
-    // `InputTenantSource` that names the tenant of its requests (the `x-tenant` header).
+    // Every event's handler chain runs in its tenant's scope. An HTTP transport's chain runs at
+    // request level instead, and its router enters the tenant's scope after CORS and the tenant
+    // step (`registerHttpTransport`).
     TenantScopesRootFeature.register(container);
 
     // ── Request registration ───────────────────────────────────
@@ -74,4 +76,10 @@ export async function registerWebinyApiRoot(
 
     // ── Storage (variant-specific: database, CMS storage ops, registries, OpenSearch core) ──
     await config.registerRootStorage(container);
+
+    // ── CORS allowed headers ───────────────────────────────────
+    // The request headers extensions allow in the CORS preflight: read once per Lambda instance, for
+    // the CORS step, which runs at request level, before any tenant scope (where extensions register).
+    // Last: it registers what a request has, the extensions included, in a throwaway container.
+    await registerRootAllowedRequestHeaders(container);
 }

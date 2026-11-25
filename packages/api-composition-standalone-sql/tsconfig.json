@@ -16,6 +16,7 @@
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-pg" },
+    { "path": "../api-kernel-core" },
     { "path": "../api-storage-pg" },
     { "path": "../api-storage-sqlite" },
     { "path": "../api-websockets" }
@@ -55,6 +56,8 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
       "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
+      "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
+      "@webiny/api-kernel-core": ["../api-kernel-core/src"],
       "@webiny/api-storage-pg/*": ["../api-storage-pg/src/*"],
       "@webiny/api-storage-pg": ["../api-storage-pg/src"],
       "@webiny/api-storage-sqlite/*": ["../api-storage-sqlite/src/*"],

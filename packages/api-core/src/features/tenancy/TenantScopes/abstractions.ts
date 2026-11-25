@@ -152,8 +152,9 @@ export namespace TenantScopeRegistration {
  * Which tenant an event runs in:
  * - `{ tenantId }`: that tenant, or the root tenant for `null`. With `ifUnknown: "root"` an unknown
  *   tenant runs in the root tenant's scope too, instead of failing with `TenantNotFoundError`.
- * - `"tenant-neutral"`: in no tenant's scope, with only the request container's services (the SQL
- *   schema setup, which runs before any tenant exists).
+ * - `"tenant-neutral"`: in no tenant's scope, with only the request container's services: the SQL
+ *   schema setup, which runs before any tenant exists, and an HTTP request, whose router enters the
+ *   tenant's scope itself once CORS and the tenant step are done.
  */
 export type EventTenant =
     | { tenantId: string | null; ifUnknown?: "fail" | "root" }
@@ -161,7 +162,7 @@ export type EventTenant =
 
 /**
  * Names the tenant of the events it knows: the EXTRACT step of the tenant, one per transport or
- * event type (the `x-tenant` header of an HTTP request, `tenant` of a background task's payload).
+ * event type (`tenant` of a background task's payload, the connection's tenant of a WebSocket event).
  * Registered in the root. Returns `undefined` for an event it doesn't know.
  *
  * An event no source knows runs in the root tenant's scope.

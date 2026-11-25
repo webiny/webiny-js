@@ -19,7 +19,11 @@ import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
-import { createServerHandler, NodeHttpFeature } from "@webiny/api-kernel-core/nodeHttp/index.js";
+import {
+    createServerHandler,
+    NodeHttpFeature,
+    NodeHttpInputHandler
+} from "@webiny/api-kernel-core/nodeHttp/index.js";
 import { registerHttpTransport } from "@webiny/api-composition-core";
 import { RandomProcessOwner } from "@webiny/api-kernel-core";
 import { registerExtensions } from "@webiny/handler";
@@ -57,7 +61,11 @@ import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { createLogger, registerRootBuildParams } from "@webiny/api-composition-core";
+import {
+    createLogger,
+    registerRootAllowedRequestHeaders,
+    registerRootBuildParams
+} from "@webiny/api-composition-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
@@ -162,11 +170,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
-            // registerHttpTransport also registers the tenant, identity and preview-as loading.
-            registerHttpTransport(rootContainer, NodeHttpFeature);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading, and the
+            // hand-off of each request into its tenant's scope once CORS and the tenant step are done.
+            registerHttpTransport(rootContainer, NodeHttpFeature, NodeHttpInputHandler);
 
-            // Every event's handler chain runs in its tenant's scope: a background task or scheduled
-            // action in the tenant of its payload, anything else as the root tenant.
+            // Every other event's handler chain runs in its tenant's scope: a background task or
+            // scheduled action in the tenant of its payload, anything else as the root tenant.
             TenantScopesRootFeature.register(rootContainer);
 
             rootContainer.registerInstance(ApiRequestRegistration, {
@@ -227,6 +236,13 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Registers the EmptyTrashBinsEvent handler that the periodic trigger
             // (startBulkActionsServer, onServer below) dispatches.
             EmptyTrashBinsFeature.register(rootContainer);
+
+            // ── CORS allowed headers (root) ────────────────────────────
+            // The request headers extensions allow in the CORS preflight: read once, at start, for
+            // the CORS step, which runs at request level, before any tenant scope (where extensions
+            // register). Last: it registers what a request has, the extensions included, in a
+            // throwaway container.
+            await registerRootAllowedRequestHeaders(rootContainer);
         },
 
         child: async container => {

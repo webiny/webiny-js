@@ -6,13 +6,15 @@ import { TenantScopeChainRunnerDecorator } from "./TenantScopeChainRunnerDecorat
 import { BackgroundTaskTenantSource } from "./BackgroundTaskTenantSource.js";
 import { ScheduledActionTenantSource } from "./ScheduledActionTenantSource.js";
 import { TenantRegistryFeature } from "~/features/tenancy/TenancyFeature.js";
-import { TenantNeutralRequestContextFeature } from "~/features/requestContext/feature.js";import { TenancyStorageOperationsProvider } from "~/features/storageOperations/abstractions.js";
+import { TenantNeutralRequestContextFeature } from "~/features/requestContext/feature.js";
+import { TenancyStorageOperationsProvider } from "~/features/storageOperations/abstractions.js";
 import { DefaultTenancyStorageOperationsProvider } from "~/features/storageOperations/TenancyStorageOperationsProvider.js";
 
 /**
  * Root part of tenant scopes: every event's handler chain runs in its tenant's scope, and the tenant
  * of background tasks and scheduled actions comes from their payload. Each transport registers an
- * `InputTenantSource` for its own events next to it (the `x-tenant` header of an HTTP request).
+ * `InputTenantSource` for its own events next to it. An HTTP transport's says its chain runs at
+ * request level: the HTTP router enters the tenant's scope itself.
  */
 export const TenantScopesRootFeature = createFeature({
     name: "TenantScopesRoot",

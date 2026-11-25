@@ -44,7 +44,7 @@ describe("WebSocketTenantSource", () => {
         const event = {
             requestContext: {
                 routeKey: "$disconnect",
-                inputType: "DISCONNECT",
+                eventType: "DISCONNECT",
                 connectionId: "connection-1"
             },
             queryStringParameters: { tenant: "deleted" }
@@ -57,7 +57,7 @@ describe("WebSocketTenantSource", () => {
 
     it("fails a $connect of an unknown tenant", () => {
         const event = {
-            requestContext: { routeKey: "$connect", inputType: "CONNECT", connectionId: "c-1" },
+            requestContext: { routeKey: "$connect", eventType: "CONNECT", connectionId: "c-1" },
             queryStringParameters: { tenant: "deleted" }
         };
         expect(source.getTenant(request(event))).toEqual({ tenantId: "deleted" });

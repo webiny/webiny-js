@@ -124,7 +124,7 @@ const createProbe = () => {
     return { extension, composerResolvedIn };
 };
 
-describe("api-event-handler-standalone-sql — tenant scope schema", () => {
+describe("api-composition-standalone-sql — tenant scope schema", () => {
     it("builds no GraphQL schema for a tenant scope that only runs use cases", async () => {
         const { extension, composerResolvedIn } = createProbe();
         const server = await createServer(() => [extension]);
