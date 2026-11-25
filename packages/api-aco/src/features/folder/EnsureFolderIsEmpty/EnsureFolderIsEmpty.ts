@@ -1,6 +1,6 @@
-import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { EnsureFolderIsEmpty as Abstraction } from "~/features/folder/EnsureFolderIsEmpty/abstractions.js";
+import { Logger } from "@webiny/api-core/exports/api/logger.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderNotAuthorizedError, FolderNotEmptyError } from "~/domain/folder/errors.js";
 import { Result } from "@webiny/feature/api";
@@ -8,8 +8,8 @@ import { Result } from "@webiny/feature/api";
 class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private folderLevelPermissions: FolderLevelPermissions.Interface,
-        private listFoldersUseCase: ListFoldersUseCase.Interface
+        private listFoldersUseCase: ListFoldersUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async execute(
@@ -25,9 +25,9 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
                 },
                 limit: 1
             });
-
             if (result.isFail()) {
-                console.error(result.error.message);
+                this.logger.error(result.error);
+                // Report the folder as non-empty so a failed lookup cannot green-light a delete.
                 return true;
             }
 
@@ -45,13 +45,9 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
             return Result.fail(new FolderNotEmptyError());
         }
 
-        // Let's also check if there are folders / content that are not visible because of folder permissions.
-        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
-            // If folder level permissions are not enabled, we can skip this check. This is because
-            // in that case, all folders and content are visible to the user.
-            return Result.ok();
-        }
-
+        /* Also check for folders / content the identity cannot see. Security: run this even when
+           folder level permissions are not used, because other restrictions (e.g. "own entries
+           only") also hide content, and the folder must not be deleted from under it. */
         const [hasInvisibleFolders, hasInvisibleContent] =
             await this.identityContext.withoutAuthorization(async () => {
                 const [hasFolders, hasContent] = await Promise.all([
@@ -73,5 +69,5 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
 
 export const EnsureFolderIsEmpty = Abstraction.createImplementation({
     implementation: EnsureFolderIsEmptyImpl,
-    dependencies: [IdentityContext, FolderLevelPermissions, ListFoldersUseCase]
+    dependencies: [IdentityContext, ListFoldersUseCase, Logger]
 });

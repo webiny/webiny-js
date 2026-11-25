@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 import zod from "zod";
 import { WebsocketsEventValidator } from "@webiny/api-websockets/validator/index.js";
 import { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner.js";
@@ -38,7 +39,7 @@ const validation = zod
                     return undefined;
                 }
                 try {
-                    return JSON.parse(value);
+                    return parseJson(value);
                 } catch (ex) {
                     console.error(`Failed body validation: ${ex.message}`);
                     console.log(`Body: ${value}`);

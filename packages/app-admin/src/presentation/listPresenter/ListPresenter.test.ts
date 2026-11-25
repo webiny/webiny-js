@@ -103,6 +103,13 @@ class MockDataSource implements IDataSource<TestRow> {
         });
     }
 
+    /** A row added or removed in the browser after the fetch (an upload, a delete), as the cache does. */
+    setRowsLocally(rows: TestRow[]) {
+        runInAction(() => {
+            this._rows = rows;
+        });
+    }
+
     mockNextLoadMore(rows: TestRow[], meta: IDataSourceMeta) {
         this.loadMore.mockImplementationOnce(async () => {
             runInAction(() => {
@@ -587,6 +594,40 @@ describe("ListPresenter", () => {
                     cursor: "cursor-1"
                 })
             );
+        });
+
+        it("should count rows added or removed after the fetch when every item is loaded", async () => {
+            // File Manager: right after an upload the footer said "Showing 2 out of 1 file".
+            const { presenter, dataSource } = await createInitializedPresenter(
+                createMockDataSource(createRows(1), {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 1
+                })
+            );
+
+            dataSource.setRowsLocally(createRows(2));
+            expect(presenter.vm.pagination.currentCount).toBe(2);
+            expect(presenter.vm.pagination.totalCount).toBe(2);
+
+            dataSource.setRowsLocally([]);
+            expect(presenter.vm.pagination.totalCount).toBe(0);
+        });
+
+        it("should never report fewer items in total than are shown while more pages exist", async () => {
+            const { presenter, dataSource } = await createInitializedPresenter(
+                createMockDataSource(createRows(3), {
+                    cursor: "c",
+                    hasMoreItems: true,
+                    totalCount: 3
+                })
+            );
+
+            dataSource.setRowsLocally(createRows(4));
+            expect(presenter.vm.pagination.totalCount).toBe(4);
+
+            dataSource.setRowsLocally(createRows(2));
+            expect(presenter.vm.pagination.totalCount).toBe(3);
         });
 
         it("should not loadMore when hasMoreItems is false", async () => {

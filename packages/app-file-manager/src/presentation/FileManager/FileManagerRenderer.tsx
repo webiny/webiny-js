@@ -46,6 +46,9 @@ export const FileManagerRendererDecorator = FileManager.Renderer.createDecorator
                 multiple={multiple}
                 accept={accept}
                 scope={scope}
+                // Rendered by the FileManager component (a picker, or embedded in a screen), never
+                // on the File Manager's own route.
+                syncRoute={false}
             />
         );
     };

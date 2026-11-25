@@ -1,3 +1,4 @@
+import secureJsonParse from "secure-json-parse";
 import ValidationError from "~/validationError.js";
 
 export default (value: any) => {
@@ -6,7 +7,10 @@ export default (value: any) => {
     }
 
     try {
-        JSON.parse(value);
+        secureJsonParse(value, {
+            protoAction: "error",
+            constructorAction: "error"
+        });
     } catch {
         throw new ValidationError("Value needs to be a valid JSON.");
     }

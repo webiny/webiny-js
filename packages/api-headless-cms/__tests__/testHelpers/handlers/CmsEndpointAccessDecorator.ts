@@ -1,18 +1,18 @@
-import { TestHttpEventHandler } from "@webiny/event-handler-core/features/testing";
+import { TestHttpInputHandler } from "@webiny/api-kernel-core/features/testing";
 import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import type { IHeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
-class CmsEndpointAccessDecoratorImpl implements TestHttpEventHandler.Interface {
+class CmsEndpointAccessDecoratorImpl implements TestHttpInputHandler.Interface {
     constructor(
         private identityCtx: IIdentityContext,
         private cmsConfig: IHeadlessCmsEndpointConfig,
-        private inner: TestHttpEventHandler.Interface
+        private inner: TestHttpInputHandler.Interface
     ) {}
 
-    async execute(ctx: EventContext, next: NextFunction): Promise<any> {
+    async execute(ctx: InputContext, next: NextFunction): Promise<any> {
         const { type } = this.cmsConfig;
         const permission = await this.identityCtx.getPermission(`cms.endpoint.${type}`);
         if (!permission) {
@@ -33,7 +33,7 @@ class CmsEndpointAccessDecoratorImpl implements TestHttpEventHandler.Interface {
     }
 }
 
-export const CmsEndpointAccessDecorator = TestHttpEventHandler.createDecorator({
+export const CmsEndpointAccessDecorator = TestHttpInputHandler.createDecorator({
     decorator: CmsEndpointAccessDecoratorImpl,
     dependencies: [IdentityContext, HeadlessCmsEndpointConfig]
 });

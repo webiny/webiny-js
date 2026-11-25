@@ -1,8 +1,7 @@
 import { EnableTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
 import { UpdateTenantUseCase as ApiCoreUpdateTenant } from "@webiny/api-core/features/tenancy/UpdateTenant";
 import { UpdateTenantUseCase as TenantManagerUpdateTenant } from "../UpdateTenant/abstractions.js";
 import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
@@ -11,7 +10,7 @@ import { TenantPersistenceError } from "../../domain/errors.js";
 
 class EnableTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
-        private identityContext: IdentityContext.Interface,
+        private tenantAccess: TenantAccess.Interface,
         private eventPublisher: EventPublisher.Interface,
         private coreUpdateTenant: ApiCoreUpdateTenant.Interface,
         private tmUpdateTenant: TenantManagerUpdateTenant.Interface,
@@ -20,11 +19,9 @@ class EnableTenantUseCase implements UseCaseAbstraction.Interface {
 
     async execute(tenantId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Authorization checks
-        const permission = await this.identityContext.getPermission("tm.tenant");
-        if (!permission) {
-            return Result.fail(
-                new NotAuthorizedError({ message: "Not authorized to enable tenants." })
-            );
+        const access = await this.tenantAccess.canManage(tenantId);
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         // Get current tenant to verify it exists
@@ -72,7 +69,7 @@ class EnableTenantUseCase implements UseCaseAbstraction.Interface {
 export default UseCaseAbstraction.createImplementation({
     implementation: EnableTenantUseCase,
     dependencies: [
-        IdentityContext,
+        TenantAccess,
         EventPublisher,
         ApiCoreUpdateTenant,
         TenantManagerUpdateTenant,

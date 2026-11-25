@@ -4,7 +4,8 @@ export { createPermissionsFeature } from "~/permissions/index.js";
 export { createHasPermission } from "~/permissions/index.js";
 export { createUsePermissions } from "~/permissions/index.js";
 export type { Permissions } from "~/permissions/types.js";
-export { LogInUseCase } from "~/features/security/LogIn/index.js";
+export { LogInUseCase, LogInError } from "~/features/security/LogIn/index.js";
+export { LoginTenantResolver } from "~/features/security/LoginTenantResolver/index.js";
 export { LogOutUseCase } from "~/features/security/LogOut/index.js";
 export { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
 export { IdentityContext } from "~/features/security/IdentityContext/index.js";
@@ -12,3 +13,5 @@ export { useAuthentication } from "~/presentation/security/hooks/useAuthenticati
 export { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 export { HasPermissionComponent } from "~/presentation/security/components/HasPermission.js";
 export { LoginScreenComponent } from "~/base/ui/LoginScreen.js";
+export { LoginTenantPicker } from "~/presentation/security/components/LoginTenantPicker.js";
+export { LoginNoTenantAccess } from "~/presentation/security/components/LoginNoTenantAccess.js";

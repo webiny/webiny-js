@@ -1,0 +1,63 @@
+{
+  "name": "@webiny/api-composition-aws-pg",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "types": "index.d.ts",
+  "description": "EXPERIMENTAL: Webiny API handler for AWS Lambda with Postgres storage.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Webiny Team"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-composition-aws": "0.0.0",
+    "@webiny/api-composition-core": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-core-sql": "0.0.0",
+    "@webiny/api-kernel-aws": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
+    "@webiny/api-storage-pg": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "knex": "^3.3.0",
+    "pg": "^8.23.1"
+  },
+  "peerDependencies": {
+    "@webiny/di": "^2.0.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "@electric-sql/pglite-socket": "^0.2.20",
+    "@webiny/api-aco-pg": "0.0.0",
+    "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-headless-cms-pg": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^2.0.0",
+    "@webiny/handler": "0.0.0",
+    "rimraf": "^6.1.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "pg"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

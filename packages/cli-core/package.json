@@ -23,7 +23,7 @@
     "execa": "^10.2.1",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",
-    "humanize-duration": "^3.35.1",
+    "humanize-duration": "3.35.1",
     "inquirer": "^14.3.0",
     "load-json-file": "^7.0.1",
     "open": "^11.0.4",

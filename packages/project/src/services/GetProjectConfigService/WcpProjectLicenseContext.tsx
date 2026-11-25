@@ -11,6 +11,7 @@ export interface WcpProjectLicenseContextValue {
     canUseFileManagerThreatDetection: () => boolean;
     canUseWorkflows: () => boolean;
     canUseHcmsFieldPermissions: () => boolean;
+    canUseAiPowerups: () => boolean;
 }
 
 const WcpProjectLicenseContext = createContext<WcpProjectLicenseContextValue | null>(null);
@@ -47,7 +48,8 @@ export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> 
         canUseFileManagerThreatDetection: () =>
             license?.canUseFileManagerThreatDetection() ?? false,
         canUseWorkflows: () => license?.canUseWorkflows() ?? false,
-        canUseHcmsFieldPermissions: () => license?.canUseHcmsFieldPermissions() ?? false
+        canUseHcmsFieldPermissions: () => license?.canUseHcmsFieldPermissions() ?? false,
+        canUseAiPowerups: () => license?.canUseAiPowerups() ?? false
     };
 
     return (

@@ -130,7 +130,8 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         const presignedPayload = await getPresignedPostPayload(
                             await normalizer.normalizeFile(args.data),
                             settings,
-                            tenantContext
+                            tenantContext,
+                            { clientId: args.data?.id }
                         );
 
                         return new Response(presignedPayload);
@@ -169,7 +170,8 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             return getPresignedPostPayload(
                                 await normalizer.normalizeFile(data),
                                 settings,
-                                tenantContext
+                                tenantContext,
+                                { clientId: data?.id }
                             );
                         });
 
@@ -187,8 +189,11 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ data: any; numberOfParts: number }>({
             path: "FmMutation.createMultiPartUpload",
-            dependencies: [IdentityContext],
-            resolver(identityContext: IdentityContext.Interface) {
+            dependencies: [IdentityContext, TenantContext],
+            resolver(
+                identityContext: IdentityContext.Interface,
+                tenantContext: TenantContext.Interface
+            ) {
                 return async ({ args, context }) => {
                     await checkPermissions(identityContext, { rwd: "w" });
 
@@ -204,7 +209,9 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                         const multiPartUpload = await useCase.execute({
                             file: await normalizer.normalizeFile(args.data),
-                            numberOfParts: args.numberOfParts
+                            numberOfParts: args.numberOfParts,
+                            tenantId: tenantContext.getTenant().id,
+                            clientId: args.data?.id
                         });
 
                         return new Response(multiPartUpload);
@@ -221,8 +228,11 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ fileKey: string; uploadId: string }>({
             path: "FmMutation.completeMultiPartUpload",
-            dependencies: [IdentityContext],
-            resolver(identityContext: IdentityContext.Interface) {
+            dependencies: [IdentityContext, TenantContext],
+            resolver(
+                identityContext: IdentityContext.Interface,
+                tenantContext: TenantContext.Interface
+            ) {
                 return async ({ args }) => {
                     await checkPermissions(identityContext, { rwd: "w" });
 
@@ -236,7 +246,8 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                         await useCase.execute({
                             fileKey: args.fileKey,
-                            uploadId: args.uploadId
+                            uploadId: args.uploadId,
+                            tenantId: tenantContext.getTenant().id
                         });
 
                         return new Response(true);

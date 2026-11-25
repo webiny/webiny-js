@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { Commands } from "../commands.js";
-import deepEqual from "deep-equal";
+import isEqual from "lodash/isEqual.js";
 import { $getEditableElement } from "~/editorSdk/utils/$getEditableElement.js";
 
 export const useActiveElement = () => {
@@ -19,7 +19,7 @@ export const useActiveElement = () => {
 
             if (activeElementId) {
                 const newElement = toJS($getEditableElement(documentState, activeElementId));
-                if (!deepEqual(newElement, activeElement)) {
+                if (!isEqual(newElement, activeElement)) {
                     setActiveElement(newElement);
                 }
             } else {

@@ -19,6 +19,7 @@
     "@webiny/api-headless-cms-bulk-actions": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-headless-cms-utils-os": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
@@ -38,7 +39,6 @@
     "@webiny/bug-reporter": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/db": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/frontend-settings": "0.0.0",
@@ -47,6 +47,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-extensions": "0.0.0",
     "@webiny/project-extensions-aws": "0.0.0",
+    "@webiny/sdk": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
@@ -141,6 +142,7 @@
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
+    "./admin/cms/field-renderers/index": "./admin/cms/field-renderers/index.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
     "./admin/cms/model": "./admin/cms/model.js",
@@ -165,7 +167,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "a61c79ebd88fe8da21054a30f2ecd1765e63f8582e9a7cc4f807292e6dae43b4",
+  "exportGenerationHash": "946d2822a139e43f8639878765ebe5ebe3245c5d0fab630e5f114c6f2f76c7d6",
   "webiny": {
     "publishFrom": "dist"
   }

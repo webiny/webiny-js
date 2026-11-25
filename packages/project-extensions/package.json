@@ -13,6 +13,7 @@
   "description": "The Api, Admin, Infra and Project extension namespaces, for every hosting type.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/mailer-smtp": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-extensions-aws": "0.0.0",
     "@webiny/project-extensions-standalone": "0.0.0",

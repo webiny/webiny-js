@@ -5,8 +5,8 @@ import type { IAuthenticationContext } from "@webiny/api-core/features/security/
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { EventContext } from "@webiny/event-handler-core";
-import type { IWebSocketEvent } from "@webiny/event-handler-aws/eventTypes/WebSocketEventType.js";
+import type { InputContext } from "@webiny/api-kernel-core";
+import type { IWebSocketEvent } from "@webiny/api-kernel-aws/inputTypes/WebSocketInputType.js";
 import { WebSocketLambdaHandler } from "~/WebSocketLambdaHandler.js";
 
 describe("WebSocketLambdaHandler", () => {
@@ -54,7 +54,7 @@ describe("WebSocketLambdaHandler", () => {
             requestContext: { routeKey: "$connect", connectionId: "connection-1" },
             queryStringParameters: { token: "wat_123", tenant: "acme" }
         };
-        const eventContext = { event } as unknown as EventContext<IWebSocketEvent>;
+        const eventContext = { input: event } as unknown as InputContext<IWebSocketEvent>;
 
         await expect(handler.execute(eventContext, async () => undefined)).rejects.toThrow(
             "Stop after authentication."

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/event-handler-core";
+import type { InputHandler } from "@webiny/api-kernel-core";
 import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 export const WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER = "WebinyWebsocketsConnectionRows";
@@ -44,16 +44,16 @@ export type IWebsocketsConnectionRowsEvent = {
     [WEBSOCKETS_CONNECTION_ROWS_EVENT_IDENTIFIER]: true;
 } & WebsocketsConnectionRowsChange;
 
-export interface IWebsocketsConnectionRowsEventHandler extends IEventHandler<
+export interface IWebsocketsConnectionRowsInputHandler extends InputHandler.Interface<
     IWebsocketsConnectionRowsEvent,
     WebsocketsConnectionRowsResult
 > {}
 
-export const WebsocketsConnectionRowsEventHandler =
-    createAbstraction<IWebsocketsConnectionRowsEventHandler>(
+export const WebsocketsConnectionRowsInputHandler =
+    createAbstraction<IWebsocketsConnectionRowsInputHandler>(
         "Websockets/ConnectionRowsEventHandler"
     );
 
-export namespace WebsocketsConnectionRowsEventHandler {
-    export type Interface = IWebsocketsConnectionRowsEventHandler;
+export namespace WebsocketsConnectionRowsInputHandler {
+    export type Interface = IWebsocketsConnectionRowsInputHandler;
 }

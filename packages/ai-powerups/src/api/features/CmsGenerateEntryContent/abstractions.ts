@@ -44,3 +44,19 @@ export namespace CmsGenerateEntryContentUseCase {
     export type Interface = ICmsGenerateEntryContentUseCase;
     export type Params = CmsGenerateEntryContentParams;
 }
+
+export interface IQueueCmsGenerateEntryContentUseCase {
+    execute(params: CmsGenerateEntryContentParams): Promise<Result<{ id: string }, Error>>;
+}
+
+/** Queues the background task that generates CMS entry content. */
+export const QueueCmsGenerateEntryContentUseCase =
+    createAbstraction<IQueueCmsGenerateEntryContentUseCase>(
+        "AiPowerUpsQueueCmsGenerateEntryContentUseCase"
+    );
+
+export namespace QueueCmsGenerateEntryContentUseCase {
+    export type Interface = IQueueCmsGenerateEntryContentUseCase;
+    export type Params = CmsGenerateEntryContentParams;
+    export type Return = Promise<Result<{ id: string }, Error>>;
+}

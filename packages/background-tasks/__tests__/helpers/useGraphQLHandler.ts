@@ -1,4 +1,4 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
@@ -55,6 +55,7 @@ export interface InvokeParams {
 
 export interface UseHandlerParams {
     plugins?: any[];
+    permissions?: SecurityPermission[];
 }
 
 const defaultIdentity: IdentityData = {
@@ -75,7 +76,9 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, { list: defaultPermissions });
+            container.registerInstance(TestPermissions, {
+                list: params?.permissions ?? defaultPermissions
+            });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

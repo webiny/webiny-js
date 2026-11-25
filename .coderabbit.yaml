@@ -6,3 +6,8 @@ reviews:
     # stacked on a feature branch get reviewed too.
     base_branches:
       - ".*"
+    # PRs opened by these users are not auto-reviewed. A review can still
+    # be requested on such a PR with `@coderabbitai review`.
+    ignore_usernames:
+      - "adrians5j"
+      - "Pavel910"

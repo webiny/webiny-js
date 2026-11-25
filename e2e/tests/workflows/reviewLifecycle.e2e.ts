@@ -171,9 +171,14 @@ describe(
             });
             expect(approve.errorCode).toBe("Workflows/Review/NotOwner");
 
+            // The bar names the owner as the API stored them.
+            const owned = await getTargetReview(admin!, model!, entry!);
+            const owner = owned?.steps.find(step => step.id === workflow!.first.id)?.owner;
+            expect(owner?.id).toBe(cast!.reviewerA1.id);
+
             await openEntryForm(app, model!, entry!);
             const bar = reviewBar(browser);
-            await expect(bar.getByText(`Owner: ${cast!.reviewerA1.displayName}`)).toBeVisible();
+            await expect(bar.getByText(`Owner: ${owner!.displayName}`)).toBeVisible();
             await expect(bar.getByRole("button", "Approve")).toBeHidden();
             await bar.getByRole("button", "Take over").tap();
             const takeOver = screen.getByRole("dialog", "Take over this step?");
@@ -241,7 +246,8 @@ describe(
             const bar = reviewBar(browser);
             await expect(bar.getByText("Every step approved. Ready to publish.")).toBeVisible();
 
-            await screen.getByRole("button", "Save & Publish").tap();
+            // An approved revision is locked for editing, so the button only publishes.
+            await screen.getByRole("button", "Publish").tap();
             const confirm = screen.getByRole("dialog", "Publish entry");
             await confirm.getByRole("button", "Yes, publish!").tap();
             await expect(confirm).toBeHidden();
@@ -265,9 +271,13 @@ describe(
             }
             const first = screen.getByTestId(`review-step-${workflow!.first.id}`);
             await first.getByText(workflow!.first.title).tap();
-            // The comment is quoted after the name of who approved: the reviewer who took over.
+            // The comment is quoted after the name of who approved: the reviewer who took over,
+            // named as the API stored them.
+            const approved = await getTargetReview(admin!, model!, entry!);
+            const approver = approved?.steps.find(step => step.id === workflow!.first.id)?.owner;
+            expect(approver?.id).toBe(cast!.reviewerA2.id);
             await expect(
-                first.getByText(`${cast!.reviewerA2.displayName}: “${approveComment}”`)
+                first.getByText(`${approver!.displayName}: “${approveComment}”`)
             ).toBeVisible();
         });
     }

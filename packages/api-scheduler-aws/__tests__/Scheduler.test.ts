@@ -183,7 +183,7 @@ describe("Scheduler", () => {
         testContainer.registerInstance(ScheduledActionHandler, {
             canHandle: () => true,
             async handle(): Promise<void> {
-                throw new Error("Handler execution failed");
+                throw new Error("Kernel execution failed");
             }
         });
 
@@ -211,7 +211,7 @@ describe("Scheduler", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/Execution/Failed");
-        expect(result.error.message).toContain("Handler execution failed");
+        expect(result.error.message).toContain("Kernel execution failed");
 
         // Verify schedule entry still exists with error stored
         const getErrorResult = await getScheduledAction.execute({
@@ -219,7 +219,7 @@ describe("Scheduler", () => {
             namespace
         });
         expect(getErrorResult.isFail()).toBe(false);
-        expect(getErrorResult.value.error).toContain("Handler execution failed");
+        expect(getErrorResult.value.error).toContain("Kernel execution failed");
     });
 
     it("should update existing schedule when rescheduling", async () => {

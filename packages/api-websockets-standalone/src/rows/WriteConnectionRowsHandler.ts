@@ -1,8 +1,8 @@
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-import type { EventContext } from "@webiny/event-handler-core";
+import type { InputContext } from "@webiny/api-kernel-core";
 import {
-    WebsocketsConnectionRowsEventHandler,
+    WebsocketsConnectionRowsInputHandler,
     type IWebsocketsConnectionRowsEvent,
     type WebsocketsConnectionRowWrite,
     type WebsocketsConnectionRowWriteFailure,
@@ -17,16 +17,16 @@ const REMOVE_STALE_BATCH_SIZE = 10;
  * Applies a change to the connection registry's rows, in the request container the event runs in,
  * on that request's registry (the storage registers it there).
  */
-class WriteConnectionRowsHandlerImpl implements WebsocketsConnectionRowsEventHandler.Interface {
+class WriteConnectionRowsHandlerImpl implements WebsocketsConnectionRowsInputHandler.Interface {
     public constructor(
         private readonly registry: ConnectionRegistry.Interface,
         private readonly logger: Logger.Interface
     ) {}
 
     public async execute(
-        ctx: EventContext<IWebsocketsConnectionRowsEvent>
+        ctx: InputContext<IWebsocketsConnectionRowsEvent>
     ): Promise<WebsocketsConnectionRowsResult> {
-        const change = ctx.event;
+        const change = ctx.input;
         switch (change.action) {
             case "write": {
                 const failures: (WebsocketsConnectionRowWriteFailure | null)[] = [];
@@ -89,7 +89,7 @@ class WriteConnectionRowsHandlerImpl implements WebsocketsConnectionRowsEventHan
     }
 }
 
-export const WriteConnectionRowsHandler = WebsocketsConnectionRowsEventHandler.createImplementation(
+export const WriteConnectionRowsHandler = WebsocketsConnectionRowsInputHandler.createImplementation(
     {
         implementation: WriteConnectionRowsHandlerImpl,
         dependencies: [ConnectionRegistry, Logger]

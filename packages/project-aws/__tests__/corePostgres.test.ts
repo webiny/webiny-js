@@ -206,14 +206,15 @@ describe("CorePostgres", () => {
         });
     });
 
-    it("protects a production database: deletion protection, a week of backups and a final snapshot", () => {
+    it("protects a production database: deletion protection, 35 days of retained backups and a final snapshot", () => {
         const fake = createFakeApp();
         addCorePostgres(fake, { protect: true });
 
         const cluster = fake.one(aws.rds.Cluster);
         expect(cluster.config).toMatchObject({
             deletionProtection: true,
-            backupRetentionPeriod: 7,
+            backupRetentionPeriod: 35,
+            deleteAutomatedBackups: false,
             skipFinalSnapshot: false
         });
         expect(cluster.config.finalSnapshotIdentifier).toBeDefined();
@@ -229,6 +230,7 @@ describe("CorePostgres", () => {
         expect(cluster.config).toMatchObject({
             deletionProtection: false,
             backupRetentionPeriod: 1,
+            deleteAutomatedBackups: undefined,
             skipFinalSnapshot: true,
             finalSnapshotIdentifier: undefined
         });

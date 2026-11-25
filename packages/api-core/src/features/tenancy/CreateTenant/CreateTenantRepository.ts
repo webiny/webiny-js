@@ -12,6 +12,9 @@ class CreateTenantRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async create(tenant: Tenant) {
         const created = await this.gateway.createTenant(tenant);
+        // The id may already be cached as "not found" (the existence check), and prime() doesn't
+        // overwrite a cached key.
+        this.cache.clear(created.id);
         this.cache.prime(created.id, created);
         return created;
     }

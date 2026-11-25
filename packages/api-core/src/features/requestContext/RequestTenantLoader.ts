@@ -5,6 +5,7 @@ import type { ITenantContext } from "~/features/tenancy/TenantContext/abstractio
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import type { IGetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
+import { TenantNotFoundError } from "./TenantNotFoundError.js";
 
 const DEFAULT_TENANT_ID = "root";
 
@@ -62,7 +63,10 @@ export class RequestTenantLoaderImpl implements Abstraction.Interface {
             return;
         }
 
-        console.warn(`[RequestTenantLoader] Tenant "${resolvedId}" not found.`);
+        /* Any other unknown tenant fails the request here. Carrying on with no tenant only moved the
+           failure to whatever read the tenant next, and the admin login relies on this code to fall
+           back to root when the tenant it remembered was deleted. */
+        throw new TenantNotFoundError(resolvedId);
     }
 }
 

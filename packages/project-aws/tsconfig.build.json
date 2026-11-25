@@ -4,6 +4,7 @@
   "references": [
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../cli-core/tsconfig.build.json" },
+    { "path": "../mailer-smtp/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../project-extensions-aws/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
@@ -21,6 +22,8 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
+      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
+      "@webiny/mailer-smtp": ["../mailer-smtp/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],

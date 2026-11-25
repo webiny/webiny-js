@@ -1,6 +1,6 @@
 import React from "react";
 import { useDrop } from "react-dnd";
-import deepEqual from "deep-equal";
+import isEqual from "lodash/isEqual.js";
 import { cn, Icon } from "@webiny/admin-ui";
 import { ReactComponent as InsertIcon } from "@webiny/icons/add_circle.svg";
 import { ReactComponent as BlockIcon } from "@webiny/icons/block.svg";
@@ -74,7 +74,7 @@ export const DropBox = React.memo(
             </div>
         );
     },
-    (prev, next) => deepEqual(prev, next)
+    (prev, next) => isEqual(prev, next)
 );
 
 DropBox.displayName = "DropBox";

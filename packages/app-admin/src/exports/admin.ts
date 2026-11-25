@@ -1,4 +1,6 @@
 export { FormModelFactory } from "~/features/formModel/abstractions.js";
+export { WebinySdk } from "~/features/webinySdk/abstractions.js";
+export { Result } from "@webiny/sdk";
 export { DevToolsSection } from "~/components/index.js";
 export { createReactiveComponent } from "~/index.js";
 export { RegisterFeature } from "~/components/RegisterFeature.js";

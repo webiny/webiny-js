@@ -36,7 +36,7 @@ class ProvidersGraphQLMapperImpl implements AiPowerUpsSettingsGroupGraphQLMapper
                 name: p.name,
                 description: p.description,
                 model: p.model,
-                apiKey: p.apiKeyMasked ?? null
+                apiKey: p.apiKeyMasked || null
             }))
         };
     }

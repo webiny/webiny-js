@@ -1,7 +1,10 @@
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { NotifyRecordChangeUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { FolderCatalogSync } from "~/features/flp/FolderCatalogSync/abstractions.js";
+import { CreateFlpUseCase } from "~/features/flp/CreateFlp/abstractions.js";
+import { FOLDER_RECORD_TYPE } from "~/features/folder/NotifyFolderChange/recordType.js";
 import type { Folder } from "~/folder/folder.types.js";
 import type { ICreateFlpTaskInput, IDeleteFlpTaskInput, IUpdateFlpTaskInput } from "~/types.js";
 import { CREATE_FLP_TASK_ID, DELETE_FLP_TASK_ID, UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
@@ -20,10 +23,47 @@ class TaskFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private tasks: TaskService.Interface,
-        private logger: Logger.Interface
+        private logger: Logger.Interface,
+        private createFlp: CreateFlpUseCase.Interface,
+        private notifyRecordChange: NotifyRecordChangeUseCase.Interface
     ) {}
 
     async folderCreated(folder: Folder): Promise<void> {
+        /* Create the FLP record right away. Until it exists, the folder's permissions load as
+           empty, which means "public": anyone with access to the app could read the folder
+           or change its permissions. It's a single write, so there's no need for a task. */
+        let created = false;
+        try {
+            await this.createFlp.execute(folder);
+            created = true;
+        } catch (error) {
+            this.logger.error(
+                { error, folderId: folder.id },
+                "Could not create the folder's FLP record, falling back to the task."
+            );
+        }
+
+        if (created) {
+            const notifyIdentityId = this.getNotifyIdentityId();
+            if (notifyIdentityId) {
+                try {
+                    await this.notifyRecordChange.execute({
+                        type: FOLDER_RECORD_TYPE,
+                        id: folder.id,
+                        change: "created",
+                        identityId: notifyIdentityId
+                    });
+                } catch (error) {
+                    this.logger.error(
+                        { error, folderId: folder.id },
+                        "Could not notify about the created folder."
+                    );
+                }
+            }
+            return;
+        }
+
+        // Fall back to the background task, which retries outside of this request.
         await this.trigger<ICreateFlpTaskInput>(
             CREATE_FLP_TASK_ID,
             { folder, notifyIdentityId: this.getNotifyIdentityId() },
@@ -77,5 +117,11 @@ class TaskFolderCatalogSyncImpl implements FolderCatalogSync.Interface {
 
 export const TaskFolderCatalogSync = FolderCatalogSync.createImplementation({
     implementation: TaskFolderCatalogSyncImpl,
-    dependencies: [IdentityContext, TaskService, Logger]
+    dependencies: [
+        IdentityContext,
+        TaskService,
+        Logger,
+        CreateFlpUseCase,
+        NotifyRecordChangeUseCase
+    ]
 });

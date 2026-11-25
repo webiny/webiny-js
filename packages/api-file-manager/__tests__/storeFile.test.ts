@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mdbid } from "@webiny/utils";
 import { Result } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/api-kernel-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import type { HandlerParams } from "~tests/utils/useGqlHandler";

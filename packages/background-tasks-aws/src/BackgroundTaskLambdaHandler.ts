@@ -1,13 +1,13 @@
 import type { Container } from "@webiny/feature/api";
-import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { AwsLambdaContext } from "@webiny/api-kernel-aws/abstractions/AwsLambdaContext.js";
+import { BackgroundTaskInputHandler } from "@webiny/api-kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { TaskRunner } from "@webiny/background-tasks/api/runner/index.js";
 import { TaskEventValidation } from "@webiny/background-tasks/api/runner/TaskEventValidation.js";
 import type { Context } from "@webiny/background-tasks/api/types.js";
@@ -17,11 +17,11 @@ import { LambdaTimer } from "~/timer/LambdaTimer.js";
  * (mirrors the default Lambda timeout budget handler-aws's CustomTimer uses). */
 const FALLBACK_MAX_RUNNING_MILLISECONDS = 14 * 60 * 1000;
 
-class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Interface {
+class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskInputHandler.Interface {
     constructor(private container: Container) {}
 
     async execute(
-        eventCtx: EventContext<IBackgroundTaskEvent>,
+        inputCtx: InputContext<IBackgroundTaskEvent>,
         _next: NextFunction
     ): Promise<unknown> {
         // Date-based fallback in case there is no real Lambda context (see below) — captured up
@@ -30,7 +30,7 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
         // The SFN/EventBridge transport wraps the task as `{ name, payload }`; TaskRunner expects the
         // flat task event (webinyTaskId at top level), so unwrap `payload` (falling back to the event
         // itself if it's already flat).
-        const taskEvent = (eventCtx.event as any)?.payload || eventCtx.event;
+        const taskEvent = (inputCtx.input as any)?.payload || inputCtx.input;
 
         // Background tasks have no HTTP request establisher. This is the bg-task EXTRACT step: put the
         // tenant id from the task event into RawTenantId, then run the shared LOAD step
@@ -64,7 +64,7 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
     }
 }
 
-export const BackgroundTaskLambdaHandler = BackgroundTaskEventHandler.createImplementation({
+export const BackgroundTaskLambdaHandler = BackgroundTaskInputHandler.createImplementation({
     implementation: BackgroundTaskLambdaHandlerImpl,
     dependencies: [RequestContainer]
 });

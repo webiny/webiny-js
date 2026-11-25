@@ -6,9 +6,9 @@ import { useFeature } from "@webiny/app";
 import { useRoute, useRouter } from "@webiny/app";
 import { GetUserFeature } from "~/features/adminUsers/users/getUser/index.js";
 import type { IGetUserGatewayResult } from "~/features/adminUsers/users/getUser/abstractions/GetUserGateway.js";
-import { CreateUserFeature } from "~/features/adminUsers/users/createUser/index.js";
 import { UpdateUserFeature } from "~/features/adminUsers/users/updateUser/index.js";
 import { UserEventsFeature } from "~/features/adminUsers/users/userEvents/index.js";
+import { UserFormFeature } from "~/presentation/adminUsers/userForm/feature.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 import { useToast } from "@webiny/admin-ui";
 
@@ -34,9 +34,9 @@ export function useUserForm() {
     const toast = useToast();
 
     const { useCase: getUser } = useFeature(GetUserFeature);
-    const { useCase: createUser } = useFeature(CreateUserFeature);
     const { useCase: updateUser } = useFeature(UpdateUserFeature);
     const { revision } = useFeature(UserEventsFeature);
+    const { presenter: newUserForm } = useFeature(UserFormFeature);
 
     const id = route.params.id;
     const newUser = route.params.new === true;
@@ -48,6 +48,12 @@ export function useUserForm() {
     // Only the newest read may set the user. A read still running when another user is opened, or
     // when a newer read of the same user starts, would otherwise show data that is no longer current.
     const lastRead = useRef(0);
+
+    useEffect(() => {
+        if (newUser) {
+            newUserForm.reset();
+        }
+    }, [newUser]);
 
     const showLoadError = (error: Error) => {
         goToRoute(Routes.Users.List);
@@ -116,23 +122,39 @@ export function useUserForm() {
         );
     }, [id, revision, userLoading]);
 
-    const loading = userLoading || mutationLoading;
+    const loading = userLoading || mutationLoading || newUserForm.vm.saving;
 
     const onSubmit = useCallback<SubmitUserCallable>(
         async data => {
+            if (newUser) {
+                const result = await newUserForm.submit(data);
+                if (result.type === "created" || result.type === "linked") {
+                    goToRoute(Routes.Users.List, { id: result.user.id });
+                    toast.showSuccessToast({
+                        title:
+                            result.type === "linked"
+                                ? "User linked to this tenant."
+                                : "User saved successfully."
+                    });
+                } else if (result.type === "failed") {
+                    toast.showWarningToast({
+                        title: "Error creating user",
+                        description: result.message,
+                        duration: Infinity
+                    });
+                }
+                // `linkRequired`: the form now shows the link alert instead.
+                return;
+            }
+
             setMutationLoading(true);
 
             try {
-                if (newUser) {
-                    const resultUser = await createUser.execute({ data });
-                    goToRoute(Routes.Users.List, { id: resultUser.id });
-                } else {
-                    const { id: userId, ...rest } = data;
-                    await updateUser.execute({
-                        id: userId as string,
-                        data: omit(rest, ["external"])
-                    });
-                }
+                const { id: userId, ...rest } = data;
+                await updateUser.execute({
+                    id: userId as string,
+                    data: omit(rest, ["external"])
+                });
 
                 toast.showSuccessToast({
                     title: "User saved successfully."
@@ -159,6 +181,7 @@ export function useUserForm() {
         user,
         onSubmit,
         isNewUser: newUser,
+        newUserForm,
         fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
         showEmptyView,
         createUser() {

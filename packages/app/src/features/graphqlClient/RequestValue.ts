@@ -48,6 +48,10 @@ export class RequestValue {
         return this._request.endpoint;
     }
 
+    get keepalive() {
+        return this._request.keepalive;
+    }
+
     get operationName() {
         return this._operationName;
     }

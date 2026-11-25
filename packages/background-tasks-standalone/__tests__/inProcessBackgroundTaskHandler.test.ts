@@ -5,9 +5,9 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
-import { RequestContainer } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
+import { BackgroundTaskInputHandler } from "@webiny/api-kernel-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
 import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
@@ -15,7 +15,7 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
-import { RandomProcessOwner } from "@webiny/event-handler-standalone";
+import { RandomProcessOwner } from "@webiny/api-kernel-core";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { CLAIM_RENEW_EVERY_MS } from "~/claim/constants.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
@@ -86,9 +86,10 @@ const createHandler = () => {
     other.register(RandomProcessOwner).inSingletonScope();
     other.register(KeyValueTaskClaim);
 
-    const handler = container.resolve(BackgroundTaskEventHandler);
+    const handler = container.resolve(BackgroundTaskInputHandler);
     const next = async () => undefined;
-    const run = () => handler.execute({ event } as any, next) as Promise<Record<string, unknown>>;
+    const run = () =>
+        handler.execute({ input: event } as any, next) as Promise<Record<string, unknown>>;
 
     return {
         run,
