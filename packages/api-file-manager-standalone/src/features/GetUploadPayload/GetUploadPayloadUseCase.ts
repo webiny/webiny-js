@@ -5,6 +5,7 @@ import type { FileData } from "@webiny/api-file-manager/features/upload/types.js
 import type { UploadPayloadResponse } from "@webiny/api-file-manager/features/upload/types.js";
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
+import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 
@@ -37,7 +38,7 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
         );
 
         const tenant = this.tenantContext.getTenant();
-        const storageKey = `tenants/${tenant.id}/files/${file.key}`;
+        const storageKey = toTenantFileKey(tenant.id, file.key);
         const secret = this.config.uploadSecret;
         const expiresAt = Date.now() + 60_000;
 

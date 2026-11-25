@@ -1,4 +1,3 @@
-import nodePath from "node:path";
 import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
 import type { StandaloneConfig } from "./abstractions.js";
 
@@ -23,7 +22,7 @@ function readSecret(env: Env, name: string): string {
  * variable, so a misconfigured container fails at boot instead of on the first upload or login.
  *
  * Nothing falls back to a default: `webiny watch` and `webiny serve` get their values from
- * `<Infra.ApiUrl>`, `<Infra.AdminUrl>`, `<Infra.FileStorage>` and `<Infra.Crypto.*>` in
+ * `<Infra.ApiUrl>`, `<Infra.AdminUrl>`, `<Infra.FileStorage.*>` and `<Infra.Crypto.*>` in
  * webiny.config, and a deployed container must set them explicitly.
  */
 export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
@@ -42,13 +41,6 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
     if (adminUrlValue && !adminUrl.isKnown()) {
         problems.push(`WEBINY_ADMIN_URL is not an absolute http(s) URL: "${adminUrlValue}".`);
     }
-
-    /*
-     * Optional here: a project extension can provide the storage instead (`<S3FileStorage />`).
-     * Whether one of the two is there is checked once the build params are read
-     * (`assertFileStorage`).
-     */
-    const storagePath = read(env, "WEBINY_LOCAL_STORAGE_PATH");
 
     const uploadSecret = readSecret(env, "WEBINY_UPLOAD_SECRET");
     if (!uploadSecret) {
@@ -85,7 +77,6 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         apiUrl,
         adminUrl,
         fileStorage: {
-            storagePath: storagePath ? nodePath.resolve(storagePath) : undefined,
             uploadSecret
         },
         encryption: {

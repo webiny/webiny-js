@@ -15,7 +15,6 @@ import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { GetFileContentsByIdFeature } from "~/features/GetFileContentsById/feature.js";
 import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/feature.js";
 import { FileContentsStorageFeature } from "~/features/FileContentsStorage/feature.js";
-import { ObjectStorageFeature } from "~/features/ObjectStorage/feature.js";
 import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js";
 import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
 import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
@@ -27,8 +26,10 @@ export const FileManagerStandaloneFeature = createFeature({
         // The standalone API handler reads these from env when the server starts.
         FileManagerStandaloneConfigFeature.register(container, config);
 
-        // Where the files are kept: a folder on disk or an S3-compatible bucket.
-        ObjectStorageFeature.register(container, config);
+        /*
+         * Where the files are kept is not this feature's choice: it resolves `ObjectStorage`, which a
+         * provider registers (`@webiny/api-object-storage-disk` or `@webiny/api-object-storage-s3`).
+         */
 
         /*
          * In-process asset-delivery implementations (LocalAssetResolver/OutputStrategy/SharpTransform)

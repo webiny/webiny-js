@@ -1,44 +1,34 @@
 import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import type { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
-import { DiskObjectStorage } from "~/features/ObjectStorage/DiskObjectStorage.js";
-import { cleanupStorage } from "./helpers.js";
+import type { ObjectStorageTestBackend } from "../../../api-object-storage/__tests__/contracts/ObjectStorageTestBackend.js";
+import { diskBackend as diskStorageBackend } from "../../../api-object-storage-disk/__tests__/diskBackend.js";
+import { s3Backend as s3StorageBackend } from "../../../api-object-storage-s3/__tests__/s3Backend.js";
+import { s3Endpoint } from "../../../api-object-storage-s3/__tests__/s3Backend.js";
 import { SECRET } from "./helpers.js";
-import { setupStorage } from "./helpers.js";
+
+export { MIN_PART_SIZE } from "../../../api-object-storage/__tests__/contracts/ObjectStorageTestBackend.js";
 
 /**
- * A storage the storage-independent tests run against. This package runs them on disk;
- * `@webiny/api-file-manager-standalone-s3` runs the contracts in `../contracts` on an S3-compatible
- * bucket with a backend of its own.
+ * A storage the storage-independent tests run against: a provider's test backend, plus the upload
+ * settings. Always a folder on disk; also an S3-compatible bucket when `WEBINY_TEST_S3_ENDPOINT` is
+ * set (see `@webiny/api-object-storage-s3`'s `s3Backend`).
  */
-export interface TestStorageBackend {
-    name: string;
-    setup(): Promise<void>;
-    cleanup(): Promise<void>;
+export interface TestStorageBackend extends ObjectStorageTestBackend {
     config(): FileManagerStandaloneConfig.Interface;
-    storage(): ObjectStorage.Interface;
 }
 
-let diskConfig: FileManagerStandaloneConfig.Interface;
-let diskPath: string;
-
-export const diskBackend: TestStorageBackend = {
-    name: "disk",
-    async setup() {
-        diskPath = await setupStorage();
-        diskConfig = { storagePath: diskPath, uploadSecret: SECRET };
-    },
-    async cleanup() {
-        await cleanupStorage();
-    },
-    config() {
-        return diskConfig;
-    },
-    storage() {
-        return new DiskObjectStorage({ path: diskPath });
-    }
+const withUploadConfig = (backend: ObjectStorageTestBackend): TestStorageBackend => {
+    return {
+        name: backend.name,
+        setup: () => backend.setup(),
+        cleanup: () => backend.cleanup(),
+        storage: () => backend.storage(),
+        config: () => ({ uploadSecret: SECRET })
+    };
 };
 
-export const storageBackends: TestStorageBackend[] = [diskBackend];
+export const diskBackend = withUploadConfig(diskStorageBackend);
 
-/* S3 refuses multipart parts under 5 MiB, except the last one. */
-export const MIN_PART_SIZE = 5 * 1024 * 1024;
+export const storageBackends: TestStorageBackend[] = [diskBackend];
+if (s3Endpoint) {
+    storageBackends.push(withUploadConfig(s3StorageBackend));
+}

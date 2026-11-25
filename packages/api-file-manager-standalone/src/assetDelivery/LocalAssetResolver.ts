@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ObjectStorageContentsReader } from "~/assetDelivery/ObjectStorageContentsReader.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 
 interface AssetMetadata {
     id: string;

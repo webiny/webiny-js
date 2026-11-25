@@ -132,18 +132,17 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     WebsocketsStandaloneFeature.register(requestContainer);
                 },
                 /*
-                 * File-manager storage transport: a folder on disk, or what a project extension
-                 * registers instead (`<S3FileStorage />` registers an S3-compatible bucket). Where
-                 * AWS uploads straight to S3 (+ a separate asset-delivery Lambda), the server takes
-                 * uploads and serves files in-process. FileManagerStandaloneFeature registers asset
-                 * delivery (overriding the domain's null impls), the upload/multipart HTTP routes,
-                 * and the storage they write to.
+                 * File-manager storage transport. Where AWS uploads straight to S3 (+ a separate
+                 * asset-delivery Lambda), the server takes uploads and serves files in-process.
+                 * FileManagerStandaloneFeature registers asset delivery (overriding the domain's
+                 * null impls) and the upload/multipart HTTP routes; they store through
+                 * `ObjectStorage`, which a project extension registers (`<Infra.FileStorage.Disk />`
+                 * a folder on disk, `<Infra.FileStorage.S3 />` an S3-compatible bucket).
+                 * `assertFileStorage` has made sure the build has one.
                  */
                 fileManager: requestContainer => {
-                    FileManagerStandaloneFeature.register(
-                        requestContainer,
-                        standaloneConfig.fileStorage
-                    );
+                    const { uploadSecret } = standaloneConfig.fileStorage;
+                    FileManagerStandaloneFeature.register(requestContainer, { uploadSecret });
                 }
             }
         });
@@ -158,7 +157,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             const extensions = config.extensions();
             const buildParams = await readBuildParams(extensions);
             assertNoBakedSecrets(buildParams);
-            assertFileStorage(standaloneConfig.fileStorage, buildParams);
+            assertFileStorage(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             rootContainer.registerInstance(Logger, logger);

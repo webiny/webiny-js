@@ -13,37 +13,19 @@ const createBuildParams = (params: Record<string, unknown>): BuildParams.Interfa
     };
 };
 
-const fileStorage = (storagePath: string | undefined) => {
-    return { storagePath, uploadSecret: "upload-secret" };
-};
-
 describe("assertFileStorage", () => {
-    it("accepts a folder without a storage extension", () => {
+    it.each(["disk", "s3"])("accepts a build with the %s storage", storage => {
+        const buildParams = createBuildParams({ ObjectStorage: storage });
+
+        expect(() => assertFileStorage(buildParams)).not.toThrow();
+    });
+
+    it("refuses a build without a storage", () => {
         const buildParams = createBuildParams({});
 
-        expect(() => assertFileStorage(fileStorage("/data/storage"), buildParams)).not.toThrow();
-    });
-
-    it("accepts a storage extension without a folder", () => {
-        const buildParams = createBuildParams({ FileManagerStorage: "s3" });
-
-        expect(() => assertFileStorage(fileStorage(undefined), buildParams)).not.toThrow();
-    });
-
-    it("refuses neither a folder nor a storage extension", () => {
-        const buildParams = createBuildParams({});
-
-        expect(() => assertFileStorage(fileStorage(undefined), buildParams)).toThrowError(
-            "WEBINY_LOCAL_STORAGE_PATH is not set, and no file storage extension (such as " +
-                "<S3FileStorage />) is in the build. Set one of the two."
-        );
-    });
-
-    it("refuses both a folder and a storage extension", () => {
-        const buildParams = createBuildParams({ FileManagerStorage: "s3" });
-
-        expect(() => assertFileStorage(fileStorage("/data/storage"), buildParams)).toThrowError(
-            'WEBINY_LOCAL_STORAGE_PATH is set, but the build keeps files in "s3" storage.'
+        expect(() => assertFileStorage(buildParams)).toThrowError(
+            "No file storage is in the build. Add <Infra.FileStorage.Disk /> or " +
+                "<Infra.FileStorage.S3 />."
         );
     });
 });

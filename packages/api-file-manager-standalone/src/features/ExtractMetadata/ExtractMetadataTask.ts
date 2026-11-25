@@ -6,7 +6,7 @@ import {
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 
 class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMetadataInput> {
     public constructor(

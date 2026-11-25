@@ -1,0 +1,39 @@
+{
+  "name": "@webiny/api-object-storage-disk",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./project": "./project.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-object-storage-disk"
+  },
+  "description": "Keeps a standalone Webiny project's objects (uploaded files and the like) in a folder on disk.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-object-storage": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/project": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "react": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@webiny/build-tools": "0.0.0",
+    "rimraf": "^6.1.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

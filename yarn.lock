@@ -10932,6 +10932,7 @@ __metadata:
     "@webiny/api-file-manager-standalone": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms-bulk-actions-standalone": "npm:0.0.0"
+    "@webiny/api-object-storage": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-scheduler-standalone": "npm:0.0.0"
     "@webiny/api-websockets-standalone": "npm:0.0.0"
@@ -11006,28 +11007,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-standalone-s3@workspace:packages/api-file-manager-standalone-s3":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-file-manager-standalone-s3@workspace:packages/api-file-manager-standalone-s3"
-  dependencies:
-    "@types/react": "npm:19.3.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-file-manager": "npm:0.0.0"
-    "@webiny/api-file-manager-standalone": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
-    p-map: "npm:^7.1.1"
-    react: "npm:19.3.1"
-    rimraf: "npm:^6.1.4"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^5.1.1"
-    zod: "npm:4.6.7"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-file-manager-standalone@npm:0.0.0, @webiny/api-file-manager-standalone@workspace:packages/api-file-manager-standalone":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-standalone@workspace:packages/api-file-manager-standalone"
@@ -11035,13 +11014,15 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-object-storage": "npm:0.0.0"
+    "@webiny/api-object-storage-disk": "npm:0.0.0"
+    "@webiny/api-object-storage-s3": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     exifreader: "npm:^4.54.0"
     p-map: "npm:^7.1.1"
@@ -11517,6 +11498,56 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
     zod: "npm:4.6.7"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-object-storage-disk@npm:0.0.0, @webiny/api-object-storage-disk@workspace:packages/api-object-storage-disk":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-object-storage-disk@workspace:packages/api-object-storage-disk"
+  dependencies:
+    "@types/react": "npm:19.3.0"
+    "@webiny/api-object-storage": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    react: "npm:19.3.1"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+    zod: "npm:4.6.7"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-object-storage-s3@npm:0.0.0, @webiny/api-object-storage-s3@workspace:packages/api-object-storage-s3":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-object-storage-s3@workspace:packages/api-object-storage-s3"
+  dependencies:
+    "@types/react": "npm:19.3.0"
+    "@webiny/api-object-storage": "npm:0.0.0"
+    "@webiny/api-object-storage-disk": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    p-map: "npm:^7.1.1"
+    react: "npm:19.3.1"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
+    zod: "npm:4.6.7"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-object-storage@npm:0.0.0, @webiny/api-object-storage@workspace:packages/api-object-storage":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-object-storage@workspace:packages/api-object-storage"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    rimraf: "npm:^6.1.4"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
   languageName: unknown
   linkType: soft
 
@@ -13700,6 +13731,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-extensions-standalone@workspace:packages/project-extensions-standalone"
   dependencies:
+    "@webiny/api-object-storage-disk": "npm:0.0.0"
+    "@webiny/api-object-storage-s3": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     react: "npm:19.3.1"

@@ -2,7 +2,7 @@ import {
     TaskDefinition,
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { TENANTS_KEY_PREFIX } from "~/utils/tenantsKeyPrefix.js";
 
 export interface CleanupStaleMultipartUploadsInput {

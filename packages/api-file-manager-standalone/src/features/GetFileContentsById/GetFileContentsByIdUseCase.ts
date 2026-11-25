@@ -6,7 +6,7 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstraction.Interface {
     private readonly metadataReader: MetadataReader.Interface;

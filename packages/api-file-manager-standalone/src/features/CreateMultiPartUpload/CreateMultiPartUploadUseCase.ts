@@ -3,7 +3,7 @@ import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 

@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import { UploadRejectedError } from "~/domain/UploadRejectedError.js";
 import { isTenantFileKey } from "~/utils/isTenantFileKey.js";
 import { verifyUploadToken } from "~/utils/uploadToken.js";

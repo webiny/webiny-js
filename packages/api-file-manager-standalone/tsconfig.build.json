@@ -5,13 +5,15 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-object-storage/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../api-object-storage-disk/tsconfig.build.json" },
+    { "path": "../api-object-storage-s3/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -26,6 +28,8 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-object-storage/*": ["../api-object-storage/src/*"],
+      "@webiny/api-object-storage": ["../api-object-storage/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
@@ -36,10 +40,12 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/api-object-storage-disk/*": ["../api-object-storage-disk/src/*"],
+      "@webiny/api-object-storage-disk": ["../api-object-storage-disk/src"],
+      "@webiny/api-object-storage-s3/*": ["../api-object-storage-s3/src/*"],
+      "@webiny/api-object-storage-s3": ["../api-object-storage-s3/src"]
     }
   }
 }

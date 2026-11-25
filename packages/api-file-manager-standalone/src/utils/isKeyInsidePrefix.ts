@@ -1,4 +1,4 @@
-import { isValidObjectKey } from "./isValidObjectKey.js";
+import { isValidObjectKey } from "@webiny/api-object-storage";
 
 /*
  * Whether `key` is a valid storage key below `prefix`, which ends in `/`. The prefix itself does

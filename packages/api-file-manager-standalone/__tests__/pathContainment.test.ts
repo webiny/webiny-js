@@ -5,6 +5,7 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import { Result } from "@webiny/feature/api";
 import { invokeHttpRoute } from "@webiny/event-handler-core";
 import { ObjectStorageContentsReader } from "~/assetDelivery/ObjectStorageContentsReader.js";
 import { DeleteFileFromStorageHandler } from "~/features/DeleteFileFromStorage/DeleteFileFromStorageHandler.js";
@@ -52,7 +53,7 @@ const makeAsset = (key: string) => ({
 });
 
 const makeDeleteHandler = () => {
-    const keyValueStore = { delete: async () => {} } as any;
+    const keyValueStore = { delete: async () => Result.ok() } as any;
     const tenantContext = makeTenantContext();
     return new DeleteFileFromStorageHandler(
         tenantContext,
@@ -143,7 +144,7 @@ describe("delete file from storage", () => {
         await writeTestFile(`tenants/${TENANT_ID}/files/abc/doc.txt`, content);
 
         const handler = makeDeleteHandler();
-        await handler.handle({ payload: { file: { id: "abc" } } } as any);
+        await handler.handle({ payload: { file: { id: "abc", key: "abc/doc.txt" } } } as any);
 
         const folderPath = path.join(filesRoot(), "abc");
         await expect(fs.stat(folderPath)).rejects.toThrow("ENOENT");
@@ -153,7 +154,7 @@ describe("delete file from storage", () => {
         const id = traversalKeyTo(outside().dir);
 
         const handler = makeDeleteHandler();
-        await handler.handle({ payload: { file: { id } } } as any);
+        await handler.handle({ payload: { file: { id, key: `${id}/doc.txt` } } } as any);
 
         const kept = await readKeptFile();
         expect(kept).toBe("keep");
@@ -164,8 +165,8 @@ describe("delete file from storage", () => {
         await writeTestFile(`tenants/${TENANT_ID}/files/abc/doc.txt`, content);
 
         const handler = makeDeleteHandler();
-        await handler.handle({ payload: { file: { id: ".." } } } as any);
-        await handler.handle({ payload: { file: { id: "." } } } as any);
+        await handler.handle({ payload: { file: { id: "..", key: "../doc.txt" } } } as any);
+        await handler.handle({ payload: { file: { id: ".", key: "./doc.txt" } } } as any);
 
         const docPath = path.join(filesRoot(), "abc", "doc.txt");
         const kept = await fs.readFile(docPath, "utf8");

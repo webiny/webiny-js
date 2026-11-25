@@ -1,7 +1,6 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
-import nodePath from "node:path";
 import { Container } from "@webiny/feature/api";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { PublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
@@ -12,7 +11,6 @@ import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 const validEnv = {
     WEBINY_API_URL: "https://api.staging.example.com/",
     WEBINY_ADMIN_URL: "https://admin.staging.example.com",
-    WEBINY_LOCAL_STORAGE_PATH: "data/storage",
     WEBINY_UPLOAD_SECRET: "staging-upload-secret",
     WEBINY_ENCRYPTION_PASSPHRASE: "staging-passphrase",
     WEBINY_HASHING_PEPPER: "staging-pepper"
@@ -24,10 +22,7 @@ describe("readStandaloneConfig", () => {
 
         expect(config.apiUrl.toString()).toBe("https://api.staging.example.com");
         expect(config.adminUrl.toString()).toBe("https://admin.staging.example.com");
-        expect(config.fileStorage).toEqual({
-            storagePath: nodePath.resolve("data/storage"),
-            uploadSecret: "staging-upload-secret"
-        });
+        expect(config.fileStorage).toEqual({ uploadSecret: "staging-upload-secret" });
         expect(config.encryption).toEqual({ passphrase: "staging-passphrase", salt: "" });
         expect(config.hashing).toEqual({ pepper: "staging-pepper" });
     });
@@ -43,12 +38,6 @@ describe("readStandaloneConfig", () => {
         expect(config.fileStorage.uploadSecret).toBe(" upload secret ");
         expect(config.encryption.passphrase).toBe(" passphrase ");
         expect(config.hashing.pepper).toBe("pepper\n");
-    });
-
-    it("leaves the storage folder unset when WEBINY_LOCAL_STORAGE_PATH is", () => {
-        const config = readStandaloneConfig({ ...validEnv, WEBINY_LOCAL_STORAGE_PATH: undefined });
-
-        expect(config.fileStorage.storagePath).toBeUndefined();
     });
 
     it("treats a missing Admin URL as unknown", () => {

@@ -27,8 +27,8 @@ const publicUrls: PublicUrls.Interface = {
 };
 
 /**
- * The upload + read round trip contract, run against one storage backend: this package calls it
- * for disk, `@webiny/api-file-manager-standalone-s3` for an S3-compatible bucket.
+ * The upload + read round trip contract, run against each of `storageBackends`: a folder on disk,
+ * and an S3-compatible bucket when `WEBINY_TEST_S3_ENDPOINT` is set.
  */
 export const describeUploadRoundTripContract = (backend: TestStorageBackend): void => {
     describe(`upload + read round trip: ${backend.name}`, () => {

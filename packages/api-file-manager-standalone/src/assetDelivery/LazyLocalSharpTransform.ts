@@ -6,7 +6,7 @@ import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetD
 import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
-import { ObjectStorage } from "~/features/ObjectStorage/abstractions.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
 /**
