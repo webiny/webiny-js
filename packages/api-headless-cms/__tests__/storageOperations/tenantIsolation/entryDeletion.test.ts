@@ -13,14 +13,14 @@ import {
     TENANT_A,
     TENANT_B
 } from "./helpers";
-import { useStorageContainer } from "../useStorageContainer";
+import { useTenantRoutedStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
 describe("Tenant isolation - entry deletion", () => {
-    const getContainer = useStorageContainer();
+    const getContainer = useTenantRoutedStorageContainer();
     const modelA = createIsolationModel(TENANT_A);
     const modelB = createIsolationModel(TENANT_B);
 

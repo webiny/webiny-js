@@ -16,6 +16,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -32,7 +33,8 @@ class DdbEsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -40,6 +42,11 @@ class DdbEsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsCreateParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId(
+            initialModel.tenant,
+            initialEntry.tenant,
+            initialStorageEntry.tenant
+        );
 
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
@@ -52,8 +59,12 @@ class DdbEsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         const transformer = createTransformer<T>({
             fieldIndexRegistry: this.fieldIndexRegistry,
             model,
-            entry: initialEntry,
-            storageEntry: initialStorageEntry,
+            /**
+             * Copies with the scope's tenant: the caller's objects are left as they are, the stored
+             * and indexed records carry the scope's tenant.
+             */
+            entry: { ...initialEntry, tenant },
+            storageEntry: { ...initialStorageEntry, tenant },
             compressionHandler: this.compressionHandler,
             valuesModifiers: this.valuesModifiers
         });
@@ -67,9 +78,9 @@ class DdbEsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
             model
         });
 
-        const revisionKeys = createEntryRevisionKeys(entry);
-        const latestKeys = createEntryLatestKeys(entry);
-        const publishedKeys = createEntryPublishedKeys(entry);
+        const revisionKeys = createEntryRevisionKeys(entry, tenant);
+        const latestKeys = createEntryLatestKeys(entry, tenant);
+        const publishedKeys = createEntryPublishedKeys(entry, tenant);
 
         const entityBatch = this.entity.createEntityWriter({
             put: [
@@ -103,7 +114,7 @@ class DdbEsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         try {
             await entityBatch.execute();
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -166,6 +177,7 @@ export const DdbEsCreateEntry = CreateEntryStorageOperation.createImplementation
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
         CmsModelOpenSearchIndexProvider,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

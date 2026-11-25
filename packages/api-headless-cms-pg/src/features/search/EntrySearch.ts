@@ -11,6 +11,7 @@ import type {
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { ValueFilterRegistry } from "@webiny/db-utils";
@@ -38,7 +39,7 @@ import { readsIx } from "~/features/indexMode/indexMode.js";
 import { createNullToken } from "./tokens.js";
 import { readValueCounts } from "./valueCounts.js";
 import { rowToEntry } from "~/features/entries/entryRow.js";
-import { modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
+import { modelRef, modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
 
 const MAX_LIST_LIMIT = 1000000;
 /* Entries read per query when loading a list page. */
@@ -75,13 +76,15 @@ class EntrySearchImpl implements Abstraction.Interface {
         private readonly filterCreateRegistry: FieldFilterCreateRegistry.Interface,
         private readonly sortingRegistry: FieldSortingRegistry.Interface,
         private readonly valueFilterRegistry: ValueFilterRegistry.Interface,
-        private readonly config: PgStorageConfig.Interface
+        private readonly config: PgStorageConfig.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async list<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsListParams
     ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>> {
+        const tenant = this.scopeTenant.getId(initialModel.tenant);
         const model = this.storageModelProvider.getModel(initialModel);
         const where: Partial<CmsEntryListWhere> = { ...params.where };
 
@@ -89,6 +92,7 @@ class EntrySearchImpl implements Abstraction.Interface {
         if (where.entryId && where.published !== true && where.latest !== true) {
             return listRevisionsOfEntry<T>({
                 knex: this.knex.client,
+                tenant,
                 tables: this.schema.getTables(),
                 model,
                 params,
@@ -164,6 +168,7 @@ class EntrySearchImpl implements Abstraction.Interface {
         const page = rows.slice(0, limit);
 
         const items = await this.loadEntries<T>(
+            tenant,
             model,
             entries,
             page.map(row => row.id)
@@ -183,6 +188,7 @@ class EntrySearchImpl implements Abstraction.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
     ) {
+        const tenant = this.scopeTenant.getId(model.tenant);
         const field = model.fields.find(f => f.fieldId === params.fieldId);
         if (!field) {
             return [];
@@ -238,7 +244,7 @@ class EntrySearchImpl implements Abstraction.Interface {
             `SELECT e.data->'values'->? AS value FROM "${search}" s
              JOIN "${entries}" e ON e.tenant = ? AND e.model_id = ? AND e.id = s.id
              WHERE ${filter.sql}`,
-            new SqlFragment("", [field.storageId, model.tenant, model.modelId]).rawBindings(
+            new SqlFragment("", [field.storageId, tenant, model.modelId]).rawBindings(
                 ...filter.bindings
             )
         );
@@ -281,6 +287,7 @@ class EntrySearchImpl implements Abstraction.Interface {
     }
 
     private async loadEntries<T extends CmsEntryValues>(
+        tenant: string,
         model: ReturnType<CmsStorageModelProvider.Interface["getModel"]>,
         entries: string,
         ids: string[]
@@ -293,7 +300,7 @@ class EntrySearchImpl implements Abstraction.Interface {
         const byId = new Map<string, { id: string; data: CmsStorageEntry }>();
         for (let start = 0; start < ids.length; start += LOAD_ENTRIES_CHUNK) {
             const rows: { id: string; data: CmsStorageEntry }[] = await whereTextIn(
-                modelRows(this.knex.client, entries, model).select("id", "data"),
+                modelRows(this.knex.client, entries, modelRef(tenant, model)).select("id", "data"),
                 "id",
                 ids.slice(start, start + LOAD_ENTRIES_CHUNK)
             );
@@ -339,6 +346,7 @@ export const EntrySearchImplementation = Abstraction.createImplementation({
         FieldFilterCreateRegistry,
         FieldSortingRegistry,
         ValueFilterRegistry,
-        PgStorageConfig
+        PgStorageConfig,
+        ScopeTenant
     ]
 });

@@ -6,6 +6,7 @@ import {
     TenancyStorageOperationsProvider
 } from "./abstractions.js";
 import { MissingTenancyStorageOperationsError } from "./errors.js";
+import { tenantNeutralScopeTenant } from "~/features/tenancy/ScopeTenant/scopeTenants.js";
 
 class TenancyStorageOperationsProviderImpl implements TenancyStorageOperationsProvider.Interface {
     constructor(
@@ -18,7 +19,10 @@ class TenancyStorageOperationsProviderImpl implements TenancyStorageOperationsPr
             return this.tenancyFactory.create();
         }
         if (this.coreFactory) {
-            return this.coreFactory.create().tenancyStorageOperations;
+            // The tenant registry is tenant-neutral: it reads and writes the tenant records of
+            // any tenant, so it gets no scope tenant.
+            return this.coreFactory.create({ scopeTenant: tenantNeutralScopeTenant })
+                .tenancyStorageOperations;
         }
         throw new MissingTenancyStorageOperationsError();
     }

@@ -27,6 +27,8 @@ import { rowToEntry } from "./entryRow.js";
 
 interface IListRevisionsOfEntryParams {
     knex: Knex;
+    /* The storage's scope tenant (`ScopeTenant`). */
+    tenant: string;
     tables: PgSchema.Tables;
     model: StorageOperationsCmsModel;
     params: CmsEntryStorageOperationsListParams;
@@ -58,7 +60,7 @@ export const listRevisionsOfEntry = async <T extends CmsEntryValues = CmsEntryVa
         .knex(input.tables.entries)
         .select("data")
         .where({
-            tenant: model.tenant,
+            tenant: input.tenant,
             model_id: model.modelId,
             entry_id: entryId,
             wby_deleted: wbyDeleted

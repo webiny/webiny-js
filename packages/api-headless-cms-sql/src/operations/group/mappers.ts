@@ -1,12 +1,13 @@
 import type { CmsGroup } from "@webiny/api-headless-cms/types/index.js";
 import type { IGroupRow } from "./types.js";
 
-export const groupToRow = (group: CmsGroup): IGroupRow => {
+/** The group's row, in `tenant`: the scope's tenant of the operation writing it. */
+export const groupToRow = (group: CmsGroup, tenant: string): IGroupRow => {
     return {
         id: group.id,
         name: group.name,
         slug: group.slug,
-        tenant: group.tenant,
+        tenant,
         description: group.description ?? null,
         icon: group.icon ? JSON.stringify(group.icon) : null,
         createdBy_id: group.createdBy?.id ?? null,

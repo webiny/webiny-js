@@ -1,4 +1,5 @@
 import { GetEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { EntrySearch } from "~/features/search/abstractions.js";
 import type {
     CmsEntryStorageOperationsGetParams,
@@ -7,12 +8,17 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 
 class PgGetEntryImpl implements GetEntryStorageOperation.Interface {
-    public constructor(private readonly search: EntrySearch.Interface) {}
+    public constructor(
+        private readonly search: EntrySearch.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
+    ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetParams
     ) {
+        // The search checks it too; the operation checks what its caller passed up front.
+        this.scopeTenant.getId(model.tenant);
         const { items } = await this.search.list<T>(model, { ...params, limit: 1 });
         return items.shift() || null;
     }
@@ -20,5 +26,5 @@ class PgGetEntryImpl implements GetEntryStorageOperation.Interface {
 
 export const PgGetEntry = GetEntryStorageOperation.createImplementation({
     implementation: PgGetEntryImpl,
-    dependencies: [EntrySearch]
+    dependencies: [EntrySearch, ScopeTenant]
 });

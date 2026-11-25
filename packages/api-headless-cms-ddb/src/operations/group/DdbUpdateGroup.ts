@@ -1,18 +1,23 @@
 import type { CmsGroupStorageOperationsUpdateParams } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import { UpdateGroupStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/group/UpdateGroupStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
 import { createKeys, createType } from "./keys.js";
 
 class DdbUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
-    constructor(private entity: CmsDdbGroupEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbGroupEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(params: CmsGroupStorageOperationsUpdateParams) {
         const { group } = params;
-        const keys = createKeys(group);
+        const tenant = this.scopeTenant.getId(group.tenant);
+        const keys = createKeys({ tenant, id: group.id });
         try {
             await this.entity.put({
-                data: group,
+                data: { ...group, tenant },
                 TYPE: createType(),
                 ...keys
             });
@@ -28,5 +33,5 @@ class DdbUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
 
 export const DdbUpdateGroup = UpdateGroupStorageOperation.createImplementation({
     implementation: DdbUpdateGroupImpl,
-    dependencies: [CmsDdbGroupEntity]
+    dependencies: [CmsDdbGroupEntity, ScopeTenant]
 });

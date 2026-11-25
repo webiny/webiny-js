@@ -14,14 +14,14 @@ import {
     ISOLATION_ENTRY_ID,
     TENANT_A
 } from "./helpers";
-import { useStorageContainer } from "../useStorageContainer";
+import { useTenantRoutedStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
 describe("Tenant isolation - entry reads", () => {
-    const getContainer = useStorageContainer();
+    const getContainer = useTenantRoutedStorageContainer();
     const modelA = createIsolationModel(TENANT_A);
 
     beforeEach(async () => {

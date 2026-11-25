@@ -1,6 +1,7 @@
 import type { Knex } from "knex";
 import { WebinyError } from "@webiny/error";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { EntryValuesPatcher as Abstraction } from "./abstractions.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
@@ -8,7 +9,8 @@ import { PgSchema } from "~/features/schema/abstractions.js";
 class EntryValuesPatcherImpl implements Abstraction.Interface {
     public constructor(
         private readonly schema: PgSchema.Interface,
-        private readonly storageModelProvider: CmsStorageModelProvider.Interface
+        private readonly storageModelProvider: CmsStorageModelProvider.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async patch(
@@ -16,6 +18,7 @@ class EntryValuesPatcherImpl implements Abstraction.Interface {
         model: CmsModel,
         patches: Abstraction.Patch[]
     ): Promise<string[]> {
+        const tenant = this.scopeTenant.getId(model.tenant);
         if (patches.length === 0) {
             return [];
         }
@@ -47,7 +50,7 @@ class EntryValuesPatcherImpl implements Abstraction.Interface {
                 FROM jsonb_to_recordset(?::jsonb) AS v(entry_id text, value jsonb)
                 WHERE e.tenant = ? AND e.model_id = ? AND e.entry_id = v.entry_id
                     AND (e.is_latest OR e.is_published)`,
-                [field.storageId, JSON.stringify(rows), model.tenant, model.modelId]
+                [field.storageId, JSON.stringify(rows), tenant, model.modelId]
             );
         }
 
@@ -57,5 +60,5 @@ class EntryValuesPatcherImpl implements Abstraction.Interface {
 
 export const EntryValuesPatcherImplementation = Abstraction.createImplementation({
     implementation: EntryValuesPatcherImpl,
-    dependencies: [PgSchema, CmsStorageModelProvider]
+    dependencies: [PgSchema, CmsStorageModelProvider, ScopeTenant]
 });

@@ -5,14 +5,19 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { aggregateUniqueFieldValues } from "@webiny/api-headless-cms-storage";
 
 const MAX_LIST_LIMIT = 1000000;
 
 class DdbGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperation.Interface {
-    constructor(private listEntries: ListEntriesStorageOperation.Interface) {}
+    constructor(
+        private listEntries: ListEntriesStorageOperation.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetUniqueFieldValuesParams) {
+        this.scopeTenant.getId(model.tenant);
         const { where, fieldId } = params;
 
         const field = model.fields.find(f => f.fieldId === fieldId);
@@ -35,5 +40,5 @@ class DdbGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperatio
 
 export const DdbGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: DdbGetUniqueFieldValuesImpl,
-    dependencies: [ListEntriesStorageOperation]
+    dependencies: [ListEntriesStorageOperation, ScopeTenant]
 });

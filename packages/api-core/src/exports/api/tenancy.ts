@@ -1,4 +1,5 @@
 export { TenantContext } from "~/features/tenancy/TenantContext/index.js";
+export { ScopeTenant, TenantScopeMismatchError } from "~/features/tenancy/ScopeTenant/index.js";
 export {
     TenantScope,
     TenantScopes,

@@ -16,6 +16,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -33,7 +34,8 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -41,13 +43,18 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
         params: CmsEntryStorageOperationsUnpublishParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId(
+            initialModel.tenant,
+            initialEntry.tenant,
+            initialStorageEntry.tenant
+        );
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const transformer = createTransformer({
             valuesModifiers: this.valuesModifiers,
             model,
-            entry: initialEntry,
-            storageEntry: initialStorageEntry,
+            entry: { ...initialEntry, tenant },
+            storageEntry: { ...initialStorageEntry, tenant },
             fieldIndexRegistry: this.fieldIndexRegistry,
             compressionHandler: this.compressionHandler
         });
@@ -57,16 +64,16 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
          * We need the latest entry to check if it needs to be updated.
          */
         const [latestStorageEntry] = await this.dataLoaders.getLatestRevisionByEntryId({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [entry.id]
         });
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
-        const entryRevisionKeys = createEntryRevisionKeys(entry);
+        const entryRevisionKeys = createEntryRevisionKeys(entry, tenant);
 
         const entityBatch = this.entity.createEntityWriter({
             put: [
@@ -101,7 +108,7 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
                 model
             });
 
-            const entryLatestKeys = createEntryLatestKeys(storageEntry);
+            const entryLatestKeys = createEntryLatestKeys(storageEntry, tenant);
             entityBatch.put({
                 ...entryLatestKeys,
                 data: storageEntry
@@ -123,7 +130,7 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -165,6 +172,7 @@ export const DdbEsUnpublishEntry = UnpublishEntryStorageOperation.createImplemen
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
         CmsModelOpenSearchIndexProvider,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

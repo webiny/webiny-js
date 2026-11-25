@@ -8,7 +8,14 @@ import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/in
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ModelFactory } from "~/features/modelBuilder/index.js";
-import { TenantScope, TenantScopes } from "@webiny/api-core/exports/api/tenancy.js";
+import {
+    ScopeTenant,
+    TenantScope,
+    TenantScopeMismatchError,
+    TenantScopes
+} from "@webiny/api-core/exports/api/tenancy.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/index.js";
+import { GetRevisionByIdStorageOperation } from "~/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
@@ -167,5 +174,25 @@ describe("CMS entry tenant isolation", () => {
         });
         expect(published.isOk()).toBe(true);
         expect(published.value.tenant).toBe("sub-tenant");
+    });
+
+    /*
+     * Storage acts on its scope's tenant and refuses a model of another tenant. The use cases above
+     * work with a model loaded in root because `RuntimeTenant` stamps the scope's tenant onto it.
+     */
+    it("stamps the scope's tenant, which storage accepts, and storage refuses an unstamped model", async () => {
+        const rootModel = await loadRootModel();
+
+        await inSubTenant(async scope => {
+            const stamped = scope.resolve(RuntimeTenant).assign(rootModel);
+            expect(stamped.tenant).toBe("sub-tenant");
+            expect(stamped.tenant).toBe(scope.resolve(ScopeTenant).getId());
+
+            const storage = scope.resolve(GetRevisionByIdStorageOperation);
+            await expect(storage.execute(stamped, { id: "none#0001" })).resolves.toBeFalsy();
+            await expect(storage.execute(rootModel, { id: "none#0001" })).rejects.toThrow(
+                TenantScopeMismatchError
+            );
+        });
     });
 });

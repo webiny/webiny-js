@@ -7,7 +7,7 @@ import { DeleteEntryStorageOperation } from "@webiny/api-headless-cms/features/s
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
 import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
-import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createPartitionKey } from "./keys.js";
 
 class DdbEsDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
@@ -15,17 +15,16 @@ class DdbEsDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
         private entity: CmsDdbEsEntryEntity.Interface,
         private esEntity: CmsDdbEsEntriesEsEntity.Interface,
         private dataLoaders: CmsDdbEsDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(initialModel: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
         const { entry } = params;
+        const tenant = this.scopeTenant.getId(initialModel.tenant, entry.tenant);
         const id = entry.id || entry.entryId;
-        const model = this.storageModelProvider.getModel(initialModel);
-
         const partitionKey = createPartitionKey({
             id,
-            tenant: model.tenant
+            tenant
         });
 
         const items = await this.entity.queryAll({
@@ -64,7 +63,7 @@ class DdbEsDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -94,10 +93,5 @@ class DdbEsDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
 
 export const DdbEsDeleteEntry = DeleteEntryStorageOperation.createImplementation({
     implementation: DdbEsDeleteEntryImpl,
-    dependencies: [
-        CmsDdbEsEntryEntity,
-        CmsDdbEsEntriesEsEntity,
-        CmsDdbEsDataLoaders,
-        CmsStorageModelProvider
-    ]
+    dependencies: [CmsDdbEsEntryEntity, CmsDdbEsEntriesEsEntity, CmsDdbEsDataLoaders, ScopeTenant]
 });

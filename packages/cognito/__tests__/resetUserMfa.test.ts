@@ -15,7 +15,7 @@ import {
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CreateUserUseCase as CoreCreateUserUseCase } from "@webiny/api-core/features/users/CreateUser/index.js";
 import { CreateRoleUseCase } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
@@ -38,7 +38,7 @@ describe("Admin Users (Cognito): resetting a user's MFA", () => {
 
     const createTenantContainer = (tenant: Tenant) => {
         const tenantContainer = new Container();
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(tenantContainer, apiCoreStorage.storageOperations);

@@ -6,6 +6,7 @@ import type {
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
 import { RestoreFromBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -20,7 +21,8 @@ class DdbRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -28,6 +30,11 @@ class DdbRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
         params: CmsEntryStorageOperationsRestoreFromBinParams<T>
     ): Promise<CmsStorageEntry<T>> {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId(
+            initialModel.tenant,
+            entry.tenant,
+            initialStorageEntry.tenant
+        );
         const model = this.storageModelProvider.getModel(initialModel);
 
         /**
@@ -38,7 +45,7 @@ class DdbRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
             records = await this.entity.queryAll({
                 partitionKey: createPartitionKey({
                     id: entry.id,
-                    tenant: model.tenant
+                    tenant
                 }),
                 options: {
                     gte: " "
@@ -92,9 +99,7 @@ class DdbRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
         try {
             await entityBatch.execute();
 
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
 
             return initialStorageEntry;
         } catch (ex) {
@@ -113,5 +118,5 @@ class DdbRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
 
 export const DdbRestoreFromBin = RestoreFromBinStorageOperation.createImplementation({
     implementation: DdbRestoreFromBinImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

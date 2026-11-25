@@ -2,18 +2,23 @@ import type { CmsModelStorageOperationsCreateParams } from "@webiny/api-headless
 import WebinyError from "@webiny/error";
 import { convertException } from "@webiny/utils";
 import { CreateModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/CreateModelStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { createKeys, createType } from "./keys.js";
 
 class DdbCreateModelImpl implements CreateModelStorageOperation.Interface {
-    constructor(private entity: CmsDdbModelEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbModelEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(params: CmsModelStorageOperationsCreateParams) {
         const { model } = params;
-        const keys = createKeys(model);
+        const tenant = this.scopeTenant.getId(model.tenant);
+        const keys = createKeys({ tenant, modelId: model.modelId });
         try {
             await this.entity.put({
-                data: model,
+                data: { ...model, tenant },
                 ...keys,
                 TYPE: createType()
             });
@@ -30,5 +35,5 @@ class DdbCreateModelImpl implements CreateModelStorageOperation.Interface {
 
 export const DdbCreateModel = CreateModelStorageOperation.createImplementation({
     implementation: DdbCreateModelImpl,
-    dependencies: [CmsDdbModelEntity]
+    dependencies: [CmsDdbModelEntity, ScopeTenant]
 });

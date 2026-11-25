@@ -1,4 +1,5 @@
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { MoveToBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveToBinStorageOperation.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
 import { SearchIndexer } from "~/features/search/abstractions.js";
@@ -6,16 +7,26 @@ import type {
     CmsEntryStorageOperationsMoveToBinParams,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { copyEntryLevelMeta, patchAllEntryRevisions } from "~/features/entries/entryQueries.js";
+import {
+    copyEntryLevelMeta,
+    modelRef,
+    patchAllEntryRevisions
+} from "~/features/entries/entryQueries.js";
 
 class PgMoveToBinImpl implements MoveToBinStorageOperation.Interface {
     public constructor(
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
-        private readonly indexer: SearchIndexer.Interface
+        private readonly indexer: SearchIndexer.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async execute(model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) {
+        const tenant = this.scopeTenant.getId(
+            model.tenant,
+            params.entry?.tenant,
+            params.storageEntry?.tenant
+        );
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
 
@@ -23,7 +34,7 @@ class PgMoveToBinImpl implements MoveToBinStorageOperation.Interface {
             await patchAllEntryRevisions(
                 trx,
                 entries,
-                model,
+                modelRef(tenant, model),
                 params.entry.entryId,
                 data => {
                     const target = data as unknown as Record<string, unknown>;
@@ -44,5 +55,5 @@ class PgMoveToBinImpl implements MoveToBinStorageOperation.Interface {
 
 export const PgMoveToBin = MoveToBinStorageOperation.createImplementation({
     implementation: PgMoveToBinImpl,
-    dependencies: [KnexClient, PgSchema, SearchIndexer]
+    dependencies: [KnexClient, PgSchema, SearchIndexer, ScopeTenant]
 });

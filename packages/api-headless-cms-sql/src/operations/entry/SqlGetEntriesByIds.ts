@@ -8,6 +8,7 @@ import type {
 import { GetEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntriesByIdsStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
 import { createEntryQuery } from "./queryHelpers.js";
@@ -17,7 +18,8 @@ class SqlGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interfac
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -30,12 +32,14 @@ class SqlGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interfac
         model: CmsModel,
         params: CmsEntryStorageOperationsGetByIdsParams
     ) {
+        const tenant = this.scopeTenant.getId(model.tenant);
+
         await this.entryTableManager.ensureTable();
 
         const idList = params.ids as string[];
 
         const rows: IEntryRow[] = await this.query()
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .whereIn("id", idList);
 
@@ -48,5 +52,5 @@ class SqlGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interfac
 
 export const SqlGetEntriesByIds = GetEntriesByIdsStorageOperation.createImplementation({
     implementation: SqlGetEntriesByIdsImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

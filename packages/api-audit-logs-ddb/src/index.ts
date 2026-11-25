@@ -3,6 +3,7 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createStorage } from "~/Storage.js";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 interface RegisterAuditLogsDdbStorageOperationsParams {
     documentClient: DynamoDBDocument;
@@ -13,13 +14,17 @@ export const registerAuditLogsDdbStorageOperations = (
     params: RegisterAuditLogsDdbStorageOperationsParams
 ) => {
     return createRegisterExtensionPlugin(context => {
-        const compressionHandler = context.container.resolve(CompressionHandler);
-        const storage = createStorage({
-            client: params.documentClient,
-            tableName: params.tableName,
-            compressionHandler
+        const container = context.container;
+        // Built when first used, in the container that registered it (a tenant scope), with that
+        // scope's tenant.
+        container.registerFactory(AuditLogsStorage, () => {
+            return createStorage({
+                client: params.documentClient,
+                tableName: params.tableName,
+                compressionHandler: container.resolve(CompressionHandler),
+                scopeTenant: container.resolve(ScopeTenant)
+            });
         });
-        context.container.registerInstance(AuditLogsStorage, storage);
     });
 };
 export { AuditLogsDdbFeature } from "./AuditLogsDdbFeature.js";

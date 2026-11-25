@@ -6,7 +6,7 @@ import { License } from "@webiny/wcp";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
 import { Logger, NullLogger } from "~/features/logger/index.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
 import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
@@ -81,7 +81,7 @@ describe("Granting permissions: only what the caller holds", () => {
     beforeEach(() => {
         container = new Container();
 
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);

@@ -5,6 +5,7 @@ import type {
     CmsEntryStorageOperationsDeleteRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { DeleteEntryRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -21,17 +22,19 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     private async getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
+        tenant: string,
         params: { id: string }
     ) {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getPublishedRevisionByEntryId<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
         const item = items.shift() || null;
@@ -49,12 +52,19 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) {
         const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
+        const tenant = this.scopeTenant.getId(
+            initialModel.tenant,
+            entry.tenant,
+            params.storageEntry?.tenant,
+            latestEntry?.tenant,
+            initialLatestStorageEntry?.tenant
+        );
 
         const model = this.storageModelProvider.getModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
         const entityBatch = this.entity.createEntityWriter({
@@ -66,7 +76,11 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
             ]
         });
 
-        const publishedStorageEntry = await this.getPublishedRevisionByEntryId(model, entry);
+        const publishedStorageEntry = await this.getPublishedRevisionByEntryId(
+            model,
+            tenant,
+            entry
+        );
 
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
@@ -79,12 +93,15 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
         }
 
         if (initialLatestStorageEntry) {
-            const latestStorageEntry = convertToStorageEntry({
-                storageEntry: initialLatestStorageEntry,
-                model
-            });
+            const latestStorageEntry = {
+                ...convertToStorageEntry({
+                    storageEntry: initialLatestStorageEntry,
+                    model
+                }),
+                tenant
+            };
             entityBatch.put({
-                ...createEntryLatestKeys(latestStorageEntry),
+                ...createEntryLatestKeys(latestStorageEntry, tenant),
                 data: {
                     ...latestStorageEntry
                 }
@@ -93,7 +110,7 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
             // Do an update on the latest revision. We need to update the latest revision's
             // entry-level meta fields to match the previous revision's entry-level meta fields.
             entityBatch.put({
-                ...createEntryRevisionKeys(latestStorageEntry),
+                ...createEntryRevisionKeys(latestStorageEntry, tenant),
                 data: {
                     ...latestStorageEntry
                 }
@@ -102,9 +119,7 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
         try {
             await entityBatch.execute();
 
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
                 error: ex,
@@ -117,5 +132,5 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
 
 export const DdbDeleteEntryRevision = DeleteEntryRevisionStorageOperation.createImplementation({
     implementation: DdbDeleteEntryRevisionImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

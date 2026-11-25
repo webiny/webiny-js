@@ -8,7 +8,7 @@ import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdenti
 import { UserStorageError } from "~/features/users/shared/errors.js";
 import { FindUserRecordsUseCase } from "~/features/users/FindUserRecords/index.js";
 import type { Container } from "@webiny/di";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
 import { Authenticator } from "~/features/security/authentication/Authenticator/abstractions.js";
 import type { AdminUser } from "~/types/users.js";
 import type { Tenant } from "~/types/tenancy.js";
@@ -220,7 +220,14 @@ describe("Tenant-aware login", () => {
         ]
     });
 
-    const storage = () => getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+    /**
+     * The storage the test seeds and reads records with, across tenants: each call acts in the tenant
+     * of the record or `where` it's given, as storage built in that tenant's scope does.
+     */
+    const storage = () =>
+        getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore").storageOperations({
+            scopeTenant: { getId: (...passed) => passed.find(Boolean) ?? "root" }
+        });
 
     const login = async (token: string) => {
         const [response] = await invoke({

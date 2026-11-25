@@ -10,7 +10,7 @@ import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getIntrospectionQuery } from "graphql";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
@@ -77,7 +77,7 @@ export interface InvokeParams {
  * or grab the fully-initialized request context via `getContext()`.
  */
 export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const identity = params.identity === undefined ? DEFAULT_IDENTITY : params.identity;

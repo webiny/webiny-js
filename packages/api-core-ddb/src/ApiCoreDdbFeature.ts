@@ -16,7 +16,7 @@ export const ApiCoreDdbFeature = createFeature<ApiCoreDdbConfig>({
     name: "ApiCoreDdb",
     register(container, { documentClient }) {
         container.registerInstance(ApiCoreStorageOperationsFactory, {
-            create: () => createApiCoreDdb({ documentClient })
+            create: ({ scopeTenant }) => createApiCoreDdb({ documentClient, scopeTenant })
         });
         // The tenant registry on its own: the request container reads the request's tenant from it.
         container.registerInstance(TenancyStorageOperationsFactory, {

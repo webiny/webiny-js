@@ -22,6 +22,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
 import { Debugger } from "@webiny/api-core/features/debugger/index.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import "~/debuggerNamespaces.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
 
@@ -35,7 +36,8 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         openSearchClient: OpenSearchClient.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private debuggerService: Debugger.Interface
+        private debuggerService: Debugger.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
@@ -44,6 +46,11 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsListParams
     ) {
+        /**
+         * The index and the shared index's tenant filter are derived from the model's tenant, which
+         * must be the scope's.
+         */
+        this.scopeTenant.getId(initialModel.tenant);
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const limit = createLimit(params.limit, 50);
@@ -160,6 +167,7 @@ export const DdbEsListEntries = ListEntriesStorageOperation.createImplementation
         CmsEntryOpenSearchFieldIndexRegistry,
         OpenSearchClient,
         CmsModelOpenSearchIndexProvider,
-        Debugger
+        Debugger,
+        ScopeTenant
     ]
 });

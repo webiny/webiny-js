@@ -1,4 +1,5 @@
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { GetPublishedEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedEntriesByIdsStorageOperation.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
@@ -9,25 +10,27 @@ import type {
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
+import { modelRef, modelRows, whereTextIn } from "~/features/entries/entryQueries.js";
 import { type IEntryRow, rowToEntry } from "~/features/entries/entryRow.js";
 
 class PgGetPublishedEntriesByIdsImpl implements GetPublishedEntriesByIdsStorageOperation.Interface {
     public constructor(
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
-        private readonly storageModelProvider: CmsStorageModelProvider.Interface
+        private readonly storageModelProvider: CmsStorageModelProvider.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedByIdsParams
     ) {
+        const tenant = this.scopeTenant.getId(model.tenant);
         await this.schema.ensure();
         const ids = params.ids as string[];
         const keys = ids.map(id => parseIdentifier(id).id);
         const rows = await whereTextIn(
-            modelRows(this.knex.client, this.schema.getTables().entries, model),
+            modelRows(this.knex.client, this.schema.getTables().entries, modelRef(tenant, model)),
             "entry_id",
             keys
         ).andWhere("is_published", true);
@@ -44,5 +47,5 @@ class PgGetPublishedEntriesByIdsImpl implements GetPublishedEntriesByIdsStorageO
 export const PgGetPublishedEntriesByIds =
     GetPublishedEntriesByIdsStorageOperation.createImplementation({
         implementation: PgGetPublishedEntriesByIdsImpl,
-        dependencies: [KnexClient, PgSchema, CmsStorageModelProvider]
+        dependencies: [KnexClient, PgSchema, CmsStorageModelProvider, ScopeTenant]
     });

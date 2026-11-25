@@ -10,6 +10,7 @@ import {
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import type { ApiCoreConfig } from "~/types/core.js";
 import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/abstractions.js";
+import { ScopeTenant } from "~/features/tenancy/ScopeTenant/abstractions.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
@@ -47,7 +48,14 @@ export const ApiCoreFeature = createFeature({
     register(container: Container, config: ApiCoreConfig = {}) {
         // Storage operations are built synchronously, here, from the adapter-provided factory —
         // the same way for every event (no out-of-feature construction, no async initializer).
-        const storageOperations = container.resolve(ApiCoreStorageOperationsFactory).create();
+        // They take their tenant from the container's `ScopeTenant`, which reads its `TenantContext`
+        // when the storage is used: both register below.
+        const scopeTenant: ScopeTenant.Interface = {
+            getId: (...passed) => container.resolve(ScopeTenant).getId(...passed)
+        };
+        const storageOperations = container
+            .resolve(ApiCoreStorageOperationsFactory)
+            .create({ scopeTenant });
 
         // Register features
         WcpFeature.register(container, config.wcpLicense);

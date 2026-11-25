@@ -3,6 +3,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { patchAllEntryRevisions } from "./queryHelpers.js";
 
@@ -11,12 +12,15 @@ class SqlMoveEntryImpl implements MoveEntryStorageOperation.Interface {
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
 
     async execute(model: CmsModel, id: string, folderId: string) {
+        const tenant = this.scopeTenant.getId(model.tenant);
+
         await this.entryTableManager.ensureTable();
 
         const { id: entryId } = parseIdentifier(id);
@@ -24,7 +28,7 @@ class SqlMoveEntryImpl implements MoveEntryStorageOperation.Interface {
         await patchAllEntryRevisions(
             this.knex,
             this.entryTableManager.getTableName(),
-            model,
+            { tenant, modelId: model.modelId },
             entryId,
             parsed => {
                 parsed.location = { folderId };
@@ -35,5 +39,5 @@ class SqlMoveEntryImpl implements MoveEntryStorageOperation.Interface {
 
 export const SqlMoveEntry = MoveEntryStorageOperation.createImplementation({
     implementation: SqlMoveEntryImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

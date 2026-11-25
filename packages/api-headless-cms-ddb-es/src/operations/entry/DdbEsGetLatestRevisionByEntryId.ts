@@ -6,6 +6,7 @@ import type {
 import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
 
 class DdbEsGetLatestRevisionByEntryIdImpl
@@ -13,17 +14,19 @@ class DdbEsGetLatestRevisionByEntryIdImpl
 {
     constructor(
         private dataLoaders: CmsDdbEsDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) {
+        const tenant = this.scopeTenant.getId(initialModel.tenant);
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const [entry] = await this.dataLoaders.getLatestRevisionByEntryId<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
         if (!entry) {
@@ -39,5 +42,5 @@ class DdbEsGetLatestRevisionByEntryIdImpl
 export const DdbEsGetLatestRevisionByEntryId =
     GetLatestRevisionByEntryIdStorageOperation.createImplementation({
         implementation: DdbEsGetLatestRevisionByEntryIdImpl,
-        dependencies: [CmsDdbEsDataLoaders, CmsStorageModelProvider]
+        dependencies: [CmsDdbEsDataLoaders, CmsStorageModelProvider, ScopeTenant]
     });

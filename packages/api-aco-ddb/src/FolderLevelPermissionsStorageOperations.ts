@@ -12,10 +12,28 @@ import type {
     StorageOperationsUpdateFlpParams
 } from "@webiny/api-aco/types.js";
 import { executeWithRetry } from "@webiny/utils";
+import type { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 export interface StorageOperationsConfig {
     documentClient: DynamoDBDocument;
+    /** The tenant the storage acts on: its tenant scope's. */
+    scopeTenant: ScopeTenant.Interface;
 }
+
+const createTableAndEntity = (documentClient: DynamoDBDocument) => {
+    const table = createTable({
+        name: String(process.env.DB_TABLE),
+        documentClient
+    });
+    const entity = createStandardEntity<FolderLevelPermission>({
+        table: table.table,
+        name: "ACO.flp"
+    });
+    return { table, entity };
+};
+
+/** The table and entity, built once per client: the storage itself is built per tenant scope. */
+const tablesByClient = new WeakMap<DynamoDBDocument, ReturnType<typeof createTableAndEntity>>();
 
 interface CreateKeysParams {
     tenant: string;
@@ -33,22 +51,29 @@ interface CreateGsiKeysParams {
 export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
     private readonly entity;
     private readonly table;
+    private readonly scopeTenant: ScopeTenant.Interface;
 
-    constructor({ documentClient }: StorageOperationsConfig) {
-        this.table = createTable({
-            name: String(process.env.DB_TABLE),
-            documentClient
-        });
+    constructor({ documentClient, scopeTenant }: StorageOperationsConfig) {
+        let tableAndEntity = tablesByClient.get(documentClient);
+        if (!tableAndEntity) {
+            tableAndEntity = createTableAndEntity(documentClient);
+            tablesByClient.set(documentClient, tableAndEntity);
+        }
+        this.table = tableAndEntity.table;
+        this.entity = tableAndEntity.entity;
+        this.scopeTenant = scopeTenant;
+    }
 
-        this.entity = createStandardEntity<FolderLevelPermission>({
-            table: this.table.table,
-            name: "ACO.flp"
-        });
+    /** The permission with its scope's tenant, checked against the one it carries. */
+    private inScope<T extends { tenant?: string | null }>(record: T): T & { tenant: string } {
+        return { ...record, tenant: this.scopeTenant.getId(record.tenant) };
     }
 
     public async list({
-        where: { tenant, type, path_startsWith, parentId }
+        where
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
+        const { type, path_startsWith, parentId } = where;
+        const tenant = this.scopeTenant.getId(where.tenant);
         try {
             if (parentId) {
                 const entries = await this.entity.queryAll({
@@ -97,10 +122,9 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async get({
-        tenant,
-        id
-    }: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
+    public async get(params: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
+        const { id } = params;
+        const tenant = this.scopeTenant.getId(params.tenant);
         try {
             const entry = await this.entity.get(this.createKeys({ tenant, id }));
 
@@ -118,9 +142,8 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async create({
-        data
-    }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+    public async create(params: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+        const data = this.inScope(params.data);
         const keys = {
             ...this.createKeys(data),
             ...this.createGsiKeys(data)
@@ -147,10 +170,10 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         original
     }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
         try {
-            const data = {
+            const data = this.inScope({
                 ...original,
                 ...inputData
-            };
+            });
 
             const keys = {
                 ...this.createKeys(data),
@@ -172,7 +195,8 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
+    public async delete(params: StorageOperationsDeleteFlpParams): Promise<void> {
+        const flp = this.inScope(params.flp);
         const keys = this.createKeys(flp);
 
         try {
@@ -198,10 +222,10 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
             const updatedItems: FolderLevelPermission[] = [];
 
             for (const { original, data: inputData } of items) {
-                const data = {
+                const data = this.inScope({
                     ...original,
                     ...inputData
-                };
+                });
 
                 const keys = {
                     ...this.createKeys(data),

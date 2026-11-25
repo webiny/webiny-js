@@ -5,6 +5,7 @@ import { CreateModelStorageOperation } from "@webiny/api-headless-cms/features/s
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { createKeys, createType } from "./keys.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
 class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
@@ -13,25 +14,27 @@ class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEsModelEntity.Interface,
         openSearchClient: OpenSearchClient.Interface,
-        private indexProvider: CmsModelOpenSearchIndexProvider.Interface
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
 
     async execute(params: CmsModelStorageOperationsCreateParams) {
         const { model } = params;
+        const tenant = this.scopeTenant.getId(model.tenant);
 
         const configurations = createConfigurations(this.indexProvider);
         const { index } = await configurations.es({
             model
         });
 
-        const keys = createKeys(model);
+        const keys = createKeys({ tenant, modelId: model.modelId });
 
         let error;
         try {
             await this.entity.put({
-                data: model,
+                data: { ...model, tenant },
                 ...keys,
                 TYPE: createType()
             });
@@ -60,5 +63,10 @@ class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
 
 export const DdbEsCreateModel = CreateModelStorageOperation.createImplementation({
     implementation: DdbEsCreateModelImpl,
-    dependencies: [CmsDdbEsModelEntity, OpenSearchClient, CmsModelOpenSearchIndexProvider]
+    dependencies: [
+        CmsDdbEsModelEntity,
+        OpenSearchClient,
+        CmsModelOpenSearchIndexProvider,
+        ScopeTenant
+    ]
 });

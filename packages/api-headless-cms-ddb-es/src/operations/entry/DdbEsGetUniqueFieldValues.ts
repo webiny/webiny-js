@@ -16,6 +16,7 @@ import {
     CmsEntryOpenSearchBodyBuilder,
     CmsModelOpenSearchIndexProvider
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperation.Interface {
     private elasticsearch: Client;
@@ -23,12 +24,18 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
     constructor(
         private bodyBuilder: CmsEntryOpenSearchBodyBuilder.Interface,
         openSearchClient: OpenSearchClient.Interface,
-        private indexProvider: CmsModelOpenSearchIndexProvider.Interface
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetUniqueFieldValuesParams) {
+        /**
+         * The index and the shared index's tenant filter are derived from the model's tenant, which
+         * must be the scope's.
+         */
+        this.scopeTenant.getId(model.tenant);
         const { where, fieldId } = params;
 
         const configurations = createConfigurations(this.indexProvider);
@@ -111,5 +118,10 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
 
 export const DdbEsGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: DdbEsGetUniqueFieldValuesImpl,
-    dependencies: [CmsEntryOpenSearchBodyBuilder, OpenSearchClient, CmsModelOpenSearchIndexProvider]
+    dependencies: [
+        CmsEntryOpenSearchBodyBuilder,
+        OpenSearchClient,
+        CmsModelOpenSearchIndexProvider,
+        ScopeTenant
+    ]
 });

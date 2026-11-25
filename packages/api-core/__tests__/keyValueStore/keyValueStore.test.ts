@@ -8,7 +8,8 @@ import type {
     TenancyStorageOperations as ITenancyStorageOperations
 } from "~/types/tenancy.js";
 import { GlobalKeyValueStore, KeyValueStore } from "~/features/keyValueStore/index.js";
-import { ApiCoreStorageOperations } from "~/types/core";
+import { ApiCoreStorageOperationsBuilder } from "~/types/core";
+import { tenantNeutralScopeTenant } from "~/features/tenancy/ScopeTenant/index.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 
 const createTenant = (input: Pick<Tenant, "id" | "name" | "parent">): Tenant => {
@@ -88,8 +89,11 @@ describe("KeyValueStore Feature", () => {
 
     beforeEach(() => {
         container = new Container();
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const { keyValueStorageOperations } = apiCoreStorage.storageOperations;
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
+        // The key-value store is keyed by its own scope, so it takes no scope tenant.
+        const { keyValueStorageOperations } = apiCoreStorage.storageOperations({
+            scopeTenant: tenantNeutralScopeTenant
+        });
 
         // Create mocks
         const mockTenancyStorage = new MockTenancyStorageOperations();

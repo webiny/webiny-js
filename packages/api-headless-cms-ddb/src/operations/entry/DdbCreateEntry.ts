@@ -5,6 +5,7 @@ import type {
     CmsEntryStorageOperationsCreateParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -19,7 +20,8 @@ class DdbCreateEntryImpl implements CreateEntryStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -27,19 +29,27 @@ class DdbCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsCreateParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId(
+            initialModel.tenant,
+            entry.tenant,
+            initialStorageEntry.tenant
+        );
         const model = this.storageModelProvider.getModel(initialModel);
 
         const isPublished = entry.status === "published";
 
         const locked = isPublished ? true : entry.locked;
 
-        const storageEntry = convertToStorageEntry({
-            model,
-            storageEntry: initialStorageEntry
-        });
+        const storageEntry = {
+            ...convertToStorageEntry({
+                model,
+                storageEntry: initialStorageEntry
+            }),
+            tenant
+        };
 
-        const storageEntryRevisionKeys = createEntryRevisionKeys(entry);
-        const storageEntryLatestKeys = createEntryLatestKeys(entry);
+        const storageEntryRevisionKeys = createEntryRevisionKeys(entry, tenant);
+        const storageEntryLatestKeys = createEntryLatestKeys(entry, tenant);
         /**
          * We need to:
          *  - create new main entry item
@@ -68,7 +78,7 @@ class DdbCreateEntryImpl implements CreateEntryStorageOperation.Interface {
          * We need to create published entry if
          */
         if (isPublished) {
-            const storageEntryPublishedKeys = createEntryPublishedKeys(storageEntry);
+            const storageEntryPublishedKeys = createEntryPublishedKeys(storageEntry, tenant);
             entityBatch.put({
                 ...storageEntryPublishedKeys,
                 data: {
@@ -80,9 +90,7 @@ class DdbCreateEntryImpl implements CreateEntryStorageOperation.Interface {
 
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not insert data into the DynamoDB.",
@@ -100,5 +108,5 @@ class DdbCreateEntryImpl implements CreateEntryStorageOperation.Interface {
 
 export const DdbCreateEntry = CreateEntryStorageOperation.createImplementation({
     implementation: DdbCreateEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

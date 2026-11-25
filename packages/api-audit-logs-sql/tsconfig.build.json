@@ -3,10 +3,10 @@
   "include": ["src"],
   "references": [
     { "path": "../api-audit-logs/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-core-sql/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../api-core/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -17,14 +17,14 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

@@ -6,6 +6,7 @@ import type {
 import { DeleteEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { IEntryRow } from "./types.js";
 import { createModelEntryQuery } from "./queryHelpers.js";
@@ -15,25 +16,31 @@ class SqlDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
 
-    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
-        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
+    private modelQuery(tenant: string, model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), {
+            tenant,
+            modelId: model.modelId
+        });
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
+        const tenant = this.scopeTenant.getId(model.tenant, params.entry.tenant);
+
         await this.entryTableManager.ensureTable();
 
         const { id: entryId } = parseIdentifier(params.entry.id);
 
-        await this.modelQuery(model).andWhere("entryId", entryId).delete();
+        await this.modelQuery(tenant, model).andWhere("entryId", entryId).delete();
     }
 }
 
 export const SqlDeleteEntry = DeleteEntryStorageOperation.createImplementation({
     implementation: SqlDeleteEntryImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

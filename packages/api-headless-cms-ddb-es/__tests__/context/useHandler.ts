@@ -17,7 +17,7 @@ import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -51,7 +51,7 @@ let rootContainer: Container | null = null;
 export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHandlerCoreParams) => {
     const elasticsearchClient = createTestOpenSearchClient();
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = params.identity ?? defaultIdentity;

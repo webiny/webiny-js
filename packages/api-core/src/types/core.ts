@@ -32,3 +32,5 @@ export type ApiCoreConfig = {
      */
     tenantScope?: boolean;
 };
+
+export type { ApiCoreStorageOperationsBuilder } from "~/features/storageOperations/abstractions.js";

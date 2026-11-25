@@ -1,4 +1,5 @@
 import { KnexClient, SqlSchemaConfig, SqlSchemaSetup } from "@webiny/api-core-sql";
+import { tenantNeutralScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { SqliteStorage } from "~/SqliteStorage.js";
 import { createTableManager } from "~/createTableManager.js";
 
@@ -14,7 +15,12 @@ class AuditLogsSqlSchemaSetupImpl implements SqlSchemaSetup.Interface {
     public async setup(): Promise<void> {
         const tableManager = createTableManager(this.knex, this.schemaConfig, false);
         // Building the storage declares its table on the manager.
-        new SqliteStorage({ knex: this.knex.client, tableManager });
+        new SqliteStorage({
+            knex: this.knex.client,
+            tableManager,
+            // The setup runs in no tenant, and only declares the table.
+            scopeTenant: tenantNeutralScopeTenant
+        });
         await tableManager.setup();
     }
 }

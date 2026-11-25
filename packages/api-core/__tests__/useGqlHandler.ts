@@ -6,7 +6,7 @@ import { registerApiCoreStorageOperations } from "~/features/storageOperations/a
 import { getStorageOps } from "~/testing/environment.js";
 import { WcpLicenseLoader } from "~/features/wcp/WcpLicenseLoader.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
 import { TestAuthenticator } from "./mocks/TestAuthenticator.js";
 import { TestAuthorizer } from "./mocks/TestAuthorizer.js";
 import { AuthTriggerHandler } from "./handlers/AuthTriggerHandler.js";
@@ -55,7 +55,7 @@ type UseGqlHandlerParams = {
 };
 
 export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
 
     /*
      * Requests run the way the API runs them: the request container is tenant-neutral, and the

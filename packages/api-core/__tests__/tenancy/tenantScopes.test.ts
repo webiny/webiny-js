@@ -31,7 +31,7 @@ import { RolesRepository } from "~/features/security/roles/shared/abstractions.j
 import { AppInstaller, InstallTenantUseCase } from "~/features/tenancy/InstallTenant/index.js";
 import type { ITenantPermission } from "~/features/security/authorization/GroupsTeamsAuthorizer/abstractions.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
 import type { Tenant, TenancyStorageOperations } from "~/types/tenancy.js";
 import { TestAuthenticator } from "../mocks/TestAuthenticator.js";
 import { TestAuthorizer } from "../mocks/TestAuthorizer.js";
@@ -100,7 +100,7 @@ type Probe = (ctx: ProbeContext) => Promise<unknown>;
  * router, with services resolved for the handler chain, and its result is the response.
  */
 const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const tenancy = new InMemoryTenancyStorageOperations([
         createTenant("root"),
         createTenant("acme"),
@@ -144,10 +144,10 @@ const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}
         },
         child: container => {
             requestContainers.push(container);
-            registerApiCoreStorageOperations(container, {
-                ...apiCoreStorage.storageOperations,
+            registerApiCoreStorageOperations(container, params => ({
+                ...apiCoreStorage.storageOperations(params),
                 tenancyStorageOperations: tenancy
-            });
+            }));
             container.registerInstance(Logger, new NullLogger());
             TenantNeutralRequestFeature.register(container);
             container.registerInstance(TenantScopeRegistration, {

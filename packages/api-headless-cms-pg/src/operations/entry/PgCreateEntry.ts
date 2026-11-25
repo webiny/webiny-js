@@ -1,4 +1,5 @@
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CreateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
@@ -15,13 +16,19 @@ class PgCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
         private readonly indexer: SearchIndexer.Interface,
-        private readonly storageModelProvider: CmsStorageModelProvider.Interface
+        private readonly storageModelProvider: CmsStorageModelProvider.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateParams<T>
     ) {
+        const tenant = this.scopeTenant.getId(
+            model.tenant,
+            params.entry?.tenant,
+            params.storageEntry?.tenant
+        );
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
 
@@ -31,7 +38,7 @@ class PgCreateEntryImpl implements CreateEntryStorageOperation.Interface {
 
         await this.knex.client.transaction(async trx => {
             await trx(entries).insert(
-                entryToRow(storageEntry, this.storageModelProvider.getModel(model))
+                entryToRow(storageEntry, this.storageModelProvider.getModel(model), tenant)
             );
             await this.indexer.syncEntries(trx, model, [storageEntry.entryId]);
         });
@@ -44,5 +51,5 @@ class PgCreateEntryImpl implements CreateEntryStorageOperation.Interface {
 
 export const PgCreateEntry = CreateEntryStorageOperation.createImplementation({
     implementation: PgCreateEntryImpl,
-    dependencies: [KnexClient, PgSchema, SearchIndexer, CmsStorageModelProvider]
+    dependencies: [KnexClient, PgSchema, SearchIndexer, CmsStorageModelProvider, ScopeTenant]
 });

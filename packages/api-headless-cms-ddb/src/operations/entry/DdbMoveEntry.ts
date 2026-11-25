@@ -1,16 +1,16 @@
 import WebinyError from "@webiny/error";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
-import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { createPartitionKey } from "~/operations/entry/keys.js";
 
 class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(initialModel: CmsModel, id: string, folderId: string) {
@@ -19,13 +19,13 @@ class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
          * - load all the revisions of the entry, including published and latest
          * - update all the revisions (published and latest ) of the entry with new folderId
          */
-        const model = this.storageModelProvider.getModel(initialModel);
+        const tenant = this.scopeTenant.getId(initialModel.tenant);
         /**
          * First we need to load all the revisions and published / latest entry.
          */
         const partitionKey = createPartitionKey({
             id,
-            tenant: model.tenant
+            tenant
         });
         const records = await this.entity.queryAll({
             partitionKey,
@@ -57,9 +57,7 @@ class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
         try {
             await entityBatch.execute();
 
-            this.dataLoaders.clearAll({
-                tenant: model.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
         } catch (ex) {
             throw WebinyError.from(ex, {
                 message: "Could not move records to a new folder.",
@@ -74,5 +72,5 @@ class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
 
 export const DdbMoveEntry = MoveEntryStorageOperation.createImplementation({
     implementation: DdbMoveEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, ScopeTenant]
 });

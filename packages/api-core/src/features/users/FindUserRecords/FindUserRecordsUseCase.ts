@@ -5,11 +5,14 @@ import { ListTenantsUseCase } from "~/features/tenancy/ListTenants/index.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { UserStorageError } from "~/features/users/shared/errors.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
+import type { Tenant } from "~/types/tenancy.js";
+import { TenantScopes } from "~/features/tenancy/TenantScopes/abstractions.js";
 
 class FindUserRecordsUseCaseImpl implements Abstraction.Interface {
     constructor(
         private listTenants: ListTenantsUseCase.Interface,
-        private repository: AdminUsersRepository.Interface
+        private repository: AdminUsersRepository.Interface,
+        private tenantScopes: TenantScopes.Interface
     ) {}
 
     async execute(id: string, options: Abstraction.Options = {}): Abstraction.Return {
@@ -28,16 +31,36 @@ class FindUserRecordsUseCaseImpl implements Abstraction.Interface {
             return Result.fail(probedResult.error);
         }
 
+        const { users, tenants } = probedResult.value;
         const indexedTenants = new Set(indexed.map(user => user.tenant));
-        const unindexed = probedResult.value.filter(user => !indexedTenants.has(user.tenant));
+        const unindexed = users.filter(user => !indexedTenants.has(user.tenant));
 
-        // Rewriting a record adds the index keys. A failed write only means the next lookup probes again.
-        await Promise.all(unindexed.map(user => this.repository.update(user)));
+        await Promise.all(unindexed.map(user => this.addToIndex(user, tenants)));
 
         return Result.ok([...indexed, ...unindexed]);
     }
 
-    private async probeAllTenants(id: string): Promise<Result<AdminUser[], Abstraction.Error>> {
+    /**
+     * Rewriting a record adds the index keys. It's rewritten in its own tenant's scope, the only
+     * storage that writes that tenant's records. A failed write only means the next lookup probes again.
+     */
+    private async addToIndex(user: AdminUser, tenants: Tenant[]): Promise<void> {
+        const tenant = tenants.find(tenant => tenant.id === user.tenant);
+        if (!tenant) {
+            return;
+        }
+        try {
+            await this.tenantScopes.withTenant(tenant, async scope => {
+                await scope.resolve(AdminUsersRepository).update(user);
+            });
+        } catch {
+            // Like a failed write: the next lookup probes again.
+        }
+    }
+
+    private async probeAllTenants(
+        id: string
+    ): Promise<Result<{ users: AdminUser[]; tenants: Tenant[] }, Abstraction.Error>> {
         let tenantsResult: Awaited<ReturnType<ListTenantsUseCase.Interface["execute"]>>;
         try {
             tenantsResult = await this.listTenants.execute();
@@ -52,18 +75,22 @@ class FindUserRecordsUseCaseImpl implements Abstraction.Interface {
         // Uninstalled tenants have no users yet.
         const tenants = tenantsResult.value.filter(tenant => tenant.isInstalled);
         if (tenants.length === 0) {
-            return Result.ok([]);
+            return Result.ok({ users: [], tenants });
         }
 
-        return this.repository.getUserAcrossTenants({
+        const usersResult = await this.repository.getUserAcrossTenants({
             id,
             tenants: tenants.map(tenant => tenant.id)
         });
+        if (usersResult.isFail()) {
+            return Result.fail(usersResult.error);
+        }
+        return Result.ok({ users: usersResult.value, tenants });
     }
 }
 
 export const FindUserRecordsUseCase = createImplementation({
     abstraction: Abstraction,
     implementation: FindUserRecordsUseCaseImpl,
-    dependencies: [ListTenantsUseCase, AdminUsersRepository]
+    dependencies: [ListTenantsUseCase, AdminUsersRepository, TenantScopes]
 });

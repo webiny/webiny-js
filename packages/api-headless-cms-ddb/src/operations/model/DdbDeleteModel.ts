@@ -1,15 +1,20 @@
 import type { CmsModelStorageOperationsDeleteParams } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import { DeleteModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/DeleteModelStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { createKeys } from "./keys.js";
 
 class DdbDeleteModelImpl implements DeleteModelStorageOperation.Interface {
-    constructor(private entity: CmsDdbModelEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbModelEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(params: CmsModelStorageOperationsDeleteParams) {
         const { model } = params;
-        const keys = createKeys(model);
+        const tenant = this.scopeTenant.getId(model.tenant);
+        const keys = createKeys({ tenant, modelId: model.modelId });
         try {
             await this.entity.delete(keys);
         } catch (ex) {
@@ -24,5 +29,5 @@ class DdbDeleteModelImpl implements DeleteModelStorageOperation.Interface {
 
 export const DdbDeleteModel = DeleteModelStorageOperation.createImplementation({
     implementation: DdbDeleteModelImpl,
-    dependencies: [CmsDdbModelEntity]
+    dependencies: [CmsDdbModelEntity, ScopeTenant]
 });

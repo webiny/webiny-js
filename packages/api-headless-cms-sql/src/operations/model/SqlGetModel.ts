@@ -5,6 +5,7 @@ import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js"
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
 import { rowToModel } from "./mappers.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 class SqlGetModelImpl implements GetModelStorageOperation.Interface {
     private tableName: string;
@@ -12,18 +13,21 @@ class SqlGetModelImpl implements GetModelStorageOperation.Interface {
     constructor(
         private knex: KnexClient.Interface,
         tableNameResolver: TableNameResolver.Interface,
-        private modelSchemaManager: ModelSchemaManager.Interface
+        private modelSchemaManager: ModelSchemaManager.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.tableName = tableNameResolver.resolve("models");
     }
 
     async execute(params: CmsModelStorageOperationsGetParams) {
+        const tenant = this.scopeTenant.getId(params.tenant);
+
         await this.modelSchemaManager.ensure(this.tableName);
 
         const row = await this.knex
             .client<IModelRow>(this.tableName)
             .where("modelId", params.modelId)
-            .where("tenant", params.tenant)
+            .where("tenant", tenant)
             .first();
 
         if (!row) {
@@ -36,5 +40,5 @@ class SqlGetModelImpl implements GetModelStorageOperation.Interface {
 
 export const SqlGetModel = GetModelStorageOperation.createImplementation({
     implementation: SqlGetModelImpl,
-    dependencies: [KnexClient, TableNameResolver, ModelSchemaManager]
+    dependencies: [KnexClient, TableNameResolver, ModelSchemaManager, ScopeTenant]
 });

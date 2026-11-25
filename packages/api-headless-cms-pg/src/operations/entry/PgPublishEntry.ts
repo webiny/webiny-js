@@ -1,4 +1,5 @@
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { PublishEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
@@ -11,6 +12,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { entryToRow } from "~/features/entries/entryRow.js";
 import {
+    modelRef,
     modelRows,
     patchAllEntryRevisions,
     syncEntryToLatest
@@ -21,43 +23,51 @@ class PgPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
         private readonly indexer: SearchIndexer.Interface,
-        private readonly storageModelProvider: CmsStorageModelProvider.Interface
+        private readonly storageModelProvider: CmsStorageModelProvider.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsPublishParams<T>
     ) {
+        const tenant = this.scopeTenant.getId(
+            model.tenant,
+            params.entry?.tenant,
+            params.storageEntry?.tenant
+        );
+        const ref = modelRef(tenant, model);
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
         const storageEntry = params.storageEntry as CmsStorageEntry;
 
         await this.knex.client.transaction(async trx => {
             // The previously published revision becomes "unpublished".
-            await patchAllEntryRevisions(trx, entries, model, storageEntry.entryId, data => {
+            await patchAllEntryRevisions(trx, entries, ref, storageEntry.entryId, data => {
                 if (data.isPublished && data.id !== storageEntry.id) {
                     data.isPublished = false;
                     data.status = "unpublished";
                 }
             });
-            await modelRows(trx, entries, model)
+            await modelRows(trx, entries, ref)
                 .andWhere("entry_id", storageEntry.entryId)
                 .andWhereNot("id", storageEntry.id)
                 .update({ is_published: false });
 
-            const existing = await modelRows(trx, entries, model)
+            const existing = await modelRows(trx, entries, ref)
                 .andWhere("id", storageEntry.id)
                 .first();
             storageEntry.isLatest = existing?.is_latest ?? storageEntry.isLatest;
             storageEntry.isPublished = true;
             const { is_latest: _latest, ...row } = entryToRow(
                 storageEntry,
-                this.storageModelProvider.getModel(model)
+                this.storageModelProvider.getModel(model),
+                tenant
             );
-            await modelRows(trx, entries, model).andWhere("id", storageEntry.id).update(row);
+            await modelRows(trx, entries, ref).andWhere("id", storageEntry.id).update(row);
 
             const live = { version: params.entry.version };
-            await syncEntryToLatest(trx, entries, model, storageEntry, latest => {
+            await syncEntryToLatest(trx, entries, ref, storageEntry, latest => {
                 latest.live = live;
             });
             await this.indexer.syncEntries(trx, model, [storageEntry.entryId]);
@@ -69,5 +79,5 @@ class PgPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
 export const PgPublishEntry = PublishEntryStorageOperation.createImplementation({
     implementation: PgPublishEntryImpl,
-    dependencies: [KnexClient, PgSchema, SearchIndexer, CmsStorageModelProvider]
+    dependencies: [KnexClient, PgSchema, SearchIndexer, CmsStorageModelProvider, ScopeTenant]
 });

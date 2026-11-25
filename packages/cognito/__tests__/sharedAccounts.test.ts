@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { License } from "@webiny/wcp";
@@ -12,11 +13,16 @@ import {
     AuthenticatedIdentity,
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import {
+    TenantNeutralRequestFeature,
+    TenantScope,
+    TenantScopeRegistration,
+    TenantScopes
+} from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { AdminUsersRepository } from "@webiny/api-core/features/users/shared/abstractions.js";
 import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
 import { Result } from "@webiny/feature/api";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
@@ -34,36 +40,54 @@ import { MockAuthorizer } from "./mocks/MockAuthorizer.js";
 const acme = { id: "acme", name: "Acme", isInstalled: true } as Tenant;
 
 describe("Admin Users (Cognito): one account across tenants", () => {
-    /** The container of the tenant the test is in: one per tenant, on the same storage. */
-    let container: Container;
-    let containers: Map<string, Container>;
+    /**
+     * The scope of the tenant the test is in. The test's request has a scope per tenant, on the same
+     * storage: each tenant's records are written by that tenant's scope.
+     */
+    let container: TenantScope.Interface;
+    let request: Container;
     let identity: AuthenticatedIdentity | undefined;
     let mockCognitoService: MockCognitoService;
+    /** What a test registers in each tenant scope the request builds after it's set. */
+    let registerInScope: ((scope: Container) => void) | undefined;
 
-    const storage = () => getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+    const storage = () =>
+        getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore").storageOperations;
+    /**
+     * The storage the test reads records with, across tenants: each call acts in the tenant of the
+     * `where` it's given, as storage built in that tenant's scope does.
+     */
+    const readStorage = () =>
+        storage()({ scopeTenant: { getId: (...passed) => passed.find(Boolean) ?? "root" } });
 
-    const createTenantContainer = (tenant: Tenant) => {
-        const tenantContainer = new Container();
+    const createRequestContainer = () => {
+        const requestContainer = new Container();
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
-        registerApiCoreStorageOperations(tenantContainer, storage());
-        tenantContainer.registerInstance(Logger, new NullLogger());
-        ApiCoreFeature.register(tenantContainer, { wcpLicense: testLicense });
-        tenantContainer.registerInstance(Authorizer, new MockAuthorizer());
-        tenantContainer.resolve(TenantContext).setTenant(tenant);
-        tenantContainer.registerInstance(CognitoService, mockCognitoService);
-        CognitoApiFeature.register(tenantContainer);
-        return tenantContainer;
+        requestContainer.registerInstance(RequestContainer, requestContainer);
+        registerApiCoreStorageOperations(requestContainer, storage());
+        requestContainer.registerInstance(Logger, new NullLogger());
+        TenantNeutralRequestFeature.register(requestContainer);
+        requestContainer.registerInstance(TenantScopeRegistration, {
+            register: async scope => {
+                ApiCoreFeature.register(scope, { wcpLicense: testLicense, tenantScope: true });
+                scope.registerInstance(Authorizer, new MockAuthorizer());
+                scope.registerInstance(CognitoService, mockCognitoService);
+                CognitoApiFeature.register(scope);
+                registerInScope?.(scope);
+            }
+        });
+        return requestContainer;
     };
 
-    /** Continues in `tenant`'s container, as the signed-in identity. */
-    const inTenant = (tenant: Tenant) => {
-        let next = containers.get(tenant.id);
-        if (!next) {
-            next = createTenantContainer(tenant);
-            containers.set(tenant.id, next);
-        }
-        container = next;
+    /** The scope of `tenant` in the test's request: built on first use, then reused. */
+    const scopeOf = (tenant: Tenant) => {
+        return request.resolve(TenantScopes).withTenant(tenant, async scope => scope);
+    };
+
+    /** Continues in `tenant`'s scope, as the signed-in identity. */
+    const inTenant = async (tenant: Tenant) => {
+        container = await scopeOf(tenant);
         if (identity) {
             container.resolve(IdentityContext).setIdentity(identity);
         }
@@ -76,11 +100,11 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
     /** Creates userA in root, then links the same account in Acme. */
     const createInRootAndAcme = async () => {
-        inTenant(RootTenantValue.create());
+        await inTenant(RootTenantValue.create());
         const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
         expect(rootResult.isOk()).toBe(true);
 
-        inTenant(acme);
+        await inTenant(acme);
         const acmeResult = await container
             .resolve(LinkUserUseCase)
             .execute({ email: adminUsers.userA.email });
@@ -90,11 +114,28 @@ describe("Admin Users (Cognito): one account across tenants", () => {
     };
 
     beforeEach(async () => {
-        containers = new Map();
         identity = undefined;
+        registerInScope = undefined;
         mockCognitoService = new MockCognitoService();
+        request = createRequestContainer();
 
-        inTenant(RootTenantValue.create());
+        // The tenant records: a record's tenant is loaded to write it in that tenant's scope.
+        const { tenancyStorageOperations } = readStorage();
+        for (const tenant of [RootTenantValue.create(), acme]) {
+            await tenancyStorageOperations.createTenant({
+                description: "",
+                status: "enabled",
+                settings: {},
+                tags: [],
+                parent: tenant.id === "root" ? null : "root",
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
+                ...tenant,
+                isInstalled: true
+            } as Tenant);
+        }
+
+        await inTenant(RootTenantValue.create());
     });
 
     describe("creating a user whose email already has an account", () => {
@@ -102,7 +143,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
             const createUserSpy = vi.spyOn(mockCognitoService, "createUser");
 
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(CreateUserUseCase).execute({
                 ...adminUsers.userA,
                 password: "AnotherPass123!"
@@ -112,7 +153,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(result.error?.code).toBe("Cognito/Account/ExistsInOtherTenant");
             expect(createUserSpy).not.toHaveBeenCalled();
 
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootResult.value!.id
             });
             expect(records.map(record => record.tenant)).toEqual(["root"]);
@@ -144,7 +185,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
             const updateAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
 
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(LinkUserUseCase).execute({
                 email: adminUsers.userA.email,
                 roles: ["editors"],
@@ -168,7 +209,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(setPasswordSpy).not.toHaveBeenCalled();
             expect(updateAttributesSpy).not.toHaveBeenCalled();
 
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootUser.id
             });
             expect(records.map(record => record.tenant).sort()).toEqual(["acme", "root"]);
@@ -187,7 +228,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
                 }
             });
 
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container
                 .resolve(LinkUserUseCase)
                 .execute({ email: adminUsers.userA.email });
@@ -212,7 +253,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
         });
 
         it("refuses an email without an account", async () => {
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container
                 .resolve(LinkUserUseCase)
                 .execute({ email: "nobody@example.com" });
@@ -232,7 +273,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
                 }
             });
 
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container
                 .resolve(LinkUserUseCase)
                 .execute({ email: adminUsers.userA.email });
@@ -244,7 +285,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
         it("refuses an administrator without permission to manage users", async () => {
             await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
 
-            inTenant(acme);
+            await inTenant(acme);
             vi.spyOn(container.resolve(IdentityContext), "getPermission").mockResolvedValue(null);
             const result = await container
                 .resolve(LinkUserUseCase)
@@ -264,7 +305,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect((await checkEmail(adminUsers.userA.email)).value).toBe("EXISTS_HERE");
             expect((await checkEmail(adminUsers.userB.email)).value).toBe("AVAILABLE");
 
-            inTenant(acme);
+            await inTenant(acme);
             expect((await checkEmail(adminUsers.userA.email)).value).toBe("EXISTS_ELSEWHERE");
         });
 
@@ -283,10 +324,12 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
             const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
 
-            inTenant(acme);
-            container.registerInstance(GetRoleUseCase, {
-                execute: async () => Result.ok({ id: "full-access-role" })
-            } as unknown as GetRoleUseCase.Interface);
+            registerInScope = scope => {
+                scope.registerInstance(GetRoleUseCase, {
+                    execute: async () => Result.ok({ id: "full-access-role" })
+                } as unknown as GetRoleUseCase.Interface);
+            };
+            await inTenant(acme);
             const installer = container
                 .resolveAll(AppInstaller)
                 .find(installer => installer.appName === "Cognito")!;
@@ -297,7 +340,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
                 password: "IgnoredPass123!"
             });
 
-            const acmeRecord = await storage().usersStorageOperations.getUser({
+            const acmeRecord = await readStorage().usersStorageOperations.getUser({
                 where: { tenant: "acme", id: rootResult.value!.id }
             });
             expect(acmeRecord).toMatchObject({
@@ -312,14 +355,14 @@ describe("Admin Users (Cognito): one account across tenants", () => {
         it("keeps the account while another tenant still has the user", async () => {
             const { acmeUser } = await createInRootAndAcme();
 
-            inTenant(acme);
+            await inTenant(acme);
             const deleteResult = await container.resolve(DeleteUserUseCase).execute(acmeUser.id);
 
             expect(deleteResult.isOk()).toBe(true);
             expect((await mockCognitoService.getUser(adminUsers.userA.email)) !== null).toBe(true);
 
             // The user is gone from Acme only.
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: acmeUser.id
             });
             expect(records.map(record => record.tenant)).toEqual(["root"]);
@@ -328,10 +371,10 @@ describe("Admin Users (Cognito): one account across tenants", () => {
         it("deletes the account with the user's last tenant record", async () => {
             const { rootUser } = await createInRootAndAcme();
 
-            inTenant(acme);
+            await inTenant(acme);
             await container.resolve(DeleteUserUseCase).execute(rootUser.id);
 
-            inTenant(RootTenantValue.create());
+            await inTenant(RootTenantValue.create());
             const deleteResult = await container.resolve(DeleteUserUseCase).execute(rootUser.id);
 
             expect(deleteResult.isOk()).toBe(true);
@@ -345,7 +388,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
 
             signInAs("acme-admin");
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(acmeUser.id, {
                 password: "TakenOver123!"
             });
@@ -360,7 +403,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const { acmeUser } = await createInRootAndAcme();
 
             signInAs("acme-admin");
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(acmeUser.id, {
                 firstName: "Someone"
             });
@@ -373,7 +416,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const { acmeUser } = await createInRootAndAcme();
 
             signInAs("acme-admin");
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(acmeUser.id, {
                 // The form sends the unchanged name and email along.
                 email: acmeUser.email,
@@ -390,7 +433,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const { rootUser } = await createInRootAndAcme();
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 firstName: "Renamed",
                 lastName: "Person"
@@ -398,7 +441,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
             expect(result.isOk()).toBe(true);
 
-            const rootRecord = await storage().usersStorageOperations.getUser({
+            const rootRecord = await readStorage().usersStorageOperations.getUser({
                 where: { tenant: "root", id: rootUser.id }
             });
             expect(rootRecord).toMatchObject({
@@ -412,7 +455,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const { rootUser, acmeUser } = await createInRootAndAcme();
 
             // userB exists only in root.
-            inTenant(RootTenantValue.create());
+            await inTenant(RootTenantValue.create());
             const userBResult = await container
                 .resolve(CreateUserUseCase)
                 .execute(adminUsers.userB);
@@ -420,7 +463,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const updateAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 email: adminUsers.userB.email
             });
@@ -431,7 +474,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(updateAttributesSpy).not.toHaveBeenCalled();
 
             // Nothing was written.
-            const acmeRecord = await storage().usersStorageOperations.getUser({
+            const acmeRecord = await readStorage().usersStorageOperations.getUser({
                 where: { tenant: "acme", id: rootUser.id }
             });
             expect(acmeRecord?.email).toBe(acmeUser.email);
@@ -444,7 +487,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             );
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 firstName: "Renamed"
             });
@@ -452,7 +495,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(result.isFail()).toBe(true);
             expect(result.error?.code).toBe("Cognito/User/Update");
 
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootUser.id
             });
             const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
@@ -469,7 +512,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
             // The old email still finds the record in each tenant.
             for (const tenant of ["root", "acme"]) {
-                const byEmail = await storage().usersStorageOperations.getUser({
+                const byEmail = await readStorage().usersStorageOperations.getUser({
                     where: { tenant, email: rootUser.email }
                 });
                 expect(byEmail?.id).toBe(rootUser.id);
@@ -478,7 +521,10 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
         it("puts this tenant's record back when another tenant's record can't be synced", async () => {
             const { rootUser, acmeUser } = await createInRootAndAcme();
-            const repository = container.resolve(AdminUsersRepository);
+            // Root's record is written by root's scope.
+            const repository = (await scopeOf(RootTenantValue.create())).resolve(
+                AdminUsersRepository
+            );
             const update = repository.update.bind(repository);
             let failedOnce = false;
             vi.spyOn(repository, "update").mockImplementation(async user => {
@@ -491,7 +537,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const updateAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 firstName: "Renamed"
             });
@@ -499,7 +545,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(result.isFail()).toBe(true);
             expect(updateAttributesSpy).not.toHaveBeenCalled();
 
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootUser.id
             });
             const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
@@ -509,7 +555,10 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
         it("names the tenants whose records can't be put back after Cognito rejects the change", async () => {
             const { rootUser, acmeUser } = await createInRootAndAcme();
-            const repository = container.resolve(AdminUsersRepository);
+            // Root's record is written by root's scope.
+            const repository = (await scopeOf(RootTenantValue.create())).resolve(
+                AdminUsersRepository
+            );
             const update = repository.update.bind(repository);
             let rootWrites = 0;
             vi.spyOn(repository, "update").mockImplementation(async user => {
@@ -524,7 +573,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             );
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 firstName: "Renamed"
             });
@@ -539,7 +588,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             });
 
             // Acme's record was put back; root's still has the new name.
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootUser.id
             });
             const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
@@ -549,7 +598,10 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
         it("retries a rollback write that fails and puts the record back", async () => {
             const { rootUser, acmeUser } = await createInRootAndAcme();
-            const repository = container.resolve(AdminUsersRepository);
+            // Root's record is written by root's scope.
+            const repository = (await scopeOf(RootTenantValue.create())).resolve(
+                AdminUsersRepository
+            );
             const update = repository.update.bind(repository);
             let rootWrites = 0;
             vi.spyOn(repository, "update").mockImplementation(async user => {
@@ -564,7 +616,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             );
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 firstName: "Renamed"
             });
@@ -573,7 +625,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(result.error?.code).toBe("Cognito/User/Update");
             expect(rootWrites).toBe(3);
 
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootUser.id
             });
             const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
@@ -588,7 +640,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             );
 
             signInAs(rootUser.id);
-            inTenant(acme);
+            await inTenant(acme);
             const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
                 firstName: "Renamed",
                 password: "NewPass123!"
@@ -598,7 +650,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             expect(result.error?.code).toBe("Cognito/User/Update");
 
             // The name already reached Cognito, so the records keep it.
-            const records = await storage().usersStorageOperations.listUserRecords({
+            const records = await readStorage().usersStorageOperations.listUserRecords({
                 id: rootUser.id
             });
             expect(records.map(record => record.firstName)).toEqual(["Renamed", "Renamed"]);

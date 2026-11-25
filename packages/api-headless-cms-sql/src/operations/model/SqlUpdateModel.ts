@@ -5,6 +5,7 @@ import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js"
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
 import { modelToRow } from "./mappers.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 class SqlUpdateModelImpl implements UpdateModelStorageOperation.Interface {
     private tableName: string;
@@ -12,19 +13,21 @@ class SqlUpdateModelImpl implements UpdateModelStorageOperation.Interface {
     constructor(
         private knex: KnexClient.Interface,
         tableNameResolver: TableNameResolver.Interface,
-        private modelSchemaManager: ModelSchemaManager.Interface
+        private modelSchemaManager: ModelSchemaManager.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.tableName = tableNameResolver.resolve("models");
     }
 
     async execute(params: CmsModelStorageOperationsUpdateParams) {
+        const tenant = this.scopeTenant.getId(params.model.tenant);
         const model = params.model;
-        const row = modelToRow(model);
+        const row = modelToRow(model, tenant);
 
         await this.modelSchemaManager.ensure(this.tableName);
         await this.knex
             .client<IModelRow>(this.tableName)
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .update(row);
 
@@ -34,5 +37,5 @@ class SqlUpdateModelImpl implements UpdateModelStorageOperation.Interface {
 
 export const SqlUpdateModel = UpdateModelStorageOperation.createImplementation({
     implementation: SqlUpdateModelImpl,
-    dependencies: [KnexClient, TableNameResolver, ModelSchemaManager]
+    dependencies: [KnexClient, TableNameResolver, ModelSchemaManager, ScopeTenant]
 });
