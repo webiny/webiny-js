@@ -11,10 +11,12 @@ export const filterPermissionsByName = <
     permissions: SecurityPermission[],
     name: string
 ): TPermission[] => {
-    return permissions.filter(permission => {
+    const matching = permissions.filter(permission => {
         if (permission.name === name) {
             return true;
         }
         return minimatch(name, permission.name);
-    }) as TPermission[];
+    });
+
+    return matching as TPermission[];
 };

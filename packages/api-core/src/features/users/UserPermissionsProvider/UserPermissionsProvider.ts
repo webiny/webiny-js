@@ -1,16 +1,16 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { ListUsersWithPermissionsUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { UserPermissionsProvider as Abstraction } from "./abstractions.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 import { PermissionTransformer } from "~/features/security/authorization/AuthorizationContext/abstractions.js";
 import { getPermissionsFromRoles } from "~/features/security/utils/getPermissionsFromRoles.js";
-import { filterOutCustomWbyAppsPermissions } from "~/features/security/utils/filterOutCustomWbyAppsPermissions.js";
+import { transformPermissions } from "~/features/security/utils/transformPermissions.js";
+import { applyAaclLogic } from "~/features/security/utils/applyAaclLogic.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
 import type { Role } from "~/types/security.js";
-import type { SecurityPermission } from "~/types/security.js";
 import type { Team } from "~/types/security.js";
 
 // The user's own roles, plus the roles of the teams the user belongs to.
@@ -28,12 +28,13 @@ const getUserRoles = (user: AdminUser, roles: Role[], teams: Team[]) => {
 };
 
 /*
- * Builds each user's permissions the way `GetPermissionsFromIdentity` and `IdentityContext` do
- * for a signed-in user: the user's roles, plus the roles of the user's teams when teams are
- * enabled, then the permission transformers, then the AACL filter. Roles and teams are loaded
- * once for all users instead of once per user.
+ * Builds each user's permissions the way a signed-in user's are built: the roles from
+ * `GetPermissionsFromIdentity`, then `transformPermissions` as in `AuthorizationContext`, then
+ * `applyAaclLogic` as in `IdentityContext`. Roles and teams are loaded once for all users
+ * instead of once per user. A failed load is returned as an error rather than as users
+ * without permissions, because the caller shows the result as an answer.
  */
-class ListUsersWithPermissionsUseCaseImpl implements UseCaseAbstraction.Interface {
+class UserPermissionsProviderImpl implements Abstraction.Interface {
     constructor(
         private wcpContext: WcpContext.Interface,
         private usersRepository: AdminUsersRepository.Interface,
@@ -42,14 +43,24 @@ class ListUsersWithPermissionsUseCaseImpl implements UseCaseAbstraction.Interfac
         private transformers: PermissionTransformer.Interface[]
     ) {}
 
-    async execute(): Promise<Result<UseCaseAbstraction.Item[], UseCaseAbstraction.Error>> {
+    async listUsersWithPermissions(): Promise<Result<Abstraction.Item[], Abstraction.Error>> {
         const usersResult = await this.usersRepository.list({});
         if (usersResult.isFail()) {
             return Result.fail(usersResult.error);
         }
 
-        const roles = await this.listRoles();
-        const teams = this.wcpContext.canUseTeams() ? await this.listTeams() : [];
+        const rolesResult = await this.rolesRepository.list({});
+        if (rolesResult.isFail()) {
+            return Result.fail(rolesResult.error);
+        }
+
+        const teamsResult = await this.listTeams();
+        if (teamsResult.isFail()) {
+            return Result.fail(teamsResult.error);
+        }
+
+        const roles = rolesResult.value;
+        const teams = teamsResult.value;
 
         const items = usersResult.value.map(user => {
             const permissions = this.getUserPermissions(user, roles, teams);
@@ -59,45 +70,28 @@ class ListUsersWithPermissionsUseCaseImpl implements UseCaseAbstraction.Interfac
         return Result.ok(items);
     }
 
+    private async listTeams(): Promise<Result<Team[], TeamsRepository.Error>> {
+        if (!this.wcpContext.canUseTeams()) {
+            return Result.ok([]);
+        }
+        return this.teamsRepository.list({});
+    }
+
     private getUserPermissions(user: AdminUser, roles: Role[], teams: Team[]) {
         const userRoles = getUserRoles(user, roles, teams);
         const permissions = getPermissionsFromRoles(userRoles);
-        const transformed = this.transform(permissions);
+        const transformed = transformPermissions(permissions, this.transformers);
 
-        return this.applyAacl(transformed);
-    }
-
-    private transform(permissions: SecurityPermission[]) {
-        if (this.transformers.length === 0) {
-            return permissions;
-        }
-
-        return permissions.flatMap(permission => {
-            return this.transformers.flatMap(transformer => transformer.execute(permission));
+        return applyAaclLogic(transformed, {
+            aaclEnabled: this.wcpContext.canUseAacl(),
+            teamsEnabled: this.wcpContext.canUseTeams()
         });
-    }
-
-    private applyAacl(permissions: SecurityPermission[]) {
-        if (this.wcpContext.canUseAacl()) {
-            return permissions;
-        }
-        return filterOutCustomWbyAppsPermissions(permissions);
-    }
-
-    private async listRoles() {
-        const result = await this.rolesRepository.list({});
-        return result.isOk() ? result.value : [];
-    }
-
-    private async listTeams() {
-        const result = await this.teamsRepository.list({});
-        return result.isOk() ? result.value : [];
     }
 }
 
-export const ListUsersWithPermissionsUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
-    implementation: ListUsersWithPermissionsUseCaseImpl,
+export const UserPermissionsProvider = createImplementation({
+    abstraction: Abstraction,
+    implementation: UserPermissionsProviderImpl,
     dependencies: [
         WcpContext,
         AdminUsersRepository,

@@ -535,18 +535,8 @@ export const createContentEntriesSchema = ({
                     }
                 },
                 async listContentEntryAuthors(_, args: any, context) {
-                    const models = await context.cms.listModels({ includePrivate: false });
-                    const model = models.find(m => m.modelId === args.modelId);
-                    if (!model) {
-                        return new NotAuthorizedResponse({
-                            data: {
-                                modelId: args.modelId
-                            }
-                        });
-                    }
-
                     const useCase = context.container.resolve(ListEntryAuthorsUseCase);
-                    const result = await useCase.execute(model);
+                    const result = await useCase.execute(args.modelId);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

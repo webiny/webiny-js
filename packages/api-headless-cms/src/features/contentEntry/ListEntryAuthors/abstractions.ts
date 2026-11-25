@@ -1,9 +1,7 @@
-import { createAbstraction, Result } from "@webiny/feature/api";
-import type { CmsModel } from "~/types/index.js";
-import type {
-    EntryNotAuthorizedError,
-    EntryPersistenceError
-} from "~/domain/contentEntry/errors.js";
+import { createAbstraction } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
+import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 export interface CmsEntryAuthor {
     id: string;
@@ -15,7 +13,7 @@ export interface CmsEntryAuthor {
  * entry list can offer them as authors to filter by. Only the user's ID and name are returned.
  */
 export interface IListEntryAuthorsUseCase {
-    execute(model: CmsModel): Promise<Result<CmsEntryAuthor[], UseCaseError>>;
+    execute(modelId: string): Promise<Result<CmsEntryAuthor[], UseCaseError>>;
 }
 
 export interface IListEntryAuthorsUseCaseErrors {

@@ -1,14 +1,15 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { ListUsersWithPermissionsUseCase } from "@webiny/api-core/features/users/ListUsersWithPermissions/index.js";
+import { UserPermissionsProvider } from "@webiny/api-core/features/users/UserPermissionsProvider/index.js";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { filterPermissionsByName } from "@webiny/api-core/features/security/utils/filterPermissionsByName.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ListEntryAuthorsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { ListGroupsRepository } from "~/features/contentModelGroup/ListGroups/index.js";
+import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsGroup } from "~/types/index.js";
@@ -24,104 +25,123 @@ const getDisplayName = (user: Pick<AdminUser, "id" | "displayName" | "firstName"
 
 /*
  * Runs the same entry read check the CMS runs on a request, with the user's permissions
- * instead of the caller's. Model access guards are left out: they check the identity of
- * the current request, and the caller has already passed them.
+ * instead of the caller's.
  */
 const canUserReadEntries = (
     model: CmsModel,
-    user: AdminUser,
-    permissions: SecurityPermission[],
-    listAllGroups: () => Promise<CmsGroup[]>
+    item: UserPermissionsProvider.Item,
+    groups: CmsGroup[]
 ) => {
     const identity = new AuthenticatedIdentity({
-        id: user.id,
-        displayName: getDisplayName(user),
+        id: item.user.id,
+        displayName: getDisplayName(item.user),
         type: "admin"
     });
 
-    const accessControl = new AccessControlClass({
-        getIdentity: async () => identity,
-        getGroupsPermissions: async () => {
-            return filterPermissionsByName(permissions, "cms.contentModelGroup");
-        },
-        getModelsPermissions: async () => {
-            return filterPermissionsByName(permissions, "cms.contentModel");
-        },
-        getEntriesPermissions: async () => {
-            return filterPermissionsByName(permissions, "cms.contentEntry");
-        },
-        listAllGroups
+    const accessControl = AccessControlClass.fromPermissions({
+        identity,
+        permissions: item.permissions,
+        listAllGroups: async () => groups
     });
 
     return accessControl.canAccessEntry({ model });
 };
 
+const notAuthorized = (modelId: string) => {
+    const error = new EntryNotAuthorizedError(`Not allowed to access "${modelId}" entries.`);
+    return Result.fail(error);
+};
+
+/*
+ * A model that does not exist and a model the caller cannot read get the same answer,
+ * so the query does not tell which models exist.
+ */
+const fromModelError = (modelId: string, error: GetModelUseCase.Error) => {
+    if (error instanceof ModelPersistenceError) {
+        const persistenceError = new EntryPersistenceError(error);
+        return Result.fail(persistenceError);
+    }
+    return notAuthorized(modelId);
+};
+
 class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
+        private getModel: GetModelUseCase.Interface,
         private accessControl: AccessControl.Interface,
-        private cmsContext: CmsContext.Interface,
-        private listUsersWithPermissions: ListUsersWithPermissionsUseCase.Interface
+        private identityContext: IdentityContext.Interface,
+        private listGroupsRepository: ListGroupsRepository.Interface,
+        private userPermissionsProvider: UserPermissionsProvider.Interface
     ) {}
 
-    async execute(model: CmsModel): UseCaseAbstraction.Return {
+    async execute(modelId: string): UseCaseAbstraction.Return {
+        const modelResult = await this.getModel.execute(modelId);
+        if (modelResult.isFail()) {
+            return fromModelError(modelId, modelResult.error);
+        }
+
+        // Private models are internal and have no entry list.
+        const model = modelResult.value;
+        if (model.isPrivate) {
+            return notAuthorized(modelId);
+        }
+
         const canRead = await this.accessControl.canAccessEntry({ model });
         if (!canRead) {
-            const error = EntryNotAuthorizedError.fromModel(model);
-            return Result.fail(error);
+            return notAuthorized(modelId);
         }
 
         // An identity that only sees its own entries can only filter by itself.
         const canAccessOnlyOwned = await this.accessControl.canAccessOnlyOwnedEntries({ model });
         if (canAccessOnlyOwned) {
-            const identity = this.cmsContext.security.getIdentity();
+            const identity = this.identityContext.getIdentity();
             return Result.ok([
                 { id: identity.id, displayName: identity.displayName || identity.id }
             ]);
         }
 
-        const usersResult = await this.listUsersWithPermissions.execute();
+        const usersResult = await this.userPermissionsProvider.listUsersWithPermissions();
         if (usersResult.isFail()) {
             const error = new EntryPersistenceError(usersResult.error);
             return Result.fail(error);
         }
 
-        const listAllGroups = this.createGroupsLoader();
+        /*
+         * The checks need every group, not only the ones the caller can see, the same way the
+         * request's own `AccessControl` loads them.
+         */
+        const groupsResult = await this.identityContext.withoutAuthorization(() => {
+            return this.listGroupsRepository.execute();
+        });
+        if (groupsResult.isFail()) {
+            const error = new EntryPersistenceError(groupsResult.error);
+            return Result.fail(error);
+        }
 
         const authors: UseCaseAbstraction.Author[] = [];
-        for (const { user, permissions } of usersResult.value) {
-            const canUserRead = await canUserReadEntries(model, user, permissions, listAllGroups);
+        for (const item of usersResult.value) {
+            const canUserRead = await canUserReadEntries(model, item, groupsResult.value);
             if (!canUserRead) {
                 continue;
             }
 
-            const displayName = getDisplayName(user);
-            authors.push({ id: user.id, displayName });
+            const displayName = getDisplayName(item.user);
+            authors.push({ id: item.user.id, displayName });
         }
 
         authors.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
         return Result.ok(authors);
     }
-
-    /*
-     * Every user's check needs the model groups. Load them once, without authorization,
-     * the same way the request's own `AccessControl` does.
-     */
-    private createGroupsLoader() {
-        let groups: Promise<CmsGroup[]> | undefined;
-        return () => {
-            if (!groups) {
-                groups = this.cmsContext.security.withoutAuthorization(() => {
-                    return this.cmsContext.cms.listGroups();
-                });
-            }
-            return groups;
-        };
-    }
 }
 
 export const ListEntryAuthorsUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: ListEntryAuthorsUseCaseImpl,
-    dependencies: [AccessControl, CmsContext, ListUsersWithPermissionsUseCase]
+    dependencies: [
+        GetModelUseCase,
+        AccessControl,
+        IdentityContext,
+        ListGroupsRepository,
+        UserPermissionsProvider
+    ]
 });

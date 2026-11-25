@@ -182,8 +182,13 @@ describe("listContentEntryAuthors", () => {
             permissions: readOtherModel
         });
 
-        expect(result.data).toBeNull();
-        expect(result.error.code).toBe("SECURITY_NOT_AUTHORIZED");
+        expect(result).toEqual({
+            data: null,
+            error: {
+                code: "Cms/Entry/NotAuthorized",
+                message: `Not allowed to access "testModel" entries.`
+            }
+        });
     });
 
     it("refuses a caller who can read the model but not its entries", async () => {
@@ -207,12 +212,17 @@ describe("listContentEntryAuthors", () => {
         });
     });
 
-    it("refuses an unknown model", async () => {
+    it("refuses an unknown model with the same error as an unreadable one", async () => {
         await setup();
 
         const result = await listAuthors({ identity: identityA }, "doesNotExist");
 
-        expect(result.data).toBeNull();
-        expect(result.error.code).toBe("SECURITY_NOT_AUTHORIZED");
+        expect(result).toEqual({
+            data: null,
+            error: {
+                code: "Cms/Entry/NotAuthorized",
+                message: `Not allowed to access "doesNotExist" entries.`
+            }
+        });
     });
 });

@@ -4,7 +4,7 @@ import { GetUserFeature } from "./GetUser/feature.js";
 import { GetCurrentUserFeature } from "./GetCurrentUser/feature.js";
 import { GetIdentityProfileFeature } from "./GetIdentityProfile/feature.js";
 import { ListUsersFeature } from "./ListUsers/feature.js";
-import { ListUsersWithPermissionsFeature } from "./ListUsersWithPermissions/feature.js";
+import { UserPermissionsProviderFeature } from "./UserPermissionsProvider/feature.js";
 import { CreateUserFeature } from "./CreateUser/feature.js";
 import { UpdateUserFeature } from "./UpdateUser/feature.js";
 import { DeleteUserFeature } from "./DeleteUser/feature.js";
@@ -24,7 +24,7 @@ export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Inter
         GetCurrentUserFeature.register(container);
         GetIdentityProfileFeature.register(container);
         ListUsersFeature.register(container);
-        ListUsersWithPermissionsFeature.register(container);
+        UserPermissionsProviderFeature.register(container);
         ListUserTeamsFeature.register(container);
         CreateUserFeature.register(container);
         UpdateUserFeature.register(container);
