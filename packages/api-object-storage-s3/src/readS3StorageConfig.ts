@@ -19,10 +19,15 @@ function isHttpUrl(value: string): boolean {
 
 /*
  * The prefix as the storage uses it: empty, or ending in exactly one `/`. A leading `/` would make
- * an object key that starts with an empty segment.
+ * an object key that starts with an empty segment. Trailing `/`s are trimmed with a loop: the regex
+ * `/\/+$/` backtracks quadratically on a long run of `/` that isn't at the end.
  */
 function normalizePrefix(prefix: string): string {
-    const trimmed = prefix.replace(/\/+$/, "");
+    let end = prefix.length;
+    while (end > 0 && prefix[end - 1] === "/") {
+        end--;
+    }
+    const trimmed = prefix.slice(0, end);
     return trimmed ? `${trimmed}/` : "";
 }
 

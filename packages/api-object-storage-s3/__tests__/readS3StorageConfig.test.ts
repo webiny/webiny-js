@@ -46,6 +46,31 @@ describe("readS3StorageConfig", () => {
         });
     });
 
+    it("ends the prefix in exactly one /", () => {
+        const config = readS3StorageConfig({
+            WEBINY_S3_BUCKET: "uploads",
+            WEBINY_S3_REGION: "auto",
+            WEBINY_S3_PREFIX: "staging///"
+        });
+
+        expect(config.prefix).toBe("staging/");
+    });
+
+    it("reads a prefix with a long run of / in linear time", () => {
+        const prefix = `a${"/".repeat(100_000)}a`;
+
+        const start = performance.now();
+        const config = readS3StorageConfig({
+            WEBINY_S3_BUCKET: "uploads",
+            WEBINY_S3_REGION: "auto",
+            WEBINY_S3_PREFIX: prefix
+        });
+        const elapsedMs = performance.now() - start;
+
+        expect(config.prefix).toBe(`${prefix}/`);
+        expect(elapsedMs).toBeLessThan(100);
+    });
+
     it.each(["https://", "http://:9000", "r2.example.com", "ftp://r2.example.com"])(
         "refuses the endpoint %j",
         endpoint => {
