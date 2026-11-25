@@ -169,17 +169,17 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         data: inputData,
         original
     }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
+        const data = this.inScope({
+            ...original,
+            ...inputData
+        });
+
+        const keys = {
+            ...this.createKeys(data),
+            ...this.createGsiKeys(data)
+        };
+
         try {
-            const data = this.inScope({
-                ...original,
-                ...inputData
-            });
-
-            const keys = {
-                ...this.createKeys(data),
-                ...this.createGsiKeys(data)
-            };
-
             await this.entity.put({
                 ...keys,
                 data
@@ -216,17 +216,19 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     public async batchUpdate({
         items
     }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
+        const scopedItems = items.map(({ original, data: inputData }) => {
+            return this.inScope({
+                ...original,
+                ...inputData
+            });
+        });
+
         try {
             const batch = this.entity.createEntityWriter();
 
             const updatedItems: FolderLevelPermission[] = [];
 
-            for (const { original, data: inputData } of items) {
-                const data = this.inScope({
-                    ...original,
-                    ...inputData
-                });
-
+            for (const data of scopedItems) {
                 const keys = {
                     ...this.createKeys(data),
                     ...this.createGsiKeys(data)

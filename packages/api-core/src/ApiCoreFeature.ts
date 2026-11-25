@@ -9,8 +9,14 @@ import {
 } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import type { ApiCoreConfig } from "~/types/core.js";
-import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/abstractions.js";
-import { ScopeTenant } from "~/features/tenancy/ScopeTenant/abstractions.js";
+import { TenancyStorageOperationsProvider } from "~/features/storageOperations/abstractions.js";
+import {
+    ScopedAdminUsersStorageOperations,
+    ScopedApiCoreStorage,
+    ScopedKeyValueStorageOperations,
+    ScopedSecurityStorageOperations
+} from "~/features/storageOperations/ApiCoreStorage.js";
+import { DefaultTenancyStorageOperationsProvider } from "~/features/storageOperations/TenancyStorageOperationsProvider.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
@@ -46,16 +52,13 @@ import { FeatureFlagsSchemaFactory } from "~/graphql/featureFlags/FeatureFlagsSc
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
     register(container: Container, config: ApiCoreConfig = {}) {
-        // Storage operations are built synchronously, here, from the adapter-provided factory —
-        // the same way for every event (no out-of-feature construction, no async initializer).
-        // They take their tenant from the container's `ScopeTenant`, which reads its `TenantContext`
-        // when the storage is used: both register below.
-        const scopeTenant: ScopeTenant.Interface = {
-            getId: (...passed) => container.resolve(ScopeTenant).getId(...passed)
-        };
-        const storageOperations = container
-            .resolve(ApiCoreStorageOperationsFactory)
-            .create({ scopeTenant });
+        // The core storage: built from the adapter-provided `ApiCoreStorageOperationsFactory` with
+        // the scope's `ScopeTenant` (both injected) the first time a part of it is used. Each part
+        // is its own implementation that injects that one instance.
+        container.register(ScopedApiCoreStorage).inSingletonScope();
+        container.register(ScopedSecurityStorageOperations);
+        container.register(ScopedAdminUsersStorageOperations);
+        container.register(ScopedKeyValueStorageOperations);
 
         // Register features
         WcpFeature.register(container, config.wcpLicense);
@@ -79,15 +82,20 @@ export const ApiCoreFeature = createFeature({
          * its own, and its `TenantScopes` serves only the container's own tenant.
          */
         if (!config.tenantScope) {
-            TenantRegistryFeature.register(container, storageOperations.tenancyStorageOperations);
+            // Tenant-neutral, like the request container's registry (`TenantNeutralRequestFeature`).
+            container.register(DefaultTenancyStorageOperationsProvider);
+            TenantRegistryFeature.register(
+                container,
+                container.resolve(TenancyStorageOperationsProvider).create()
+            );
             TenantNeutralRequestContextFeature.register(container);
             container.registerInstance(RequestContainer, container);
             container.register(SingleContainerTenantScopes).inSingletonScope();
         }
         TenantScopeTenancyFeature.register(container);
-        SecurityFeature.register(container, storageOperations.securityStorageOperations);
-        AdminUsersFeature.register(container, storageOperations.usersStorageOperations);
-        KeyValueStoreFeature.register(container, storageOperations.keyValueStorageOperations);
+        SecurityFeature.register(container);
+        AdminUsersFeature.register(container);
+        KeyValueStoreFeature.register(container);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
         TenantScopeRequestContextFeature.register(container);

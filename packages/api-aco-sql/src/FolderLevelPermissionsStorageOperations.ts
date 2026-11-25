@@ -145,13 +145,13 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         data: inputData,
         original
     }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
+        const data = this.inScope({
+            ...original,
+            ...inputData
+        });
+
         try {
             await this.ensureTable();
-
-            const data = this.inScope({
-                ...original,
-                ...inputData
-            });
 
             await this.knex<FlpRow>(this.tableName)
                 .where("tenant", data.tenant)
@@ -189,18 +189,20 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     public async batchUpdate({
         items
     }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
+        const scopedItems = items.map(({ original, data: inputData }) => {
+            return this.inScope({
+                ...original,
+                ...inputData
+            });
+        });
+
         try {
             await this.ensureTable();
 
             // Built inside the callback: a transaction that loses its connection runs it again.
             return await this.knex.transaction(async trx => {
                 const updatedItems: FolderLevelPermission[] = [];
-                for (const { original, data: inputData } of items) {
-                    const data = this.inScope({
-                        ...original,
-                        ...inputData
-                    });
-
+                for (const data of scopedItems) {
                     await trx<FlpRow>(this.tableName)
                         .where("tenant", data.tenant)
                         .andWhere("id", data.id)

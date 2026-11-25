@@ -64,7 +64,7 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
         const storageEntry = {

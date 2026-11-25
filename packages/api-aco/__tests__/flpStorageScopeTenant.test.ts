@@ -42,8 +42,16 @@ describe("Folder-level permissions storage: the scope's tenant", () => {
         await expect(
             storage.create({ data: { ...flp, id: "flp-scope-2", tenant: "other" } })
         ).rejects.toThrow(TenantScopeMismatchError);
+        const otherTenantUpdate = { tenant: "other", slug: "b" };
+        await expect(storage.update({ original: flp, data: otherTenantUpdate })).rejects.toThrow(
+            TenantScopeMismatchError
+        );
+        await expect(
+            storage.batchUpdate({ items: [{ original: flp, data: otherTenantUpdate }] })
+        ).rejects.toThrow(TenantScopeMismatchError);
 
-        // Nothing was written for the other tenant's record.
+        // Nothing was written for the other tenant's record, and root's record is unchanged.
         expect(await storage.get({ tenant: "root", id: "flp-scope-2" })).toBeNull();
+        expect(await storage.get({ tenant: "root", id: flp.id })).toMatchObject({ slug: "a" });
     });
 });

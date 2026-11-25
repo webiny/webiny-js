@@ -83,7 +83,11 @@ describe("registerApiRequestStack", () => {
         await request.resolve(TenantScopeRegistration).register(scope);
 
         expect(registeredIn).toEqual([scope, scope]);
-        expect(scope.resolve(ApiCoreStorageOperationsFactory).create()).toBe(storageOperations);
+        expect(
+            scope
+                .resolve(ApiCoreStorageOperationsFactory)
+                .create({ scopeTenant: { getId: () => "root" } })
+        ).toBe(storageOperations);
         expect(scope.resolve(TenantContext)).toBeTruthy();
         expect(() => request.resolve(ApiCoreStorageOperationsFactory)).toThrow();
     });
@@ -99,7 +103,11 @@ describe("registerApiRequestStack", () => {
         await request.resolve(TenantScopeRegistration).register(scope);
 
         expect(scope.resolveAll(RequestStorage)).toEqual([]);
-        expect(scope.resolve(ApiCoreStorageOperationsFactory).create()).toBe(storageOperations);
+        expect(
+            scope
+                .resolve(ApiCoreStorageOperationsFactory)
+                .create({ scopeTenant: { getId: () => "root" } })
+        ).toBe(storageOperations);
     });
 
     // The SQL schema setup: everything a request has, without a tenant.

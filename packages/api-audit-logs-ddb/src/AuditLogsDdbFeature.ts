@@ -1,6 +1,7 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { AuditLogsDdbConfig, DdbAuditLogsStorage } from "./DdbAuditLogsStorage.js";
+import { AuditLogsDdbConfig } from "~/abstractions/AuditLogsDdbConfig.js";
+import { DdbAuditLogsStorage } from "./DdbAuditLogsStorage.js";
 
 export interface AuditLogsDdbFeatureConfig {
     tableName?: string;

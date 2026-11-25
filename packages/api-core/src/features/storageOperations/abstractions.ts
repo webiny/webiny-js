@@ -32,6 +32,17 @@ export namespace ApiCoreStorageOperationsFactory {
     export type Params = ApiCoreStorageOperationsFactoryParams;
 }
 
+/**
+ * The core storage operations of a tenant scope, built from `ApiCoreStorageOperationsFactory` with
+ * the scope's `ScopeTenant`. `ApiCoreFeature` serves each part (security, users, the key-value
+ * store) from it.
+ */
+export const ApiCoreStorage = createAbstraction<ApiCoreStorageOperations>("ApiCoreStorage");
+
+export namespace ApiCoreStorage {
+    export type Interface = ApiCoreStorageOperations;
+}
+
 /** Builds the core storage operations for a tenant scope. */
 export type ApiCoreStorageOperationsBuilder = (
     params: ApiCoreStorageOperationsFactoryParams

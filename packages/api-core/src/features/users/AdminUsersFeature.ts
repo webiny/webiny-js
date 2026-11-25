@@ -14,7 +14,11 @@ import { NotifyUserChangeFeature } from "./NotifyUserChange/index.js";
 import { UsersAiToolsFeature } from "./ai/feature.js";
 import { FindUserRecordsFeature } from "./FindUserRecords/feature.js";
 
-export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Interface>({
+/**
+ * Omit the storage operations to register `AdminUsersStorageOperations` yourself (`ApiCoreFeature`
+ * serves it from the tenant scope's core storage).
+ */
+export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Interface | undefined>({
     name: "AdminUsers",
     register(container, storageOperations) {
         // Register repository in singleton scope
@@ -35,6 +39,8 @@ export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Inter
         FindUserRecordsFeature.register(container);
 
         // Legacy storage ops
-        container.registerInstance(AdminUsersStorageOperations, storageOperations);
+        if (storageOperations) {
+            container.registerInstance(AdminUsersStorageOperations, storageOperations);
+        }
     }
 });

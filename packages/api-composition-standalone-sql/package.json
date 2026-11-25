@@ -35,6 +35,7 @@
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-aco-pg": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-pg": "0.0.0",
     "@webiny/api-storage-pg": "0.0.0",
