@@ -17,7 +17,7 @@ import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
-import { ListEntryAuthorsUseCase } from "~/features/contentEntry/ListEntryAuthors/index.js";
+import { ListUsersWhoCanReadEntriesUseCase } from "~/features/contentEntry/ListUsersWhoCanReadEntries/index.js";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -413,13 +413,13 @@ export const createContentEntriesSchema = ({
                 id: ID!
             }
 
-            type CmsContentEntryAuthor {
+            type CmsEntriesReader {
                 id: ID!
                 displayName: String!
             }
 
-            type CmsContentEntryAuthorsResponse {
-                data: [CmsContentEntryAuthor!]
+            type CmsEntriesReadersResponse {
+                data: [CmsEntriesReader!]
                 error: CmsError
             }
 
@@ -433,7 +433,7 @@ export const createContentEntriesSchema = ({
                 ): CmsContentEntriesResponse!
 
                 # Users who can read the given content model's entries, to filter entries by author.
-                listContentEntryAuthors(modelId: ID!): CmsContentEntryAuthorsResponse!
+                listUsersWhoCanReadEntries(modelId: ID!): CmsEntriesReadersResponse!
 
                 # Get content entry meta data
                 getContentEntry(entry: CmsModelEntryInput!): CmsContentEntryResponse!
@@ -534,8 +534,8 @@ export const createContentEntriesSchema = ({
                         return new ErrorResponse(ex);
                     }
                 },
-                async listContentEntryAuthors(_, args: any, context) {
-                    const useCase = context.container.resolve(ListEntryAuthorsUseCase);
+                async listUsersWhoCanReadEntries(_, args: any, context) {
+                    const useCase = context.container.resolve(ListUsersWhoCanReadEntriesUseCase);
                     const result = await useCase.execute(args.modelId);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

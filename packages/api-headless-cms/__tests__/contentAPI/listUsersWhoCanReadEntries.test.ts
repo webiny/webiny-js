@@ -13,8 +13,8 @@ import { identityA } from "./security/utils";
 const TENANT = "root";
 
 const QUERY = /* GraphQL */ `
-    query ListAuthors($modelId: ID!) {
-        listContentEntryAuthors(modelId: $modelId) {
+    query ListUsersWhoCanReadEntries($modelId: ID!) {
+        listUsersWhoCanReadEntries(modelId: $modelId) {
             data {
                 id
                 displayName
@@ -151,7 +151,7 @@ const setup = async () => {
     await seedUsersRolesAndTeams();
 };
 
-const listAuthors = async (
+const listUsersWhoCanReadEntries = async (
     params: Parameters<typeof useTestModelHandler>[0],
     modelId = "testModel"
 ) => {
@@ -159,14 +159,14 @@ const listAuthors = async (
     const [response] = await manage.invoke({
         body: { query: QUERY, variables: { modelId } }
     });
-    return response.data.listContentEntryAuthors;
+    return response.data.listUsersWhoCanReadEntries;
 };
 
-describe("listContentEntryAuthors", () => {
+describe("listUsersWhoCanReadEntries", () => {
     it("lists the users who can read the model's entries, by name", async () => {
         await setup();
 
-        const result = await listAuthors({ identity: identityA });
+        const result = await listUsersWhoCanReadEntries({ identity: identityA });
 
         expect(result).toEqual({
             data: [
@@ -190,7 +190,10 @@ describe("listContentEntryAuthors", () => {
     it("returns only the caller for a model that has a model access guard", async () => {
         await setup();
 
-        const result = await listAuthors({ identity: identityA, plugins: [guardPlugin] });
+        const result = await listUsersWhoCanReadEntries({
+            identity: identityA,
+            plugins: [guardPlugin]
+        });
 
         expect(result).toEqual({
             data: [{ id: identityA.id, displayName: identityA.displayName }],
@@ -201,7 +204,7 @@ describe("listContentEntryAuthors", () => {
     it("returns only the caller when the caller can only read their own entries", async () => {
         await setup();
 
-        const result = await listAuthors({
+        const result = await listUsersWhoCanReadEntries({
             identity: { ...identityA, id: "bob", displayName: "Bob" },
             permissions: readOwnEntries
         });
@@ -215,7 +218,7 @@ describe("listContentEntryAuthors", () => {
     it("refuses a caller who cannot read the model's entries", async () => {
         await setup();
 
-        const result = await listAuthors({
+        const result = await listUsersWhoCanReadEntries({
             identity: { ...identityA, id: "cid", displayName: "Cid" },
             permissions: readOtherModel
         });
@@ -232,7 +235,7 @@ describe("listContentEntryAuthors", () => {
     it("refuses a caller who can read the model but not its entries", async () => {
         await setup();
 
-        const result = await listAuthors({
+        const result = await listUsersWhoCanReadEntries({
             identity: { ...identityA, id: "dan", displayName: "Dan" },
             permissions: [
                 { name: "cms.endpoint.manage" },
@@ -253,7 +256,7 @@ describe("listContentEntryAuthors", () => {
     it("refuses an unknown model with the same error as an unreadable one", async () => {
         await setup();
 
-        const result = await listAuthors({ identity: identityA }, "doesNotExist");
+        const result = await listUsersWhoCanReadEntries({ identity: identityA }, "doesNotExist");
 
         expect(result).toEqual({
             data: null,

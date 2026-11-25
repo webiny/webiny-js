@@ -4,7 +4,7 @@ import { UserPermissionsProvider } from "@webiny/api-core/features/users/UserPer
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { UserDisplayName } from "@webiny/api-core/domain/users/UserDisplayName.js";
-import { ListEntryAuthorsUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { ListUsersWhoCanReadEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
@@ -21,7 +21,7 @@ import type { AdminUser } from "@webiny/api-core/types/users.js";
  * The e-mail is left out on purpose: the query is open to anyone who can read the model's
  * entries, so a user without a name is listed by ID rather than by e-mail address.
  */
-const toAuthor = (user: Pick<AdminUser, "id" | "displayName" | "firstName" | "lastName">) => {
+const toReader = (user: Pick<AdminUser, "id" | "displayName" | "firstName" | "lastName">) => {
     const nameSource = {
         id: user.id,
         displayName: user.displayName,
@@ -40,12 +40,12 @@ const toAuthor = (user: Pick<AdminUser, "id" | "displayName" | "firstName" | "la
 const canUserReadEntries = (
     model: CmsModel,
     item: UserPermissionsProvider.Item,
-    author: UseCaseAbstraction.Author,
+    reader: UseCaseAbstraction.Reader,
     groups: CmsGroup[]
 ) => {
     const identity = new AuthenticatedIdentity({
-        id: author.id,
-        displayName: author.displayName,
+        id: reader.id,
+        displayName: reader.displayName,
         type: "admin"
     });
 
@@ -75,7 +75,7 @@ const fromModelError = (modelId: string, error: GetModelUseCase.Error) => {
     return notAuthorized(modelId);
 };
 
-class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
+class ListUsersWhoCanReadEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private getModel: GetModelUseCase.Interface,
         private accessControl: AccessControl.Interface,
@@ -136,31 +136,31 @@ class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(error);
         }
 
-        const authors: UseCaseAbstraction.Author[] = [];
+        const readers: UseCaseAbstraction.Reader[] = [];
         for (const item of usersResult.value) {
-            const author = toAuthor(item.user);
-            const canUserRead = await canUserReadEntries(model, item, author, groupsResult.value);
+            const reader = toReader(item.user);
+            const canUserRead = await canUserReadEntries(model, item, reader, groupsResult.value);
             if (canUserRead) {
-                authors.push(author);
+                readers.push(reader);
             }
         }
 
-        authors.sort((a, b) => a.displayName.localeCompare(b.displayName));
+        readers.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
-        return Result.ok(authors);
+        return Result.ok(readers);
     }
 
     private listOnlyCaller() {
         const identity = this.identityContext.getIdentity();
-        const author = toAuthor(identity);
+        const reader = toReader(identity);
 
-        return Result.ok([author]);
+        return Result.ok([reader]);
     }
 }
 
-export const ListEntryAuthorsUseCase = createImplementation({
+export const ListUsersWhoCanReadEntriesUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
-    implementation: ListEntryAuthorsUseCaseImpl,
+    implementation: ListUsersWhoCanReadEntriesUseCaseImpl,
     dependencies: [
         GetModelUseCase,
         AccessControl,
