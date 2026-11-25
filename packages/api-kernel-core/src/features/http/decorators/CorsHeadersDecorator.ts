@@ -1,6 +1,7 @@
 import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 import { corsHeaders } from "~/features/http/corsHeaders.js";
+import { getHeader } from "~/features/http/getHeader.js";
 
 const ALLOWED_HEADERS = [
     "accept",
@@ -43,10 +44,12 @@ const corsOriginHeaders = (request: IHttpRequest): Record<string, string> => {
     if (PRIVATE_FILE_PATH.test(request.path || "")) {
         return { "access-control-allow-origin": "*" };
     }
-    return corsHeaders(request.headers["origin"]);
+    // Header names reach the router in whatever case the transport and the client used.
+    const origin = getHeader(request.headers, "origin");
+    return corsHeaders(origin);
 };
 
-class SecureHeadersDecoratorImpl implements IHttpRouter {
+class CorsHeadersDecoratorImpl implements IHttpRouter {
     private readonly allowedHeaders: string;
 
     constructor(
@@ -88,7 +91,7 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
     }
 }
 
-export const SecureHeadersDecorator = HttpRouter.createDecorator({
-    decorator: SecureHeadersDecoratorImpl,
+export const CorsHeadersDecorator = HttpRouter.createDecorator({
+    decorator: CorsHeadersDecoratorImpl,
     dependencies: [[HttpAllowedRequestHeaders, { multiple: true }]]
 });

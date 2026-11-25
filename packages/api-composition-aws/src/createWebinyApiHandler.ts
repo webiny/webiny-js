@@ -11,9 +11,7 @@
  * template) is what makes it unit/integration testable.
  */
 import { createLambdaHandler, ApiGatewayFeature } from "@webiny/api-kernel-aws";
-import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
-import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
-import { ApiGatewayAssumePermissionsDecorator } from "~/handlers/ApiGatewayAssumePermissionsDecorator.js";
+import { registerHttpTransport } from "@webiny/api-composition-core";
 import {
     registerInboundInputTypes,
     registerWebinyApiChild,
@@ -28,27 +26,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
-            ApiGatewayFeature.register(container);
-
-            // ── Tenant + auth (extract → shared load) ──────────────────
-            // These decorators depend on api-core (RequestTenantLoader/RequestIdentityLoader), so
-            // they live in this composition layer, not api-kernel-aws. registerDecorator applies
-            // LATER registrations as the OUTER wrapper (whose execute() runs first). TENANT must be
-            // established before IDENTITY: API-key authentication resolves the key by tenant partition
-            // (ApiKeysRepository reads TenantContext.getTenant()), so identity establishment depends on
-            // the tenant. The reverse is not true — RequestTenantLoader has no identity dependency. So
-            // register identity first (inner) and tenant last (outer) → tenant runs, then identity,
-            // then the router.
-            container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
-            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
-
-            /*
-             * Preview-as. Outermost, so the header lands in RawAssumePermissions before anything
-             * can ask for permissions. Order is not load-bearing beyond that: the holder is read
-             * lazily, and AssumedPermissions checks the caller's real permissions before it
-             * honours the header.
-             */
-            container.registerDecorator(ApiGatewayAssumePermissionsDecorator);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading.
+            registerHttpTransport(container, ApiGatewayFeature);
 
             // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
             // WebSockets) with its handler. Kept in one function so the set is testable and an

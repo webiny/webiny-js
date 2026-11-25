@@ -1,13 +1,10 @@
-import { HttpRouter, RouteNotFoundError } from "@webiny/api-kernel-core";
-import { codedErrorBody } from "@webiny/api-kernel-core";
+import { HttpRouter } from "@webiny/api-kernel-core";
+import { internalServerErrorResponse } from "@webiny/api-kernel-core";
 import type { InputContext, IHttpResponse, NextFunction } from "@webiny/api-kernel-core";
-import type { ICodedError } from "@webiny/api-kernel-core";
 import { FunctionUrlStreamInputHandler } from "~/abstractions/handlers/FunctionUrlStreamInputHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
 import { writeHttpResponseToStream } from "~/streaming/writeHttpResponseToStream.js";
-
-const JSON_HEADERS = { "content-type": "application/json" };
 
 /**
  * Terminal handler for the Lambda Function URL response-streaming transport. Routes through the same
@@ -31,7 +28,9 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamInputHandle
         try {
             response = await this.router.route(request);
         } catch (e) {
-            const errorResponse = this.errorResponse(e);
+            // The router turns its own errors into responses (`ErrorResponseDecorator`), so this is rare.
+            console.error("HTTP handler error:", e);
+            const errorResponse = internalServerErrorResponse();
             await writeHttpResponseToStream(raw, errorResponse);
             return;
         }
@@ -49,23 +48,6 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamInputHandle
                 raw.end();
             }
         }
-    }
-
-    private errorResponse(e: unknown): IHttpResponse {
-        if (e instanceof RouteNotFoundError) {
-            return { statusCode: 404, headers: JSON_HEADERS, body: { message: e.message } };
-        }
-        if (e && typeof e === "object" && (e as any).code) {
-            console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);
-            const body = codedErrorBody(e as ICodedError);
-            return { statusCode: 500, headers: JSON_HEADERS, body };
-        }
-        console.error("HTTP handler error:", e);
-        return {
-            statusCode: 500,
-            headers: JSON_HEADERS,
-            body: { message: "Internal server error" }
-        };
     }
 }
 

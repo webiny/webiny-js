@@ -11,7 +11,6 @@ export { AwsLambdaStreamKernelPlatform } from "./AwsLambdaStreamKernelPlatform.j
 export type { AwsLambdaStreamInvocation } from "./AwsLambdaStreamKernelPlatform.js";
 export { LambdaWebKernelPlatform } from "./LambdaWebKernelPlatform.js";
 export * from "./streaming/awslambda.js";
-export * from "./streaming/writeHttpResponseToStream.js";
 
 export * from "./abstractions/index.js";
 export * from "./inputTypes/index.js";
