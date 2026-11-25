@@ -324,10 +324,8 @@ describe("SDK GraphQL - CMS Search", () => {
                 });
 
                 expect(searchResult.isOk()).toBe(true);
-                expect({
-                    search,
-                    names: searchResult.value.data.map(item => item.values?.name)
-                }).toEqual({
+                const names = searchResult.value.data.map(item => item.values?.name);
+                expect({ search, names }).toEqual({
                     search,
                     names: ["Introduction to Rope Climbing 11/14"]
                 });
@@ -356,13 +354,43 @@ describe("SDK GraphQL - CMS Search", () => {
                 });
 
                 expect(listResult.isOk()).toBe(true);
-                expect({
-                    value,
-                    names: listResult.value.data.map(item => item.values?.name)
-                }).toEqual({
+                const names = listResult.value.data.map(item => item.values?.name);
+                expect({ value, names }).toEqual({
                     value,
                     names: ["Introduction to Rope Climbing 11/14"]
                 });
+            }
+        });
+
+        it("should search for AND, OR and NOT as words, not as query operators", async () => {
+            await createAndPublishEntry({
+                name: "Terms AND/OR conditions",
+                sku: "TRM-001",
+                description: "Legal",
+                price: 0
+            });
+            await createAndPublishEntry({
+                name: "Rock/NOT/Roll",
+                sku: "TRM-002",
+                description: "Music",
+                price: 0
+            });
+
+            const cases = [
+                { search: "Terms AND/OR conditions", expected: ["Terms AND/OR conditions"] },
+                { search: "Rock/NOT/Roll", expected: ["Rock/NOT/Roll"] }
+            ];
+
+            for (const { search, expected } of cases) {
+                const searchResult = await sdk.cms.listEntries<ProductValues>({
+                    modelId: "product",
+                    search,
+                    fields: ["id", "values.name"]
+                });
+
+                expect(searchResult.isOk()).toBe(true);
+                const names = searchResult.value.data.map(item => item.values?.name);
+                expect({ search, names }).toEqual({ search, names: expected });
             }
         });
 

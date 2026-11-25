@@ -52,6 +52,13 @@ export const normalizeValue = (value: string) => {
         result = result.replace(new RegExp(character, "g"), `\\${character}`);
     }
 
+    /**
+     * The query string syntax reads uppercase AND, OR and NOT as operators, so "Terms AND/OR
+     * conditions" would fail to parse and "Rock/NOT/Roll" would exclude "Roll". The analyzer
+     * lowercases indexed words anyway, so lowercasing them makes them plain words to search for.
+     */
+    result = result.replace(/\b(AND|OR|NOT)\b/g, operator => operator.toLowerCase());
+
     return result || "";
 };
 
