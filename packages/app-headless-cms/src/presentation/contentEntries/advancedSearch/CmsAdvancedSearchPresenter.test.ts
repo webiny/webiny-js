@@ -91,6 +91,22 @@ describe("CmsAdvancedSearchPresenter", () => {
         expect(presenter.vm.authors).toHaveLength(3);
     });
 
+    it("keeps the result of the newest load when an older one fails later", async () => {
+        const { presenter, listTargets } = createPresenter();
+        let failOlderLoad: (error: Error) => void = () => {};
+        const olderLoad = new Promise<typeof TARGETS>((_, reject) => {
+            failOlderLoad = reject;
+        });
+        listTargets.mockReturnValueOnce(olderLoad);
+
+        const older = presenter.loadAuthors();
+        await presenter.loadAuthors();
+        failOlderLoad(new Error("Network error"));
+        await older;
+
+        expect(presenter.vm.authors).toHaveLength(3);
+    });
+
     it("clears the keys of the previous filter that the new filter does not have", () => {
         const { presenter, set, clear } = createPresenter();
 

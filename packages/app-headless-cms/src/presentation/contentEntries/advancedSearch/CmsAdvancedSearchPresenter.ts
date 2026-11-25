@@ -6,7 +6,7 @@ import type { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/domain/
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import { ListFolderPermissionsTargetsUseCase } from "~/features/listFolderPermissionsTargets/abstractions.js";
 import { ContentEntriesPresenter } from "~/presentation/contentEntries/list/abstractions.js";
-import { FieldsMapper } from "~/presentation/contentEntries/views/FieldsMapper.js";
+import { FieldsMapper } from "./FieldsMapper.js";
 import { CmsAdvancedSearchPresenter as Abstraction } from "./abstractions.js";
 import type { EntryAuthor } from "./abstractions.js";
 import { wrapUserFields } from "./wrapUserFields.js";
@@ -22,14 +22,20 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
      * other controls, such as `folderId`, and those are never cleared from here.
      */
     private appliedKeys: string[] = [];
+    // Counts the author loads, so a load that finishes after a newer one leaves its result unused.
+    private authorsLoad = 0;
 
     constructor(
         private listTargets: ListFolderPermissionsTargetsUseCase.Interface,
         private contentEntries: ContentEntriesPresenter.Interface
     ) {
-        makeAutoObservable<CmsAdvancedSearchPresenterImpl, "listTargets" | "contentEntries">(this, {
+        makeAutoObservable<
+            CmsAdvancedSearchPresenterImpl,
+            "listTargets" | "contentEntries" | "authorsLoad"
+        >(this, {
             listTargets: false,
-            contentEntries: false
+            contentEntries: false,
+            authorsLoad: false
         });
     }
 
@@ -41,17 +47,22 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
         return FieldsMapper.toRaw(this.contentEntries.vm.model, this.authors);
     }
 
-    /**
+    /*
      * Asked on every mount, so the list always belongs to the identity that is signed in now. The
      * API returns no users to an identity that cannot read them, and that identity gets no Author
      * filter. A failed request leaves the filter out until the next mount.
      */
     async loadAuthors(): Promise<void> {
+        const load = ++this.authorsLoad;
         let targets: FolderLevelPermissionsTarget[] = [];
         try {
             targets = await this.listTargets.execute();
         } catch {
             targets = [];
+        }
+
+        if (load !== this.authorsLoad) {
+            return;
         }
 
         const authors = targets.filter(target => target.type === "admin").map(toAuthor);
@@ -79,7 +90,7 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
         this.appliedKeys = Object.keys(where);
     }
 
-    /**
+    /*
      * Called when the search unmounts. The search forgets its applied filter when it is hidden, so
      * the list drops it too, rather than staying narrowed by a filter nothing on screen shows.
      */

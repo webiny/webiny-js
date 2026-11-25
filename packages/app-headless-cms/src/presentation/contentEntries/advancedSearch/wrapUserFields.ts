@@ -1,10 +1,12 @@
-const SYSTEM_FIELD_PREFIXES = ["status", "createdOn", "savedOn", "createdBy", "AND", "OR"];
+import { FieldsMapper } from "./FieldsMapper.js";
 
 function isSystemKey(key: string): boolean {
-    return SYSTEM_FIELD_PREFIXES.some(prefix => key === prefix || key.startsWith(`${prefix}_`));
+    return FieldsMapper.systemFieldIds.some(
+        prefix => key === prefix || key.startsWith(`${prefix}_`)
+    );
 }
 
-/**
+/*
  * Moves the conditions on model fields under `values`, where the entry list's where input expects
  * them. System fields, such as `createdBy`, stay at the top level.
  */
@@ -14,7 +16,8 @@ export function wrapUserFields(where: Record<string, unknown>): Record<string, u
 
     for (const [key, value] of Object.entries(where)) {
         if (key === "AND" || key === "OR") {
-            result[key] = (value as Record<string, unknown>[]).map(item => wrapUserFields(item));
+            const conditions = value as Record<string, unknown>[];
+            result[key] = conditions.map(item => wrapUserFields(item));
         } else if (isSystemKey(key)) {
             result[key] = value;
         } else {
