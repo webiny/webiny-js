@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { MailerSettingsAfterSaveEventHandler } from "@webiny/api-mailer/features/SaveSettings/index.js";
+import { MailerSettingsAfterSaveEventHandler } from "@webiny/api-mailer";
 import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
@@ -10,13 +10,14 @@ class AuditLogMailerSettingsAfterSaveHandlerImpl
 
     async handle(event: MailerSettingsAfterSaveEventHandler.Event): Promise<void> {
         try {
-            const { settings } = event.payload;
+            // Any transport with stored settings publishes this event; secrets are already left out.
+            const { transport, settings } = event.payload;
 
             const recordResult = await this.recordAuditLog.execute({
                 audit: AUDIT.MAILER.SETTINGS.UPDATE,
                 message: "Settings updated",
-                content: { after: settings },
-                entityId: "-"
+                content: { after: { transport, ...settings } },
+                entityId: transport
             });
             if (recordResult.isFail()) {
                 throw recordResult.error;

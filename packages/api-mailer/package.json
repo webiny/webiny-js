@@ -22,11 +22,9 @@
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
-    "nodemailer": "^10.6.1",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/nodemailer": "^8.0.2",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-kernel-core": "0.0.0",

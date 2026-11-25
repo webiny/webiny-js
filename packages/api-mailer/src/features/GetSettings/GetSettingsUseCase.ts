@@ -1,37 +1,49 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { SettingsNotAuthorized } from "~/domain/errors.js";
-import {
-    GetSettingsUseCase,
-    GetSettingsRepository,
-    type ISettingsWithSource
-} from "./abstractions.js";
+import { GetSettingsUseCase, GetSettingsRepository } from "./abstractions.js";
+import { TransportSettingsDefinition } from "~/domain/TransportSettings/abstractions.js";
+import { findDefinition, withoutSecrets } from "~/domain/TransportSettings/findDefinition.js";
+import { SettingsNotAuthorized, UnknownTransportSettings } from "~/domain/errors.js";
+import { MAILER_SETTINGS_PERMISSION } from "~/constants.js";
 
-/**
- * Settings for the GraphQL API. Internal callers (e.g. MailerService) read them through
- * GetSettingsRepository.
- */
 class GetSettingsUseCaseImpl implements GetSettingsUseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private repository: GetSettingsRepository.Interface
+        private repository: GetSettingsRepository.Interface,
+        private definitions: TransportSettingsDefinition.Interface[]
     ) {}
 
-    async execute(
-        transportName: string
-    ): Promise<Result<ISettingsWithSource, SettingsNotAuthorized>> {
-        const permission = await this.identityContext.getPermission("mailer.settings");
+    async execute(transport: string) {
+        const permission = await this.identityContext.getPermission(MAILER_SETTINGS_PERMISSION);
         if (!permission) {
             return Result.fail(
                 new SettingsNotAuthorized("Not allowed to read the mailer settings.")
             );
         }
 
-        return this.repository.get(transportName);
+        const definition = findDefinition(this.definitions, transport);
+        if (!definition) {
+            return Result.fail(new UnknownTransportSettings(transport));
+        }
+
+        const result = await this.repository.get(transport);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const { settings, source } = result.value;
+        return Result.ok({
+            settings: settings ? withoutSecrets(definition, settings) : null,
+            source
+        });
     }
 }
 
 export const GetSettingsUseCaseImplementation = GetSettingsUseCase.createImplementation({
     implementation: GetSettingsUseCaseImpl,
-    dependencies: [IdentityContext, GetSettingsRepository]
+    dependencies: [
+        IdentityContext,
+        GetSettingsRepository,
+        [TransportSettingsDefinition, { multiple: true }]
+    ]
 });
