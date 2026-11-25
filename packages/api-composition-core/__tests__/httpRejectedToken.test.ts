@@ -1,12 +1,14 @@
 import { generateKeyPairSync } from "node:crypto";
-import type { IncomingMessage } from "node:http";
 import jwt from "jsonwebtoken";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { NodeHttpInputHandler } from "@webiny/api-kernel-core/nodeHttp/index.js";
+import { HttpFeature } from "@webiny/api-kernel-core";
+import { HttpRouter } from "@webiny/api-kernel-core";
+import type { IHttpRequest } from "@webiny/api-kernel-core";
 import type { IHttpResponse } from "@webiny/api-kernel-core";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/RawAuthToken.js";
 import { RequestIdentityLoader } from "@webiny/api-core/features/requestContext/RequestIdentityLoader.js";
@@ -18,7 +20,7 @@ import { JwtAuthenticator } from "@webiny/api-core/idp/JwtAuthenticator.js";
 import { OidcJwtIdentityProvider } from "@webiny/api-core/idp/OidcJwtIdentityProvider.js";
 import { JwkCache } from "@webiny/api-core/idp/abstractions.js";
 import { OidcIdentityProvider } from "@webiny/api-core/idp/abstractions.js";
-import { NodeHttpIdentityLoaderDecorator } from "~/nodeHttp/NodeHttpIdentityLoaderDecorator.js";
+import { HttpIdentityLoaderDecorator } from "~/http/HttpIdentityLoaderDecorator.js";
 
 const ISSUER = "https://idp.example.com";
 const KID = "key-1";
@@ -42,9 +44,11 @@ interface ISetupParams {
 }
 
 /*
- * The whole identity load path a Node request takes: RequestIdentityLoader, AuthenticationContext,
- * JwtAuthenticator and OidcJwtIdentityProvider, verifying a token signed with a real key. Only the
- * OIDC provider's settings, the key cache, the event publisher and the router are stand-ins.
+ * The whole identity load path a request takes: RequestIdentityLoader, AuthenticationContext,
+ * JwtAuthenticator and OidcJwtIdentityProvider, verifying a token signed with a real key, inside the
+ * real HttpFeature decorators. The identity decorator is registered before HttpFeature, the way the
+ * compositions register it, so the test also proves its 401 and its errors get the CORS headers. Only
+ * the OIDC provider's settings, the key cache, the event publisher and the routes are stand-ins.
  */
 const setup = (params: ISetupParams = {}) => {
     const route = vi.fn(async () => ROUTED);
@@ -74,49 +78,71 @@ const setup = (params: ISetupParams = {}) => {
     container.registerInstance(IdentityContext, {
         setIdentity: () => {}
     } as unknown as IdentityContext.Interface);
-    container.registerInstance(NodeHttpInputHandler, { execute: route });
-    container.registerDecorator(NodeHttpIdentityLoaderDecorator);
+    container.registerDecorator(HttpIdentityLoaderDecorator);
+    HttpFeature.register(container);
+    // Stands in for the routes, in place of the HttpRouterImpl HttpFeature registered.
+    container.registerInstance(HttpRouter, { route });
 
-    const handler = container.resolve(NodeHttpInputHandler);
+    const router = container.resolve(HttpRouter);
 
-    return { handler, route };
+    return { router, route };
 };
 
-const execute = (handler: NodeHttpInputHandler.Interface, token: string) => {
-    const request = {
+const execute = (router: HttpRouter.Interface, token: string, originHeader = "origin") => {
+    const request: IHttpRequest = {
+        method: "POST",
+        path: "/graphql",
         headers: {
             authorization: `Bearer ${token}`,
-            origin: ORIGIN
-        }
-    } as unknown as IncomingMessage;
+            [originHeader]: ORIGIN
+        },
+        query: {},
+        pathParameters: {},
+        body: {}
+    };
 
-    return handler.execute({ input: request, metadata: {} }, async () => undefined);
+    return router.route(request);
+};
+
+const CORS_HEADERS = {
+    "access-control-allow-origin": ORIGIN,
+    "access-control-allow-credentials": "true",
+    vary: "origin"
 };
 
 const unauthorized = (code: string, message: string): IHttpResponse => {
     return {
         statusCode: 401,
         headers: {
-            "access-control-allow-origin": ORIGIN,
-            "access-control-allow-credentials": "true",
-            vary: "origin",
             "content-type": "application/json",
-            "www-authenticate": 'Bearer error="invalid_token"'
+            "www-authenticate": 'Bearer error="invalid_token"',
+            ...CORS_HEADERS
         },
         body: { message, code, data: null }
     };
 };
 
-describe("NodeHttpIdentityLoaderDecorator", () => {
+const INTERNAL_SERVER_ERROR: IHttpResponse = {
+    statusCode: 500,
+    headers: { "content-type": "application/json", ...CORS_HEADERS },
+    body: { message: "Internal server error" }
+};
+
+describe("HttpIdentityLoaderDecorator inside HttpFeature", () => {
+    beforeEach(() => {
+        // ErrorResponseDecorator logs the errors it answers with a 500.
+        vi.spyOn(console, "error").mockImplementation(() => {});
+    });
+
     it("answers 401 when verifyTokenClaims rejects the token", async () => {
-        const { handler, route } = setup({
+        const { router, route } = setup({
             verifyTokenClaims: async () => {
                 throw new Error("The token's audience is not this API.");
             }
         });
         const token = signToken({});
 
-        const response = await execute(handler, token);
+        const response = await execute(router, token);
 
         const expected = unauthorized(
             "Authentication/InvalidToken",
@@ -126,12 +152,23 @@ describe("NodeHttpIdentityLoaderDecorator", () => {
         expect(route).not.toHaveBeenCalled();
     });
 
-    it("answers 401 when the token has expired", async () => {
-        const { handler, route } = setup();
+    it("finds the origin for the CORS headers whatever case the header name arrives in", async () => {
+        const { router } = setup();
         const expiredAt = Math.floor(Date.now() / 1000) - 60;
         const token = signToken({ exp: expiredAt });
 
-        const response = await execute(handler, token);
+        const response = await execute(router, token, "Origin");
+
+        const expected = unauthorized("Authentication/TokenExpired", "jwt expired");
+        expect(response).toEqual(expected);
+    });
+
+    it("answers 401 when the token has expired", async () => {
+        const { router, route } = setup();
+        const expiredAt = Math.floor(Date.now() / 1000) - 60;
+        const token = signToken({ exp: expiredAt });
+
+        const response = await execute(router, token);
 
         const expected = unauthorized("Authentication/TokenExpired", "jwt expired");
         expect(response).toEqual(expected);
@@ -139,33 +176,33 @@ describe("NodeHttpIdentityLoaderDecorator", () => {
     });
 
     it("routes the request when the token is accepted", async () => {
-        const { handler, route } = setup({
+        const { router, route } = setup({
             verifyTokenClaims: async () => {}
         });
         const token = signToken({});
 
-        const response = await execute(handler, token);
+        const response = await execute(router, token);
 
-        expect(response).toBe(ROUTED);
+        expect(response).toEqual({ ...ROUTED, headers: CORS_HEADERS });
         expect(route).toHaveBeenCalledTimes(1);
     });
 
-    it("lets a failure to fetch the signing keys propagate instead of answering 401", async () => {
-        const { handler, route } = setup({
+    it("answers 500, not 401, when fetching the signing keys fails", async () => {
+        const { router, route } = setup({
             getKeys: async () => {
                 throw new Error("The JWKS request timed out.");
             }
         });
         const token = signToken({});
 
-        const result = execute(handler, token);
+        const response = await execute(router, token);
 
-        await expect(result).rejects.toThrow("The JWKS request timed out.");
+        expect(response).toEqual(INTERNAL_SERVER_ERROR);
         expect(route).not.toHaveBeenCalled();
     });
 
-    it("lets a failing AfterAuthenticationEvent handler propagate instead of answering 401", async () => {
-        const { handler, route } = setup({
+    it("answers 500, not 401, when an AfterAuthenticationEvent handler fails", async () => {
+        const { router, route } = setup({
             publish: async event => {
                 if (event instanceof AfterAuthenticationEvent) {
                     throw new Error("An AfterAuthenticationEvent handler failed.");
@@ -174,9 +211,9 @@ describe("NodeHttpIdentityLoaderDecorator", () => {
         });
         const token = signToken({});
 
-        const result = execute(handler, token);
+        const response = await execute(router, token);
 
-        await expect(result).rejects.toThrow("An AfterAuthenticationEvent handler failed.");
+        expect(response).toEqual(INTERNAL_SERVER_ERROR);
         expect(route).not.toHaveBeenCalled();
     });
 });

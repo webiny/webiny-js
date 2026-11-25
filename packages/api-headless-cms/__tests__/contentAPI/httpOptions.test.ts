@@ -11,7 +11,7 @@ if (process.env.WEBINY_ENABLE_VERSION_HEADER === "true") {
 
 describe("HTTP Options request", () => {
     // The tripwire this used to carry — a post-auth initializer that threw if it ran — is gone
-    // with RequestContextInitializer itself. SecureHeadersDecorator still short-circuits OPTIONS
+    // with RequestContextInitializer itself. CorsHeadersDecorator still short-circuits OPTIONS
     // before the router dispatches, which is what the assertions below check.
     const manageOpts = { path: "manage" };
 

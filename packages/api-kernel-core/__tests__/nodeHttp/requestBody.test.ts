@@ -32,15 +32,19 @@ const definition: HttpRouteDefinition.Interface = {
     handler: EchoLengthRoute
 };
 
+const ORIGIN = "https://admin.example.com";
+
 interface IReply {
     statusCode: number;
+    allowOrigin: string | undefined;
     body: string;
 }
 
 function post(port: number, body: Buffer, chunked: boolean): Promise<IReply> {
     return new Promise((resolve, reject) => {
         const headers: Record<string, string | number> = {
-            "content-type": "application/octet-stream"
+            "content-type": "application/octet-stream",
+            origin: ORIGIN
         };
         if (!chunked) {
             headers["content-length"] = body.length;
@@ -53,7 +57,8 @@ function post(port: number, body: Buffer, chunked: boolean): Promise<IReply> {
                 response.on("data", chunk => chunks.push(chunk));
                 response.on("end", () => {
                     const text = Buffer.concat(chunks).toString("utf8");
-                    resolve({ statusCode: response.statusCode ?? 0, body: text });
+                    const allowOrigin = response.headers["access-control-allow-origin"];
+                    resolve({ statusCode: response.statusCode ?? 0, allowOrigin, body: text });
                 });
             }
         );
@@ -115,6 +120,8 @@ describe("Node HTTP server request body", () => {
 
         expect(reply.statusCode).toBe(413);
         expect(reply.body).toContain("maximum allowed size");
+        // The router never sees this request, so the transport adds the CORS headers itself.
+        expect(reply.allowOrigin).toBe(ORIGIN);
     });
 
     it("refuses a chunked body once it grows past the limit", async () => {

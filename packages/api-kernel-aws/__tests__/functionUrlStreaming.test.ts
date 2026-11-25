@@ -146,7 +146,7 @@ describe("Lambda Function URL response streaming", () => {
 
         expect(prelude!.statusCode).toBe(201);
         expect(prelude!.headers!["content-type"]).toBe("text/event-stream");
-        // SecureHeadersDecorator runs on this transport too (HttpFeature registers it), so a browser
+        // CorsHeadersDecorator runs on this transport too (HttpFeature registers it), so a browser
         // reading the stream cross-origin gets the same CORS treatment as a GraphQL call.
         expect(prelude!.headers!["access-control-allow-origin"]).toBe("*");
     });

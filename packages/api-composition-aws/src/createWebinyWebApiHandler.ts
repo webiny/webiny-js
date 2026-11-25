@@ -3,7 +3,7 @@
  *
  * A web function runs a plain Node HTTP server instead of an event handler: Lambda passes the listen
  * address in `AWS_LAMBDA_HTTP_ENDPOINT` and forwards each HTTP request to it. So the transport here is
- * the Node HTTP one standalone also uses (`NodeHttpFeature` + the `NodeHttp*` decorators), while everything
+ * the Node HTTP one standalone also uses (`NodeHttpFeature`), while everything
  * behind it is the AWS composition the other two AWS handlers use: the storage variant (database
  * included) and the per-request stack with the AWS transports (S3, EventBridge Scheduler, API Gateway
  * WebSockets).
@@ -16,9 +16,7 @@ import { createServerHandler } from "@webiny/api-kernel-core/nodeHttp/index.js";
 import { LambdaWebKernelPlatform } from "@webiny/api-kernel-aws";
 import { NodeHttpFeature } from "@webiny/api-kernel-core/nodeHttp/index.js";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-composition-core/nodeHttp/index.js";
-import { NodeHttpTenantLoaderDecorator } from "@webiny/api-composition-core/nodeHttp/index.js";
-import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-composition-core/nodeHttp/index.js";
+import { registerHttpTransport } from "@webiny/api-composition-core";
 import { registerWebinyApiChild } from "~/composition/index.js";
 import { registerWebinyApiRoot } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
@@ -36,15 +34,8 @@ export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfi
         platform: LambdaWebKernelPlatform,
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
-            NodeHttpFeature.register(container);
-
-            // ── Tenant + auth (extract → shared load) ──────────────────
-            // Same order as the other AWS handlers: later registrations wrap earlier ones, so tenant
-            // runs first, then identity, then the router. The identity decorator reads
-            // `X-Webiny-Authorization` before `Authorization`.
-            container.registerDecorator(NodeHttpIdentityLoaderDecorator);
-            container.registerDecorator(NodeHttpTenantLoaderDecorator);
-            container.registerDecorator(NodeHttpAssumePermissionsDecorator);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading.
+            registerHttpTransport(container, NodeHttpFeature);
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Same reason as the streaming handler: `TaskService.trigger()` needs the Step Functions
