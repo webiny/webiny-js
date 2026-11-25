@@ -9,11 +9,29 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListGroupsRepository } from "~/features/contentModelGroup/ListGroups/index.js";
+import { ModelAccessGuard } from "~/features/contentModel/ModelAccessGuard/index.js";
 import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
+
+/*
+ * The e-mail is left out on purpose: the query is open to anyone who can read the model's
+ * entries, so a user without a name is listed by ID rather than by e-mail address.
+ */
+const toAuthor = (user: Pick<AdminUser, "id" | "displayName" | "firstName" | "lastName">) => {
+    const nameSource = {
+        id: user.id,
+        displayName: user.displayName,
+        firstName: user.firstName,
+        lastName: user.lastName
+    };
+    const displayName = UserDisplayName.from(nameSource).toString();
+
+    return { id: user.id, displayName };
+};
 
 /*
  * Runs the same entry read check the CMS runs on a request, with the user's permissions
@@ -22,11 +40,12 @@ import type { CmsModel } from "~/types/index.js";
 const canUserReadEntries = (
     model: CmsModel,
     item: UserPermissionsProvider.Item,
+    author: UseCaseAbstraction.Author,
     groups: CmsGroup[]
 ) => {
     const identity = new AuthenticatedIdentity({
-        id: item.user.id,
-        displayName: UserDisplayName.from(item.user).toString(),
+        id: author.id,
+        displayName: author.displayName,
         type: "admin"
     });
 
@@ -62,7 +81,8 @@ class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
         private accessControl: AccessControl.Interface,
         private identityContext: IdentityContext.Interface,
         private listGroupsRepository: ListGroupsRepository.Interface,
-        private userPermissionsProvider: UserPermissionsProvider.Interface
+        private userPermissionsProvider: UserPermissionsProvider.Interface,
+        private modelAccessGuards: ModelAccessGuard.Interface[]
     ) {}
 
     async execute(modelId: string): UseCaseAbstraction.Return {
@@ -85,10 +105,17 @@ class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
         // An identity that only sees its own entries can only filter by itself.
         const canAccessOnlyOwned = await this.accessControl.canAccessOnlyOwnedEntries({ model });
         if (canAccessOnlyOwned) {
-            const identity = this.identityContext.getIdentity();
-            return Result.ok([
-                { id: identity.id, displayName: identity.displayName || identity.id }
-            ]);
+            return this.listOnlyCaller();
+        }
+
+        /*
+         * A model access guard decides from the current request, so it cannot tell whether
+         * another user passes it. Rather than list users the guard might refuse, a guarded
+         * model only offers the caller.
+         */
+        const isGuarded = this.modelAccessGuards.some(guard => guard.canHandle(model));
+        if (isGuarded) {
+            return this.listOnlyCaller();
         }
 
         const usersResult = await this.userPermissionsProvider.listUsersWithPermissions();
@@ -111,18 +138,23 @@ class ListEntryAuthorsUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const authors: UseCaseAbstraction.Author[] = [];
         for (const item of usersResult.value) {
-            const canUserRead = await canUserReadEntries(model, item, groupsResult.value);
-            if (!canUserRead) {
-                continue;
+            const author = toAuthor(item.user);
+            const canUserRead = await canUserReadEntries(model, item, author, groupsResult.value);
+            if (canUserRead) {
+                authors.push(author);
             }
-
-            const displayName = UserDisplayName.from(item.user).toString();
-            authors.push({ id: item.user.id, displayName });
         }
 
         authors.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
         return Result.ok(authors);
+    }
+
+    private listOnlyCaller() {
+        const identity = this.identityContext.getIdentity();
+        const author = toAuthor(identity);
+
+        return Result.ok([author]);
     }
 }
 
@@ -134,6 +166,7 @@ export const ListEntryAuthorsUseCase = createImplementation({
         AccessControl,
         IdentityContext,
         ListGroupsRepository,
-        UserPermissionsProvider
+        UserPermissionsProvider,
+        [ModelAccessGuard, { multiple: true }]
     ]
 });

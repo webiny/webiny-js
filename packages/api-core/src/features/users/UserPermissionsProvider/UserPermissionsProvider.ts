@@ -82,10 +82,10 @@ class UserPermissionsProviderImpl implements Abstraction.Interface {
         const permissions = getPermissionsFromRoles(userRoles);
         const transformed = transformPermissions(permissions, this.transformers);
 
-        return applyAaclLogic(transformed, {
-            aaclEnabled: this.wcpContext.canUseAacl(),
-            teamsEnabled: this.wcpContext.canUseTeams()
-        });
+        const aaclEnabled = this.wcpContext.canUseAacl();
+        const teamsEnabled = this.wcpContext.canUseTeams();
+
+        return applyAaclLogic(transformed, { aaclEnabled, teamsEnabled });
     }
 }
 

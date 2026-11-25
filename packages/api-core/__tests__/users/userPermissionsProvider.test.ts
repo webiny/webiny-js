@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { UserPermissionsProvider } from "~/features/users/UserPermissionsProvider/index.js";

@@ -31,7 +31,8 @@ export class AuthorizationContext implements Abstraction.Interface {
             for (const authorizer of authorizers) {
                 const permissions = await authorizer.authorize(identity);
                 if (Array.isArray(permissions)) {
-                    this.permissions = transformPermissions(permissions, this.getTransformers());
+                    const transformers = this.getTransformers();
+                    this.permissions = transformPermissions(permissions, transformers);
                     return resolve(this.permissions);
                 }
             }

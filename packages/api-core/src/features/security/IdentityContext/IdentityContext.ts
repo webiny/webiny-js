@@ -100,10 +100,10 @@ class IdentityContextImpl implements Abstraction.Interface {
     async listPermissions(): Promise<SecurityPermission[]> {
         const permissions = await this.authorizationContext.loadPermissions(this.getIdentity());
         // TODO: extract this into a decorator
-        return applyAaclLogic(permissions, {
-            aaclEnabled: this.wcpContext.canUseAacl(),
-            teamsEnabled: this.wcpContext.canUseTeams()
-        });
+        const aaclEnabled = this.wcpContext.canUseAacl();
+        const teamsEnabled = this.wcpContext.canUseTeams();
+
+        return applyAaclLogic(permissions, { aaclEnabled, teamsEnabled });
     }
 
     async hasFullAccess(): Promise<boolean> {
