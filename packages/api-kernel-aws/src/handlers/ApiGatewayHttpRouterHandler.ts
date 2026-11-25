@@ -7,7 +7,7 @@ import { apiGatewayEventToHttpRequest } from "~/translators/apiGatewayEventToHtt
 import { httpResponseToApiGatewayResult } from "~/translators/httpResponseToApiGatewayResult.js";
 
 /*
- * The router turns its own errors into responses (`HttpErrorDecorator`), so the catch below only sees
+ * The router turns its own errors into responses (`ErrorResponseDecorator`), so the catch below only sees
  * an error from translating the response.
  */
 class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayInputHandler.Interface {

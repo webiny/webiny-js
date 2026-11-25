@@ -13,7 +13,7 @@ import { RequestBodyTooLargeError } from "~/nodeHttp/translators/RequestBodyTooL
  * `createServerHandler` writes to the Node response). Mirrors AWS's `ApiGatewayHttpRouterHandler`,
  * minus the transport-specific response translation (the server writes IHttpResponse directly).
  *
- * The router turns its own errors into responses (`HttpErrorDecorator`), so only errors from reading
+ * The router turns its own errors into responses (`ErrorResponseDecorator`), so only errors from reading
  * the request reach the catch below.
  */
 class NodeHttpRouterHandlerImpl implements NodeHttpInputHandler.Interface {

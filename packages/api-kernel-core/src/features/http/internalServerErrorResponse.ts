@@ -1,7 +1,7 @@
 import type { IHttpResponse } from "./abstractions.js";
 
 /**
- * The answer to an error that carries nothing a client should see. `HttpErrorDecorator` and every
+ * The answer to an error that carries nothing a client should see. `ErrorResponseDecorator` and every
  * transport's last-resort catch return it, so the body is defined once.
  */
 export function internalServerErrorResponse(): IHttpResponse {

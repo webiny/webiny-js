@@ -14,7 +14,7 @@ import { rejectedTokenResponse } from "~/auth/rejectedTokenResponse.js";
  * authenticates as anonymous.
  *
  * A token an identity provider rejects ends the request with a 401. Any other error propagates, and
- * `HttpErrorDecorator` answers it with a 500.
+ * `ErrorResponseDecorator` answers it with a 500.
  */
 class HttpIdentityLoaderDecoratorImpl implements HttpRouter.Interface {
     constructor(

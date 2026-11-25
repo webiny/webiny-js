@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
-import { HttpErrorDecorator } from "~/features/http/decorators/HttpErrorDecorator.js";
-import { SecureHeadersDecorator } from "~/features/http/decorators/SecureHeadersDecorator.js";
+import { ErrorResponseDecorator } from "~/features/http/decorators/ErrorResponseDecorator.js";
+import { CorsHeadersDecorator } from "~/features/http/decorators/CorsHeadersDecorator.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
 
 export const HttpFeature = createFeature({
@@ -12,10 +12,10 @@ export const HttpFeature = createFeature({
         /*
          * Decorators registered earlier sit further inside. An error thrown by a route, or by a
          * decorator registered before this feature, becomes a response here, and that response then
-         * gets the CORS headers from SecureHeadersDecorator.
+         * gets the CORS headers from CorsHeadersDecorator.
          */
-        container.registerDecorator(HttpErrorDecorator);
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(ErrorResponseDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         // Registered last so it's the OUTERMOST decorator: it compresses the fully-formed response
         // (after CORS/other headers are set). Emits a gzip/br Buffer body — both terminal transports
         // already handle Buffers (API Gateway base64 + isBase64Encoded; Node server raw bytes).

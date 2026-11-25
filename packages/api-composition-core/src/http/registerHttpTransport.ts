@@ -11,7 +11,7 @@ export interface IHttpTransportFeature {
  * request needs, in the one order that works.
  *
  * `HttpRequestContextFeature` has to be registered first. A decorator registered earlier sits further
- * inside, so its decorators then run inside `HttpErrorDecorator` and `SecureHeadersDecorator`, which
+ * inside, so its decorators then run inside `ErrorResponseDecorator` and `CorsHeadersDecorator`, which
  * the transport feature registers through `HttpFeature`, and their responses and errors get the CORS
  * headers. In the other order, a rejected token's 401 reaches the browser without them and reads as a
  * CORS failure, and nothing else breaks to show it.

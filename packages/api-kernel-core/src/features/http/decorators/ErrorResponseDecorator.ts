@@ -31,13 +31,13 @@ function errorResponse(error: unknown): IHttpResponse {
 
 /**
  * Turns an error thrown while handling a request into a response, so it comes back through
- * `SecureHeadersDecorator` and gets the CORS headers like any other response. A browser on another
+ * `CorsHeadersDecorator` and gets the CORS headers like any other response. A browser on another
  * origin cannot read a response without them, and reports a CORS failure instead of the error.
  *
  * It catches what a route throws and what the decorators inside it throw, such as the API's tenant
  * and identity loaders. Those are registered before `HttpFeature` so they sit inside this decorator.
  */
-class HttpErrorDecoratorImpl implements HttpRouter.Interface {
+class ErrorResponseDecoratorImpl implements HttpRouter.Interface {
     constructor(private decoratee: HttpRouter.Interface) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
@@ -49,7 +49,7 @@ class HttpErrorDecoratorImpl implements HttpRouter.Interface {
     }
 }
 
-export const HttpErrorDecorator = HttpRouter.createDecorator({
-    decorator: HttpErrorDecoratorImpl,
+export const ErrorResponseDecorator = HttpRouter.createDecorator({
+    decorator: ErrorResponseDecoratorImpl,
     dependencies: []
 });

@@ -9,7 +9,7 @@ import { HttpAssumePermissionsDecorator } from "./HttpAssumePermissionsDecorator
  *
  * Register it BEFORE the transport feature (`ApiGatewayFeature`, `FunctionUrlStreamFeature`,
  * `NodeHttpFeature`), which registers `HttpFeature`. A decorator registered earlier sits further
- * inside, so these run inside `SecureHeadersDecorator` and `HttpErrorDecorator`: their responses and
+ * inside, so these run inside `CorsHeadersDecorator` and `ErrorResponseDecorator`: their responses and
  * errors get the CORS headers, and a CORS preflight is answered before any of them runs. Registered
  * after it, a rejected token's 401 reaches the browser without CORS headers and reads as a CORS
  * failure.

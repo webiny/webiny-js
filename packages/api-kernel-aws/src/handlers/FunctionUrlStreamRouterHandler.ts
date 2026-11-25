@@ -28,7 +28,7 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamInputHandle
         try {
             response = await this.router.route(request);
         } catch (e) {
-            // The router turns its own errors into responses (`HttpErrorDecorator`), so this is rare.
+            // The router turns its own errors into responses (`ErrorResponseDecorator`), so this is rare.
             console.error("HTTP handler error:", e);
             const errorResponse = internalServerErrorResponse();
             await writeHttpResponseToStream(raw, errorResponse);

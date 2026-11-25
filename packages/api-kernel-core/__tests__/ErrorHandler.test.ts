@@ -69,7 +69,7 @@ const ERROR_HEADERS = {
 
 describe("HttpFeature error handling", () => {
     beforeEach(() => {
-        // HttpErrorDecorator logs the errors it answers with a 500.
+        // ErrorResponseDecorator logs the errors it answers with a 500.
         vi.spyOn(console, "error").mockImplementation(() => {});
     });
 
@@ -106,7 +106,7 @@ describe("HttpFeature error handling", () => {
 
     /*
      * A browser on another origin can only read an error response that carries the CORS headers,
-     * so every error the router answers goes out through SecureHeadersDecorator.
+     * so every error the router answers goes out through CorsHeadersDecorator.
      */
     it("answers a route's error with a 500 that carries the CORS headers", async () => {
         const handler = createTestHttpHandler({

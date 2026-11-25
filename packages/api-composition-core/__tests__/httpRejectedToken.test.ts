@@ -130,7 +130,7 @@ const INTERNAL_SERVER_ERROR: IHttpResponse = {
 
 describe("HttpIdentityLoaderDecorator inside HttpFeature", () => {
     beforeEach(() => {
-        // HttpErrorDecorator logs the errors it answers with a 500.
+        // ErrorResponseDecorator logs the errors it answers with a 500.
         vi.spyOn(console, "error").mockImplementation(() => {});
     });
 

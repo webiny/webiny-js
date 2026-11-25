@@ -3,7 +3,7 @@ import { Container } from "@webiny/di";
 import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { RequestContainer } from "~/features/kernel/RequestContainer.js";
-import { SecureHeadersDecorator } from "~/features/http/decorators/SecureHeadersDecorator.js";
+import { CorsHeadersDecorator } from "~/features/http/decorators/CorsHeadersDecorator.js";
 import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/features/http/abstractions.js";
 import { registerHttpRouteInstance } from "~/features/testing/index.js";
 
@@ -16,12 +16,12 @@ const req = (method: string, path: string, origin?: string): IHttpRequest => ({
     body: undefined
 });
 
-describe("SecureHeadersDecorator", () => {
+describe("CorsHeadersDecorator", () => {
     it("should return 204 with CORS headers for OPTIONS", async () => {
         const container = new Container();
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         const router = container.resolve(HttpRouter);
 
         const result = await router.route(req("OPTIONS", "/graphql", "https://example.com"));
@@ -36,7 +36,7 @@ describe("SecureHeadersDecorator", () => {
         const container = new Container();
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         const router = container.resolve(HttpRouter);
 
         const result = await router.route(req("OPTIONS", "/stream/x", "https://example.com"));
@@ -63,7 +63,7 @@ describe("SecureHeadersDecorator", () => {
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
         container.registerInstance(HttpAllowedRequestHeaders, { headers: ["X-Custom-Site"] });
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         const router = container.resolve(HttpRouter);
 
         const result = await router.route(req("OPTIONS", "/graphql", "https://example.com"));
@@ -91,7 +91,7 @@ describe("SecureHeadersDecorator", () => {
         });
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         const router = container.resolve(HttpRouter);
 
         const result = await router.route(req("GET", "/test", "https://example.com"));
@@ -104,7 +104,7 @@ describe("SecureHeadersDecorator", () => {
         const container = new Container();
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         const router = container.resolve(HttpRouter);
 
         const result = await router.route(req("OPTIONS", "/test"));
@@ -127,7 +127,7 @@ describe("SecureHeadersDecorator", () => {
         });
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
-        container.registerDecorator(SecureHeadersDecorator);
+        container.registerDecorator(CorsHeadersDecorator);
         const router = container.resolve(HttpRouter);
 
         for (const method of ["GET", "OPTIONS"]) {

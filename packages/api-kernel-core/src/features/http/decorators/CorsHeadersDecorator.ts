@@ -49,7 +49,7 @@ const corsOriginHeaders = (request: IHttpRequest): Record<string, string> => {
     return corsHeaders(origin);
 };
 
-class SecureHeadersDecoratorImpl implements IHttpRouter {
+class CorsHeadersDecoratorImpl implements IHttpRouter {
     private readonly allowedHeaders: string;
 
     constructor(
@@ -91,7 +91,7 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
     }
 }
 
-export const SecureHeadersDecorator = HttpRouter.createDecorator({
-    decorator: SecureHeadersDecoratorImpl,
+export const CorsHeadersDecorator = HttpRouter.createDecorator({
+    decorator: CorsHeadersDecoratorImpl,
     dependencies: [[HttpAllowedRequestHeaders, { multiple: true }]]
 });
