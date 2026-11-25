@@ -7,8 +7,8 @@ import { useCurrentPanel } from "./useCurrentPanel.js";
 
 /**
  * The panel's label and its collapse button, for content that renders inside a panel. Renders
- * nothing outside one. The button lines up with the open button on the collapsed strip
- * (`CollapsedPanel`), so it stays put when the panel is toggled: both centre it 28px from the top,
+ * nothing outside one. The button lines up with the open button on the collapsed panel's
+ * `SidePanelRail`, so it stays put when the panel is toggled: both centre it 28px from the top,
  * where `SidePanel`, the AI assistant's header, has its close button. `data-panel-collapse` is how
  * `PanelSlot` finds it to move focus to it after the panel opens.
  */

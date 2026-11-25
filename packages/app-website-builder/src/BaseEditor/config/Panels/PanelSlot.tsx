@@ -4,12 +4,12 @@ import { useLayoutEffect } from "react";
 import { useRef } from "react";
 import { useState } from "react";
 import { cn } from "@webiny/admin-ui";
-import { CollapsedPanel } from "./CollapsedPanel.js";
+import { SidePanelRail } from "@webiny/admin-ui";
 import { CurrentPanelContext } from "./PanelsContext.js";
 import type { PanelConfig } from "./types.js";
 import type { PanelSide } from "./types.js";
 
-/** The collapsed strip's width. */
+/** `SidePanelRail`'s width. */
 const COLLAPSED_WIDTH = 45;
 
 export interface PanelSlotProps {
@@ -54,7 +54,7 @@ export const PanelSlot = ({ panel, side, open, toggleCount, onExpand }: PanelSlo
         }
         const slot = slotRef.current;
         if (!open) {
-            slot?.querySelector<HTMLElement>("[data-panel-expand]")?.focus();
+            slot?.querySelector<HTMLElement>('[data-role="side-panel-rail-expand"]')?.focus();
             return;
         }
         // A panel without `PanelHeader` (the AI assistant has its own header): its first button.
@@ -105,7 +105,7 @@ export const PanelSlot = ({ panel, side, open, toggleCount, onExpand }: PanelSlo
                     open ? "pointer-events-none opacity-0" : "opacity-100 delay-75"
                 )}
             >
-                <CollapsedPanel label={panel.label} side={side} onExpand={onExpand} />
+                <SidePanelRail label={panel.label} side={side} onExpand={onExpand} />
             </div>
         </div>
     );

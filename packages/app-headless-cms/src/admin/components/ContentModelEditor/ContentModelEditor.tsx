@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { makeDecoratable, useDialogs } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { IconButton, OverlayLoader, SegmentedControlPrimitive, Tag, Text } from "@webiny/admin-ui";
-import { ReactComponent as ExpandSidebarIcon } from "@webiny/icons/left_panel_open.svg";
+import {
+    OverlayLoader,
+    SegmentedControlPrimitive,
+    SidePanelRail,
+    Tag,
+    Text
+} from "@webiny/admin-ui";
 import { ReactComponent as ViewCompactAltIcon } from "@webiny/icons/view_compact_alt.svg";
 import { ReactComponent as ViewDayIcon } from "@webiny/icons/view_day.svg";
 import { FieldsSidebar } from "./FieldsSidebar.js";
@@ -102,28 +107,20 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                 onCollapse={() => setIsSidebarOpen(false)}
                             />
                         </div>
-                        {/* Collapsed strip */}
                         <div
                             className={
-                                "absolute inset-0 flex flex-col items-center pt-md gap-md transition-opacity duration-150 " +
+                                "absolute inset-0 transition-opacity duration-150 " +
                                 (!isSidebarOpen
                                     ? "opacity-100 delay-75"
                                     : "opacity-0 pointer-events-none")
                             }
                         >
-                            <IconButton
-                                variant={"ghost"}
-                                size={"xs"}
-                                icon={<ExpandSidebarIcon />}
-                                onClick={() => setIsSidebarOpen(true)}
+                            {/* This container already draws the border, open or collapsed. */}
+                            <SidePanelRail
+                                label={"Fields"}
+                                bordered={false}
+                                onExpand={() => setIsSidebarOpen(true)}
                             />
-                            <span
-                                className={
-                                    "text-sm font-semibold text-neutral-strong [writing-mode:vertical-rl]"
-                                }
-                            >
-                                Fields
-                            </span>
                         </div>
                     </div>
                     <div
