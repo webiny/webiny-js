@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";

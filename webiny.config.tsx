@@ -24,7 +24,7 @@ export const FeatureFlags = () => (
             fileManager: {
                 threatDetection: false
             },
-            recordLocking: false
+            recordLocking: true
         }}
     />
 );

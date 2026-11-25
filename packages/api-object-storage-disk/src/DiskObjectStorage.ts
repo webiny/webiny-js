@@ -43,6 +43,38 @@ const temporaryPathFor = (filePath: string): string => {
     return `${filePath}.${suffix}.uploading`;
 };
 
+/*
+ * Whether a folder holds a file at any depth. Removing an object can leave its empty folders
+ * behind, and those hold nothing. A missing folder, or a file at the path, holds nothing either.
+ */
+const containsFile = async (folderPath: string): Promise<boolean> => {
+    let entries;
+    try {
+        entries = await readdir(folderPath, { withFileTypes: true });
+    } catch (error) {
+        if (isMissing(error) || errorCode(error) === "ENOTDIR") {
+            return false;
+        }
+        throw error;
+    }
+    for (const entry of entries) {
+        if (entry.isFile()) {
+            return true;
+        }
+    }
+    for (const entry of entries) {
+        if (!entry.isDirectory()) {
+            continue;
+        }
+        const entryPath = path.join(folderPath, entry.name);
+        // oxlint-disable-next-line no-await-in-loop -- stops at the first folder with a file.
+        if (await containsFile(entryPath)) {
+            return true;
+        }
+    }
+    return false;
+};
+
 const ensureParentFolder = async (filePath: string): Promise<void> => {
     const folderPath = path.dirname(filePath);
     await mkdir(folderPath, { recursive: true });
@@ -136,6 +168,15 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
             throw error;
         }
         await rm(folderPath, { recursive: true, force: true });
+    }
+
+    public async hasPrefix(prefix: string): Promise<boolean> {
+        if (!prefix.endsWith("/")) {
+            throw new Error(`A prefix must end with "/": "${prefix}".`);
+        }
+        const folderKey = prefix.slice(0, -1);
+        const folderPath = this.resolveKey(folderKey);
+        return containsFile(folderPath);
     }
 
     public async createMultipartUpload(key: string): Promise<string> {

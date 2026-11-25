@@ -28,6 +28,7 @@ export interface IRecordLockingPresenter {
     refreshLock(): Promise<void>;
     forceUnlock(): Promise<boolean>;
     handleKickOut(data: IKickOutData): void;
+    release(): Promise<void>;
     dispose(): void;
 }
 

@@ -3,7 +3,7 @@ import { GetSettingsRepositoryImplementation } from "./GetSettingsRepository.js"
 import { GetSettingsUseCaseImplementation } from "./GetSettingsUseCase.js";
 
 export const GetSettingsFeature = createFeature({
-    name: "GetSettings",
+    name: "Mailer/GetSettings",
     register(container) {
         container.register(GetSettingsRepositoryImplementation).inSingletonScope();
         container.register(GetSettingsUseCaseImplementation);

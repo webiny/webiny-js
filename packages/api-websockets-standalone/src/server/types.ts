@@ -3,7 +3,7 @@ import type { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
-import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 
 /**
  * Resolves a connection's identity from the `?token` JWT sent on the WebSocket upgrade — the SAME

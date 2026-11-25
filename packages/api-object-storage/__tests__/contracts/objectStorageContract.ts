@@ -85,6 +85,20 @@ export const describeObjectStorageContract = (backend: ObjectStorageTestBackend)
             expect((await storage.get("tenants/t1/files/abc"))?.toString()).toBe("a");
         });
 
+        it("should tell whether anything is stored under a prefix", async () => {
+            const storage = backend.storage();
+            await storage.put("tenants/t1/files/abc/optimized/b.png", Buffer.from("b"));
+            await storage.put("tenants/t1/files/abcd", Buffer.from("c"));
+
+            expect(await storage.hasPrefix("tenants/t1/files/abc/")).toBe(true);
+            expect(await storage.hasPrefix("tenants/t1/files/ab/")).toBe(false);
+            expect(await storage.hasPrefix("tenants/t1/files/abcd/")).toBe(false);
+
+            await storage.delete("tenants/t1/files/abc/optimized/b.png");
+
+            expect(await storage.hasPrefix("tenants/t1/files/abc/")).toBe(false);
+        });
+
         it.each([
             "../x.txt",
             "tenants/t1/../../x.txt",

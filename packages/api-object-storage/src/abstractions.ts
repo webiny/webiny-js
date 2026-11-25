@@ -34,6 +34,8 @@ export interface IObjectStorage {
     delete(key: string): Promise<void>;
     /** Removes everything whose key starts with `prefix`. */
     deletePrefix(prefix: string): Promise<void>;
+    /** Whether anything is stored under a key that starts with `prefix`, which ends in `/`. */
+    hasPrefix(prefix: string): Promise<boolean>;
     /** Starts a multipart upload of the object at `key`, and returns its upload ID. */
     createMultipartUpload(key: string): Promise<string>;
     /** Stores one part of a multipart upload, and returns its ETag. */

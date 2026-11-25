@@ -5,8 +5,7 @@ import type { PulumiAppModuleDefinition } from "@webiny/pulumi";
 import type { IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 import type { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { Vpc } from "@webiny/project-extensions-aws/extensions/Vpc.js";
-import { Postgres } from "@webiny/project-extensions-aws/extensions/Postgres.js";
-import { RdsProxy } from "@webiny/project-extensions-aws/extensions/RdsProxy.js";
+import { AuroraPostgresCluster as Postgres } from "@webiny/project-extensions-aws/extensions/AuroraPostgresCluster.js";
 import { CorePostgres, type CorePostgresParams } from "~/pulumi/apps/core/CorePostgres.js";
 import { CoreVpc } from "~/pulumi/apps/core/CoreVpc.js";
 import { AddCorePostgresImpl } from "~/extensions/Postgres/AddCorePostgres.js";
@@ -207,14 +206,15 @@ describe("CorePostgres", () => {
         });
     });
 
-    it("protects a production database: deletion protection, a week of backups and a final snapshot", () => {
+    it("protects a production database: deletion protection, 35 days of retained backups and a final snapshot", () => {
         const fake = createFakeApp();
         addCorePostgres(fake, { protect: true });
 
         const cluster = fake.one(aws.rds.Cluster);
         expect(cluster.config).toMatchObject({
             deletionProtection: true,
-            backupRetentionPeriod: 7,
+            backupRetentionPeriod: 35,
+            deleteAutomatedBackups: false,
             skipFinalSnapshot: false
         });
         expect(cluster.config.finalSnapshotIdentifier).toBeDefined();
@@ -230,6 +230,7 @@ describe("CorePostgres", () => {
         expect(cluster.config).toMatchObject({
             deletionProtection: false,
             backupRetentionPeriod: 1,
+            deleteAutomatedBackups: undefined,
             skipFinalSnapshot: true,
             finalSnapshotIdentifier: undefined
         });
@@ -270,7 +271,7 @@ const projectConfigWith = (extensions: Array<[unknown, ExtensionParams]>): IProj
             extensions.filter(([ext]) => ext === type).map(([, params]) => ({ params }))
     }) as unknown as IProjectConfigModel;
 
-/* Runs the `<Infra.Postgres />` core Pulumi hook; the module itself only records its params. */
+/* Runs the `<Infra.AuroraPostgres />` core Pulumi hook; the module itself only records its params. */
 const runHook = async (
     extensions: Array<[unknown, ExtensionParams]>,
     appParams: Parameters<typeof createFakeApp>[0] = {}
@@ -292,8 +293,8 @@ const runHook = async (
     return { fake, params: added?.config as CorePostgresParams | undefined };
 };
 
-describe("the <Infra.Postgres /> core Pulumi hook", () => {
-    it("adds nothing without <Infra.Postgres />", async () => {
+describe("the <Infra.AuroraPostgres /> core Pulumi hook", () => {
+    it("adds nothing without <Infra.AuroraPostgres />", async () => {
         const { params, fake } = await runHook([[Vpc, { enabled: true }]]);
 
         expect(params).toBeUndefined();
@@ -341,9 +342,8 @@ describe("the <Infra.Postgres /> core Pulumi hook", () => {
         ]);
         const custom = await runHook(
             [
-                [Postgres, { minCapacity: 2, maxCapacity: 32, readers: 1 }],
-                [Vpc, { enabled: true }],
-                [RdsProxy, { enabled: true }]
+                [Postgres, { minCapacity: 2, maxCapacity: 32, readers: 1, rdsProxy: true }],
+                [Vpc, { enabled: true }]
             ],
             { isProduction: true }
         );

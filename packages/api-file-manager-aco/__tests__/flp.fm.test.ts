@@ -152,11 +152,15 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Getting files in the folder should be forbidden for identity C.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectFileNotAuthorized(
+                // Files in a folder without access read as missing, so their existence isn't revealed.
+                await expect(
                     gqlIdentityC.fm.getFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.getFile;
                     })
-                );
+                ).resolves.toMatchObject({
+                    data: null,
+                    error: { code: "FileManager/File/NotFoundError" }
+                });
             }
 
             // Listing files in the folder should be forbidden for identity C.
@@ -190,7 +194,8 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Updating a file in the folder should be forbidden for identity C.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectFileNotAuthorized(
+                // Files in a folder without access read as missing, so their existence isn't revealed.
+                await expect(
                     gqlIdentityC.fm
                         .updateFile({
                             id: createdFile.id,
@@ -199,17 +204,23 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
                         .then(([response]) => {
                             return response.data.fileManager.updateFile;
                         })
-                );
+                ).resolves.toMatchObject({
+                    data: null,
+                    error: { code: "FileManager/File/NotFoundError" }
+                });
             }
 
             // Deleting a file in the folder should be forbidden for identity C.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectFileNotAuthorized(
+                await expect(
                     gqlIdentityC.fm.deleteFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.deleteFile;
                     })
-                );
+                ).resolves.toMatchObject({
+                    data: null,
+                    error: { code: "FileManager/File/NotFoundError" }
+                });
             }
 
             // Set identity C as owner of the folder. CRUD should now be allowed.
@@ -349,11 +360,15 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Getting files in the folder should be forbidden for identity B.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectFileNotAuthorized(
+                // Files in a folder without access read as missing, so their existence isn't revealed.
+                await expect(
                     gqlIdentityB.fm.getFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.getFile;
                     })
-                );
+                ).resolves.toMatchObject({
+                    data: null,
+                    error: { code: "FileManager/File/NotFoundError" }
+                });
             }
 
             // Listing files in the folder should be forbidden for identity B.
@@ -387,7 +402,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Updating a file in the folder should be forbidden for identity B.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectFileNotAuthorized(
+                await expect(
                     gqlIdentityB.fm
                         .updateFile({
                             id: createdFile.id,
@@ -396,17 +411,23 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
                         .then(([response]) => {
                             return response.data.fileManager.updateFile;
                         })
-                );
+                ).resolves.toMatchObject({
+                    data: null,
+                    error: { code: "FileManager/File/NotFoundError" }
+                });
             }
 
             // Deleting a file in the folder should be forbidden for identity B.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectFileNotAuthorized(
+                await expect(
                     gqlIdentityB.fm.deleteFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.deleteFile;
                     })
-                );
+                ).resolves.toMatchObject({
+                    data: null,
+                    error: { code: "FileManager/File/NotFoundError" }
+                });
             }
         }
     );
@@ -486,4 +507,47 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             );
         }
     );
+
+    test("listTags should work with FLP and no restricted folders", testOptions, async () => {
+        await gqlIdentityA.fm.createFile({
+            data: createSampleFileData({ tags: ["root-tag"] })
+        });
+
+        const [response] = await gqlIdentityC.fm.listTags();
+        const result = response.data.fileManager.listTags;
+
+        expect(result.error).toBeNull();
+        expect(result.data).toEqual([{ tag: "root-tag", count: 1 }]);
+    });
+
+    test("listTags should exclude tags of files in inaccessible folders", testOptions, async () => {
+        const folder = await gqlIdentityA.aco
+            .createFolder({
+                data: { title: "Tags Folder", slug: "tags-folder", type: FOLDER_TYPE }
+            })
+            .then(([response]) => response.data.aco.createFolder.data);
+
+        await gqlIdentityA.aco.updateFolder({
+            id: folder.id,
+            data: { permissions: [{ target: `admin:${identityB.id}`, level: "owner" }] }
+        });
+
+        await gqlIdentityA.fm.createFile({
+            data: createSampleFileData({ tags: ["root-tag"] })
+        });
+        await gqlIdentityA.fm.createFile({
+            data: createSampleFileData({ tags: ["secret-tag"], location: { folderId: folder.id } })
+        });
+
+        // Identity C cannot read the folder.
+        const [responseC] = await gqlIdentityC.fm.listTags();
+        expect(responseC.data.fileManager.listTags.error).toBeNull();
+        expect(responseC.data.fileManager.listTags.data).toEqual([{ tag: "root-tag", count: 1 }]);
+
+        // Identity B has access to the folder.
+        const [responseB] = await gqlIdentityB.fm.listTags();
+        expect(responseB.data.fileManager.listTags.error).toBeNull();
+        const tagsB = responseB.data.fileManager.listTags.data.map((t: any) => t.tag).sort();
+        expect(tagsB).toEqual(["root-tag", "secret-tag"]);
+    });
 });

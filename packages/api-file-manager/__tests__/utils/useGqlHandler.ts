@@ -1,5 +1,5 @@
 import { until } from "@webiny/api/testing/until.js";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
@@ -37,7 +37,8 @@ export default (params: HandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
-    const resolvedIdentity = identity ?? defaultIdentity;
+    // `undefined` uses the default identity, `null` makes the caller anonymous.
+    const resolvedIdentity = identity === undefined ? defaultIdentity : identity;
     const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];
 
     const handler = createTestHttpHandler({

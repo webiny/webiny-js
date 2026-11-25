@@ -1,5 +1,6 @@
 import type { AssetContentsReader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 import type { ObjectStorage } from "@webiny/api-object-storage";
+import { isTenantFileKey } from "~/utils/isTenantFileKey.js";
 
 export class ObjectStorageContentsReader implements AssetContentsReader.Interface {
     private readonly objectStorage: ObjectStorage.Interface;
@@ -14,6 +15,10 @@ export class ObjectStorageContentsReader implements AssetContentsReader.Interfac
 
     public async read(asset: AssetContentsReader.Asset): Promise<Buffer> {
         const key = asset.getKey();
+        // Security: the key comes from the file record, never read outside the tenant's files.
+        if (!isTenantFileKey(asset.getTenant(), key)) {
+            throw new Error(`Asset "${key}" is outside of the tenant's files.`);
+        }
         const data = await this.objectStorage.get(key);
         if (!data) {
             throw new Error(`No contents stored for asset "${key}".`);

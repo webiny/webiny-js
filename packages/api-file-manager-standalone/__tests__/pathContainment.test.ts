@@ -6,7 +6,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Result } from "@webiny/feature/api";
-import { invokeHttpRoute } from "@webiny/event-handler-core";
+import { invokeHttpRoute } from "@webiny/api-kernel-core";
 import { ObjectStorageContentsReader } from "~/assetDelivery/ObjectStorageContentsReader.js";
 import { DeleteFileFromStorageHandler } from "~/features/DeleteFileFromStorage/DeleteFileFromStorageHandler.js";
 import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFileContentsByIdUseCase.js";
@@ -47,13 +47,18 @@ const traversalKeyTo = (target: string) => {
     return path.relative(root, target);
 };
 
-const makeAsset = (key: string) => ({
+const makeAsset = (key: string, tenant = TENANT_ID) => ({
+    getTenant: () => tenant,
     getKey: () => key,
     getContentType: () => "text/plain"
 });
 
 const makeDeleteHandler = () => {
-    const keyValueStore = { delete: async () => Result.ok() } as any;
+    // No stored metadata, so the handler's tenant check on it has nothing to compare.
+    const keyValueStore = {
+        get: async () => Result.fail(new Error("Not found.")),
+        delete: async () => Result.ok()
+    } as any;
     const tenantContext = makeTenantContext();
     return new DeleteFileFromStorageHandler(
         tenantContext,
@@ -105,7 +110,17 @@ describe("local contents reader", () => {
         const reader = ObjectStorageContentsReader.create(makeDiskStorage());
         const asset = makeAsset(bucketKey) as any;
 
-        await expect(reader.read(asset)).rejects.toThrow("Invalid storage key");
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant's files");
+    });
+
+    it("should refuse another tenant's file", async () => {
+        const bucketKey = "tenants/other-tenant/files/abc/doc.txt";
+        await writeTestFile(bucketKey, Buffer.from("theirs"));
+
+        const reader = ObjectStorageContentsReader.create(makeDiskStorage());
+        const asset = makeAsset(bucketKey) as any;
+
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant's files");
     });
 });
 
@@ -124,6 +139,25 @@ describe("get file contents", () => {
 
         const useCase = new GetFileContentsByIdUseCase(metadataReader, makeDiskStorage());
         const result = await useCase.execute("evil");
+
+        expect(result.isFail()).toBe(true);
+    });
+
+    it("should not read another tenant's file by id", async () => {
+        const bucketKey = "tenants/other-tenant/files/abc/doc.txt";
+        await writeTestFile(bucketKey, Buffer.from("theirs"));
+        const metadataReader: MetadataReader.Interface = {
+            read: async () => ({
+                id: "abc",
+                tenant: TENANT_ID,
+                size: 0,
+                contentType: "text/plain",
+                bucketKey
+            })
+        };
+
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeDiskStorage());
+        const result = await useCase.execute("abc");
 
         expect(result.isFail()).toBe(true);
     });

@@ -1,5 +1,6 @@
 import "@webiny/background-tasks/api/types.js";
 import { TaskDefinition, TaskHandler } from "@webiny/api-core/exports/api/tasks.js";
+import { isValidEndpointUrl } from "~/api/utils/isValidEndpointUrl.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
@@ -12,6 +13,15 @@ import type { ISendWebhookTaskInput, ISendWebhookTaskOutput, IWebhookPayload } f
 import type { IWebhookSignPayloadHeaders } from "@webiny/api-core/features/webhooks/WebhookSignPayload/abstractions.js";
 
 type IRunParams = TaskHandler.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
+
+/* The delivery log only needs enough of the response to debug the receiver. */
+const MAX_STORED_RESPONSE_BODY_LENGTH = 4096;
+const truncateResponseBody = (body: string | undefined) => {
+    if (!body || body.length <= MAX_STORED_RESPONSE_BODY_LENGTH) {
+        return body;
+    }
+    return `${body.slice(0, MAX_STORED_RESPONSE_BODY_LENGTH)}… (truncated)`;
+};
 
 class SendWebhookTaskHandlerImpl implements TaskHandler.Interface<
     ISendWebhookTaskInput,
@@ -80,6 +90,14 @@ class SendWebhookTaskHandlerImpl implements TaskHandler.Interface<
             ...signHeaders
         };
 
+        // Webhooks stored before the endpoint rules were tightened may still point to a local address.
+        if (!isValidEndpointUrl(webhook.endpointUrl)) {
+            await this.updateDeliveryRepository.execute(input.deliveryId, { status: "failed" });
+            return controller.response.error({
+                message: `Webhook endpoint URL is not allowed: ${webhook.endpointUrl}`
+            });
+        }
+
         const result = await this.deliver.execute({
             url: webhook.endpointUrl,
             headers: requestHeaders,
@@ -95,7 +113,7 @@ class SendWebhookTaskHandlerImpl implements TaskHandler.Interface<
             requestHeaders,
             responseTime: result.responseTime,
             responseStatus: result.status,
-            responseBody: result.body,
+            responseBody: truncateResponseBody(result.body),
             status: result.status > 0 ? "delivered" : "failed"
         });
 

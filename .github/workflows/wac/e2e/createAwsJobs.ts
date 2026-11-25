@@ -73,8 +73,8 @@ export interface AwsVariantJobsContext {
 // - report status (`/e2e` only): writes the shards' combined result and the Admin URL into the status comment.
 //
 // Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
-// Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
-// aws-nuke rather than `webiny destroy`.
+// Nothing needs it afterwards: the nightly `aws-nuke.yml` workflow in webiny/webiny-js-ci-infrastructure
+// removes the deployed resources with aws-nuke rather than `webiny destroy`.
 export const createAwsJobs = (
     { dbSetup, shards }: AwsVariant,
     {

@@ -6,13 +6,11 @@ import type { GetProductionEnvironments } from "@webiny/project/abstractions/ind
 import type { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
 import type { CoreStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
 import { Vpc } from "@webiny/project-extensions-aws/extensions/Vpc.js";
-import { Postgres } from "@webiny/project-extensions-aws/extensions/Postgres.js";
-import { RdsProxy } from "@webiny/project-extensions-aws/extensions/RdsProxy.js";
+import { AuroraPostgresCluster as Postgres } from "@webiny/project-extensions-aws/extensions/AuroraPostgresCluster.js";
 import { PulumiOpenSearch } from "@webiny/project-extensions-aws/extensions/PulumiOpenSearch.js";
 import { BlueGreenDeployments } from "@webiny/project-extensions-aws/extensions/BlueGreenDeployments.js";
 import { DatabaseSetup } from "@webiny/project/extensions/index.js";
 import { ValidatePostgresBeforeCoreDeployImpl } from "~/extensions/Postgres/ValidatePostgresBeforeCoreDeploy.js";
-import { EnsurePostgresWithRdsProxyImpl } from "~/extensions/RdsProxy/EnsurePostgresWithRdsProxy.js";
 import { EnsurePostgresSetupUnchangedImpl } from "~/extensions/ProjectAws/EnsurePostgresSetupUnchanged.js";
 
 type ExtensionParams = Record<string, unknown>;
@@ -53,7 +51,7 @@ const POSTGRES: [unknown, ExtensionParams] = [Postgres, {}];
 const VPC_ENABLED: [unknown, ExtensionParams] = [Vpc, { enabled: true }];
 const LAMBDA_VPC = { securityGroupIds: ["sg-lambda"], subnetIds: ["subnet-lambda"] };
 
-describe("deploy core with <Infra.Postgres />", () => {
+describe("deploy core with <Infra.AuroraPostgres />", () => {
     it("passes with <Infra.Vpc enabled />", async () => {
         await expect(validatePostgres([POSTGRES, VPC_ENABLED])).resolves.toBeUndefined();
     });
@@ -62,6 +60,7 @@ describe("deploy core with <Infra.Postgres />", () => {
         const result = await failure(validatePostgres([POSTGRES]));
 
         expect(result.reason).toBe("Cannot deploy Postgres without a VPC.");
+        expect(result.message).toContain("<Infra.AuroraPostgres />");
         expect(result.message).toContain("<Infra.Vpc enabled />");
     });
 
@@ -119,6 +118,7 @@ describe("deploy core with <Infra.Postgres />", () => {
 
         expect(result.reason).toBe("Cannot deploy Postgres with OpenSearch enabled.");
         expect(result.message).toContain("<Infra.OpenSearch enabled />");
+        expect(result.message).toContain("<Infra.AuroraPostgres />");
     });
 
     it("passes with OpenSearch explicitly disabled", async () => {
@@ -135,6 +135,7 @@ describe("deploy core with <Infra.Postgres />", () => {
         expect(result.reason).toBe("Cannot deploy Postgres with blue-green deployments.");
         expect(result.message).toContain("Sync System");
         expect(result.message).toContain("<Infra.BlueGreenDeployments enabled />");
+        expect(result.message).toContain("<Infra.AuroraPostgres />");
     });
 
     it("passes with blue-green deployments explicitly disabled", async () => {
@@ -155,26 +156,6 @@ describe("deploy core with <Infra.Postgres />", () => {
 
         await expect(
             validatePostgres([POSTGRES, VPC_ENABLED, [BlueGreenDeployments, blueGreenDisabled]])
-        ).resolves.toBeUndefined();
-    });
-});
-
-describe("deploy core with <Infra.RdsProxy enabled />", () => {
-    const ensurePostgres = (extensions: Array<[unknown, ExtensionParams]>) =>
-        new EnsurePostgresWithRdsProxyImpl(
-            getProjectConfigService(projectConfigWith(extensions))
-        ).execute();
-
-    it("stops without <Infra.Postgres />, and says to add it", async () => {
-        const result = await failure(ensurePostgres([[RdsProxy, { enabled: true }]]));
-
-        expect(result.reason).toBe("Cannot deploy an RDS Proxy without Postgres.");
-        expect(result.message).toContain("<Infra.Postgres />");
-    });
-
-    it("passes with <Infra.Postgres />", async () => {
-        await expect(
-            ensurePostgres([POSTGRES, [RdsProxy, { enabled: true }]])
         ).resolves.toBeUndefined();
     });
 });
@@ -215,6 +196,7 @@ describe("deploy core on a core that was already deployed", () => {
         );
         expect(fromOs.reason).toContain(`"ddb+os"`);
         expect(fromDdb.message).toContain("destroy the project and deploy it again");
+        expect(fromDdb.message).toContain("remove <Infra.AuroraPostgres />");
     });
 
     it("stops a core deployed with Postgres from switching away, also when no setup is configured", async () => {
@@ -225,5 +207,6 @@ describe("deploy core on a core that was already deployed", () => {
             `Cannot deploy without Postgres. The Core application was deployed with the "pg" database setup.`
         );
         expect(toDefault.reason).toBe(toOs.reason);
+        expect(toOs.message).toContain("add <Infra.AuroraPostgres />");
     });
 });

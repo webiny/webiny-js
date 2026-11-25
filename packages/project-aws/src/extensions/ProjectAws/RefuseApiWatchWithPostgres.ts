@@ -6,9 +6,9 @@ import { getPostgresConfigFromExtension } from "~/pulumi/apps/extensions/getPost
 
 /**
  * Watching the API on AWS replaces the deployed functions with forwarders and runs every request
- * on the developer's machine, with the deployed function's env. With `<Infra.Postgres />` that env
- * points at Aurora in the VPC's private subnets, which the machine can't reach, so every request
- * would time out. Watch is refused before anything is built or replaced.
+ * on the developer's machine, with the deployed function's env. With `<Infra.AuroraPostgres />`
+ * that env points at Aurora in the VPC's private subnets, which the machine can't reach, so every
+ * request would time out. Watch is refused before anything is built or replaced.
  *
  * Unconditional: `--no-deployment-checks` doesn't skip it, because watch can't work at all.
  */
@@ -35,7 +35,7 @@ export class RefuseApiWatchWithPostgresImpl implements ApiBeforeWatch.Interface 
                 "subnets, which your machine can't reach. To try your changes, deploy them",
                 "instead by running: %s."
             ].join(" "),
-            "<Infra.Postgres />",
+            "<Infra.AuroraPostgres />",
             cmd
         );
     }

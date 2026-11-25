@@ -11,5 +11,9 @@ export {
     CreateFolderUseCase,
     CreateFolderGateway
 } from "~/features/folders/createFolder/abstractions.js";
+export {
+    DeleteFolderUseCase,
+    DeleteFolderGateway
+} from "~/features/folders/deleteFolder/abstractions.js";
 export type { Folder } from "~/domain/folder/Folder.js";
 export type { FolderDto } from "~/domain/folder/FolderDto.js";

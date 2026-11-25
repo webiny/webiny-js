@@ -7,6 +7,7 @@ import {
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import { ObjectStorage } from "@webiny/api-object-storage";
+import { isTenantFileKey } from "~/utils/isTenantFileKey.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstraction.Interface {
     private readonly metadataReader: MetadataReader.Interface;
@@ -25,6 +26,11 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
     ): Promise<Result<FileContents, GetFileContentsByIdUseCaseAbstraction.Error>> {
         const metadata = await this.metadataReader.read(fileId);
         if (!metadata) {
+            return Result.fail(new FileNotFoundError(fileId));
+        }
+
+        // Security: the key comes from the file record, never read outside the tenant's files.
+        if (!isTenantFileKey(metadata.tenant, metadata.bucketKey)) {
             return Result.fail(new FileNotFoundError(fileId));
         }
 

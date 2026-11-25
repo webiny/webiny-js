@@ -18,10 +18,15 @@ export const SaveAndPublishButton = observer(() => {
         return null;
     }
 
+    // A workflow locks an approved entry, so there is nothing to save and it can only be published.
+    const canSave = presenter.vm.canSave;
+
     const saveAndPublish = async () => {
-        const saved = await presenter.saveRevision({ skipValidation: false });
-        if (!saved) {
-            return;
+        if (canSave) {
+            const saved = await presenter.saveRevision({ skipValidation: false });
+            if (!saved) {
+                return;
+            }
         }
         await presenter.publishRevision();
     };
@@ -32,7 +37,7 @@ export const SaveAndPublishButton = observer(() => {
             disabled={presenter.vm.loading !== null}
             data-testid="cms-content-save-publish-content-button"
         >
-            {"Save & Publish"}
+            {canSave ? "Save & Publish" : "Publish"}
         </ButtonPrimary>
     );
 });

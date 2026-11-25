@@ -5,6 +5,7 @@ import {
     CreateScheduleCommand,
     DeleteScheduleCommand,
     GetScheduleCommand,
+    ResourceNotFoundException,
     SchedulerClient,
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler/index.js";
@@ -46,6 +47,15 @@ describe("SchedulerService", () => {
 
     it("throws if creating a schedule in the past", async () => {
         const client = mockClient(SchedulerClient);
+        client.on(GetScheduleCommand).rejects(
+            new ResourceNotFoundException({
+                Message: "Resource not found.",
+                message: "Resource not found.",
+                $metadata: {
+                    httpStatusCode: 404
+                }
+            })
+        );
         const service = new EventBridgeSchedulerService(() => client, config);
 
         const input: SchedulerServiceCreateInput = {

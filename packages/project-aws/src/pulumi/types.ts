@@ -7,8 +7,8 @@ export interface IDefaultStackOutput extends GetAppStackOutput.StackOutput {
     region: string;
     /*
      * The core's DynamoDB table, and the `primaryDynamodbTable*` outputs below. Absent with
-     * `<Infra.Postgres />`: the core creates no DynamoDB table. The types stay non-optional so
-     * existing code that reads them keeps compiling.
+     * `<Infra.AuroraPostgres />`: the core creates no DynamoDB table. The types stay non-optional
+     * so existing code that reads them keeps compiling.
      */
     dynamoDbTable: string;
     iotAuthorizerName: string;
@@ -45,8 +45,8 @@ export interface IDefaultStackOutput extends GetAppStackOutput.StackOutput {
     appDomain?: string;
     deliveryDomain?: string;
     /**
-     * The api app's `schema-setup` function. Set with `<Infra.Postgres />` only: other apps' deploys
-     * invoke it to store their service manifests in the database.
+     * The api app's `schema-setup` function. Set with `<Infra.AuroraPostgres />` only: other apps'
+     * deploys invoke it to store their service manifests in the database.
      */
     schemaSetupLambdaArn?: string;
 }

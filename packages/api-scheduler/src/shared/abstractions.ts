@@ -45,7 +45,7 @@ export interface IScheduledAction<T extends GenericRecord = GenericRecord> exten
 }
 
 /**
- * ScheduledActionHandler - Similar to EventHandler pattern
+ * ScheduledActionHandler - Similar to InputHandler pattern
  *
  * Each application (CMS, Mailer, etc.) implements handlers for their actions.
  * This is the ONLY action abstraction needed.

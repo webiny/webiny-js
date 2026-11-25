@@ -1,4 +1,4 @@
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/api-kernel-core";
 import { UploadFileUseCase } from "~/features/UploadFile/abstractions.js";
 import { toBuffer } from "../utils.js";
 import { parseMultipart } from "../utils.js";

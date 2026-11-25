@@ -697,6 +697,53 @@ describe("Folder Level Permissions - Security Checks", () => {
         });
     });
 
+    it("as an editor, I should not be able to clear the folder permissions with null", async () => {
+        const folder = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder Null",
+                    slug: "folder-null",
+                    type: FOLDER_TYPE,
+                    permissions: [{ level: "editor", target: `admin:${identityB.id}` }]
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const [nullResponse] = await acoIdentityB.updateFolder({
+            id: folder.id,
+            data: { permissions: null }
+        });
+        expect(nullResponse.data.aco.updateFolder.data).toBeNull();
+        expect(nullResponse.data.aco.updateFolder.error).toMatchObject({
+            message: "Not allowed to change the folder permissions."
+        });
+
+        const [emptyResponse] = await acoIdentityB.updateFolder({
+            id: folder.id,
+            data: { permissions: [] }
+        });
+        expect(emptyResponse.data.aco.updateFolder.error).toMatchObject({
+            message: "Not allowed to change the folder permissions."
+        });
+
+        // Still restricted: identity B keeps the "editor" level.
+        const [afterwards] = await acoIdentityA.getFolder({ id: folder.id });
+        expect(afterwards.data.aco.getFolder.data.permissions).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ target: `admin:${identityB.id}`, level: "editor" })
+            ])
+        );
+
+        // A rename without permissions still works for the editor.
+        const [renamed] = await acoIdentityB.updateFolder({
+            id: folder.id,
+            data: { title: "Folder Null Renamed" }
+        });
+        expect(renamed.data.aco.updateFolder.error).toBeNull();
+    });
+
     it("owner access inherited from a full access role should not be overridable", async () => {
         const folderA = await acoIdentityA
             .createFolder({

@@ -2,8 +2,9 @@ import { Result } from "@webiny/feature/api";
 import { GetApiKeyUseCase as GetApiKeyUseCaseAbstraction } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
-import type { ApiKey } from "../shared/types.js";
+import type { ReadableApiKey } from "../shared/types.js";
 import { ApiKeyNotAuthorizedError } from "~/features/security/apiKeys/shared/errors.js";
+import { hideTokenUnlessFullAccess } from "../shared/hideToken.js";
 
 class GetApiKeyUseCaseImpl implements GetApiKeyUseCaseAbstraction.Interface {
     private repository: ApiKeysRepository.Interface;
@@ -17,13 +18,19 @@ class GetApiKeyUseCaseImpl implements GetApiKeyUseCaseAbstraction.Interface {
         this.identityContext = identityContext;
     }
 
-    async execute(id: string): Promise<Result<ApiKey, GetApiKeyUseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<ReadableApiKey, GetApiKeyUseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new ApiKeyNotAuthorizedError());
         }
 
-        return this.repository.get(id);
+        const result = await this.repository.get(id);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const [apiKey] = await hideTokenUnlessFullAccess(this.identityContext, [result.value]);
+        return Result.ok(apiKey);
     }
 }
 

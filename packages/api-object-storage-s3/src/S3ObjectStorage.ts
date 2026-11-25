@@ -186,6 +186,20 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
         } while (continuationToken);
     }
 
+    public async hasPrefix(prefix: string): Promise<boolean> {
+        if (!prefix.endsWith("/")) {
+            throw new Error(`A prefix must end with "/": "${prefix}".`);
+        }
+        const folderKey = prefix.slice(0, -1);
+        const command = new ListObjectsV2Command({
+            Bucket: this.bucket,
+            Prefix: `${this.toObjectKey(folderKey)}/`,
+            MaxKeys: 1
+        });
+        const page = await this.client.send(command);
+        return (page.KeyCount ?? 0) > 0;
+    }
+
     public async createMultipartUpload(key: string): Promise<string> {
         const objectKey = this.toObjectKey(key);
         const command = new CreateMultipartUploadCommand({

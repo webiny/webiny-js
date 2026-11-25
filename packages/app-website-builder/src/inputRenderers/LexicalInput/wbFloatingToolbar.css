@@ -1,0 +1,15 @@
+/*
+ * The floating toolbar: `.wb-static-toolbar`'s buttons in a panel over the selected text
+ * (lexical-editor's FloatingToolbar positions it).
+ */
+.wb-static-toolbar.wb-floating-toolbar {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  border: 1px solid var(--border-color-neutral-muted);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+}

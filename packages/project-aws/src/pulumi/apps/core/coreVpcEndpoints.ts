@@ -6,14 +6,14 @@ import type { CoreVpc } from "./CoreVpc.js";
 export interface CoreVpcEndpointsParams {
     vpc: Pick<CoreVpc, "vpc" | "subnets" | "routeTables">;
     region: pulumi.Input<string>;
-    /* The project has `<Infra.Postgres />`. */
+    /* The project has `<Infra.AuroraPostgres />`. */
     usesPostgres: boolean;
 }
 
 /**
  * The VPC endpoints of `<Infra.Vpc useVpcEndpoints />`: gateways for S3 and DynamoDB, interfaces for
- * SQS and EventBridge. With `<Infra.Postgres />` there's no DynamoDB endpoint: nothing in the VPC
- * talks to DynamoDB.
+ * SQS and EventBridge. With `<Infra.AuroraPostgres />` there's no DynamoDB endpoint: nothing in the
+ * VPC talks to DynamoDB.
  */
 export const addCoreVpcEndpoints = (app: PulumiApp, params: CoreVpcEndpointsParams) => {
     const { vpc, subnets, routeTables } = params.vpc;

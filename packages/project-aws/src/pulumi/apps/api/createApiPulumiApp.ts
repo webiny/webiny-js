@@ -202,7 +202,7 @@ export const createApiPulumiApp = () => {
             const graphqlEnv = {
                 COGNITO_REGION: getEnvVariableAwsRegion(),
                 COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+                // The core's DynamoDB tables: none with `<Infra.AuroraPostgres />`.
                 ...dynamoDbEnv,
                 OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
@@ -218,8 +218,8 @@ export const createApiPulumiApp = () => {
                 // TODO: move to okta plugin
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
 
-                // With `<Infra.Postgres />`: the database the API runs on. The background-task,
-                // fm-download and schema-setup functions copy this function's env.
+                // With `<Infra.AuroraPostgres />`: the database the API runs on. The
+                // background-task, fm-download and schema-setup functions copy this function's env.
                 ...(usesPostgres ? getPostgresLambdaEnvFromCore(core) : {})
             };
 
@@ -254,7 +254,7 @@ export const createApiPulumiApp = () => {
                 graphqlWeb = app.addModule(ApiGraphqlWeb, {
                     namePrefix: pulumiResourceNamePrefix ?? "",
                     vpc: graphqlWebVpc,
-                    // With `<Infra.Postgres />`, a bigger pool than the plain Lambdas' 1.
+                    // With `<Infra.AuroraPostgres />`, a bigger pool than the plain Lambdas' 1.
                     env: getPostgresWebFunctionEnv(postgresConfig)
                 });
                 app.addOutputs({
@@ -283,8 +283,8 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            // With `<Infra.Postgres />`, every deploy sets the database up and stores the service
-            // manifests: the core's (from its stack output), then the api's own: `api` and
+            // With `<Infra.AuroraPostgres />`, every deploy sets the database up and stores the
+            // service manifests: the core's (from its stack output), then the api's own: `api` and
             // `scheduler` (see below) and any an extension adds with `addServiceManifest`.
             const schemaSetup = usesPostgres
                 ? app.addModule(ApiSchemaSetup, {
@@ -328,7 +328,7 @@ export const createApiPulumiApp = () => {
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
 
-            // The core's DynamoDB tables: none with `<Infra.Postgres />`.
+            // The core's DynamoDB tables: none with `<Infra.AuroraPostgres />`.
             addDynamoDbOutputs(app, core, usesPostgres);
 
             if (schemaSetup) {

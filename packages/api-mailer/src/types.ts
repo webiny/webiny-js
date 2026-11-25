@@ -37,13 +37,3 @@ interface BaseTransportSendData {
 
 export type TransportSendData = BaseTransportSendData &
     (TransportSendToData | TransportSendBccData | TransportSendCcData);
-
-export interface TransportSettings {
-    host: string;
-    port: number;
-    secure: boolean;
-    user: string;
-    password: string;
-    from: string;
-    replyTo?: string;
-}

@@ -3,6 +3,12 @@ import type { ISchemaMemory } from "./getSchemaMemory.js";
 
 export type TableCreator = (table: Knex.CreateTableBuilder) => void;
 
+/**
+ * Brings a table that already existed up to date (the creator only runs for new tables).
+ * Must be idempotent: it runs once per process for every existing table.
+ */
+export type TableUpgrade = (knex: Knex, tableName: string) => Promise<void>;
+
 export interface EnsureTableParams {
     /** The connection or transaction to check and create the table on. */
     knex: Knex;
@@ -10,6 +16,7 @@ export interface EnsureTableParams {
     memory: ISchemaMemory;
     tableName: string;
     create: TableCreator;
+    upgrade?: TableUpgrade;
 }
 
 /*
@@ -46,7 +53,7 @@ const handleOf = (knex: Knex): string => {
  * memory was reset is recorded after it.
  */
 export function ensureTable(params: EnsureTableParams): Promise<void> {
-    const { knex, memory, tableName, create } = params;
+    const { knex, memory, tableName, create, upgrade } = params;
     if (memory.known.has(tableName)) {
         return Promise.resolve();
     }
@@ -58,7 +65,7 @@ export function ensureTable(params: EnsureTableParams): Promise<void> {
         return pending;
     }
 
-    const check: Promise<void> = createTableIfMissing(knex, tableName, create)
+    const check: Promise<void> = createTableIfMissing(knex, tableName, create, upgrade)
         .then(() => {
             if (memory.generation === generation) {
                 recordTable(knex, memory, tableName);
@@ -84,15 +91,20 @@ export function recordTable(knex: Knex, memory: ISchemaMemory, tableName: string
 }
 
 /**
- * Creates the table if it doesn't exist. Another process (or connection) may create it between the
- * check and the create: if it exists after a failed create, that's success.
+ * Creates the table if it doesn't exist, or runs `upgrade` on it if it does. Another process (or
+ * connection) may create it between the check and the create: if it exists after a failed create,
+ * that's success, and that process created it with the current creator.
  */
 export async function createTableIfMissing(
     knex: Knex,
     tableName: string,
-    create: TableCreator
+    create: TableCreator,
+    upgrade?: TableUpgrade
 ): Promise<void> {
     if (await knex.schema.hasTable(tableName)) {
+        if (upgrade) {
+            await upgrade(knex, tableName);
+        }
         return;
     }
     try {

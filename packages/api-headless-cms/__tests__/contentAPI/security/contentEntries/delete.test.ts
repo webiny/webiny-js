@@ -63,4 +63,66 @@ describe("Delete Permissions Checks", () => {
             error: null
         });
     });
+    it("should not bulk delete entries of others with a read-all role and a delete-own role", async () => {
+        const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
+        await manageApiA.setup();
+
+        const entryOfA = await manageApiA.createTestEntry();
+
+        // One role allows reading all entries, the other one allows deleting only own entries.
+        const readAll = new CmsTestPermissions({
+            groups: { rwd: "r" },
+            models: { rwd: "r" },
+            entries: { rwd: "r" }
+        });
+        const deleteOwn = new CmsTestPermissions({
+            groups: { rwd: "r" },
+            models: { rwd: "r" },
+            entries: { rwd: "rwd", own: true }
+        });
+
+        const { manage: manageApiB } = useTestModelHandler({
+            identity: identityB,
+            permissions: [...readAll.getPermissions(), ...deleteOwn.getPermissions()]
+        });
+
+        const entryOfB = await manageApiB.createTestEntry();
+        expect(entryOfB.error).toBeNull();
+
+        // Bulk delete removes the published record of each entry as well, so publish both.
+        for (const entry of [entryOfA, entryOfB]) {
+            const published = await manageApiA.publishTestEntry({
+                variables: { revision: entry.data.id }
+            });
+            expect(published.error).toBeNull();
+        }
+
+        const [response] = await manageApiB.invoke({
+            body: {
+                query: /* GraphQL */ `
+                    mutation DeleteTestEntries($entries: [ID!]!) {
+                        deleteMultipleTestEntries(entries: $entries) {
+                            data {
+                                id
+                            }
+                            error {
+                                code
+                                message
+                            }
+                        }
+                    }
+                `,
+                variables: { entries: [entryOfA.data.entryId, entryOfB.data.entryId] }
+            }
+        });
+
+        expect(response.errors).toBeUndefined();
+        expect(response.data.deleteMultipleTestEntries.error).toBeNull();
+
+        // Only the own entry is deleted.
+        const remaining = await manageApiA.listTestEntries();
+        const remainingIds = remaining.data.map(entry => entry.entryId);
+
+        expect(remainingIds).toEqual([entryOfA.data.entryId]);
+    });
 });

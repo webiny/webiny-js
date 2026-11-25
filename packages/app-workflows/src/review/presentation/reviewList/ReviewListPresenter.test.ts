@@ -87,7 +87,8 @@ const setup = (teamCount = 1, permissions: IPermission[] = []) => {
         rowProvider,
         initialScope: null,
         initialState: null,
-        showContentType: true
+        showContentType: true,
+        fixedContentTypeId: null
     };
     return { container, presenter, activity, listReviews, params };
 };
@@ -401,6 +402,48 @@ describe("ReviewListPresenter", () => {
         await presenter.setState("inReview");
         await presenter.setContentType("article");
         expect(presenter.vm.isFiltered).toBe(true);
+    });
+
+    it("narrows every request to a fixed content model that is no filter and survives Clear filters", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.execute.mockResolvedValue(page([]));
+        await presenter.init({
+            ...params,
+            initialScope: "all",
+            initialState: "all",
+            showContentType: false,
+            fixedContentTypeId: "article"
+        });
+
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ scope: "all", where: { modelId: "article", state: "all" } })
+        );
+        expect(presenter.vm.contentTypeId).toBeNull();
+        expect(presenter.vm.isFiltered).toBe(false);
+
+        await presenter.setScope("myRequests");
+        await presenter.setSearch("budget");
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { titleContains: "budget", modelId: "article", state: "all" }
+            })
+        );
+
+        await presenter.clearFilters();
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { modelId: "article", state: "all" }
+            })
+        );
+        expect(presenter.vm.isFiltered).toBe(false);
+
+        // A new list without it is not narrowed.
+        await presenter.init(params);
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ where: { state: "inReview" } })
+        );
     });
 
     it("toggles the sort direction and reloads in that order", async () => {

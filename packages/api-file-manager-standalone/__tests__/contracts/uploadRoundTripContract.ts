@@ -3,7 +3,7 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { invokeHttpRoute } from "@webiny/event-handler-core";
+import { invokeHttpRoute } from "@webiny/api-kernel-core";
 import { UploadSingleFileRoute } from "../../src/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
 import { UploadFileUseCase } from "../../src/features/UploadFile/UploadFileUseCase.js";
 import { UploadPartRoute } from "../../src/routes/UploadPartRoute/UploadPartRoute.js";

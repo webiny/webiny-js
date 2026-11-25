@@ -343,4 +343,50 @@ describe("Webhook CRUD GraphQL", () => {
         expect(result.data).toBeNull();
         expect(result.error.code).toBe("WEBHOOK_NOT_AUTHORIZED");
     });
+
+    it("should return the signing secret only to users with write permission", async () => {
+        const [createResponse] = await handler.invoke({
+            body: {
+                query: CREATE_WEBHOOK,
+                variables: { input: VALID_INPUT }
+            }
+        });
+        const { id, signingSecret } = createResponse.data.webhooks.createWebhook.data;
+        expect(signingSecret).toEqual(expect.any(String));
+
+        const readOnlyHandler = useGraphQLHandler({
+            permissions: [{ name: "webhooks.webhook", rwd: "r" }]
+        });
+        const [readOnlyGet] = await readOnlyHandler.invoke({
+            body: { query: GET_WEBHOOK, variables: { id } }
+        });
+        expect(readOnlyGet.data.webhooks.getWebhook.error).toBeNull();
+        expect(readOnlyGet.data.webhooks.getWebhook.data.id).toBe(id);
+        expect(readOnlyGet.data.webhooks.getWebhook.data.signingSecret).toBeNull();
+
+        const [readOnlyList] = await readOnlyHandler.invoke({
+            body: { query: LIST_WEBHOOKS }
+        });
+        const readOnlyItems = readOnlyList.data.webhooks.listWebhooks.data;
+        expect(readOnlyItems.length).toBeGreaterThan(0);
+        for (const item of readOnlyItems) {
+            expect(item.signingSecret).toBeNull();
+        }
+
+        const writerHandler = useGraphQLHandler({
+            permissions: [{ name: "webhooks.webhook", rwd: "rw" }]
+        });
+        const [writerGet] = await writerHandler.invoke({
+            body: { query: GET_WEBHOOK, variables: { id } }
+        });
+        expect(writerGet.data.webhooks.getWebhook.data.signingSecret).toBe(signingSecret);
+
+        const [writerList] = await writerHandler.invoke({
+            body: { query: LIST_WEBHOOKS }
+        });
+        const writerItem = writerList.data.webhooks.listWebhooks.data.find(
+            (item: { id: string }) => item.id === id
+        );
+        expect(writerItem.signingSecret).toBe(signingSecret);
+    });
 });

@@ -13,16 +13,15 @@ const getConnectedOn = (connectedAt?: number) => {
 
 export const websocketsRouteConnect: WebsocketsRouteHandler.Interface = {
     route: CONNECT,
-    async run({ registry, event, container, response, getTenant, getIdentity }) {
+    async run({ registry, event, container, response, getTenant, identity }) {
         const tenant = getTenant();
-        const identity = getIdentity();
         // On `$connect`, API Gateway accepts the socket on any 2xx, so every refusal needs a status.
         if (!tenant) {
             return response.error({
                 statusCode: 400,
                 message: "Missing tenant."
             });
-        } else if (!identity) {
+        } else if (identity.isAnonymous()) {
             return response.error({
                 statusCode: 401,
                 message: "Missing identity."

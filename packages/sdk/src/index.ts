@@ -5,6 +5,7 @@ export * from "./FileManagerSdk.js";
 export * from "./LanguagesSdk.js";
 export * from "./TasksSdk.js";
 export * from "./WebhooksSdk.js";
+export * from "./WebsiteBuilderSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
 export { resolveHeaders } from "./utils/resolveHeaders.js";
@@ -148,3 +149,45 @@ export type {
 export type { ResendWebhookDeliveryParams } from "./methods/webhooks/resendWebhookDelivery.js";
 
 export type { TriggerWebhookParams } from "./methods/webhooks/triggerWebhook.js";
+
+// Export Website Builder types.
+export type {
+    WbIdentity,
+    WbLocation,
+    WbPageStatus,
+    WbPage,
+    WbPageRevision,
+    WbListMeta,
+    WbGlobalComponent,
+    WbPageListSorter,
+    WbPagesListWhere,
+    WbPageInput,
+    WbPageCreateInput
+} from "./methods/websiteBuilder/websiteBuilderTypes.js";
+
+// Export types from websiteBuilder methods.
+export type { GetPageByIdParams } from "./methods/websiteBuilder/getPageById.js";
+
+export type { GetPageByPathParams } from "./methods/websiteBuilder/getPageByPath.js";
+
+export type { GetPageRevisionsParams } from "./methods/websiteBuilder/getPageRevisions.js";
+
+export type { ListPagesParams, ListPagesResult } from "./methods/websiteBuilder/listPages.js";
+
+export type { CreatePageParams } from "./methods/websiteBuilder/createPage.js";
+
+export type { UpdatePageParams } from "./methods/websiteBuilder/updatePage.js";
+
+export type { PublishPageParams } from "./methods/websiteBuilder/publishPage.js";
+
+export type { UnpublishPageParams } from "./methods/websiteBuilder/unpublishPage.js";
+
+export type { CreatePageRevisionFromParams } from "./methods/websiteBuilder/createPageRevisionFrom.js";
+
+export type { DeletePageParams } from "./methods/websiteBuilder/deletePage.js";
+
+export type { GetGlobalComponentParams } from "./methods/websiteBuilder/getGlobalComponent.js";
+
+export type { ListGlobalComponentsParams } from "./methods/websiteBuilder/listGlobalComponents.js";
+
+export type { SaveGlobalComponentParams } from "./methods/websiteBuilder/saveGlobalComponent.js";

@@ -8,6 +8,8 @@ import { createUploadToken } from "~/utils/uploadToken.js";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
 
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; /* 1TB */
 
@@ -24,12 +26,14 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly config: FileManagerStandaloneConfig.Interface,
-        private readonly publicUrls: PublicUrls.Interface
+        private readonly publicUrls: PublicUrls.Interface,
+        private readonly objectStorage: ObjectStorage.Interface
     ) {}
 
     public async execute(
         file: FileData,
-        settings: FileManagerSettings
+        settings: FileManagerSettings,
+        options: GetUploadPayloadUseCaseAbstraction.Options = {}
     ): Promise<UploadPayloadResponse> {
         const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
         const uploadMaxFileSize = sanitizeFileSizeValue(
@@ -38,6 +42,13 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
         );
 
         const tenant = this.tenantContext.getTenant();
+        await ensureNewFileId({
+            objectStorage: this.objectStorage,
+            file,
+            tenantId: tenant.id,
+            clientId: options.clientId
+        });
+
         const storageKey = toTenantFileKey(tenant.id, file.key);
         const secret = this.config.uploadSecret;
         const expiresAt = Date.now() + 60_000;
@@ -72,5 +83,5 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
 
 export const GetUploadPayloadUseCase = GetUploadPayloadUseCaseAbstraction.createImplementation({
     implementation: GetUploadPayloadUseCaseImpl,
-    dependencies: [TenantContext, FileManagerStandaloneConfig, PublicUrls]
+    dependencies: [TenantContext, FileManagerStandaloneConfig, PublicUrls, ObjectStorage]
 });

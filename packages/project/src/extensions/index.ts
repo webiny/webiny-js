@@ -16,7 +16,6 @@ import { ApiExtension } from "./ApiExtension.js";
 import { ApiRoute } from "./api/index.js";
 import { BackgroundTasks } from "./api/index.js";
 import { ModelFieldCompression } from "./api/index.js";
-import { Smtp } from "./api/index.js";
 
 // Hooks.
 import {
@@ -106,8 +105,7 @@ export const definitions = [
 
     // Api settings that apply to every hosting type.
     BackgroundTasks.def,
-    ModelFieldCompression.def,
-    Smtp.def
+    ModelFieldCompression.def
 ];
 
 export { Project } from "./Project.js";

@@ -12,6 +12,7 @@ import {
     CollabThreadValidationError
 } from "~/api/domain/thread/errors.js";
 import { toCollabIdentity } from "~/api/utils/identity.js";
+import { normalizeMentions } from "~/api/utils/mentions.js";
 
 class ReplyToThreadUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -43,7 +44,7 @@ class ReplyToThreadUseCaseImpl implements UseCase.Interface {
         const message: ICollabMessage = {
             id: mdbid(),
             body: input.body,
-            mentions: input.mentions ?? [],
+            mentions: normalizeMentions(input.mentions),
             createdBy: toCollabIdentity(identity),
             createdOn: new Date().toISOString()
         };

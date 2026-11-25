@@ -21,20 +21,33 @@ class DeleteFileFromStorageHandlerImpl implements FileAfterDeleteEventHandler.In
          * delivered even when removing its contents fails. A failure is logged: the delete itself
          * has happened.
          */
-        const metadataResult = await this.keyValueStore.delete(
-            `FileManager/File/${file.id}/Metadata`
-        );
-        if (metadataResult.isFail()) {
-            this.logger.warn(
-                { error: metadataResult.error, fileId: file.id },
-                "Could not delete a file's metadata."
-            );
-        }
+        await this.deleteMetadata(file.id);
 
         try {
             await this.deleteContents(file.id, file.key);
         } catch (error) {
             this.logger.warn({ error, fileId: file.id }, "Could not delete a file's contents.");
+        }
+    }
+
+    /*
+     * Metadata is global and keyed only by file ID, so a file of another tenant with the same ID
+     * owns it: that tenant's metadata is never deleted.
+     */
+    private async deleteMetadata(fileId: string): Promise<void> {
+        const tenant = this.tenantContext.getTenant();
+        const metadataKey = `FileManager/File/${fileId}/Metadata`;
+        const existing = await this.keyValueStore.get<{ tenant?: string }>(metadataKey);
+        if (existing.isOk() && existing.value?.tenant && existing.value.tenant !== tenant.id) {
+            return;
+        }
+
+        const result = await this.keyValueStore.delete(metadataKey);
+        if (result.isFail()) {
+            this.logger.warn(
+                { error: result.error, fileId },
+                "Could not delete a file's metadata."
+            );
         }
     }
 

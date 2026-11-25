@@ -14,7 +14,7 @@ import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { RandomProcessOwner } from "@webiny/event-handler-standalone";
+import { RandomProcessOwner } from "@webiny/api-kernel-core";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
@@ -22,7 +22,7 @@ import { RECOVER_GRACE_MS } from "~/claim/constants.js";
 import { RecoverTasksHandler } from "~/recovery/RecoverTasksHandler.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
-import { TaskRecoverEventHandler } from "~/recovery/TaskRecoverEventHandler.js";
+import { TaskRecoverInputHandler } from "~/recovery/TaskRecoverInputHandler.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
 const TTL_MS = 60_000;
@@ -96,7 +96,7 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(RecoverTasksHandler);
 
-    const handler = container.resolve(TaskRecoverEventHandler);
+    const handler = container.resolve(TaskRecoverInputHandler);
     const claim = container.resolve(TaskClaim);
     const next = async () => undefined;
     const recover = () => handler.execute({} as any, next);

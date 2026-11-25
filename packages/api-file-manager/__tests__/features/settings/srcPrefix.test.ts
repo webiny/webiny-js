@@ -13,6 +13,7 @@ import { GetSettingsFeature } from "~/features/settings/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/feature.js";
 import { DefaultSrcPrefixFeature } from "~/features/settings/DefaultSrcPrefix/feature.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 /**
  * A File Manager with an in-memory settings store and an API whose public URL the test can change,
@@ -36,6 +37,8 @@ const createFileManager = (initialApiUrl: string | null) => {
         }
     } as never);
     container.registerInstance(EventPublisher, { publish: async () => {} } as never);
+    // Updating settings needs `fm.settings`; this test is about the prefix, not the permission.
+    container.registerInstance(FmPermissions, { canAccess: async () => true } as never);
     container.registerInstance(PublicUrls, {
         getApiUrl: async () => PublicUrl.from(apiUrl),
         getAdminUrl: async () => PublicUrl.unknown()

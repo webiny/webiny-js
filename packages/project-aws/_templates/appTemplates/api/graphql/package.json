@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {},
   "dependencies": {
-    "@webiny/api-event-handler-aws-ddb": "latest",
-    "@webiny/api-event-handler-aws-ddb-os": "latest",
+    "@webiny/api-composition-aws-ddb": "latest",
+    "@webiny/api-composition-aws-ddb-os": "latest",
     "@webiny/api-aco": "latest",
     "@webiny/api-audit-logs": "latest",
     "@webiny/api-core": "latest",

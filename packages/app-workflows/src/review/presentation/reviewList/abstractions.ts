@@ -59,6 +59,11 @@ export interface ReviewListInitParams {
     initialState: ReviewListState | null;
     // Whether the list shows the content type column and filter (CMS); the filtered empty copy names it.
     showContentType: boolean;
+    /*
+     * The one content model every request is narrowed to; `null` for none. It is not a filter:
+     * "Clear filters" keeps it and it is not counted as one.
+     */
+    fixedContentTypeId: string | null;
 }
 
 // The scope and state of the route's `?scope=` and `?state=`; `null` for a missing or invalid value.

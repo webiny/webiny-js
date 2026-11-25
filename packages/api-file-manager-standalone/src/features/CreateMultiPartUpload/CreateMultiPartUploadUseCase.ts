@@ -6,6 +6,7 @@ import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneCon
 import { ObjectStorage } from "@webiny/api-object-storage";
 import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
 
 class CreateMultiPartUploadUseCaseImpl
     implements CreateMultiPartUploadUseCaseAbstraction.Interface
@@ -20,8 +21,14 @@ class CreateMultiPartUploadUseCaseImpl
     public async execute(
         params: CreateMultiPartUploadUseCaseAbstraction.Params
     ): Promise<CreateMultiPartUploadResult> {
-        const { file, numberOfParts } = params;
+        const { file, numberOfParts, clientId } = params;
         const tenant = this.tenantContext.getTenant();
+        await ensureNewFileId({
+            objectStorage: this.objectStorage,
+            file,
+            tenantId: tenant.id,
+            clientId
+        });
         const apiUrl = await this.publicUrls.getApiUrl();
 
         const key = toTenantFileKey(tenant.id, file.key);

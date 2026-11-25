@@ -8,7 +8,7 @@ import type { TenantContext } from "@webiny/api-core/features/tenancy/TenantCont
 import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import type { ObjectStorage } from "@webiny/api-object-storage";
 import { DiskObjectStorage } from "@webiny/api-object-storage-disk";
-import type { IHttpRequest } from "@webiny/event-handler-core";
+import type { IHttpRequest } from "@webiny/api-kernel-core";
 
 export const SECRET = "test-upload-secret";
 export const TENANT_ID = "t1";

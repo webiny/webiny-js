@@ -13,6 +13,7 @@ export const addApiKeySchema = (builder: IGraphQLSchemaBuilder): void => {
             name: String
             slug: String
             description: String
+            # Security: null when the caller doesn't have full access.
             token: String
             permissions: [JSON]
             createdOn: DateTime

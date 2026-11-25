@@ -20,10 +20,18 @@ describe("tenant file keys", () => {
 interface DeleteSetup {
     storage?: Partial<ObjectStorage.Interface>;
     metadataDeleteFails?: boolean;
+    /** The tenant the stored metadata names; no stored metadata when unset. */
+    metadataTenant?: string;
 }
 
 const createDeleteHandler = (setup: DeleteSetup = {}) => {
     const keyValueStore = {
+        get: vi.fn(async () => {
+            if (!setup.metadataTenant) {
+                return Result.fail(new Error("Not found."));
+            }
+            return Result.ok({ tenant: setup.metadataTenant });
+        }),
         delete: vi.fn(async () => {
             if (setup.metadataDeleteFails) {
                 return Result.fail(new Error("table unreachable"));
@@ -92,6 +100,25 @@ describe("delete file from storage", () => {
         await handler.handle(deleteEvent({ id: "abc", key: "abc/photo.png" }));
 
         expect(logger.warn).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not delete metadata another tenant's file with the same ID owns", async () => {
+        const { handler, keyValueStore, storage } = createDeleteHandler({
+            metadataTenant: "other-tenant"
+        });
+
+        await handler.handle(deleteEvent({ id: "abc", key: "abc/photo.png" }));
+
+        expect(keyValueStore.delete).not.toHaveBeenCalled();
+        expect(storage.deletePrefix).toHaveBeenCalledWith(`tenants/${TENANT_ID}/files/abc/`);
+    });
+
+    it("should delete the metadata of the tenant's own file", async () => {
+        const { handler, keyValueStore } = createDeleteHandler({ metadataTenant: TENANT_ID });
+
+        await handler.handle(deleteEvent({ id: "abc", key: "abc/photo.png" }));
+
+        expect(keyValueStore.delete).toHaveBeenCalledWith("FileManager/File/abc/Metadata");
     });
 
     it("should log a failed metadata delete and still delete the contents", async () => {

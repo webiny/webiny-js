@@ -7,6 +7,7 @@ import { createDeleteModelStore, createStoreValue } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
 import { assertModelDeletable } from "~/graphql/deleteModel/assertModelDeletable.js";
+import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 import type { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import type { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
@@ -38,6 +39,16 @@ export const fullyDeleteModel = async (
     }
 
     await assertModelDeletable({ accessControl, model });
+
+    /**
+     * Security: the task deletes every entry of the model, so the caller must be able to
+     * delete entries and must not be limited to its own entries.
+     */
+    const canDeleteEntries = await accessControl.canAccessEntry({ model, rwd: "d" });
+    const onlyOwnedEntries = await accessControl.canAccessOnlyOwnedEntries({ model });
+    if (!canDeleteEntries || onlyOwnedEntries) {
+        throw new NotAuthorizedError(`Not allowed to delete "${model.modelId}" entries.`);
+    }
 
     const store = createDeleteModelStore(keyValueStore, model.tenant);
     const existing = await store.get(model.modelId);

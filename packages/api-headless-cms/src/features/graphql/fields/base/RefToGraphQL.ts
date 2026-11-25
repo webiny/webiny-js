@@ -172,7 +172,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                     return [];
                 }
 
-                const entriesByModel = referenceFieldValues.reduce(
+                const entriesByModel = referenceFieldValues.reduce<Record<string, string[]>>(
                     (collection, ref) => {
                         if (!collection[ref.modelId]) {
                             collection[ref.modelId] = [];
@@ -182,7 +182,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                         collection[ref.modelId].push(ref.entryId);
                         return collection;
                     },
-                    {} as Record<string, string[]>
+                    {}
                 );
 
                 const getters = Object.keys(entriesByModel).map(async modelId => {
@@ -196,6 +196,10 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                         return [];
                     }
                     const model = modelResult.value;
+                    // Private models are internal; a reference must never expose their entries.
+                    if (model.isPrivate) {
+                        return [];
+                    }
 
                     let entries: CmsEntry[] = [];
                     if (isReadEndpoint) {
@@ -232,6 +236,10 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                 return null;
             }
             const model = modelResult.value;
+            // Private models are internal; a reference must never expose their entries.
+            if (model.isPrivate) {
+                return null;
+            }
 
             let revisions: CmsEntry[] = [];
             if (isReadEndpoint) {

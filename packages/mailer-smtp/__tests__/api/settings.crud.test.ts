@@ -1,0 +1,271 @@
+import { describe, it, expect, vi } from "vitest";
+import { createContextHandler } from "./contextHandler";
+import { GetSettingsUseCase, GetSettingsRepository } from "@webiny/api-mailer";
+import { SaveSettingsUseCase } from "@webiny/api-mailer";
+import { TransportSendData } from "@webiny/api-mailer/types.js";
+
+vi.mock("nodemailer", () => {
+    return {
+        createTransport: () => {
+            return {
+                sendMail: async (params: TransportSendData) => {
+                    return {
+                        envelope: "envelope",
+                        messageId: "123",
+                        accepted: [params.to],
+                        rejected: [],
+                        pending: [],
+                        response: "ok"
+                    };
+                }
+            };
+        }
+    };
+});
+
+describe("Settings Transporter CRUD", () => {
+    const { handle } = createContextHandler();
+
+    const input = {
+        host: "dummy-host.webiny",
+        user: "user",
+        password: "someReallyComplexPasswordWithNumbers1234",
+        from: "from@dummy-host.webiny",
+        replyTo: "replyTo@dummy-host.webiny"
+    };
+
+    it("should return stored settings without the password when saving", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const result = await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        expect(result.isOk()).toBe(true);
+        // The save path never returns the password — the only sanctioned path
+        // for retrieving the stored password is GetSettingsUseCase / Repository.
+        expect(result.value).toEqual({
+            host: input.host,
+            port: 587,
+            secure: false,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
+        });
+        expect(result.value).not.toHaveProperty("password");
+    });
+
+    it("should return the password from the repository only, not from the use case", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _password, ...withoutPassword } = input;
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const result = await getSettings.execute("Mailer/SmtpTransport");
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual({
+            settings: { ...withoutPassword, port: 587, secure: false },
+            source: "storage"
+        });
+
+        const repository = context.container.resolve(GetSettingsRepository);
+        const repositoryResult = await repository.get("Mailer/SmtpTransport");
+        expect(repositoryResult.value).toEqual({
+            settings: { ...input, port: 587, secure: false },
+            source: "storage"
+        });
+    });
+
+    it("should return stored settings without the password when updating", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        const updateResult = await saveSettings.execute("Mailer/SmtpTransport", {
+            ...input,
+            port: 30,
+            host: "dummy-host2.webiny"
+        });
+
+        expect(updateResult.isOk()).toBe(true);
+        expect(updateResult.value).toEqual({
+            host: "dummy-host2.webiny",
+            port: 30,
+            secure: false,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
+        });
+        expect(updateResult.value).not.toHaveProperty("password");
+
+        const updateResult2 = await saveSettings.execute("Mailer/SmtpTransport", {
+            ...input,
+            host: "dummy-host3.webiny"
+        });
+
+        expect(updateResult2.isOk()).toBe(true);
+        expect(updateResult2.value).toEqual({
+            host: "dummy-host3.webiny",
+            port: 30,
+            secure: false,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
+        });
+        expect(updateResult2.value).not.toHaveProperty("password");
+    });
+
+    it("should be possible to update settings without password", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        const removedPasswordInput: Partial<typeof input> = {
+            ...input
+        };
+        delete removedPasswordInput["password"];
+
+        const updateResult = await saveSettings.execute("Mailer/SmtpTransport", {
+            host: input.host,
+            user: input.user,
+            from: "from2@dummy-host.webiny",
+            port: 587
+        });
+
+        expect(updateResult.isOk()).toBe(true);
+        expect(updateResult.value).toEqual({
+            host: input.host,
+            port: 587,
+            secure: false,
+            user: input.user,
+            from: "from2@dummy-host.webiny",
+            replyTo: input.replyTo
+        });
+        expect(updateResult.value).not.toHaveProperty("password");
+
+        const repository = context.container.resolve(GetSettingsRepository);
+        const afterUpdate = await repository.get("Mailer/SmtpTransport");
+
+        expect(afterUpdate.isOk()).toBe(true);
+        expect(afterUpdate.value).toEqual({
+            settings: {
+                ...input,
+                password: input.password,
+                port: 587,
+                secure: false,
+                from: "from2@dummy-host.webiny"
+            },
+            source: "storage"
+        });
+    });
+
+    it("should require the password when the host changes", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        const updateResult = await saveSettings.execute("Mailer/SmtpTransport", {
+            host: "attacker-host.webiny",
+            user: input.user,
+            from: input.from
+        });
+
+        expect(updateResult.isFail()).toBe(true);
+        expect(updateResult.error?.code).toBe("Mailer/Settings/Validation");
+
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const afterUpdate = await getSettings.execute("Mailer/SmtpTransport");
+        expect(afterUpdate.value?.settings?.host).toBe(input.host);
+    });
+
+    it("should not be possible to read settings without permissions", async () => {
+        const fullCtx = await handle();
+
+        const saveSettings = fullCtx.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        const { handle: noAccessHandle } = createContextHandler({
+            permissions: []
+        });
+
+        const context = await noAccessHandle();
+
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const result = await getSettings.execute("Mailer/SmtpTransport");
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/Settings/NotAuthorized");
+
+        /* Internal callers (sending mail) read the settings through the repository. */
+        const repository = context.container.resolve(GetSettingsRepository);
+        const repositoryResult = await repository.get("Mailer/SmtpTransport");
+
+        expect(repositoryResult.isOk()).toBe(true);
+        expect(repositoryResult.value).toEqual({
+            settings: {
+                ...input,
+                port: 587,
+                secure: false
+            },
+            source: "storage"
+        });
+    });
+
+    it("should default secure to true when port is 465", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const result = await saveSettings.execute("Mailer/SmtpTransport", { ...input, port: 465 });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toMatchObject({ port: 465, secure: true });
+    });
+
+    it("should respect explicit secure: false even on port 465", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const result = await saveSettings.execute("Mailer/SmtpTransport", {
+            ...input,
+            port: 465,
+            secure: false
+        });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toMatchObject({ port: 465, secure: false });
+    });
+
+    it("should infer secure from stored port 465 when reading back", async () => {
+        const context = await handle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        await saveSettings.execute("Mailer/SmtpTransport", { ...input, port: 465 });
+
+        const getSettings = context.container.resolve(GetSettingsUseCase);
+        const result = await getSettings.execute("Mailer/SmtpTransport");
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.settings?.secure).toBe(true);
+        expect(result.value.settings?.port).toBe(465);
+    });
+
+    it("should not be possible to save settings due to no permissions", async () => {
+        const { handle: noAccessHandle } = createContextHandler({
+            permissions: []
+        });
+
+        const context = await noAccessHandle();
+
+        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+        const saveResponse = await saveSettings.execute("Mailer/SmtpTransport", input);
+
+        expect(saveResponse.isFail()).toEqual(true);
+        expect(saveResponse.error.code).toEqual("Mailer/Settings/NotAuthorized");
+    });
+});

@@ -30,7 +30,6 @@ import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
 import type { ReviewWorkflow } from "@webiny/app-workflows/review/domain/types.js";
 import { GetBoundWorkflowUseCase } from "@webiny/app-workflows/review/useCases/getBoundWorkflow/abstractions.js";
 import { BoundWorkflowFeature } from "@webiny/app-workflows/review/presentation/boundWorkflow/feature.js";
-import { Routes } from "~/routes.js";
 import "~/types.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
@@ -91,6 +90,26 @@ vi.mock("@webiny/app-website-builder/presentation/security/HasPermission.js", ()
     return {
         HasPermission: (props: ChildrenProps) => {
             return props.children;
+        }
+    };
+});
+
+interface OverlayStubProps {
+    title: string;
+    app: string;
+}
+
+// The overlay's own behaviour is covered in app-workflows; here only that the item opens it.
+vi.mock("@webiny/app-workflows/review/mounting/components/ReviewContentReviewsOverlay.js", () => {
+    return {
+        ReviewContentReviewsOverlay: (props: OverlayStubProps) => {
+            return (
+                <div
+                    data-testid="content-reviews-overlay"
+                    data-title={props.title}
+                    data-app={props.app}
+                />
+            );
         }
     };
 });
@@ -253,14 +272,21 @@ describe("Website Builder Change status decoration from the composition root", (
         expect(screen.queryAllByTestId("change-status")).toHaveLength(1);
     });
 
-    it("flag on: the Content Reviews sidebar item is mounted and opens the route", async () => {
+    it("flag on: the Content Reviews sidebar item is mounted and opens the overlay", async () => {
         mountRoot(true, null);
 
         await waitForActions();
         const footer = screen.getByTestId("sidebar-footer");
         expect(footer.querySelector('[data-name="contentReviews"]')).not.toBeNull();
+        expect(screen.queryByTestId("content-reviews-overlay")).toBeNull();
+
         fireEvent.click(screen.getByRole("button", { name: "Content Reviews" }));
-        expect(goToRoute).toHaveBeenCalledWith(Routes.Pages.WorkflowStateList);
+
+        // The item opens the page reviews over the list and does not leave it.
+        const overlay = screen.getByTestId("content-reviews-overlay");
+        expect(overlay.getAttribute("data-title")).toBe("Content Reviews - Pages");
+        expect(overlay.getAttribute("data-app")).toBe("wb");
+        expect(goToRoute).not.toHaveBeenCalled();
     });
 
     it("flag off: no Content Reviews sidebar item is mounted", async () => {

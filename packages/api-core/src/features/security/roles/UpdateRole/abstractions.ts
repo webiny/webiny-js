@@ -5,12 +5,14 @@ import { RolesRepository } from "../shared/abstractions.js";
 import {
     NotAuthorizedError,
     CannotUpdatePluginRolesError,
+    CannotUpdateSystemRolesError,
     RoleValidationError
 } from "../shared/errors.js";
 
 export interface IUpdateRoleUseCaseErrors {
     notAuthorized: NotAuthorizedError;
     cannotUpdatePlugin: CannotUpdatePluginRolesError;
+    cannotUpdateSystem: CannotUpdateSystemRolesError;
     validation: RoleValidationError;
 }
 

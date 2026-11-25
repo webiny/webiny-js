@@ -44,14 +44,13 @@ import { BlueGreenDeployments } from "@webiny/project-extensions-aws/extensions/
 import { CorePulumi } from "@webiny/project-extensions-aws/extensions/index.js";
 import { DynamoDbPitr } from "@webiny/project-extensions-aws/extensions/index.js";
 import { OpenSearch } from "@webiny/project-extensions-aws/extensions/index.js";
-import { Postgres as AwsPostgres } from "@webiny/project-extensions-aws/extensions/index.js";
-import { RdsProxy } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AuroraPostgres } from "@webiny/project-extensions-aws/extensions/index.js";
 import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/index.js";
 import { Vpc } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { DiskFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { Postgres as StandalonePostgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { S3FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
@@ -67,16 +66,6 @@ const Encryption = createHostingSwitch(
     "aws"
 );
 const Hashing = createHostingSwitch({ aws: AwsHashing, standalone: StandaloneHashing }, "aws");
-
-/*
- * The AWS version creates an Aurora PostgreSQL cluster in the core app and takes its capacity
- * settings; the standalone version connects to a database you run and takes its connection
- * settings. Falls back to the standalone version, which `Infra.Postgres` was before AWS had one.
- */
-const Postgres = createHostingSwitch(
-    { aws: AwsPostgres, standalone: StandalonePostgres },
-    "standalone"
-);
 
 /*
  * Standalone file storage, one tag per storage, each with every setting it needs:
@@ -112,13 +101,10 @@ export const Infra = {
     Encryption,
     EnvVar,
 
-    // Every hosting type, with a different version per hosting type.
-    Postgres,
-
     // AWS.
     Vpc,
-    // Alias of Infra.Core.RdsProxy (prefer Infra.Core.RdsProxy going forward).
-    RdsProxy,
+    // Postgres on AWS: an Aurora cluster Webiny creates. Standalone connects with `Infra.Postgres`.
+    AuroraPostgres,
     BlueGreenDeployments,
     // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
     OpenSearch,
@@ -140,6 +126,7 @@ export const Infra = {
     },
 
     // Standalone.
+    Postgres,
     Sqlite,
     Pglite,
     FileStorage,
@@ -183,7 +170,6 @@ export const Infra = {
         StackOutputValue: CoreStackOutputValue,
         DynamoDb,
         OpenSearch,
-        RdsProxy,
         S3Bucket
     }
 };
