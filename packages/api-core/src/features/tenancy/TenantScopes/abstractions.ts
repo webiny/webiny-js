@@ -24,6 +24,7 @@ export interface ITenantScope {
     resolveAll<T>(abstraction: Abstraction<T>): T[];
 }
 
+/** A tenant's scope, given to a `TenantScopes` callback: resolve that tenant's services from it. */
 export const TenantScope = createAbstraction<ITenantScope>("Tenancy/TenantScope");
 
 export namespace TenantScope {
@@ -58,6 +59,10 @@ export interface ITenantScopes {
     withEachTenant<R>(tenants: Tenant[], cb: (scope: ITenantScope) => Promise<R>): Promise<R[]>;
 }
 
+/**
+ * Run work in another tenant's scope (or the root tenant's, or each of several tenants'), resolving
+ * that tenant's services from the scope. The one sanctioned place to resolve services by hand.
+ */
 export const TenantScopes = createAbstraction<ITenantScopes>("Tenancy/TenantScopes");
 
 export namespace TenantScopes {

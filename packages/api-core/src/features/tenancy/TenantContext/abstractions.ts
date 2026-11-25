@@ -4,25 +4,15 @@ import type { Tenant } from "~/types/tenancy.js";
 export interface ITenantContext {
     /**
      * Sets the container's tenant, once: setting the same tenant again refreshes its record, and
-     * another tenant throws `TenantAlreadySetError`. Throws when called inside a `withTenant()`,
-     * `withRootTenant()` or `withEachTenant()` callback: nest another `withTenant()` call instead.
+     * another tenant throws `TenantAlreadySetError`. To work in another tenant, run the work in that
+     * tenant's scope with `TenantScopes.withTenant()`.
      */
     setTenant(tenant: Tenant): void;
-    /** The tenant switched to by the enclosing `with*` callback, or the request's tenant. */
+    /** The tenant of this container's scope. */
     getTenant(): Tenant;
-    /*
-     * The `with*` methods switch the tenant for their callback's async call chain only. Code of the
-     * same request running at the same time keeps reading the request's tenant.
-     */
-    withRootTenant<T>(cb: () => T): Promise<T>;
-    withEachTenant<TReturn>(
-        tenants: Tenant[],
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn[]>;
-    withTenant<TReturn>(tenant: Tenant, cb: (tenant: Tenant) => Promise<TReturn>): Promise<TReturn>;
 }
 
-/** Provides access to the current tenant and tenant-scoped execution. */
+/** The tenant of the current tenant scope. */
 export const TenantContext = createAbstraction<ITenantContext>("TenantContext");
 
 export namespace TenantContext {

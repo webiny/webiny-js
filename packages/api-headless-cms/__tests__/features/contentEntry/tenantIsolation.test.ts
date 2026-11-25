@@ -8,7 +8,7 @@ import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/in
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ModelFactory } from "~/features/modelBuilder/index.js";
-import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
+import { TenantScope, TenantScopes } from "@webiny/api-core/exports/api/tenancy.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
@@ -48,8 +48,8 @@ const subTenant: Tenant = {
 };
 
 /*
- * The scheduler loads a model, then switches to the tenant it publishes for with
- * `TenantContext.withTenant()`. The model it holds still says `tenant: "root"`, and storage
+ * The scheduler loads a model, then runs in the scope of the tenant it publishes for
+ * (`TenantScopes.withTenant()`). The model it holds still says `tenant: "root"`, and storage
  * operations key entries by `model.tenant`, so without stamping the current tenant onto the model
  * they read and write the root tenant's entries.
  */
@@ -68,6 +68,10 @@ describe("CMS entry tenant isolation", () => {
 
     const asSystem = <T>(cb: () => Promise<T>) =>
         container.resolve(IdentityContext).withoutAuthorization(cb);
+
+    // Runs in the sub-tenant's scope, without authorization (carried into the scope).
+    const inSubTenant = <T>(cb: (scope: TenantScope.Interface) => Promise<T>) =>
+        asSystem(() => container.resolve(TenantScopes).withTenant(subTenant, cb));
 
     const loadRootModel = async () => {
         const result = await asSystem(() =>
@@ -88,23 +92,19 @@ describe("CMS entry tenant isolation", () => {
         );
         expect(created.isOk()).toBe(true);
 
-        await container.resolve(TenantContext).withTenant(subTenant, async () => {
-            const result = await asSystem(() =>
-                container.resolve(GetEntryByIdUseCase).execute(rootModel, created.value.id)
-            );
-            expect(result.isFail()).toBe(true);
-        });
+        const result = await inSubTenant(scope =>
+            scope.resolve(GetEntryByIdUseCase).execute(rootModel, created.value.id)
+        );
+        expect(result.isFail()).toBe(true);
     });
 
     it("writes an entry into the current tenant even with a model loaded in root", async () => {
         const rootModel = await loadRootModel();
 
-        const created = await container.resolve(TenantContext).withTenant(subTenant, () =>
-            asSystem(() =>
-                container.resolve(CreateEntryUseCase).execute(rootModel, {
-                    values: { title: "Sub-tenant entry" }
-                })
-            )
+        const created = await inSubTenant(scope =>
+            scope.resolve(CreateEntryUseCase).execute(rootModel, {
+                values: { title: "Sub-tenant entry" }
+            })
         );
         expect(created.isOk()).toBe(true);
         expect(created.value.tenant).toBe("sub-tenant");
@@ -115,13 +115,9 @@ describe("CMS entry tenant isolation", () => {
         );
         expect(fromRoot.isFail()).toBe(true);
 
-        const fromSubTenant = await container
-            .resolve(TenantContext)
-            .withTenant(subTenant, () =>
-                asSystem(() =>
-                    container.resolve(GetEntryByIdUseCase).execute(rootModel, created.value.id)
-                )
-            );
+        const fromSubTenant = await inSubTenant(scope =>
+            scope.resolve(GetEntryByIdUseCase).execute(rootModel, created.value.id)
+        );
         expect(fromSubTenant.isOk()).toBe(true);
     });
 
@@ -135,13 +131,11 @@ describe("CMS entry tenant isolation", () => {
         );
         expect(created.isOk()).toBe(true);
 
-        await container.resolve(TenantContext).withTenant(subTenant, async () => {
-            const result = await asSystem(() =>
-                container.resolve(GetRevisionByIdUseCase).execute(rootModel, created.value.id)
-            );
-            expect(result.isFail()).toBe(true);
-            expect(result.error.code).toBe("Cms/Entry/NotFound");
-        });
+        const result = await inSubTenant(scope =>
+            scope.resolve(GetRevisionByIdUseCase).execute(rootModel, created.value.id)
+        );
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Cms/Entry/NotFound");
     });
 
     it("lists only the current tenant's entries with a model loaded in root", async () => {
@@ -153,31 +147,25 @@ describe("CMS entry tenant isolation", () => {
             })
         );
 
-        await container.resolve(TenantContext).withTenant(subTenant, async () => {
-            const result = await asSystem(() =>
-                container.resolve(ListLatestEntriesUseCase).execute(rootModel)
-            );
-            expect(result.isOk()).toBe(true);
-            expect(result.value.entries).toEqual([]);
-        });
+        const result = await inSubTenant(scope =>
+            scope.resolve(ListLatestEntriesUseCase).execute(rootModel)
+        );
+        expect(result.isOk()).toBe(true);
+        expect(result.value.entries).toEqual([]);
     });
 
     it("publishes into the current tenant with a model loaded in root", async () => {
         const rootModel = await loadRootModel();
 
-        await container.resolve(TenantContext).withTenant(subTenant, async () => {
-            const created = await asSystem(() =>
-                container.resolve(CreateEntryUseCase).execute(rootModel, {
-                    values: { title: "Sub-tenant entry" }
-                })
-            );
+        const published = await inSubTenant(async scope => {
+            const created = await scope.resolve(CreateEntryUseCase).execute(rootModel, {
+                values: { title: "Sub-tenant entry" }
+            });
             expect(created.isOk()).toBe(true);
 
-            const published = await asSystem(() =>
-                container.resolve(PublishEntryUseCase).execute(rootModel, created.value.id)
-            );
-            expect(published.isOk()).toBe(true);
-            expect(published.value.tenant).toBe("sub-tenant");
+            return scope.resolve(PublishEntryUseCase).execute(rootModel, created.value.id);
         });
+        expect(published.isOk()).toBe(true);
+        expect(published.value.tenant).toBe("sub-tenant");
     });
 });

@@ -283,6 +283,37 @@ export const MyPresenter = Abstraction.createImplementation({
 });
 ```
 
+### Another tenant's services (`TenantScopes`) — API only
+
+Everything injected into a constructor belongs to the current tenant: its repositories, storage and caches act on that tenant. To work in another tenant (the root tenant, or each of a list of tenants), inject `TenantScopes` and run the work in that tenant's scope. The callback gets a `TenantScope`, and you resolve the services you need from it. This is the one sanctioned place to resolve services by hand: an injected service of the current tenant can't be used in another tenant's scope (it throws `StaleKernelExecutionError`).
+
+```ts
+import { TenantScopes } from "webiny/api/tenancy";
+import { GetApiKeyBySlugUseCase } from "webiny/api/security/api-key";
+
+class SharedRootTenantApiKeyImpl implements ApiKeyFactory.Interface {
+  constructor(private tenantScopes: TenantScopes.Interface) {}
+
+  async execute() {
+    // The key is stored in the root tenant: read it in the root tenant's scope.
+    const result = await this.tenantScopes.withRootTenant(scope => {
+      return scope.resolve(GetApiKeyBySlugUseCase).execute("frontend-integration");
+    });
+    // ...
+  }
+}
+
+export default ApiKeyFactory.createImplementation({
+  implementation: SharedRootTenantApiKeyImpl,
+  dependencies: [TenantScopes]
+});
+```
+
+- `withTenant(tenant, cb)`, `withRootTenant(cb)`, `withEachTenant(tenants, cb)`.
+- Use `scope.resolveAll(Abstraction)` where you would inject `[Abstraction, { multiple: true }]`.
+- Resolve services only inside the callback, and don't let them escape it. Plain values (ids, an identity, results) may cross scopes.
+- The callback runs as the caller's identity, checked against the target tenant's permissions.
+
 ## Container API Reference
 
 ### Registration
@@ -369,6 +400,7 @@ container.registerComposite(ValidatorComposite);
 7. **BuildParam declarations belong inside the extension's `Extension.tsx`**, not in `webiny.config.tsx`. Expose required params as React props on the extension component so the consumer decides where values come from (see `webiny-full-stack-architect` skill for the full pattern).
 8. For multi-injection, type the constructor param as `T[]` and use `[Abstraction, { multiple: true }]` in the dependencies array.
 9. Each implementation of a multi-bound abstraction is a separate `container.register()` call — they accumulate.
+10. Never resolve services by hand, with one exception: to work in another tenant, inject `TenantScopes` and resolve that tenant's services from the `TenantScope` its callback gets (see above).
 
 ## Related Skills
 

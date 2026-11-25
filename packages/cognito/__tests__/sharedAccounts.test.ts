@@ -34,19 +34,44 @@ import { MockAuthorizer } from "./mocks/MockAuthorizer.js";
 const acme = { id: "acme", name: "Acme", isInstalled: true } as Tenant;
 
 describe("Admin Users (Cognito): one account across tenants", () => {
+    /** The container of the tenant the test is in: one per tenant, on the same storage. */
     let container: Container;
+    let containers: Map<string, Container>;
+    let identity: AuthenticatedIdentity | undefined;
     let mockCognitoService: MockCognitoService;
 
     const storage = () => getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
 
+    const createTenantContainer = (tenant: Tenant) => {
+        const tenantContainer = new Container();
+        const testLicense = License.fromLicenseDto(createTestWcpLicense());
+
+        registerApiCoreStorageOperations(tenantContainer, storage());
+        tenantContainer.registerInstance(Logger, new NullLogger());
+        ApiCoreFeature.register(tenantContainer, { wcpLicense: testLicense });
+        tenantContainer.registerInstance(Authorizer, new MockAuthorizer());
+        tenantContainer.resolve(TenantContext).setTenant(tenant);
+        tenantContainer.registerInstance(CognitoService, mockCognitoService);
+        CognitoApiFeature.register(tenantContainer);
+        return tenantContainer;
+    };
+
+    /** Continues in `tenant`'s container, as the signed-in identity. */
     const inTenant = (tenant: Tenant) => {
-        container.resolve(TenantContext).setTenant(tenant);
+        let next = containers.get(tenant.id);
+        if (!next) {
+            next = createTenantContainer(tenant);
+            containers.set(tenant.id, next);
+        }
+        container = next;
+        if (identity) {
+            container.resolve(IdentityContext).setIdentity(identity);
+        }
     };
 
     const signInAs = (id: string) => {
-        container
-            .resolve(IdentityContext)
-            .setIdentity(new AuthenticatedIdentity({ id, displayName: id, type: "admin" }));
+        identity = new AuthenticatedIdentity({ id, displayName: id, type: "admin" });
+        container.resolve(IdentityContext).setIdentity(identity);
     };
 
     /** Creates userA in root, then links the same account in Acme. */
@@ -65,32 +90,20 @@ describe("Admin Users (Cognito): one account across tenants", () => {
     };
 
     beforeEach(async () => {
-        container = new Container();
-
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const testLicense = License.fromLicenseDto(createTestWcpLicense());
-
-        registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        container.registerInstance(Logger, new NullLogger());
-        ApiCoreFeature.register(container, { wcpLicense: testLicense });
-        container.registerInstance(Authorizer, new MockAuthorizer());
+        containers = new Map();
+        identity = undefined;
+        mockCognitoService = new MockCognitoService();
 
         inTenant(RootTenantValue.create());
-
-        mockCognitoService = new MockCognitoService();
-        container.registerInstance(CognitoService, mockCognitoService);
-
-        CognitoApiFeature.register(container);
     });
 
     describe("creating a user whose email already has an account", () => {
         it("refuses, so the account has to be linked, and creates nothing", async () => {
-            const createUser = container.resolve(CreateUserUseCase);
-            const rootResult = await createUser.execute(adminUsers.userA);
+            const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
             const createUserSpy = vi.spyOn(mockCognitoService, "createUser");
 
             inTenant(acme);
-            const result = await createUser.execute({
+            const result = await container.resolve(CreateUserUseCase).execute({
                 ...adminUsers.userA,
                 password: "AnotherPass123!"
             });
@@ -230,9 +243,9 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
         it("refuses an administrator without permission to manage users", async () => {
             await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
-            vi.spyOn(container.resolve(IdentityContext), "getPermission").mockResolvedValue(null);
 
             inTenant(acme);
+            vi.spyOn(container.resolve(IdentityContext), "getPermission").mockResolvedValue(null);
             const result = await container
                 .resolve(LinkUserUseCase)
                 .execute({ email: adminUsers.userA.email });
@@ -268,12 +281,12 @@ describe("Admin Users (Cognito): one account across tenants", () => {
     describe("installing a tenant", () => {
         it("links the new tenant's admin when their email already has an account", async () => {
             const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
-            container.registerInstance(GetRoleUseCase, {
-                execute: async () => Result.ok({ id: "full-access-role" })
-            } as unknown as GetRoleUseCase.Interface);
             const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
 
             inTenant(acme);
+            container.registerInstance(GetRoleUseCase, {
+                execute: async () => Result.ok({ id: "full-access-role" })
+            } as unknown as GetRoleUseCase.Interface);
             const installer = container
                 .resolveAll(AppInstaller)
                 .find(installer => installer.appName === "Cognito")!;

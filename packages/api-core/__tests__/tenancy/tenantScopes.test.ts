@@ -24,6 +24,12 @@ import {
     UnknownTenantStorageError
 } from "~/features/tenancy/TenantScopes/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
+import { AuthenticatedIdentity } from "~/features/security/IdentityContext/index.js";
+import { PermissionsProcessor } from "~/features/security/authorization/GroupsTeamsAuthorizer/abstractions.js";
+import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
+import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
+import { AppInstaller, InstallTenantUseCase } from "~/features/tenancy/InstallTenant/index.js";
+import type { ITenantPermission } from "~/features/security/authorization/GroupsTeamsAuthorizer/abstractions.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import type { Tenant, TenancyStorageOperations } from "~/types/tenancy.js";
@@ -93,7 +99,7 @@ type Probe = (ctx: ProbeContext) => Promise<unknown>;
  * request runs in the scope of its `x-tenant` header's tenant. The probe runs in place of the
  * router, with services resolved for the handler chain, and its result is the response.
  */
-const createProbeHandler = () => {
+const createProbeHandler = (options: { scope?: (scope: Container) => void } = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const tenancy = new InMemoryTenancyStorageOperations([
         createTenant("root"),
@@ -108,10 +114,10 @@ const createProbeHandler = () => {
 
     class ProbeDecorator implements TestHttpInputHandler.Interface {
         constructor(
-            private tenantScopes: TenantScopes.Interface,
-            private tenantContext: TenantContext.Interface,
-            private identityContext: IdentityContext.Interface,
-            private container: Container,
+            public readonly tenantScopes: TenantScopes.Interface,
+            public readonly tenantContext: TenantContext.Interface,
+            public readonly identityContext: IdentityContext.Interface,
+            public readonly container: Container,
             // The router it replaces is never called.
             private decoratee: TestHttpInputHandler.Interface
         ) {}
@@ -147,6 +153,7 @@ const createProbeHandler = () => {
             container.registerInstance(TenantScopeRegistration, {
                 register: async scope => {
                     ApiCoreFeature.register(scope, { tenantScope: true });
+                    options.scope?.(scope);
                     scopeRegistrations.push(String(scopeRegistrations.length));
                 }
             });
@@ -165,6 +172,52 @@ const createProbeHandler = () => {
         getRequestContainer: () => requestContainers[requestContainers.length - 1],
         countScopeRegistrations: () => scopeRegistrations.length
     };
+};
+
+/** Permissions of the scope it is resolved in: only the root tenant grants any. */
+const createRootOnlyPermissions = (processedIn: string[]) => {
+    class RootOnlyPermissions implements PermissionsProcessor.Interface {
+        constructor(private tenantContext: TenantContext.Interface) {}
+
+        async getPermissions(): Promise<ITenantPermission[] | null> {
+            const tenant = this.tenantContext.getTenant().id;
+            processedIn.push(tenant);
+            return tenant === "root" ? [{ name: "reports.read", _src: "root" }] : null;
+        }
+    }
+    return PermissionsProcessor.createImplementation({
+        implementation: RootOnlyPermissions,
+        dependencies: [TenantContext]
+    });
+};
+
+/** An app installer that records the tenant of the scope it runs in. */
+const createInstaller = (
+    appName: string,
+    log: string[],
+    options: { dependsOn?: string[]; fails?: boolean } = {}
+) => {
+    class RecordingInstaller implements AppInstaller.Interface {
+        readonly appName = appName;
+        readonly dependsOn = options.dependsOn ?? [];
+
+        constructor(private tenantContext: TenantContext.Interface) {}
+
+        async install(): Promise<void> {
+            log.push(`install ${appName} in ${this.tenantContext.getTenant().id}`);
+            if (options.fails) {
+                throw new Error(`${appName} failed`);
+            }
+        }
+
+        async uninstall(): Promise<void> {
+            log.push(`uninstall ${appName} in ${this.tenantContext.getTenant().id}`);
+        }
+    }
+    return AppInstaller.createImplementation({
+        implementation: RecordingInstaller,
+        dependencies: [TenantContext]
+    });
 };
 
 const getTenant = async (ctx: ProbeContext, id: string): Promise<Tenant> => {
@@ -346,5 +399,123 @@ describe("Tenant scopes", () => {
         expect(result.refreshed).toBe("Acme Renamed");
         expect(result.error).toBeInstanceOf(TenantAlreadySetError);
         expect(result.tenant).toBe("acme");
+    });
+
+    it("reads a role only in the scope of the tenant it was created in", async () => {
+        const { run } = createProbeHandler();
+
+        const result = await run(null, async ctx => {
+            const created = await ctx.identityContext.withoutAuthorization(() => {
+                return ctx.container.resolve(CreateRoleUseCase).execute({
+                    name: "Files reader",
+                    slug: "files-reader",
+                    description: "",
+                    permissions: [{ name: "fm.file", rwd: "r" }]
+                });
+            });
+            const role = created.value!;
+            const inRoot = await ctx.container.resolve(RolesRepository).get({ id: role.id });
+
+            const acme = await getTenant(ctx, "acme");
+            const inAcme = await ctx.tenantScopes.withTenant(acme, async scope => {
+                const repository = scope.resolve(RolesRepository);
+                return {
+                    byId: (await repository.get({ id: role.id })).isOk(),
+                    bySlug: (await repository.get({ slug: "files-reader" })).isOk()
+                };
+            });
+            return { inRoot: inRoot.isOk(), inAcme };
+        });
+
+        expect(result).toEqual({ inRoot: true, inAcme: { byId: false, bySlug: false } });
+    });
+
+    it("reads a sub-tenant user's permissions from the parent tenant's scope", async () => {
+        const processedIn: string[] = [];
+        const { run } = createProbeHandler({
+            scope: scope => scope.register(createRootOnlyPermissions(processedIn))
+        });
+
+        const permissions = await run("acme", async ctx => {
+            processedIn.length = 0;
+            const user = new AuthenticatedIdentity({
+                id: "parent-user",
+                displayName: "Parent user",
+                type: "admin",
+                context: { canAccessTenant: true }
+            });
+            return ctx.identityContext.withIdentity(user, () => {
+                return ctx.identityContext.listPermissions();
+            });
+        });
+
+        // acme's processor finds nothing; root's, built in root's scope, grants the permissions.
+        expect(processedIn).toEqual(["acme", "root"]);
+        expect(permissions).toContainEqual(expect.objectContaining({ name: "reports.read" }));
+    });
+
+    it("installs a tenant with the installers of its own scope", async () => {
+        const log: string[] = [];
+        const { run, tenancy } = createProbeHandler({
+            scope: scope => scope.register(createInstaller("Files", log))
+        });
+        const fresh = createTenant("fresh", { isInstalled: false, status: "enabled" });
+        await tenancy.createTenant(fresh);
+
+        const result = await run(null, async ctx => {
+            const installed = await ctx.container.resolve(InstallTenantUseCase).execute({
+                tenant: fresh,
+                installationInput: [{ app: "Files", data: {} }]
+            });
+            // The always-run Security installer created the default roles in the new tenant.
+            const roles = await ctx.tenantScopes.withTenant(fresh, async scope => {
+                const listed = await scope.resolve(RolesRepository).list({});
+                return listed.value?.length ?? 0;
+            });
+            return { ok: installed.isOk(), roles };
+        });
+
+        expect(result.ok).toBe(true);
+        expect(result.roles).toBeGreaterThan(0);
+        expect(log).toEqual(["install Files in fresh"]);
+        expect(await tenancy.getTenantsByIds(["fresh"])).toMatchObject([
+            { id: "fresh", isInstalled: true, status: "enabled" }
+        ]);
+    });
+
+    it("rolls a failed tenant install back in the new tenant's scope", async () => {
+        const log: string[] = [];
+        const { run, tenancy } = createProbeHandler({
+            scope: scope => {
+                scope.register(createInstaller("Files", log));
+                scope.register(
+                    createInstaller("Pages", log, { dependsOn: ["Files"], fails: true })
+                );
+            }
+        });
+        const broken = createTenant("broken", { isInstalled: false, status: "enabled" });
+        await tenancy.createTenant(broken);
+
+        const result = await run(null, async ctx => {
+            const installed = await ctx.container.resolve(InstallTenantUseCase).execute({
+                tenant: broken,
+                installationInput: [
+                    { app: "Files", data: {} },
+                    { app: "Pages", data: {} }
+                ]
+            });
+            const data = installed.error?.data as { failedApp?: string } | undefined;
+            return { failedApp: data?.failedApp };
+        });
+
+        expect(result.failedApp).toBe("Pages");
+        expect(log).toEqual([
+            "install Files in broken",
+            "install Pages in broken",
+            "uninstall Files in broken"
+        ]);
+        expect(await tenancy.getTenantsByIds(["broken"])).toMatchObject([
+            { id: "broken", isInstalled: false }
+        ]);
     });
 });

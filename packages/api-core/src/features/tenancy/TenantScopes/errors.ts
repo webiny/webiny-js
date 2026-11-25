@@ -24,3 +24,21 @@ export class MissingTenantScopeRegistrationError extends BaseError {
         });
     }
 }
+
+/**
+ * A container that holds the whole API for one tenant (a test harness that builds no tenant scopes)
+ * was asked for another tenant's scope.
+ */
+export class NoTenantScopesError extends BaseError<{
+    tenantId: string | undefined;
+    requestedTenantId: string;
+}> {
+    override readonly code = "Tenancy/NoTenantScopes" as const;
+
+    constructor(tenantId: string | undefined, requestedTenantId: string) {
+        super({
+            message: `This container holds the API for tenant "${tenantId ?? "(none)"}" only and builds no tenant scopes, so it can't run work in tenant "${requestedTenantId}". Build the request with tenant scopes: registerApiRequestStack(), or createTenantScopedChild() in tests.`,
+            data: { tenantId, requestedTenantId }
+        });
+    }
+}

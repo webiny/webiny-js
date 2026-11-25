@@ -2,6 +2,14 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { TenancyFeature } from "~/features/tenancy/TenancyFeature.js";
+import {
+    TenantAlreadySetError,
+    TenantIsDisabledError
+} from "~/features/tenancy/TenantContext/errors.js";
+import { SingleContainerTenantScopes } from "~/features/tenancy/TenantScopes/SingleContainerTenantScopes.js";
+import { TenantScopes } from "~/features/tenancy/TenantScopes/abstractions.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import { NoTenantScopesError } from "~/features/tenancy/TenantScopes/errors.js";
 import type {
     Tenant,
     TenancyStorageOperations as ITenancyStorageOperations
@@ -17,7 +25,7 @@ const createTenant = (id: string, parent: string | null): Tenant => {
         description: "",
         settings: {},
         tags: [],
-        status: "active",
+        status: "enabled",
         savedOn: new Date().toISOString()
     };
 };
@@ -52,116 +60,73 @@ class MockTenancyStorageOperations implements ITenancyStorageOperations {
     }
 }
 
-describe("TenantContext.withTenant", () => {
+describe("TenantContext", () => {
     let tenantContext: TenantContext.Interface;
 
     beforeEach(() => {
         const container = new Container();
         TenancyFeature.register(container, new MockTenancyStorageOperations());
         tenantContext = container.resolve(TenantContext);
+    });
+
+    it("has no tenant until one is set", () => {
+        expect(tenantContext.getTenant()).toBeNull();
+    });
+
+    it("sets the tenant once, and refreshes its record for the same id", () => {
         tenantContext.setTenant(createTenant("root", null));
+        tenantContext.setTenant({ ...createTenant("root", null), name: "Renamed root" });
+
+        expect(tenantContext.getTenant().name).toBe("Renamed root");
     });
 
-    it("runs the callback in the given tenant and restores the initial one", async () => {
-        const result = await tenantContext.withTenant(createTenant("sub", "root"), async () => {
-            return tenantContext.getTenant().id;
-        });
+    it("refuses another tenant once one is set", () => {
+        tenantContext.setTenant(createTenant("root", null));
 
-        expect(result).toBe("sub");
+        expect(() => tenantContext.setTenant(createTenant("sub", "root"))).toThrow(
+            TenantAlreadySetError
+        );
         expect(tenantContext.getTenant().id).toBe("root");
     });
 
-    it("restores the initial tenant when the callback throws", async () => {
-        await expect(
-            tenantContext.withTenant(createTenant("sub", "root"), async () => {
-                throw new Error("Boom!");
-            })
-        ).rejects.toThrow("Boom!");
+    it("refuses a disabled tenant", () => {
+        const disabled: Tenant = { ...createTenant("sub", "root"), status: "disabled" };
 
-        expect(tenantContext.getTenant().id).toBe("root");
+        expect(() => tenantContext.setTenant(disabled)).toThrow(TenantIsDisabledError);
     });
 });
 
 /*
- * Work outside an HTTP request (a background task, a scheduled action, a scheduled EventBridge
- * event) starts with no tenant. Restoring that afterwards used to throw, after the callback had
- * already done its work.
+ * A container that holds the whole API for one tenant, as the test harnesses without tenant scopes
+ * build it: its only scope is itself.
  */
-describe("TenantContext with no tenant set", () => {
-    let tenantContext: TenantContext.Interface;
+describe("TenantScopes of a single container", () => {
+    let container: Container;
+    let tenantScopes: TenantScopes.Interface;
 
     beforeEach(() => {
-        const container = new Container();
+        container = new Container();
         TenancyFeature.register(container, new MockTenancyStorageOperations());
-        tenantContext = container.resolve(TenantContext);
+        container.resolve(TenantContext).setTenant(createTenant("root", null));
+        container.registerInstance(RequestContainer, container);
+        container.register(SingleContainerTenantScopes).inSingletonScope();
+        tenantScopes = container.resolve(TenantScopes);
     });
 
-    it("withTenant runs the callback and leaves no tenant set", async () => {
-        const tenant = createTenant("sub", "root");
-        const result = await tenantContext.withTenant(tenant, async () => {
-            return tenantContext.getTenant().id;
+    it("runs the container's own tenant in the container", async () => {
+        const result = await tenantScopes.withRootTenant(async scope => {
+            return {
+                tenant: scope.tenant.id,
+                resolved: scope.resolve(TenantContext) === container.resolve(TenantContext)
+            };
         });
 
-        expect(result).toBe("sub");
-        expect(tenantContext.getTenant()).toBeNull();
+        expect(result).toEqual({ tenant: "root", resolved: true });
     });
 
-    it("withRootTenant runs the callback and leaves no tenant set", async () => {
-        const result = await tenantContext.withRootTenant(async () => {
-            return tenantContext.getTenant().id;
-        });
-
-        expect(result).toBe("root");
-        expect(tenantContext.getTenant()).toBeNull();
-    });
-
-    it("withEachTenant runs the callback per tenant and leaves no tenant set", async () => {
-        const tenants = [createTenant("a", "root"), createTenant("b", "root")];
-        const result = await tenantContext.withEachTenant(tenants, async tenant => {
-            return tenant.id;
-        });
-
-        expect(result).toEqual(["a", "b"]);
-        expect(tenantContext.getTenant()).toBeNull();
-    });
-});
-
-describe("TenantContext switches inside a callback", () => {
-    let tenantContext: TenantContext.Interface;
-
-    beforeEach(() => {
-        const container = new Container();
-        TenancyFeature.register(container, new MockTenancyStorageOperations());
-        tenantContext = container.resolve(TenantContext);
-        tenantContext.setTenant(createTenant("root", null));
-    });
-
-    it("refuses setTenant() inside a withTenant() callback", async () => {
+    it("refuses another tenant", async () => {
         await expect(
-            tenantContext.withTenant(createTenant("sub", "root"), async () => {
-                tenantContext.setTenant(createTenant("other", "root"));
-            })
-        ).rejects.toThrow("TenantContext.setTenant() was called inside a withTenant()");
-        expect(tenantContext.getTenant().id).toBe("root");
-    });
-
-    it("keeps a nested switch in one Promise.all branch out of the other branch", async () => {
-        const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-        const [nested, sibling] = await tenantContext.withTenant(
-            createTenant("sub", "root"),
-            async () => {
-                return Promise.all([
-                    tenantContext.withTenant(createTenant("nested", "root"), async () => {
-                        await wait(20);
-                        return tenantContext.getTenant().id;
-                    }),
-                    wait(5).then(() => tenantContext.getTenant().id)
-                ]);
-            }
-        );
-
-        expect(nested).toBe("nested");
-        expect(sibling).toBe("sub");
+            tenantScopes.withTenant(createTenant("sub", "root"), async () => "ran")
+        ).rejects.toBeInstanceOf(NoTenantScopesError);
     });
 });

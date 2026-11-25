@@ -33,6 +33,8 @@ import {
     TenantNeutralRequestContextFeature,
     TenantScopeRequestContextFeature
 } from "~/features/requestContext/index.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import { SingleContainerTenantScopes } from "~/features/tenancy/TenantScopes/SingleContainerTenantScopes.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
 import { SecuritySchemaFactory } from "~/graphql/security/SecuritySchemaFactory.js";
 import { UsersSchemaFactory } from "~/graphql/users/UsersSchemaFactory.js";
@@ -63,12 +65,16 @@ export const ApiCoreFeature = createFeature({
         HasherFeature.register(container);
         FeatureFlagsFeature.register(container);
         /*
-         * In a tenant scope, the tenant registry and the raw request values come from the request
-         * container (`TenantNeutralRequestFeature`), shared by every scope of the request.
+         * In a tenant scope, the tenant registry, the raw request values and `TenantScopes` come
+         * from the request container (`TenantNeutralRequestFeature`), shared by every scope of the
+         * request. A container that holds the whole API (a test harness without tenant scopes) has
+         * its own, and its `TenantScopes` serves only the container's own tenant.
          */
         if (!config.tenantScope) {
             TenantRegistryFeature.register(container, storageOperations.tenancyStorageOperations);
             TenantNeutralRequestContextFeature.register(container);
+            container.registerInstance(RequestContainer, container);
+            container.register(SingleContainerTenantScopes).inSingletonScope();
         }
         TenantScopeTenancyFeature.register(container);
         SecurityFeature.register(container, storageOperations.securityStorageOperations);

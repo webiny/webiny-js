@@ -35,24 +35,6 @@ class FaultyTenantContext implements TenantContext.Interface {
     public setTenant(tenant: Tenant): void {
         this.decoratee.setTenant(tenant);
     }
-
-    public withRootTenant<T>(cb: () => T): Promise<T> {
-        return this.decoratee.withRootTenant(cb);
-    }
-
-    public withEachTenant<TReturn>(
-        tenants: Tenant[],
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn[]> {
-        return this.decoratee.withEachTenant(tenants, cb);
-    }
-
-    public withTenant<TReturn>(
-        tenant: Tenant,
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn> {
-        return this.decoratee.withTenant(tenant, cb);
-    }
 }
 
 /**

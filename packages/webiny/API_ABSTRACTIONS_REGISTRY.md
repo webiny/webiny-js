@@ -169,6 +169,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | Abstraction                      | Source                                                     |
 | -------------------------------- | ---------------------------------------------------------- |
 | `TenantContext`                  | `@webiny/api-core/features/tenancy/TenantContext/index.js` |
+| `TenantScope`                    | `@webiny/api-core/features/tenancy/TenantScopes/index.js`  |
+| `TenantScopes`                   | `@webiny/api-core/features/tenancy/TenantScopes/index.js`  |
 | `CreateTenantUseCase`            | `@webiny/api-core/features/tenancy/CreateTenant/index.js`  |
 | `CreateTenantRepository`         | `@webiny/api-core/features/tenancy/CreateTenant/index.js`  |
 | `GetTenantByIdUseCase`           | `@webiny/api-core/features/tenancy/GetTenantById/index.js` |

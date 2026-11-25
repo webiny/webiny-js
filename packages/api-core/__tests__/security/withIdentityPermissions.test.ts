@@ -58,28 +58,6 @@ class StubTenantContext implements TenantContext.Interface {
     setTenant(tenant: Tenant): void {
         this.tenant = tenant;
     }
-
-    async withRootTenant<T>(cb: () => T): Promise<T> {
-        return cb();
-    }
-
-    async withEachTenant<TReturn>(
-        tenants: Tenant[],
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn[]> {
-        const results: TReturn[] = [];
-        for (const tenant of tenants) {
-            results.push(await cb(tenant));
-        }
-        return results;
-    }
-
-    async withTenant<TReturn>(
-        tenant: Tenant,
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn> {
-        return cb(tenant);
-    }
 }
 
 const createIdentity = (id: string): AuthenticatedIdentity => {

@@ -29,18 +29,44 @@ import { MockAuthorizer } from "./mocks/MockAuthorizer.js";
 const acme = { id: "acme", name: "Acme", isInstalled: true } as Tenant;
 
 describe("Admin Users (Cognito): resetting a user's MFA", () => {
+    /** The container of the tenant the test is in: one per tenant, on the same storage. */
     let container: Container;
+    let containers: Map<string, Container>;
+    let identity: AuthenticatedIdentity | undefined;
     let mockCognitoService: MockCognitoService;
     let mockAuthorizer: MockAuthorizer;
 
+    const createTenantContainer = (tenant: Tenant) => {
+        const tenantContainer = new Container();
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const testLicense = License.fromLicenseDto(createTestWcpLicense());
+
+        registerApiCoreStorageOperations(tenantContainer, apiCoreStorage.storageOperations);
+        tenantContainer.registerInstance(Logger, new NullLogger());
+        ApiCoreFeature.register(tenantContainer, { wcpLicense: testLicense });
+        tenantContainer.registerInstance(Authorizer, mockAuthorizer);
+        tenantContainer.resolve(TenantContext).setTenant(tenant);
+        tenantContainer.registerInstance(CognitoService, mockCognitoService);
+        CognitoApiFeature.register(tenantContainer);
+        return tenantContainer;
+    };
+
+    /** Continues in `tenant`'s container, as the signed-in identity. */
     const inTenant = (tenant: Tenant) => {
-        container.resolve(TenantContext).setTenant(tenant);
+        let next = containers.get(tenant.id);
+        if (!next) {
+            next = createTenantContainer(tenant);
+            containers.set(tenant.id, next);
+        }
+        container = next;
+        if (identity) {
+            container.resolve(IdentityContext).setIdentity(identity);
+        }
     };
 
     const signInAs = (id: string) => {
-        container
-            .resolve(IdentityContext)
-            .setIdentity(new AuthenticatedIdentity({ id, displayName: id, type: "admin" }));
+        identity = new AuthenticatedIdentity({ id, displayName: id, type: "admin" });
+        container.resolve(IdentityContext).setIdentity(identity);
     };
 
     const resetMfa = (id: string) => container.resolve(ResetUserMfaUseCase).execute(id);
@@ -52,23 +78,12 @@ describe("Admin Users (Cognito): resetting a user's MFA", () => {
     };
 
     beforeEach(async () => {
-        container = new Container();
-
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const testLicense = License.fromLicenseDto(createTestWcpLicense());
-
-        registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        container.registerInstance(Logger, new NullLogger());
-        ApiCoreFeature.register(container, { wcpLicense: testLicense });
+        containers = new Map();
+        identity = undefined;
         mockAuthorizer = new MockAuthorizer();
-        container.registerInstance(Authorizer, mockAuthorizer);
+        mockCognitoService = new MockCognitoService();
 
         inTenant(RootTenantValue.create());
-
-        mockCognitoService = new MockCognitoService();
-        container.registerInstance(CognitoService, mockCognitoService);
-
-        CognitoApiFeature.register(container);
     });
 
     it("deletes the TOTP software token of the user's Cognito account", async () => {

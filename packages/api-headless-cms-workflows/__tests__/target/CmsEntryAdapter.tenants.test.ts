@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import { CreateTenantUseCase } from "@webiny/api-core/features/tenancy/CreateTenant/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateUserUseCase } from "@webiny/api-core/features/users/CreateUser/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
@@ -39,13 +40,16 @@ const createChildTenant = async (context: CmsContext, tenantId: string) => {
     );
 };
 
-/** Stores a real admin user in the current tenant, or in `tenant` (setup, so without authorization). */
+/**
+ * Stores a real admin user in the current tenant, or in `tenant`'s scope (setup, so without
+ * authorization).
+ */
 const storeUser = async (context: CmsContext, id: string, tenant?: Tenant) => {
-    const tenantContext = context.container.resolve(TenantContext);
-    await tenantContext.withTenant(tenant ?? tenantContext.getTenant(), async () => {
-        await context.container.resolve(IdentityContext).withoutAuthorization(async () => {
+    const current = context.container.resolve(TenantContext).getTenant();
+    await context.container.resolve(TenantScopes).withTenant(tenant ?? current, async scope => {
+        await scope.resolve(IdentityContext).withoutAuthorization(async () => {
             expectOk(
-                await context.container.resolve(CreateUserUseCase).execute({
+                await scope.resolve(CreateUserUseCase).execute({
                     id,
                     email: `${id}@webiny.test`,
                     firstName: id,

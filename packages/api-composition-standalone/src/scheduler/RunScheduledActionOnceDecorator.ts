@@ -6,7 +6,7 @@ import type { IScheduledActionEventPayload } from "@webiny/api-kernel-core";
 import type { IScheduledActionResult } from "@webiny/api-kernel-core";
 import type { InputContext } from "@webiny/api-kernel-core";
 import type { NextFunction } from "@webiny/api-kernel-core";
-import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
+import { GetTenantByIdUseCase, TenantScopes } from "@webiny/api-core/exports/api/tenancy.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
@@ -54,8 +54,7 @@ class RunScheduledActionOnceDecoratorImpl implements ScheduledActionInputHandler
     public constructor(
         private readonly getTenantById: GetTenantByIdUseCase.Interface,
         private readonly tenantContext: TenantContext.Interface,
-        private readonly identityContext: IdentityContext.Interface,
-        private readonly getScheduledAction: GetScheduledActionUseCase.Interface,
+        private readonly tenantScopes: TenantScopes.Interface,
         private readonly store: GlobalKeyValueStore.Interface,
         private readonly decoratee: ScheduledActionInputHandler.Interface
     ) {}
@@ -99,10 +98,10 @@ class RunScheduledActionOnceDecoratorImpl implements ScheduledActionInputHandler
             throw tenantResult.error;
         }
 
-        return this.tenantContext.withTenant(tenantResult.value, () => {
+        return this.tenantScopes.withTenant(tenantResult.value, scope => {
             // GetScheduledAction checks permissions, and nobody is signed in when a timer fires.
-            return this.identityContext.withoutAuthorization(async () => {
-                const result = await this.getScheduledAction.execute({
+            return scope.resolve(IdentityContext).withoutAuthorization(async () => {
+                const result = await scope.resolve(GetScheduledActionUseCase).execute({
                     id: input.id,
                     namespace: input.namespace
                 });
@@ -145,11 +144,5 @@ class RunScheduledActionOnceDecoratorImpl implements ScheduledActionInputHandler
 
 export const RunScheduledActionOnceDecorator = ScheduledActionInputHandler.createDecorator({
     decorator: RunScheduledActionOnceDecoratorImpl,
-    dependencies: [
-        GetTenantByIdUseCase,
-        TenantContext,
-        IdentityContext,
-        GetScheduledActionUseCase,
-        GlobalKeyValueStore
-    ]
+    dependencies: [GetTenantByIdUseCase, TenantContext, TenantScopes, GlobalKeyValueStore]
 });
