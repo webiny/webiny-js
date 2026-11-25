@@ -34,6 +34,9 @@ const toBody = (request: AdminAssistantRequest): Record<string, unknown> => {
     if (request.toolResults?.length) {
         body["toolResults"] = request.toolResults;
     }
+    if (request.controls) {
+        body["controls"] = request.controls;
+    }
 
     return body;
 };

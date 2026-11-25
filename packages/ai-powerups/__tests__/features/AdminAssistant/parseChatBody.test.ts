@@ -118,3 +118,31 @@ describe("parseChatBody client tools", () => {
         expect(params?.clientTools).toEqual([]);
     });
 });
+
+describe("parseChatBody composer controls", () => {
+    it("keeps what the composer controls are set to", () => {
+        const controls = { promptContext: { projectId: "velo" } };
+        const params = parseChatBody({ prompt: "build the page", controls });
+
+        expect(params?.controls).toEqual(controls);
+    });
+
+    it("keeps them on a decision too, since the resumed run builds its instructions again", () => {
+        const controls = { promptContext: { projectId: "velo" } };
+        const params = parseChatBody({
+            chatId: "chat-1",
+            approvals: [{ approvalId: "a1", approved: true }],
+            controls
+        });
+
+        expect(params?.controls).toEqual(controls);
+    });
+
+    it("drops controls too big to be settings, and still takes the question", () => {
+        const controls = { promptContext: { projectId: "x".repeat(5000) } };
+        const params = parseChatBody({ prompt: "build the page", controls });
+
+        expect(params?.prompt).toBe("build the page");
+        expect(params?.controls).toBeUndefined();
+    });
+});

@@ -34,6 +34,7 @@ import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
 import { AdminAssistantFeature } from "~/features/adminAssistant/index.js";
 import { AssistantPageContextFeature } from "~/features/assistantPageContext/index.js";
 import { AssistantClientToolsFeature } from "~/features/assistantClientTools/index.js";
+import { AssistantComposerControlsFeature } from "~/features/assistantComposerControls/index.js";
 import { AiChatsFeature } from "~/features/aiChats/index.js";
 import { AiChatsPanelFeature } from "~/presentation/aiChats/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
@@ -81,6 +82,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     AiChatsFeature.register(container);
     AssistantPageContextFeature.register(container);
     AssistantClientToolsFeature.register(container);
+    AssistantComposerControlsFeature.register(container);
     AdminAssistantFeature.register(container);
     AiChatsPanelFeature.register(container);
     CommandPaletteFeature.register(container);

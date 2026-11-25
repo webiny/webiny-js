@@ -55,6 +55,11 @@ export interface AdminAssistantParams {
     clientTools?: ClientToolDeclaration[];
     /** Results of the client tool calls the chat's last run paused on. */
     toolResults?: ClientToolResult[];
+    /**
+     * What the screen's composer controls are set to, by control name, such as the page editor's
+     * project and personas. Sent with every request, since each run builds its instructions afresh.
+     */
+    controls?: Record<string, unknown>;
 }
 
 export interface IAdminAssistantUseCase {

@@ -61,6 +61,8 @@ export interface AdminAssistantRequest {
     clientTools?: AdminAssistantClientToolDeclaration[];
     /** Results of the browser calls the run paused on. Needs the `chatId` of the paused run. */
     toolResults?: AdminAssistantClientToolResult[];
+    /** What the screen's composer controls are set to, by control name. Sent with every request. */
+    controls?: Record<string, unknown>;
 }
 
 /**

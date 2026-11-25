@@ -2,7 +2,18 @@ import { parseDecisions } from "./approvals.js";
 import { parsePageContext } from "./parsePageContext.js";
 import { parseClientTools } from "./clientTools/index.js";
 import { parseToolResults } from "./clientTools/index.js";
+import { isRecord } from "./clientTools/isRecord.js";
 import type { AdminAssistantParams } from "./abstractions.js";
+
+/** A few ids per control. Anything bigger is not a setting. */
+const MAX_CONTROLS_LENGTH = 4000;
+
+const parseControls = (value: unknown): Record<string, unknown> | undefined => {
+    if (!isRecord(value) || JSON.stringify(value).length > MAX_CONTROLS_LENGTH) {
+        return undefined;
+    }
+    return value;
+};
 
 const safeParse = (value: string): unknown => {
     try {
@@ -14,7 +25,8 @@ const safeParse = (value: string): unknown => {
 
 /**
  * Accepts a question, `{ chatId?, prompt, pageContext?, toolResults? }`, or what a paused run waits
- * for, `{ chatId, approvals?, toolResults? }`. Either can carry the screen's `clientTools`. A question
+ * for, `{ chatId, approvals?, toolResults? }`. Either can carry the screen's `clientTools`, and
+ * `controls`, what its composer controls are set to. A question
  * carries results when it replaces a run whose browser calls ran while it waited for an approval.
  * The history is never in the body: the use case reads it from the saved chat.
  *
@@ -35,6 +47,10 @@ export const parseChatBody = (body: unknown): AdminAssistantParams | null => {
     const prompt = payload["prompt"];
 
     const params: AdminAssistantParams = { decisions, clientTools, toolResults: [] };
+    const controls = parseControls(payload["controls"]);
+    if (controls) {
+        params.controls = controls;
+    }
     if (typeof chatId === "string" && chatId) {
         params.chatId = chatId;
     }

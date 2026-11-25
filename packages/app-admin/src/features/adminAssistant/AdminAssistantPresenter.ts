@@ -9,6 +9,7 @@ import type { AiTurnViewModel } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import { AssistantPageContext } from "~/features/assistantPageContext/abstractions.js";
 import { AssistantClientTools } from "~/features/assistantClientTools/abstractions.js";
+import { AssistantComposerControls } from "~/features/assistantComposerControls/abstractions.js";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
@@ -91,7 +92,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         private gateway: AdminAssistantGateway.Interface,
         private chats: AiChatsRepository.Interface,
         private pageContext: AssistantPageContext.Interface,
-        private clientTools: AssistantClientTools.Interface
+        private clientTools: AssistantClientTools.Interface,
+        private composerControls: AssistantComposerControls.Interface
     ) {
         // Machinery, not state anything renders, so keep them out of the map.
         makeAutoObservable<
@@ -101,6 +103,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             | "chats"
             | "pageContext"
             | "clientTools"
+            | "composerControls"
             | "heldResults"
             | "unsaved"
             | "offeredTools"
@@ -110,6 +113,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             chats: false,
             pageContext: false,
             clientTools: false,
+            composerControls: false,
             heldResults: false,
             unsaved: false,
             offeredTools: false
@@ -338,7 +342,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
     /**
      * A request for the chat on screen: the server reads its history from the saved chat. Carries
-     * the tools the screen runs now, since a resumed run may call them again.
+     * the tools the screen runs now, since a resumed run may call them again, and what the screen's
+     * composer controls are set to, since every run builds its instructions afresh.
      */
     private request(rest: Omit<AdminAssistantRequest, "chatId">): AdminAssistantRequest {
         const request: AdminAssistantRequest = { ...rest };
@@ -353,6 +358,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 description,
                 inputSchema
             }));
+        }
+        const controls = this.composerControls.values();
+        if (Object.keys(controls).length > 0) {
+            request.controls = controls;
         }
         return request;
     }
@@ -635,6 +644,7 @@ export const AdminAssistantPresenter = Abstraction.createImplementation({
         AdminAssistantGateway,
         AiChatsRepository,
         AssistantPageContext,
-        AssistantClientTools
+        AssistantClientTools,
+        AssistantComposerControls
     ]
 });

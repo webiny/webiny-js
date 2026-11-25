@@ -1,6 +1,7 @@
 import { hasToolCall } from "ai";
 import { stepCountIs } from "ai";
 import type { ModelMessage } from "ai";
+import type { ToolSet } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
@@ -33,6 +34,12 @@ import { answersExactly } from "./clientTools/index.js";
 import { toClientToolSet } from "./clientTools/index.js";
 import { unansweredClientCalls } from "./clientTools/index.js";
 import { toAnswersMessage } from "./toAnswersMessage.js";
+import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import { checkAdditionalFilesAccess } from "~/api/features/AiPromptContext/checkAdditionalFilesAccess.js";
+import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { parsePromptContext } from "./promptContext.js";
+import { describeAttachedFiles } from "./promptContext.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -101,7 +108,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         private readonly config: AdminAssistantConfig.Interface,
         private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private readonly getChat: GetAiChatUseCase.Interface,
-        private readonly saveChat: SaveAiChatUseCase.Interface
+        private readonly saveChat: SaveAiChatUseCase.Interface,
+        private readonly promptContextBuilder: AiPromptContextBuilder.Interface,
+        private readonly getFile: GetFileUseCase.Interface
     ) {}
 
     async *stream(params: AdminAssistantParams): AsyncIterable<AdminAssistantEvent> {
@@ -353,8 +362,13 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         }
 
         const history = await this.history(params);
+        const voice = await this.promptContext(params);
 
-        const serverTools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
+        const serverTools = {
+            ...this.aiSdkTools.getToolSet(),
+            ...voice.tools,
+            [FOLLOW_UPS_TOOL]: followUpsTool
+        };
         /*
          * A client tool never shadows a server one: a screen declaring `deleteFolder` must not turn
          * a gated server call into one the browser answers unapproved.
@@ -374,6 +388,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         const readOnlyNames = new Set([
             ...this.declarations.filter(isReadOnlyTool).map(declaration => declaration.name),
             FOLLOW_UPS_TOOL,
+            ...Object.keys(voice.tools),
             ...clientToolNames
         ]);
 
@@ -406,6 +421,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             const where = describePageContext(params.pageContext);
             guidance = `${guidance}\n\n${where}`;
         }
+        if (voice.instructions) {
+            guidance = `${guidance}\n\n${voice.instructions}`;
+        }
         const system = withAdditionalInstructions(capability, guidance);
 
         const request: Ai.GenerateTextParams = {
@@ -427,6 +445,39 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         };
 
         return { request, history, clientToolNames };
+    }
+
+    /**
+     * The project, personas and attached files the screen's composer controls chose: the same
+     * context the magic wand's dialog builds, as instructions plus `read_project_file` for the files.
+     * Nothing when no control chose any.
+     */
+    private async promptContext(
+        params: AdminAssistantParams
+    ): Promise<{ instructions: string; tools: ToolSet }> {
+        const chosen = parsePromptContext(params.controls);
+        if (!chosen) {
+            return { instructions: "", tools: {} };
+        }
+
+        /*
+         * The builder reads file contents without a permission check, so each attached file is
+         * fetched through File Manager as the user first, as the magic wand does before queueing.
+         */
+        const access = await checkAdditionalFilesAccess(this.getFile, chosen.additionalFileIds);
+        if (access.isFail()) {
+            throw new Error(`An attached file can't be read: ${access.error.message}`);
+        }
+
+        const context = await this.promptContextBuilder.execute(chosen);
+        const parts = [context.toString().trim(), describeAttachedFiles(context.additionalFiles)];
+        const instructions = parts.filter(Boolean).join("\n\n");
+
+        if (context.allProjectFiles.length === 0) {
+            return { instructions, tools: {} };
+        }
+        const tools = createReadProjectFileTool(context.allProjectFiles, context.excludedFileIds);
+        return { instructions, tools };
     }
 
     /**
@@ -481,6 +532,8 @@ export const AdminAssistantUseCase = Abstraction.createImplementation({
         AdminAssistantConfig,
         ResolveAiCapabilityUseCase,
         GetAiChatUseCase,
-        SaveAiChatUseCase
+        SaveAiChatUseCase,
+        AiPromptContextBuilder,
+        GetFileUseCase
     ]
 });

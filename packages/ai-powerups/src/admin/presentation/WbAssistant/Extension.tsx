@@ -6,6 +6,7 @@ import { AssistantPanel } from "./AssistantPanel.js";
 import { ASSISTANT_PANEL } from "./AssistantPanel.js";
 import { PageEditorAssistant } from "./PageEditorAssistant.js";
 import { PageEditorAssistantFeature } from "./feature.js";
+import { PromptContextFeature } from "./promptContextFeature.js";
 
 const { Ui } = PageEditorConfig;
 
@@ -29,6 +30,7 @@ export const WbAssistant = () => {
     return (
         <>
             <RegisterFeature feature={PageEditorAssistantFeature} />
+            <RegisterFeature feature={PromptContextFeature} />
             <PageEditorConfig>
                 <Ui.Panels.Panel
                     name={ASSISTANT_PANEL}

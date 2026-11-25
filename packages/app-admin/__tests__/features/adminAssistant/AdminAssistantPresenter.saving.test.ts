@@ -10,6 +10,7 @@ import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstra
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 import { AssistantPageContext } from "~/features/assistantPageContext/AssistantPageContext.js";
 import { AssistantClientTools } from "~/features/assistantClientTools/AssistantClientTools.js";
+import { AssistantComposerControls } from "~/features/assistantComposerControls/AssistantComposerControls.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
 import { AssistantPageContext as PageContextAbstraction } from "~/features/assistantPageContext/abstractions.js";
 import { createFakeChats } from "./createFakeChats.js";
@@ -41,6 +42,7 @@ const setup = (runs: AdminAssistantStreamEvent[][]) => {
     container.registerInstance(AiChatsRepository, chats.repository);
     container.register(AssistantPageContext).inSingletonScope();
     container.register(AssistantClientTools).inSingletonScope();
+    container.register(AssistantComposerControls).inSingletonScope();
     container.register(AdminAssistantPresenter);
 
     return {

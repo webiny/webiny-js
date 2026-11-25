@@ -21,6 +21,8 @@ import { AiChatTooLargeError } from "~/api/features/AiChats/domain/errors.js";
 import { AiChatPersistenceError } from "~/api/features/AiChats/domain/errors.js";
 import type { AiChat } from "~/api/features/AiChats/domain/types.js";
 import type { ModelMessage } from "ai";
+import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 
 const ADDITIONAL = "Always answer in Welsh.";
 
@@ -49,7 +51,12 @@ interface SetupOptions {
     saveError?: Error;
     /** Makes every save throw this, rather than return a failed result. */
     saveThrows?: Error;
+    /** Files the user may not read, by id. */
+    deniedFiles?: string[];
 }
+
+/** What the fake prompt context builder puts in the instructions. */
+const VOICE = "## Writer persona: Friendly expert";
 
 const setup = (
     resolution?: Result<never, Error>,
@@ -127,9 +134,45 @@ const setup = (
         }
     } as unknown as SaveAiChatUseCase.Interface);
 
+    const contextRequests: AiPromptContextBuilder.Params[] = [];
+    container.registerInstance(AiPromptContextBuilder, {
+        execute: async (params: AiPromptContextBuilder.Params) => {
+            contextRequests.push(params);
+            const files = (params.additionalFileIds ?? []).map(id => ({
+                id,
+                name: `${id}.md`,
+                content: "Saturdays, 10am.",
+                tokenCount: 5
+            }));
+            return {
+                allProjectFiles: files,
+                additionalFiles: files,
+                excludedFileIds: new Set<string>(),
+                cacheHit: false,
+                warnings: [],
+                toString: () => `\n\n${VOICE}`
+            };
+        }
+    } as AiPromptContextBuilder.Interface);
+
+    const denied = new Set(options.deniedFiles ?? []);
+    container.registerInstance(GetFileUseCase, {
+        execute: async (id: string) => {
+            if (denied.has(id)) {
+                return Result.fail(new Error("Not authorized."));
+            }
+            return Result.ok({ id });
+        }
+    } as unknown as GetFileUseCase.Interface);
+
     container.register(AdminAssistantUseCaseImplementation);
 
-    return { useCase: container.resolve(AdminAssistantUseCase), requests, saves };
+    return {
+        useCase: container.resolve(AdminAssistantUseCase),
+        requests,
+        saves,
+        contextRequests
+    };
 };
 
 const QUESTION: AdminAssistantParams = { prompt: "which products are on sale?", decisions: [] };
@@ -418,6 +461,75 @@ describe("AdminAssistantUseCase", () => {
         const events = await run(useCase);
 
         expect(events.map(event => event.type)).toEqual(["start", "saved", "done"]);
+    });
+});
+
+describe("AdminAssistantUseCase prompt context", () => {
+    const promptContext = {
+        projectId: "velo",
+        writerPersonaId: "friendly",
+        additionalFileIds: ["schedule"]
+    };
+    const withVoice: AdminAssistantParams = { ...QUESTION, controls: { promptContext } };
+
+    it("builds nothing when no composer control chose a voice", async () => {
+        const { useCase, requests, contextRequests } = setup();
+
+        await run(useCase);
+
+        expect(contextRequests).toHaveLength(0);
+        expect(requests[0].system).not.toContain(VOICE);
+        expect(Object.keys(requests[0].tools ?? {})).not.toContain("read_project_file");
+    });
+
+    it("writes for the chosen project and personas, before the project's instructions", async () => {
+        const { useCase, requests, contextRequests } = setup();
+
+        await run(useCase, withVoice);
+
+        expect(contextRequests).toEqual([
+            {
+                projectId: "velo",
+                readerPersonaId: null,
+                writerPersonaId: "friendly",
+                additionalFileIds: ["schedule"]
+            }
+        ]);
+        const system = requests[0].system as string;
+        expect(system).toContain(VOICE);
+        expect(system.indexOf(VOICE)).toBeLessThan(system.indexOf(ADDITIONAL));
+    });
+
+    it("lists the attached files and lets the model read them without approval", async () => {
+        const { useCase, requests } = setup();
+
+        await run(useCase, withVoice);
+
+        const request = requests[0] as unknown as {
+            system: string;
+            activeTools: string[];
+            toolApproval: (params: { toolCall: { toolName: string } }) => string;
+        };
+        expect(request.system).toContain('- id: "schedule", name: "schedule.md"');
+        expect(request.system).not.toContain("Saturdays, 10am.");
+        expect(request.activeTools).toContain("read_project_file");
+        expect(request.toolApproval({ toolCall: { toolName: "read_project_file" } })).toBe(
+            "not-applicable"
+        );
+    });
+
+    it("refuses an attached file the user may not read, before building anything", async () => {
+        const { useCase, requests, contextRequests } = setup(undefined, [], {
+            deniedFiles: ["schedule"]
+        });
+
+        const events = await run(useCase, withVoice);
+
+        expect(events).toEqual([
+            { type: "error", message: "An attached file can't be read: Not authorized." }
+        ]);
+        expect(contextRequests).toHaveLength(0);
+        expect(requests).toHaveLength(0);
     });
 });
 

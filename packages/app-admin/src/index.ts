@@ -136,6 +136,10 @@ export {
     AssistantClientTools,
     AssistantClientToolsFeature
 } from "./features/assistantClientTools/index.js";
+export {
+    AssistantComposerControls,
+    AssistantComposerControlsFeature
+} from "./features/assistantComposerControls/index.js";
 
 /*
  * AI chats: the saved assistant conversations and the side panel that lists them. Stored through the
