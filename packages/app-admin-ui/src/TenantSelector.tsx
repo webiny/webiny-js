@@ -50,8 +50,9 @@ export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
                 onOpenChange={setOpen}
                 modal={false}
                 trigger={
-                    <div
-                        className={"flex items-center gap-x-xs cursor-pointer"}
+                    <button
+                        type={"button"}
+                        className={"flex items-center gap-x-xs cursor-pointer min-w-0"}
                         data-testid={"tenant-selector"}
                     >
                         <span className={"truncate"}>{currentTenant.name}</span>
@@ -61,7 +62,7 @@ export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
                             size={"sm"}
                             className={"shrink-0 fill-neutral-strong"}
                         />
-                    </div>
+                    </button>
                 }
                 align={"start"}
                 className={"w-[220px]"}
