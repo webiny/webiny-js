@@ -35,16 +35,17 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
             canManage: permission.editor
         });
 
+        // Opens the editor on the model whose delete was refused.
+        const workflowLink = router.getLink(Routes.ContentModels.Workflows, {
+            modelId: props.model.modelId
+        });
+
         if (copy.title === null) {
             return (
                 <Alert type={"danger"}>
                     <div className={"flex flex-col gap-xs"}>
                         <Text>{copy.body}</Text>
-                        {copy.showLink && (
-                            <Link to={router.getLink(Routes.ContentModels.Workflows)}>
-                                {"Open workflow"}
-                            </Link>
-                        )}
+                        {copy.showLink && <Link to={workflowLink}>{"Open workflow"}</Link>}
                     </div>
                 </Alert>
             );
@@ -55,11 +56,7 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
                 <div className={"flex flex-col gap-xs"}>
                     <Heading level={6}>{copy.title}</Heading>
                     <Text>{copy.body}</Text>
-                    {copy.showLink && (
-                        <Link to={router.getLink(Routes.ContentModels.Workflows)}>
-                            {"Open workflow"}
-                        </Link>
-                    )}
+                    {copy.showLink && <Link to={workflowLink}>{"Open workflow"}</Link>}
                 </div>
             </Alert>
         );

@@ -55,7 +55,9 @@ class ReviewNotifierServiceImpl implements Abstraction.Interface {
                 targetId: review.targetId,
                 targetRevisionId: review.targetRevisionId,
                 title: delivery.message.title,
-                body: delivery.message.body
+                body: delivery.message.body,
+                link: delivery.message.link,
+                linkLabel: delivery.message.linkLabel
             };
             // The sender never rejects; this catch only guards a decorator that does (R87), so
             // the other deliveries and the transports below still run.

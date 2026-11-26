@@ -18,7 +18,7 @@ import { AdminWithConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import { findElements } from "~/editor/testing/findElements.js";
-import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
+import { WorkflowEditorRouteView } from "./WorkflowEditorRouteView.js";
 import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { WorkflowEditorRouteProps } from "./WorkflowEditorRoute.js";
@@ -37,8 +37,8 @@ vi.mock("~/presentation/permissions/useWorkflowsPermission.js", () => {
 });
 
 // The view is not under test here; the test looks at the props the route gives it.
-vi.mock("~/editor/presentation/editor/components/WorkflowEditorView.js", () => {
-    return { WorkflowEditorView: () => null };
+vi.mock("./WorkflowEditorRouteView.js", () => {
+    return { WorkflowEditorRouteView: () => null };
 });
 
 interface CapturedRoute {
@@ -131,7 +131,7 @@ describe("WorkflowEditorRoute", () => {
 
         const items = await mount();
         const element = getEditorElement(items);
-        const views = findElements(element, WorkflowEditorView);
+        const views = findElements(element, WorkflowEditorRouteView);
         const noAccess = findElements(element, EditorNoPermission);
 
         expect(views).toHaveLength(0);
@@ -168,12 +168,12 @@ describe("WorkflowEditorRoute", () => {
         const items = await mount();
         const element = getEditorElement(items);
 
-        const views = findElements(element, WorkflowEditorView);
+        const views = findElements(element, WorkflowEditorRouteView);
         const noAccess = findElements(element, EditorNoPermission);
 
         expect(views).toHaveLength(1);
         expect(noAccess).toHaveLength(0);
-        expect(Object.keys(views[0].props)).toEqual(["app", "breadcrumbName"]);
+        expect(Object.keys(views[0].props)).toEqual(["route", "app", "breadcrumbName"]);
         expect(views[0].props.breadcrumbName).toBe("cms.workflows");
         expect(views[0].props.app).toBe(app);
     });
