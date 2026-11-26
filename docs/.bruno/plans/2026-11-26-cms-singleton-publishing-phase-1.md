@@ -24,7 +24,7 @@
   - `"The first revision of a singleton entry cannot be deleted."`
   - `"The published revision cannot be deleted. Unpublish it first."`
 - Tag values: `"$publishing:true"`, `"$publishing:false"`.
-- Tests run by file path, one test command at a time, never a whole package. `api-headless-cms` test files run on every storage, in this order: `yarn test <path>`, `yarn test:es <path>`, `yarn test:os <path>`, `yarn test:sql <path>`, `WEBINY_STORAGE=pg,sql yarn test <path>`. Other packages: `yarn test <path>`.
+- Tests run by file path, one test command at a time, never a whole package. `api-headless-cms` test files that touch storage run on every storage, in this order: `yarn test <path>`, `yarn test:es <path>`, `yarn test:os <path>`, `yarn test:sql <path>`, `WEBINY_STORAGE=pg,sql yarn test <path>`. Other packages: `yarn test <path>`.
 - Commit chain, run before every commit step (rerun from the top after any fix): `git add .`, `yarn > /dev/null 2>&1`, `node scripts/generateTsConfigsInPackages.js`, `yarn adio`, `yarn format:fix > /dev/null 2>&1`, `yarn lint:fix`, `yarn webiny sync-dependencies`, `git add .`. Commits use Conventional Commits.
 
 ## Review Focus
@@ -76,7 +76,7 @@ it("createSingletonEntryId is stable per modelId", () => {
 
 - [ ] **Step 2: Run** `yarn test packages/api-headless-cms/__tests__/domain/singletonModel.test.ts`. Expected: FAIL, modules not found.
 - [ ] **Step 3: Implement** the helpers and constants. Move `isSingletonModel` out of `entryOwnerAccess.ts` (import it there). Replace the private copy in `ListCmsEntryWorkflowModelsUseCase.ts:26` with the export. Remove `UNPUBLISHABLE_MODEL_TAG` from `isBindableModel.ts` and use `CMS_MODEL_PUBLISHING_DISABLED_TAG` there and in both handlers (no alias, per `no-backwards-compat`).
-- [ ] **Step 4: Run** the new test, then `yarn test packages/api-headless-cms-workflows/__tests__/utils/isBindableModel.test.ts` and `yarn test packages/api-headless-cms-workflows/__tests__/wrappers/listWorkflowModels.test.ts`. Expected: PASS.
+- [ ] **Step 4: Run** the new test (a pure unit test with no storage, so `yarn test` only), then `yarn test packages/api-headless-cms-workflows/__tests__/utils/isBindableModel.test.ts` and `yarn test packages/api-headless-cms-workflows/__tests__/wrappers/listWorkflowModels.test.ts`. Expected: PASS.
 - [ ] **Step 5: Commit chain, then commit** `feat(api-headless-cms): add singleton and publishing model helpers`.
 
 ### Task 2: Generic use case guards for singletons
@@ -269,8 +269,8 @@ type SingletonOperation =
 
 **Files:**
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryFormView.tsx` (extract the editor body)
-- Modify: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.ts:316-334` and its abstractions (load error state)
-- Test: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.test.ts` (create, or extend if present)
+- Modify: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.ts:316-334` and `packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts` (`loadError: string | null` on the view model)
+- Test: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.test.ts` (extend: add a `describe("loadRevision")` block next to `describe("saveRevision")` at :112)
 - Create: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryEditorBody.tsx` (props `ContentEntryEditorBodyProps { entryId: string | null; modelName: string; onBack?: () => void }`)
 - Create: `packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.tsx`
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ModelLoader.tsx:23`
@@ -290,7 +290,8 @@ type SingletonOperation =
   - presenter test: `loadRevision` with a gateway that throws sets `vm.loadError` to the error message and clears `loading`; a later successful `loadRevision` clears `vm.loadError`;
   - route `id` changes: the view calls `presenter.init` with the new id and the editor body loads that revision;
   - `vm.hasFields === false`: shows "This model has no fields.";
-  - untagged model: Save shows; publish actions and "New revision" do not; Save on a locked `#0001` calls update.
+  - untagged model: Save shows; publish actions and "New revision" do not; Save on a locked `#0001` calls update; Save sends `skipValidation: false` (an untagged singleton has no publish step, so Save validates, as for `$publishing:false` models and as `SingleEntryPresenter` did);
+  - tagged model: Save sends `skipValidation: true` (validation runs on publish).
 - [ ] **Step 2: Run** `yarn test packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.test.tsx`. Expected: FAIL.
 - [ ] **Step 3: Implement.** `ContentEntryFormPresenter.loadRevision` has `try/finally` and no `catch` today (`:316-334`), so a failed load is an unhandled rejection. Add `loadError: string | null` to the view model, set it in a `catch`, clear it on the next load, and render it in `ContentEntryEditorBody` in place of the form. This also fixes the regular editor. `ContentEntryFormView` becomes the list adapter around `ContentEntryEditorBody`, reading `entryId`, folder id and model name from the list presenter as today. `SingletonEditorView` provides `ModelProvider` and `ContentEntryEditorWithConfig` like `ListView.tsx:26-28`, and calls `presenter.init(model, route.params.id)` on mount and whenever `route.params.id` changes. `ModelLoader` renders it for every singleton. Remove the old singleton UI and both record-locking singleton decorators.
 - [ ] **Step 4: Run** the new test, then the existing record-locking tests one file at a time (`RecordLockingPresenter.test.ts`, `LogOutUseCaseLockingDecorator.test.ts` in `packages/app-record-locking/src/presentation/entryLocking/`). Expected: PASS.
