@@ -16,6 +16,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -40,7 +41,8 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -48,13 +50,14 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsUpdateParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const transformer = createTransformer({
             valuesModifiers: this.valuesModifiers,
             model,
-            entry: initialEntry,
-            storageEntry: initialStorageEntry,
+            entry: { ...initialEntry, tenant },
+            storageEntry: { ...initialStorageEntry, tenant },
             fieldIndexRegistry: this.fieldIndexRegistry,
             compressionHandler: this.compressionHandler
         });
@@ -64,20 +67,20 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
 
-        const revisionKeys = createEntryRevisionKeys(entry);
-        const latestKeys = createEntryLatestKeys(entry);
-        const publishedKeys = createEntryPublishedKeys(entry);
+        const revisionKeys = createEntryRevisionKeys(entry, tenant);
+        const latestKeys = createEntryLatestKeys(entry, tenant);
+        const publishedKeys = createEntryPublishedKeys(entry, tenant);
 
         /**
          * We need the latest entry to check if it needs to be updated.
          */
         const [latestStorageEntry] = await this.dataLoaders.getLatestRevisionByEntryId({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [entry.id]
         });
 
         const [publishedStorageEntry] = await this.dataLoaders.getPublishedRevisionByEntryId({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [entry.id]
         });
 
@@ -161,7 +164,7 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
                     ...updatedLatestStorageEntry,
                     PK: createPartitionKey({
                         id: latestStorageEntry.id,
-                        tenant: model.tenant
+                        tenant
                     }),
                     SK: createRevisionSortKey(latestStorageEntry)
                 });
@@ -207,7 +210,7 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -246,6 +249,7 @@ export const DdbEsUpdateEntry = UpdateEntryStorageOperation.createImplementation
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
         CmsModelOpenSearchIndexProvider,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

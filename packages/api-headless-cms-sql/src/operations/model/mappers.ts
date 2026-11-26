@@ -1,9 +1,10 @@
 import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IModelRow } from "./types.js";
 
-export const modelToRow = (model: StorageCmsModel): IModelRow => {
+/** The model's row, in `tenant`: the scope's tenant of the operation writing it. */
+export const modelToRow = (model: StorageCmsModel, tenant: string): IModelRow => {
     return {
-        tenant: model.tenant,
+        tenant,
         modelId: model.modelId,
         name: model.name,
         singularApiName: model.singularApiName,

@@ -7,6 +7,7 @@ import type {
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
@@ -38,13 +39,15 @@ class DdbListEntriesImpl implements ListEntriesStorageOperation.Interface {
         private filterCreateRegistry: FieldFilterCreateRegistry.Interface,
         private sortingRegistry: FieldSortingRegistry.Interface,
         private valueFilterRegistry: ValueFilterRegistry.Interface,
-        private entrySystemFields: CmsEntrySystemField.Interface[]
+        private entrySystemFields: CmsEntrySystemField.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsListParams
     ) {
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const {
@@ -60,7 +63,7 @@ class DdbListEntriesImpl implements ListEntriesStorageOperation.Interface {
 
         const type = initialWhere.published ? "P" : "L";
 
-        const partitionKey = createGSIPartitionKey(model, type);
+        const partitionKey = createGSIPartitionKey({ tenant, modelId: model.modelId }, type);
         const options = {
             index: "GSI1",
             gte: " "
@@ -194,6 +197,7 @@ export const DdbListEntries = ListEntriesStorageOperation.createImplementation({
         FieldFilterCreateRegistry,
         FieldSortingRegistry,
         ValueFilterRegistry,
-        [CmsEntrySystemField, { multiple: true }]
+        [CmsEntrySystemField, { multiple: true }],
+        ScopeTenant
     ]
 });

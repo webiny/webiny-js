@@ -6,6 +6,7 @@ import {
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { createTeam, FakeListUserTeams } from "~tests/__helpers/FakeListUserTeams.js";
 import { OTHER_TEAM_ID, REVIEW_TEAM_ID } from "~tests/__helpers/fixtures.js";
@@ -76,14 +77,20 @@ describe("CurrentUserTeams", () => {
         expect(fake.calls).toEqual([DEFAULT_USER_ID, SECOND_USER_ID]);
     });
 
-    it("keys the cache by tenant", async () => {
+    it("looks the teams up again in another tenant's scope", async () => {
         const fake = createFake();
         const { container, teams } = await createTeamsContext(fake);
-        const tenantContext = container.resolve(TenantContext);
-        const other = { ...tenantContext.getTenant(), id: "other-tenant", name: "Other" };
+        const tenant = container.resolve(TenantContext).getTenant();
+        const other = { ...tenant, id: "other-tenant", name: "Other" };
 
         await teams.getTeamIds();
-        await tenantContext.withTenant(other, () => teams.getTeamIds());
+        // Called from outside any scope's callback, so the identity is passed in explicitly.
+        const identity = container.resolve(IdentityContext).getIdentity();
+        await container.resolve(TenantScopes).withTenant(other, scope => {
+            return scope.resolve(IdentityContext).withIdentity(identity, () => {
+                return scope.resolve(CurrentUserTeams).getTeamIds();
+            });
+        });
         await teams.getTeamIds();
 
         // One lookup per tenant: the other tenant's teams are never served from the first one.

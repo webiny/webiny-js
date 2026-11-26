@@ -17,7 +17,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { Extension } from "~/api/Extension.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -36,7 +36,7 @@ const defaultIdentity: IdentityData = { id: "12345678", type: "admin", displayNa
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 
 const getLanguageModel = async (wcpLicense: ILicense) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const capturedCtx: { value?: Record<string, any> } = {};

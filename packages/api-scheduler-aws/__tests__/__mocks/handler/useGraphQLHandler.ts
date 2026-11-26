@@ -17,7 +17,7 @@ import type {
     SchedulerClient,
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
@@ -55,7 +55,7 @@ const defaultIdentity: IdentityData = {
 export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
     const { permissions, identity } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;

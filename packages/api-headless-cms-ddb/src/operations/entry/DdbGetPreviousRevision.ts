@@ -5,6 +5,7 @@ import type {
     CmsEntryStorageOperationsGetPreviousRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { GetPreviousRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPreviousRevisionStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { createPartitionKey } from "~/operations/entry/keys.js";
@@ -13,18 +14,20 @@ import { convertFromStorageEntry } from "./storageEntryUtils.js";
 class DdbGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) {
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const { entryId, version } = params;
         const partitionKey = createPartitionKey({
-            tenant: model.tenant,
+            tenant,
             id: entryId
         });
 
@@ -68,5 +71,5 @@ class DdbGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
 
 export const DdbGetPreviousRevision = GetPreviousRevisionStorageOperation.createImplementation({
     implementation: DdbGetPreviousRevisionImpl,
-    dependencies: [CmsDdbEntryEntity, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsStorageModelProvider, ScopeTenant]
 });

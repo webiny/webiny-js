@@ -19,7 +19,11 @@
  * way and its callers treat a failed trigger as a no-op (ACO's FLP handlers, for one, swallow it),
  * so writes land while their projections never update.
  */
-import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/api-kernel-aws";
+import {
+    createStreamLambdaHandler,
+    FunctionUrlStreamFeature,
+    FunctionUrlStreamInputHandler
+} from "@webiny/api-kernel-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
 import { registerHttpTransport } from "@webiny/api-composition-core";
@@ -34,8 +38,13 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             // Registers the Function URL event type + router + the streaming terminal handler.
             // Deliberately NOT alongside ApiGatewayFeature: both event types match the same payload
             // shape, so they must never share a container.
-            // registerHttpTransport also registers the tenant, identity and preview-as loading.
-            registerHttpTransport(container, FunctionUrlStreamFeature);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading, and the
+            // hand-off of each request into its tenant's scope once CORS and the tenant step are done.
+            registerHttpTransport(
+                container,
+                FunctionUrlStreamFeature,
+                FunctionUrlStreamInputHandler
+            );
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Registers StepFunctionService, which is what a `TaskService.trigger()` resolves to

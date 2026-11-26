@@ -22,6 +22,7 @@
   "description": "SQL storage operations for Headless CMS API.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-storage": "0.0.0",
@@ -32,7 +33,6 @@
     "knex": "^3.3.0"
   },
   "devDependencies": {
-    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "better-sqlite3": "^13.2.0",

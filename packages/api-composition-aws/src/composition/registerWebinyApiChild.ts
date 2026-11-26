@@ -1,5 +1,9 @@
 import type { Container } from "@webiny/di";
-import { registerApiRequestStack } from "@webiny/api-composition-core";
+import {
+    registerApiRequestStack,
+    registerApiRequestStackInOneContainer,
+    type RegisterApiRequestStackConfig
+} from "@webiny/api-composition-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
@@ -8,17 +12,11 @@ import { CloudFrontCdnCacheFeature } from "~/cdnCache/feature.js";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**
- * Sets up the per-request CHILD container: the transport-agnostic feature stack (shared with the
- * server transport), with the AWS-specific interleave points supplied as the `transports` adapters.
- *
- * Named for the `child` lifecycle step of `KernelConfig`, not "request", so it matches the contract
- * it implements.
+ * The transport-agnostic feature stack (shared with the server transport), with the AWS-specific
+ * interleave points supplied as the `transports` adapters.
  */
-export async function registerWebinyApiChild(
-    container: Container,
-    config: WebinyApiCompositionConfig
-): Promise<void> {
-    await registerApiRequestStack(container, {
+function createStackConfig(config: WebinyApiCompositionConfig): RegisterApiRequestStackConfig {
+    return {
         extensions: config.extensions,
         transports: {
             // Public URLs: written to the service manifest by the `api` and `admin` Pulumi apps.
@@ -42,5 +40,30 @@ export async function registerWebinyApiChild(
                 FileManagerS3Feature.register(c, {});
             }
         }
-    });
+    };
+}
+
+/**
+ * Sets up the per-request CHILD container: its tenant-neutral part, and how each tenant scope of
+ * the request is registered (the feature stack).
+ *
+ * Named for the `child` lifecycle step of `KernelConfig`, not "request", so it matches the contract
+ * it implements.
+ */
+export async function registerWebinyApiChild(
+    container: Container,
+    config: WebinyApiCompositionConfig
+): Promise<void> {
+    await registerApiRequestStack(container, createStackConfig(config));
+}
+
+/**
+ * The whole request stack in one container, without a tenant: for work outside a request (the SQL
+ * schema setup).
+ */
+export async function registerWebinyApiInOneContainer(
+    container: Container,
+    config: WebinyApiCompositionConfig
+): Promise<void> {
+    await registerApiRequestStackInOneContainer(container, createStackConfig(config));
 }

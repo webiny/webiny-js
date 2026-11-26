@@ -8,20 +8,23 @@ import { ListGroupsStorageOperation } from "@webiny/api-headless-cms/features/sh
 import { CmsDdbEsGroupEntity } from "~/abstractions/CmsDdbEsGroupEntity.js";
 import { FilterUtil } from "@webiny/db-dynamodb/exports/api/db.js";
 import { createPartitionKey } from "./keys.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 class DdbEsListGroupsImpl implements ListGroupsStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEsGroupEntity.Interface,
-        private filterUtil: FilterUtil.Interface
+        private filterUtil: FilterUtil.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(params: CmsGroupStorageOperationsListParams) {
         const { sort, where } = params;
+        const tenant = this.scopeTenant.getId();
 
         let records: CmsGroup[] = [];
         try {
             const ddbRecords = await this.entity.queryAll({
-                partitionKey: createPartitionKey(where),
+                partitionKey: createPartitionKey({ tenant }),
                 options: {
                     gte: " "
                 }
@@ -58,5 +61,5 @@ class DdbEsListGroupsImpl implements ListGroupsStorageOperation.Interface {
 
 export const DdbEsListGroups = ListGroupsStorageOperation.createImplementation({
     implementation: DdbEsListGroupsImpl,
-    dependencies: [CmsDdbEsGroupEntity, FilterUtil]
+    dependencies: [CmsDdbEsGroupEntity, FilterUtil, ScopeTenant]
 });

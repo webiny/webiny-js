@@ -1,6 +1,6 @@
 import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTasks/index.js";
@@ -20,6 +20,12 @@ import { TaskRecoverInputHandler } from "./TaskRecoverInputHandler.js";
 const PAGE_SIZE = 100;
 
 type Outcome = "resumed" | "failed" | "skipped";
+
+// The task use cases of the tenant being recovered, resolved from its scope.
+interface TenantTasks {
+    list: ListTasksUseCase.Interface;
+    update: UpdateTaskUseCase.Interface;
+}
 
 // Same reasoning as the scheduler's recovery: not installed has no tasks, disabled must not run them.
 function canRecover(tenant: Tenant): boolean {
@@ -72,9 +78,7 @@ function toEvent(task: ITask, tenant: string): IBackgroundTaskEvent {
 class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
     public constructor(
         private readonly listTenants: ListTenantsUseCase.Interface,
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly listTasks: ListTasksUseCase.Interface,
-        private readonly updateTask: UpdateTaskUseCase.Interface,
+        private readonly tenantScopes: TenantScopes.Interface,
         private readonly claim: TaskClaim.Interface,
         private readonly recoveries: TaskRecoveries.Interface,
         private readonly tasksLoop: BackgroundTasksLoop.Interface,
@@ -116,19 +120,24 @@ class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
 
     private recoverTenant(tenant: Tenant, result: TaskRecoverInputHandler.Result): Promise<void> {
         // No `withoutAuthorization`: tasks are a private model, which no permission check applies to.
-        return this.tenantContext.withTenant(tenant, () => {
-            return this.recoverUnfinished(tenant.id, result);
+        return this.tenantScopes.withTenant(tenant, scope => {
+            const tasks: TenantTasks = {
+                list: scope.resolve(ListTasksUseCase),
+                update: scope.resolve(UpdateTaskUseCase)
+            };
+            return this.recoverUnfinished(tenant.id, tasks, result);
         });
     }
 
     private async recoverUnfinished(
         tenant: string,
+        tasks: TenantTasks,
         result: TaskRecoverInputHandler.Result
     ): Promise<void> {
         let after: string | undefined;
 
         do {
-            const listResult = await this.listTasks.execute({
+            const listResult = await tasks.list.execute({
                 where: { taskStatus_in: [TaskDataStatus.PENDING, TaskDataStatus.RUNNING] },
                 limit: PAGE_SIZE,
                 after
@@ -138,7 +147,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
             }
 
             for (const task of listResult.value.items) {
-                const outcome = await this.recoverTask(task, tenant);
+                const outcome = await this.recoverTask(task, tenant, tasks);
                 if (outcome === "resumed") {
                     result.resumed++;
                 } else if (outcome === "failed") {
@@ -152,7 +161,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
     }
 
     // One task that cannot be recovered is logged, and the rest of the page is still recovered.
-    private async recoverTask(task: ITask, tenant: string): Promise<Outcome> {
+    private async recoverTask(task: ITask, tenant: string, tasks: TenantTasks): Promise<Outcome> {
         // A process that is shutting down would only take a claim it cannot use, and delay the next owner.
         if (this.shutdown.isShuttingDown() || isJustTriggered(task)) {
             return "skipped";
@@ -167,7 +176,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
 
             const count = await this.recoveries.record(target, task.savedOn);
             if (count > MAX_RECOVERIES) {
-                await this.fail(task, count);
+                await this.fail(task, count, tasks);
                 await this.claim.release(target);
                 return "failed";
             }
@@ -182,9 +191,9 @@ class RecoverTasksHandlerImpl implements TaskRecoverInputHandler.Interface {
         }
     }
 
-    private async fail(task: ITask, count: number): Promise<void> {
+    private async fail(task: ITask, count: number, tasks: TenantTasks): Promise<void> {
         const finishedOn = new Date().toISOString();
-        const result = await this.updateTask.execute(task.id, {
+        const result = await tasks.update.execute(task.id, {
             taskStatus: TaskDataStatus.FAILED,
             finishedOn,
             output: {
@@ -204,9 +213,7 @@ export const RecoverTasksHandler = TaskRecoverInputHandler.createImplementation(
     implementation: RecoverTasksHandlerImpl,
     dependencies: [
         ListTenantsUseCase,
-        TenantContext,
-        ListTasksUseCase,
-        UpdateTaskUseCase,
+        TenantScopes,
         TaskClaim,
         TaskRecoveries,
         BackgroundTasksLoop,

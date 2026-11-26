@@ -7,6 +7,7 @@ import type {
 import { GetRevisionsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionsStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
@@ -17,7 +18,8 @@ class SqlGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -30,12 +32,14 @@ class SqlGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const { id: entryId } = parseIdentifier(params.id);
 
         const rows: IEntryRow[] = await this.query()
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .where("entryId", entryId)
             .orderBy("version", "desc");
@@ -46,5 +50,5 @@ class SqlGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
 
 export const SqlGetRevisions = GetRevisionsStorageOperation.createImplementation({
     implementation: SqlGetRevisionsImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

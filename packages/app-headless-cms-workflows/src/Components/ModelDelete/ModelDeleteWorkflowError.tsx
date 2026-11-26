@@ -45,7 +45,7 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
                 <Alert type={"danger"}>
                     <div className={"flex flex-col gap-xs"}>
                         <Text>{copy.body}</Text>
-                        {copy.showLink && <Link to={workflowLink}>{"Open workflow"}</Link>}
+                        {copy.showLink ? <Link to={workflowLink}>{"Open workflow"}</Link> : null}
                     </div>
                 </Alert>
             );
@@ -56,7 +56,7 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
                 <div className={"flex flex-col gap-xs"}>
                     <Heading level={6}>{copy.title}</Heading>
                     <Text>{copy.body}</Text>
-                    {copy.showLink && <Link to={workflowLink}>{"Open workflow"}</Link>}
+                    {copy.showLink ? <Link to={workflowLink}>{"Open workflow"}</Link> : null}
                 </div>
             </Alert>
         );

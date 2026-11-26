@@ -16,6 +16,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createTransformer } from "./transformations/index.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createLatestSortKey, createPartitionKey, createPublishedSortKey } from "./keys.js";
 import {
     isRestoredEntryMetaField,
@@ -32,7 +33,8 @@ class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interfac
         private storageModelProvider: CmsStorageModelProvider.Interface,
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -40,6 +42,7 @@ class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interfac
         params: CmsEntryStorageOperationsRestoreFromBinParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const transformer = createTransformer({
@@ -60,7 +63,7 @@ class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interfac
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
         /**
@@ -114,7 +117,7 @@ class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interfac
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -212,6 +215,7 @@ export const DdbEsRestoreFromBin = RestoreFromBinStorageOperation.createImplemen
         CmsStorageModelProvider,
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

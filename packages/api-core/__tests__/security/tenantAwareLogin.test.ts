@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { getStorageOps } from "~/testing/environment.js";
+import { createFixedScopeTenant } from "~/features/tenancy/ScopeTenant/index.js";
 import { useGqlHandler } from "../useGqlHandler";
 import { Result } from "@webiny/feature/api";
 import { AfterLoginEventHandler } from "~/features/security/login/index.js";
@@ -8,7 +9,7 @@ import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdenti
 import { UserStorageError } from "~/features/users/shared/errors.js";
 import { FindUserRecordsUseCase } from "~/features/users/FindUserRecords/index.js";
 import type { Container } from "@webiny/di";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
 import { Authenticator } from "~/features/security/authentication/Authenticator/abstractions.js";
 import type { AdminUser } from "~/types/users.js";
 import type { Tenant } from "~/types/tenancy.js";
@@ -220,7 +221,36 @@ describe("Tenant-aware login", () => {
         ]
     });
 
-    const storage = () => getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+    /** Storage built for one tenant's scope. */
+    const storageOf = (tenant: string) =>
+        getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore").storageOperations({
+            scopeTenant: createFixedScopeTenant(tenant)
+        });
+
+    /**
+     * The storage the test seeds and reads records with, across tenants. Storage ignores the tenant
+     * a caller passes, so each user read and write goes to the storage of the record's (or
+     * `where`'s) tenant, as it would run in that tenant's scope. The cross-tenant reads
+     * (`getUserAcrossTenants`, `listUserRecords`) and the tenant registry are tenant-neutral.
+     */
+    const storage = () => {
+        const root = storageOf("root");
+        const users = root.usersStorageOperations;
+        const usersStorageOperations: typeof users = {
+            ...users,
+            getUser: params =>
+                storageOf(params.where.tenant).usersStorageOperations.getUser(params),
+            listUsers: params =>
+                storageOf(params.where.tenant).usersStorageOperations.listUsers(params),
+            createUser: params =>
+                storageOf(params.user.tenant).usersStorageOperations.createUser(params),
+            updateUser: params =>
+                storageOf(params.user.tenant).usersStorageOperations.updateUser(params),
+            deleteUser: params =>
+                storageOf(params.user.tenant).usersStorageOperations.deleteUser(params)
+        };
+        return { ...root, usersStorageOperations };
+    };
 
     const login = async (token: string) => {
         const [response] = await invoke({

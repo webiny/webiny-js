@@ -10,7 +10,11 @@
  * (`@webiny/api-composition-aws-ddb`, `-aws-ddb-os`). Keeping the wiring in real packages (not an app
  * template) is what makes it unit/integration testable.
  */
-import { createLambdaHandler, ApiGatewayFeature } from "@webiny/api-kernel-aws";
+import {
+    createLambdaHandler,
+    ApiGatewayFeature,
+    ApiGatewayInputHandler
+} from "@webiny/api-kernel-aws";
 import { registerHttpTransport } from "@webiny/api-composition-core";
 import {
     registerInboundInputTypes,
@@ -26,8 +30,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
-            // registerHttpTransport also registers the tenant, identity and preview-as loading.
-            registerHttpTransport(container, ApiGatewayFeature);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading, and the
+            // hand-off of each request into its tenant's scope once CORS and the tenant step are done.
+            registerHttpTransport(container, ApiGatewayFeature, ApiGatewayInputHandler);
 
             // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
             // WebSockets) with its handler. Kept in one function so the set is testable and an

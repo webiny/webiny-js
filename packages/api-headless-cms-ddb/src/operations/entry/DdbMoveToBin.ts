@@ -4,6 +4,7 @@ import type {
     CmsEntryStorageOperationsMoveToBinParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { MoveToBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveToBinStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -18,7 +19,8 @@ class DdbMoveToBinImpl implements MoveToBinStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(
@@ -26,6 +28,7 @@ class DdbMoveToBinImpl implements MoveToBinStorageOperation.Interface {
         params: CmsEntryStorageOperationsMoveToBinParams
     ): Promise<void> {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         /**
@@ -37,7 +40,7 @@ class DdbMoveToBinImpl implements MoveToBinStorageOperation.Interface {
             records = await this.entity.queryAll({
                 partitionKey: createPartitionKey({
                     id: entry.id,
-                    tenant: model.tenant
+                    tenant
                 }),
                 options: {
                     gte: " "
@@ -89,9 +92,7 @@ class DdbMoveToBinImpl implements MoveToBinStorageOperation.Interface {
          */
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not move the entry to the bin.",
@@ -108,5 +109,5 @@ class DdbMoveToBinImpl implements MoveToBinStorageOperation.Interface {
 
 export const DdbMoveToBin = MoveToBinStorageOperation.createImplementation({
     implementation: DdbMoveToBinImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

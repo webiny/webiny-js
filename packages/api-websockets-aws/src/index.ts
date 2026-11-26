@@ -3,6 +3,7 @@ import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
 import { WebSocketLambdaHandler } from "~/WebSocketLambdaHandler.js";
 
 export { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
+export { WebSocketTenantSource } from "~/WebSocketTenantSource.js";
 // The DynamoDB connection registry is at `@webiny/api-websockets-aws/ddb/index.js`, so loading the
 // transport loads no DynamoDB code.
 

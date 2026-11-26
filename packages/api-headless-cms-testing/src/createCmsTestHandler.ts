@@ -10,7 +10,7 @@ import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getIntrospectionQuery } from "graphql";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
@@ -18,7 +18,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms/HeadlessCmsFeature.
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
-import { RootTenantInitializer } from "@webiny/api-core-testing";
+import { TestTenantScopesFeature, createTenantScopedChild } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./processLegacyPlugins.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { NullLogger } from "@webiny/api-core/features/logger/index.js";
@@ -77,7 +77,7 @@ export interface InvokeParams {
  * or grab the fully-initialized request context via `getContext()`.
  */
 export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const identity = params.identity === undefined ? DEFAULT_IDENTITY : params.identity;
@@ -93,7 +93,8 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         container.register(TestAuthenticator);
         container.register(TestAuthorizer);
         container.registerDecorator(AuthTriggerHandler);
-        container.registerDecorator(RootTenantInitializer);
+        // Each request runs in the scope of its `x-tenant` header's tenant, as in the API.
+        TestTenantScopesFeature.register(container);
         // Same as the real handlers, so every request after the first reuses the built schema.
         GraphQLSchemaCacheFeature.register(container);
         // Fails a test when a schema factory's output changes under the same schema key.
@@ -104,17 +105,19 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         JwksStoreFeature.register(container);
     };
 
-    // Everything up to (but not including) the GraphQL engine — shared by the HTTP handler and the
-    // context-capture handler.
+    // The request container's tenant-neutral part: the storage the tenants are read from, the logger.
     const setupRequest = async (container: Container) => {
-        const wcpLicense = await WcpLicenseLoader.load(
-            params.testProjectLicense ?? createTestWcpLicense()
-        );
-
+        await WcpLicenseLoader.load(params.testProjectLicense ?? createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         const logger = new NullLogger();
         container.registerInstance(Logger, logger);
-        ApiCoreFeature.register(container, { wcpLicense });
+    };
+
+    // A tenant scope's part, up to (but not including) the GraphQL engine — shared by the HTTP
+    // handler and the context-capture handler.
+    const setupScope = async (container: Container) => {
+        const wcpLicense = WcpLicenseLoader.getCached();
+        ApiCoreFeature.register(container, { wcpLicense, tenantScope: true });
 
         // CMS storage preset. All storage presets are RegisterExtensionPlugins (registerDynamoDBCore,
         // registerCmsOpenSearchStorageOperations, dbPlugins, ...); processLegacyPlugins runs them at
@@ -149,10 +152,13 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     const handler = createTestHttpHandler({
         root: setupRoot,
-        child: async container => {
-            await setupRequest(container);
-            GraphQLEngineFeature.register(container);
-        }
+        child: createTenantScopedChild({
+            request: setupRequest,
+            scope: async container => {
+                await setupScope(container);
+                GraphQLEngineFeature.register(container);
+            }
+        })
     });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
@@ -182,9 +188,9 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     /**
      * Build the request once and return the fully-initialized context (after auth, tenant, CMS and
-     * all consumer features): the request container, captured when the handler creates it, after
-     * one request has run through it. For tests that resolve services directly from the container
-     * rather than issuing GraphQL queries.
+     * all consumer features): the container of the request's tenant scope (the root tenant's),
+     * captured when the request builds it, after one request has run through it. For tests that
+     * resolve services directly from the container rather than issuing GraphQL queries.
      */
     const getContext = async <
         C extends Record<string, any> = Record<string, any>
@@ -193,11 +199,14 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
         const ctxHandler = createTestHttpHandler({
             root: setupRoot,
-            child: async container => {
-                await setupRequest(container);
-                GraphQLEngineFeature.register(container);
-                requestContainer = container;
-            }
+            child: createTenantScopedChild({
+                request: setupRequest,
+                scope: async container => {
+                    await setupScope(container);
+                    GraphQLEngineFeature.register(container);
+                    requestContainer = container;
+                }
+            })
         });
 
         await ctxHandler({

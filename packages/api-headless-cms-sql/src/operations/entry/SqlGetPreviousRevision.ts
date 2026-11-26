@@ -7,6 +7,7 @@ import type {
 import { GetPreviousRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPreviousRevisionStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
 import { createEntryQuery } from "./queryHelpers.js";
@@ -16,7 +17,8 @@ class SqlGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -29,10 +31,12 @@ class SqlGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const row = await this.query()
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .where("entryId", params.entryId)
             .andWhere("version", "<", params.version)
@@ -49,5 +53,5 @@ class SqlGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
 
 export const SqlGetPreviousRevision = GetPreviousRevisionStorageOperation.createImplementation({
     implementation: SqlGetPreviousRevisionImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

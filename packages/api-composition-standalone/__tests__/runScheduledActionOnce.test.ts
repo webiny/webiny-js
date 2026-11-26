@@ -10,6 +10,7 @@ import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/api-kernel-core";
 import type { IScheduledActionEvent } from "@webiny/api-kernel-core";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { KeyNotFoundError } from "@webiny/api-core/features/keyValueStore/index.js";
@@ -82,9 +83,19 @@ const createProcess = (store: GlobalKeyValueStore.Interface, action: IActionStat
         execute: async () => Result.ok(tenant as any)
     } as unknown as GetTenantByIdUseCase.Interface);
     container.registerInstance(TenantContext, {
-        getTenant: () => tenant,
-        withTenant: async (_tenant: unknown, cb: () => Promise<unknown>) => cb()
+        getTenant: () => tenant
     } as unknown as TenantContext.Interface);
+    // The action's tenant's scope is the test's container.
+    container.registerInstance(TenantScopes, {
+        withTenant: async (_tenant: unknown, cb: (scope: any) => Promise<unknown>) => {
+            return cb({
+                tenant,
+                storage: "default",
+                resolve: (abstraction: any) => container.resolve(abstraction),
+                resolveAll: (abstraction: any) => container.resolveAll(abstraction)
+            });
+        }
+    } as unknown as TenantScopes.Interface);
     container.registerInstance(IdentityContext, {
         withoutAuthorization: (cb: () => Promise<unknown>) => cb()
     } as unknown as IdentityContext.Interface);

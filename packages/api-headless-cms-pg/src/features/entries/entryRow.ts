@@ -22,11 +22,18 @@ export interface IEntryRow {
  * renamed in the admin UI keeps its `storageId`, so its stored values stay with it, and a field
  * deleted and added again under the same name gets a new `storageId`, so it doesn't see the old
  * field's values.
+ *
+ * `tenant` is the storage's scope tenant (`ScopeTenant`): the row and its data get it, whatever the
+ * entry carries (the operation checked that against the scope's already).
  */
-export const entryToRow = (entry: CmsStorageEntry, model: StorageOperationsCmsModel): IEntryRow => {
+export const entryToRow = (
+    entry: CmsStorageEntry,
+    model: StorageOperationsCmsModel,
+    tenant: string
+): IEntryRow => {
     const values = model.convertValueKeyToStorage({ fields: model.fields, values: entry.values });
     return {
-        tenant: entry.tenant,
+        tenant,
         model_id: entry.modelId,
         id: entry.id,
         entry_id: entry.entryId,
@@ -35,7 +42,7 @@ export const entryToRow = (entry: CmsStorageEntry, model: StorageOperationsCmsMo
         is_published: !!entry.isPublished,
         wby_deleted: !!entry.wbyDeleted,
         // jsonb; serialized explicitly so Date values become ISO strings, as in the SQL storage.
-        data: JSON.stringify({ ...entry, values }) as unknown as CmsStorageEntry
+        data: JSON.stringify({ ...entry, tenant, values }) as unknown as CmsStorageEntry
     };
 };
 

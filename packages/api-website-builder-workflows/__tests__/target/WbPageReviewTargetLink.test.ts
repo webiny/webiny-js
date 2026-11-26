@@ -1,10 +1,11 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ReviewTargetLink } from "@webiny/api-workflows/features/notifications/ReviewTargetLink/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 
 let links: ReviewTargetLink.Interface[] = [];
 
-beforeAll(async () => {
+// Per test: the request reads its tenant from storage, whose test tables exist only during a test.
+beforeEach(async () => {
     const context = await createUserContext();
     links = context.container.resolveAll(ReviewTargetLink);
 });

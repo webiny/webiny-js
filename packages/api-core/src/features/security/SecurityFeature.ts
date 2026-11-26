@@ -19,13 +19,15 @@ import { LogInFeature } from "./login/feature.js";
  * This is the main entry point for registering all security-related features.
  *
  * @param container - DI container instance
- * @param storageOperations - Storage operations implementation
+ * @param storageOperations - Storage operations implementation. Omitted, the caller registers
+ * `SecurityStorageOperations` (`ApiCoreFeature` serves it from the tenant scope's core storage).
  */
-export const SecurityFeature = createFeature({
+export const SecurityFeature = createFeature<ISecurityStorageOperations | undefined>({
     name: "SecurityFeature",
-    register(container: Container, storageOperations: ISecurityStorageOperations) {
-        // Register storage operations abstraction (singleton)
-        container.registerInstance(SecurityStorageOperations, storageOperations);
+    register(container: Container, storageOperations?: ISecurityStorageOperations) {
+        if (storageOperations) {
+            container.registerInstance(SecurityStorageOperations, storageOperations);
+        }
 
         AuthorizationContextFeature.register(container);
         AuthenticationContextFeature.register(container);

@@ -13,6 +13,8 @@ export {
     ChildContainerFactory,
     KernelExecutionRunner
 } from "./abstractions.js";
+export { InputChainRunner } from "./InputChainRunner.js";
+export { DefaultInputChainRunner } from "./DefaultInputChainRunner.js";
 export * from "./Kernel.js";
 export * from "./RootContainerFactory.js";
 export * from "./ChildContainerFactory.js";

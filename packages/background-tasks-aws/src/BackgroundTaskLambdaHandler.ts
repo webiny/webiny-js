@@ -2,10 +2,6 @@ import type { Container } from "@webiny/feature/api";
 import { AwsLambdaContext } from "@webiny/api-kernel-aws/abstractions/AwsLambdaContext.js";
 import { BackgroundTaskInputHandler } from "@webiny/api-kernel-core";
 import { RequestContainer } from "@webiny/api-kernel-core";
-import {
-    RawTenantId,
-    RequestTenantLoader
-} from "@webiny/api-core/features/requestContext/index.js";
 import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
 import { TaskRunner } from "@webiny/background-tasks/api/runner/index.js";
@@ -32,15 +28,8 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskInputHandler.Inte
         // itself if it's already flat).
         const taskEvent = (inputCtx.input as any)?.payload || inputCtx.input;
 
-        // Background tasks have no HTTP request establisher. This is the bg-task EXTRACT step: put the
-        // tenant id from the task event into RawTenantId, then run the shared LOAD step
-        // (RequestTenantLoader) — same tenant-establishment path as every other transport. The task
-        // use cases and repositories resolve the current tenant, so it must be set before the task
-        // runs.
-        if (taskEvent?.tenant) {
-            this.container.resolve(RawTenantId).set(taskEvent.tenant);
-            await this.container.resolve(RequestTenantLoader).establish();
-        }
+        // The handler runs in the task's tenant scope: `BackgroundTaskTenantSource` names it from
+        // `tenant` of the task event, so `container` is that scope's container.
 
         // TaskRunner still takes the legacy context object, which now only carries the container.
         const ctx: Record<string, any> = { container: this.container };

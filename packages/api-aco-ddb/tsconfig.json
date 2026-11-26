@@ -3,13 +3,13 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-aco" },
+    { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../utils" },
-    { "path": "../api-core" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -20,6 +20,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
@@ -31,9 +33,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

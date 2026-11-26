@@ -7,6 +7,7 @@ import { createStorageTransformCallable } from "@webiny/api-headless-cms-storage
 import { SearchIndexer as Abstraction } from "./abstractions.js";
 import type { IReindexEntriesParams, IReindexEntriesResult } from "./abstractions.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
 import { ScopeRegistry } from "~/features/scopes/abstractions.js";
 import { buildSearchRow } from "./buildSearchRow.js";
@@ -24,7 +25,8 @@ class SearchIndexerImpl implements Abstraction.Interface {
         private readonly scopes: ScopeRegistry.Interface,
         private readonly storageTransformRegistry: StorageTransformRegistry.Interface,
         private readonly storageModelProvider: CmsStorageModelProvider.Interface,
-        private readonly knex: KnexClient.Interface
+        private readonly knex: KnexClient.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async syncEntries(
@@ -32,10 +34,11 @@ class SearchIndexerImpl implements Abstraction.Interface {
         model: CmsModel,
         entryIds: string[]
     ): Promise<void> {
+        const tenant = this.scopeTenant.getId();
         // Only these entries' rows: a model change never rebuilds other rows inside a write
         // (ModelStorageSync does that in the background). These rows get their final shape.
         const scope = await this.scopes.get(model, db);
-        return this.rebuild(db, model, scope, entryIds);
+        return this.rebuild(db, tenant, model, scope, entryIds);
     }
 
     public async reindexEntries(
@@ -43,6 +46,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
         params: IReindexEntriesParams
     ): Promise<IReindexEntriesResult> {
         const { after, limit } = params;
+        const tenant = this.scopeTenant.getId();
         // Before the transaction, as the write operations do: it may need a connection of its own.
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
@@ -50,7 +54,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
             // Entry ids in order, through the (tenant, model_id, entry_id, version) index.
             const query = trx(entries)
                 .distinct("entry_id")
-                .where({ tenant: model.tenant, model_id: model.modelId })
+                .where({ tenant, model_id: model.modelId })
                 .orderBy("entry_id")
                 .limit(limit);
             if (after !== null) {
@@ -59,7 +63,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
             const entryIds: string[] = (await query).map(row => row.entry_id);
             if (entryIds.length > 0) {
                 const scope = await this.scopes.get(model, trx);
-                await this.rebuild(trx, model, scope, entryIds);
+                await this.rebuild(trx, tenant, model, scope, entryIds);
             }
             return {
                 indexed: entryIds.length,
@@ -70,6 +74,8 @@ class SearchIndexerImpl implements Abstraction.Interface {
 
     private async rebuild(
         db: Knex.Transaction,
+        /* The scope's tenant (`ScopeTenant`). */
+        tenant: string,
         model: CmsModel,
         scope: ScopeRegistryTypes.Scope,
         entryIds: string[] | null
@@ -85,7 +91,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
 
         const rowsQuery = db(entries)
             .select("entry_id", "version", "is_latest", "is_published", "data")
-            .where({ tenant: model.tenant, model_id: model.modelId })
+            .where({ tenant, model_id: model.modelId })
             .andWhere(q => q.where("is_latest", true).orWhere("is_published", true));
         const deleteQuery = db(search).where("scope_id", scope.scopeId);
         if (entryIds !== null) {
@@ -153,6 +159,7 @@ export const SearchIndexerImplementation = Abstraction.createImplementation({
         ScopeRegistry,
         StorageTransformRegistry,
         CmsStorageModelProvider,
-        KnexClient
+        KnexClient,
+        ScopeTenant
     ]
 });

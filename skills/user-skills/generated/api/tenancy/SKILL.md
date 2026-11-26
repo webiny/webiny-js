@@ -1,7 +1,7 @@
 ---
 name: webiny-api-tenancy-catalog
 description: >
-  API — Tenancy — 17 abstractions.
+  API — Tenancy — 20 abstractions.
   Tenant lifecycle and installation event handlers and use cases.
 ---
 
@@ -38,6 +38,13 @@ Tenant lifecycle and installation event handlers and use cases.
 **Import:** `import { CreateTenantUseCase } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/CreateTenant/index.ts`
 **Description:** Create a new tenant.
+
+---
+
+**Name:** `DEFAULT_TENANT_STORAGE`
+**Import:** `import { DEFAULT_TENANT_STORAGE } from "webiny/api/tenancy"`
+**Source:** `@webiny/api-core/features/tenancy/TenantScopes/index.ts`
+**Description:** The storage every tenant runs on until per-tenant storage exists: the deploy's own.
 
 ---
 
@@ -114,7 +121,7 @@ Tenant lifecycle and installation event handlers and use cases.
 **Name:** `TenantContext`
 **Import:** `import { TenantContext } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/TenantContext/index.ts`
-**Description:** Provides access to the current tenant and tenant-scoped execution.
+**Description:** The tenant of the current tenant scope. Its `withTenant()`, `withRootTenant()` and `withEachTenant()` methods are deprecated: use `TenantScopes`.
 
 ---
 
@@ -122,6 +129,20 @@ Tenant lifecycle and installation event handlers and use cases.
 **Import:** `import { TenantInstalledEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/InstallTenant/index.ts`
 **Description:** Hook into tenant lifecycle after a tenant is installed.
+
+---
+
+**Name:** `TenantScope`
+**Import:** `import { TenantScope } from "webiny/api/tenancy"`
+**Source:** `@webiny/api-core/features/tenancy/TenantScopes/index.ts`
+**Description:** A tenant's scope, given to a `TenantScopes` callback: resolve that tenant's services from it.
+
+---
+
+**Name:** `TenantScopes`
+**Import:** `import { TenantScopes } from "webiny/api/tenancy"`
+**Source:** `@webiny/api-core/features/tenancy/TenantScopes/index.ts`
+**Description:** Run work in another tenant's scope (or the root tenant's, or each of several tenants'), resolving that tenant's services from the scope. The one sanctioned place to resolve services by hand.
 
 ---
 
