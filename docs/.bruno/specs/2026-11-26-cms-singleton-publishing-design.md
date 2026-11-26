@@ -72,9 +72,12 @@ Replace the fixed `#0001` read with a lookup by `entryId`:
 | Endpoint | Returns | Creates if missing |
 |---|---|---|
 | manage | latest revision (`GetLatestRevisionByEntryId`) | yes, as today |
-| preview | latest revision (`GetLatestRevisionByEntryId`) | no; `null` data |
-| read (6.6) | latest revision, as today (D3) | as today |
-| read (6.7) | published revision (`GetPublishedSingletonEntryUseCase`) | no; `null` data |
+| preview | latest revision (`GetLatestRevisionByEntryId`) | yes, as today |
+| read (6.6) | latest revision, as today (D3) | yes, as today |
+| read (6.7) | published revision (`GetPublishedSingletonEntryUseCase`); before the first publish, the entry with empty values (D2) | yes, as today |
+
+Every endpoint creates the singleton entry when it does not exist. A site that reads keys from a
+singleton gets an entry with empty values, never a not-found error or `null` data.
 
 - Signatures: `GetLatestRevisionByEntryId.execute(model, { id })`
   (`GetLatestRevisionByEntryId/abstractions.ts:16-19`) and
@@ -87,7 +90,7 @@ Replace the fixed `#0001` read with a lookup by `entryId`:
   workflows) use one helper. Replace the private copy in `ListCmsEntryWorkflowModelsUseCase.ts:26`.
 - Extract the `entryId` derivation into one helper (`createSingletonEntryId(model)`) so every use
   case uses the same value.
-- Manage `get<Singular>` creates the entry only when called without `revision`. With a `revision`,
+- `get<Singular>` creates the entry only when called without `revision`. With a `revision`,
   it checks the prefix (below) and fetches that revision; it never creates.
 - Every singleton use case that takes a `revision` argument checks that it starts with
   `${entryId}#` and fails with `EntryNotFoundError` otherwise. Without this, a caller could publish
@@ -195,19 +198,22 @@ Proposed defaults. Each is open until confirmed.
   (`UpdateEntryUseCase.ts:47`). To change a published singleton, the client calls
   `create<Singular>From` first and updates the new revision. Only internal code (for example
   `UpdateEntrySystem`) may change a locked revision. Concurrent saves behave as for regular entries.
-- **D2. Read API before the first publish.** Default: `data: null, error: null`. Alternative: an
-  `Cms/Entry/NotFound` error.
+- **D2. Read API before the first publish (6.7). Decided: empty values, never not found.** The
+  entry is created if missing (as today). If no revision is published, read returns the singleton
+  with its `id` and `entryId` and empty `values`. It never returns draft values, and never `null`
+  data or a not-found error.
 - **D3. Existing singletons. Decided: phased, no upgrade script.**
   - **6.6:** publishing and revisions ship. `GetPublishedSingletonEntryUseCase` exists, but the read
     API does not use it yet. Read keeps today's behaviour and returns the latest revision (today
     that is always `#0001`), so read output does not change for anyone. Editors can publish their
     singletons during 6.6.
   - **6.7:** the read API switches to `GetPublishedSingletonEntryUseCase` and returns only the
-    published revision, `null` before the first publish. Breaking change: announce it in the 6.6
-    and 6.7 release notes, with the instruction to publish each singleton before upgrading to 6.7.
+    published revision; before the first publish, the entry with empty values (D2). Breaking
+    change: announce it in the 6.6 and 6.7 release notes, with the instruction to publish each
+    singleton before upgrading to 6.7.
 - **D4. Delete a singleton revision.** Default: allowed, except for the only remaining revision and
   the published revision. To delete the published revision, unpublish first. This keeps the read API
-  from silently going to `null` through a delete.
+  from silently falling back to empty values through a delete.
 - **D5. Workflows.** Singletons stay excluded from workflow binding
   (`ListCmsEntryWorkflowModelsUseCase.ts:101`), so no review gate applies to singleton publish.
   Default: keep this for v1.
@@ -226,8 +232,8 @@ Proposed defaults. Each is open until confirmed.
 
 - Use case tests per new use case, on DDB, DDB-ES, SQLite (`api-headless-cms-sql`) and Postgres
   (`api-headless-cms-pg`) storage.
-- Endpoint tests: preview returns latest and never creates; manage creates if missing. Read per D3:
-  6.6 latest, 6.7 published only and never creates.
+- Endpoint tests: every endpoint creates the entry if missing. Preview and manage return latest.
+  Read per D3: 6.6 latest; 6.7 published, or empty values before the first publish (D2).
 - Read and preview SDL have no `meta` and no mutations.
 - Update on a locked latest revision fails with `EntryLockedError` (D1).
 - Update when the entry does not exist creates it and applies the update.
@@ -239,5 +245,5 @@ Proposed defaults. Each is open until confirmed.
 - A user with "own entries" permission can publish, unpublish, create and delete revisions of a
   singleton created by another user.
 - Existing `#0001`-only singleton: manage reads, updates and publishes it with no storage migration.
-- 6.6: read returns the latest revision, published or not. 6.7: read returns `null` until the first
-  publish, then the published revision (D3).
+- 6.6: read returns the latest revision, published or not. 6.7: read returns empty values until the
+  first publish, then the published revision (D2, D3).
