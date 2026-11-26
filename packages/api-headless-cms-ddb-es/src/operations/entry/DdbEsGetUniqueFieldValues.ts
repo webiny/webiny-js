@@ -35,7 +35,7 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
          * The index and the shared index's tenant filter are derived from the model's tenant, which
          * must be the scope's.
          */
-        this.scopeTenant.getId(model.tenant);
+        this.scopeTenant.getId();
         const { where, fieldId } = params;
 
         const configurations = createConfigurations(this.indexProvider);

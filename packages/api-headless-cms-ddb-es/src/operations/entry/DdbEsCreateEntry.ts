@@ -42,11 +42,7 @@ class DdbEsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsCreateParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            initialEntry.tenant,
-            initialStorageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
 
         const model = this.storageModelProvider.getModel<T>(initialModel);
 

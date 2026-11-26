@@ -20,7 +20,7 @@ class SqlGetModelImpl implements GetModelStorageOperation.Interface {
     }
 
     async execute(params: CmsModelStorageOperationsGetParams) {
-        const tenant = this.scopeTenant.getId(params.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.modelSchemaManager.ensure(this.tableName);
 

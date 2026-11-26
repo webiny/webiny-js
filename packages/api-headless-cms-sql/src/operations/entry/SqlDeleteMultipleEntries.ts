@@ -30,7 +30,7 @@ class SqlDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

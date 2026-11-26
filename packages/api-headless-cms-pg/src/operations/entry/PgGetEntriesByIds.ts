@@ -24,7 +24,7 @@ class PgGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interface
         model: CmsModel,
         params: CmsEntryStorageOperationsGetByIdsParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const ids = params.ids as string[];
         const keys = ids;

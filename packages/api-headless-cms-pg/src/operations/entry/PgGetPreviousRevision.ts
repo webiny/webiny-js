@@ -23,7 +23,7 @@ class PgGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.I
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const row = await modelRows(
             this.knex.client,

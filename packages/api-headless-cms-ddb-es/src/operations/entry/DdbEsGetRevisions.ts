@@ -20,7 +20,7 @@ class DdbEsGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const entries = await this.dataLoaders.getAllEntryRevisions<T>({

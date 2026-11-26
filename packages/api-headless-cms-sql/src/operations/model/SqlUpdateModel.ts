@@ -20,7 +20,7 @@ class SqlUpdateModelImpl implements UpdateModelStorageOperation.Interface {
     }
 
     async execute(params: CmsModelStorageOperationsUpdateParams) {
-        const tenant = this.scopeTenant.getId(params.model.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = params.model;
         const row = modelToRow(model, tenant);
 

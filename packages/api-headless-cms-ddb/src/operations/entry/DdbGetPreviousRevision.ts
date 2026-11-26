@@ -22,7 +22,7 @@ class DdbGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const { entryId, version } = params;

@@ -40,7 +40,7 @@ class SqlGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperatio
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetUniqueFieldValuesParams) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         const field = model.fields.find(f => f.fieldId === params.fieldId);
 

@@ -19,7 +19,7 @@ class DdbGetEntryImpl implements GetEntryStorageOperation.Interface {
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetParams
     ) {
-        this.scopeTenant.getId(initialModel.tenant);
+        this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const { items } = await this.listEntries.execute<T>(model, {

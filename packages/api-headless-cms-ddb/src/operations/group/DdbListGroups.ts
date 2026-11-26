@@ -19,7 +19,7 @@ class DdbListGroupsImpl implements ListGroupsStorageOperation.Interface {
 
     async execute(params: CmsGroupStorageOperationsListParams) {
         const { sort, where } = params;
-        const tenant = this.scopeTenant.getId(where?.tenant);
+        const tenant = this.scopeTenant.getId();
 
         let records: CmsGroup[] = [];
         try {

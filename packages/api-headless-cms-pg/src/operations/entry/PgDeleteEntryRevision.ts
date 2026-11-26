@@ -26,13 +26,7 @@ class PgDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.I
         model: CmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry?.tenant,
-            params.storageEntry?.tenant,
-            params.latestEntry?.tenant,
-            params.latestStorageEntry?.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const ref = modelRef(tenant, model);
         await this.schema.ensure();
         const { entries } = this.schema.getTables();

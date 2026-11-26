@@ -13,7 +13,7 @@ class DdbEsDeleteGroupImpl implements DeleteGroupStorageOperation.Interface {
 
     async execute(params: CmsGroupStorageOperationsDeleteParams) {
         const { group } = params;
-        const tenant = this.scopeTenant.getId(group.tenant);
+        const tenant = this.scopeTenant.getId();
         const keys = createKeys({ tenant, id: group.id });
         try {
             await this.entity.delete(keys);

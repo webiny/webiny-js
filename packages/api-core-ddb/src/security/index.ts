@@ -14,9 +14,9 @@ export const createStorageOperations = (
 ): SecurityStorageOperations => {
     const { table: tableName, documentClient, scopeTenant } = params;
 
-    /** The record with its scope's tenant, checked against the one it carries. */
+    /** The record with its scope's tenant, whatever tenant it carries. */
     const inScope = <T extends { tenant?: string | null }>(record: T): T & { tenant: string } => {
-        return { ...record, tenant: scopeTenant.getId(record.tenant) };
+        return { ...record, tenant: scopeTenant.getId() };
     };
 
     const table = createTable({
@@ -176,7 +176,7 @@ export const createStorageOperations = (
         },
         async getApiKey(params) {
             const { id } = params;
-            const tenant = scopeTenant.getId(params.tenant);
+            const tenant = scopeTenant.getId();
             const keys = createApiKeyKeys({ id, tenant });
 
             try {
@@ -193,7 +193,7 @@ export const createStorageOperations = (
         },
         async getApiKeyByToken(params) {
             const { token } = params;
-            const tenant = scopeTenant.getId(params.tenant);
+            const tenant = scopeTenant.getId();
             const queryParams: IEntityQueryOneParams = {
                 partitionKey: `T#${tenant}#API_KEYS`,
                 options: {
@@ -215,7 +215,7 @@ export const createStorageOperations = (
         },
         async getApiKeyBySlug(params) {
             const { slug } = params;
-            const tenant = scopeTenant.getId(params.tenant);
+            const tenant = scopeTenant.getId();
             const queryParams: IEntityQueryOneParams = {
                 partitionKey: `T#${tenant}#API_KEYS`,
                 options: {
@@ -237,7 +237,7 @@ export const createStorageOperations = (
         },
         async getRole({ where }) {
             const { id, slug } = where;
-            const tenant = scopeTenant.getId(where.tenant);
+            const tenant = scopeTenant.getId();
             try {
                 if (id) {
                     const result = await entities.roles.get(createRoleKeys({ tenant, id }));
@@ -262,7 +262,7 @@ export const createStorageOperations = (
         },
         async getTeam({ where }) {
             const { id, slug } = where;
-            const tenant = scopeTenant.getId(where.tenant);
+            const tenant = scopeTenant.getId();
             try {
                 if (id) {
                     const result = await entities.teams.get(createTeamKeys({ tenant, id }));
@@ -287,8 +287,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async listApiKeys({ where, sort }): Promise<StorageApiKey[]> {
-            const tenant = scopeTenant.getId(where.tenant);
+        async listApiKeys({ sort }): Promise<StorageApiKey[]> {
+            const tenant = scopeTenant.getId();
             let items;
             try {
                 items = await entities.apiKeys.queryAll({
@@ -308,7 +308,7 @@ export const createStorageOperations = (
         },
         async listRoles({ where, sort }): Promise<StorageRole[]> {
             const { id_in, slug_in } = where;
-            const tenant = scopeTenant.getId(where.tenant);
+            const tenant = scopeTenant.getId();
             let items: StorageRole[];
             try {
                 const ddbItems = await entities.roles.queryAll({
@@ -339,7 +339,7 @@ export const createStorageOperations = (
         },
         async listTeams({ where, sort }): Promise<StorageTeam[]> {
             const { id_in, slug_in } = where;
-            const tenant = scopeTenant.getId(where.tenant);
+            const tenant = scopeTenant.getId();
             let items: StorageTeam[];
             try {
                 const ddbRecords = await entities.teams.queryAll({

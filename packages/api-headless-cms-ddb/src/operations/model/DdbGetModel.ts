@@ -12,7 +12,7 @@ class DdbGetModelImpl implements GetModelStorageOperation.Interface {
     ) {}
 
     async execute(params: CmsModelStorageOperationsGetParams) {
-        const tenant = this.scopeTenant.getId(params.tenant);
+        const tenant = this.scopeTenant.getId();
         const keys = createKeys({ tenant, modelId: params.modelId });
         try {
             const result = await this.entity.get(keys);

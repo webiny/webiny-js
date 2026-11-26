@@ -19,8 +19,8 @@ class SqlListModelsImpl implements ListModelsStorageOperation.Interface {
         this.tableName = tableNameResolver.resolve("models");
     }
 
-    async execute(params: CmsModelStorageOperationsListParams) {
-        const tenant = this.scopeTenant.getId(params.where.tenant);
+    async execute(_params: CmsModelStorageOperationsListParams) {
+        const tenant = this.scopeTenant.getId();
 
         await this.modelSchemaManager.ensure(this.tableName);
 

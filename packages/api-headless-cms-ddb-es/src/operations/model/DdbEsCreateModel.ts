@@ -22,7 +22,7 @@ class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
 
     async execute(params: CmsModelStorageOperationsCreateParams) {
         const { model } = params;
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         const configurations = createConfigurations(this.indexProvider);
         const { index } = await configurations.es({

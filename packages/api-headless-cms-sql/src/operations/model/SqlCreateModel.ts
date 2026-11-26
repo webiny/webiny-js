@@ -20,7 +20,7 @@ class SqlCreateModelImpl implements CreateModelStorageOperation.Interface {
     }
 
     async execute(params: CmsModelStorageOperationsCreateParams) {
-        const tenant = this.scopeTenant.getId(params.model.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = params.model;
         const row = modelToRow(model, tenant);
 

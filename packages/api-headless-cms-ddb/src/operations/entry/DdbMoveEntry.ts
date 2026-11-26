@@ -19,7 +19,7 @@ class DdbMoveEntryImpl implements MoveEntryStorageOperation.Interface {
          * - load all the revisions of the entry, including published and latest
          * - update all the revisions (published and latest ) of the entry with new folderId
          */
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         /**
          * First we need to load all the revisions and published / latest entry.
          */

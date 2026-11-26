@@ -50,7 +50,7 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
          * The index and the shared index's tenant filter are derived from the model's tenant, which
          * must be the scope's.
          */
-        this.scopeTenant.getId(initialModel.tenant);
+        this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const limit = createLimit(params.limit, 50);

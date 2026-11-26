@@ -31,7 +31,7 @@ class SqlGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

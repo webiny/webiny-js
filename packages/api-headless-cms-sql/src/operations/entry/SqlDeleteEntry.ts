@@ -30,7 +30,7 @@ class SqlDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
-        const tenant = this.scopeTenant.getId(model.tenant, params.entry.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

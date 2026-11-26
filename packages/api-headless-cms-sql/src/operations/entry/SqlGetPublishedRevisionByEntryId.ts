@@ -34,7 +34,7 @@ class SqlGetPublishedRevisionByEntryIdImpl
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

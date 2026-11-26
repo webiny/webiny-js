@@ -17,7 +17,7 @@ class DdbGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperatio
     ) {}
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetUniqueFieldValuesParams) {
-        this.scopeTenant.getId(model.tenant);
+        this.scopeTenant.getId();
         const { where, fieldId } = params;
 
         const field = model.fields.find(f => f.fieldId === fieldId);

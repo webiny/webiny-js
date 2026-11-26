@@ -22,11 +22,7 @@ class PgMoveToBinImpl implements MoveToBinStorageOperation.Interface {
     ) {}
 
     public async execute(model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry?.tenant,
-            params.storageEntry?.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
 

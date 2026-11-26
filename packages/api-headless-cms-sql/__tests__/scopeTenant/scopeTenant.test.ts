@@ -4,7 +4,6 @@ import { Container } from "@webiny/feature/api";
 import { KnexClient } from "@webiny/api-core-sql";
 import {
     ScopeTenant,
-    TenantScopeMismatchError,
     createFixedScopeTenant
 } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createIdentifier } from "@webiny/utils";
@@ -68,7 +67,7 @@ const createEntry = (tenant: string): CmsEntry => {
         status: "draft",
         values: { name: "entry" },
         location: { folderId: "root" }
-    } as CmsEntry;
+    } as unknown as CmsEntry;
 };
 
 describe("SQL CMS storage and its scope's tenant", () => {
@@ -100,25 +99,25 @@ describe("SQL CMS storage and its scope's tenant", () => {
         expect(models.map(m => [m.tenant, m.modelId])).toEqual([[SCOPE_TENANT, model.modelId]]);
     });
 
-    it("listing models with another tenant throws", async () => {
-        await expect(
-            container
-                .resolve(ListModelsStorageOperation)
-                .execute({ where: { tenant: OTHER_TENANT } })
-        ).rejects.toThrow(TenantScopeMismatchError);
+    it("listing models ignores the tenant the caller passes", async () => {
+        const model = createModel(SCOPE_TENANT);
+        await container.resolve(CreateModelStorageOperation).execute({ model });
+
+        const models = await container
+            .resolve(ListModelsStorageOperation)
+            .execute({ where: { tenant: OTHER_TENANT } });
+
+        expect(models.map(m => [m.tenant, m.modelId])).toEqual([[SCOPE_TENANT, model.modelId]]);
     });
 
-    it("creating a model of another tenant throws and writes nothing", async () => {
-        await expect(
-            container
-                .resolve(CreateModelStorageOperation)
-                .execute({ model: createModel(OTHER_TENANT) })
-        ).rejects.toThrow(TenantScopeMismatchError);
+    it("a model passed with another tenant is stored under the scope's tenant", async () => {
+        const model = createModel(OTHER_TENANT);
+        await container.resolve(CreateModelStorageOperation).execute({ model });
 
         const models = await container
             .resolve(ListModelsStorageOperation)
             .execute({ where: { tenant: SCOPE_TENANT } });
-        expect(models).toEqual([]);
+        expect(models.map(m => [m.tenant, m.modelId])).toEqual([[SCOPE_TENANT, model.modelId]]);
     });
 
     it("entries are written in the scope's tenant and read back", async () => {
@@ -138,27 +137,27 @@ describe("SQL CMS storage and its scope's tenant", () => {
         expect(rows).toEqual([{ tenant: SCOPE_TENANT }]);
     });
 
-    it("reading an entry with a model of another tenant throws", async () => {
+    it("reading an entry with a model of another tenant reads the scope's entry", async () => {
         const model = createModel(SCOPE_TENANT);
         const entry = createEntry(SCOPE_TENANT);
         await container
             .resolve(CreateEntryStorageOperation)
             .execute(model, { entry, storageEntry: entry });
 
-        await expect(
-            container
-                .resolve(GetRevisionByIdStorageOperation)
-                .execute(createModel(OTHER_TENANT), { id: ID })
-        ).rejects.toThrow(TenantScopeMismatchError);
+        const read = await container
+            .resolve(GetRevisionByIdStorageOperation)
+            .execute(createModel(OTHER_TENANT), { id: ID });
+        expect(read?.id).toEqual(ID);
     });
 
-    it("creating an entry of another tenant throws", async () => {
+    it("an entry passed with another tenant is stored under the scope's tenant", async () => {
         const entry = createEntry(OTHER_TENANT);
+        await container
+            .resolve(CreateEntryStorageOperation)
+            .execute(createModel(OTHER_TENANT), { entry, storageEntry: entry });
 
-        await expect(
-            container
-                .resolve(CreateEntryStorageOperation)
-                .execute(createModel(SCOPE_TENANT), { entry, storageEntry: entry })
-        ).rejects.toThrow(TenantScopeMismatchError);
+        const tableName = container.resolve(EntryTableManager).getTableName();
+        const rows = await knex()(tableName).select("tenant").where("id", ID);
+        expect(rows).toEqual([{ tenant: SCOPE_TENANT }]);
     });
 });

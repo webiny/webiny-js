@@ -23,7 +23,7 @@ class PgGetRevisionByIdImpl implements GetRevisionByIdStorageOperation.Interface
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const row = await modelRows(
             this.knex.client,

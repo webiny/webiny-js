@@ -34,7 +34,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
         model: CmsModel,
         entryIds: string[]
     ): Promise<void> {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         // Only these entries' rows: a model change never rebuilds other rows inside a write
         // (ModelStorageSync does that in the background). These rows get their final shape.
         const scope = await this.scopes.get(model, db);
@@ -46,7 +46,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
         params: IReindexEntriesParams
     ): Promise<IReindexEntriesResult> {
         const { after, limit } = params;
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         // Before the transaction, as the write operations do: it may need a connection of its own.
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
@@ -74,7 +74,7 @@ class SearchIndexerImpl implements Abstraction.Interface {
 
     private async rebuild(
         db: Knex.Transaction,
-        /* The scope's tenant (`ScopeTenant`), checked against the model's by the caller. */
+        /* The scope's tenant (`ScopeTenant`). */
         tenant: string,
         model: CmsModel,
         scope: ScopeRegistryTypes.Scope,

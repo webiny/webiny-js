@@ -16,7 +16,7 @@ class PgMoveEntryImpl implements MoveEntryStorageOperation.Interface {
     ) {}
 
     public async execute(model: CmsModel, id: string, folderId: string) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
         const { id: entryId } = parseIdentifier(id);

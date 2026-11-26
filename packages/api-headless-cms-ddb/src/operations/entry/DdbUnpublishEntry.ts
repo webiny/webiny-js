@@ -55,11 +55,7 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
         params: CmsEntryStorageOperationsUnpublishParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            entry.tenant,
-            initialStorageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const partitionKey = createPartitionKey({

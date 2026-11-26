@@ -19,7 +19,7 @@ class SqlDeleteModelImpl implements DeleteModelStorageOperation.Interface {
     }
 
     async execute(params: CmsModelStorageOperationsDeleteParams) {
-        const tenant = this.scopeTenant.getId(params.model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.modelSchemaManager.ensure(this.tableName);
         await this.knex

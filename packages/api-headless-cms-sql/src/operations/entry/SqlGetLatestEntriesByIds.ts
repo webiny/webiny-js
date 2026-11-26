@@ -33,7 +33,7 @@ class SqlGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperat
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

@@ -1,9 +1,8 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { createStorage } from "~/Storage.js";
-import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
+import { DynamoDBClientFeature } from "@webiny/db-dynamodb";
+import { AuditLogsDdbConfig } from "~/abstractions/AuditLogsDdbConfig.js";
+import { DdbAuditLogsStorage } from "./DdbAuditLogsStorage.js";
 
 interface RegisterAuditLogsDdbStorageOperationsParams {
     documentClient: DynamoDBDocument;
@@ -15,16 +14,12 @@ export const registerAuditLogsDdbStorageOperations = (
 ) => {
     return createRegisterExtensionPlugin(context => {
         const container = context.container;
-        // Built when first used, in the container that registered it (a tenant scope), with that
-        // scope's tenant.
-        container.registerFactory(AuditLogsStorage, () => {
-            return createStorage({
-                client: params.documentClient,
-                tableName: params.tableName,
-                compressionHandler: container.resolve(CompressionHandler),
-                scopeTenant: container.resolve(ScopeTenant)
-            });
-        });
+        // The storage injects `DynamoDBClient`; this one wraps the given document client.
+        // `CompressionHandler` is already registered, so `AuditLogsDdbFeature` (which registers
+        // the compressors again) isn't used here.
+        DynamoDBClientFeature.register(container, params.documentClient);
+        container.registerInstance(AuditLogsDdbConfig, { tableName: params.tableName });
+        container.register(DdbAuditLogsStorage).inContainerScope();
     });
 };
 export { AuditLogsDdbFeature } from "./AuditLogsDdbFeature.js";

@@ -35,11 +35,7 @@ class SqlPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsPublishParams<T>
     ) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry.tenant,
-            params.storageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

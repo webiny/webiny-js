@@ -73,7 +73,7 @@ export class Storage implements IStorage {
         const { id } = params;
 
         try {
-            const tenant = this.scopeTenant.getId(params.tenant);
+            const tenant = this.scopeTenant.getId();
             const result = await this.entity.get({
                 PK: `T#${tenant}#AUDIT_LOG`,
                 SK: `${id}`
@@ -100,8 +100,8 @@ export class Storage implements IStorage {
         const auditLog = structuredClone(params.data);
 
         try {
-            // Stored with its scope's tenant, checked against the one it carries.
-            auditLog.tenant = this.scopeTenant.getId(auditLog.tenant);
+            // Stored with its scope's tenant, whatever tenant it carries.
+            auditLog.tenant = this.scopeTenant.getId();
             const item = await this.converter.oneToStorage(auditLog);
             await this.entity.put(item);
         } catch (ex) {
@@ -121,7 +121,7 @@ export class Storage implements IStorage {
         try {
             const result = await this.patternHandler.handle({
                 ...params,
-                tenant: this.scopeTenant.getId(params.tenant)
+                tenant: this.scopeTenant.getId()
             });
 
             return ListSuccessResult.create({

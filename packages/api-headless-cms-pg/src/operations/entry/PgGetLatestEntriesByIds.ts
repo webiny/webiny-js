@@ -25,7 +25,7 @@ class PgGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperati
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const ids = params.ids as string[];
         const keys = ids.map(id => parseIdentifier(id).id);

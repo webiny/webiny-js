@@ -84,7 +84,7 @@ class EntrySearchImpl implements Abstraction.Interface {
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsListParams
     ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>> {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
         const where: Partial<CmsEntryListWhere> = { ...params.where };
 
@@ -188,7 +188,7 @@ class EntrySearchImpl implements Abstraction.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         const field = model.fields.find(f => f.fieldId === params.fieldId);
         if (!field) {
             return [];

@@ -8,12 +8,7 @@ import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/in
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ModelFactory } from "~/features/modelBuilder/index.js";
-import {
-    ScopeTenant,
-    TenantScope,
-    TenantScopeMismatchError,
-    TenantScopes
-} from "@webiny/api-core/exports/api/tenancy.js";
+import { ScopeTenant, TenantScope, TenantScopes } from "@webiny/api-core/exports/api/tenancy.js";
 import { RuntimeTenant } from "~/features/runtimeTenant/index.js";
 import { GetRevisionByIdStorageOperation } from "~/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
@@ -177,10 +172,10 @@ describe("CMS entry tenant isolation", () => {
     });
 
     /*
-     * Storage acts on its scope's tenant and refuses a model of another tenant. The use cases above
-     * work with a model loaded in root because `RuntimeTenant` stamps the scope's tenant onto it.
+     * Storage acts on its scope's tenant and ignores the tenant a model carries. `RuntimeTenant`
+     * still stamps the scope's tenant onto a model loaded in root.
      */
-    it("stamps the scope's tenant, which storage accepts, and storage refuses an unstamped model", async () => {
+    it("stamps the scope's tenant, and storage reads the scope's entry with an unstamped model", async () => {
         const rootModel = await loadRootModel();
 
         await inSubTenant(async scope => {
@@ -188,11 +183,15 @@ describe("CMS entry tenant isolation", () => {
             expect(stamped.tenant).toBe("sub-tenant");
             expect(stamped.tenant).toBe(scope.resolve(ScopeTenant).getId());
 
+            const created = await scope.resolve(CreateEntryUseCase).execute(rootModel, {
+                values: { title: "Read with root's model" }
+            });
+            expect(created.isOk()).toBe(true);
+
             const storage = scope.resolve(GetRevisionByIdStorageOperation);
-            await expect(storage.execute(stamped, { id: "none#0001" })).resolves.toBeFalsy();
-            await expect(storage.execute(rootModel, { id: "none#0001" })).rejects.toThrow(
-                TenantScopeMismatchError
-            );
+            await expect(
+                storage.execute(rootModel, { id: created.value.id })
+            ).resolves.toMatchObject({ id: created.value.id, tenant: "sub-tenant" });
         });
     });
 });

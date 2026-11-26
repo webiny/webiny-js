@@ -21,7 +21,7 @@ class SqlListGroupsImpl implements ListGroupsStorageOperation.Interface {
     }
 
     async execute(params: CmsGroupStorageOperationsListParams) {
-        const tenant = this.scopeTenant.getId(params.where.tenant);
+        const tenant = this.scopeTenant.getId();
         const { where, sort } = params;
 
         await this.groupSchemaManager.ensure(this.tableName);

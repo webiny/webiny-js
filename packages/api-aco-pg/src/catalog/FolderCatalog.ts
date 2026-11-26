@@ -109,11 +109,6 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
         private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
-    /** The catalog acts on its scope's tenant: the folder model's, checked to be the scope's. */
-    private tenantOf(folderModel: CmsModel): string {
-        return this.scopeTenant.getId(folderModel.tenant);
-    }
-
     public async sync(
         trx: Knex.Transaction,
         folderModel: CmsModel,
@@ -129,7 +124,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
             return [];
         }
 
-        const tenant = this.tenantOf(folderModel);
+        const tenant = this.scopeTenant.getId();
         const sources = await this.readSources(trx, folderModel, entryIds);
         const patched = new Set<string>();
         for (const id of entryIds) {
@@ -155,7 +150,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
         }
         const db = await this.readyClient(folderModel);
         const { folders, grants } = this.schema.getTables();
-        const tenant = this.tenantOf(folderModel);
+        const tenant = this.scopeTenant.getId();
 
         const rows: FolderRow[] = (
             await db.raw(`SELECT * FROM "${folders}" WHERE tenant = ? AND id = ANY(?::text[])`, [
@@ -232,7 +227,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
         const { folders } = this.schema.getTables();
         const query = db(folders)
             .select("id")
-            .where({ tenant: this.tenantOf(folderModel), type: params.type });
+            .where({ tenant: this.scopeTenant.getId(), type: params.type });
         if (params.parentId) {
             query.andWhere("parent_id", params.parentId);
         }
@@ -251,7 +246,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
     ): Promise<string[]> {
         const db = await this.readyClient(folderModel);
         const { folders, grants } = this.schema.getTables();
-        const tenant = this.tenantOf(folderModel);
+        const tenant = this.scopeTenant.getId();
 
         // Every branch is limited to the folders asked for.
         const scope = `f.tenant = ? AND f.type = ?${parentId ? " AND f.parent_id = ?" : ""}`;
@@ -312,9 +307,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
     public async listTypes(folderModel: CmsModel): Promise<string[]> {
         const db = await this.readyClient(folderModel);
         const { folders } = this.schema.getTables();
-        const rows = await db(folders)
-            .distinct("type")
-            .where({ tenant: this.tenantOf(folderModel) });
+        const rows = await db(folders).distinct("type").where({ tenant: this.scopeTenant.getId() });
         return rows.map((row: { type: string }) => row.type);
     }
 
@@ -327,7 +320,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
         // Both before opening a transaction: each may need a connection of its own.
         await this.pgSchema.ensure();
         await this.schema.ensure();
-        if (!this.schema.isKnownBuilt(this.tenantOf(folderModel))) {
+        if (!this.schema.isKnownBuilt(this.scopeTenant.getId())) {
             await this.knex.client.transaction(trx => this.ensureBuilt(trx, folderModel));
         }
         return this.knex.client;
@@ -335,7 +328,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
 
     /** Builds the tenant's catalog if it has not been built. Returns whether it built it now. */
     private async ensureBuilt(trx: Knex.Transaction, folderModel: CmsModel): Promise<boolean> {
-        const tenant = this.tenantOf(folderModel);
+        const tenant = this.scopeTenant.getId();
         if (this.schema.isKnownBuilt(tenant)) {
             return false;
         }
@@ -376,7 +369,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
          * paths. The tables start empty for the tenant, so the rows are written in a few multi-row
          * INSERTs, with no per-folder round trips and no grants to delete first.
          */
-        const tenant = this.tenantOf(folderModel);
+        const tenant = this.scopeTenant.getId();
         const rows: FolderRow[] = [];
         const grantRows: Array<GrantRow & { tenant: string; position: number }> = [];
         let current: Array<{ source: FolderSource; parent: FolderRow | null }> = (
@@ -430,7 +423,7 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
         folderModel: CmsModel,
         source: FolderSource
     ): Promise<string[]> {
-        const tenant = this.tenantOf(folderModel);
+        const tenant = this.scopeTenant.getId();
         const { folders } = this.schema.getTables();
 
         const existing: FolderRow | undefined = (
@@ -588,14 +581,12 @@ class FolderCatalogImpl implements FolderCatalog.Interface {
     ): Promise<Map<string, FolderSource>> {
         // The entries table exists: write paths ensured it, read paths did in readyClient().
         const { entries } = this.pgSchema.getTables();
-        const query = db(entries)
-            .select("entry_id", "data")
-            .where({
-                tenant: this.tenantOf(folderModel),
-                model_id: folderModel.modelId,
-                is_latest: true,
-                wby_deleted: false
-            });
+        const query = db(entries).select("entry_id", "data").where({
+            tenant: this.scopeTenant.getId(),
+            model_id: folderModel.modelId,
+            is_latest: true,
+            wby_deleted: false
+        });
         if (entryIds !== null) {
             query.whereRaw("entry_id = ANY(?::text[])", [textArray(entryIds)]);
         }

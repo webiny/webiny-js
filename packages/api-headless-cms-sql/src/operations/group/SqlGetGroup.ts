@@ -20,7 +20,7 @@ class SqlGetGroupImpl implements GetGroupStorageOperation.Interface {
     }
 
     async execute(params: CmsGroupStorageOperationsGetParams) {
-        const tenant = this.scopeTenant.getId(params.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.groupSchemaManager.ensure(this.tableName);
 

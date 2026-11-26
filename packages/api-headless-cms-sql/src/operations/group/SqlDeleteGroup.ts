@@ -19,7 +19,7 @@ class SqlDeleteGroupImpl implements DeleteGroupStorageOperation.Interface {
     }
 
     async execute(params: CmsGroupStorageOperationsDeleteParams) {
-        const tenant = this.scopeTenant.getId(params.group.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.groupSchemaManager.ensure(this.tableName);
         await this.knex

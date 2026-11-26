@@ -47,7 +47,7 @@ class DdbListEntriesImpl implements ListEntriesStorageOperation.Interface {
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsListParams
     ) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const {

@@ -42,11 +42,7 @@ class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interfac
         params: CmsEntryStorageOperationsRestoreFromBinParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            initialEntry.tenant,
-            initialStorageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const transformer = createTransformer({

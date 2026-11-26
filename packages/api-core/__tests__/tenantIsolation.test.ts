@@ -3,17 +3,14 @@ import { getStorageOps } from "~/testing/environment.js";
 import type { ApiCoreStorageOperationsBuilder } from "~/features/storageOperations/abstractions.js";
 import type { AdminUsersStorageOperations } from "~/types/users.js";
 import type { SecurityStorageOperations } from "~/types/security.js";
-import {
-    createFixedScopeTenant,
-    TenantScopeMismatchError
-} from "~/features/tenancy/ScopeTenant/index.js";
+import { createFixedScopeTenant } from "~/features/tenancy/ScopeTenant/index.js";
 
 const TENANT_A = "tenantA";
 const TENANT_B = "tenantB";
 
 /**
  * Each tenant's storage is built for its own tenant scope: tenant B's storage doesn't see tenant A's
- * records, and a storage given another tenant than its scope's throws.
+ * records, and a tenant a caller passes is ignored: storage reads and writes its scope's tenant.
  */
 describe("Tenant Isolation", () => {
     let usersA: AdminUsersStorageOperations;
@@ -299,40 +296,35 @@ describe("Tenant Isolation", () => {
             createdBy: null
         };
 
-        it("throws when reading with another tenant", async () => {
+        it("reads the scope's tenant, whatever tenant the caller passes", async () => {
             await usersA.createUser({ user: userA });
 
-            await expect(
-                usersA.getUser({ where: { tenant: TENANT_B, id: userA.id } })
-            ).rejects.toThrow(TenantScopeMismatchError);
-            await expect(securityA.listRoles({ where: { tenant: TENANT_B } })).rejects.toThrow(
-                TenantScopeMismatchError
-            );
-            await expect(
-                securityA.getApiKeyByToken({ tenant: TENANT_B, token: "secret-token-123" })
-            ).rejects.toThrow(TenantScopeMismatchError);
+            const user = await usersA.getUser({ where: { tenant: TENANT_B, id: userA.id } });
+            expect(user).toMatchObject({ id: userA.id, tenant: TENANT_A });
         });
 
-        it("throws when writing a record of another tenant, and writes nothing", async () => {
-            await expect(
-                usersA.createUser({ user: { ...userA, tenant: TENANT_B } })
-            ).rejects.toThrow(TenantScopeMismatchError);
-            await expect(
-                securityA.createRole({
-                    role: {
-                        id: "role-1",
-                        tenant: TENANT_B,
-                        name: "Editor",
-                        slug: "editor",
-                        description: "",
-                        system: false,
-                        permissions: [],
-                        createdOn: new Date().toISOString(),
-                        createdBy: null
-                    }
-                })
-            ).rejects.toThrow(TenantScopeMismatchError);
+        it("stores a record passed with another tenant under the scope's tenant", async () => {
+            await usersA.createUser({ user: { ...userA, tenant: TENANT_B } });
+            await securityA.createRole({
+                role: {
+                    id: "role-1",
+                    tenant: TENANT_B,
+                    name: "Editor",
+                    slug: "editor",
+                    description: "",
+                    system: false,
+                    permissions: [],
+                    createdOn: new Date().toISOString(),
+                    createdBy: null
+                }
+            });
 
+            expect(
+                await usersA.getUser({ where: { tenant: TENANT_A, id: userA.id } })
+            ).toMatchObject({ id: userA.id, tenant: TENANT_A });
+            expect(await securityA.listRoles({ where: { tenant: TENANT_A } })).toMatchObject([
+                { id: "role-1", tenant: TENANT_A }
+            ]);
             expect(await usersB.getUser({ where: { tenant: TENANT_B, id: userA.id } })).toBeNull();
             expect(await securityB.listRoles({ where: { tenant: TENANT_B } })).toHaveLength(0);
         });

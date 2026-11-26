@@ -11,8 +11,8 @@ class DdbListModelsImpl implements ListModelsStorageOperation.Interface {
         private scopeTenant: ScopeTenant.Interface
     ) {}
 
-    async execute(params: CmsModelStorageOperationsListParams) {
-        const tenant = this.scopeTenant.getId(params.where?.tenant);
+    async execute(_params: CmsModelStorageOperationsListParams) {
+        const tenant = this.scopeTenant.getId();
         const partitionKey = createPartitionKey({ tenant });
         try {
             const result = await this.entity.queryAll({

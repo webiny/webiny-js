@@ -26,11 +26,7 @@ class PgCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOpe
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry?.tenant,
-            params.storageEntry?.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const ref = modelRef(tenant, model);
         await this.schema.ensure();
         const { entries } = this.schema.getTables();

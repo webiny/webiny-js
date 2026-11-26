@@ -6,14 +6,11 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import {
-    GetModelStorageOperation,
     GetRevisionByIdStorageOperation,
     ListModelsStorageOperation,
-    ListGroupsStorageOperation,
-    ListEntriesStorageOperation
+    ListGroupsStorageOperation
 } from "@webiny/api-headless-cms/features/shared/storageOperations/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { TenantScopeMismatchError } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { Container } from "@webiny/di";
 
 // @ts-expect-error This is enough for tests.
@@ -49,8 +46,8 @@ const getProductModel = async (container: Container): Promise<CmsModel> => {
 };
 
 /**
- * The context's tenant scope is "root": storage operations act on "root" only, and throw when a
- * caller passes another tenant.
+ * The context's tenant scope is "root": storage operations act on "root" only, and ignore any tenant
+ * a caller passes.
  */
 describe("storage operations take their tenant from the tenant scope", () => {
     const { handler } = useHandler<CmsContext>({
@@ -78,22 +75,22 @@ describe("storage operations take their tenant from the tenant scope", () => {
         expect(Array.isArray(groups)).toBe(true);
     });
 
-    it("throws when a model or group operation is given another tenant", async () => {
+    it("lists the scope's models and groups when given another tenant", async () => {
         const { container } = await createContext();
 
+        const models = await container
+            .resolve(ListModelsStorageOperation)
+            .execute({ where: { tenant: "root" } });
         await expect(
             container.resolve(ListModelsStorageOperation).execute({ where: { tenant: "webiny" } })
-        ).rejects.toBeInstanceOf(TenantScopeMismatchError);
+        ).resolves.toEqual(models);
 
+        const groups = await container
+            .resolve(ListGroupsStorageOperation)
+            .execute({ where: { tenant: "root" } });
         await expect(
             container.resolve(ListGroupsStorageOperation).execute({ where: { tenant: "webiny" } })
-        ).rejects.toBeInstanceOf(TenantScopeMismatchError);
-
-        await expect(
-            container
-                .resolve(GetModelStorageOperation)
-                .execute({ tenant: "webiny", modelId: "product" })
-        ).rejects.toBeInstanceOf(TenantScopeMismatchError);
+        ).resolves.toEqual(groups);
     });
 
     it("reads an entry with a model of the scope's tenant", async () => {
@@ -117,21 +114,24 @@ describe("storage operations take their tenant from the tenant scope", () => {
         });
     });
 
-    it("throws when an entry operation is given a model of another tenant", async () => {
+    it("reads the scope's entries when given a model of another tenant", async () => {
         const { container } = await createContext();
         const model = await getProductModel(container);
+
+        const created = await container
+            .resolve(CreateEntryUseCase)
+            .execute(model, { values: { name: "Scoped product" } });
+        expect(created.isOk()).toBe(true);
+        const entry = created.value;
+
         const otherTenantModel: CmsModel = { ...model, tenant: "webiny" };
+        const revision = await container
+            .resolve(GetRevisionByIdStorageOperation)
+            .execute(otherTenantModel, { id: entry.id });
 
-        await expect(
-            container
-                .resolve(GetRevisionByIdStorageOperation)
-                .execute(otherTenantModel, { id: "anything#0001" })
-        ).rejects.toBeInstanceOf(TenantScopeMismatchError);
-
-        await expect(
-            container
-                .resolve(ListEntriesStorageOperation)
-                .execute(otherTenantModel, { where: {}, limit: 10 })
-        ).rejects.toBeInstanceOf(TenantScopeMismatchError);
+        expect(revision).toMatchObject({
+            id: entry.id,
+            tenant: "root"
+        });
     });
 });

@@ -20,7 +20,7 @@ class DdbEsGetRevisionByIdImpl implements GetRevisionByIdStorageOperation.Interf
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const [entry] = await this.dataLoaders.getRevisionById<T>({

@@ -24,11 +24,7 @@ class PgCreateEntryImpl implements CreateEntryStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateParams<T>
     ) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry?.tenant,
-            params.storageEntry?.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
 

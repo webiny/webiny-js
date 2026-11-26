@@ -19,7 +19,7 @@ class PgDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
     ) {}
 
     public async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
-        const tenant = this.scopeTenant.getId(model.tenant, params.entry?.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
         const { id: entryId } = parseIdentifier(params.entry.id);

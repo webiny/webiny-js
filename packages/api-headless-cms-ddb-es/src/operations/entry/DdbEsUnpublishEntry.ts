@@ -43,11 +43,7 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
         params: CmsEntryStorageOperationsUnpublishParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            initialEntry.tenant,
-            initialStorageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const transformer = createTransformer({

@@ -7,7 +7,6 @@ export {
 } from "./features/storageOperations/abstractions.js";
 export {
     ScopeTenant,
-    TenantScopeMismatchError,
     NoScopeTenantError,
     createFixedScopeTenant
 } from "./features/tenancy/ScopeTenant/index.js";

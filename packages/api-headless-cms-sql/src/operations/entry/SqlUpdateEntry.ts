@@ -35,11 +35,7 @@ class SqlUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsUpdateParams<T>
     ) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry.tenant,
-            params.storageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

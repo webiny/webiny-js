@@ -18,7 +18,7 @@ class EntryValuesPatcherImpl implements Abstraction.Interface {
         model: CmsModel,
         patches: Abstraction.Patch[]
     ): Promise<string[]> {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         if (patches.length === 0) {
             return [];
         }

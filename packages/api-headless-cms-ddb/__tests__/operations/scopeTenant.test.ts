@@ -1,22 +1,27 @@
+import { resolve } from "path";
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
+import { setupDynalite } from "@webiny/db-dynamodb/testing/setupDynalite.js";
 import {
     createFixedScopeTenant,
-    ScopeTenant,
-    TenantScopeMismatchError
+    ScopeTenant
 } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { CmsModel, StorageOperationsCmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { CreateModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/CreateModelStorageOperation.js";
 import { ListModelsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import { GetRevisionByIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
 import { HeadlessCmsDdbFeature } from "~/index.js";
 import { createModel } from "./helpers/createModel.js";
 
+// This file writes to DynamoDB, so it starts the local DynamoDB the package config describes.
+await setupDynalite(resolve(import.meta.dirname, "../../"));
+
 /**
- * Storage operations take their tenant from the tenant scope they were built in. A caller passing
- * another tenant (a `where.tenant`, `model.tenant`, …) gets `TenantScopeMismatchError`.
+ * Storage operations take their tenant from the tenant scope they were built in, and ignore any
+ * tenant a caller passes (a `where.tenant`, `model.tenant`, …).
  */
 const createScope = (tenant: string) => {
     const root = new Container();
@@ -43,17 +48,24 @@ describe("storage operations and the scope's tenant", () => {
     const tenant = `scopeTenant${Math.random().toString(36).slice(2, 10)}`;
     const otherTenant = `${tenant}Other`;
 
-    it("throws when listing models with another tenant", async () => {
+    it("stores a model passed with another tenant under the scope's tenant", async () => {
         const scope = createScope(tenant);
+        const model = createTenantModel(otherTenant);
 
-        await expect(
-            scope.resolve(ListModelsStorageOperation).execute({
-                where: { tenant: otherTenant }
-            })
-        ).rejects.toThrow(TenantScopeMismatchError);
+        await scope.resolve(CreateModelStorageOperation).execute({ model });
+
+        const models = await scope.resolve(ListModelsStorageOperation).execute({
+            where: { tenant: otherTenant }
+        });
+        expect(models.map(m => [m.tenant, m.modelId])).toEqual([[tenant, model.modelId]]);
+
+        const otherScopeModels = await createScope(otherTenant)
+            .resolve(ListModelsStorageOperation)
+            .execute({ where: { tenant: otherTenant } });
+        expect(otherScopeModels).toEqual([]);
     });
 
-    it("throws when reading an entry of another tenant's model", async () => {
+    it("reads with the scope's tenant when given another tenant's model", async () => {
         const scope = createScope(tenant);
         const model = createTenantModel(otherTenant);
 
@@ -61,6 +73,6 @@ describe("storage operations and the scope's tenant", () => {
             scope
                 .resolve(GetRevisionByIdStorageOperation)
                 .execute(model, { id: "nonExistingEntry#0001" })
-        ).rejects.toThrow(TenantScopeMismatchError);
+        ).resolves.toBeNull();
     });
 });

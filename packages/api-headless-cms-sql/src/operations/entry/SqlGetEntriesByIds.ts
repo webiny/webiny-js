@@ -32,7 +32,7 @@ class SqlGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interfac
         model: CmsModel,
         params: CmsEntryStorageOperationsGetByIdsParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

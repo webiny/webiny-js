@@ -21,11 +21,7 @@ class SqlMoveToBinImpl implements MoveToBinStorageOperation.Interface {
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) {
-        const tenant = this.scopeTenant.getId(
-            model.tenant,
-            params.entry.tenant,
-            params.storageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

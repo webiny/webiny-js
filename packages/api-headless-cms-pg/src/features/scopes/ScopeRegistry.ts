@@ -145,12 +145,12 @@ class ScopeRegistryImpl implements Abstraction.Interface {
 
     public forget(model: CmsModel): void {
         scopeCache.delete(
-            scopeCacheKey(this.schema.getTables().scopes, this.tenantOf(model), model.modelId)
+            scopeCacheKey(this.schema.getTables().scopes, this.scopeTenant.getId(), model.modelId)
         );
     }
 
     public async get(model: CmsModel, db?: Knex): Promise<Abstraction.Scope> {
-        const tenant = this.tenantOf(model);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { scopes } = this.schema.getTables();
         const key = scopeCacheKey(scopes, tenant, model.modelId);
@@ -237,7 +237,7 @@ class ScopeRegistryImpl implements Abstraction.Interface {
         model: CmsModel,
         change: (stored: Abstraction.SlotMap) => Abstraction.SlotMap
     ): Promise<void> {
-        const tenant = this.tenantOf(model);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         await this.knex.client.transaction(async trx => {
             const row = await this.lockScope(trx, tenant, model);
@@ -248,7 +248,7 @@ class ScopeRegistryImpl implements Abstraction.Interface {
     }
 
     public async clear(model: CmsModel): Promise<void> {
-        const tenant = this.tenantOf(model);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { scopes, search, values, valueDeltas } = this.schema.getTables();
         await this.knex.client.transaction(async trx => {
@@ -270,11 +270,6 @@ class ScopeRegistryImpl implements Abstraction.Interface {
             );
         });
         this.forget(model);
-    }
-
-    /* The scope's tenant (`ScopeTenant`): a model of another tenant throws. */
-    private tenantOf(model: CmsModel): string {
-        return this.scopeTenant.getId(model.tenant);
     }
 
     private createPlan(model: CmsModel): IIndexPlan {

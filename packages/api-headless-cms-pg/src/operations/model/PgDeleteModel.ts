@@ -1,5 +1,4 @@
 import { DeleteModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/index.js";
-import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { CmsModelStorageOperationsDeleteParams } from "@webiny/api-headless-cms/types/index.js";
 import { ScopeRegistry } from "~/features/scopes/abstractions.js";
 
@@ -12,13 +11,10 @@ import { ScopeRegistry } from "~/features/scopes/abstractions.js";
 class PgDeleteModelImpl implements DeleteModelStorageOperation.Interface {
     public constructor(
         private readonly scopes: ScopeRegistry.Interface,
-        private readonly scopeTenant: ScopeTenant.Interface,
         private readonly decoratee: DeleteModelStorageOperation.Interface
     ) {}
 
     public async execute(params: CmsModelStorageOperationsDeleteParams): Promise<void> {
-        // Checked before anything is deleted: a model of another tenant throws here.
-        this.scopeTenant.getId(params.model.tenant);
         await this.decoratee.execute(params);
         await this.scopes.clear(params.model);
     }
@@ -26,5 +22,5 @@ class PgDeleteModelImpl implements DeleteModelStorageOperation.Interface {
 
 export const PgDeleteModel = DeleteModelStorageOperation.createDecorator({
     decorator: PgDeleteModelImpl,
-    dependencies: [ScopeRegistry, ScopeTenant]
+    dependencies: [ScopeRegistry]
 });

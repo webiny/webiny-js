@@ -18,7 +18,7 @@ class PgListEntriesImpl implements ListEntriesStorageOperation.Interface {
         params: CmsEntryStorageOperationsListParams
     ) {
         // The search checks it too; the operation checks what its caller passed up front.
-        this.scopeTenant.getId(model.tenant);
+        this.scopeTenant.getId();
         return this.search.list<T>(model, params);
     }
 }

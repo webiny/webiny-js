@@ -20,7 +20,7 @@ class DdbEsMoveEntryImpl implements MoveEntryStorageOperation.Interface {
     ) {}
 
     async execute(initialModel: CmsModel, id: string, folderId: string) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
 
         const partitionKey = createPartitionKey({
             id,

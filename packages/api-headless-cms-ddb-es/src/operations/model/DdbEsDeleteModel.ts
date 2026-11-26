@@ -13,7 +13,7 @@ class DdbEsDeleteModelImpl implements DeleteModelStorageOperation.Interface {
 
     async execute(params: CmsModelStorageOperationsDeleteParams): Promise<void> {
         const { model } = params;
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         const keys = createKeys({ tenant, modelId: model.modelId });
 
         try {

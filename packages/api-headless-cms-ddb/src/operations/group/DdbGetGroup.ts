@@ -12,7 +12,7 @@ class DdbGetGroupImpl implements GetGroupStorageOperation.Interface {
     ) {}
 
     async execute(params: CmsGroupStorageOperationsGetParams) {
-        const tenant = this.scopeTenant.getId(params.tenant);
+        const tenant = this.scopeTenant.getId();
         const keys = createKeys({ tenant, id: params.id });
         try {
             const result = await this.entity.get(keys);

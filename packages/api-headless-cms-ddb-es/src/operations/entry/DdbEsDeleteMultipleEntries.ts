@@ -21,7 +21,7 @@ class DdbEsDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOper
 
     async execute(initialModel: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams) {
         const { entries } = params;
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
         /**
          * First we need all the revisions of the entries we want to delete.

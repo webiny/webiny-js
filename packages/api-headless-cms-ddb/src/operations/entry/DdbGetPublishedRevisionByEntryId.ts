@@ -22,7 +22,7 @@ class DdbGetPublishedRevisionByEntryIdImpl
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getPublishedRevisionByEntryId<T>({

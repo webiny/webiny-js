@@ -1,5 +1,5 @@
 import type { ScopeTenant } from "./abstractions.js";
-import { NoScopeTenantError, assertScopeTenant } from "./errors.js";
+import { NoScopeTenantError } from "./errors.js";
 
 /**
  * For storage built where there is no tenant: the request container's tenant registry. Using its
@@ -14,8 +14,7 @@ export const tenantNeutralScopeTenant: ScopeTenant.Interface = {
 /** A scope tenant fixed to one tenant id, for storage built outside a tenant scope (tests, tools). */
 export const createFixedScopeTenant = (tenantId: string): ScopeTenant.Interface => {
     return {
-        getId(...passed: ScopeTenant.Passed[]): string {
-            assertScopeTenant(tenantId, passed);
+        getId(): string {
             return tenantId;
         }
     };

@@ -20,7 +20,7 @@ class DdbEsGetEntriesByIdsImpl implements GetEntriesByIdsStorageOperation.Interf
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetByIdsParams
     ) {
-        const tenant = this.scopeTenant.getId(initialModel.tenant);
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const entries = await this.dataLoaders.getRevisionById<T>({

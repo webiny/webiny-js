@@ -18,7 +18,7 @@ class DdbDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
 
     async execute(initialModel: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
         const { entry } = params;
-        const tenant = this.scopeTenant.getId(initialModel.tenant, entry.tenant);
+        const tenant = this.scopeTenant.getId();
         const id = entry.id || entry.entryId;
 
         const partitionKey = createPartitionKey({

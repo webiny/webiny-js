@@ -43,7 +43,7 @@ class SqlGetEntryImpl implements GetEntryStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsGetParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

@@ -31,7 +31,7 @@ class SqlGetRevisionByIdImpl implements GetRevisionByIdStorageOperation.Interfac
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

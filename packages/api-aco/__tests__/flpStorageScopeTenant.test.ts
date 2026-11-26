@@ -1,11 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { TenantScopeMismatchError } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { FlpStorageOperations } from "~/features/folder/shared/abstractions.js";
 import { useHandler } from "./utils/useHandler";
 
 /**
  * The folder-level permissions storage acts on its scope's tenant (here root): it stores and reads
- * root's permissions, and throws when it's given another tenant.
+ * root's permissions, whatever tenant a caller passes.
  */
 describe("Folder-level permissions storage: the scope's tenant", () => {
     const flp = {
@@ -18,7 +17,9 @@ describe("Folder-level permissions storage: the scope's tenant", () => {
         permissions: []
     };
 
-    it("stores and reads the scope's tenant, and throws for another tenant", async ({ skip }) => {
+    it("stores and reads the scope's tenant, whatever tenant the caller passes", async ({
+        skip
+    }) => {
         const { handler } = useHandler();
         const { container } = await handler();
 
@@ -31,27 +32,19 @@ describe("Folder-level permissions storage: the scope's tenant", () => {
         }
 
         await storage.create({ data: flp });
-        expect(await storage.get({ tenant: "root", id: flp.id })).toMatchObject({ id: flp.id });
+        // Read from the scope's tenant: the passed tenant is ignored.
+        expect(await storage.get({ tenant: "other", id: flp.id })).toMatchObject({ id: flp.id });
 
-        await expect(storage.get({ tenant: "other", id: flp.id })).rejects.toThrow(
-            TenantScopeMismatchError
-        );
-        await expect(storage.list({ where: { tenant: "other", type: flp.type } })).rejects.toThrow(
-            TenantScopeMismatchError
-        );
-        await expect(
-            storage.create({ data: { ...flp, id: "flp-scope-2", tenant: "other" } })
-        ).rejects.toThrow(TenantScopeMismatchError);
-        const otherTenantUpdate = { tenant: "other", slug: "b" };
-        await expect(storage.update({ original: flp, data: otherTenantUpdate })).rejects.toThrow(
-            TenantScopeMismatchError
-        );
-        await expect(
-            storage.batchUpdate({ items: [{ original: flp, data: otherTenantUpdate }] })
-        ).rejects.toThrow(TenantScopeMismatchError);
+        // A record passed with another tenant is stored under the scope's tenant.
+        await storage.create({ data: { ...flp, id: "flp-scope-2", tenant: "other" } });
+        expect(await storage.get({ tenant: "root", id: "flp-scope-2" })).toMatchObject({
+            id: "flp-scope-2"
+        });
 
-        // Nothing was written for the other tenant's record, and root's record is unchanged.
-        expect(await storage.get({ tenant: "root", id: "flp-scope-2" })).toBeNull();
-        expect(await storage.get({ tenant: "root", id: flp.id })).toMatchObject({ slug: "a" });
+        await storage.update({ original: flp, data: { tenant: "other", slug: "b" } });
+        expect(await storage.get({ tenant: "root", id: flp.id })).toMatchObject({ slug: "b" });
+
+        const listed = await storage.list({ where: { tenant: "other", type: flp.type } });
+        expect(listed.map(item => item.id).sort()).toEqual([flp.id, "flp-scope-2"]);
     });
 });

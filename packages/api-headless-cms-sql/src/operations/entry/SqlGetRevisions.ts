@@ -32,7 +32,7 @@ class SqlGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
 
         await this.entryTableManager.ensureTable();
 

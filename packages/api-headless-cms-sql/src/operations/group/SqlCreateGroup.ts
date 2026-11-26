@@ -20,7 +20,7 @@ class SqlCreateGroupImpl implements CreateGroupStorageOperation.Interface {
     }
 
     async execute(params: CmsGroupStorageOperationsCreateParams) {
-        const tenant = this.scopeTenant.getId(params.group.tenant);
+        const tenant = this.scopeTenant.getId();
         const row = groupToRow(params.group, tenant);
 
         await this.groupSchemaManager.ensure(this.tableName);

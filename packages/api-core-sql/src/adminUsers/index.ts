@@ -46,9 +46,9 @@ export const createStorageOperations = (
 ): AdminUsersStorageOperations => {
     const { knex, tableManager, scopeTenant } = params;
 
-    /** The user with its scope's tenant, checked against the one it carries. */
+    /** The user with its scope's tenant, whatever tenant it carries. */
     const inScope = <T extends AdminUser>(user: T): T => {
-        return { ...user, tenant: scopeTenant.getId(user.tenant) };
+        return { ...user, tenant: scopeTenant.getId() };
     };
 
     // The user→tenant index: finds every tenant's record of one user.
@@ -89,7 +89,7 @@ export const createStorageOperations = (
             const {
                 where: { id, email }
             } = params;
-            const tenant = scopeTenant.getId(params.where.tenant);
+            const tenant = scopeTenant.getId();
 
             try {
                 if (id) {
@@ -166,7 +166,7 @@ export const createStorageOperations = (
             const { where, sort } = params;
 
             try {
-                const rows = await query().where("tenant", scopeTenant.getId(where.tenant));
+                const rows = await query().where("tenant", scopeTenant.getId());
 
                 let items = rows.map(row => rowToUser<TUser>(row));
 

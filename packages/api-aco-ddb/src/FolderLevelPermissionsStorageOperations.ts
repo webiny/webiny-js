@@ -64,16 +64,16 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         this.scopeTenant = scopeTenant;
     }
 
-    /** The permission with its scope's tenant, checked against the one it carries. */
+    /** The permission with its scope's tenant, whatever tenant it carries. */
     private inScope<T extends { tenant?: string | null }>(record: T): T & { tenant: string } {
-        return { ...record, tenant: this.scopeTenant.getId(record.tenant) };
+        return { ...record, tenant: this.scopeTenant.getId() };
     }
 
     public async list({
         where
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
         const { type, path_startsWith, parentId } = where;
-        const tenant = this.scopeTenant.getId(where.tenant);
+        const tenant = this.scopeTenant.getId();
         try {
             if (parentId) {
                 const entries = await this.entity.queryAll({
@@ -124,7 +124,7 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
 
     public async get(params: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
         const { id } = params;
-        const tenant = this.scopeTenant.getId(params.tenant);
+        const tenant = this.scopeTenant.getId();
         try {
             const entry = await this.entity.get(this.createKeys({ tenant, id }));
 

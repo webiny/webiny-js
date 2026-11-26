@@ -13,7 +13,7 @@ class DdbEsCreateGroupImpl implements CreateGroupStorageOperation.Interface {
 
     async execute(params: CmsGroupStorageOperationsCreateParams) {
         const { group } = params;
-        const tenant = this.scopeTenant.getId(group.tenant);
+        const tenant = this.scopeTenant.getId();
         const keys = createKeys({ tenant, id: group.id });
         try {
             await this.entity.put({

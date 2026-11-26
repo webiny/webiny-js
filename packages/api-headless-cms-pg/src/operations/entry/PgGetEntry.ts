@@ -18,7 +18,7 @@ class PgGetEntryImpl implements GetEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsGetParams
     ) {
         // The search checks it too; the operation checks what its caller passed up front.
-        this.scopeTenant.getId(model.tenant);
+        this.scopeTenant.getId();
         const { items } = await this.search.list<T>(model, { ...params, limit: 1 });
         return items.shift() || null;
     }

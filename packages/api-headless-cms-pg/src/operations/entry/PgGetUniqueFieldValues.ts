@@ -17,7 +17,7 @@ class PgGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperation
         params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
     ) {
         // The search checks it too; the operation checks what its caller passed up front.
-        this.scopeTenant.getId(model.tenant);
+        this.scopeTenant.getId();
         return this.search.uniqueValues(model, params);
     }
 }

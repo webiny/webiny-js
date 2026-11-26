@@ -52,13 +52,7 @@ class DdbDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) {
         const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            entry.tenant,
-            params.storageEntry?.tenant,
-            latestEntry?.tenant,
-            initialLatestStorageEntry?.tenant
-        );
+        const tenant = this.scopeTenant.getId();
 
         const model = this.storageModelProvider.getModel(initialModel);
 

@@ -1,11 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { TenantScopeMismatchError } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { AuditLogsStorage } from "~/abstractions.js";
 import { useHandler } from "./helpers/useHandler.js";
 
 /**
  * The audit logs storage acts on its scope's tenant (here root): it stores and lists root's logs,
- * and refuses another tenant.
+ * whatever tenant a caller passes.
  */
 describe("Audit logs storage: the scope's tenant", () => {
     const createAuditLog = (id: string, tenant: string) => ({
@@ -23,27 +22,23 @@ describe("Audit logs storage: the scope's tenant", () => {
         content: "{}"
     });
 
-    it("stores and reads the scope's tenant, and refuses another tenant", async () => {
+    it("stores and reads the scope's tenant, whatever tenant the caller passes", async () => {
         const { handler } = useHandler();
         const { container } = await handler();
         const storage = container.resolve(AuditLogsStorage);
 
-        const stored = await storage.store({ data: createAuditLog("log-scope-1", "root") });
-        expect(stored.success).toBe(true);
-        const fetched = await storage.fetch({ id: "log-scope-1", tenant: "root" });
-        expect(fetched.success).toBe(true);
+        // A log passed with another tenant is stored under the scope's tenant.
+        const stored = await storage.store({ data: createAuditLog("log-scope-1", "other") });
+        expect(stored).toMatchObject({ success: true, data: { tenant: "root" } });
 
-        const fetchedOther = await storage.fetch({ id: "log-scope-1", tenant: "other" });
-        expect(fetchedOther.success).toBe(false);
-        expect(fetchedOther.error).toBeInstanceOf(TenantScopeMismatchError);
+        const fetched = await storage.fetch({ id: "log-scope-1", tenant: "other" });
+        expect(fetched).toMatchObject({
+            success: true,
+            data: { id: "log-scope-1", tenant: "root" }
+        });
 
-        const listedOther = await storage.list({ tenant: "other", limit: 10 });
-        expect(listedOther.success).toBe(false);
-        expect(listedOther.error).toBeInstanceOf(TenantScopeMismatchError);
-
-        const storedOther = await storage.store({ data: createAuditLog("log-scope-2", "other") });
-        expect(storedOther.success).toBe(false);
-        expect(storedOther.error).toBeInstanceOf(TenantScopeMismatchError);
-        expect((await storage.fetch({ id: "log-scope-2", tenant: "root" })).success).toBe(false);
+        const listed = await storage.list({ tenant: "other", app: "scopeTest", limit: 10 });
+        expect(listed.success).toBe(true);
+        expect(listed.data?.map(log => [log.id, log.tenant])).toEqual([["log-scope-1", "root"]]);
     });
 });

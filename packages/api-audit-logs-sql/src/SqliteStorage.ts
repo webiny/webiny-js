@@ -102,7 +102,7 @@ export class SqliteStorage implements IStorage {
         try {
             const row = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                 .where("id", params.id)
-                .andWhere("tenant", this.scopeTenant.getId(params.tenant))
+                .andWhere("tenant", this.scopeTenant.getId())
                 .first();
 
             if (!row) {
@@ -130,8 +130,8 @@ export class SqliteStorage implements IStorage {
         await this.ensureTable();
 
         try {
-            // Stored with its scope's tenant, checked against the one it carries.
-            const tenant = this.scopeTenant.getId(params.data.tenant);
+            // Stored with its scope's tenant, whatever tenant it carries.
+            const tenant = this.scopeTenant.getId();
             const row = toRow({ ...params.data, tenant });
 
             const existing = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
@@ -149,7 +149,7 @@ export class SqliteStorage implements IStorage {
             }
 
             return {
-                data: params.data,
+                data: { ...params.data, tenant },
                 success: true
             };
         } catch (error) {
@@ -168,7 +168,7 @@ export class SqliteStorage implements IStorage {
 
             const query = this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME)).where(
                 "tenant",
-                this.scopeTenant.getId(params.tenant)
+                this.scopeTenant.getId()
             );
 
             if (params.app) {

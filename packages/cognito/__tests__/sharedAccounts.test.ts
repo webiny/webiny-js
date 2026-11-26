@@ -3,6 +3,7 @@ import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/api-kernel-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { createFixedScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { License } from "@webiny/wcp";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { Logger, NullLogger } from "@webiny/api-core/features/logger/index.js";
@@ -54,12 +55,23 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
     const storage = () =>
         getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore").storageOperations;
+    /** Storage built for one tenant's scope. */
+    const storageOf = (tenant: string) =>
+        storage()({ scopeTenant: createFixedScopeTenant(tenant) });
     /**
-     * The storage the test reads records with, across tenants: each call acts in the tenant of the
-     * `where` it's given, as storage built in that tenant's scope does.
+     * The storage the test reads records with, across tenants. Storage ignores the tenant a caller
+     * passes, so `getUser` reads from the storage of its `where`'s tenant, as it would run in that
+     * tenant's scope. `listUserRecords` is tenant-neutral.
      */
-    const readStorage = () =>
-        storage()({ scopeTenant: { getId: (...passed) => passed.find(Boolean) ?? "root" } });
+    const readStorage = () => {
+        const root = storageOf("root");
+        const users = root.usersStorageOperations;
+        const usersStorageOperations: typeof users = {
+            ...users,
+            getUser: params => storageOf(params.where.tenant).usersStorageOperations.getUser(params)
+        };
+        return { ...root, usersStorageOperations };
+    };
 
     const createRequestContainer = () => {
         const requestContainer = new Container();

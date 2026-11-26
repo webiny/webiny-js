@@ -13,9 +13,9 @@ import type {
 export const createStorageOperations: CreateAdminUsersStorageOperations = params => {
     const { table: tableName, documentClient, scopeTenant } = params;
 
-    /** The user with its scope's tenant, checked against the one it carries. */
+    /** The user with its scope's tenant, whatever tenant it carries. */
     const inScope = <T extends AdminUser>(user: T): T => {
-        return { ...user, tenant: scopeTenant.getId(user.tenant) };
+        return { ...user, tenant: scopeTenant.getId() };
     };
 
     const table = createTable({
@@ -95,7 +95,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             const {
                 where: { id, email }
             } = params;
-            const tenant = scopeTenant.getId(params.where.tenant);
+            const tenant = scopeTenant.getId();
             try {
                 if (id) {
                     const response = await entities.users.get<IStandardEntityAttributes<TUser>>(
@@ -177,7 +177,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             where,
             sort
         }: StorageOperationsListUsersParams) {
-            const tenant = scopeTenant.getId(where.tenant);
+            const tenant = scopeTenant.getId();
             let items: TUser[];
             try {
                 const ddbItems = await entities.users.queryAll<IStandardEntityAttributes<TUser>>({

@@ -35,7 +35,12 @@ class FindUserRecordsUseCaseImpl implements Abstraction.Interface {
         const indexedTenants = new Set(indexed.map(user => user.tenant));
         const unindexed = users.filter(user => !indexedTenants.has(user.tenant));
 
-        await Promise.all(unindexed.map(user => this.addToIndex(user, tenants)));
+        // One tenant at a time: each rewrite enters that tenant's scope, and a scope only goes idle
+        // (and can be released) once its rewrite is done.
+        const tenantsById = new Map(tenants.map(tenant => [tenant.id, tenant]));
+        for (const user of unindexed) {
+            await this.addToIndex(user, tenantsById.get(user.tenant));
+        }
 
         return Result.ok([...indexed, ...unindexed]);
     }
@@ -44,8 +49,7 @@ class FindUserRecordsUseCaseImpl implements Abstraction.Interface {
      * Rewriting a record adds the index keys. It's rewritten in its own tenant's scope, the only
      * storage that writes that tenant's records. A failed write only means the next lookup probes again.
      */
-    private async addToIndex(user: AdminUser, tenants: Tenant[]): Promise<void> {
-        const tenant = tenants.find(tenant => tenant.id === user.tenant);
+    private async addToIndex(user: AdminUser, tenant: Tenant | undefined): Promise<void> {
         if (!tenant) {
             return;
         }

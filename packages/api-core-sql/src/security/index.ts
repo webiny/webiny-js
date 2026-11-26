@@ -48,9 +48,9 @@ export const createStorageOperations = (
 ): SecurityStorageOperations => {
     const { knex, tableManager, scopeTenant } = params;
 
-    /** The record with its scope's tenant, checked against the one it carries. */
+    /** The record with its scope's tenant, whatever tenant it carries. */
     const inScope = <T extends { tenant?: string | null }>(record: T): T & { tenant: string } => {
-        return { ...record, tenant: scopeTenant.getId(record.tenant) };
+        return { ...record, tenant: scopeTenant.getId() };
     };
 
     const ensureRolesTable = tableManager.define(ROLES_TABLE, table => {
@@ -92,7 +92,7 @@ export const createStorageOperations = (
     return {
         /* Roles */
         async getRole({ where: { tenant, id, slug } }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureRolesTable();
 
             try {
@@ -121,7 +121,7 @@ export const createStorageOperations = (
         },
 
         async listRoles({ where: { tenant, id_in, slug_in }, sort }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureRolesTable();
 
             try {
@@ -203,7 +203,7 @@ export const createStorageOperations = (
 
         /* Teams */
         async getTeam({ where: { tenant, id, slug } }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureTeamsTable();
 
             try {
@@ -232,7 +232,7 @@ export const createStorageOperations = (
         },
 
         async listTeams({ where: { tenant, id_in, slug_in }, sort }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureTeamsTable();
 
             try {
@@ -314,7 +314,7 @@ export const createStorageOperations = (
 
         /* API Keys */
         async getApiKey({ id, tenant }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureApiKeysTable();
 
             try {
@@ -331,7 +331,7 @@ export const createStorageOperations = (
         },
 
         async getApiKeyByToken({ tenant, token }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureApiKeysTable();
 
             try {
@@ -351,7 +351,7 @@ export const createStorageOperations = (
         },
 
         async getApiKeyBySlug({ tenant, slug }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureApiKeysTable();
 
             try {
@@ -371,7 +371,7 @@ export const createStorageOperations = (
         },
 
         async listApiKeys({ where: { tenant }, sort }) {
-            tenant = scopeTenant.getId(tenant);
+            tenant = scopeTenant.getId();
             await ensureApiKeysTable();
 
             try {

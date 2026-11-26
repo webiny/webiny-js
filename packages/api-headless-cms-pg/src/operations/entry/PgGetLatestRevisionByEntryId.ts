@@ -26,7 +26,7 @@ class PgGetLatestRevisionByEntryIdImpl
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { id: entryId } = parseIdentifier(params.id);
         const row = await modelRows(

@@ -22,7 +22,7 @@ class DdbEsGetEntryImpl implements GetEntryStorageOperation.Interface {
         /**
          * Only checked here: the listing reads with the scope's tenant itself.
          */
-        this.scopeTenant.getId(initialModel.tenant);
+        this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const { items } = await this.listEntries.execute<T>(model, {

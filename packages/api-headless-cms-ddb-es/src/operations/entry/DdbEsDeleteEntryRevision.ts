@@ -45,13 +45,7 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ): Promise<void> {
         const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            entry.tenant,
-            params.storageEntry?.tenant,
-            latestEntry?.tenant,
-            initialLatestStorageEntry?.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const partitionKey = createPartitionKey({

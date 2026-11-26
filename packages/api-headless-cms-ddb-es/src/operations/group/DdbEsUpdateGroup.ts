@@ -13,7 +13,7 @@ class DdbEsUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
 
     async execute(params: CmsGroupStorageOperationsUpdateParams) {
         const { group } = params;
-        const tenant = this.scopeTenant.getId(group.tenant);
+        const tenant = this.scopeTenant.getId();
         const keys = createKeys({ tenant, id: group.id });
         try {
             await this.entity.put({

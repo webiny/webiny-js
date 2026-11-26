@@ -4,7 +4,6 @@ import { Container } from "@webiny/di";
 import { KnexClient } from "@webiny/api-core-sql";
 import {
     ScopeTenant,
-    TenantScopeMismatchError,
     createFixedScopeTenant
 } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -20,7 +19,7 @@ import { PgUpdateEntry } from "~/operations/entry/PgUpdateEntry.js";
 
 /*
  * The entry operations with a fake query layer, no database: they act on the tenant of the scope
- * they were built in, and throw when a caller passes another one.
+ * they were built in, whatever tenant a caller passes.
  */
 
 interface IQueryCall {
@@ -53,8 +52,10 @@ const createFakeDb = () => {
             }
         };
         return builder;
-    }) as unknown as Knex & { transaction: unknown };
-    db.transaction = async (callback: (trx: Knex) => Promise<unknown>) => callback(db);
+    }) as unknown as Knex;
+    (db as unknown as { transaction: unknown }).transaction = async (
+        callback: (trx: Knex) => Promise<unknown>
+    ) => callback(db);
     return { db, calls };
 };
 
@@ -124,40 +125,36 @@ describe("entry storage operations take the tenant of their scope", () => {
         expect(JSON.parse(insert.data as string).tenant).toBe("root");
     });
 
-    it("throws for a model of another tenant, before touching the database", async () => {
-        const { container, calls, synced } = createContainer("root");
+    it("writes a model and entry passed with another tenant under the scope's tenant", async () => {
+        const { container, calls } = createContainer("root");
         const create = container.resolve(CreateEntryStorageOperation);
 
-        const error = await create
-            .execute(model("other"), { entry: entry("other"), storageEntry: entry("other") })
-            .catch(e => e);
+        await create.execute(model("other"), {
+            entry: entry("other"),
+            storageEntry: entry("other")
+        });
 
-        expect(error).toBeInstanceOf(TenantScopeMismatchError);
-        expect(error.data).toEqual({ scopeTenantId: "root", passedTenantId: "other" });
-        expect(calls).toEqual([]);
-        expect(synced).toEqual([]);
+        const insert = calls.find(call => call.insert)!.insert!;
+        expect(insert.tenant).toBe("root");
+        expect(JSON.parse(insert.data as string).tenant).toBe("root");
     });
 
-    it("throws for an entry of another tenant, though the model is the scope's", async () => {
+    it("updates under the scope's tenant when the entry carries another one", async () => {
         const { container, calls } = createContainer("root");
         const update = container.resolve(UpdateEntryStorageOperation);
 
-        await expect(
-            update.execute(model("root"), { entry: entry("root"), storageEntry: entry("other") })
-        ).rejects.toBeInstanceOf(TenantScopeMismatchError);
-        expect(calls).toEqual([]);
+        await update.execute(model("root"), { entry: entry("root"), storageEntry: entry("other") });
+
+        const write = calls.find(call => call.update)!;
+        expect(write.where[0]).toEqual({ tenant: "root", model_id: "article" });
+        expect(JSON.parse(write.update!.data as string).tenant).toBe("root");
     });
 
-    it("reads with the scope's tenant, and refuses another one", async () => {
+    it("reads with the scope's tenant, whatever tenant the model carries", async () => {
         const { container, calls } = createContainer("root");
         const get = container.resolve(GetRevisionByIdStorageOperation);
 
-        await get.execute(model("root"), { id: "abc#0001" });
+        await get.execute(model("other"), { id: "abc#0001" });
         expect(calls[0].where[0]).toEqual({ tenant: "root", model_id: "article" });
-
-        await expect(get.execute(model("other"), { id: "abc#0001" })).rejects.toBeInstanceOf(
-            TenantScopeMismatchError
-        );
-        expect(calls).toHaveLength(1);
     });
 });

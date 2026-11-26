@@ -19,7 +19,7 @@ class PgDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperati
     ) {}
 
     public async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams) {
-        const tenant = this.scopeTenant.getId(model.tenant);
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
         const entryIds = params.entries.map(id => parseIdentifier(id).id);

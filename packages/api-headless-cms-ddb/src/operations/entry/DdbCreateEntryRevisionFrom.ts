@@ -30,11 +30,7 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
-        const tenant = this.scopeTenant.getId(
-            initialModel.tenant,
-            entry.tenant,
-            initialStorageEntry.tenant
-        );
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const storageEntry = {
