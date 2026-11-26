@@ -52,11 +52,10 @@ export function checkSingletonRevision(
 
     // 2. The value is a revision id.
     if (version === null) {
-        const message =
-            operation === "delete"
-                ? "Singleton entry cannot be deleted."
-                : "A revision id is required.";
-        return Result.fail(new EntryValidationError(message));
+        if (operation === "delete") {
+            return Result.fail(new EntryValidationError("Singleton entry cannot be deleted."));
+        }
+        return Result.fail(new EntryValidationError("A revision id is required."));
     }
 
     if (isPublishingEnabled(model)) {
