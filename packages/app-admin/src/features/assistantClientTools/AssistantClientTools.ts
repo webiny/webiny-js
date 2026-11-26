@@ -43,6 +43,13 @@ class AssistantClientToolsImpl implements Abstraction.Interface {
         return this.entries.some(entry => entry.tools.includes(tool));
     }
 
+    /*
+     * Runs one tool call the model asked for, in the browser: the model can't change the screen
+     * itself, so the server stops and hands the call here. The result goes back to the server in
+     * the next request, and the model carries on from it. Never throws: the server only carries on
+     * once every waiting call has a result, so a failure comes back as an `error` result the model
+     * can read and react to.
+     */
     async run(call: Abstraction.Call, offered: Abstraction.Tool[]): Promise<Abstraction.Result> {
         const { toolCallId, toolName } = call;
         const tool = offered.find(candidate => candidate.name === toolName);
