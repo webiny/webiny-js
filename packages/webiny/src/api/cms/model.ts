@@ -39,3 +39,9 @@ export { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 export { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/abstractions.js";
 export { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 export { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/index.js";
+export { isSingletonModel } from "@webiny/api-headless-cms/domain/contentModel/isSingletonModel.js";
+export { isPublishingEnabled } from "@webiny/api-headless-cms/domain/contentModel/isPublishingEnabled.js";
+export {
+    CMS_MODEL_PUBLISHING_ENABLED_TAG,
+    CMS_MODEL_PUBLISHING_DISABLED_TAG
+} from "@webiny/api-headless-cms/constants.js";
