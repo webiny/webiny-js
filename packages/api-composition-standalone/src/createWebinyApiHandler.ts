@@ -54,12 +54,12 @@ import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/sched
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
-import { mkdirSync } from "node:fs";
 import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
+import { assertFileStorage } from "~/config/assertFileStorage.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
 import {
     createLogger,
@@ -140,12 +140,18 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             realtime: scopeContainer => {
                 WebsocketsStandaloneFeature.register(scopeContainer);
             },
-            // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
-            // delivery Lambda), the single-process server stores files on disk and serves them
-            // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
-            // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
+            /*
+             * File-manager storage transport. Where AWS uploads straight to S3 (+ a separate
+             * asset-delivery Lambda), the server takes uploads and serves files in-process.
+             * FileManagerStandaloneFeature registers asset delivery (overriding the domain's
+             * null impls) and the upload/multipart HTTP routes; they store through
+             * `ObjectStorage`, which a project extension registers (`<Infra.FileStorage.Disk />`
+             * a folder on disk, `<Infra.FileStorage.S3 />` an S3-compatible bucket).
+             * `assertFileStorage` has made sure the build has one.
+             */
             fileManager: scopeContainer => {
-                FileManagerStandaloneFeature.register(scopeContainer, standaloneConfig.fileStorage);
+                const { uploadSecret } = standaloneConfig.fileStorage;
+                FileManagerStandaloneFeature.register(scopeContainer, { uploadSecret });
             }
         }
     };
@@ -160,13 +166,13 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // the root, and every request container and tenant scope reads them from here.
             const buildParams = await registerRootBuildParams(rootContainer, config.extensions());
             assertNoBakedSecrets(buildParams);
+            assertFileStorage(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             rootContainer.registerInstance(Logger, logger);
 
             // Names this process in shared storage: task claims and websocket connections.
             rootContainer.register(RandomProcessOwner).inSingletonScope();
-            mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.

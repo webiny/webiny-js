@@ -11,6 +11,7 @@ import { createPgStorage } from "@webiny/api-storage-pg";
 import { HeadlessCmsPgExtension } from "@webiny/api-headless-cms-pg";
 import { AcoPgExtension } from "@webiny/api-aco-pg";
 import { createSqlApiHandler } from "~/createWebinyApiHandler.js";
+import { diskFileStorage } from "./diskFileStorage.js";
 
 class SigningSecretBuildParam implements BuildParam.Interface {
     key = "SelfHostedAuthSigningSecret";
@@ -113,7 +114,7 @@ export const createPgServer = async (options: CreatePgServerOptions = {}) => {
      */
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
 
-    // What `<Infra.ApiUrl>` and `<Infra.FileStorage>` put in the env of `webiny watch`.
+    // What `<Infra.ApiUrl>` and `<Infra.FileStorage.Disk>` put in the env of `webiny watch`.
     vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
     vi.stubEnv(
         "WEBINY_LOCAL_STORAGE_PATH",
@@ -127,7 +128,7 @@ export const createPgServer = async (options: CreatePgServerOptions = {}) => {
     let server: Awaited<ReturnType<typeof createSqlApiHandler>>;
     try {
         server = await createSqlApiHandler({
-            extensions: () => extensions,
+            extensions: () => [...diskFileStorage, ...extensions],
             storage: createPgStorage({ knex })
         });
     } catch (error) {

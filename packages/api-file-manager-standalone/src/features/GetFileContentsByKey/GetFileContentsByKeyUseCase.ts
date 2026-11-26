@@ -1,4 +1,3 @@
-import { promises as fs } from "node:fs";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetFileContentsByKeyUseCase as GetFileContentsByKeyUseCaseAbstraction } from "@webiny/api-file-manager/features/file/GetFileContentsByKey/index.js";
@@ -7,8 +6,8 @@ import {
     FileNotFoundError,
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { getFileStorageKey, resolveTenantFilePath } from "~/utils/storagePaths.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
+import { toTenantFileKey } from "~/utils/toTenantFileKey.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
     jpg: "image/jpeg",
@@ -50,33 +49,24 @@ function resolveContentType(key: string): string {
 class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCaseAbstraction.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly config: FileManagerStandaloneConfig.Interface
+        private readonly objectStorage: ObjectStorage.Interface
     ) {}
 
     async execute(
         key: string
     ): Promise<Result<FileContents, GetFileContentsByKeyUseCaseAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        let filePath: string;
-        try {
-            // Security: never read outside the tenant's files.
-            filePath = resolveTenantFilePath(
-                this.config.storagePath,
-                tenant.id,
-                getFileStorageKey(tenant.id, key)
-            );
-        } catch {
-            return Result.fail(new FileNotFoundError(key));
-        }
 
         try {
-            const buffer = await fs.readFile(filePath);
+            // A key outside the tenant's files is refused, not looked up.
+            const objectKey = toTenantFileKey(tenant.id, key);
+            const buffer = await this.objectStorage.get(objectKey);
+            if (!buffer) {
+                return Result.fail(new FileNotFoundError(key));
+            }
             const contentType = resolveContentType(key);
             return Result.ok({ buffer, contentType });
         } catch (error) {
-            if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-                return Result.fail(new FileNotFoundError(key));
-            }
             return Result.fail(
                 new FilePersistenceError(error instanceof Error ? error : new Error(String(error)))
             );
@@ -87,5 +77,5 @@ class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCaseAbst
 export const GetFileContentsByKeyUseCase =
     GetFileContentsByKeyUseCaseAbstraction.createImplementation({
         implementation: GetFileContentsByKeyUseCaseImpl,
-        dependencies: [TenantContext, FileManagerStandaloneConfig]
+        dependencies: [TenantContext, ObjectStorage]
     });

@@ -1,9 +1,13 @@
 import { promises as fs } from "node:fs";
+import { vi } from "vitest";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import path from "node:path";
 import os from "node:os";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import type { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import type { ObjectStorage } from "@webiny/api-object-storage";
+import { DiskObjectStorage } from "@webiny/api-object-storage-disk";
 import type { IHttpRequest } from "@webiny/api-kernel-core";
 
 export const SECRET = "test-upload-secret";
@@ -23,9 +27,25 @@ export const tenant = {
 };
 
 export const makeConfig = (): FileManagerStandaloneConfig.Interface => ({
-    storagePath: storagePath,
     uploadSecret: SECRET
 });
+
+export const makeDiskStorage = (): ObjectStorage.Interface => {
+    return new DiskObjectStorage({ path: storagePath });
+};
+
+export const makeLogger = (): Logger.Interface => {
+    const noop = () => undefined;
+    return {
+        trace: noop,
+        debug: noop,
+        info: noop,
+        warn: vi.fn(),
+        error: vi.fn(),
+        fatal: noop,
+        log: noop
+    };
+};
 
 export const makeTenantContext = (): TenantContext.Interface => ({
     getTenant: () => tenant,
