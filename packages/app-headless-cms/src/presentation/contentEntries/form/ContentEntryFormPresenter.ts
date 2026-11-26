@@ -1,4 +1,5 @@
 import { computed, makeAutoObservable, runInAction, toJS } from "mobx";
+import { isPublishingEnabled } from "@webiny/app-headless-cms-common";
 import { FormModel, FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
@@ -38,6 +39,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private entry: CmsContentEntry | null = null;
     private form: FormModel.Interface | null = null;
     private loading: string | null = null;
+    private loadError: string | null = null;
     private folderId: string | null = null;
 
     constructor(
@@ -95,6 +97,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         const meta = entry?.meta;
         const isLocked = meta?.locked ?? false;
         const status = meta?.status;
+        const isPublishable = isPublishingEnabled(this.model);
         /**
          * Can save if the entry is locked and published/unpublished - it will trigger create new revision.
          * Or if the entry is not locked and the form is not null (meaning we are creating a new entry or editing an existing one).
@@ -105,13 +108,20 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
 
         return {
             loading: this.loading,
+            loadError: this.loadError,
             model: this.model,
             entry: toJS(this.entry),
             form: this.form?.vm ?? null,
             canSave,
             status,
+            /**
+             * A model without publishing has no new revisions: saving a locked revision updates it.
+             */
             canCreateNewRevision:
-                !!status && canSave && ["published", "unpublished"].includes(status),
+                isPublishable &&
+                !!status &&
+                canSave &&
+                ["published", "unpublished"].includes(status),
             canPublish: this.entry !== null && status !== "published",
             canUnpublish: this.entry !== null && status === "published",
             canDelete: this.entry !== null,
@@ -315,6 +325,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
 
     async loadRevision(id: string): Promise<void> {
         this.loading = "Loading entry...";
+        this.loadError = null;
 
         try {
             const entry = await this.getEntryUseCase.execute({
@@ -325,6 +336,10 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             runInAction(() => {
                 this.entry = entry;
                 this.buildAndPopulateForm(entry);
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.loadError = error.message;
             });
         } finally {
             runInAction(() => {
@@ -358,6 +373,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     reset(): void {
         this.form = null;
         this.entry = null;
+        this.loadError = null;
         this.folderId = null;
     }
 
@@ -381,7 +397,10 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private async saveEntry(params: SaveEntryParams): Promise<CmsContentEntry> {
         const { model, entry, data, skipValidation } = params;
 
-        if (entry.meta.locked) {
+        /**
+         * Without publishing there are no new revisions, so a locked revision is updated in place.
+         */
+        if (entry.meta.locked && isPublishingEnabled(model)) {
             return await this.createRevisionFromUseCase.execute({
                 model,
                 revisionId: entry.id,

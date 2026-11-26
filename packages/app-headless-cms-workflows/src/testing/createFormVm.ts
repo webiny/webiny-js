@@ -7,6 +7,7 @@ export function createFormVm(
 ): ContentEntryFormPresenter.ViewModel {
     return {
         loading: null,
+        loadError: null,
         entry: createEntry(),
         canCreateNewRevision: false,
         model: MODEL,
