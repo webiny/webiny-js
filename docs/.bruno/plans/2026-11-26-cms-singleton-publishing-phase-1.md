@@ -4,7 +4,7 @@
 
 **Goal:** Singleton CMS models tagged `$publishing:true` get publish, unpublish and revisions; every singleton is edited in the regular entry editor without the list.
 
-**Architecture:** Thin singleton use cases resolve the singleton `entryId`, run the singleton checks, and delegate to the generic entry use cases. The singular GraphQL SDL is split into shared types, read/preview `get<S>` and a manage block whose signatures match the regular manage SDL, so the admin editor gateways work unchanged. The admin gets a `SingletonEditorView` built from the regular editor body.
+**Architecture:** Thin singleton use cases resolve the singleton `entryId`, run the singleton checks, and delegate to the generic entry use cases. The singular GraphQL SDL is split into shared types, read/preview `get<S>` and a manage block whose signatures match the regular manage SDL, so the admin editor gateways work unchanged. The admin gets a `SingletonEditorView` with its own presenter around the regular editor body.
 
 **Tech Stack:** TypeScript, `@webiny/di` features/abstractions, `@webiny/feature/api` `Result`, GraphQL SDL strings, React + MobX presenters, Vitest.
 
@@ -14,9 +14,8 @@
 
 - Phase 1 only. Phase 2 (scheduling) is out of scope; do not hide the scheduler UI.
 - No storage key changes. DDB/DDB-ES key formats are frozen.
-- One abstraction, implementation or feature per file. No `Impl`/`Implementation` suffix on exported names or file names.
-- No inline object types; extract named interfaces.
-- No helper functions or private methods that wrap use case calls; inject the use case and handle `Result` inline.
+- Before coding, read every rule in `ai-context/code-style/` (required by `AGENTS.md`). Most relevant here: `one-class-per-file`, `one-public-function-per-file`, `one-component-per-file`, `presenter-owns-component-state`, `no-container-as-service-locator`, `no-backwards-compat`, `no-multiline-ternaries`, `no-nested-call-arguments`, `no-inline-class-in-create-implementation`.
+- No `Impl`/`Implementation` suffix on exported names or file names. No inline object types. No helper functions or private methods that wrap use case calls. Barrels export only what external consumers need.
 - Exact error messages (from the spec):
   - `"Model does not support publishing."`
   - `"Model does not support revisions."`
@@ -25,16 +24,16 @@
   - `"The first revision of a singleton entry cannot be deleted."`
   - `"The published revision cannot be deleted. Unpublish it first."`
 - Tag values: `"$publishing:true"`, `"$publishing:false"`.
-- Tests are run by file path, one test command at a time. `api-headless-cms` tests run on every storage: `yarn test <path>`, `yarn test:os <path>`, `WEBINY_STORAGE=sql yarn test <path>`, `WEBINY_STORAGE=pg,sql yarn test <path>`.
-- Commits: Conventional Commits. Before each commit run the repo pre-commit chain from `CLAUDE.md` (`yarn format:fix`, `yarn lint:fix`, `yarn adio`, `node scripts/generateTsConfigsInPackages.js`).
+- Tests run by file path, one test command at a time, never a whole package. `api-headless-cms` test files run on every storage, in this order: `yarn test <path>`, `yarn test:es <path>`, `yarn test:os <path>`, `yarn test:sql <path>`, `WEBINY_STORAGE=pg,sql yarn test <path>`. Other packages: `yarn test <path>`.
+- Commit chain, run before every commit step (rerun from the top after any fix): `git add .`, `yarn > /dev/null 2>&1`, `node scripts/generateTsConfigsInPackages.js`, `yarn adio`, `yarn format:fix > /dev/null 2>&1`, `yarn lint:fix`, `yarn webiny sync-dependencies`, `git add .`. Commits use Conventional Commits.
 
 ## Review Focus
 
-- An admin URL whose `?id=` is a revision of another entry: the editor shows the `EntryNotFoundError` message, not a blank form. Test in Task 7.
-- An untagged singleton whose `#0001` is still locked from an earlier tagged period: Save in the admin works and no publish actions show. Test in Task 7.
-- A tagged singleton whose `#0001` is published: deleting `#0001` fails with the first-revision message, not the published one. Test in Task 4.
+- An admin URL whose `id` is a revision of another entry: the editor shows the `EntryNotFoundError` message, not a blank form. Test in Task 8.
+- An untagged singleton whose `#0001` is still locked from an earlier tagged period: Save works and no publish actions show. Tests in Tasks 2 and 8.
+- A tagged singleton whose `#0001` is published: deleting `#0001` fails with the first-revision message. Test in Task 4.
 - `getSettingsRevisions` called with a revision id (what the admin sends): returns the list. Test in Task 4.
-- A singleton model with no fields: no API, and the admin shows "This model has no fields." without a request. Tests in Tasks 4 and 7.
+- A singleton model with no fields: no API, and the admin shows "This model has no fields." without a request. Tests in Tasks 4 and 8.
 
 ---
 
@@ -48,7 +47,7 @@
 - Modify: `packages/api-headless-cms/src/exports/api/cms/model.ts`
 - Modify: `packages/api-headless-cms/src/features/contentEntry/shared/entryOwnerAccess.ts:15-17`
 - Modify: `packages/api-headless-cms-workflows/src/features/wrappers/ListCmsEntryWorkflowModels/ListCmsEntryWorkflowModelsUseCase.ts:26`
-- Modify: `packages/api-headless-cms-workflows/src/utils/isBindableModel.ts:4`
+- Modify: `packages/api-headless-cms-workflows/src/utils/isBindableModel.ts:4` and its importers `features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeCreate.ts:5,56` and `...OnBeforeUpdate.ts:5,56`
 - Test: `packages/api-headless-cms/__tests__/domain/singletonModel.test.ts`
 
 **Interfaces:**
@@ -56,8 +55,8 @@
   - `CMS_MODEL_PUBLISHING_ENABLED_TAG = "$publishing:true"`, `CMS_MODEL_PUBLISHING_DISABLED_TAG = "$publishing:false"` in `constants.ts`
   - `isSingletonModel(model: Pick<CmsModel, "tags">): boolean`
   - `isPublishingEnabled(model: Pick<CmsModel, "tags">): boolean`
-  - `createSingletonEntryId(model: Pick<CmsModel, "modelId">): string` (returns `createCacheKey(model.modelId)`, the value `GetSingletonEntryUseCase.ts:35` computes today)
-  - all three exported from `@webiny/api-headless-cms/exports/api/cms/model.js`
+  - `createSingletonEntryId(model: Pick<CmsModel, "modelId">): string`, returns `createCacheKey(model.modelId)` (the value `GetSingletonEntryUseCase.ts:35` computes). Internal; not exported from the barrel.
+  - `isSingletonModel` and `isPublishingEnabled` exported from `@webiny/api-headless-cms/exports/api/cms/model.js`
 
 - [ ] **Step 1: Write the failing test** `singletonModel.test.ts`:
 
@@ -76,9 +75,9 @@ it("createSingletonEntryId is stable per modelId", () => {
 ```
 
 - [ ] **Step 2: Run** `yarn test packages/api-headless-cms/__tests__/domain/singletonModel.test.ts`. Expected: FAIL, modules not found.
-- [ ] **Step 3: Implement the three helpers and constants.** Move `isSingletonModel` out of `entryOwnerAccess.ts` (import it there). Replace the private copy in `ListCmsEntryWorkflowModelsUseCase.ts:26` with the export. Replace the `"$publishing:false"` literal in `isBindableModel.ts:4` with `CMS_MODEL_PUBLISHING_DISABLED_TAG`; its logic stays.
-- [ ] **Step 4: Run** the test file (all four storage commands are not needed for a pure unit test; `yarn test` is enough). Expected: PASS.
-- [ ] **Step 5: Commit** `feat(api-headless-cms): add singleton and publishing model helpers`.
+- [ ] **Step 3: Implement** the helpers and constants. Move `isSingletonModel` out of `entryOwnerAccess.ts` (import it there). Replace the private copy in `ListCmsEntryWorkflowModelsUseCase.ts:26` with the export. Remove `UNPUBLISHABLE_MODEL_TAG` from `isBindableModel.ts` and use `CMS_MODEL_PUBLISHING_DISABLED_TAG` there and in both handlers (no alias, per `no-backwards-compat`).
+- [ ] **Step 4: Run** the new test, then `yarn test packages/api-headless-cms-workflows/__tests__/utils/isBindableModel.test.ts` and `yarn test packages/api-headless-cms-workflows/__tests__/wrappers/listWorkflowModels.test.ts`. Expected: PASS.
+- [ ] **Step 5: Commit chain, then commit** `feat(api-headless-cms): add singleton and publishing model helpers`.
 
 ### Task 2: Generic use case guards for singletons
 
@@ -96,17 +95,18 @@ it("createSingletonEntryId is stable per modelId", () => {
 - Consumes: `isSingletonModel`, `isPublishingEnabled` (Task 1).
 - Produces: generic use cases that enforce the spec's "generic use cases also guard singletons" list and the untagged `#0001` lock skip.
 
-- [ ] **Step 1: Write the failing tests.** Use `useSingletonCategoryHandler` (Task 4 rewrites its queries; here use only its `getContext()`): invoke any query once, then resolve the generic use cases from `manager.getContext().container`. Seed entries with `CreateEntryUseCase` / `CreateEntryRevisionFromUseCase` resolved the same way. Tests:
-  - `PublishEntryUseCase` on an untagged singleton revision fails with `"Model does not support publishing."`.
-  - `DeleteEntryRevisionUseCase` on a tagged singleton: `#0001` fails with the first-revision message; the published `#0002` fails with the published message; an unpublished `#0003` succeeds.
-  - `DeleteEntryRevisionUseCase` on an untagged singleton `#0002` fails with `"Model does not support publishing."`.
-  - `DeleteEntryUseCase` on a singleton fails with `"Singleton entry cannot be deleted."`.
-  - `UpdateEntryUseCase` on an untagged singleton whose `#0001` is locked succeeds; on a tagged singleton it fails with `EntryLockedError`.
-  - A user with own-entries permission publishes a tagged singleton revision created by another identity (use the handler's `identity`/`permissions` params).
+- [ ] **Step 1: Write the failing tests.** Build two model plugins with `createPluginFromCmsModel` from `getCmsModel("categorySingleton")` (as `singletonContentEntry.test.ts:7-10`): untagged `tags: [CMS_MODEL_SINGLETON_TAG]` and tagged `tags: [CMS_MODEL_SINGLETON_TAG, CMS_MODEL_PUBLISHING_ENABLED_TAG]`, each in its own `describe` with its own `useSingletonCategoryHandler({ path: "manage/en-US", plugins })`. In each test call `manager.introspect()` once, then take `const container = manager.getContext().container`, get the model with `container.resolve(GetModelUseCase).execute("categorySingleton")` (`features/contentModel/GetModel/abstractions.ts:12-13`), and seed entries with `CreateEntryUseCase` (id from `createSingletonEntryId`) and `CreateEntryRevisionFromUseCase`. Tests:
+  - `PublishEntryUseCase`, `UnpublishEntryUseCase`, `CreateEntryRevisionFromUseCase` on an untagged singleton revision fail with `"Model does not support publishing."`.
+  - `DeleteEntryRevisionUseCase`, tagged: `#0001` fails with the first-revision message (also when `#0001` is published); the published `#0002` fails with the published message; an unpublished `#0003` succeeds.
+  - `DeleteEntryRevisionUseCase`, untagged `#0002`: fails with `"Model does not support publishing."`.
+  - `DeleteEntryUseCase` and `DeleteMultipleEntriesUseCase` on a singleton fail with `"Singleton entry cannot be deleted."`.
+  - `UpdateEntryUseCase`: untagged singleton with a locked `#0001` succeeds; untagged with a locked leftover `#0002` fails with `EntryLockedError`; tagged with a locked revision fails with `EntryLockedError`.
+  - A user with own-entries permission (handler `identity`/`permissions` params; see `__tests__/contentAPI/security/contentEntries/ownEntries.test.ts`) publishes, unpublishes, creates a revision from, and deletes a revision of a tagged singleton created by another identity.
+  - Events: a `PublishEntry` on a tagged singleton fires the entry after-publish event (subscribe the way `__tests__/lifecycleHooks` tests do).
 - [ ] **Step 2: Run** `yarn test packages/api-headless-cms/__tests__/contentAPI/singletonGenericGuards.test.ts`. Expected: FAIL.
-- [ ] **Step 3: Implement the guards** with `EntryValidationError(message)` and the owner-check exemption (`isSingletonModel(model)` skips only the entry-level `canAccessEntry({ model, entry, ... })` call; model-level checks stay). Delete checks run `#0001` before published.
-- [ ] **Step 4: Run** the test file with all four storage commands. Expected: PASS on each.
-- [ ] **Step 5: Commit** `feat(api-headless-cms): guard generic entry use cases for singleton models`.
+- [ ] **Step 3: Implement.** Guards return `EntryValidationError(message)`. Owner-check exemption: when `isSingletonModel(model)`, skip only the entry-level `canAccessEntry({ model, entry, ... })` call; model-level checks stay. Delete checks run `#0001` before published. Lock skip condition in `UpdateEntryUseCase.ts:47`: `isSingletonModel(model) && !isPublishingEnabled(model) && parseIdentifier(id).version === 1`.
+- [ ] **Step 4: Run** the test file with all five storage commands. Expected: PASS on each.
+- [ ] **Step 5: Commit chain, then commit** `feat(api-headless-cms): guard generic entry use cases for singleton models`.
 
 ### Task 3: Singleton use cases
 
@@ -114,131 +114,180 @@ it("createSingletonEntryId is stable per modelId", () => {
 - Create one folder per use case under `packages/api-headless-cms/src/features/contentEntry/`, each with `abstractions.ts`, `<Name>UseCase.ts`, `feature.ts`, `index.ts` (follow `GetSingletonEntry/`):
   `GetLatestSingletonEntry`, `GetPublishedSingletonEntry`, `GetSingletonEntryRevision`, `ListSingletonEntryRevisions`, `UpdateSingletonEntryRevisionDescription`, `CreateSingletonEntryRevisionFrom`, `PublishSingletonEntry`, `UnpublishSingletonEntry`, `DeleteSingletonEntryRevision`
 - Modify: `features/contentEntry/UpdateSingletonEntry/*` (takes `revision`)
-- Create: `features/contentEntry/shared/SingletonRevisionCheck.ts` (an injectable service, not a wrapper of use cases: pure checks returning `Result<string, Error>` with the parsed entry id)
-- Delete: `features/contentEntry/GetSingletonEntry/`
-- Modify: `features/contentEntry/ContentEntriesFeature.ts:27-28,55,76` (register new features)
+- Create: `features/contentEntry/shared/checkSingletonRevision.ts` (one public pure function)
+- Modify: `features/contentEntry/ContentEntriesFeature.ts` (register the new features)
 - Test: `packages/api-headless-cms/__tests__/contentEntry/singletonUseCases.test.ts`
 
+`GetSingletonEntry/` stays until Task 4 removes its last users.
+
 **Interfaces:**
-- Consumes: Task 1 helpers; Task 2 guards; generic use cases `GetLatestRevisionByEntryId.execute(model, { id })`, `GetPublishedRevisionByEntryId.execute(model, entryId)`, `GetRevisionById`, `GetRevisionsByEntryId`, `CreateEntry`, `UpdateEntry`, `UpdateRevisionDescription`, `CreateEntryRevisionFrom`, `PublishEntry`, `UnpublishEntry`, `DeleteEntryRevision`.
+- Consumes: Task 1 helpers; Task 2 guards; generic `GetLatestRevisionByEntryId.execute(model, { id })`, `GetPublishedRevisionByEntryId.execute(model, entryId)`, `GetRevisionById`, `GetRevisionsByEntryId`, `CreateEntry`, `UpdateEntry`, `UpdateRevisionDescription`, `CreateEntryRevisionFrom`, `PublishEntry`, `UnpublishEntry`, `DeleteEntryRevision`.
 - Produces (each `execute` returns `Promise<Result<…, UseCase.Error>>`):
   - `GetLatestSingletonEntryUseCase.execute(model)` → `CmsEntry`
-  - `GetPublishedSingletonEntryUseCase.execute(model)` → `CmsEntry` (empty-values entry when tagged and nothing published)
+  - `GetPublishedSingletonEntryUseCase.execute(model)` → `CmsEntry`
   - `GetSingletonEntryRevisionUseCase.execute(model, revision)` → `CmsEntry`
   - `ListSingletonEntryRevisionsUseCase.execute(model, id)` → `CmsEntry[]`
   - `UpdateSingletonEntryUseCase.execute(model, revision, data, options?)` → `CmsEntry`
   - `UpdateSingletonEntryRevisionDescriptionUseCase.execute(model, revision, revisionDescription)` → `CmsEntry`
   - `CreateSingletonEntryRevisionFromUseCase.execute(model, revision, data?, options?)` → `CmsEntry`
-  - `PublishSingletonEntryUseCase.execute(model, revision)` / `UnpublishSingletonEntryUseCase.execute(model, revision)` → `CmsEntry`
+  - `PublishSingletonEntryUseCase.execute(model, revision)`, `UnpublishSingletonEntryUseCase.execute(model, revision)` → `CmsEntry`
   - `DeleteSingletonEntryRevisionUseCase.execute(model, revision, options?)` → `boolean`
-  - `SingletonRevisionCheck.check(model, value, operation): Result<string, EntryNotFoundError | EntryValidationError>` implementing steps 1-4 of the spec's "Order of checks"; `operation` is a string union of the manage operation names.
+  - `checkSingletonRevision(params: CheckSingletonRevisionParams): Result<string, EntryNotFoundError | EntryValidationError>` with `CheckSingletonRevisionParams { model: CmsModel; value: string; operation: SingletonOperation }`, implementing steps 1-4 of the spec's "Order of checks"; returns the parsed entry id. `SingletonOperation` is the string union `"getRevision" | "listRevisions" | "update" | "updateRevisionDescription" | "createFrom" | "publish" | "unpublish" | "delete"`.
 
-- [ ] **Step 1: Write the failing tests**, one `describe` per use case, resolving each from the container. Assertions from the spec, including: untagged `GetLatest` with a leftover `#0002` returns `#0001`; tagged `GetPublished` with nothing published returns `values` equal to the empty values and `id === "<entryId>#0001"`; `ListSingletonEntryRevisions` accepts `entryId` and `"<entryId>#0002"`, and returns only `#0001` for an untagged model with a leftover `#0002`; foreign revision → `EntryNotFoundError`; untagged `update(#0002)` → `"Model does not support revisions."`; untagged `publish(#0002)` → `"Model does not support publishing."`; `delete(entryId)` → `"Singleton entry cannot be deleted."`; `update(entryId)` → `"A revision id is required."`.
+- [ ] **Step 1: Write the failing tests**, one `describe` per use case, same setup as Task 2. Assertions from the spec, including: untagged `GetLatest` with a leftover `#0002` returns `#0001`; tagged `GetPublished` with nothing published returns `id === "<entryId>#0001"` and every field in `values` empty; `ListSingletonEntryRevisions` accepts `entryId` and `"<entryId>#0002"`, and returns only `#0001` for an untagged model with a leftover `#0002`; foreign revision → `EntryNotFoundError`; untagged `update(#0002)` → `"Model does not support revisions."`; untagged `publish(#0002)` → `"Model does not support publishing."`; `delete(entryId)` → `"Singleton entry cannot be deleted."`; `update(entryId)` → `"A revision id is required."`.
 - [ ] **Step 2: Run** `yarn test packages/api-headless-cms/__tests__/contentEntry/singletonUseCases.test.ts`. Expected: FAIL.
-- [ ] **Step 3: Implement** the use cases and `SingletonRevisionCheck`. Find-or-create in the two get use cases uses `CreateEntry` with `{ skipValidation: true }`, as `GetSingletonEntryUseCase.ts:45-54` does today.
-- [ ] **Step 4: Run** the test file with all four storage commands. Expected: PASS on each.
-- [ ] **Step 5: Commit** `feat(api-headless-cms): add singleton entry use cases`.
+- [ ] **Step 3: Implement.** Find-or-create in the two get use cases uses `CreateEntry` with `{ skipValidation: true }`, as `GetSingletonEntryUseCase.ts:45-54` does. `GetPublishedSingletonEntryUseCase`, tagged with nothing published: returns the `#0001` entry from `GetRevisionById` with `values` replaced by `{}` (field values resolve to `null` in GraphQL, as for a new entry today).
+- [ ] **Step 4: Run** the test file with all five storage commands. Expected: PASS on each.
+- [ ] **Step 5: Commit chain, then commit** `feat(api-headless-cms): add singleton entry use cases`.
 
-### Task 4: Singular GraphQL SDL and resolvers
+### Task 4: Singular GraphQL SDL, resolvers and public exports
 
 **Files:**
 - Modify: `packages/api-headless-cms/src/graphql/schema/createSingularSDL.ts`
 - Modify: `packages/api-headless-cms/src/graphql/schema/createSingularResolvers.ts`
 - Modify: `packages/api-headless-cms/src/graphql/schema/schemaPlugins.ts:52`
-- Create: one resolver file per manage field under `graphql/schema/resolvers/singular/` (follow `resolveGet.ts`); replace `resolveGet.ts`/`resolveUpdate.ts`
-- Modify: `packages/api-headless-cms/__tests__/testHelpers/useSingletonCategoryHandler.ts` (new operations; preview path)
+- Create: one resolver file per field under `graphql/schema/resolvers/singular/` (follow `resolveGet.ts`); remove `resolveGet.ts`/`resolveUpdate.ts`
+- Delete: `features/contentEntry/GetSingletonEntry/` and its registration in `ContentEntriesFeature.ts`
+- Modify: `packages/api-headless-cms/src/exports/api/cms/entry.ts:110-111,151-152` (export `GetLatestSingletonEntryUseCase`, `GetPublishedSingletonEntryUseCase`, `UpdateSingletonEntryUseCase`; remove `GetSingletonEntryUseCase`)
+- Modify: `packages/webiny/src/api/cms/entry.ts:77,96` (same change)
+- Modify: `packages/api-headless-cms/__tests__/testHelpers/useSingletonCategoryHandler.ts`
 - Modify: `packages/api-headless-cms/__tests__/contentAPI/singletonContentEntry.test.ts`
 - Create: `packages/api-headless-cms/__tests__/contentAPI/singletonPublishing.test.ts`
+- Modify: `ai-context/core-features-reference.md` (singleton publishing entry)
 
 **Interfaces:**
-- Consumes: Task 3 use cases (see the spec's resolver table).
-- Produces: GraphQL operations exactly as the spec's Manage API block, read/preview `get<S>`; handler helpers `getCategory()`, `getCategoryLatest()`, `getCategoryRevision(revision)`, `getCategoryRevisions(id)`, `updateCategory(revision, data)`, `createCategoryFrom(revision)`, `publishCategory(revision)`, `unpublishCategory(revision)`, `deleteCategory(revision)`, `updateCategoryRevisionDescription(revision, text)`.
+- Consumes: Task 3 use cases (the spec's resolver table).
+- Produces: the GraphQL operations in the spec's Manage API block and read/preview `get<S>`; handler helpers `getCategory()`, `getCategoryLatest()`, `getCategoryRevision(revision)`, `getCategoryRevisions(id)`, `updateCategory(revision, data)`, `updateCategoryRevisionDescription(revision, text)`, `createCategoryFrom(revision)`, `publishCategory(revision)`, `unpublishCategory(revision)`, `deleteCategory(revision)`.
 
 - [ ] **Step 1: Write the failing tests.**
-  - `singletonContentEntry.test.ts` (untagged): `getCategoryLatest` creates and returns `#0001`; `updateCategory(#0001)` updates; read and preview `getCategory` return the updated `#0001`; manage `getCategory` without arguments is a GraphQL validation error (`Cannot query field "getCategory"` on `Query`).
-  - `singletonPublishing.test.ts` (tagged `["singleEntry", "$publishing:true"]`): read returns empty values before publish; after `publishCategory(#0001)` read returns the published values; after `createCategoryFrom(#0001)` + `updateCategory(#0002)`, preview returns `#0002` values and read still returns `#0001` values; `updateCategory(#0001)` while published fails with `EntryLockedError`'s code; `getCategoryRevisions` with `"<entryId>#0002"` returns two revisions; deleting published `#0001` fails with the first-revision message.
+  - `singletonContentEntry.test.ts` (untagged): `getCategoryLatest` creates and returns `#0001`; `updateCategory(#0001)` updates; read and preview `getCategory` return the updated `#0001`; manage `getCategory` without arguments fails GraphQL validation with `Cannot query field "getCategory" on type "Query"`.
+  - `singletonPublishing.test.ts` (tagged):
+    - read returns empty values before publish; after `publishCategory(#0001)` read returns the published values;
+    - after `createCategoryFrom(#0001)` and `updateCategory(#0002)`, preview returns `#0002` values and read still returns `#0001` values;
+    - `updateCategory(#0001)` while published fails with the `EntryLockedError` code;
+    - `getCategoryRevisions("<entryId>#0002")` returns two revisions;
+    - deleting published `#0001` fails with the first-revision message;
+    - tag lifecycle: publish `#0001` tagged; switch to an untagged plugin; `updateCategory(#0001)` works and read returns the new values; switch back to tagged; read returns the same values;
+    - untagged with a leftover `#0002`: preview `getCategory` and `getCategoryLatest` return `#0001`.
   - Read and preview introspection: the `<S>` type has no `meta`; `Mutation` has no singleton fields.
-  - A singleton model with no fields produces no `get<S>` on any endpoint.
+  - A singleton model with no fields has no `get<S>` on any endpoint.
 - [ ] **Step 2: Run** both test files with `yarn test`. Expected: FAIL.
-- [ ] **Step 3: Implement** the SDL split and resolvers per the spec's "Schema generation" section. `schemaPlugins.ts:52` passes `type` (`read` or `preview`) through for use-case choice; field resolvers keep `endpointType: "read"` for preview.
-- [ ] **Step 4: Run** both test files with all four storage commands. Expected: PASS on each.
-- [ ] **Step 5: Commit** `feat(api-headless-cms): singleton publishing GraphQL operations`.
+- [ ] **Step 3: Implement** the SDL split and resolvers per the spec's "Schema generation" section. `schemaPlugins.ts:52` passes `type` (`read` or `preview`) through for the use-case choice; field resolvers keep `endpointType: "read"` for preview. Remove `GetSingletonEntry/`, update both export files, and add the singleton publishing entry to `ai-context/core-features-reference.md`.
+- [ ] **Step 4: Run** both test files with all five storage commands. Expected: PASS on each.
+- [ ] **Step 5: Commit chain, then commit** `feat(api-headless-cms): singleton publishing GraphQL operations`.
 
-### Task 5: Admin publishing helpers
+### Task 5: Admin model helpers
 
 **Files:**
 - Modify: `packages/app-headless-cms-common/src/constants.ts` (add both tag constants)
-- Create: `packages/app-headless-cms-common/src/isPublishingEnabled.ts` (export from the package index)
+- Create: `packages/app-headless-cms-common/src/isSingletonModel.ts`, `packages/app-headless-cms-common/src/isPublishingEnabled.ts` (export from `src/index.ts`)
 - Modify: `packages/app-headless-cms/src/admin/hooks/useIsModelPublishable.ts:7`
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/actions/SaveContentButton.tsx:24`
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/actions/CreateNewRevisionButton.tsx:28`
 - Test: `packages/app-headless-cms-common/src/isPublishingEnabled.test.ts`
 
 **Interfaces:**
-- Produces: `isPublishingEnabled(model: Pick<CmsModel, "tags">): boolean` in `@webiny/app-headless-cms-common`, same rule as Task 1.
+- Produces: `isSingletonModel(model: Pick<CmsModel, "tags">): boolean` and `isPublishingEnabled(model: Pick<CmsModel, "tags">): boolean` in `@webiny/app-headless-cms-common`, same rules as Task 1.
 
-- [ ] **Step 1: Write the failing test** with the same four assertions as Task 1.
+- [ ] **Step 1: Write the failing test** with the Task 1 assertions plus `isSingletonModel({ tags: ["singleEntry"] }) === true`.
 - [ ] **Step 2: Run** `yarn test packages/app-headless-cms-common/src/isPublishingEnabled.test.ts`. Expected: FAIL.
 - [ ] **Step 3: Implement** and switch the three call sites to `isPublishingEnabled(model)`.
 - [ ] **Step 4: Run** the test. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(app-headless-cms): share the publishing-enabled rule`.
+- [ ] **Step 5: Commit chain, then commit** `feat(app-headless-cms): share the singleton and publishing-enabled rules`.
 
 ### Task 6: Admin singleton editor gateways
 
 **Files:**
-- Create: `packages/app-headless-cms/src/features/contentEntry/singletonEditor/` with, per operation, `abstractions.ts`, gateway, use case and `feature.ts`:
-  - `GetLatestSingletonEntryGateway` / `GetLatestSingletonEntryUseCase` → `get<S>Latest`
-  - `GetSingletonEntryRevisionGateway` → `get<S>Revision(revision)`, registered as the `GetEntryGateway` implementation for singleton models
+- Create: `packages/app-headless-cms/src/features/contentEntry/singletonEditor/` with `GetLatestSingletonEntryGateway.ts`, `GetLatestSingletonEntryUseCase.ts`, `GetEntryGatewaySingletonDecorator.ts`, `abstractions.ts`, `feature.ts`
+- Modify: `packages/app-headless-cms/src/features/contentEntry/feature.ts:15,46` (register `SingletonEditorFeature` instead of `SingletonEntryFeature`)
 - Delete: `packages/app-headless-cms/src/features/contentEntry/singletonEntry/`
+- Modify: `packages/app-headless-cms/src/features/contentEntry/entryValueGateways.test.ts` (drop the `singletonEntry` imports and cases)
 - Test: `packages/app-headless-cms/src/features/contentEntry/singletonEditor/singletonEditorGateways.test.ts`
 
 **Interfaces:**
-- Consumes: Task 4 operations.
-- Produces: `GetLatestSingletonEntryUseCase.execute(model): Promise<Result<CmsContentEntry, CmsEntryError>>`; a `GetEntryGateway` implementation with the same interface as `features/contentEntry/getEntry/abstractions.ts:29`.
+- Consumes: Task 4 operations; Task 5 `isSingletonModel`.
+- Produces:
+  - `GetLatestSingletonEntryUseCase.execute(model: CmsModel): Promise<Result<CmsContentEntry, CmsEntryError>>`
+  - `GetEntryGatewaySingletonDecorator`, same interface as `features/contentEntry/getEntry/abstractions.ts:29`: for `isSingletonModel(model)` it sends `get<S>Revision(revision)`, otherwise it delegates to the decorated gateway. Same contract as `GetEntryGateway.ts:53-55`: returns the entry and throws `Error` when the response has `error`.
+  - `SingletonEditorFeature` registers the gateway, the use case and the decorator (`container.registerDecorator`, as `features/contentEntry/referenceTitles/feature.ts:13-14`).
 
-- [ ] **Step 1: Write the failing tests** with a mocked GraphQL client (follow `entryValueGateways.test.ts`): the latest gateway sends `get<S>Latest` with no variables; the revision gateway sends `get<S>Revision` with `{ revision }`; both map `error` to a failed `Result`.
+- [ ] **Step 1: Write the failing tests** with a mocked GraphQL client (follow `entryValueGateways.test.ts`): the latest gateway sends `get<S>Latest` with no variables and maps `error` to a failed `Result`; the decorator sends `get<S>Revision` with `{ revision }` for a singleton model, throws on `error`, and calls the decorated gateway for a regular model; a container with `SingletonEditorFeature` registered resolves `GetEntryGateway` to the decorator.
 - [ ] **Step 2: Run** the test file with `yarn test`. Expected: FAIL.
-- [ ] **Step 3: Implement**, and wire the singleton `GetEntryGateway` through DI so the editor resolves it when the model is a singleton.
-- [ ] **Step 4: Run** the test. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(app-headless-cms): singleton editor gateways`.
+- [ ] **Step 3: Implement** and switch the registration in `features/contentEntry/feature.ts`.
+- [ ] **Step 4: Run** the new test and `yarn test packages/app-headless-cms/src/features/contentEntry/entryValueGateways.test.ts`. Expected: PASS.
+- [ ] **Step 5: Commit chain, then commit** `feat(app-headless-cms): singleton editor gateways`.
 
-### Task 7: SingletonEditorView and guards
+### Task 7: SingletonEditorPresenter
+
+**Files:**
+- Create: `packages/app-headless-cms/src/presentation/contentEntries/singletonEditor/abstractions.ts`, `SingletonEditorPresenter.ts`, `feature.ts`
+- Test: `packages/app-headless-cms/src/presentation/contentEntries/singletonEditor/SingletonEditorPresenter.test.ts`
+
+**Interfaces:**
+- Consumes: Task 6 `GetLatestSingletonEntryUseCase`; the app router (`packages/app/src/features/router/abstractions.ts`, `replaceRoute(route, params)` at :68,113); `Routes.ContentEntries.List` (`app-headless-cms/src/routes.ts:18-29`, already has optional `id`).
+- Produces: `ISingletonEditorPresenter` with `vm: ISingletonEditorVm { entryId: string | null; loading: boolean; error: string | null; hasFields: boolean }`, `init(model: CmsModel, routeEntryId: string | undefined): Promise<void>`, `dispose(): void`.
+
+- [ ] **Step 1: Write the failing tests:**
+  - model with no fields: `vm.hasFields === false`, no use case call;
+  - `routeEntryId` given: `vm.entryId === routeEntryId`, no use case call;
+  - no `routeEntryId`: calls `GetLatestSingletonEntryUseCase`, then `replaceRoute(Routes.ContentEntries.List, { modelId, id: entry.id })`, `vm.entryId === entry.id`;
+  - use case fails: `vm.error` holds the error message.
+- [ ] **Step 2: Run** `yarn test packages/app-headless-cms/src/presentation/contentEntries/singletonEditor/SingletonEditorPresenter.test.ts`. Expected: FAIL.
+- [ ] **Step 3: Implement.** `hasFields` is `model.fields.length > 0`, checked first in `init`.
+- [ ] **Step 4: Run** the test. Expected: PASS.
+- [ ] **Step 5: Commit chain, then commit** `feat(app-headless-cms): singleton editor presenter`.
+
+### Task 8: SingletonEditorView and removal of the old singleton UI
 
 **Files:**
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryFormView.tsx` (extract the editor body)
-- Create: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryEditorBody.tsx` (props: `entryId: string | null`, `modelName: string`, `onBack?: () => void`)
+- Create: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryEditorBody.tsx` (props `ContentEntryEditorBodyProps { entryId: string | null; modelName: string; onBack?: () => void }`)
 - Create: `packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.tsx`
-- Create: `packages/app-headless-cms/src/admin/components/IsNotSingletonModel.tsx`
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ModelLoader.tsx:23`
-- Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/RevisionListItem.tsx:256`
-- Modify: `packages/app-headless-cms/src/ContentEntriesModule.tsx:183` (wrap `DeleteEntryMenuItem`)
-- Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntriesView.tsx:9,45`
+- Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntriesView.tsx:9,45` (register `SingletonEditorPresenterFeature` instead of `SingleEntryPresenterFeature`)
 - Delete: `SingleEntryView.tsx`, `SingleEntryLayout.tsx`, `SingleEntryFormContent.tsx` (if only used there), `presentation/contentEntries/singleEntry/`
-- Delete: `packages/app-record-locking/src/presentation/entryLocking/SingleEntryPresenterDecorator.ts`, `SingleEntryContentDecorator.tsx`; update `feature.ts:13` and any `SingleEntryContentDecorator` registration
-- Modify: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.ts` (early return when `!isReviewableModel(model)`)
+- Delete: `packages/app-record-locking/src/presentation/entryLocking/SingleEntryPresenterDecorator.ts` (registration at `entryLocking/feature.ts:6,13`) and `SingleEntryContentDecorator.tsx` (registration at `packages/app-record-locking/src/RecordLockingModule.tsx:12,113`)
 - Test: `packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.test.tsx`
+
+**Interfaces:**
+- Consumes: Task 7 presenter; Task 5 `isPublishingEnabled` (through `useIsModelPublishable`).
+- Produces: `SingletonEditorView({ model }: SingletonEditorViewProps)`; `ContentEntryEditorBody`.
+
+- [ ] **Step 1: Write the failing tests** (React Testing Library, presenter and editor use cases mocked):
+  - renders `ContentEntryEditorBody` with `vm.entryId`, no back button, no list, no "New entry";
+  - `vm.error` set (foreign revision in the URL): shows the error message;
+  - `vm.hasFields === false`: shows "This model has no fields.";
+  - untagged model: Save shows; publish actions and "New revision" do not; Save on a locked `#0001` calls update.
+- [ ] **Step 2: Run** `yarn test packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.test.tsx`. Expected: FAIL.
+- [ ] **Step 3: Implement.** `ContentEntryFormView` becomes the list adapter around `ContentEntryEditorBody`, reading `entryId`, folder id and model name from the list presenter as today. `SingletonEditorView` provides `ModelProvider` and `ContentEntryEditorWithConfig` like `ListView.tsx:26-28`, and calls `presenter.init(model, route.params.id)` on mount. `ModelLoader` renders it for every singleton. Remove the old singleton UI and both record-locking singleton decorators.
+- [ ] **Step 4: Run** the new test, then the existing record-locking tests one file at a time (`RecordLockingPresenter.test.ts`, `LogOutUseCaseLockingDecorator.test.ts` in `packages/app-record-locking/src/presentation/entryLocking/`). Expected: PASS.
+- [ ] **Step 5: Commit chain, then commit** `feat(app-headless-cms): edit singletons in the regular entry editor`.
+
+### Task 9: Singleton guards in the editor and workflows
+
+**Files:**
+- Create: `packages/app-headless-cms/src/admin/components/IsNotSingletonModel.tsx`
+- Modify: `packages/app-headless-cms/src/ContentEntriesModule.tsx:183` (wrap `DeleteEntryMenuItem`)
+- Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/RevisionListItem.tsx:256`
+- Modify: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.ts` (early return when `!isReviewableModel(model)`)
+- Test: `packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.test.tsx` (extend)
 - Test: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.test.ts` (extend)
 
 **Interfaces:**
-- Consumes: Task 5 `isPublishingEnabled`, Task 6 gateways/use case, Task 1 rules via the API.
-- Produces: `SingletonEditorView({ model }: SingletonEditorViewProps)`; `IsNotSingletonModel({ children })`.
+- Consumes: Task 8 view; Task 5 `isSingletonModel`.
+- Produces: `IsNotSingletonModel({ children }: IsNotSingletonModelProps)`.
 
-- [ ] **Step 1: Write the failing tests** (`SingletonEditorView.test.tsx`, React Testing Library with mocked use cases):
-  - without `?id=`, loads via `GetLatestSingletonEntryUseCase` and replaces the route with the returned revision id;
-  - with `?id=<foreign revision>`, shows the `EntryNotFoundError` message;
-  - untagged model: Save button shows, publish actions and "New revision" do not; Save on a locked `#0001` calls update (no locked-state block in the UI);
-  - tagged model: publish actions show; the delete-entry menu item does not; delete on `#0001` and on the published revision is disabled in the revisions list;
-  - no back button, no list, no "New entry";
-  - a model with no fields shows "This model has no fields." and calls no use case.
-  - Workflows decorator test: for a singleton model the decorator calls the inner use case directly, without `ActiveReviewGuard`.
+- [ ] **Step 1: Write the failing tests:**
+  - tagged model: publish actions show; the delete-entry menu item does not; delete on `#0001` and on the published revision is disabled in the revisions list; delete on another unpublished revision is enabled;
+  - workflows decorator: for a singleton model it calls the inner use case directly, without `ActiveReviewGuard`.
 - [ ] **Step 2: Run** each test file with `yarn test <path>`. Expected: FAIL.
-- [ ] **Step 3: Implement.** `ContentEntryFormView` becomes the list adapter around `ContentEntryEditorBody`, reading `entryId`, folder id and model name from the list presenter as today. `SingletonEditorView` provides `ModelProvider` and `ContentEntryEditorWithConfig` like `ListView.tsx:26-28`. `ModelLoader` renders it for every singleton.
-- [ ] **Step 4: Run** each test file. Expected: PASS. Then run `yarn test packages/app-headless-cms/src/presentation/contentEntries` once to catch broken imports from the deleted files.
-- [ ] **Step 5: Commit** `feat(app-headless-cms): edit singletons in the regular entry editor`.
+- [ ] **Step 3: Implement** `IsNotSingletonModel` in the style of `admin/components/IsModelPublishable.tsx`, the `canDelete` singleton check, and the decorator early return.
+- [ ] **Step 4: Run** each test file. Expected: PASS.
+- [ ] **Step 5: Commit chain, then commit** `feat(app-headless-cms): singleton guards in the entry editor`.
 
-### Task 8: Verification
+### Task 10: Verification
 
-- [ ] **Step 1:** `yarn build -p @webiny/api-headless-cms -p @webiny/app-headless-cms -p @webiny/app-headless-cms-common -p @webiny/app-record-locking -p @webiny/api-headless-cms-workflows -p @webiny/app-headless-cms-workflows 2>&1 | tail -30`. Expected: no errors.
-- [ ] **Step 2:** Run the pre-commit chain from `CLAUDE.md`. Expected: all steps pass; rerun from the top after any fix.
-- [ ] **Step 3:** Grep for leftovers: `grep -rn "GetSingletonEntryUseCase\|SingleEntryPresenter\|\"\\$publishing:false\"" packages/*/src`. Expected: no hits outside the constants files.
-- [ ] **Step 4: Commit** any fixes: `chore: singleton publishing phase 1 cleanup`.
+- [ ] **Step 1:** Build each changed package, one call each: `yarn build -p <pkg> --safe-replace 2>&1 | tail -30` for `@webiny/api-headless-cms`, `@webiny/api-headless-cms-workflows`, `@webiny/app-headless-cms-common`, `@webiny/app-headless-cms`, `@webiny/app-record-locking`, `@webiny/app-headless-cms-workflows`, `webiny`. Expected: no errors.
+- [ ] **Step 2:** Grep for leftovers: `grep -rn "GetSingletonEntryUseCase\|SingleEntryPresenter\|UNPUBLISHABLE_MODEL_TAG\|\"\\$publishing:false\"" packages/*/src`. Expected: no hits outside the two constants files.
+- [ ] **Step 3:** Draft the breaking-change lines for the PR description from the spec's "Breaking changes (release notes)" section, plus: `GetSingletonEntryUseCase` removed from the public exports (use `GetLatestSingletonEntryUseCase` / `GetPublishedSingletonEntryUseCase`); `UpdateSingletonEntryUseCase.execute` takes `revision`.
+- [ ] **Step 4: Commit chain, then commit** any fixes: `chore: singleton publishing phase 1 cleanup`.

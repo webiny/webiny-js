@@ -203,6 +203,10 @@ extend type Mutation {
 - Read and preview `getSettings` keep their signature. Preview now returns the latest revision
   instead of `#0001`, which is the same for untagged singletons.
 
+- Public exports (`@webiny/api-headless-cms/exports/api/cms/entry.js` and `webiny/api/cms/entry`):
+  `GetSingletonEntryUseCase` is removed; use `GetLatestSingletonEntryUseCase` or
+  `GetPublishedSingletonEntryUseCase`. `UpdateSingletonEntryUseCase.execute` takes a `revision`.
+
 We expect no clients to call the manage singleton operations outside the Webiny admin.
 
 ## Backend rules
@@ -339,8 +343,8 @@ One editor for every singleton, built from the regular editor.
   `getSettingsLatest`, then replaces the route with that revision id, so revision switching starts
   from a route that has an id. Renders the editor body without a back button, list, folders, breadcrumbs or
   "New entry". Revision switching keeps working through `route.params.id`
-  (`RevisionSelector.tsx:55`, `RevisionListItem.tsx:106`, `OlderRevisionAlert.tsx:29`,
-  `CreateNewRevisionButton.tsx:38`).
+  (`actions/RevisionSelector.tsx:55`, `RevisionListItem.tsx:106`, `OlderRevisionAlert.tsx:29`,
+  `actions/CreateNewRevisionButton.tsx:38`).
 - `ModelLoader.tsx:23` renders `SingletonEditorView` for every singleton model. A singleton model
   with no fields has no API (see Schema generation), so `SingletonEditorView` shows an empty-state
   message ("This model has no fields.") and makes no request.
@@ -391,8 +395,8 @@ Phase 2 scope. The detailed design is added to this spec after phase 1 is implem
 reviewed before phase 2 implementation starts:
 
 - Scheduling publish and unpublish of a tagged singleton revision from the singleton editor.
-- `api-headless-cms-scheduler` `SchedulePublishEntryUseCase.ts:28` and
-  `ScheduleUnpublishEntryUseCase.ts:28` run only a model-level check today. Add the
+- `api-headless-cms-scheduler` `SchedulePublishEntryUseCase/SchedulePublishEntryUseCase.ts:28` and
+  `ScheduleUnpublishEntryUseCase/ScheduleUnpublishEntryUseCase.ts:28` run only a model-level check today. Add the
   `isPublishingEnabled` check, which also closes the existing gap for `$publishing:false` models.
 - The scheduled action runs `PublishEntry` / `UnpublishEntry`, so the singleton rules above apply.
 
