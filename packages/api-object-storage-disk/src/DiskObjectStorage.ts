@@ -141,7 +141,7 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         }
     }
 
-    public async getStream(key: string): Promise<ObjectStorage.ReadStream | null> {
+    public async getStream(key: string): Promise<AsyncIterable<Uint8Array> | null> {
         const filePath = this.resolveKey(key);
         let handle;
         try {
@@ -163,8 +163,7 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
                 await handle.close();
                 return null;
             }
-            const body = handle.createReadStream();
-            return { body, size: stats.size };
+            return handle.createReadStream();
         } catch (error) {
             await handle.close();
             throw error;

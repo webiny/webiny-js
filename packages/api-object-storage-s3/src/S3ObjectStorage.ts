@@ -144,7 +144,7 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
         }
     }
 
-    public async getStream(key: string): Promise<ObjectStorage.ReadStream | null> {
+    public async getStream(key: string): Promise<AsyncIterable<Uint8Array> | null> {
         const objectKey = this.toObjectKey(key);
         const command = new GetObjectCommand({
             Bucket: this.bucket,
@@ -160,9 +160,8 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
             throw error;
         }
 
-        const size = result.ContentLength ?? 0;
         if (!result.Body) {
-            return { body: Readable.from([]), size };
+            return Readable.from([]);
         }
         /*
          * In Node the SDK hands back the HTTP response itself, a `Readable`. Reading it pulls the
@@ -172,7 +171,7 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
         if (!(result.Body instanceof Readable)) {
             throw new Error(`GetObject of "${objectKey}" did not return a Node stream.`);
         }
-        return { body: result.Body, size };
+        return result.Body;
     }
 
     public async delete(key: string): Promise<void> {

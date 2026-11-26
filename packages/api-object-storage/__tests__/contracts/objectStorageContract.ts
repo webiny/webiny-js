@@ -47,11 +47,10 @@ export const describeObjectStorageContract = (backend: ObjectStorageTestBackend)
 
             const stream = await storage.getStream(KEY);
             const chunks: Uint8Array[] = [];
-            for await (const chunk of stream!.body) {
+            for await (const chunk of stream!) {
                 chunks.push(chunk);
             }
 
-            expect(stream?.size).toBe(contents.length);
             expect(chunks.length).toBeGreaterThan(1);
             expect(Buffer.concat(chunks).equals(contents)).toBe(true);
         });
@@ -62,7 +61,7 @@ export const describeObjectStorageContract = (backend: ObjectStorageTestBackend)
 
             const stream = await storage.getStream(KEY);
             let chunks = 0;
-            for await (const _chunk of stream!.body) {
+            for await (const _chunk of stream!) {
                 chunks++;
                 break;
             }

@@ -2,6 +2,15 @@ import type { AssetContentsReader } from "@webiny/api-file-manager/exports/api/f
 import type { ObjectStorage } from "@webiny/api-object-storage";
 import { isTenantFileKey } from "~/utils/isTenantFileKey.js";
 
+// Security: the key comes from the file record, never read outside the tenant's files.
+const getTenantFileKey = (asset: AssetContentsReader.Asset): string => {
+    const key = asset.getKey();
+    if (!isTenantFileKey(asset.getTenant(), key)) {
+        throw new Error(`Asset "${key}" is outside of the tenant's files.`);
+    }
+    return key;
+};
+
 export class ObjectStorageContentsReader implements AssetContentsReader.Interface {
     private readonly objectStorage: ObjectStorage.Interface;
 
@@ -14,7 +23,7 @@ export class ObjectStorageContentsReader implements AssetContentsReader.Interfac
     }
 
     public async read(asset: AssetContentsReader.Asset): Promise<Buffer> {
-        const key = this.getTenantFileKey(asset);
+        const key = getTenantFileKey(asset);
         const data = await this.objectStorage.get(key);
         if (!data) {
             throw new Error(`No contents stored for asset "${key}".`);
@@ -23,20 +32,11 @@ export class ObjectStorageContentsReader implements AssetContentsReader.Interfac
     }
 
     public async readStream(asset: AssetContentsReader.Asset): Promise<AsyncIterable<Uint8Array>> {
-        const key = this.getTenantFileKey(asset);
-        const stream = await this.objectStorage.getStream(key);
-        if (!stream) {
+        const key = getTenantFileKey(asset);
+        const contents = await this.objectStorage.getStream(key);
+        if (!contents) {
             throw new Error(`No contents stored for asset "${key}".`);
         }
-        return stream.body;
-    }
-
-    // Security: the key comes from the file record, never read outside the tenant's files.
-    private getTenantFileKey(asset: AssetContentsReader.Asset): string {
-        const key = asset.getKey();
-        if (!isTenantFileKey(asset.getTenant(), key)) {
-            throw new Error(`Asset "${key}" is outside of the tenant's files.`);
-        }
-        return key;
+        return contents;
     }
 }
