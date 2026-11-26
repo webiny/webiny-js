@@ -404,7 +404,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         if (token !== this.runToken || this.status !== "ready" || selection !== this.selectToken) {
             return;
         }
-        const first = this.rows[0];
+        const requested = this.rows.find(item => item.modelId === params.initialModelId);
+        const first = requested ?? this.rows[0];
         if (first) {
             await this.openModel(first.modelId);
         }

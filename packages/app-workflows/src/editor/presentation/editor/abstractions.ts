@@ -26,6 +26,8 @@ import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter
  */
 export interface WorkflowEditorInitParams {
     app: WorkflowEditorAppAdapter;
+    // The model to open first; an unknown id (or one past the first page) opens the first model.
+    initialModelId?: string;
 }
 
 export type WorkflowEditorStatus = "loading" | "ready" | "failed" | "noAccess";

@@ -84,6 +84,20 @@ describe("ReviewNotificationHandler", () => {
         });
     });
 
+    it("passes the server's link kind and label on to the service untouched", async () => {
+        const { handle, handler } = setup();
+        const withLink = { ...data, link: "reviewDetails", linkLabel: "View review details" };
+
+        await handler.handle(
+            new WebsocketEvent({ action: WORKFLOWS_NOTIFICATION_ACTION, data: withLink })
+        );
+
+        expect(handle).toHaveBeenCalledWith({
+            data: withLink,
+            url: "/cms/content-entries/article?id=entry-1#0002"
+        });
+    });
+
     it("does not throw when the service throws", async () => {
         const { handle, handler } = setup();
         handle.mockImplementation(() => {

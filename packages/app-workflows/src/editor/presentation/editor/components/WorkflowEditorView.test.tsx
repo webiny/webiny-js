@@ -93,6 +93,16 @@ describe("WorkflowEditorView", () => {
         expect(dispose).toHaveBeenCalledTimes(1);
     });
 
+    it("passes initialModelId to init", () => {
+        const { container, init } = createSetup("ready");
+
+        renderWithContainer(
+            <WorkflowEditorView app={app} breadcrumbName="cms.workflows" initialModelId="page" />,
+            container
+        );
+        expect(init).toHaveBeenCalledWith({ app, initialModelId: "page" });
+    });
+
     it("renders the layout from the presenter's view model", () => {
         const { container } = createSetup("loading");
 

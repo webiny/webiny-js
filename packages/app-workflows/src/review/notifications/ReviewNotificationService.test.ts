@@ -74,6 +74,44 @@ describe("ReviewNotificationService", () => {
         });
     });
 
+    it("uses the label of a content link from the server", () => {
+        service.handle({
+            data: createData({ link: "content", linkLabel: "Open content" }),
+            url: "/cms/content-entries/article?id=entry-1%230001"
+        });
+
+        const input: INotificationInput = notifications.notify.mock.calls[0][0];
+        expect(input.link).toEqual({
+            label: "Open content",
+            url: "/cms/content-entries/article?id=entry-1%230001"
+        });
+    });
+
+    it("links a review details message to the content URL with the review id, under the server's label", () => {
+        service.handle({
+            data: createData({ link: "reviewDetails", linkLabel: "View review details" }),
+            url: "/cms/content-entries/article?id=entry-1%230001"
+        });
+
+        const input: INotificationInput = notifications.notify.mock.calls[0][0];
+        expect(input.link).toEqual({
+            label: "View review details",
+            url: "/cms/content-entries/article?id=entry-1%230001&reviewId=review-1"
+        });
+    });
+
+    it("starts the query when the content URL has none (Website Builder editor)", () => {
+        service.handle({
+            data: createData({ link: "reviewDetails", linkLabel: "View review details" }),
+            url: "/website-builder/pages/editor/page-1%230001"
+        });
+
+        const input: INotificationInput = notifications.notify.mock.calls[0][0];
+        expect(input.link?.url).toBe(
+            "/website-builder/pages/editor/page-1%230001?reviewId=review-1"
+        );
+    });
+
     it("signals the activity bus with a remote source, the namespace, the review id and the revision id of the message", () => {
         service.handle({ data: createData({ namespace: "wb.page" }), url: null });
 
