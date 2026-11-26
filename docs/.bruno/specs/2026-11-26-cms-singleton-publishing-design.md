@@ -325,8 +325,8 @@ through GraphQL:
 ### Access control
 
 Add the singleton exemption from the entry-level owner check to `PublishEntryUseCase.ts:46`,
-`UnpublishEntryUseCase.ts:54`, `CreateEntryRevisionFromUseCase.ts:54,75` and
-`DeleteEntryRevisionUseCase.ts:64`, using `isSingletonModel`. Model-level checks (`pw: "p"`,
+`UnpublishEntryUseCase.ts:54`, `CreateEntryRevisionFromUseCase.ts:54,75`,
+`DeleteEntryRevisionUseCase.ts:64` and `UpdateRevisionDescriptionUseCase.ts:48-56`, using `isSingletonModel`. Model-level checks (`pw: "p"`,
 `pw: "u"`, `rwd: "w"`, `rwd: "d"`) stay.
 
 ### Events

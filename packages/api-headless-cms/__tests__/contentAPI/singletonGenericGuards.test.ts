@@ -15,6 +15,7 @@ import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/in
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/DeleteEntryRevision/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
 import { DeleteMultipleEntriesUseCase } from "~/features/contentEntry/DeleteMultipleEntries/index.js";
+import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/UpdateRevisionDescription/index.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
 
 const NO_PUBLISHING = "Model does not support publishing.";
@@ -348,6 +349,49 @@ describe("singleton generic guards - tagged model", () => {
             .resolve(DeleteEntryRevisionUseCase)
             .execute(model, created.value.id);
         expect(deleted.isOk()).toBe(true);
+    });
+
+    it("should let an own-entries user update the revision description of a singleton created by another identity", async () => {
+        const managerA = useSingletonCategoryHandler({
+            path: "manage/en-US",
+            plugins: taggedPlugins,
+            identity: identityA
+        });
+        const managerB = useSingletonCategoryHandler({
+            path: "manage/en-US",
+            plugins: taggedPlugins,
+            identity: identityB,
+            permissions: createOwnEntriesPermissions()
+        });
+
+        await managerA.introspect();
+        const modelA = (
+            await managerA
+                .getContext()
+                .container.resolve(GetModelUseCase)
+                .execute("categorySingleton")
+        ).value;
+        const first = (
+            await managerA
+                .getContext()
+                .container.resolve(CreateEntryUseCase)
+                .execute(
+                    modelA,
+                    { id: createSingletonEntryId(modelA), values },
+                    { skipValidation: true }
+                )
+        ).value;
+        expect(first.createdBy.id).toBe("a");
+
+        await managerB.introspect();
+        const container = managerB.getContext().container;
+        const model = (await container.resolve(GetModelUseCase).execute("categorySingleton")).value;
+
+        const result = await container
+            .resolve(UpdateRevisionDescriptionUseCase)
+            .execute(model, first.id, "A description");
+        expect(result.isOk()).toBe(true);
+        expect(result.value.revisionDescription).toBe("A description");
     });
 });
 
