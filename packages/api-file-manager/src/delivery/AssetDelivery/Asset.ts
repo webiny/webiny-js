@@ -2,6 +2,10 @@ import type { AssetContentsReader, AssetOutputStrategy } from "~/delivery/index.
 
 type Setter<T> = (arg: T | undefined) => T;
 
+async function* toSingleChunk(contents: Buffer): AsyncIterable<Uint8Array> {
+    yield contents;
+}
+
 export interface AssetData {
     id: string;
     tenant: string;
@@ -54,6 +58,21 @@ export class Asset {
             throw Error(`Asset contents reader was not configured!`);
         }
         return this.contentsReader.read(this);
+    }
+
+    /**
+     * The contents in chunks, read as the consumer pulls them when the reader can stream, else in
+     * one chunk.
+     */
+    async getContentsStream(): Promise<AsyncIterable<Uint8Array>> {
+        if (!this.contentsReader) {
+            throw Error(`Asset contents reader was not configured!`);
+        }
+        if (this.contentsReader.readStream) {
+            return this.contentsReader.readStream(this);
+        }
+        const contents = await this.contentsReader.read(this);
+        return toSingleChunk(contents);
     }
 
     setContentsReader(reader: AssetContentsReader) {

@@ -13,6 +13,13 @@ export interface IObjectStorageAbortMultipartUploadsParams {
     startedBefore: Date;
 }
 
+export interface IObjectStorageReadStream {
+    /** The object's bytes, read from storage as the consumer pulls them. */
+    body: AsyncIterable<Uint8Array>;
+    /** The object's size in bytes. */
+    size: number;
+}
+
 /**
  * Stores bytes by key. Features (the standalone file manager, for one) depend on this and never on
  * a provider; the project registers exactly one provider: a folder on disk
@@ -30,6 +37,13 @@ export interface IObjectStorage {
     putIfAbsent(key: string, body: Buffer): Promise<boolean>;
     /** The contents stored under `key`, or `null` when nothing is. */
     get(key: string): Promise<Buffer | null>;
+    /**
+     * Opens the contents stored under `key` for reading in chunks, or returns `null` when nothing is.
+     * Use it instead of `get` where the bytes only pass through (delivering a file), so a large
+     * object never sits in memory whole. A consumer that stops early ends the iteration (`break`
+     * in a `for await`), which releases the file or connection.
+     */
+    getStream(key: string): Promise<IObjectStorageReadStream | null>;
     /** Removes what is stored under `key`. Removing a missing key is not an error. */
     delete(key: string): Promise<void>;
     /** Removes everything whose key starts with `prefix`. */
@@ -55,6 +69,7 @@ export namespace ObjectStorage {
     export type Interface = IObjectStorage;
     export type UploadPartParams = IObjectStorageUploadPartParams;
     export type AbortMultipartUploadsParams = IObjectStorageAbortMultipartUploadsParams;
+    export type ReadStream = IObjectStorageReadStream;
 }
 
 /**

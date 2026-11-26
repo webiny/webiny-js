@@ -37,6 +37,14 @@ const isMissing = (error: unknown): boolean => {
     return errorCode(error) === "ENOENT";
 };
 
+/*
+ * Nothing is stored under a key whose path is a folder: it only holds other keys, as a prefix does
+ * in a bucket.
+ */
+const isFolder = (error: unknown): boolean => {
+    return errorCode(error) === "EISDIR";
+};
+
 /* A path next to `filePath`, for writing a file before it is moved or linked into place. */
 const temporaryPathFor = (filePath: string): string => {
     const suffix = mdbid();
@@ -126,9 +134,39 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         try {
             return await readFile(filePath);
         } catch (error) {
-            if (isMissing(error)) {
+            if (isMissing(error) || isFolder(error)) {
                 return null;
             }
+            throw error;
+        }
+    }
+
+    public async getStream(key: string): Promise<ObjectStorage.ReadStream | null> {
+        const filePath = this.resolveKey(key);
+        let handle;
+        try {
+            handle = await open(filePath, "r");
+        } catch (error) {
+            if (isMissing(error) || isFolder(error)) {
+                return null;
+            }
+            throw error;
+        }
+
+        /*
+         * Opened here rather than when the consumer starts reading, so a missing file is `null`
+         * before anything has been sent. The stream closes the file when it ends or is destroyed.
+         */
+        try {
+            const stats = await handle.stat();
+            if (stats.isDirectory()) {
+                await handle.close();
+                return null;
+            }
+            const body = handle.createReadStream();
+            return { body, size: stats.size };
+        } catch (error) {
+            await handle.close();
             throw error;
         }
     }

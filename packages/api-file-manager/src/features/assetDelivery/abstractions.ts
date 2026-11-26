@@ -27,6 +27,12 @@ export interface IAssetTransformationStrategy {
 
 export interface IAssetContentsReader {
     read(asset: IAsset): Promise<Buffer>;
+    /**
+     * Reads the contents in chunks, so delivering a large file never holds it in memory whole.
+     * Optional: a reader without it (an image transform's output, already in memory) is read with
+     * `read`.
+     */
+    readStream?(asset: IAsset): Promise<AsyncIterable<Uint8Array>>;
 }
 
 export interface IAssetAuthorizer {
