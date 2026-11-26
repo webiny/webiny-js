@@ -82,7 +82,10 @@ singleton model with `singularApiName: "Settings"`.
     `SaveContentButton` and `CreateNewRevisionButton` use it.
 - Adding the tag to an existing singleton: the read API returns empty values until an editor
   publishes (see read below). The docs say to publish right after adding the tag. Removing the tag:
-  the read API returns `#0001` again; later revisions stay in storage but are not reachable.
+  the read API returns `#0001` again; later revisions stay in storage but are not reachable. The tag
+  cannot be guarded, because code-defined models change it without an API call.
+- If `#0001` was published while tagged, it stays locked after the tag is removed. Untagged models
+  skip the lock check on `#0001` (see Locked revisions), so the singleton stays editable.
 
 ## GraphQL
 
@@ -256,6 +259,12 @@ entries (`UpdateEntryUseCase.ts:47`). To change a published singleton, the clien
 `createSettingsFrom` and updates the new revision. Only internal code (for example
 `UpdateEntrySystem`) changes a locked revision.
 
+Exception: on an untagged singleton, `updateSettings(#0001)` skips the lock check, so a `#0001` that
+was published before the tag was removed stays editable. `UpdateEntryUseCase.ts:47` gets this
+branch (`isSingletonModel(model) && !isPublishingEnabled(model)`). The untagged read API reads
+`#0001` through `GetRevisionById`, the revision record, so a stale published record in storage is
+never served.
+
 ### Delete
 
 A foreign revision or id fails with `EntryNotFoundError` (step 1). The rule-based failures below are
@@ -394,7 +403,9 @@ reviewed before phase 2 implementation starts:
 - `getSettingsRevisions` accepts the entry id and a revision id; for an untagged model with a
   leftover `#0002` it returns only `#0001`.
 - Untagged: publish, unpublish, create-from and delete fail; get and update of `#0001` work.
-- Update of a locked revision fails with `EntryLockedError`.
+- Update of a locked revision fails with `EntryLockedError` on a tagged singleton.
+- Untagged singleton with a locked (previously published) `#0001`: `updateSettings(#0001)` works and
+  read returns the updated values.
 - Delete: whole entry, `#0001` and the published revision fail; other revisions succeed.
 - A user with "own entries" permission can publish, unpublish, create and delete revisions of a
   singleton created by another user.
