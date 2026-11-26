@@ -3,7 +3,8 @@ import { GetPublishedSingletonEntryUseCase as UseCaseAbstraction } from "./abstr
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
-import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import { EntryNotFoundError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 import { createSingletonEntryId } from "~/domain/contentModel/createSingletonEntryId.js";
 import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -23,6 +24,10 @@ class GetPublishedSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interf
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
+        if (!isSingletonModel(model)) {
+            return Result.fail(new EntryValidationError("Model is not marked as singleton."));
+        }
+
         const entryId = createSingletonEntryId(model);
         const publishingEnabled = isPublishingEnabled(model);
 

@@ -96,6 +96,28 @@ const seed = async (setup: Setup, revisions: number) => {
 describe("singleton use cases - tagged model", () => {
     const setupTagged = useSetup(taggedPlugins);
 
+    it("GetLatestSingletonEntry rejects a model that is not a singleton", async () => {
+        const { container, model } = await setupTagged();
+
+        const result = await container
+            .resolve(GetLatestSingletonEntryUseCase)
+            .execute({ ...model, tags: [] });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("Model is not marked as singleton.");
+    });
+
+    it("GetPublishedSingletonEntry rejects a model that is not a singleton", async () => {
+        const { container, model } = await setupTagged();
+
+        const result = await container
+            .resolve(GetPublishedSingletonEntryUseCase)
+            .execute({ ...model, tags: [] });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("Model is not marked as singleton.");
+    });
+
     it("GetLatestSingletonEntry creates #0001 and then returns the latest revision", async () => {
         const { container, model, entryId } = await setupTagged();
         const useCase = container.resolve(GetLatestSingletonEntryUseCase);
