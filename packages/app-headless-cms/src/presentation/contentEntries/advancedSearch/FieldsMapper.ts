@@ -1,6 +1,25 @@
 import sortBy from "lodash/sortBy.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
+import type { EntryAuthor } from "./abstractions.js";
+
+const AUTHOR_FIELD_ID = "createdBy";
+
+const createAuthorField = (authors: EntryAuthor[]): FieldRaw => {
+    return {
+        id: AUTHOR_FIELD_ID,
+        type: "text",
+        label: "Author",
+        list: false,
+        predefinedValues: {
+            enabled: true,
+            values: sortBy(authors, ["displayName"]).map(author => ({
+                label: author.displayName,
+                value: author.id
+            }))
+        }
+    };
+};
 
 export class FieldsMapper {
     private static excluded: FieldRaw["type"][] = ["rich-text", "file", "object", "dynamicZone"];
@@ -42,7 +61,15 @@ export class FieldsMapper {
         }
     ];
 
-    static toRaw(model: CmsModel): FieldRaw[] {
+    /*
+     * The entry's own fields, as opposed to the model's. Their conditions stay at the top level of
+     * the list's where input instead of going under `values`.
+     */
+    static get systemFieldIds(): string[] {
+        return [...this.defaultFields.map(field => field.id), AUTHOR_FIELD_ID];
+    }
+
+    static toRaw(model: CmsModel, authors: EntryAuthor[] = []): FieldRaw[] {
         const modelFields = model.fields
             .filter(modelField => !this.excluded.includes(modelField.type))
             .map(modelField => {
@@ -56,6 +83,12 @@ export class FieldsMapper {
                 };
             });
 
-        return sortBy([...this.defaultFields, ...modelFields], ["label"]);
+        /*
+         * The Author field is offered even before its authors load, or when loading them fails, so
+         * a saved filter on Author still opens with its condition and value in place.
+         */
+        const authorField = createAuthorField(authors);
+
+        return sortBy([...this.defaultFields, authorField, ...modelFields], ["label"]);
     }
 }

@@ -1,6 +1,11 @@
 import type { OpenSearchIndexRequestBody } from "~/types.js";
 import { getCommonMappings } from "./common.js";
 
+/**
+ * No analyzer is set, so text is indexed with the standard analyzer. `normalizeValue` in
+ * `~/normalize.ts` turns search terms into the words this analyzer indexes, and has to change if
+ * the analyzer does.
+ */
 const config: OpenSearchIndexRequestBody = {
     mappings: {
         dynamic_templates: getCommonMappings(mappings => {
