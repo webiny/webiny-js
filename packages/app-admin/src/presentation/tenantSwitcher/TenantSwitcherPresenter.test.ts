@@ -1,4 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { TenantSwitcherSource } from "~/features/tenantSwitcher/abstractions.js";
 import { TenantContext } from "~/features/tenancy/abstractions.js";

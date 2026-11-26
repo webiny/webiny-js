@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
