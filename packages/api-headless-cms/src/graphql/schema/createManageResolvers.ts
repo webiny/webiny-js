@@ -21,9 +21,7 @@ import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom.js";
 import { resolveDuplicate } from "./resolvers/manage/resolveDuplicate.js";
 import { normalizeGraphQlInput } from "./resolvers/manage/normalizeGraphQlInput.js";
 import { createFieldResolversFactory } from "./createFieldResolvers.js";
-import { getEntryTitle } from "~/utils/getEntryTitle.js";
-import { getEntryImage } from "~/utils/getEntryImage.js";
-import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
+import { createEntryMetaResolvers } from "./createEntryMetaResolvers.js";
 
 interface CreateManageResolversParams {
     models: CmsModel[];
@@ -94,33 +92,9 @@ export const createManageResolvers: CreateManageResolvers = ({ models, model, fi
             [`duplicate${model.singularApiName}`]: resolveDuplicate(resolverFactoryParams)
         },
         ...fieldResolvers,
-        [`${model.singularApiName}Meta`]: {
-            title(entry: Pick<CmsEntry, "id" | "values">) {
-                return getEntryTitle(model, entry);
-            },
-            description: (entry: Pick<CmsEntry, "values">, _: any, context: CmsContext) => {
-                if (!model.descriptionFieldId) {
-                    return "";
-                }
-                const field = model.fields.find(f => f.fieldId === model.descriptionFieldId);
-                if (!field) {
-                    return "";
-                }
-
-                return entryFieldFromStorageTransform({
-                    context,
-                    model,
-                    field,
-                    value: entry.values[field.fieldId as keyof CmsEntry["values"]]
-                });
-            },
-            image: (entry: Pick<CmsEntry, "values">) => {
-                return getEntryImage(model, entry);
-            },
-            status(entry: Pick<CmsEntry, "status">) {
-                return entry.status;
-            },
-            async revisions(entry: Pick<CmsEntry, "entryId">, _: any, context: CmsContext) {
+        [`${model.singularApiName}Meta`]: createEntryMetaResolvers({
+            model,
+            async revisions(entry: Pick<CmsEntry, "entryId">, _: unknown, context: CmsContext) {
                 const result = await context.container
                     .resolve(GetRevisionsByEntryIdUseCase)
                     .execute(model, entry.entryId);
@@ -129,6 +103,6 @@ export const createManageResolvers: CreateManageResolvers = ({ models, model, fi
                 }
                 return result.value.sort((a, b) => b.version - a.version);
             }
-        }
+        })
     };
 };
