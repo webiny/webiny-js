@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Button, useToast } from "@webiny/admin-ui";
+import { isPublishingEnabled } from "@webiny/app-headless-cms-common";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
@@ -21,7 +22,7 @@ export const SaveContentButton = observer(() => {
 
     const handleSave = async () => {
         const model = presenter.vm.model;
-        const isPublishable = !model.tags.includes("$publishing:false");
+        const isPublishable = isPublishingEnabled(model);
 
         const isNew = presenter.vm.isNewEntry;
         const saved = await presenter.saveRevision({ skipValidation: isPublishable });

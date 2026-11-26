@@ -1,8 +1,8 @@
+import { CMS_MODEL_PUBLISHING_DISABLED_TAG } from "@webiny/app-headless-cms-common";
 import type { ContentType } from "./abstractions.js";
 import type { ListedModel } from "./abstractions.js";
 
 // Models that cannot be published cannot be bound to a workflow (mirror of `isBindableModel`).
-const UNPUBLISHABLE_MODEL_TAG = "$publishing:false";
 
 /*
  * The content types a Content Reviews list can show: bindable models that are not being deleted,
@@ -13,7 +13,7 @@ export const toContentTypes = (models: ListedModel[]): ContentType[] => {
         if (model.isBeingDeleted) {
             return false;
         }
-        return !(model.tags ?? []).includes(UNPUBLISHABLE_MODEL_TAG);
+        return !(model.tags ?? []).includes(CMS_MODEL_PUBLISHING_DISABLED_TAG);
     });
 
     return bindable

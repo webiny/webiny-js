@@ -12350,6 +12350,7 @@ __metadata:
     react: "npm:19.3.1"
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^5.1.1"
   languageName: unknown
   linkType: soft
 
