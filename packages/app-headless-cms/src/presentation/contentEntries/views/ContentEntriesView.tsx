@@ -5,6 +5,7 @@ import { FoldersFeature } from "@webiny/app-aco/features/folders/feature.js";
 import { FolderTreePresenterFeature } from "@webiny/app-aco/presentation/folderTree/feature.js";
 import { CmsModelContext } from "~/features/contentEntry/CmsModelContext.js";
 import { ContentEntriesPresenterFeature } from "../list/feature.js";
+import { CmsAdvancedSearchFeature } from "../advancedSearch/feature.js";
 import { ContentEntryFormPresenterFeature } from "../form/feature.js";
 import { SingleEntryPresenterFeature } from "../singleEntry/feature.js";
 import {
@@ -39,6 +40,7 @@ export const ContentEntriesView = ({
         FolderTreePresenterFeature.register(child);
         child.register(CmsModelContext).inSingletonScope();
         ContentEntriesPresenterFeature.register(child);
+        CmsAdvancedSearchFeature.register(child);
         ContentEntryFormPresenterFeature.register(child);
         RevisionsListFeature.register(child);
         SingleEntryPresenterFeature.register(child);
