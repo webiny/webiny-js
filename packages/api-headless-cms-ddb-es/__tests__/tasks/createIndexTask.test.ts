@@ -1,4 +1,5 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
@@ -114,9 +115,11 @@ describe("Create index task", () => {
             });
         });
 
-        const result = await runner({
-            webinyTaskId: task.id
-        });
+        // A task runs in its tenant's scope, as the background task handler runs it: the task
+        // creates the indexes of every tenant, each in its own scope, as the user who runs it.
+        const result = await context.container
+            .resolve(TenantScopes)
+            .withRootTenant(() => runner({ webinyTaskId: task.id }));
 
         const indexName = (model: { tenant: string; modelId: string }) =>
             createTestModelIndexName(context.container, { model: model as any });

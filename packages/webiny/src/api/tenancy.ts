@@ -1,4 +1,5 @@
 export { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+export { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 export {
     TenantScope,
     TenantScopes,
