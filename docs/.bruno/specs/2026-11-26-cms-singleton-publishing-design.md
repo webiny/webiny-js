@@ -73,7 +73,8 @@ Replace the fixed `#0001` read with a lookup by `entryId`:
 |---|---|---|
 | manage | latest revision (`GetLatestRevisionByEntryId`) | yes, as today |
 | preview | latest revision (`GetLatestRevisionByEntryId`) | no; `null` data |
-| read | published revision (`GetPublishedRevisionByEntryId`) | no; `null` data |
+| read (6.6) | latest revision, as today (D3) | as today |
+| read (6.7) | published revision (`GetPublishedSingletonEntryUseCase`) | no; `null` data |
 
 - Signatures: `GetLatestRevisionByEntryId.execute(model, { id })`
   (`GetLatestRevisionByEntryId/abstractions.ts:16-19`) and
@@ -106,6 +107,7 @@ use case. One use case per file.
 | `CreateSingletonEntryRevisionUseCase` | `CreateEntryRevisionFrom` (latest, or a given revision id) |
 | `DeleteSingletonEntryRevisionUseCase` | `DeleteEntryRevision` |
 | `ListSingletonEntryRevisionsUseCase` | `GetRevisionsByEntryId` |
+| `GetPublishedSingletonEntryUseCase` | `GetPublishedRevisionByEntryId`; ships in 6.6, used by the read API from 6.7 (D3) |
 | `UpdateSingletonEntryUseCase` (changed) | Entry missing: create it (as the manage get does), then `UpdateEntry`. Latest revision not locked: `UpdateEntry` on it. Locked (published): `CreateEntryRevisionFrom` the latest, then `UpdateEntry` on the new revision (D1) |
 
 ### Backend: access control
@@ -201,22 +203,14 @@ Proposed defaults. Each is open until confirmed.
   is a different one.
 - **D2. Read API before the first publish.** Default: `data: null, error: null`. Alternative: an
   `Cms/Entry/NotFound` error.
-- **D3. Existing singletons.** After this change the read API returns only published revisions.
-  Existing singletons have never been published, so their read API output would change from the
-  draft to `null`. This repo has no in-repo data upgrade mechanism; upgrades ship as scripts in the
-  external `webiny-upgrades-v6` repository, run by `webiny upgrade`
-  (`packages/cli-core/src/features/UpgradeCommand/UpgradeCommandHandler.ts`). Options:
-  - **Upgrade script (default).** A `webiny-upgrades-v6` script publishes the latest revision of
-    every singleton entry, in every tenant. Limits to accept:
-    - Publish validates the entry (`CreatePublishEntryDataFactory.ts:35-42`). Singletons were
-      created with `skipValidation: true`, so some fail. The script reports them and leaves them as
-      drafts; their read output becomes `null` until an editor fixes and publishes them.
-    - Each publish fires the normal publish events, so webhooks and audit logs see one publish per
-      singleton at upgrade time.
-  - **No upgrade.** Read returns `null` until someone publishes. Breaking change for anyone reading
-    singletons from the read API today. Announce in release notes.
-  - **Model flag** (for example `singleEntryPublishing`), off for existing models. No breaking
-    change, but two singleton code paths to keep.
+- **D3. Existing singletons. Decided: phased, no upgrade script.**
+  - **6.6:** publishing and revisions ship. `GetPublishedSingletonEntryUseCase` exists, but the read
+    API does not use it yet. Read keeps today's behaviour and returns the latest revision (today
+    that is always `#0001`), so read output does not change for anyone. Editors can publish their
+    singletons during 6.6.
+  - **6.7:** the read API switches to `GetPublishedSingletonEntryUseCase` and returns only the
+    published revision, `null` before the first publish. Breaking change: announce it in the 6.6
+    and 6.7 release notes, with the instruction to publish each singleton before upgrading to 6.7.
 - **D4. Delete a singleton revision.** Default: allowed, except for the only remaining revision and
   the published revision. To delete the published revision, unpublish first. This keeps the read API
   from silently going to `null` through a delete.
@@ -238,8 +232,8 @@ Proposed defaults. Each is open until confirmed.
 
 - Use case tests per new use case, on DDB, DDB-ES, SQLite (`api-headless-cms-sql`) and Postgres
   (`api-headless-cms-pg`) storage.
-- Endpoint tests: read returns published, preview returns latest, manage creates if missing. Read
-  and preview never create.
+- Endpoint tests: preview returns latest and never creates; manage creates if missing. Read per D3:
+  6.6 latest, 6.7 published only and never creates.
 - Read and preview SDL have no `meta` and no mutations.
 - Update on a locked latest revision (per D1).
 - Update when the entry does not exist creates it and applies the update.
@@ -250,5 +244,6 @@ Proposed defaults. Each is open until confirmed.
 - Scheduling publish or unpublish of a singleton fails (D6).
 - A user with "own entries" permission can publish, unpublish, create and delete revisions of a
   singleton created by another user.
-- Existing `#0001`-only singleton: manage reads and updates it with no storage migration. After the
-  D3 upgrade step, read returns it as published.
+- Existing `#0001`-only singleton: manage reads, updates and publishes it with no storage migration.
+- 6.6: read returns the latest revision, published or not. 6.7: read returns `null` until the first
+  publish, then the published revision (D3).
