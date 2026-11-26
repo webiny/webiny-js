@@ -1,6 +1,6 @@
 import React from "react";
 import { Tag } from "@webiny/admin-ui";
-import { ReactComponent as QuestionIcon } from "@webiny/icons/chat_bubble.svg";
+import { ReactComponent as QuestionIcon } from "@webiny/icons/chat_bubble_outline.svg";
 import { ReactComponent as ActionIcon } from "@webiny/icons/add.svg";
 import { CommandRowLayout } from "./CommandRowLayout.js";
 import { GroupHeading } from "./GroupHeading.js";
