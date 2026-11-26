@@ -35,6 +35,9 @@ import { SaveContentButton } from "./actions/SaveContentButton.js";
 import { SaveAndPublishButton } from "./actions/SaveAndPublishButton.js";
 import { PublishOnlyButton } from "./actions/PublishOnlyButton.js";
 import { CreateNewRevisionButton } from "./actions/CreateNewRevisionButton.js";
+import { IsNotSingletonModel } from "~/admin/components/IsNotSingletonModel.js";
+import { DeleteEntryMenuItem } from "./actions/DeleteEntryMenuItem.js";
+import { RevisionListItem } from "./RevisionListItem.js";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { ContentEntryEditorBody } from "./ContentEntryEditorBody.js";
@@ -136,6 +139,18 @@ vi.mock("@webiny/admin-ui", async importOriginal => {
             <button onClick={props.onClick}>{props["aria-label"]}</button>
         ),
         Tooltip: () => null,
+        DropdownMenu: Object.assign(
+            (props: { trigger?: React.ReactNode; children?: React.ReactNode }) => (
+                <div>{props.children}</div>
+            ),
+            {
+                Item: (props: { text?: string; disabled?: boolean }) => (
+                    <button disabled={props.disabled}>{props.text}</button>
+                ),
+                Separator: () => null,
+                Link: Object.assign(() => null, { Icon: () => null })
+            }
+        ),
         OverlayLoader: (props: OverlayLoaderProps) => <div>{props.text}</div>,
         Button: (props: ButtonProps) => <button onClick={props.onClick}>{props.text}</button>,
         useToast: () => ({ showSuccessToast: () => undefined })
@@ -168,6 +183,9 @@ vi.mock("@webiny/app-admin", async importOriginal => {
             return { route: { params } };
         },
         useDialogs: () => ({ showDialog: vi.fn() }),
+        OptionsMenuItem: (props: ButtonProps & { label?: string }) => (
+            <button onClick={props.onClick}>{props.label}</button>
+        ),
         Buttons: () => (
             <>
                 {hoisted.buttonActions.current.map(action => (
@@ -208,7 +226,12 @@ vi.mock("~/admin/config/contentEntries/editor/ContentEntryEditorConfig.js", () =
 
 vi.mock("~/admin/hooks/usePermission.js", () => {
     return {
-        usePermission: () => ({ canEdit: () => true, canPublish: () => true })
+        usePermission: () => ({
+            canEdit: () => true,
+            canPublish: () => true,
+            canUnpublish: () => true,
+            canDelete: () => true
+        })
     };
 });
 
@@ -517,6 +540,79 @@ describe("SingletonEditorView", () => {
             expect.objectContaining({ options: { skipValidation: true } })
         );
         expect(view.getByText("Save & Publish")).toBeTruthy();
+    });
+});
+
+describe("singleton guards", () => {
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("tagged: shows the publish actions and hides the delete-entry menu item", async () => {
+        hoisted.route.set({ modelId: "settings", id: "settings#0001" });
+        const { model } = setup({ tags: TAGGED });
+
+        const view = render(
+            <ModelProvider model={model}>
+                <ContentEntryEditorBody entryId={"settings#0001"} modelName={"S"} />
+                <IsNotSingletonModel>
+                    <DeleteEntryMenuItem />
+                </IsNotSingletonModel>
+            </ModelProvider>
+        );
+
+        expect(await view.findByText("Save & Publish")).toBeTruthy();
+        expect(view.queryByText("Trash entry")).toBeNull();
+    });
+
+    it("keeps the delete-entry menu item for a regular model", async () => {
+        const { model } = setup({ tags: [] });
+        const regular = { ...model, tags: [] } as CmsModel;
+
+        const view = render(
+            <ModelProvider model={regular}>
+                <ContentEntryEditorBody entryId={"settings#0001"} modelName={"S"} />
+                <IsNotSingletonModel>
+                    <DeleteEntryMenuItem />
+                </IsNotSingletonModel>
+            </ModelProvider>
+        );
+
+        expect(await view.findByText("Trash entry")).toBeTruthy();
+    });
+
+    const renderRevision = (model: CmsModel, id: string, version: number, status: string) => {
+        const revision = {
+            ...createRevision(id, false, status),
+            meta: { locked: false, status, title: "S", version }
+        };
+        const item = { revision, canPublish: false, canUnpublish: false };
+        return render(
+            <ModelProvider model={model}>
+                <RevisionListItem item={item as any} />
+            </ModelProvider>
+        );
+    };
+
+    it("disables delete on #0001 of a singleton", () => {
+        const { model } = setup({ tags: TAGGED });
+        const view = renderRevision(model, "settings#0001", 1, "unpublished");
+
+        expect((view.getByText("Delete revision") as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it("disables delete on the published revision of a singleton", () => {
+        const { model } = setup({ tags: TAGGED });
+        const view = renderRevision(model, "settings#0003", 3, "published");
+
+        expect((view.getByText("Delete revision") as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it("enables delete on another unpublished revision of a singleton", () => {
+        const { model } = setup({ tags: TAGGED });
+        const view = renderRevision(model, "settings#0002", 2, "unpublished");
+
+        expect((view.getByText("Delete revision") as HTMLButtonElement).disabled).toBe(false);
     });
 });
 

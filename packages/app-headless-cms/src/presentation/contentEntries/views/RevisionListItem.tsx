@@ -1,5 +1,6 @@
 import React from "react";
 import { useFeature } from "@webiny/app";
+import { isSingletonModel } from "@webiny/app-headless-cms-common";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { DropdownMenu, Icon, IconButton, List, Tag, Text, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
@@ -16,6 +17,7 @@ import type { CmsContentEntryRevision } from "~/types.js";
 import type { RevisionsListPresenter } from "../revisionsList/abstractions.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
+import { useModel } from "~/admin/components/ModelProvider/index.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { Routes } from "~/routes.js";
@@ -98,9 +100,14 @@ export const RevisionListItem = ({ item }: RevisionListItemProps) => {
     const formPresenter = useContentEntryFormPresenter();
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
+    const { model } = useModel();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
     const statusTag = getStatusTag(revision);
+    // The API rejects deleting the first revision of a singleton and its published revision.
+    const isProtectedSingletonRevision =
+        isSingletonModel(model) &&
+        (revision.meta.version === 1 || revision.meta.status === "published");
 
     const navigateToRevision = (id: string) => {
         goToRoute(Routes.ContentEntries.List, { ...route.params, id });
@@ -258,6 +265,7 @@ export const RevisionListItem = ({ item }: RevisionListItemProps) => {
                                 <DropdownMenu.Separator />
                                 <DropdownMenu.Item
                                     onClick={handleDeleteRevision}
+                                    disabled={isProtectedSingletonRevision}
                                     icon={<DeleteIcon />}
                                     text={t`Delete revision`}
                                     variant={"destructive"}

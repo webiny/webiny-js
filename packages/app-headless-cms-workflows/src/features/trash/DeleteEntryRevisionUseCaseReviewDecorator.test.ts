@@ -15,7 +15,12 @@ import { createTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/cr
 import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/registerTrashUseCaseFakes.js";
 import { DeleteEntryRevisionUseCaseReviewDecorator } from "./DeleteEntryRevisionUseCaseReviewDecorator.js";
 
-const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;
+const MODEL = { modelId: "article", singularApiName: "Article", tags: [] } as unknown as CmsModel;
+const SINGLETON_MODEL = {
+    modelId: "settings",
+    singularApiName: "Settings",
+    tags: ["singleEntry"]
+} as unknown as CmsModel;
 
 function createRefusal() {
     return new GraphQLOperationError({
@@ -125,5 +130,19 @@ describe("DeleteEntryRevisionUseCaseReviewDecorator", () => {
             .catch(e => e);
 
         expect(error).toBe(failure);
+    });
+
+    it("calls the decoratee directly for a singleton model, without the guard", async () => {
+        const { confirm, decoratee, useCases, useCase } = setup();
+        decoratee.execute.mockRejectedValue(createRefusal());
+
+        const error = await useCase
+            .execute({ model: SINGLETON_MODEL, revisionId: "entry-1#0002" })
+            .catch(e => e);
+
+        expect(error).toBeInstanceOf(GraphQLOperationError);
+        expect(decoratee.execute).toHaveBeenCalledTimes(1);
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
+        expect(confirm).not.toHaveBeenCalled();
     });
 });
