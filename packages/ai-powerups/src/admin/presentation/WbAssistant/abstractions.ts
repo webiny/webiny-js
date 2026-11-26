@@ -60,13 +60,13 @@ export interface IPromptContextViewModel {
 
 /**
  * Which project, reader persona and writer persona the assistant writes for in the page editor, and
- * the files attached for it: the choice the magic wand's dialog offers, made once for the chat.
+ * the files attached for it, chosen once for the chat.
  */
 export interface IPromptContextPresenter {
     readonly vm: IPromptContextViewModel;
     /** Read the presets from the AI Power-Ups settings. */
     load(): Promise<void>;
-    /** Choosing a project also chooses its default personas, as the magic wand's dialog does. */
+    /** Choosing a project also chooses its default personas. */
     setProject(id: string | null): void;
     setReaderPersona(id: string | null): void;
     setWriterPersona(id: string | null): void;

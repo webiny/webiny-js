@@ -12,7 +12,7 @@ import { ReactComponent as FileIcon } from "@webiny/icons/description.svg";
 import { PromptContextFeature } from "./promptContextFeature.js";
 import type { PromptContextPresenter } from "./abstractions.js";
 
-/** What the server reads an attached file as. The magic wand's dialog takes the same. */
+/** What the server reads an attached file as. */
 const ACCEPT = [
     "text/*",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

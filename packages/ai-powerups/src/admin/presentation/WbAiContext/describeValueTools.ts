@@ -5,8 +5,7 @@ import type { ToolRegistry } from "@webiny/app-admin";
 /**
  * The value tools (`textToLexical`, `resolveImage`, ...) as a model writes them: name, description
  * and the shape of the input and output. A model wraps a value in `{ tool, params }` and the
- * `ToolPipelineRunner` turns it into the real value. Shared by the one-shot page generator and the
- * assistant's page editor tools.
+ * `ToolPipelineRunner` turns it into the real value. Used by the assistant's page editor tools.
  */
 export const describeValueTools = (toolRegistry: ToolRegistry.Interface) => {
     return toolRegistry.getTools().map(tool => {

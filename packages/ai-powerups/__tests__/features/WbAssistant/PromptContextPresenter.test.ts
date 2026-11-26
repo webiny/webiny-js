@@ -49,7 +49,7 @@ describe("PromptContextPresenter", () => {
         ]);
     });
 
-    it("chooses a project's default personas with it, as the magic wand's dialog does", async () => {
+    it("chooses a project's default personas with it", async () => {
         const promptContext = await setup();
 
         promptContext.setProject("velo");

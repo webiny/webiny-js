@@ -4,8 +4,7 @@ import { isRecord } from "./clientTools/isRecord.js";
 
 /**
  * The composer control the page editor adds: which project, reader persona and writer persona the
- * assistant writes for, and files attached for it to read. The same choice the magic wand's dialog
- * offers.
+ * assistant writes for, and files attached for it to read.
  */
 export const PROMPT_CONTEXT_CONTROL = "promptContext";
 

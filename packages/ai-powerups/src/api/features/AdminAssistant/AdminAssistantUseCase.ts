@@ -448,8 +448,8 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
     }
 
     /**
-     * The project, personas and attached files the screen's composer controls chose: the same
-     * context the magic wand's dialog builds, as instructions plus `read_project_file` for the files.
+     * The project, personas and attached files the screen's composer controls chose, as
+     * instructions plus `read_project_file` for the files.
      * Nothing when no control chose any.
      */
     private async promptContext(
@@ -462,7 +462,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
         /*
          * The builder reads file contents without a permission check, so each attached file is
-         * fetched through File Manager as the user first, as the magic wand does before queueing.
+         * fetched through File Manager as the user first.
          */
         const access = await checkAdditionalFilesAccess(this.getFile, chosen.additionalFileIds);
         if (access.isFail()) {
