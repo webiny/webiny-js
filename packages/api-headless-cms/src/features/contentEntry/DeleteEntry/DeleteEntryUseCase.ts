@@ -6,7 +6,8 @@ import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "~/features/co
 import type { CmsDeleteEntryOptions, CmsModel } from "~/types/index.js";
 import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { EntryBeforeDeleteEvent, EntryAfterDeleteEvent, EntryDeleteErrorEvent } from "./events.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 
 /**
  * DeleteEntryUseCase - Orchestrates permanent deletion of an entry.
@@ -31,6 +32,10 @@ class DeleteEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         id: string,
         options: CmsDeleteEntryOptions
     ): Promise<Result<void, UseCaseAbstraction.Error>> {
+        if (isSingletonModel(model)) {
+            return Result.fail(new EntryValidationError("Singleton entry cannot be deleted."));
+        }
+
         const { permanently = true } = options;
 
         if (!permanently) {

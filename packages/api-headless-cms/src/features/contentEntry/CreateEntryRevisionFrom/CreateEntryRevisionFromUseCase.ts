@@ -18,7 +18,9 @@ import {
     EntryRevisionBeforeCreateEvent,
     EntryRevisionCreateErrorEvent
 } from "./events.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
+import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
 import { CreateEntryRevisionFromDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory/index.js";
 
 class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -41,6 +43,10 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
+        if (isSingletonModel(model) && !isPublishingEnabled(model)) {
+            return Result.fail(new EntryValidationError("Model does not support publishing."));
+        }
+
         const originalResult = await this.getRevisionById.execute<T>(model, sourceId);
 
         if (originalResult.isFail()) {
@@ -51,13 +57,17 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         // Security: write access must be checked against the source entry, not only against the
         // new revision (whose meta fields, e.g. createdBy, can come from input).
-        const canWriteOriginal = await this.accessControl.canAccessEntry({
-            model,
-            entry: originalEntry,
-            rwd: "w"
-        });
-        if (!canWriteOriginal) {
-            return Result.fail(EntryNotAuthorizedError.fromModel(model));
+        // Singleton entries are shared by everyone who can access the model, so the
+        // entry-level (owner) checks are skipped for them.
+        if (!isSingletonModel(model)) {
+            const canWriteOriginal = await this.accessControl.canAccessEntry({
+                model,
+                entry: originalEntry,
+                rwd: "w"
+            });
+            if (!canWriteOriginal) {
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            }
         }
 
         const dataResult = await this.createEntryRevisionFromDataFactory.create<T>(
@@ -72,14 +82,16 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         }
         const { entry, input } = dataResult.value;
 
-        const canAccessEntry = await this.accessControl.canAccessEntry({
-            model,
-            entry,
-            rwd: "w"
-        });
+        if (!isSingletonModel(model)) {
+            const canAccessEntry = await this.accessControl.canAccessEntry({
+                model,
+                entry,
+                rwd: "w"
+            });
 
-        if (!canAccessEntry) {
-            return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            if (!canAccessEntry) {
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            }
         }
 
         try {
