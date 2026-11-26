@@ -50,7 +50,7 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
      * signed in now and to the model on screen. The API only lists the users who can read the
      * model's entries, and an identity limited to its own entries gets only itself. A model seen
      * before keeps offering its last authors while they load again. A failed request changes
-     * nothing, so the Author filter keeps its last authors, or stays out if it never had any.
+     * nothing, so the Author filter keeps its last authors, or offers none if it never had any.
      */
     async loadAuthors(): Promise<void> {
         const modelId = this.contentEntries.vm.model.modelId;

@@ -72,14 +72,16 @@ describe("CmsAdvancedSearchPresenter", () => {
         expect(presenter.vm.authors).toEqual([{ id: "user-2", displayName: "Beth Smith" }]);
     });
 
-    it("offers no Author field until there are authors", async () => {
+    it("offers the Author field before the authors load, and fills it once they do", async () => {
         const { presenter } = createPresenter();
+        const authorValues = () =>
+            presenter.vm.fields.find(field => field.id === "createdBy")?.predefinedValues?.values;
 
-        expect(presenter.vm.fields.map(field => field.id)).not.toContain("createdBy");
+        expect(authorValues()).toEqual([]);
 
         await presenter.loadAuthors();
 
-        expect(presenter.vm.fields.map(field => field.id)).toContain("createdBy");
+        expect(authorValues()).toHaveLength(3);
     });
 
     it("asks again on every load, so a failed request is retried", async () => {

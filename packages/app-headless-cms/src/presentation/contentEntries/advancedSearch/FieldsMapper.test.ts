@@ -10,10 +10,13 @@ const model = {
 } as unknown as CmsModel;
 
 describe("FieldsMapper", () => {
-    it("offers no Author filter when there are no authors to pick from", () => {
-        const ids = FieldsMapper.toRaw(model).map(field => field.id);
+    it("offers the Author filter even when there are no authors to pick from yet", () => {
+        const author = FieldsMapper.toRaw(model).find(field => field.id === "createdBy");
 
-        expect(ids).not.toContain("createdBy");
+        expect(author).toMatchObject({
+            label: "Author",
+            predefinedValues: { enabled: true, values: [] }
+        });
     });
 
     it("offers an Author filter with the authors as predefined values", () => {

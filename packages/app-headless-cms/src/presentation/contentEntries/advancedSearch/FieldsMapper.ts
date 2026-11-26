@@ -83,8 +83,12 @@ export class FieldsMapper {
                 };
             });
 
-        const authorFields = authors.length > 0 ? [createAuthorField(authors)] : [];
+        /*
+         * The Author field is offered even before its authors load, or when loading them fails, so
+         * a saved filter on Author still opens with its condition and value in place.
+         */
+        const authorField = createAuthorField(authors);
 
-        return sortBy([...this.defaultFields, ...authorFields, ...modelFields], ["label"]);
+        return sortBy([...this.defaultFields, authorField, ...modelFields], ["label"]);
     }
 }
