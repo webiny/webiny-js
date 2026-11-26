@@ -18,11 +18,19 @@ export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(
         const model = formPresenter.vm.model;
 
         const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
-        // Changes to a locked revision go into the new revision that "New Revision" creates.
-        const isLocked = formPresenter.vm.entry?.meta.locked ?? false;
 
         if (isSingleton || formPresenter.vm.isNewEntry || !presenter.vm.hasWorkflow) {
             return <Original {...props} />;
+        }
+
+        // The form presenter decides whether a review blocks saving; the warning follows it.
+        let unsavedChangesWarning: React.ReactNode = null;
+        if (presenter.vm.hasState && !formPresenter.vm.canSave) {
+            unsavedChangesWarning = (
+                <Alert type="danger" className={"mt-sm"}>
+                    Any changes you do on the entry will not be stored!
+                </Alert>
+            );
         }
 
         return (
@@ -33,11 +41,7 @@ export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(
                     }
                 >
                     <WorkflowStateBar />
-                    {presenter.vm.hasState && !isLocked ? (
-                        <Alert type="danger" className={"mt-sm"}>
-                            Any changes you do on the entry will not be stored!
-                        </Alert>
-                    ) : null}
+                    {unsavedChangesWarning}
                 </div>
                 <Original {...props} />
             </>

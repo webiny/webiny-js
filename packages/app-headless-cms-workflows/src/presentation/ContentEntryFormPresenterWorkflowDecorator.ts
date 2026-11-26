@@ -29,22 +29,41 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
         const base = this.original.vm;
         const wfVm = this.workflowPresenter.vm;
 
+        const isApproved = wfVm.isApproved && !this.isStateOfAnotherRevision();
+
         return {
             ...base,
             canSave: base.canSave && !this.isBlockedByReview(),
-            canPublish: base.canPublish && (!wfVm.hasWorkflow || wfVm.isApproved)
+            canPublish: base.canPublish && (!wfVm.hasWorkflow || isApproved)
         };
     }
 
     /*
-     * A revision with a content review can't be changed. A locked revision (published or
-     * unpublished) is never changed by a save either: saving it creates a new revision, and
-     * that new revision starts without a review. So only an unlocked revision is blocked.
-     * Blocking locked ones too left "New Revision" on screen with nothing happening on click.
+     * A revision with a content review can't be changed. A save that creates a new revision
+     * (on a published or unpublished revision) doesn't change it either, and the new revision
+     * starts without a review, so only the other saves are blocked. Blocking all of them left
+     * "New Revision" on screen with nothing happening on click.
      */
     private isBlockedByReview(): boolean {
-        const isLocked = this.original.vm.entry?.meta.locked ?? false;
-        return this.workflowPresenter.vm.hasState && !isLocked;
+        if (this.isStateOfAnotherRevision()) {
+            return true;
+        }
+        return this.workflowPresenter.vm.hasState && !this.original.vm.canCreateNewRevision;
+    }
+
+    /*
+     * The review state is loaded for one revision, in `loadRevision`. Right after "New Revision"
+     * the form already holds the new draft, while the loaded review still belongs to the
+     * revision it was created from, until the route change loads the draft. That approval
+     * must not let the draft be published.
+     */
+    private isStateOfAnotherRevision(): boolean {
+        const entryId = this.original.vm.entry?.id;
+        const stateRevisionId = this.workflowPresenter.vm.id;
+        if (!entryId || !stateRevisionId) {
+            return false;
+        }
+        return stateRevisionId !== entryId;
     }
 
     async loadRevision(id: string): Promise<void> {
