@@ -1,6 +1,7 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import { TenantListGateway as GatewayAbstraction } from "./abstractions.js";
-import { Tenant, type TenantDto } from "../../shared/Tenant.js";
+import { Tenant } from "../../shared/Tenant.js";
+import type { TenantDto } from "../../shared/Tenant.js";
 
 const LIST_TENANTS = /* GraphQL */ `
     query ListTenants($search: String) {

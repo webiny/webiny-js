@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { minimatch } from "minimatch";
 import type { Tenant } from "~/features/tenancy/abstractions.js";
+import { ROOT_TENANT_ID } from "~/features/tenancy/rootTenant.js";
 
 export interface IPermission {
     name: string;
@@ -120,11 +121,24 @@ export class Identity {
     }
 
     /**
-     * Whether the identity can open another tenant than this one.
-     * Root users never can: they open tenants through Tenant Manager.
+     * Whether the identity is a user of the root tenant: one with a user record there. Without a
+     * tenant list, the default tenant decides, which identity providers that set none report as root.
+     */
+    get isRootUser(): boolean {
+        if (this.tenants.length > 0) {
+            return this.tenants.some(tenant => tenant.id === ROOT_TENANT_ID);
+        }
+
+        return this.defaultTenant?.id === ROOT_TENANT_ID;
+    }
+
+    /**
+     * Whether the identity is linked to several tenants and can switch between them. Root users
+     * aren't counted: whether they can switch is up to the tenant switcher, which Tenant Manager
+     * extends with every tenant for root admins.
      */
     get canSwitchTenant(): boolean {
-        return this.tenants.length > 1 && !this.tenants.some(tenant => tenant.id === "root");
+        return this.tenants.length > 1 && !this.isRootUser;
     }
 
     getPermission<T extends Identity.Permission = Identity.Permission>(

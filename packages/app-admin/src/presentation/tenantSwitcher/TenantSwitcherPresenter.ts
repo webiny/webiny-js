@@ -1,16 +1,35 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { runInAction } from "mobx";
 import { TenantSwitcherSource } from "~/features/tenantSwitcher/abstractions.js";
 import { TenantContext } from "~/features/tenancy/abstractions.js";
+import { ROOT_TENANT_ID } from "~/features/tenancy/rootTenant.js";
 import { TenantSwitcherPresenter as Abstraction } from "./abstractions.js";
 
 const SEARCH_DELAY_MS = 250;
 
+const toInitials = (name: string): string => {
+    const words = name.split(/\s+/).filter(Boolean);
+    const firstTwo = words.slice(0, 2);
+    return firstTwo.map(word => word[0].toUpperCase()).join("");
+};
+
+const toViewTenant = (tenant: TenantSwitcherSource.Tenant): Abstraction.Tenant => {
+    return {
+        id: tenant.id,
+        name: tenant.name,
+        logo: tenant.logo,
+        initials: toInitials(tenant.name),
+        isRoot: tenant.id === ROOT_TENANT_ID
+    };
+};
+
 class TenantSwitcherPresenterImpl implements Abstraction.Interface {
-    private current: Abstraction.Tenant | null = null;
-    private tenants: Abstraction.Tenant[] = [];
+    private current: TenantSwitcherSource.Tenant | null = null;
+    private tenants: TenantSwitcherSource.Tenant[] = [];
     private search = "";
     private loading = false;
     private searchTimer: ReturnType<typeof setTimeout> | undefined;
+    private initialized: Promise<void> | undefined;
     // Only the latest list request may write its result.
     private request = 0;
 
@@ -18,16 +37,16 @@ class TenantSwitcherPresenterImpl implements Abstraction.Interface {
         private source: TenantSwitcherSource.Interface,
         private tenantContext: TenantContext.Interface
     ) {
-        makeAutoObservable<TenantSwitcherPresenterImpl, "source" | "tenantContext" | "searchTimer">(
-            this,
-            { source: false, tenantContext: false, searchTimer: false }
-        );
+        makeAutoObservable<
+            TenantSwitcherPresenterImpl,
+            "source" | "tenantContext" | "searchTimer" | "initialized"
+        >(this, { source: false, tenantContext: false, searchTimer: false, initialized: false });
     }
 
     get vm(): Abstraction.ViewModel {
         return {
-            current: this.current,
-            tenants: this.tenants,
+            current: this.current ? toViewTenant(this.current) : null,
+            tenants: this.tenants.map(toViewTenant),
             canSwitch: this.source.canSwitch(),
             canSearch: this.source.canSearch(),
             search: this.search,
@@ -35,15 +54,12 @@ class TenantSwitcherPresenterImpl implements Abstraction.Interface {
         };
     }
 
-    async init(): Promise<void> {
-        const current = await this.source.getCurrentTenant();
-        runInAction(() => {
-            this.current = current;
-        });
-
-        if (this.source.canSwitch()) {
-            await this.loadTenants();
+    init(): Promise<void> {
+        if (!this.initialized) {
+            this.initialized = this.load();
         }
+
+        return this.initialized;
     }
 
     setSearch(search: string): void {
@@ -63,24 +79,37 @@ class TenantSwitcherPresenterImpl implements Abstraction.Interface {
         this.tenantContext.setTenant(tenantId);
     }
 
+    private async load(): Promise<void> {
+        const current = await this.source.getCurrentTenant();
+        runInAction(() => {
+            this.current = current;
+        });
+
+        if (this.source.canSwitch()) {
+            await this.loadTenants();
+        }
+    }
+
     private async loadTenants(): Promise<void> {
         const request = ++this.request;
         this.loading = true;
 
+        let tenants: TenantSwitcherSource.Tenant[] = [];
         try {
-            const tenants = await this.source.listTenants(this.search || undefined);
-            if (request === this.request) {
-                runInAction(() => {
-                    this.tenants = tenants;
-                });
-            }
-        } finally {
-            if (request === this.request) {
-                runInAction(() => {
-                    this.loading = false;
-                });
-            }
+            tenants = await this.source.listTenants(this.search || undefined);
+        } catch {
+            // A failed request leaves the menu with no tenants rather than an unhandled rejection.
+            tenants = [];
         }
+
+        if (request !== this.request) {
+            return;
+        }
+
+        runInAction(() => {
+            this.tenants = tenants;
+            this.loading = false;
+        });
     }
 }
 

@@ -16,7 +16,7 @@ interface SidebarHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 
 }
 
 const SidebarHeader = ({ title, icon, lockToggle = true }: SidebarHeaderProps) => {
-    const { togglePinned, expanded, pinned } = useSidebar();
+    const { togglePinned, setExpanded, expanded, pinned } = useSidebar();
     const [showButton, setShowButton] = useState(false);
 
     useEffect(() => {
@@ -31,7 +31,8 @@ const SidebarHeader = ({ title, icon, lockToggle = true }: SidebarHeaderProps) =
     }, [expanded]);
 
     // On the collapsed rail the icon is all there is of the header: a click on it locks the sidebar
-    // open. Captured, so a link inside the icon doesn't navigate on that click.
+    // open. Captured, so a link inside the icon doesn't navigate on that click. Expanded too, since
+    // pinning alone doesn't open it: a keyboard user never hovers it open first.
     const onIconClickCapture = (event: React.MouseEvent) => {
         if (expanded || pinned) {
             return;
@@ -40,6 +41,7 @@ const SidebarHeader = ({ title, icon, lockToggle = true }: SidebarHeaderProps) =
         event.preventDefault();
         event.stopPropagation();
         togglePinned();
+        setExpanded(true);
     };
 
     return (

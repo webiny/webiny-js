@@ -1,7 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import type { Tenant } from "~/shared/Tenant.js";
 import { TenantAccess } from "../TenantAccess/abstractions.js";
-import { ListTenantsRepository, ListTenantsUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { ListTenantsRepository } from "./abstractions.js";
+import { ListTenantsUseCase as UseCaseAbstraction } from "./abstractions.js";
 
 class ListTenantsUseCase implements UseCaseAbstraction.Interface {
     constructor(
@@ -12,8 +13,7 @@ class ListTenantsUseCase implements UseCaseAbstraction.Interface {
     async execute(
         input: UseCaseAbstraction.Input
     ): Promise<Result<Tenant[], UseCaseAbstraction.Error>> {
-        // Listing every tenant is for the identities that manage tenants.
-        const access = await this.tenantAccess.canCreate();
+        const access = await this.tenantAccess.canList();
         if (access.isFail()) {
             return Result.fail(access.error);
         }

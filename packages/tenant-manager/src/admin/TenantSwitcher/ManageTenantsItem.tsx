@@ -1,12 +1,11 @@
 import React from "react";
 import { DropdownMenu } from "@webiny/admin-ui";
-import {
-    TenantSwitcherManageItem,
-    useAuthentication,
-    useFeatureFlags,
-    useRouter,
-    useTenantContext
-} from "@webiny/app-admin";
+import { ROOT_TENANT_ID } from "@webiny/app-admin";
+import { TenantSwitcherManageItem } from "@webiny/app-admin";
+import { useAuthentication } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app-admin";
+import { useTenantContext } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { ReactComponent as TenantIcon } from "@webiny/icons/business.svg";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
@@ -19,7 +18,8 @@ export const ManageTenantsItem = TenantSwitcherManageItem.createDecorator(() => 
         const tenancy = useTenantContext();
         const { getLink } = useRouter();
 
-        if (!isRootAdmin(identity, featureFlags.isEnabled("multiTenancy"))) {
+        const canUseMultiTenancy = featureFlags.isEnabled("multiTenancy");
+        if (!isRootAdmin(identity, canUseMultiTenancy)) {
             return null;
         }
 
@@ -27,8 +27,8 @@ export const ManageTenantsItem = TenantSwitcherManageItem.createDecorator(() => 
 
         // Tenant Manager lives in the root tenant: from any other tenant, switch to root first.
         const openTenantManager = () => {
-            if (identity.currentTenant.id !== "root") {
-                tenancy.setTenant("root");
+            if (identity.currentTenant.id !== ROOT_TENANT_ID) {
+                tenancy.setTenant(ROOT_TENANT_ID);
             }
             window.location.assign(link);
         };

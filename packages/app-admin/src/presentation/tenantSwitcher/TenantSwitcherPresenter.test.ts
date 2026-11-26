@@ -69,6 +69,34 @@ describe("TenantSwitcherPresenter", () => {
         vi.useRealTimers();
     });
 
+    it("loads once, however many components call init()", async () => {
+        const { presenter, listTenants } = createPresenter(true);
+
+        await Promise.all([presenter.init(), presenter.init()]);
+        await presenter.init();
+
+        expect(listTenants).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows no tenants when the list request fails", async () => {
+        const { presenter, listTenants } = createPresenter(true);
+        listTenants.mockRejectedValueOnce(new Error("Not authorized."));
+
+        await presenter.init();
+
+        expect(presenter.vm.tenants).toEqual([]);
+        expect(presenter.vm.loading).toBe(false);
+    });
+
+    it("gives each tenant its initials", async () => {
+        const { presenter } = createPresenter(true);
+
+        await presenter.init();
+
+        expect(presenter.vm.tenants.map(tenant => tenant.initials)).toEqual(["AE", "AU"]);
+        expect(presenter.vm.current?.isRoot).toBe(false);
+    });
+
     it("switches to another tenant, and does nothing for the current one", async () => {
         const { presenter, setTenant } = createPresenter(true);
         await presenter.init();

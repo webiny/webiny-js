@@ -1,14 +1,13 @@
 import React from "react";
-import {
-    createReactiveComponent,
-    NavigationRenderer,
-    TenantSelector,
-    useAdminConfig
-} from "@webiny/app-admin";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { NavigationRenderer } from "@webiny/app-admin";
+import { TenantSelector } from "@webiny/app-admin";
+import { useAdminConfig } from "@webiny/app-admin";
+import { SimpleLink } from "@webiny/app-admin";
 import { Sidebar } from "@webiny/admin-ui";
 import { SidebarMenuItems } from "./SidebarMenuItems.js";
-import { SimpleLink } from "@webiny/app-admin";
-import { TenantAvatar, useTenantSwitcher } from "../TenantSelector.js";
+import { TenantAvatar } from "../TenantAvatar.js";
+import { useTenantSwitcher } from "../useTenantSwitcher.js";
 
 export const Navigation = NavigationRenderer.createDecorator(() => {
     return createReactiveComponent(function Navigation() {
@@ -16,11 +15,14 @@ export const Navigation = NavigationRenderer.createDecorator(() => {
         const { current } = useTenantSwitcher().vm;
 
         // The current tenant's logo, so the collapsed rail still shows which tenant this is.
-        const icon = (
-            <SimpleLink to={"/"}>
-                <TenantAvatar tenant={current ?? { id: "root", name: title, logo: null }} />
-            </SimpleLink>
-        );
+        let icon: React.ReactNode = null;
+        if (current) {
+            icon = (
+                <SimpleLink to={"/"}>
+                    <TenantAvatar tenant={current} />
+                </SimpleLink>
+            );
+        }
 
         const hasFooterMenus = menus.some(m => (m.tags || []).includes("footer"));
 

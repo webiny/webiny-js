@@ -1,5 +1,6 @@
 import React from "react";
-import { AdminConfig, HasPermission, RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
+import { AdminConfig, HasPermission, RegisterFeature } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { ReactComponent as TenantIcon } from "@webiny/icons/business.svg";
@@ -28,6 +29,16 @@ export const Extension = () => {
 
     const icon = <Menu.Link.Icon element={<TenantIcon />} label={"Tenant"} />;
 
+    let tenantManagerMenu: React.ReactNode = null;
+    if (canUseMultiTenancy) {
+        tenantManagerMenu = (
+            <Menu
+                name="tenantManager"
+                element={<Menu.Link text="Tenant Manager" icon={icon} to={link} />}
+            />
+        );
+    }
+
     return (
         <>
             <RegisterFeature feature={CurrentTenantFeature} />
@@ -42,14 +53,7 @@ export const Extension = () => {
                 <IsRootTenant>
                     <RegisterFeature feature={DisableTenantFeature} />
                     <RegisterFeature feature={EnableTenantFeature} />
-                    <HasPermission name={"tm.tenant"}>
-                        {canUseMultiTenancy ? (
-                            <Menu
-                                name="tenantManager"
-                                element={<Menu.Link text="Tenant Manager" icon={icon} to={link} />}
-                            />
-                        ) : null}
-                    </HasPermission>
+                    <HasPermission name={"tm.tenant"}>{tenantManagerMenu}</HasPermission>
                 </IsRootTenant>
             </AdminConfig>
         </>

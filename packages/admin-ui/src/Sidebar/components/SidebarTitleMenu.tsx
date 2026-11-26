@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import { makeDecoratable } from "~/utils.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { Icon } from "~/Icon/index.js";

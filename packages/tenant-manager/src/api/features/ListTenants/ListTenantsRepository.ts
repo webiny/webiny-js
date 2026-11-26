@@ -1,7 +1,10 @@
 import { Result } from "@webiny/feature/api";
-import { Tenant, type TenantValues } from "~/shared/Tenant.js";
+import { Tenant } from "~/shared/Tenant.js";
+import type { TenantValues } from "~/shared/Tenant.js";
+import type { CmsEntryListWhereValues } from "@webiny/api-headless-cms/types/index.js";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
-import { TenantModelNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
+import { TenantModelNotFoundError } from "../../domain/errors.js";
+import { TenantPersistenceError } from "../../domain/errors.js";
 import { ListTenantsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
@@ -27,17 +30,16 @@ class ListTenantsRepository implements RepositoryAbstraction.Interface {
             }
 
             const search = input.search?.trim();
+            const valuesWhere: CmsEntryListWhereValues = { status: "enabled", isInstalled: true };
+            if (search) {
+                valuesWhere.name_contains = search;
+            }
 
-            // Tenant entries live in the root tenant's CMS, wherever the request comes from.
+            // TODO: nested tenants. Like GetTenantByIdRepository, this reads the root tenant's CMS,
+            //  so it lists the root's direct children only, wherever the request comes from.
             const listResult = await this.tenantContext.withRootTenant(() => {
                 return this.listEntriesUseCase.execute<TenantValues>(modelResult.value, {
-                    where: {
-                        values: {
-                            status: "enabled",
-                            isInstalled: true,
-                            ...(search ? { name_contains: search } : {})
-                        }
-                    },
+                    where: { values: valuesWhere },
                     limit: LIMIT
                 });
             });

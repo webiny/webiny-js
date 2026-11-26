@@ -2,7 +2,8 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import type { Tenant } from "~/shared/Tenant.js";
-import type { TenantModelNotFoundError, TenantPersistenceError } from "../../domain/errors.js";
+import type { TenantModelNotFoundError } from "../../domain/errors.js";
+import type { TenantPersistenceError } from "../../domain/errors.js";
 
 export interface IListTenantsInput {
     /**

@@ -1,5 +1,6 @@
 import React from "react";
-import { AdminConfig, useFeatureFlags } from "@webiny/app-admin";
+import { AdminConfig } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
 
 const PRICING_URL = "https://www.webiny.com/pricing";
