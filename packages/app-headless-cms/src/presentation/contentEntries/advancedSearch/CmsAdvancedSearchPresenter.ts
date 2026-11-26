@@ -11,28 +11,24 @@ import type { EntryAuthor } from "./abstractions.js";
 import { wrapUserFields } from "./wrapUserFields.js";
 
 class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
-    private authors: EntryAuthor[] = [];
-    // The model the authors were loaded for, so another model's users are never offered.
-    private authorsModelId: string | null = null;
+    /*
+     * The authors loaded for each model, by model ID. One presenter serves every model the list
+     * switches to, so a model's users are only ever offered on that model.
+     */
+    private authorsByModel = new Map<string, EntryAuthor[]>();
     /*
      * The keys of the list's where input this search set. The list's filters also hold keys set by
      * other controls, such as `folderId`, and those are never cleared from here.
      */
     private appliedKeys: string[] = [];
-    // Counts the author loads, so a load that finishes after a newer one leaves its result unused.
-    private authorsLoad = 0;
 
     constructor(
         private listReaders: ListUsersWhoCanReadEntriesUseCase.Interface,
         private contentEntries: ContentEntriesPresenter.Interface
     ) {
-        makeAutoObservable<
-            CmsAdvancedSearchPresenterImpl,
-            "listReaders" | "contentEntries" | "authorsLoad"
-        >(this, {
+        makeAutoObservable<CmsAdvancedSearchPresenterImpl, "listReaders" | "contentEntries">(this, {
             listReaders: false,
-            contentEntries: false,
-            authorsLoad: false
+            contentEntries: false
         });
     }
 
@@ -42,7 +38,7 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
 
     private get currentAuthors(): EntryAuthor[] {
         const modelId = this.contentEntries.vm.model.modelId;
-        return this.authorsModelId === modelId ? this.authors : [];
+        return this.authorsByModel.get(modelId) ?? [];
     }
 
     private get fields(): FieldRaw[] {
@@ -52,26 +48,21 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
     /*
      * Asked on every mount and for every model, so the list always belongs to the identity that is
      * signed in now and to the model on screen. The API only lists the users who can read the
-     * model's entries, and an identity limited to its own entries gets only itself. A failed
-     * request leaves the Author filter out until the next mount.
+     * model's entries, and an identity limited to its own entries gets only itself. A model seen
+     * before keeps offering its last authors while they load again. A failed request changes
+     * nothing, so the Author filter keeps its last authors, or stays out if it never had any.
      */
     async loadAuthors(): Promise<void> {
-        const load = ++this.authorsLoad;
         const modelId = this.contentEntries.vm.model.modelId;
-        let authors: EntryAuthor[] = [];
+        let authors: EntryAuthor[];
         try {
             authors = await this.listReaders.execute(modelId);
         } catch {
-            authors = [];
-        }
-
-        if (load !== this.authorsLoad) {
             return;
         }
 
         runInAction(() => {
-            this.authors = authors;
-            this.authorsModelId = modelId;
+            this.authorsByModel.set(modelId, authors);
         });
     }
 

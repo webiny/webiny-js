@@ -110,6 +110,48 @@ describe("CmsAdvancedSearchPresenter", () => {
         expect(presenter.vm.authors).toHaveLength(3);
     });
 
+    it("keeps the last authors when a load fails", async () => {
+        const { presenter, listReaders } = createPresenter();
+        await presenter.loadAuthors();
+
+        listReaders.mockRejectedValueOnce(new Error("Network error"));
+        await presenter.loadAuthors();
+
+        expect(presenter.vm.authors).toEqual(READERS);
+    });
+
+    it("offers a model's authors again at once when the list switches back to it", async () => {
+        const { presenter, contentEntries, listReaders } = createPresenter();
+        await presenter.loadAuthors();
+
+        contentEntries.vm.model = { modelId: "student", fields: [] };
+        listReaders.mockResolvedValueOnce([{ id: "user-2", displayName: "Beth Smith" }]);
+        await presenter.loadAuthors();
+
+        contentEntries.vm.model = { modelId: "class", fields: [] };
+        expect(presenter.vm.authors).toEqual(READERS);
+    });
+
+    it("never offers a late answer for one model on another", async () => {
+        const { presenter, contentEntries, listReaders } = createPresenter();
+        let answerClassLoad: (readers: typeof READERS) => void = () => {};
+        const classLoad = new Promise<typeof READERS>(resolve => {
+            answerClassLoad = resolve;
+        });
+        listReaders.mockReturnValueOnce(classLoad);
+        const older = presenter.loadAuthors();
+
+        contentEntries.vm.model = { modelId: "student", fields: [] };
+        listReaders.mockResolvedValueOnce([{ id: "user-2", displayName: "Beth Smith" }]);
+        await presenter.loadAuthors();
+        answerClassLoad(READERS);
+        await older;
+
+        expect(presenter.vm.authors).toEqual([{ id: "user-2", displayName: "Beth Smith" }]);
+        contentEntries.vm.model = { modelId: "class", fields: [] };
+        expect(presenter.vm.authors).toEqual(READERS);
+    });
+
     it("clears the keys of the previous filter that the new filter does not have", () => {
         const { presenter, set, clear } = createPresenter();
 
