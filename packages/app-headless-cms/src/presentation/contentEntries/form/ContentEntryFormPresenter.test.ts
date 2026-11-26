@@ -179,6 +179,15 @@ describe("ContentEntryFormPresenter.canCreateNewRevision", () => {
         expect(presenter.vm.canCreateNewRevision).toBe(true);
     });
 
+    it("is true for a locked published revision of a regular model without publishing", async () => {
+        const { presenter, loadedEntries } = setup({ tags: ["$publishing:false"] });
+        loadedEntries.set("A", createLockedPublishedEntry("A"));
+
+        await presenter.loadRevision("A");
+
+        expect(presenter.vm.canCreateNewRevision).toBe(true);
+    });
+
     it("is true for a locked published revision of a regular model", async () => {
         const { presenter, loadedEntries } = setup();
         loadedEntries.set("A", createLockedPublishedEntry("A"));
@@ -190,6 +199,20 @@ describe("ContentEntryFormPresenter.canCreateNewRevision", () => {
 });
 
 describe("ContentEntryFormPresenter saving a locked revision", () => {
+    it("creates a new revision from the locked revision of a regular model without publishing", async () => {
+        const { presenter, loadedEntries, updateExecute, createRevisionFromExecute } = setup({
+            tags: ["$publishing:false"]
+        });
+        loadedEntries.set("A", createLockedPublishedEntry("A"));
+        await presenter.loadRevision("A");
+
+        await expect(presenter.saveRevision()).resolves.toBe(true);
+        expect(createRevisionFromExecute).toHaveBeenCalledWith(
+            expect.objectContaining({ revisionId: "A#0001" })
+        );
+        expect(updateExecute).not.toHaveBeenCalled();
+    });
+
     it("updates the locked revision of an untagged singleton in place", async () => {
         const { presenter, loadedEntries, update, updateExecute, createRevisionFromExecute } =
             setup({ tags: ["singleEntry"] });

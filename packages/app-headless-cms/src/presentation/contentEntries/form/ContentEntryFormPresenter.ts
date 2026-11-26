@@ -1,5 +1,5 @@
 import { computed, makeAutoObservable, runInAction, toJS } from "mobx";
-import { isPublishingEnabled } from "@webiny/app-headless-cms-common";
+import { isPublishingEnabled, isSingletonModel } from "@webiny/app-headless-cms-common";
 import { FormModel, FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
@@ -97,7 +97,8 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         const meta = entry?.meta;
         const isLocked = meta?.locked ?? false;
         const status = meta?.status;
-        const isPublishable = isPublishingEnabled(this.model);
+        const updatesLockedInPlace =
+            isSingletonModel(this.model) && !isPublishingEnabled(this.model);
         /**
          * Can save if the entry is locked and published/unpublished - it will trigger create new revision.
          * Or if the entry is not locked and the form is not null (meaning we are creating a new entry or editing an existing one).
@@ -115,10 +116,10 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             canSave,
             status,
             /**
-             * A model without publishing has no new revisions: saving a locked revision updates it.
+             * A singleton without publishing has no new revisions: saving a locked revision updates it.
              */
             canCreateNewRevision:
-                isPublishable &&
+                !updatesLockedInPlace &&
                 !!status &&
                 canSave &&
                 ["published", "unpublished"].includes(status),
@@ -398,9 +399,10 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         const { model, entry, data, skipValidation } = params;
 
         /**
-         * Without publishing there are no new revisions, so a locked revision is updated in place.
+         * A singleton without publishing has no new revisions, so a locked revision is updated in place.
          */
-        if (entry.meta.locked && isPublishingEnabled(model)) {
+        const updatesLockedInPlace = isSingletonModel(model) && !isPublishingEnabled(model);
+        if (entry.meta.locked && !updatesLockedInPlace) {
             return await this.createRevisionFromUseCase.execute({
                 model,
                 revisionId: entry.id,
