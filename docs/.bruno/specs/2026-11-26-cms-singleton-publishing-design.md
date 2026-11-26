@@ -108,7 +108,7 @@ use case. One use case per file.
 | `DeleteSingletonEntryRevisionUseCase` | `DeleteEntryRevision` |
 | `ListSingletonEntryRevisionsUseCase` | `GetRevisionsByEntryId` |
 | `GetPublishedSingletonEntryUseCase` | `GetPublishedRevisionByEntryId`; ships in 6.6, used by the read API from 6.7 (D3) |
-| `UpdateSingletonEntryUseCase` (changed) | Entry missing: create it (as the manage get does), then `UpdateEntry`. Latest revision not locked: `UpdateEntry` on it. Locked (published): `CreateEntryRevisionFrom` the latest, then `UpdateEntry` on the new revision (D1) |
+| `UpdateSingletonEntryUseCase` (changed) | Entry missing: create it (as the manage get does), then `UpdateEntry`. Otherwise `UpdateEntry` on the latest revision. A locked latest revision fails with `EntryLockedError`, as for regular entries (D1) |
 
 ### Backend: access control
 
@@ -190,17 +190,11 @@ Read and preview keep `get<Singular>` without arguments and without `meta`.
 
 Proposed defaults. Each is open until confirmed.
 
-- **D1. Update on a locked (published) latest revision.** Default: `update<Singular>` creates a new
-  revision from the latest and applies the update to it. This keeps the single-form UX (edit, save,
-  publish). Alternative: fail with `EntryLockedError` and require `create<Singular>From` first, like
-  regular entries.
-
-  Concurrency: two saves at the same time on a published singleton can both start from the same
-  latest revision. This is the same race regular entries have today with `create<Model>From`
-  followed by `update<Model>`; the generic use cases have no optimistic version check. Default:
-  accept the existing behaviour for v1. Optional extension: `update<Singular>` takes an optional
-  `revision` (the revision the client edited) and fails with a conflict error if the latest revision
-  is a different one.
+- **D1. Update on a locked (published) revision. Decided: not allowed, as today.**
+  `update<Singular>` on a locked latest revision fails with `EntryLockedError`
+  (`UpdateEntryUseCase.ts:47`). To change a published singleton, the client calls
+  `create<Singular>From` first and updates the new revision. Only internal code (for example
+  `UpdateEntrySystem`) may change a locked revision. Concurrent saves behave as for regular entries.
 - **D2. Read API before the first publish.** Default: `data: null, error: null`. Alternative: an
   `Cms/Entry/NotFound` error.
 - **D3. Existing singletons. Decided: phased, no upgrade script.**
@@ -235,7 +229,7 @@ Proposed defaults. Each is open until confirmed.
 - Endpoint tests: preview returns latest and never creates; manage creates if missing. Read per D3:
   6.6 latest, 6.7 published only and never creates.
 - Read and preview SDL have no `meta` and no mutations.
-- Update on a locked latest revision (per D1).
+- Update on a locked latest revision fails with `EntryLockedError` (D1).
 - Update when the entry does not exist creates it and applies the update.
 - Manage `get<Singular>(revision)` on a model with no entry returns not found and creates nothing.
 - A `revision` argument that belongs to another entry fails with `EntryNotFoundError` for publish,
