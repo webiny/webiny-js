@@ -12,7 +12,7 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { EntryLockedError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { isSingletonModel } from "~/features/contentEntry/shared/entryOwnerAccess.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 import { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/index.js";
 
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {

@@ -3,6 +3,8 @@ import type { CmsIdentity, ICmsEntryLive } from "~/types/index.js";
 export const ROOT_FOLDER = "root";
 
 export const CMS_MODEL_SINGLETON_TAG = "singleEntry";
+export const CMS_MODEL_PUBLISHING_ENABLED_TAG = "$publishing:true";
+export const CMS_MODEL_PUBLISHING_DISABLED_TAG = "$publishing:false";
 
 // Content entries - xOn and xBy meta fields.
 export const ENTRY_META_FIELDS = [

@@ -57,3 +57,11 @@ export { ListModelsUseCase } from "~/features/contentModel/ListModels/abstractio
 export { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/index.js";
 
 export { CmsModelToJsonSchemaConverter } from "~/utils/index.js";
+
+// Model helpers
+export { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
+export { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
+export {
+    CMS_MODEL_PUBLISHING_ENABLED_TAG,
+    CMS_MODEL_PUBLISHING_DISABLED_TAG
+} from "~/constants.js";
