@@ -2,7 +2,12 @@ import { isSingletonModel } from "@webiny/app-headless-cms-common";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsContentEntry, CmsErrorResponse } from "~/types.js";
 import { EntryGraphQLFields } from "../../abstractions.js";
-import { GetEntryGateway, type IGetEntryParams } from "../../getEntry/abstractions.js";
+import {
+    GetEntryGateway,
+    GetEntryGraphQLFieldSelection,
+    type IGetEntryGraphQLFieldSelection,
+    type IGetEntryParams
+} from "../../getEntry/abstractions.js";
 
 interface GetSingletonRevisionResponse {
     content: {
@@ -15,6 +20,7 @@ class GetEntryGatewaySingleton implements GetEntryGateway.Interface {
     constructor(
         private client: CmsGraphQLClient.Interface,
         private fields: EntryGraphQLFields.Interface,
+        private fieldSelections: IGetEntryGraphQLFieldSelection[],
         private decoratee: GetEntryGateway.Interface
     ) {}
 
@@ -25,11 +31,17 @@ class GetEntryGatewaySingleton implements GetEntryGateway.Interface {
             return this.decoratee.execute(params);
         }
 
+        const extraSelection: string[] = [];
+        for (const selection of this.fieldSelections) {
+            extraSelection.push(...selection.getSelection());
+        }
+
         const query = /* GraphQL */ `
             query CmsEntryGetSingletonRevision${model.singularApiName}($revision: ID!) {
                 content: get${model.singularApiName}Revision(revision: $revision) {
                     data {
                         ${this.fields.getSystemFields(model)}
+                        ${extraSelection.join("\n")}
                         ${this.fields.getValuesBlock(model)}
                     }
                     error { message code data }
@@ -54,5 +66,9 @@ class GetEntryGatewaySingleton implements GetEntryGateway.Interface {
 
 export const GetEntryGatewaySingletonDecorator = GetEntryGateway.createDecorator({
     decorator: GetEntryGatewaySingleton,
-    dependencies: [CmsGraphQLClient, EntryGraphQLFields]
+    dependencies: [
+        CmsGraphQLClient,
+        EntryGraphQLFields,
+        [GetEntryGraphQLFieldSelection, { multiple: true }]
+    ]
 });

@@ -21,14 +21,11 @@ class EntryGraphQLFieldsImpl implements Abstraction.Interface {
     getSystemFields(model: CmsModel): string {
         const isSingleton = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
 
-        let optionalFields = "";
+        let locationField = "";
         if (!isSingleton) {
-            optionalFields = `
+            locationField = `
                 wbyAco_location {
                     folderId
-                }
-                meta {
-                    ${CONTENT_META_FIELDS}
                 }
             `;
         }
@@ -60,7 +57,10 @@ class EntryGraphQLFieldsImpl implements Abstraction.Interface {
             revisionDeletedBy { ${IDENTITY_FIELDS} }
             revisionFirstPublishedBy { ${IDENTITY_FIELDS} }
             revisionLastPublishedBy { ${IDENTITY_FIELDS} }
-            ${optionalFields}
+            ${locationField}
+            meta {
+                ${CONTENT_META_FIELDS}
+            }
             live {
                 version
             }

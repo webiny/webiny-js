@@ -5,7 +5,7 @@ import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import { EntryGraphQLFields } from "../abstractions.js";
 import { GetEntryFeature } from "../getEntry/feature.js";
-import { GetEntryGateway } from "../getEntry/abstractions.js";
+import { GetEntryGateway, GetEntryGraphQLFieldSelection } from "../getEntry/abstractions.js";
 import { GetLatestSingletonEntryGateway as GatewayAbstraction } from "./getLatest/gatewayAbstractions.js";
 import { GetLatestSingletonEntryGateway } from "./getLatest/GetLatestSingletonEntryGateway.js";
 import { GetLatestSingletonEntryFeature } from "./getLatest/feature.js";
@@ -101,6 +101,17 @@ describe("singleton editor gateways", () => {
             expect(call.variables).toEqual({ revision: ENTRY.id });
             expect(decoratee.execute).not.toHaveBeenCalled();
             expect(entry).toEqual(ENTRY);
+        });
+
+        it("should include registered field selections in the query", async () => {
+            container.registerInstance(GetEntryGraphQLFieldSelection, {
+                getSelection: () => ["extraSelectionField"]
+            });
+            const gateway = container.resolve(GetEntryGateway);
+
+            await gateway.execute({ model: singletonModel, id: ENTRY.id });
+
+            expect(client.execute.mock.calls[0][0].query).toContain("extraSelectionField");
         });
 
         it("should throw when the response has an error", async () => {
