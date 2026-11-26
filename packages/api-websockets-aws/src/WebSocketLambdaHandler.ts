@@ -5,12 +5,8 @@ import type { IWebSocketEvent } from "@webiny/api-kernel-aws/inputTypes/WebSocke
 import { RequestContainer } from "@webiny/api-kernel-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import type { IAuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/abstractions.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
 import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { WebsocketsRunner } from "@webiny/api-websockets/runner/index.js";
@@ -73,9 +69,7 @@ class WebSocketLambdaHandlerImpl implements WebSocketInputHandler.Interface {
     constructor(
         private container: Container,
         private authCtx: IAuthenticationContext,
-        private identityCtx: IIdentityContext,
-        private tenantCtx: ITenantContext,
-        private getTenantById: IGetTenantByIdUseCase
+        private identityCtx: IIdentityContext
     ) {}
 
     async execute(
@@ -87,14 +81,10 @@ class WebSocketLambdaHandlerImpl implements WebSocketInputHandler.Interface {
         const ctx: Record<string, any> = { container: this.container };
 
         const raw = inputCtx.input as IWebsocketsIncomingEvent;
-        const { token, tenant, endpoint } = getEventValues(raw);
+        const { token, endpoint } = getEventValues(raw);
 
-        // The tenant first: an API key is looked up in the current tenant.
-        const tenantResult = await this.getTenantById.execute(tenant);
-        if (tenantResult.isOk()) {
-            this.tenantCtx.setTenant(tenantResult.value);
-        }
-
+        // This runs in the connection's tenant scope (`WebSocketTenantSource` names it from the
+        // event), so an API key is looked up in that tenant.
         const identity = await this.authCtx.authenticate(token ?? "");
         this.identityCtx.setIdentity(identity);
 
@@ -115,11 +105,5 @@ class WebSocketLambdaHandlerImpl implements WebSocketInputHandler.Interface {
 
 export const WebSocketLambdaHandler = WebSocketInputHandler.createImplementation({
     implementation: WebSocketLambdaHandlerImpl,
-    dependencies: [
-        RequestContainer,
-        AuthenticationContext,
-        IdentityContext,
-        TenantContext,
-        GetTenantByIdUseCase
-    ]
+    dependencies: [RequestContainer, AuthenticationContext, IdentityContext]
 });

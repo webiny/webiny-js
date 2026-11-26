@@ -7,6 +7,7 @@ import type {
 import { GetEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CmsEntrySystemField } from "@webiny/api-headless-cms/features/contentEntry/EntrySystemField/index.js";
@@ -32,7 +33,8 @@ class SqlGetEntryImpl implements GetEntryStorageOperation.Interface {
         private readonly filterCreateRegistry: FieldFilterCreateRegistry.Interface,
         private readonly sortingRegistry: FieldSortingRegistry.Interface,
         private readonly valueFilterRegistry: ValueFilterRegistry.Interface,
-        private readonly entrySystemFields: CmsEntrySystemField.Interface[]
+        private readonly entrySystemFields: CmsEntrySystemField.Interface[],
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -41,6 +43,8 @@ class SqlGetEntryImpl implements GetEntryStorageOperation.Interface {
         model: CmsModel,
         params: CmsEntryStorageOperationsGetParams
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const { items } = await listEntries<T>(
@@ -56,6 +60,7 @@ class SqlGetEntryImpl implements GetEntryStorageOperation.Interface {
                 valueFilterRegistry: this.valueFilterRegistry,
                 systemFields: this.entrySystemFields.map(systemField => systemField.field)
             },
+            tenant,
             model,
             { ...params, limit: 1 }
         );
@@ -76,6 +81,7 @@ export const SqlGetEntry = GetEntryStorageOperation.createImplementation({
         FieldFilterCreateRegistry,
         FieldSortingRegistry,
         ValueFilterRegistry,
-        [CmsEntrySystemField, { multiple: true }]
+        [CmsEntrySystemField, { multiple: true }],
+        ScopeTenant
     ]
 });

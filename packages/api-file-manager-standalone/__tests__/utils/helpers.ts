@@ -49,10 +49,7 @@ export const makeLogger = (): Logger.Interface => {
 
 export const makeTenantContext = (): TenantContext.Interface => ({
     getTenant: () => tenant,
-    setTenant: () => {},
-    withRootTenant: async (cb: () => any) => cb(),
-    withEachTenant: async (_tenants: any[], cb: (t: any) => any) => [await cb(tenant)],
-    withTenant: async (_t: any, cb: (t: any) => any) => cb(tenant)
+    setTenant: () => {}
 });
 
 export const buildMultipartBody = (

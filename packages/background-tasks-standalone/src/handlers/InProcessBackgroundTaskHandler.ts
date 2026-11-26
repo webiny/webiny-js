@@ -3,8 +3,6 @@ import { BackgroundTaskInputHandler } from "@webiny/api-kernel-core";
 import { RequestContainer } from "@webiny/api-kernel-core";
 import type { InputContext } from "@webiny/api-kernel-core";
 import type { IBackgroundTaskEvent } from "@webiny/api-kernel-core";
-import { RawTenantId } from "@webiny/api-core/features/requestContext/index.js";
-import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskRunner } from "@webiny/background-tasks/api/runner/index.js";
@@ -36,7 +34,7 @@ const handedBack = () => {
 
 /**
  * Runs one iteration of a background task in the request container the dispatcher built for it.
- * The standalone counterpart of `BackgroundTaskLambdaHandler`: same tenant set-up and runner, with
+ * The standalone counterpart of `BackgroundTaskLambdaHandler`: same tenant scope and runner, with
  * a process timer in place of the Lambda countdown.
  *
  * Every iteration runs under the task's claim, so only one process drives a task at a time. The
@@ -48,8 +46,6 @@ const handedBack = () => {
 class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskInputHandler.Interface {
     public constructor(
         private readonly container: Container,
-        private readonly rawTenantId: RawTenantId.Interface,
-        private readonly tenantLoader: RequestTenantLoader.Interface,
         private readonly claim: TaskClaim.Interface,
         private readonly shutdown: ShutdownSignal.Interface,
         private readonly logger: Logger.Interface
@@ -63,8 +59,7 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskInputHandler.I
             return handedBack();
         }
 
-        this.rawTenantId.set(taskEvent.tenant);
-        await this.tenantLoader.establish();
+        // This runs in the task's tenant scope (`BackgroundTaskTenantSource` names it from the event).
 
         const target: TaskClaim.Target = {
             tenant: taskEvent.tenant,
@@ -174,12 +169,5 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskInputHandler.I
 
 export const InProcessBackgroundTaskHandler = BackgroundTaskInputHandler.createImplementation({
     implementation: InProcessBackgroundTaskHandlerImpl,
-    dependencies: [
-        RequestContainer,
-        RawTenantId,
-        RequestTenantLoader,
-        TaskClaim,
-        ShutdownSignal,
-        Logger
-    ]
+    dependencies: [RequestContainer, TaskClaim, ShutdownSignal, Logger]
 });

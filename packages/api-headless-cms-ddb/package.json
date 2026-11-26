@@ -27,6 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-storage": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -40,7 +41,6 @@
   },
   "devDependencies": {
     "@types/jsonpack": "^1.1.6",
-    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "jest-dynalite": "^3.6.1",

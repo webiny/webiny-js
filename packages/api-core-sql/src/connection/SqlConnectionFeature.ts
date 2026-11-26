@@ -5,6 +5,7 @@ import { KnexClientFeature } from "~/feature/KnexClient/index.js";
 import { SqlSchemaConfig } from "~/schemaConfig/index.js";
 import { SqlServiceManifestLoader } from "~/serviceDiscovery/index.js";
 import { TableManager } from "~/TableManager.js";
+import { SqlTenancyStorageOperationsFactory } from "~/coreStorage/SqlTenancyStorageOperationsFactory.js";
 
 export interface SqlConnectionConfig {
     knex: Knex;
@@ -27,7 +28,9 @@ const isManaged = (schemaManaged: SqlConnectionConfig["schemaManaged"]): boolean
  * storage part registered per request, and every module on the storage (the Postgres CMS, the folder
  * catalog), runs on these.
  *
- * It holds no feature's storage: those register per request (`RequestStorage`).
+ * It holds no feature's storage: those register in each tenant scope (`RequestStorage`). The one
+ * exception is the tenant registry's (`TenancyStorageOperationsFactory`): the request container
+ * reads the request's tenant from it before any tenant scope exists.
  */
 export const SqlConnectionFeature = createFeature<SqlConnectionConfig>({
     name: "SqlConnection",
@@ -37,6 +40,7 @@ export const SqlConnectionFeature = createFeature<SqlConnectionConfig>({
             isManaged: () => isManaged(schemaManaged),
             tableNamePrefix
         });
+        container.register(SqlTenancyStorageOperationsFactory);
     }
 });
 

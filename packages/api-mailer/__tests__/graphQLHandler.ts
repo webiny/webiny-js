@@ -11,7 +11,7 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { sleep, until, createPermissions } from "./context/helpers";
 import type { CreateHandlerParams } from "./contextHandler";
 import type { IAuthorizer } from "@webiny/api-core/features/security/authorization/Authorizer/abstractions.js";
@@ -46,7 +46,7 @@ function createTestAuthorizer(permissions: SecurityPermission[]) {
 }
 
 export const createGraphQLHandler = (params?: CreateHandlerParams) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const permissions = createPermissions(params?.permissions) as SecurityPermission[];
     const identityData = params?.identity ?? {
         id: "12345678",

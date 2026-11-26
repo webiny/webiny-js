@@ -4,6 +4,7 @@ import { expect } from "vitest";
 import jwt from "jsonwebtoken";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { TenantScope } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { OidcIdentityProvider } from "@webiny/api-core/idp/index.js";
 import { CognitoApiFeature } from "@webiny/cognito/api/CognitoApiFeature.js";
 import { getTestOpenSearchClient } from "@webiny/api-opensearch/testing/index.js";
@@ -85,6 +86,11 @@ describe("api-composition-aws-ddb-os — Cognito identity provider", () => {
     it("has exactly one Cognito identity provider per request with <Cognito/>", async () => {
         const providers: OidcIdentityProvider.Interface[] = [];
         const probe = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             const resolved = container.resolveAll(OidcIdentityProvider);
             providers.push(...resolved);
         });
@@ -98,6 +104,11 @@ describe("api-composition-aws-ddb-os — Cognito identity provider", () => {
     it("has no Cognito identity provider without <Cognito/>", async () => {
         const providers: OidcIdentityProvider.Interface[] = [];
         const probe = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             const resolved = container.resolveAll(OidcIdentityProvider);
             providers.push(...resolved);
         });

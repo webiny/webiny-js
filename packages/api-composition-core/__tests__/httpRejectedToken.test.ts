@@ -7,7 +7,7 @@ import { vi } from "vitest";
 import { beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { HttpFeature } from "@webiny/api-kernel-core";
-import { HttpRouter } from "@webiny/api-kernel-core";
+import { HttpRouteDispatcher, HttpRouter } from "@webiny/api-kernel-core";
 import type { IHttpRequest } from "@webiny/api-kernel-core";
 import type { IHttpResponse } from "@webiny/api-kernel-core";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/RawAuthToken.js";
@@ -80,8 +80,13 @@ const setup = (params: ISetupParams = {}) => {
     } as unknown as IdentityContext.Interface);
     container.registerDecorator(HttpIdentityLoaderDecorator);
     HttpFeature.register(container);
-    // Stands in for the routes, in place of the HttpRouterImpl HttpFeature registered.
-    container.registerInstance(HttpRouter, { route });
+    // Stands in for the routes, behind the identity decorator.
+    container.registerInstance(HttpRouteDispatcher, { route });
+    // Stands in for HttpTenantScopeRouter's hand-off, in one container: inside HttpFeature's
+    // decorators, it runs the request's route through HttpRouteDispatcher.
+    container.registerInstance(HttpRouter, {
+        route: request => container.resolve(HttpRouteDispatcher).route(request)
+    });
 
     const router = container.resolve(HttpRouter);
 

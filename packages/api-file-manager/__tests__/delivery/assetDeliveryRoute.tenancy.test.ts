@@ -4,6 +4,7 @@ import { RequestContainer, invokeHttpRoute } from "@webiny/api-kernel-core";
 import type { HttpRouteHandler, IHttpRequest } from "@webiny/api-kernel-core";
 import { TenancyFeature } from "@webiny/api-core/features/tenancy/TenancyFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import type {
     Tenant,
     TenancyStorageOperations as ITenancyStorageOperations
@@ -31,7 +32,7 @@ const createTenant = (id: string, parent: string | null): Tenant => {
         description: "",
         settings: {},
         tags: [],
-        status: "active",
+        status: "enabled",
         savedOn: new Date().toISOString()
     };
 };
@@ -86,6 +87,25 @@ describe("AssetDeliveryRoute - tenancy", () => {
     let tenantsSeenByProcessor: string[];
     let tenantsSeenByOutput: string[];
 
+    // The processor and output strategy of a container: they record the tenant they belong to.
+    const registerDelivery = (container: Container, tenant: string) => {
+        container.registerInstance(AssetProcessor, {
+            process: async (_, asset) => {
+                tenantsSeenByProcessor.push(tenant);
+                if (processorError) {
+                    throw processorError;
+                }
+                return asset;
+            }
+        });
+        container.registerInstance(AssetOutputStrategy, {
+            output: async () => {
+                tenantsSeenByOutput.push(tenant);
+                return new AssetReply({ code: 200, body: () => Buffer.from("image") });
+            }
+        });
+    };
+
     beforeEach(() => {
         const container = new Container();
         container.registerInstance(RequestContainer, container);
@@ -99,6 +119,21 @@ describe("AssetDeliveryRoute - tenancy", () => {
         processorError = undefined;
         tenantsSeenByProcessor = [];
         tenantsSeenByOutput = [];
+
+        // Each tenant's scope is a child container with its own processor and output strategy.
+        const tenantScopes: Pick<TenantScopes.Interface, "withTenant"> = {
+            withTenant: async (tenant, cb) => {
+                const scope = container.createChildContainer();
+                registerDelivery(scope, `${tenant.id} scope`);
+                return cb({
+                    tenant,
+                    storage: "default",
+                    resolve: abstraction => scope.resolve(abstraction),
+                    resolveAll: abstraction => scope.resolveAll(abstraction)
+                });
+            }
+        };
+        container.registerInstance(TenantScopes, tenantScopes as TenantScopes.Interface);
 
         container.registerInstance(AssetRequestResolver, {
             resolve: async () => {
@@ -123,32 +158,18 @@ describe("AssetDeliveryRoute - tenancy", () => {
             }
         });
 
-        container.registerInstance(AssetProcessor, {
-            process: async (_, asset) => {
-                tenantsSeenByProcessor.push(tenantContext.getTenant().id);
-                if (processorError) {
-                    throw processorError;
-                }
-                return asset;
-            }
-        });
-
-        container.registerInstance(AssetOutputStrategy, {
-            output: async () => {
-                tenantsSeenByOutput.push(tenantContext.getTenant().id);
-                return new AssetReply({ code: 200, body: () => Buffer.from("image") });
-            }
-        });
+        // The request's own (root's): never used for another tenant's asset.
+        registerDelivery(container, "request");
 
         route = container.resolveImplementation(AssetDeliveryRoute);
     });
 
-    it("processes and outputs the asset in the tenant that owns it", async () => {
+    it("processes and outputs the asset in the scope of the tenant that owns it", async () => {
         const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(200);
-        expect(tenantsSeenByProcessor).toEqual(["sub"]);
-        expect(tenantsSeenByOutput).toEqual(["sub"]);
+        expect(tenantsSeenByProcessor).toEqual(["sub scope"]);
+        expect(tenantsSeenByOutput).toEqual(["sub scope"]);
         expect(tenantContext.getTenant().id).toBe("root");
     });
 
@@ -162,12 +183,12 @@ describe("AssetDeliveryRoute - tenancy", () => {
         expect(tenantContext.getTenant().id).toBe("root");
     });
 
-    it("restores the request tenant when processing fails", async () => {
+    it("keeps the request in the root tenant when processing fails", async () => {
         processorError = new Error("Boom!");
 
         await expect(invokeHttpRoute(route, request)).rejects.toThrow("Boom!");
 
-        expect(tenantsSeenByProcessor).toEqual(["sub"]);
+        expect(tenantsSeenByProcessor).toEqual(["sub scope"]);
         expect(tenantContext.getTenant().id).toBe("root");
     });
 });

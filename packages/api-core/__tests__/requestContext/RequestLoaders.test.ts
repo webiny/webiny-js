@@ -5,7 +5,7 @@ import { RequestIdentityLoaderImpl } from "~/features/requestContext/RequestIden
 
 /**
  * Unit tests for the transport-agnostic LOAD steps: they read the raw value the transport EXTRACT
- * step placed into RawTenantId / RawAuthToken and set TenantContext / IdentityContext.
+ * step placed into RawTenantId / RawAuthToken, and resolve the tenant / set IdentityContext.
  */
 
 function rawHolder(initial: string | null = null) {
@@ -20,56 +20,38 @@ function rawHolder(initial: string | null = null) {
 
 describe("RequestTenantLoader (LOAD)", () => {
     function setup(rawTenantId: string | null, knownTenants: string[]) {
-        let setTo: any = undefined;
-        const tenantContext = {
-            setTenant: (t: any) => {
-                setTo = t;
-            },
-            getTenant: () => setTo
-        } as any;
         const getTenantById = {
             execute: async (id: string) =>
                 knownTenants.includes(id)
                     ? Result.ok({ id, name: id })
                     : Result.fail({ type: "NOT_FOUND" })
         } as any;
-        const loader = new RequestTenantLoaderImpl(
-            tenantContext,
-            getTenantById,
-            rawHolder(rawTenantId)
-        );
-        return { loader, getSet: () => setTo };
+        return new RequestTenantLoaderImpl(getTenantById, rawHolder(rawTenantId));
     }
 
-    it("resolves the raw tenant id and sets TenantContext", async () => {
-        const { loader, getSet } = setup("acme", ["acme"]);
-        await loader.establish();
-        expect(getSet()).toEqual({ id: "acme", name: "acme" });
+    it("resolves the tenant of the raw tenant id", async () => {
+        const loader = setup("acme", ["acme"]);
+        await expect(loader.establish()).resolves.toEqual({ id: "acme", name: "acme" });
     });
 
     it("defaults to the root tenant when no raw id was extracted", async () => {
-        const { loader, getSet } = setup(null, ["root"]);
-        await loader.establish();
-        expect(getSet()).toEqual({ id: "root", name: "root" });
+        const loader = setup(null, ["root"]);
+        await expect(loader.establish()).resolves.toEqual({ id: "root", name: "root" });
     });
 
     it("fails with Tenancy/TenantNotFound when a non-root id can't be resolved", async () => {
-        const { loader, getSet } = setup("ghost", ["root"]);
+        const loader = setup("ghost", ["root"]);
         await expect(loader.establish()).rejects.toMatchObject({
             code: "Tenancy/TenantNotFound",
             data: { tenantId: "ghost" }
         });
-        expect(getSet()).toBeUndefined();
     });
 
-    it("establishes a bootstrap root tenant when the root tenant isn't installed yet", async () => {
+    it("resolves a bootstrap root tenant when the root tenant isn't installed yet", async () => {
         // Fresh, not-yet-installed environment: no raw id → "root", and "root" isn't in storage.
-        // The loader must still establish a (bootstrap) root tenant so the request pipeline and the
+        // The loader must still give a (bootstrap) root tenant so the request pipeline and the
         // GraphQL schema build function and the install mutation can create the real root tenant.
-        const { loader, getSet } = setup(null, []);
-        await loader.establish();
-        const tenant = getSet();
-        expect(tenant).toBeTruthy();
+        const tenant = await setup(null, []).establish();
         expect(tenant.id).toBe("root");
         expect(tenant.isInstalled).toBe(false);
     });

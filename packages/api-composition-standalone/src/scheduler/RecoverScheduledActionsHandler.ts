@@ -1,5 +1,5 @@
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
@@ -31,9 +31,7 @@ function canRecover(tenant: Tenant): boolean {
 class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverInputHandler.Interface {
     public constructor(
         private readonly listTenants: ListTenantsUseCase.Interface,
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly identityContext: IdentityContext.Interface,
-        private readonly listScheduledActions: ListScheduledActionsUseCase.Interface,
+        private readonly tenantScopes: TenantScopes.Interface,
         private readonly scheduler: SchedulerSingleton.Interface,
         private readonly logger: Logger.Interface
     ) {}
@@ -67,14 +65,17 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverInputH
     }
 
     private recoverTenant(tenant: Tenant): Promise<number> {
-        return this.tenantContext.withTenant(tenant, () => {
+        return this.tenantScopes.withTenant(tenant, scope => {
             /*
              * Nobody is signed in at boot. Listing without authorization is what the run side does
              * too (ExecuteScheduledActionUseCase); otherwise the anonymous identity fails the
              * permission check.
              */
-            return this.identityContext.withoutAuthorization(() => {
-                return this.recoverAllPending(tenant.id);
+            return scope.resolve(IdentityContext).withoutAuthorization(() => {
+                return this.recoverAllPending(
+                    tenant.id,
+                    scope.resolve(ListScheduledActionsUseCase)
+                );
             });
         });
     }
@@ -83,12 +84,15 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverInputH
      * Re-arms page by page, so a lookup that fails on a later page still leaves the earlier pages
      * armed. The failure is rethrown and logged by the boot step.
      */
-    private async recoverAllPending(tenant: string): Promise<number> {
+    private async recoverAllPending(
+        tenant: string,
+        listScheduledActions: ListScheduledActionsUseCase.Interface
+    ): Promise<number> {
         let recovered = 0;
         let after: string | undefined;
 
         do {
-            const listResult = await this.listScheduledActions.execute({
+            const listResult = await listScheduledActions.execute({
                 where: {},
                 limit: PAGE_SIZE,
                 after
@@ -121,12 +125,5 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverInputH
 export const RecoverScheduledActionsHandler =
     ScheduledActionRecoverInputHandler.createImplementation({
         implementation: RecoverScheduledActionsHandlerImpl,
-        dependencies: [
-            ListTenantsUseCase,
-            TenantContext,
-            IdentityContext,
-            ListScheduledActionsUseCase,
-            SchedulerSingleton,
-            Logger
-        ]
+        dependencies: [ListTenantsUseCase, TenantScopes, SchedulerSingleton, Logger]
     });

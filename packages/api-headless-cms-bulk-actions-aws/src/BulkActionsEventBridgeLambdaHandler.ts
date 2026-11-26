@@ -3,17 +3,14 @@ import {
     EventBridgeInputHandler,
     type EventBridgeResult
 } from "@webiny/api-kernel-aws/abstractions/handlers/EventBridgeInputHandler.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import type { InputContext } from "@webiny/api-kernel-core";
 
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 
 class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeInputHandler.Interface {
-    public constructor(
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly taskService: TaskService.Interface
-    ) {}
+    public constructor(private readonly tenantScopes: TenantScopes.Interface) {}
 
     public async execute(
         inputCtx: InputContext<EventBridgeEvent<string, any>>
@@ -25,8 +22,8 @@ class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeInputHandler
             };
         }
 
-        const result = await this.tenantContext.withRootTenant(async () => {
-            return await this.taskService.trigger({
+        const result = await this.tenantScopes.withRootTenant(async scope => {
+            return await scope.resolve(TaskService).trigger({
                 definition: "hcmsEntriesEmptyTrashBins"
             });
         });
@@ -43,5 +40,5 @@ class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeInputHandler
 
 export const BulkActionsEventBridgeLambdaHandler = EventBridgeInputHandler.createImplementation({
     implementation: BulkActionsEventBridgeLambdaHandlerImpl,
-    dependencies: [TenantContext, TaskService]
+    dependencies: [TenantScopes]
 });

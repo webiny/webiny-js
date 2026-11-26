@@ -11,8 +11,11 @@ class SqlApiCoreStorageOperationsFactoryImpl implements ApiCoreStorageOperations
         private readonly schemaConfig?: SqlSchemaConfig.Interface
     ) {}
 
-    public create(): ApiCoreStorageOperations {
+    public create({
+        scopeTenant
+    }: ApiCoreStorageOperationsFactory.Params): ApiCoreStorageOperations {
         return createApiCoreSql({
+            scopeTenant,
             knex: this.knex.client,
             tableNamePrefix: this.schemaConfig?.tableNamePrefix,
             schemaManaged: this.schemaConfig?.isManaged() === true

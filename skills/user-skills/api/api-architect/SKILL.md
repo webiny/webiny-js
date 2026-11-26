@@ -792,6 +792,7 @@ Creates a feature definition that the framework loads as an extension.
 6. **Scoping** — use cases = transient (default), services/repositories = singleton (`.inSingletonScope()`).
 7. **Import extensions** — always use `.js` extensions in import paths (ESM).
 8. **Value objects, not helpers** — a domain value with rules is a value object class in `domain/`; its rules live only there.
+9. **Constructor injection only, except across tenants** — never resolve services by hand. Injected services act on the current tenant; to work in another tenant (root, or each of several), inject `TenantScopes` and resolve that tenant's services from the `TenantScope` its callback gets (`scope.resolve()`, `scope.resolveAll()`). See `webiny-dependency-injection`.
 
 ## Related Skills
 

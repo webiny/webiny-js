@@ -5,14 +5,14 @@ import { UpdateGroupStorageOperation } from "~/features/shared/storageOperations
 import { DeleteGroupStorageOperation } from "~/features/shared/storageOperations/group/DeleteGroupStorageOperation.js";
 import { ListGroupsStorageOperation } from "~/features/shared/storageOperations/group/ListGroupsStorageOperation.js";
 import { createIsolationGroup, ISOLATION_GROUP_ID, TENANT_A, TENANT_B } from "./helpers";
-import { useStorageContainer } from "../useStorageContainer";
+import { useTenantRoutedStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
 describe("Tenant isolation - groups", () => {
-    const getContainer = useStorageContainer();
+    const getContainer = useTenantRoutedStorageContainer();
 
     it("should update and delete only the tenant's group", async () => {
         const container = getContainer();

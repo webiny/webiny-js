@@ -3,6 +3,7 @@ import type { Container } from "@webiny/di";
 import { SqlSchemaSetupInputType } from "./SqlSchemaSetupInputType.js";
 import { SetupSqlSchemaHandler } from "./SetupSqlSchemaHandler.js";
 import { SqlSchemaSetupServiceImplementation } from "./SqlSchemaSetupService.js";
+import { SqlSchemaSetupTenantSource } from "./SqlSchemaSetupTenantSource.js";
 
 /**
  * The deploy-time schema setup, registered in the root container: the event the deployment invokes
@@ -13,6 +14,7 @@ export const SqlSchemaSetupFeature = createFeature({
     name: "SqlSchemaSetupFeature",
     register(container: Container) {
         container.register(SqlSchemaSetupInputType);
+        container.register(SqlSchemaSetupTenantSource);
         container.register(SetupSqlSchemaHandler);
         container.register(SqlSchemaSetupServiceImplementation).inSingletonScope();
     }

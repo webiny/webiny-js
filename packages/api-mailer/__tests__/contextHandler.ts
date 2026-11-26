@@ -14,7 +14,7 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { until, sleep, createPermissions } from "./context/helpers";
 import type { PermissionsArg } from "./context/helpers";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -53,7 +53,7 @@ export const createContextHandler = (params?: CreateHandlerParams) => {
         until,
         sleep,
         handle: async (): Promise<ApiCoreContext> => {
-            const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+            const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
 
             const root = new Container();
             const child = root.createChildContainer();

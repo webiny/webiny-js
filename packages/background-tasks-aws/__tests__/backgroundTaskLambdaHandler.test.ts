@@ -4,11 +4,6 @@ import { BackgroundTasksAwsFeature } from "~/BackgroundTasksAwsFeature.js";
 import { BackgroundTaskInputHandler } from "@webiny/api-kernel-core";
 import { RequestContainer } from "@webiny/api-kernel-core";
 import { AwsLambdaContext } from "@webiny/api-kernel-aws/abstractions/AwsLambdaContext.js";
-import {
-    RawTenantId,
-    RequestTenantLoader
-} from "@webiny/api-core/features/requestContext/index.js";
-import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 
 const createHandler = () => {
     const container = new Container();
@@ -33,23 +28,6 @@ const createHandler = () => {
         })
     });
 
-    /* Mock tenant context. */
-    container.registerInstance(TenantContext, {
-        getTenant: () => ({ id: "root" }),
-        setTenant: () => {}
-    });
-
-    /* Mock RawTenantId. */
-    container.registerInstance(RawTenantId, {
-        get: () => "root",
-        set: () => {}
-    });
-
-    /* Mock RequestTenantLoader. */
-    container.registerInstance(RequestTenantLoader, {
-        establish: async () => {}
-    });
-
     BackgroundTasksAwsFeature.register(container);
 
     const handler = container.resolve(BackgroundTaskInputHandler);
@@ -62,33 +40,6 @@ describe("BackgroundTaskLambdaHandler", () => {
 
         expect(handler).toBeDefined();
         expect(typeof handler.execute).toBe("function");
-    });
-
-    it("should set tenant from task event", async () => {
-        const { handler, container } = createHandler();
-
-        let tenantSet = "";
-        container.registerInstance(RawTenantId, {
-            get: () => tenantSet,
-            set: (id: string) => {
-                tenantSet = id;
-            }
-        });
-
-        const event = {
-            webinyTaskId: "task-1",
-            webinyTaskDefinitionId: "testDef",
-            tenant: "my-tenant",
-            delay: 0
-        };
-
-        try {
-            await handler.execute({ input: event } as any, async () => {});
-        } catch {
-            /* Expected — TaskRunner will fail without full context. */
-        }
-
-        expect(tenantSet).toBe("my-tenant");
     });
 
     it("should use fallback timer when Lambda context is not set", async () => {
@@ -110,36 +61,10 @@ describe("BackgroundTaskLambdaHandler", () => {
         }
     });
 
-    it("should unwrap payload wrapper from SFN events", async () => {
-        const { handler, container } = createHandler();
-
-        let tenantSet = "";
-        container.registerInstance(RawTenantId, {
-            get: () => tenantSet,
-            set: (id: string) => {
-                tenantSet = id;
-            }
-        });
-
-        /* SFN wraps the task event in { name, payload }. */
-        const event = {
-            name: "WebinyBackgroundTask",
-            payload: {
-                webinyTaskId: "task-2",
-                webinyTaskDefinitionId: "testDef",
-                tenant: "wrapped-tenant",
-                delay: 0
-            }
-        };
-
-        try {
-            await handler.execute({ input: event } as any, async () => {});
-        } catch {
-            /* Expected. */
-        }
-
-        expect(tenantSet).toBe("wrapped-tenant");
-    });
+    /*
+     * The task's tenant isn't set here: the handler already runs in the task's tenant scope, which
+     * `BackgroundTaskTenantSource` (api-core) names from the event, wrapped or flat.
+     */
 
     it("should resolve AwsLambdaContext for timer creation", async () => {
         const container = new Container();
@@ -151,13 +76,6 @@ describe("BackgroundTaskLambdaHandler", () => {
             },
             get: () => ({ getRemainingTimeInMillis: () => 0 })
         });
-
-        container.registerInstance(TenantContext, {
-            getTenant: () => ({ id: "root" }),
-            setTenant: () => {}
-        });
-        container.registerInstance(RawTenantId, { get: () => "root", set: () => {} });
-        container.registerInstance(RequestTenantLoader, { establish: async () => {} });
 
         BackgroundTasksAwsFeature.register(container);
 

@@ -5,7 +5,8 @@ import { randomBytes } from "node:crypto";
 import { Container } from "@webiny/di";
 import type { ModelMessage } from "ai";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { tenantNeutralScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { KeyValueStoreFeature } from "@webiny/api-core/features/keyValueStore/feature.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -29,8 +30,12 @@ const question = (text: string): ModelMessage[] => [
 /** Real key-value store on the configured storage, a fixed tenant, and an identity to switch. */
 const setup = (identityId: string | null = "user-1") => {
     const container = new Container();
-    const { keyValueStorageOperations } =
-        getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+    const { keyValueStorageOperations } = getStorageOps<ApiCoreStorageOperationsBuilder>(
+        "apiCore"
+    ).storageOperations({
+        // The key-value store is keyed by its own scope, so it takes no scope tenant.
+        scopeTenant: tenantNeutralScopeTenant
+    });
 
     container.registerInstance(TenantContext, {
         getTenant: () => ({ id: "root" })

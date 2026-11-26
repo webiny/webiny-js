@@ -12,7 +12,12 @@ import { createTable, type IEntityQueryOneParams, sortItems } from "@webiny/db-d
 export const createStorageOperations = (
     params: SecurityStorageParams
 ): SecurityStorageOperations => {
-    const { table: tableName, documentClient } = params;
+    const { table: tableName, documentClient, scopeTenant } = params;
+
+    /** The record with its scope's tenant, whatever tenant it carries. */
+    const inScope = <T extends { tenant?: string | null }>(record: T): T & { tenant: string } => {
+        return { ...record, tenant: scopeTenant.getId() };
+    };
 
     const table = createTable({
         name: tableName || (process.env.DB_TABLE as string),
@@ -68,7 +73,8 @@ export const createStorageOperations = (
     });
 
     return {
-        async createApiKey({ apiKey }): Promise<void> {
+        async createApiKey(params): Promise<void> {
+            const apiKey = inScope(params.apiKey);
             const keys = {
                 ...createApiKeyKeys(apiKey),
                 ...createApiKeyGsiKeys(apiKey)
@@ -87,7 +93,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async createRole({ role }): Promise<void> {
+        async createRole(params): Promise<void> {
+            const role = inScope(params.role);
             const keys = {
                 ...createRoleKeys(role),
                 ...createRoleGsiKeys(role)
@@ -106,7 +113,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async createTeam({ team }): Promise<void> {
+        async createTeam(params): Promise<void> {
+            const team = inScope(params.team);
             const keys = {
                 ...createTeamKeys(team),
                 ...createTeamGsiKeys(team)
@@ -125,8 +133,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async deleteApiKey({ apiKey }) {
-            const keys = createApiKeyKeys(apiKey);
+        async deleteApiKey(params) {
+            const keys = createApiKeyKeys(inScope(params.apiKey));
 
             try {
                 await entities.apiKeys.delete(keys);
@@ -138,7 +146,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async deleteRole({ role }) {
+        async deleteRole(params) {
+            const role = inScope(params.role);
             const keys = createRoleKeys(role);
 
             try {
@@ -151,7 +160,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async deleteTeam({ team }) {
+        async deleteTeam(params) {
+            const team = inScope(params.team);
             const keys = createTeamKeys(team);
 
             try {
@@ -164,7 +174,9 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getApiKey({ id, tenant }) {
+        async getApiKey(params) {
+            const { id } = params;
+            const tenant = scopeTenant.getId();
             const keys = createApiKeyKeys({ id, tenant });
 
             try {
@@ -179,7 +191,9 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getApiKeyByToken({ tenant, token }) {
+        async getApiKeyByToken(params) {
+            const { token } = params;
+            const tenant = scopeTenant.getId();
             const queryParams: IEntityQueryOneParams = {
                 partitionKey: `T#${tenant}#API_KEYS`,
                 options: {
@@ -199,7 +213,9 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getApiKeyBySlug({ tenant, slug }) {
+        async getApiKeyBySlug(params) {
+            const { slug } = params;
+            const tenant = scopeTenant.getId();
             const queryParams: IEntityQueryOneParams = {
                 partitionKey: `T#${tenant}#API_KEYS`,
                 options: {
@@ -219,7 +235,9 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getRole({ where: { tenant, id, slug } }) {
+        async getRole({ where }) {
+            const { id, slug } = where;
+            const tenant = scopeTenant.getId();
             try {
                 if (id) {
                     const result = await entities.roles.get(createRoleKeys({ tenant, id }));
@@ -242,7 +260,9 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getTeam({ where: { tenant, id, slug } }) {
+        async getTeam({ where }) {
+            const { id, slug } = where;
+            const tenant = scopeTenant.getId();
             try {
                 if (id) {
                     const result = await entities.teams.get(createTeamKeys({ tenant, id }));
@@ -267,7 +287,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async listApiKeys({ where: { tenant }, sort }): Promise<StorageApiKey[]> {
+        async listApiKeys({ sort }): Promise<StorageApiKey[]> {
+            const tenant = scopeTenant.getId();
             let items;
             try {
                 items = await entities.apiKeys.queryAll({
@@ -285,7 +306,9 @@ export const createStorageOperations = (
 
             return sortItems({ items, sort }).map(item => item.data);
         },
-        async listRoles({ where: { tenant, id_in, slug_in }, sort }): Promise<StorageRole[]> {
+        async listRoles({ where, sort }): Promise<StorageRole[]> {
+            const { id_in, slug_in } = where;
+            const tenant = scopeTenant.getId();
             let items: StorageRole[];
             try {
                 const ddbItems = await entities.roles.queryAll({
@@ -314,7 +337,9 @@ export const createStorageOperations = (
 
             return items;
         },
-        async listTeams({ where: { tenant, id_in, slug_in }, sort }): Promise<StorageTeam[]> {
+        async listTeams({ where, sort }): Promise<StorageTeam[]> {
+            const { id_in, slug_in } = where;
+            const tenant = scopeTenant.getId();
             let items: StorageTeam[];
             try {
                 const ddbRecords = await entities.teams.queryAll({
@@ -343,7 +368,8 @@ export const createStorageOperations = (
             }
             return items;
         },
-        async updateApiKey({ apiKey }): Promise<void> {
+        async updateApiKey(params): Promise<void> {
+            const apiKey = inScope(params.apiKey);
             const keys = {
                 ...createApiKeyKeys(apiKey),
                 ...createApiKeyGsiKeys(apiKey)
@@ -362,7 +388,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async updateRole({ role }): Promise<void> {
+        async updateRole(params): Promise<void> {
+            const role = inScope(params.role);
             const keys = createRoleKeys(role);
 
             try {
@@ -379,7 +406,8 @@ export const createStorageOperations = (
                 });
             }
         },
-        async updateTeam({ team }): Promise<void> {
+        async updateTeam(params): Promise<void> {
+            const team = inScope(params.team);
             const keys = createTeamKeys(team);
 
             try {

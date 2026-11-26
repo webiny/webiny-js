@@ -5,7 +5,7 @@ import { HeadlessCmsFeature } from "~/index";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -30,7 +30,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     const tenant = { id: "root", name: "Root", parent: null };
     const { identity = defaultIdentity, permissions, extraPlugins = [] } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
     const resolvedPermissions = createPermissions(permissions);
 

@@ -11,7 +11,12 @@ import type {
 } from "@webiny/api-core/types/users.js";
 
 export const createStorageOperations: CreateAdminUsersStorageOperations = params => {
-    const { table: tableName, documentClient } = params;
+    const { table: tableName, documentClient, scopeTenant } = params;
+
+    /** The user with its scope's tenant, whatever tenant it carries. */
+    const inScope = <T extends AdminUser>(user: T): T => {
+        return { ...user, tenant: scopeTenant.getId() };
+    };
 
     const table = createTable({
         name: tableName || (process.env.DB_TABLE as string),
@@ -47,7 +52,8 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         getEntities() {
             return entities;
         },
-        async createUser({ user }) {
+        async createUser(params) {
+            const user = inScope(params.user);
             const keys = {
                 ...createUserKeys(user),
                 ...createUserGSIKeys(user)
@@ -69,7 +75,8 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
-        async deleteUser({ user }) {
+        async deleteUser(params) {
+            const user = inScope(params.user);
             const keys = createUserKeys(user);
 
             try {
@@ -86,8 +93,9 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             params: StorageOperationsGetUserParams
         ): Promise<TUser | null> {
             const {
-                where: { tenant, id, email }
+                where: { id, email }
             } = params;
+            const tenant = scopeTenant.getId();
             try {
                 if (id) {
                     const response = await entities.users.get<IStandardEntityAttributes<TUser>>(
@@ -113,6 +121,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
+        // Cross-tenant by design: one user's records in the given tenants, not the scope's tenant.
         async getUserAcrossTenants<TUser extends AdminUser = AdminUser>(
             params: StorageOperationsGetUserAcrossTenantsParams
         ): Promise<TUser[]> {
@@ -141,6 +150,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
+        // Cross-tenant by design: every tenant's record of one user.
         async listUserRecords<TUser extends AdminUser = AdminUser>(
             params: StorageOperationsListUserRecordsParams
         ): Promise<TUser[]> {
@@ -167,10 +177,11 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
             where,
             sort
         }: StorageOperationsListUsersParams) {
+            const tenant = scopeTenant.getId();
             let items: TUser[];
             try {
                 const ddbItems = await entities.users.queryAll<IStandardEntityAttributes<TUser>>({
-                    partitionKey: `T#${where.tenant}#ADMIN_USERS`,
+                    partitionKey: `T#${tenant}#ADMIN_USERS`,
                     options: {
                         index: "GSI1"
                     }
@@ -199,7 +210,8 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
 
             return sortItems({ items: filtered, sort });
         },
-        async updateUser({ user }) {
+        async updateUser(params) {
+            const user = inScope(params.user);
             const keys = {
                 ...createUserKeys(user),
                 ...createUserGSIKeys(user)

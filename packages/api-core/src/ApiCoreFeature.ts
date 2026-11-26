@@ -3,10 +3,20 @@ import { Container } from "@webiny/di";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
-import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
+import {
+    TenantRegistryFeature,
+    TenantScopeTenancyFeature
+} from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import type { ApiCoreConfig } from "~/types/core.js";
-import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/abstractions.js";
+import { TenancyStorageOperationsProvider } from "~/features/storageOperations/abstractions.js";
+import {
+    ScopedAdminUsersStorageOperations,
+    ScopedApiCoreStorage,
+    ScopedKeyValueStorageOperations,
+    ScopedSecurityStorageOperations
+} from "~/features/storageOperations/ApiCoreStorage.js";
+import { DefaultTenancyStorageOperationsProvider } from "~/features/storageOperations/TenancyStorageOperationsProvider.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
@@ -26,7 +36,12 @@ import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/Nul
 import { NullSendToIdentityUseCase } from "~/features/websockets/index.js";
 import { NotifyRecordChangeFeature } from "~/features/websockets/index.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
-import { RequestContextFeature } from "~/features/requestContext/index.js";
+import {
+    TenantNeutralRequestContextFeature,
+    TenantScopeRequestContextFeature
+} from "~/features/requestContext/index.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
+import { SingleContainerTenantScopes } from "~/features/tenancy/TenantScopes/SingleContainerTenantScopes.js";
 import { ApiCoreSchemaFactory } from "~/graphql/ApiCoreSchemaFactory.js";
 import { SecuritySchemaFactory } from "~/graphql/security/SecuritySchemaFactory.js";
 import { UsersSchemaFactory } from "~/graphql/users/UsersSchemaFactory.js";
@@ -37,9 +52,13 @@ import { FeatureFlagsSchemaFactory } from "~/graphql/featureFlags/FeatureFlagsSc
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
     register(container: Container, config: ApiCoreConfig = {}) {
-        // Storage operations are built synchronously, here, from the adapter-provided factory —
-        // the same way for every event (no out-of-feature construction, no async initializer).
-        const storageOperations = container.resolve(ApiCoreStorageOperationsFactory).create();
+        // The core storage: built from the adapter-provided `ApiCoreStorageOperationsFactory` with
+        // the scope's `ScopeTenant` (both injected) the first time a part of it is used. Each part
+        // is its own implementation that injects that one instance.
+        container.register(ScopedApiCoreStorage).inSingletonScope();
+        container.register(ScopedSecurityStorageOperations);
+        container.register(ScopedAdminUsersStorageOperations);
+        container.register(ScopedKeyValueStorageOperations);
 
         // Register features
         WcpFeature.register(container, config.wcpLicense);
@@ -56,13 +75,30 @@ export const ApiCoreFeature = createFeature({
         EncryptionFeature.register(container);
         HasherFeature.register(container);
         FeatureFlagsFeature.register(container);
-        TenancyFeature.register(container, storageOperations.tenancyStorageOperations);
-        SecurityFeature.register(container, storageOperations.securityStorageOperations);
-        AdminUsersFeature.register(container, storageOperations.usersStorageOperations);
-        KeyValueStoreFeature.register(container, storageOperations.keyValueStorageOperations);
+        /*
+         * In a tenant scope, the tenant registry, the raw request values and `TenantScopes` come
+         * from the request container (`TenantNeutralRequestFeature`), shared by every scope of the
+         * request. A container that holds the whole API (a test harness without tenant scopes) has
+         * its own, and its `TenantScopes` serves only the container's own tenant.
+         */
+        if (!config.tenantScope) {
+            // Tenant-neutral, like the request container's registry (`TenantNeutralRequestFeature`).
+            container.register(DefaultTenancyStorageOperationsProvider);
+            TenantRegistryFeature.register(
+                container,
+                container.resolve(TenancyStorageOperationsProvider).create()
+            );
+            TenantNeutralRequestContextFeature.register(container);
+            container.registerInstance(RequestContainer, container);
+            container.register(SingleContainerTenantScopes).inSingletonScope();
+        }
+        TenantScopeTenancyFeature.register(container);
+        SecurityFeature.register(container);
+        AdminUsersFeature.register(container);
+        KeyValueStoreFeature.register(container);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
-        RequestContextFeature.register(container);
+        TenantScopeRequestContextFeature.register(container);
         container.register(NullWebhookDispatcher).inSingletonScope();
         container.register(NullSendToIdentityUseCase);
         NotifyRecordChangeFeature.register(container);

@@ -1,16 +1,14 @@
 import { ApiKeyFactory } from "webiny/api/security";
-import { TenantContext } from "webiny/api/tenancy";
+import { TenantScopes } from "webiny/api/tenancy";
 import { GetApiKeyBySlugUseCase } from "webiny/api/security/api-key";
 
 class SharedRootTenantApiKeyImpl implements ApiKeyFactory.Interface {
-    constructor(
-        private tenantContext: TenantContext.Interface,
-        private getApiKeyBySlug: GetApiKeyBySlugUseCase.Interface
-    ) {}
+    constructor(private tenantScopes: TenantScopes.Interface) {}
 
     async execute(): ApiKeyFactory.Return {
-        const result = await this.tenantContext.withRootTenant(() => {
-            return this.getApiKeyBySlug.execute("frontend-integration");
+        // The key is stored in the root tenant: read it in the root tenant's scope.
+        const result = await this.tenantScopes.withRootTenant(scope => {
+            return scope.resolve(GetApiKeyBySlugUseCase).execute("frontend-integration");
         });
 
         if (result.isFail()) {
@@ -32,5 +30,5 @@ class SharedRootTenantApiKeyImpl implements ApiKeyFactory.Interface {
 
 export default ApiKeyFactory.createImplementation({
     implementation: SharedRootTenantApiKeyImpl,
-    dependencies: [TenantContext, GetApiKeyBySlugUseCase]
+    dependencies: [TenantScopes]
 });

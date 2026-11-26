@@ -1,4 +1,5 @@
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
@@ -10,34 +11,37 @@ import type {
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
 import { entryToRow } from "~/features/entries/entryRow.js";
-import { modelRows, patchAllEntryRevisions } from "~/features/entries/entryQueries.js";
+import { modelRef, modelRows, patchAllEntryRevisions } from "~/features/entries/entryQueries.js";
 
 class PgCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOperation.Interface {
     public constructor(
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
         private readonly indexer: SearchIndexer.Interface,
-        private readonly storageModelProvider: CmsStorageModelProvider.Interface
+        private readonly storageModelProvider: CmsStorageModelProvider.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) {
+        const tenant = this.scopeTenant.getId();
+        const ref = modelRef(tenant, model);
         await this.schema.ensure();
         const { entries } = this.schema.getTables();
         const entryId = params.entry.entryId;
         const isPublished = params.entry.status === "published";
 
         await this.knex.client.transaction(async trx => {
-            const latestRows = await modelRows(trx, entries, model).andWhere({
+            const latestRows = await modelRows(trx, entries, ref).andWhere({
                 entry_id: entryId,
                 is_latest: true
             });
             for (const row of latestRows) {
                 const data = row.data;
                 data.isLatest = false;
-                await modelRows(trx, entries, model)
+                await modelRows(trx, entries, ref)
                     .andWhere("id", row.id)
                     .update({
                         is_latest: false,
@@ -48,7 +52,7 @@ class PgCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOpe
                 await patchAllEntryRevisions(
                     trx,
                     entries,
-                    model,
+                    ref,
                     entryId,
                     data => {
                         if (data.isPublished) {
@@ -64,7 +68,7 @@ class PgCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOpe
             storageEntry.isLatest = true;
             storageEntry.isPublished = isPublished;
             await trx(entries).insert(
-                entryToRow(storageEntry, this.storageModelProvider.getModel(model))
+                entryToRow(storageEntry, this.storageModelProvider.getModel(model), tenant)
             );
             await this.indexer.syncEntries(trx, model, [entryId]);
         });
@@ -76,5 +80,5 @@ class PgCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOpe
 export const PgCreateEntryRevisionFrom =
     CreateEntryRevisionFromStorageOperation.createImplementation({
         implementation: PgCreateEntryRevisionFromImpl,
-        dependencies: [KnexClient, PgSchema, SearchIndexer, CmsStorageModelProvider]
+        dependencies: [KnexClient, PgSchema, SearchIndexer, CmsStorageModelProvider, ScopeTenant]
     });

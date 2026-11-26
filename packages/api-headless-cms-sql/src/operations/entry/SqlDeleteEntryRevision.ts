@@ -8,6 +8,7 @@ import type {
 import { DeleteEntryRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow } from "./mappers.js";
 import { createModelEntryQuery, patchAllEntryRevisions } from "./queryHelpers.js";
@@ -17,24 +18,30 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
 
-    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
-        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
+    private modelQuery(tenant: string, model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), {
+            tenant,
+            modelId: model.modelId
+        });
     }
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const wasPublished = params.storageEntry.status === "published";
 
-        await this.modelQuery(model).andWhere("id", params.storageEntry.id).delete();
+        await this.modelQuery(tenant, model).andWhere("id", params.storageEntry.id).delete();
 
         if (wasPublished) {
             await patchAllEntryRevisions(
@@ -56,9 +63,9 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
                 latestParsed.live = null;
             }
 
-            const latestRow = entryToRow(latestParsed as CmsStorageEntry);
+            const latestRow = entryToRow(latestParsed as CmsStorageEntry, tenant);
 
-            await this.modelQuery(model)
+            await this.modelQuery(tenant, model)
                 .andWhere("id", params.latestStorageEntry.id)
                 .update(latestRow);
         }
@@ -67,5 +74,5 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
 
 export const SqlDeleteEntryRevision = DeleteEntryRevisionStorageOperation.createImplementation({
     implementation: SqlDeleteEntryRevisionImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

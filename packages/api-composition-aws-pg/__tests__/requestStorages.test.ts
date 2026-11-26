@@ -3,6 +3,7 @@ import type { Knex } from "knex";
 import type { Abstraction, Container } from "@webiny/di";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { ApiCoreStorageOperationsFactory } from "@webiny/api-core";
+import { TenantScope } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
 import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { createAwsPgApiHandler } from "~/index.js";
@@ -45,6 +46,11 @@ describe("api-composition-aws-pg — storages per request", () => {
     it("holds no storage in the root, and every storage in a request's container", async () => {
         const reports: { inRoot: string[]; inRequest: string[] }[] = [];
         const inspect = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             // @webiny/di keeps a container's parent private; the test reads it to check the root.
             const root = (container as unknown as { parent: Container }).parent;
             reports.push({
