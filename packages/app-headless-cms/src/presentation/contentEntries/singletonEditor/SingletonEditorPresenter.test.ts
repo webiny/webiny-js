@@ -30,6 +30,16 @@ function setup(result: Result<CmsContentEntry, CmsEntryError> = Result.ok(ENTRY)
     return { presenter: container.resolve(Abstraction), execute, replaceRoute };
 }
 
+type FetchResult = Result<CmsContentEntry, CmsEntryError>;
+
+function createDeferred() {
+    let resolve!: (value: FetchResult) => void;
+    const promise = new Promise<FetchResult>(res => {
+        resolve = res;
+    });
+    return { promise, resolve };
+}
+
 describe("SingletonEditorPresenter", () => {
     it("reports no fields and does not fetch", async () => {
         const { presenter, execute } = setup();
@@ -82,5 +92,43 @@ describe("SingletonEditorPresenter", () => {
         await presenter.init(MODEL, "a#0002");
 
         expect(presenter.vm.entryId).toBe("a#0002");
+    });
+
+    it("is loading while the fetch is pending", async () => {
+        const { presenter, execute } = setup();
+        execute.mockImplementation(() => new Promise(() => {}));
+
+        void presenter.init(MODEL, undefined);
+
+        expect(presenter.vm.loading).toBe(true);
+    });
+
+    it("ignores a stale fetch when init runs again while pending", async () => {
+        const { presenter, execute, replaceRoute } = setup();
+        const deferred = createDeferred();
+        execute.mockImplementation(() => deferred.promise);
+
+        const first = presenter.init(MODEL, undefined);
+        await presenter.init(MODEL, "x#0002");
+        deferred.resolve(Result.ok(ENTRY));
+        await first;
+
+        expect(presenter.vm.entryId).toBe("x#0002");
+        expect(presenter.vm.loading).toBe(false);
+        expect(replaceRoute).not.toHaveBeenCalled();
+    });
+
+    it("ignores a late fetch after dispose", async () => {
+        const { presenter, execute, replaceRoute } = setup();
+        const deferred = createDeferred();
+        execute.mockImplementation(() => deferred.promise);
+
+        const pending = presenter.init(MODEL, undefined);
+        presenter.dispose();
+        deferred.resolve(Result.ok(ENTRY));
+        await pending;
+
+        expect(presenter.vm.entryId).toBeNull();
+        expect(replaceRoute).not.toHaveBeenCalled();
     });
 });

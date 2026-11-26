@@ -10,6 +10,7 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
     private loading = false;
     private error: string | null = null;
     private hasFields = false;
+    private initToken = 0;
 
     constructor(
         private readonly router: RouterRepository.Interface,
@@ -17,10 +18,11 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
     ) {
         makeAutoObservable<
             SingletonEditorPresenterImpl,
-            "router" | "getLatestSingletonEntryUseCase"
+            "router" | "getLatestSingletonEntryUseCase" | "initToken"
         >(this, {
             router: false,
-            getLatestSingletonEntryUseCase: false
+            getLatestSingletonEntryUseCase: false,
+            initToken: false
         });
     }
 
@@ -34,8 +36,10 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
     }
 
     async init(model: CmsModel, routeEntryId: string | undefined): Promise<void> {
+        const token = ++this.initToken;
         this.hasFields = model.fields.length > 0;
         this.error = null;
+        this.loading = false;
 
         if (!this.hasFields) {
             this.entryId = null;
@@ -49,6 +53,10 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
 
         this.loading = true;
         const result = await this.getLatestSingletonEntryUseCase.execute(model);
+
+        if (token !== this.initToken) {
+            return;
+        }
 
         if (result.isFail()) {
             runInAction(() => {
@@ -70,6 +78,7 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
     }
 
     dispose(): void {
+        this.initToken++;
         this.entryId = null;
         this.loading = false;
         this.error = null;
