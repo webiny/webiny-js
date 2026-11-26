@@ -8,7 +8,7 @@ export interface EntryAuthor {
 }
 
 export interface ICmsAdvancedSearchViewModel {
-    // Admin users offered by the Author filter. Empty when the identity cannot list users.
+    // The users who can read the current model's entries, offered by the Author filter.
     authors: EntryAuthor[];
     // The fields the advanced search offers for the current model, the Author field included.
     fields: FieldRaw[];

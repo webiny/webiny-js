@@ -17,6 +17,7 @@ import { MoveEntryFeature } from "./moveEntry/feature.js";
 import { BulkActionFeature } from "./bulkAction/feature.js";
 import { CmsTrashBinFeature } from "./trashBin/feature.js";
 import { SearchContentEntriesFeature } from "./searchContentEntries/feature.js";
+import { ListUsersWhoCanReadEntriesFeature } from "./listUsersWhoCanReadEntries/feature.js";
 import { GetContentEntriesFeature } from "./getContentEntries/feature.js";
 import { ReferenceTitlesFeature } from "./referenceTitles/feature.js";
 import { ValueTransformersFeature } from "./valueTransformers/feature.js";
@@ -32,6 +33,7 @@ export const ContentEntryFeature = createFeature({
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);
         SearchContentEntriesFeature.register(container);
+        ListUsersWhoCanReadEntriesFeature.register(container);
         GetContentEntriesFeature.register(container);
         ReferenceTitlesFeature.register(container);
         CreateEntryFeature.register(container);

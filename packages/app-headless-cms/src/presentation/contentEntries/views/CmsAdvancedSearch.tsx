@@ -15,12 +15,14 @@ export const CmsAdvancedSearch = observer(() => {
     const { browser } = useContentEntryListConfig();
     const { presenter: advancedSearch } = useFeature(CmsAdvancedSearchFeature);
 
+    const modelId = presenter.vm.model.modelId;
+
     useEffect(() => {
         advancedSearch.loadAuthors();
         return () => advancedSearch.clearFilter();
-    }, [advancedSearch]);
+    }, [advancedSearch, modelId]);
 
-    const repository = useFilterRepository(`cms:${presenter.vm.model.modelId}`);
+    const repository = useFilterRepository(`cms:${modelId}`);
 
     const onApplyFilter = useCallback(
         (data: FilterDTO | null) => advancedSearch.applyFilter(data),

@@ -3,25 +3,17 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
-import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
 import { Operation } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
-import { ListFolderPermissionsTargetsUseCase } from "~/features/listFolderPermissionsTargets/abstractions.js";
+import { ListUsersWhoCanReadEntriesUseCase } from "~/features/contentEntry/listUsersWhoCanReadEntries/abstractions.js";
 import { ContentEntriesPresenter } from "~/presentation/contentEntries/list/abstractions.js";
 import { CmsAdvancedSearchPresenter as Abstraction } from "./abstractions.js";
 import { CmsAdvancedSearchPresenter } from "./CmsAdvancedSearchPresenter.js";
 
-const TARGETS: FolderLevelPermissionsTarget[] = [
-    { id: "team-1", type: "team", target: "team:editors", name: "Editors", meta: {} },
-    { id: "user-1", type: "admin", target: "admin:user-1", name: "Adam Jones", meta: {} },
-    {
-        id: "user-2",
-        type: "admin",
-        target: "admin:user-2",
-        name: "",
-        meta: { email: "nameless@webiny.com" }
-    },
-    { id: "user-3", type: "admin", target: "admin:user-3", name: "", meta: { email: null } }
+const READERS: ListUsersWhoCanReadEntriesUseCase.Reader[] = [
+    { id: "user-1", displayName: "Adam Jones" },
+    { id: "user-2", displayName: "Beth Smith" },
+    { id: "user-3", displayName: "user-3" }
 ];
 
 const createFilter = (operation: Operation, value: string): FilterDTO => {
@@ -39,7 +31,7 @@ const createFilter = (operation: Operation, value: string): FilterDTO => {
 };
 
 const createPresenter = () => {
-    const listTargets = vi.fn(async () => TARGETS);
+    const listReaders = vi.fn(async (_modelId: string) => READERS);
     const set = vi.fn();
     const clear = vi.fn();
     const contentEntries = {
@@ -48,25 +40,36 @@ const createPresenter = () => {
     };
 
     const container = new Container();
-    container.registerInstance(ListFolderPermissionsTargetsUseCase, { execute: listTargets });
+    container.registerInstance(ListUsersWhoCanReadEntriesUseCase, { execute: listReaders });
     const contentEntriesInstance = contentEntries as unknown as ContentEntriesPresenter.Interface;
     container.registerInstance(ContentEntriesPresenter, contentEntriesInstance);
     container.register(CmsAdvancedSearchPresenter).inSingletonScope();
 
-    return { presenter: container.resolve(Abstraction), listTargets, set, clear };
+    return { presenter: container.resolve(Abstraction), contentEntries, listReaders, set, clear };
 };
 
 describe("CmsAdvancedSearchPresenter", () => {
-    it("lists the admin users as authors, named by name, email or id", async () => {
-        const { presenter } = createPresenter();
+    it("lists the users who can read the current model's entries as authors", async () => {
+        const { presenter, listReaders } = createPresenter();
 
         await presenter.loadAuthors();
 
-        expect(presenter.vm.authors).toEqual([
-            { id: "user-1", displayName: "Adam Jones" },
-            { id: "user-2", displayName: "nameless@webiny.com" },
-            { id: "user-3", displayName: "user-3" }
-        ]);
+        expect(listReaders).toHaveBeenCalledWith("class");
+        expect(presenter.vm.authors).toEqual(READERS);
+    });
+
+    it("offers no authors of the previous model after the model changes", async () => {
+        const { presenter, contentEntries, listReaders } = createPresenter();
+        await presenter.loadAuthors();
+
+        contentEntries.vm.model = { modelId: "student", fields: [] };
+        expect(presenter.vm.authors).toEqual([]);
+
+        listReaders.mockResolvedValueOnce([{ id: "user-2", displayName: "Beth Smith" }]);
+        await presenter.loadAuthors();
+
+        expect(listReaders).toHaveBeenLastCalledWith("student");
+        expect(presenter.vm.authors).toEqual([{ id: "user-2", displayName: "Beth Smith" }]);
     });
 
     it("offers no Author field until there are authors", async () => {
@@ -80,24 +83,24 @@ describe("CmsAdvancedSearchPresenter", () => {
     });
 
     it("asks again on every load, so a failed request is retried", async () => {
-        const { presenter, listTargets } = createPresenter();
-        listTargets.mockRejectedValueOnce(new Error("Network error"));
+        const { presenter, listReaders } = createPresenter();
+        listReaders.mockRejectedValueOnce(new Error("Network error"));
 
         await presenter.loadAuthors();
         expect(presenter.vm.authors).toEqual([]);
 
         await presenter.loadAuthors();
-        expect(listTargets).toHaveBeenCalledTimes(2);
+        expect(listReaders).toHaveBeenCalledTimes(2);
         expect(presenter.vm.authors).toHaveLength(3);
     });
 
     it("keeps the result of the newest load when an older one fails later", async () => {
-        const { presenter, listTargets } = createPresenter();
+        const { presenter, listReaders } = createPresenter();
         let failOlderLoad: (error: Error) => void = () => {};
-        const olderLoad = new Promise<typeof TARGETS>((_, reject) => {
+        const olderLoad = new Promise<typeof READERS>((_, reject) => {
             failOlderLoad = reject;
         });
-        listTargets.mockReturnValueOnce(olderLoad);
+        listReaders.mockReturnValueOnce(olderLoad);
 
         const older = presenter.loadAuthors();
         await presenter.loadAuthors();

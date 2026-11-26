@@ -1,22 +1,19 @@
 import { makeAutoObservable } from "mobx";
 import { runInAction } from "mobx";
 import { GraphQLInputMapper } from "@webiny/app-aco/components/AdvancedSearch/GraphQLInputMapper.js";
-import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
 import type { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
 import type { FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain/index.js";
-import { ListFolderPermissionsTargetsUseCase } from "~/features/listFolderPermissionsTargets/abstractions.js";
+import { ListUsersWhoCanReadEntriesUseCase } from "~/features/contentEntry/listUsersWhoCanReadEntries/abstractions.js";
 import { ContentEntriesPresenter } from "~/presentation/contentEntries/list/abstractions.js";
 import { FieldsMapper } from "./FieldsMapper.js";
 import { CmsAdvancedSearchPresenter as Abstraction } from "./abstractions.js";
 import type { EntryAuthor } from "./abstractions.js";
 import { wrapUserFields } from "./wrapUserFields.js";
 
-const toAuthor = (target: FolderLevelPermissionsTarget): EntryAuthor => {
-    return { id: target.id, displayName: target.name || target.meta?.email || target.id };
-};
-
 class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
     private authors: EntryAuthor[] = [];
+    // The model the authors were loaded for, so another model's users are never offered.
+    private authorsModelId: string | null = null;
     /*
      * The keys of the list's where input this search set. The list's filters also hold keys set by
      * other controls, such as `folderId`, and those are never cleared from here.
@@ -26,48 +23,55 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
     private authorsLoad = 0;
 
     constructor(
-        private listTargets: ListFolderPermissionsTargetsUseCase.Interface,
+        private listReaders: ListUsersWhoCanReadEntriesUseCase.Interface,
         private contentEntries: ContentEntriesPresenter.Interface
     ) {
         makeAutoObservable<
             CmsAdvancedSearchPresenterImpl,
-            "listTargets" | "contentEntries" | "authorsLoad"
+            "listReaders" | "contentEntries" | "authorsLoad"
         >(this, {
-            listTargets: false,
+            listReaders: false,
             contentEntries: false,
             authorsLoad: false
         });
     }
 
     get vm(): Abstraction.ViewModel {
-        return { authors: this.authors, fields: this.fields };
+        return { authors: this.currentAuthors, fields: this.fields };
+    }
+
+    private get currentAuthors(): EntryAuthor[] {
+        const modelId = this.contentEntries.vm.model.modelId;
+        return this.authorsModelId === modelId ? this.authors : [];
     }
 
     private get fields(): FieldRaw[] {
-        return FieldsMapper.toRaw(this.contentEntries.vm.model, this.authors);
+        return FieldsMapper.toRaw(this.contentEntries.vm.model, this.currentAuthors);
     }
 
     /*
-     * Asked on every mount, so the list always belongs to the identity that is signed in now. The
-     * API returns no users to an identity that cannot read them, and that identity gets no Author
-     * filter. A failed request leaves the filter out until the next mount.
+     * Asked on every mount and for every model, so the list always belongs to the identity that is
+     * signed in now and to the model on screen. The API only lists the users who can read the
+     * model's entries, and an identity limited to its own entries gets only itself. A failed
+     * request leaves the Author filter out until the next mount.
      */
     async loadAuthors(): Promise<void> {
         const load = ++this.authorsLoad;
-        let targets: FolderLevelPermissionsTarget[] = [];
+        const modelId = this.contentEntries.vm.model.modelId;
+        let authors: EntryAuthor[] = [];
         try {
-            targets = await this.listTargets.execute();
+            authors = await this.listReaders.execute(modelId);
         } catch {
-            targets = [];
+            authors = [];
         }
 
         if (load !== this.authorsLoad) {
             return;
         }
 
-        const authors = targets.filter(target => target.type === "admin").map(toAuthor);
         runInAction(() => {
             this.authors = authors;
+            this.authorsModelId = modelId;
         });
     }
 
@@ -101,5 +105,5 @@ class CmsAdvancedSearchPresenterImpl implements Abstraction.Interface {
 
 export const CmsAdvancedSearchPresenter = Abstraction.createImplementation({
     implementation: CmsAdvancedSearchPresenterImpl,
-    dependencies: [ListFolderPermissionsTargetsUseCase, ContentEntriesPresenter]
+    dependencies: [ListUsersWhoCanReadEntriesUseCase, ContentEntriesPresenter]
 });
