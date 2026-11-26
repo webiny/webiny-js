@@ -14,7 +14,7 @@
  */
 import { createServerHandler } from "@webiny/api-kernel-core/nodeHttp/index.js";
 import { LambdaWebKernelPlatform } from "@webiny/api-kernel-aws";
-import { NodeHttpFeature } from "@webiny/api-kernel-core/nodeHttp/index.js";
+import { NodeHttpFeature, NodeHttpInputHandler } from "@webiny/api-kernel-core/nodeHttp/index.js";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { registerHttpTransport } from "@webiny/api-composition-core";
 import { registerWebinyApiChild } from "~/composition/index.js";
@@ -34,8 +34,9 @@ export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfi
         platform: LambdaWebKernelPlatform,
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
-            // registerHttpTransport also registers the tenant, identity and preview-as loading.
-            registerHttpTransport(container, NodeHttpFeature);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading, and the
+            // hand-off of each request into its tenant's scope once CORS and the tenant step are done.
+            registerHttpTransport(container, NodeHttpFeature, NodeHttpInputHandler);
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Same reason as the streaming handler: `TaskService.trigger()` needs the Step Functions

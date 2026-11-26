@@ -19,11 +19,21 @@ import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
-import { createServerHandler, NodeHttpFeature } from "@webiny/api-kernel-core/nodeHttp/index.js";
+import {
+    createServerHandler,
+    NodeHttpFeature,
+    NodeHttpInputHandler
+} from "@webiny/api-kernel-core/nodeHttp/index.js";
 import { registerHttpTransport } from "@webiny/api-composition-core";
 import { RandomProcessOwner } from "@webiny/api-kernel-core";
 import { registerExtensions } from "@webiny/handler";
-import { ApiRequestRegistration, registerApiRequestStack } from "@webiny/api-composition-core";
+import {
+    ApiRequestRegistration,
+    registerApiRequestStack,
+    registerApiRequestStackInOneContainer,
+    type RegisterApiRequestStackConfig
+} from "@webiny/api-composition-core";
+import { TenantScopesRootFeature } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import {
     WebsocketsServerRootFeature,
     WebsocketsStandaloneFeature,
@@ -44,14 +54,18 @@ import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/sched
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
-import { mkdirSync } from "node:fs";
 import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
+import { assertFileStorage } from "~/config/assertFileStorage.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { createLogger, readBuildParams } from "@webiny/api-composition-core";
+import {
+    createLogger,
+    registerRootAllowedRequestHeaders,
+    registerRootBuildParams
+} from "@webiny/api-composition-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
@@ -95,52 +109,51 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     const logger = createLogger();
 
     /*
-     * What every request's container gets (`child`). Also in the root as `ApiRequestRegistration`,
-     * for work outside a request that needs a container a request would have: the SQL schema setup
-     * builds one on its own connection.
+     * The transport-agnostic request stack, with the server's adapters. Every request's container
+     * gets its tenant-neutral part (`child`), and each tenant scope of the request the rest. In one
+     * container, it is also in the root as `ApiRequestRegistration`, for work outside a request that
+     * needs a container a request would have: the SQL schema setup builds one on its own connection.
      */
-    const registerRequest = async (container: Container): Promise<void> => {
-        // The transport-agnostic per-request stack. The realtime hook installs the server
-        // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
-        // shared connection manager + adapter from the root. Scheduler is NOT a per-request
-        // transport here — it's a root singleton wired in `root` + `onServer` (see below).
-        await registerApiRequestStack(container, {
-            extensions: config.extensions,
-            // Why hooks (and not just registering the transports ourselves): `.register()` calls
-            // are otherwise order-independent — you can register Features in any order, because
-            // they only REGISTER, they don't RESOLVE during registration (resolution happens
-            // later, in Initializers / SchemaFactories). The one thing that makes order matter is
-            // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
-            // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
-            // our transport MUST be registered AFTER that Feature. These hooks are the seams
-            // `registerApiRequestStack` provides for exactly that — each runs right after its Null
-            // default, so the override is guaranteed without the caller knowing the internal order.
-            transports: {
-                /*
-                 * Public URLs and crypto secrets: no deploy step to discover them from, so they
-                 * come from env (StandaloneConfig, registered on the root).
-                 */
-                hostingConfig: requestContainer => {
-                    ConfigPublicUrlsFeature.register(requestContainer);
-                    StandaloneCryptoConfigFeature.register(requestContainer);
-                },
-                // Server WebSockets transport; resolves the shared connection manager + adapter
-                // from the root (registered as singletons in `root`).
-                realtime: requestContainer => {
-                    WebsocketsStandaloneFeature.register(requestContainer);
-                },
-                // File-manager storage transport: local disk. Where AWS uses S3 (+ a separate asset-
-                // delivery Lambda), the single-process server stores files on disk and serves them
-                // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
-                // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
-                fileManager: requestContainer => {
-                    FileManagerStandaloneFeature.register(
-                        requestContainer,
-                        standaloneConfig.fileStorage
-                    );
-                }
+    const stackConfig: RegisterApiRequestStackConfig = {
+        extensions: config.extensions,
+        // Why hooks (and not just registering the transports ourselves): `.register()` calls
+        // are otherwise order-independent — you can register Features in any order, because
+        // they only REGISTER, they don't RESOLVE during registration (resolution happens
+        // later, in Initializers / SchemaFactories). The one thing that makes order matter is
+        // a DEFAULT registration: e.g. `WebsocketsFeature` registers `NullWebsocketsTransport`
+        // so the abstraction is always resolvable. Overriding it (last-registration-wins) means
+        // our transport MUST be registered AFTER that Feature. These hooks are the seams
+        // `registerApiRequestStack` provides for exactly that — each runs right after its Null
+        // default, so the override is guaranteed without the caller knowing the internal order.
+        transports: {
+            /*
+             * Public URLs and crypto secrets: no deploy step to discover them from, so they
+             * come from env (StandaloneConfig, registered on the root).
+             */
+            hostingConfig: scopeContainer => {
+                ConfigPublicUrlsFeature.register(scopeContainer);
+                StandaloneCryptoConfigFeature.register(scopeContainer);
+            },
+            // Server WebSockets transport; resolves the shared connection manager + adapter
+            // from the root (registered as singletons in `root`). Scheduler is NOT a per-request
+            // transport here — it's a root singleton wired in `root` + `onServer` (see below).
+            realtime: scopeContainer => {
+                WebsocketsStandaloneFeature.register(scopeContainer);
+            },
+            /*
+             * File-manager storage transport. Where AWS uploads straight to S3 (+ a separate
+             * asset-delivery Lambda), the server takes uploads and serves files in-process.
+             * FileManagerStandaloneFeature registers asset delivery (overriding the domain's
+             * null impls) and the upload/multipart HTTP routes; they store through
+             * `ObjectStorage`, which a project extension registers (`<Infra.FileStorage.Disk />`
+             * a folder on disk, `<Infra.FileStorage.S3 />` an S3-compatible bucket).
+             * `assertFileStorage` has made sure the build has one.
+             */
+            fileManager: scopeContainer => {
+                const { uploadSecret } = standaloneConfig.fileStorage;
+                FileManagerStandaloneFeature.register(scopeContainer, { uploadSecret });
             }
-        });
+        }
     };
 
     return createServerHandler({
@@ -149,23 +162,31 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
              * Secrets come from env only. A build that bakes one (the shared <Infra.Crypto.*> from
              * @webiny/project) is refused here, before the server accepts a request.
              */
-            const extensions = config.extensions();
-            const buildParams = await readBuildParams(extensions);
+            // Build params come from the deploy, the same for every request and tenant: they live in
+            // the root, and every request container and tenant scope reads them from here.
+            const buildParams = await registerRootBuildParams(rootContainer, config.extensions());
             assertNoBakedSecrets(buildParams);
+            assertFileStorage(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             rootContainer.registerInstance(Logger, logger);
 
             // Names this process in shared storage: task claims and websocket connections.
             rootContainer.register(RandomProcessOwner).inSingletonScope();
-            mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
-            // registerHttpTransport also registers the tenant, identity and preview-as loading.
-            registerHttpTransport(rootContainer, NodeHttpFeature);
+            // registerHttpTransport also registers the tenant, identity and preview-as loading, and the
+            // hand-off of each request into its tenant's scope once CORS and the tenant step are done.
+            registerHttpTransport(rootContainer, NodeHttpFeature, NodeHttpInputHandler);
 
-            rootContainer.registerInstance(ApiRequestRegistration, { register: registerRequest });
+            // Every other event's handler chain runs in its tenant's scope: a background task or
+            // scheduled action in the tenant of its payload, anything else as the root tenant.
+            TenantScopesRootFeature.register(rootContainer);
+
+            rootContainer.registerInstance(ApiRequestRegistration, {
+                register: container => registerApiRequestStackInOneContainer(container, stackConfig)
+            });
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer, { buildParams });
@@ -221,10 +242,17 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Registers the EmptyTrashBinsEvent handler that the periodic trigger
             // (startBulkActionsServer, onServer below) dispatches.
             EmptyTrashBinsFeature.register(rootContainer);
+
+            // ── CORS allowed headers (root) ────────────────────────────
+            // The request headers extensions allow in the CORS preflight: read once, at start, for
+            // the CORS step, which runs at request level, before any tenant scope (where extensions
+            // register). Last: it registers what a request has, the extensions included, in a
+            // throwaway container.
+            await registerRootAllowedRequestHeaders(rootContainer);
         },
 
         child: async container => {
-            await registerRequest(container);
+            await registerApiRequestStack(container, stackConfig);
         },
 
         onServer: async (server, rootContainer) => {

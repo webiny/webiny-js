@@ -76,6 +76,46 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         });
     });
 
+    it("opens the model named by initialModelId instead of the first one", async () => {
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
+            createWorkflowModelPage({
+                rows: [
+                    createWorkflowModelRow(),
+                    createWorkflowModelRow({ model: "cms.page", modelId: "page", name: "Page" })
+                ]
+            })
+        );
+
+        await presenter.init({ ...params, initialModelId: "page" });
+
+        const active = presenter.vm.panel.rows.filter(row => row.active);
+        expect(active.map(row => row.name)).toEqual(["Page"]);
+    });
+
+    it("opens the first model when initialModelId is unknown or absent", async () => {
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
+            createWorkflowModelPage({
+                rows: [
+                    createWorkflowModelRow(),
+                    createWorkflowModelRow({ model: "cms.page", modelId: "page", name: "Page" })
+                ]
+            })
+        );
+
+        await presenter.init({ ...params, initialModelId: "missing" });
+        expect(presenter.vm.status).toBe("ready");
+        expect(presenter.vm.panel.rows.filter(row => row.active).map(row => row.name)).toEqual([
+            "Article"
+        ]);
+
+        await presenter.init(params);
+        expect(presenter.vm.panel.rows.filter(row => row.active).map(row => row.name)).toEqual([
+            "Article"
+        ]);
+    });
+
     it("takes the panel label and the search flag from the app adapter", async () => {
         const cms = createEditorPresenterSetup({ appKind: "cms" });
         const wb = createEditorPresenterSetup({ appKind: "wb" });

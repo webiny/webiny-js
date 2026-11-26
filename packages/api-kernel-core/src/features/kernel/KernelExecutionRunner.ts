@@ -6,7 +6,7 @@ import { KernelExecutionScope } from "./KernelExecutionScope.js";
 import { KernelPlatform } from "./KernelPlatform.js";
 import { InputType } from "./InputType.js";
 import { NoMatchingInputTypeError } from "./NoMatchingInputTypeError.js";
-import { executeChain } from "./chain.js";
+import { InputChainRunner } from "./InputChainRunner.js";
 
 class KernelExecutionRunnerImpl implements KernelExecutionRunner.Interface {
     constructor(
@@ -42,9 +42,9 @@ class KernelExecutionRunnerImpl implements KernelExecutionRunner.Interface {
             }
 
             const abstraction = matched.getHandlerAbstraction();
-            const handlers = child.resolveAll(abstraction);
+            const chainRunner = child.resolve(InputChainRunner);
 
-            return executeChain(handlers, input);
+            return chainRunner.run({ container: child, abstraction, input });
         });
     }
 }

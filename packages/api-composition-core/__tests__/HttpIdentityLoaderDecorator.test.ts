@@ -2,7 +2,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRouter } from "@webiny/api-kernel-core";
+import { HttpRouteDispatcher } from "@webiny/api-kernel-core";
 import type { IHttpRequest } from "@webiny/api-kernel-core";
 import { RawAuthToken as RawAuthTokenImpl } from "@webiny/api-core/features/requestContext/RawAuthToken.js";
 import { RawAuthToken } from "@webiny/api-core/features/requestContext/index.js";
@@ -21,7 +21,7 @@ function setup() {
     });
 
     let routed = false;
-    container.registerInstance(HttpRouter, {
+    container.registerInstance(HttpRouteDispatcher, {
         async route() {
             routed = true;
             return { statusCode: 200, body: {} };
@@ -29,7 +29,7 @@ function setup() {
     });
     container.registerDecorator(HttpIdentityLoaderDecorator);
 
-    const router = container.resolve(HttpRouter);
+    const router = container.resolve(HttpRouteDispatcher);
 
     return {
         run: async (headers: Record<string, string>, method = "POST", path = "/graphql") => {

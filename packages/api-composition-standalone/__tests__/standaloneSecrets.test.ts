@@ -12,7 +12,6 @@ import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
 
 const requiredEnv = {
     WEBINY_API_URL: "https://api.example.com",
-    WEBINY_LOCAL_STORAGE_PATH: "/data/storage",
     WEBINY_UPLOAD_SECRET: "upload-secret",
     WEBINY_ENCRYPTION_PASSPHRASE: "passphrase",
     WEBINY_HASHING_PEPPER: "pepper"

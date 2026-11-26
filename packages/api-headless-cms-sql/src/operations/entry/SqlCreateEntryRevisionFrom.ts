@@ -8,6 +8,7 @@ import type {
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow } from "./mappers.js";
 import { createEntryQuery, createModelEntryQuery } from "./queryHelpers.js";
@@ -17,7 +18,8 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -26,19 +28,24 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         return createEntryQuery(this.knex, this.entryTableManager.getTableName());
     }
 
-    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
-        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
+    private modelQuery(tenant: string, model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), {
+            tenant,
+            modelId: model.modelId
+        });
     }
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const isPublished = params.entry.status === "published";
 
-        const oldLatestRows = await this.modelQuery(model)
+        const oldLatestRows = await this.modelQuery(tenant, model)
             .andWhere("entryId", params.entry.entryId)
             .andWhere("isLatest", true);
 
@@ -46,13 +53,13 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
             const parsed = JSON.parse(row.data);
             parsed.isLatest = false;
 
-            await this.modelQuery(model)
+            await this.modelQuery(tenant, model)
                 .andWhere("id", row.id)
                 .update({ isLatest: false, data: JSON.stringify(parsed) });
         }
 
         if (isPublished) {
-            const oldPublishedRows = await this.modelQuery(model)
+            const oldPublishedRows = await this.modelQuery(tenant, model)
                 .andWhere("entryId", params.entry.entryId)
                 .andWhere("isPublished", true);
 
@@ -61,7 +68,7 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
                 parsed.isPublished = false;
                 parsed.status = "unpublished";
 
-                await this.modelQuery(model)
+                await this.modelQuery(tenant, model)
                     .andWhere("id", row.id)
                     .update({ isPublished: false, data: JSON.stringify(parsed) });
             }
@@ -71,7 +78,7 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         se.isLatest = true;
         se.isPublished = isPublished;
 
-        const row = entryToRow(se);
+        const row = entryToRow(se, tenant);
         await this.query().insert(row);
 
         return params.entry;
@@ -81,5 +88,5 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
 export const SqlCreateEntryRevisionFrom =
     CreateEntryRevisionFromStorageOperation.createImplementation({
         implementation: SqlCreateEntryRevisionFromImpl,
-        dependencies: [KnexClient, EntryTableManager]
+        dependencies: [KnexClient, EntryTableManager, ScopeTenant]
     });

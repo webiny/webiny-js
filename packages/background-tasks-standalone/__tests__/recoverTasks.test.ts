@@ -6,7 +6,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTasks/index.js";
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
@@ -71,12 +71,18 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     container.registerInstance(ListTenantsUseCase, {
         execute: async () => Result.ok(tenants.map(t => ({ isInstalled: true, ...t })) as any)
     });
-    container.registerInstance(TenantContext, {
-        withTenant: async (tenant: { id: string }, cb: (tenant: any) => Promise<unknown>) => {
+    // Every tenant's scope is the test's container; the fakes read which tenant it is for.
+    container.registerInstance(TenantScopes, {
+        withTenant: async (tenant: { id: string }, cb: (scope: any) => Promise<unknown>) => {
             currentTenant = tenant.id;
-            return cb(tenant);
+            return cb({
+                tenant,
+                storage: "default",
+                resolve: (abstraction: any) => container.resolve(abstraction),
+                resolveAll: (abstraction: any) => container.resolveAll(abstraction)
+            });
         }
-    } as unknown as TenantContext.Interface);
+    } as unknown as TenantScopes.Interface);
     container.registerInstance(ListTasksUseCase, {
         execute: async () => {
             const tenant = tenants.find(t => t.id === currentTenant);

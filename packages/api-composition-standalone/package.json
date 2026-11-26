@@ -24,6 +24,7 @@
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms-bulk-actions-standalone": "0.0.0",
     "@webiny/api-kernel-core": "0.0.0",
+    "@webiny/api-object-storage": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-scheduler-standalone": "0.0.0",
     "@webiny/api-websockets-standalone": "0.0.0",

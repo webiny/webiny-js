@@ -15,7 +15,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     private identity: Identity = new AnonymousIdentity();
     /*
      * `withIdentity()` switches the identity for its callback's async call chain only, the same way
-     * `TenantContext.withTenant()` switches the tenant.
+     * `TenantScopes.withTenant()` runs its callback as the caller's identity.
      */
     private readonly overrides = new AsyncLocalStorage<Identity>();
 

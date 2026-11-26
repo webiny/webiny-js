@@ -2,6 +2,7 @@ import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { TenantScope } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { createDecorator } from "@webiny/di";
 import type { Abstraction } from "@webiny/di";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
@@ -41,6 +42,11 @@ describe("api-composition-aws-ddb-os — root storage decorators", () => {
         const resolved: unknown[] = [];
 
         const extension = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             for (const abstraction of storages) {
                 const probe = createProbe(abstraction);
                 container.registerDecorator(probe);

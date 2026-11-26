@@ -21,7 +21,9 @@ setStorageOps("apiCore", () => {
     // What the SQL storage does when it registers in the root.
     setSqlServiceManifestLoader({ knex, tableNamePrefix });
     return {
-        storageOperations: createApiCoreSql({ knex, tableNamePrefix }),
+        // A builder: each tenant scope builds the storage with its own tenant.
+        storageOperations: ({ scopeTenant }) =>
+            createApiCoreSql({ knex, tableNamePrefix, scopeTenant }),
         plugins: []
     };
 });

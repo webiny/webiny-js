@@ -6,6 +6,7 @@ import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js"
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { rowToGroup } from "./mappers.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 class SqlListGroupsImpl implements ListGroupsStorageOperation.Interface {
     private tableName: string;
@@ -13,17 +14,19 @@ class SqlListGroupsImpl implements ListGroupsStorageOperation.Interface {
     constructor(
         private knex: KnexClient.Interface,
         tableNameResolver: TableNameResolver.Interface,
-        private groupSchemaManager: GroupSchemaManager.Interface
+        private groupSchemaManager: GroupSchemaManager.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.tableName = tableNameResolver.resolve("groups");
     }
 
     async execute(params: CmsGroupStorageOperationsListParams) {
+        const tenant = this.scopeTenant.getId();
         const { where, sort } = params;
 
         await this.groupSchemaManager.ensure(this.tableName);
 
-        const qb = this.knex.client<IGroupRow>(this.tableName).where("tenant", where.tenant);
+        const qb = this.knex.client<IGroupRow>(this.tableName).where("tenant", tenant);
 
         if (where.id) {
             qb.andWhere("id", where.id);
@@ -55,5 +58,5 @@ class SqlListGroupsImpl implements ListGroupsStorageOperation.Interface {
 
 export const SqlListGroups = ListGroupsStorageOperation.createImplementation({
     implementation: SqlListGroupsImpl,
-    dependencies: [KnexClient, TableNameResolver, GroupSchemaManager]
+    dependencies: [KnexClient, TableNameResolver, GroupSchemaManager, ScopeTenant]
 });

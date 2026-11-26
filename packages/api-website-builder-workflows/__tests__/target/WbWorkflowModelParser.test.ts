@@ -1,11 +1,12 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { WorkflowModelParserService } from "@webiny/api-workflows/features/model/WorkflowModelParserService/index.js";
 import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 
 let parser: WorkflowModelParserService.Interface;
 
-beforeAll(async () => {
+// Per test: the request reads its tenant from storage, whose test tables exist only during a test.
+beforeEach(async () => {
     const { container } = await createContextHandler().context();
     parser = container.resolve(WorkflowModelParserService);
 });

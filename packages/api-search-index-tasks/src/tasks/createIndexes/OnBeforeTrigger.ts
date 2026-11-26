@@ -1,6 +1,6 @@
 import type { IIndexManager } from "~/abstractions/IndexManager.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { TenantIndexFactory } from "~/abstractions/TenantIndexFactory.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "./createIndexFactory.js";
 import { OnBeforeTrigger as Abstraction } from "./abstractions/OnBeforeTrigger.js";
@@ -8,7 +8,7 @@ import { OnBeforeTrigger as Abstraction } from "./abstractions/OnBeforeTrigger.j
 class OnBeforeTriggerImpl implements Abstraction.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly indexFactories: TenantIndexFactory.Interface[]
+        private readonly tenantScopes: TenantScopes.Interface
     ) {}
 
     public async run(targets: string[] | undefined, indexManager: IIndexManager): Promise<void> {
@@ -18,7 +18,7 @@ class OnBeforeTriggerImpl implements Abstraction.Interface {
         }
 
         try {
-            const allIndexes = await listIndexes(this.tenantContext, [tenant], this.indexFactories);
+            const allIndexes = await listIndexes(this.tenantScopes, [tenant]);
 
             const indexes = allIndexes.filter(index => {
                 if (!targets?.length) {
@@ -59,5 +59,5 @@ class OnBeforeTriggerImpl implements Abstraction.Interface {
 
 export const OnBeforeTrigger = Abstraction.createImplementation({
     implementation: OnBeforeTriggerImpl,
-    dependencies: [TenantContext, [TenantIndexFactory, { multiple: true }]]
+    dependencies: [TenantContext, TenantScopes]
 });

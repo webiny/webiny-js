@@ -1,1 +1,1 @@
-export * from "./S3TenantLoaderDecorator.js";
+export * from "./S3TenantSource.js";

@@ -15,7 +15,9 @@ import { createLambdaHandler } from "@webiny/api-kernel-aws";
 import { InputHandler } from "@webiny/api-kernel-core";
 import { InputType } from "@webiny/api-kernel-core";
 import type { InputContext } from "@webiny/api-kernel-core";
+import type { InputChainRunner } from "@webiny/api-kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { InputTenantSource } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { registerWebinyApiRoot } from "~/composition/registerWebinyApiRoot.js";
 
 class AnyInputType implements InputType.Interface {
@@ -47,11 +49,24 @@ const logHandler = InputHandler.createImplementation({
     dependencies: [Logger]
 });
 
+// The event needs no tenant: it runs in the request container, which this handler leaves empty.
+class AnyInputTenantSource implements InputTenantSource.Interface {
+    getTenant(request: InputChainRunner.Request): InputTenantSource.Tenant | undefined {
+        return request.abstraction === InputHandler ? "tenant-neutral" : undefined;
+    }
+}
+
+const anyInputTenantSource = InputTenantSource.createImplementation({
+    implementation: AnyInputTenantSource,
+    dependencies: []
+});
+
 const createHandler = () => {
     return createLambdaHandler({
         root: async container => {
             container.register(anyInputType);
             container.register(logHandler);
+            container.register(anyInputTenantSource);
             await registerWebinyApiRoot(container, {
                 extensions: () => [],
                 registerRootStorage: () => {}
@@ -68,6 +83,13 @@ describe("API log lines on AWS", () => {
         vi.spyOn(process.stdout, "write").mockImplementation((chunk: any) => {
             const line = String(chunk);
             const parsed = JSON.parse(line);
+            /*
+             * This root registers no storage, so a request's services can't register when the CORS
+             * allowed headers are read at start, which logs a warning before any invocation runs.
+             */
+            if (String(parsed.message?.msg ?? "").startsWith("[cors]")) {
+                return true;
+            }
             lines.push(parsed);
             return true;
         });

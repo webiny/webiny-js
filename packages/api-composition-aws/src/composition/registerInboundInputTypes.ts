@@ -6,6 +6,7 @@ import { WebSocketInputType } from "@webiny/api-kernel-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
+import { WebSocketTenantSource } from "@webiny/api-websockets-aws";
 
 /**
  * Registers every NON-HTTP way this Lambda can be invoked: the event type that recognises the
@@ -37,6 +38,8 @@ export function registerInboundInputTypes(container: Container): void {
     container.register(ScheduledActionLambdaHandler);
 
     // API Gateway WebSocket invocations ($connect/$disconnect/$default). The connection handlers
-    // come from WebsocketsFeature in the per-request stack.
+    // come from WebsocketsFeature in the tenant scope's stack, and the event runs in the tenant
+    // the client names.
     container.register(WebSocketInputType);
+    container.register(WebSocketTenantSource);
 }

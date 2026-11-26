@@ -2,6 +2,7 @@ import type { Container } from "@webiny/di";
 import {
     HttpRouter,
     HttpRouteDefinition,
+    HttpRouteDispatcher,
     RouteNotFoundError
 } from "~/features/http/abstractions.js";
 import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
@@ -98,5 +99,16 @@ class HttpRouterImplClass implements HttpRouter.Interface {
 
 export const HttpRouterImpl = HttpRouter.createImplementation({
     implementation: HttpRouterImplClass,
+    dependencies: [RequestContainer]
+});
+
+// Its own class: DI metadata (the abstraction) is kept per class.
+class HttpRouteDispatcherImplClass
+    extends HttpRouterImplClass
+    implements HttpRouteDispatcher.Interface {}
+
+/** The same route matcher, as `HttpRouteDispatcher`: resolve it to run a request's route. */
+export const HttpRouteDispatcherImpl = HttpRouteDispatcher.createImplementation({
+    implementation: HttpRouteDispatcherImplClass,
     dependencies: [RequestContainer]
 });

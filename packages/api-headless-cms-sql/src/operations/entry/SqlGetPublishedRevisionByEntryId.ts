@@ -7,6 +7,7 @@ import type {
 import { GetPublishedRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
@@ -19,7 +20,8 @@ class SqlGetPublishedRevisionByEntryIdImpl
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -32,12 +34,14 @@ class SqlGetPublishedRevisionByEntryIdImpl
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const { id: entryId } = parseIdentifier(params.id);
 
         const row = await this.query()
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .where("entryId", entryId)
             .andWhere("isPublished", true)
@@ -54,5 +58,5 @@ class SqlGetPublishedRevisionByEntryIdImpl
 export const SqlGetPublishedRevisionByEntryId =
     GetPublishedRevisionByEntryIdStorageOperation.createImplementation({
         implementation: SqlGetPublishedRevisionByEntryIdImpl,
-        dependencies: [KnexClient, EntryTableManager]
+        dependencies: [KnexClient, EntryTableManager, ScopeTenant]
     });

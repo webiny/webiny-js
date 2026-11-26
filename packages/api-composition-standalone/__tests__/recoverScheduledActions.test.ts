@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
@@ -52,13 +52,18 @@ const createHandler = (setup: ISetup) => {
         }
     };
 
-    const tenantContext = {
-        getTenant: () => currentTenant,
-        withTenant: async <T>(tenant: Tenant, cb: (tenant: Tenant) => Promise<T>) => {
+    // Every tenant's scope is the test's container; the fakes read which tenant it is for.
+    const tenantScopes = {
+        withTenant: async <T>(tenant: Tenant, cb: (scope: any) => Promise<T>) => {
             const previous = currentTenant;
             currentTenant = tenant;
             try {
-                return await cb(tenant);
+                return await cb({
+                    tenant,
+                    storage: "default",
+                    resolve: (abstraction: any) => container.resolve(abstraction),
+                    resolveAll: (abstraction: any) => container.resolveAll(abstraction)
+                });
             } finally {
                 currentTenant = previous;
             }
@@ -99,7 +104,7 @@ const createHandler = (setup: ISetup) => {
 
     const container = new Container();
     container.registerInstance(ListTenantsUseCase, listTenants as any);
-    container.registerInstance(TenantContext, tenantContext as any);
+    container.registerInstance(TenantScopes, tenantScopes as any);
     container.registerInstance(IdentityContext, identityContext as any);
     container.registerInstance(ListScheduledActionsUseCase, listScheduledActions as any);
     container.registerInstance(SchedulerSingleton, scheduler as any);

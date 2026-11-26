@@ -230,7 +230,9 @@ describe("ApiCoreSqlFeature", () => {
         for (let request = 0; request < 25; request++) {
             const container = root.createChildContainer();
             ApiCoreSqlFeature.register(container);
-            const operations = container.resolve(ApiCoreStorageOperationsFactory).create();
+            const operations = container
+                .resolve(ApiCoreStorageOperationsFactory)
+                .create({ scopeTenant: { getId: () => "root" } });
             built.add(operations);
             await operations.keyValueStorageOperations.get("key", "scope");
         }

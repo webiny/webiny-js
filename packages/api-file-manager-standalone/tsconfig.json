@@ -6,12 +6,14 @@
     { "path": "../api-file-manager" },
     { "path": "../api-graphql" },
     { "path": "../api-kernel-core" },
+    { "path": "../api-object-storage" },
     { "path": "../background-tasks" },
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../api-object-storage-disk" },
+    { "path": "../api-object-storage-s3" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -28,6 +30,8 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-kernel-core/*": ["../api-kernel-core/src/*"],
       "@webiny/api-kernel-core": ["../api-kernel-core/src"],
+      "@webiny/api-object-storage/*": ["../api-object-storage/src/*"],
+      "@webiny/api-object-storage": ["../api-object-storage/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/feature/*": ["../feature/src/*"],
@@ -36,10 +40,12 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/api-object-storage-disk/*": ["../api-object-storage-disk/src/*"],
+      "@webiny/api-object-storage-disk": ["../api-object-storage-disk/src"],
+      "@webiny/api-object-storage-s3/*": ["../api-object-storage-s3/src/*"],
+      "@webiny/api-object-storage-s3": ["../api-object-storage-s3/src"]
     }
   }
 }

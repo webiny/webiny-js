@@ -9,6 +9,7 @@ export {
     ListObjectsCommand,
     UploadPartCopyCommand,
     ListObjectsV2Command,
+    ListMultipartUploadsCommand,
     ListPartsCommand,
     ObjectCannedACL,
     DeleteObjectCommand,

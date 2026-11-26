@@ -4,6 +4,7 @@ import type {
     CmsEntryStorageOperationsGetRevisionsParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { GetRevisionsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionsStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { convertFromStorageEntry } from "./storageEntryUtils.js";
@@ -11,17 +12,19 @@ import { convertFromStorageEntry } from "./storageEntryUtils.js";
 class DdbGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
     constructor(
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetRevisionsParams
     ) {
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getAllEntryRevisions<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
 
@@ -36,5 +39,5 @@ class DdbGetRevisionsImpl implements GetRevisionsStorageOperation.Interface {
 
 export const DdbGetRevisions = GetRevisionsStorageOperation.createImplementation({
     implementation: DdbGetRevisionsImpl,
-    dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

@@ -12,6 +12,7 @@ import { CanAccessCurrentTenantUseCase } from "@webiny/api-core/features/securit
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import { RequestContextFeature } from "@webiny/api-core/features/requestContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
@@ -72,6 +73,18 @@ describe("createWebsocketsAuthenticator", () => {
             }
         } as unknown as IdentityContext.Interface);
         container.registerInstance(Logger, logger);
+        // The tenant's scope: here, the same container, with the scope's tenant set when entered.
+        container.registerInstance(TenantScopes, {
+            withTenant: async (tenant, cb) => {
+                currentTenant = tenant;
+                return cb({
+                    tenant,
+                    storage: "default",
+                    resolve: abstraction => container.resolve(abstraction),
+                    resolveAll: abstraction => container.resolveAll(abstraction)
+                });
+            }
+        } as TenantScopes.Interface);
     });
 
     it("returns the identity a token authenticates as", async () => {
@@ -114,7 +127,7 @@ describe("createWebsocketsAuthenticator", () => {
         await expect(result).rejects.toThrow("container misconfigured");
     });
 
-    it("sets the requested tenant before it authenticates the token", async () => {
+    it("authenticates the token in the requested tenant's scope", async () => {
         let tenantWhenAuthenticating: string | null = "not called";
         authenticate.mockImplementation(async () => {
             // An API key is looked up in the current tenant.

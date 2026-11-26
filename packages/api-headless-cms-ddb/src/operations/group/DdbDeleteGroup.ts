@@ -1,15 +1,20 @@
 import type { CmsGroupStorageOperationsDeleteParams } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import { DeleteGroupStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/group/DeleteGroupStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
 import { createKeys } from "./keys.js";
 
 class DdbDeleteGroupImpl implements DeleteGroupStorageOperation.Interface {
-    constructor(private entity: CmsDdbGroupEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbGroupEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(params: CmsGroupStorageOperationsDeleteParams) {
         const { group } = params;
-        const keys = createKeys(group);
+        const tenant = this.scopeTenant.getId();
+        const keys = createKeys({ tenant, id: group.id });
         try {
             await this.entity.delete(keys);
         } catch (ex) {
@@ -24,5 +29,5 @@ class DdbDeleteGroupImpl implements DeleteGroupStorageOperation.Interface {
 
 export const DdbDeleteGroup = DeleteGroupStorageOperation.createImplementation({
     implementation: DdbDeleteGroupImpl,
-    dependencies: [CmsDdbGroupEntity]
+    dependencies: [CmsDdbGroupEntity, ScopeTenant]
 });

@@ -27,11 +27,17 @@ export const createPublishedSortKey = (): string => {
 
 export interface ICreateEntryPublishedKeysParams {
     id: string;
-    tenant: string;
 }
 
-export const createEntryPublishedKeys = (params: ICreateEntryPublishedKeysParams) => {
-    const { id, tenant } = params;
+/**
+ * The tenant is passed separately from the record: it is the storage scope's tenant, never one read
+ * off the record.
+ */
+export const createEntryPublishedKeys = (
+    params: ICreateEntryPublishedKeysParams,
+    tenant: string
+) => {
+    const { id } = params;
     return {
         PK: createPartitionKey({
             id,
@@ -45,11 +51,10 @@ export const createEntryPublishedKeys = (params: ICreateEntryPublishedKeysParams
 
 export interface ICreateEntryLatestKeysParams {
     id: string;
-    tenant: string;
 }
 
-export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams) => {
-    const { id, tenant } = params;
+export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams, tenant: string) => {
+    const { id } = params;
     return {
         PK: createPartitionKey({
             id,
@@ -63,12 +68,11 @@ export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams) => {
 
 export interface ICreateRevisionKeysParams {
     id: string;
-    tenant: string;
     version: number;
 }
 
-export const createEntryRevisionKeys = (params: ICreateRevisionKeysParams) => {
-    const { id, tenant, version } = params;
+export const createEntryRevisionKeys = (params: ICreateRevisionKeysParams, tenant: string) => {
+    const { id, version } = params;
     return {
         PK: createPartitionKey({
             id,

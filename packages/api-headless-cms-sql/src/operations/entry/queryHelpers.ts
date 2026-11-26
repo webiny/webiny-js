@@ -34,6 +34,10 @@ export const createEntryQuery = (knex: Knex, tableName: string): Knex.QueryBuild
     return knex<IEntryRow>(tableName);
 };
 
+/**
+ * The entries of one model in one tenant. `tenant` is the scope's tenant of the operation querying
+ * (`ScopeTenant`), never a model's or an entry's: build it as `{ tenant, modelId: model.modelId }`.
+ */
 export interface IEntryQueryModel {
     tenant: string;
     modelId: string;
@@ -126,8 +130,10 @@ export interface IListEntriesDeps {
     systemFields: CmsModelField[];
 }
 
+/** Lists the model's entries in `tenant`: the scope's tenant of the operation listing them. */
 export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
     deps: IListEntriesDeps,
+    tenant: string,
     initialModel: CmsModel,
     params: CmsEntryStorageOperationsListParams
 ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>> => {
@@ -145,7 +151,7 @@ export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
         initialLimit <= 0 || initialLimit >= MAX_LIST_LIMIT ? MAX_LIST_LIMIT : initialLimit;
 
     const qb = createEntryQuery(deps.knex, deps.tableName)
-        .where("tenant", model.tenant)
+        .where("tenant", tenant)
         .andWhere("modelId", model.modelId);
 
     if (initialWhere.entryId) {

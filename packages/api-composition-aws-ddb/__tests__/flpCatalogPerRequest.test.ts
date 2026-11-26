@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { TenantScope } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import type { Abstraction } from "@webiny/di";
 import { AcoFlpCrud } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 import { CreateFlpUseCase } from "@webiny/api-aco/features/flp/CreateFlp/abstractions.js";
@@ -26,6 +27,11 @@ describe("api-composition-aws-ddb — FLP catalog", () => {
         const errors: string[] = [];
 
         const extension = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             for (const abstraction of abstractions) {
                 try {
                     container.resolve(abstraction);

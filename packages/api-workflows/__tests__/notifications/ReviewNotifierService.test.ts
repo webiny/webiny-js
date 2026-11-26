@@ -255,7 +255,9 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
                             targetId: "article-1",
                             targetRevisionId: "article-1#0001",
                             title: MESSAGE.title,
-                            body: MESSAGE.body
+                            body: MESSAGE.body,
+                            link: "content",
+                            linkLabel: "Open content"
                         }
                     }
                 }
@@ -263,6 +265,8 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
             expect(Object.keys(sends.sent[0].message.data ?? {}).sort()).toEqual([
                 "body",
                 "event",
+                "link",
+                "linkLabel",
                 "namespace",
                 "reviewId",
                 "stepId",
@@ -455,9 +459,25 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
                         targetId: "article-1",
                         targetRevisionId: "article-1#0001",
                         title: MESSAGE.title,
-                        body: MESSAGE.body
+                        body: MESSAGE.body,
+                        link: "content",
+                        linkLabel: "Open content"
                     }
                 }
+            ]);
+        });
+
+        it("carries the link kind and label of the built message: content, and review details", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify } = await setup({ sender });
+
+            await notify({ stepId: "plain", recipients: [ANNA] });
+            await notify({ stepId: "plain", recipients: [ANNA], message: DETAILS_MESSAGE });
+
+            const sent = sender.calls.map(call => call.data as WorkflowNotificationWebsocketData);
+            expect(sent.map(data => [data.link, data.linkLabel])).toEqual([
+                ["content", "Open content"],
+                ["reviewDetails", "View review details"]
             ]);
         });
 

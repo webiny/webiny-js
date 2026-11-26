@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { TenantScope } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { CmsDdbDataLoaders } from "@webiny/api-headless-cms-ddb/abstractions/CmsDdbDataLoaders.js";
 import { createAwsDdbApiHandler } from "~/createWebinyApiHandler.js";
 
@@ -17,6 +18,11 @@ describe("api-composition-aws-ddb — CMS DataLoaders scope", () => {
         const seen: CmsDdbDataLoaders.Interface[][] = [];
 
         const probe = createRegisterExtensionPlugin(({ container }) => {
+            // Only a request's tenant scope: not the container that reads the CORS allowed
+            // headers once per process.
+            if (!container.resolveAll(TenantScope).length) {
+                return;
+            }
             const first = container.resolve(CmsDdbDataLoaders);
             const second = container.resolve(CmsDdbDataLoaders);
             seen.push([first, second]);

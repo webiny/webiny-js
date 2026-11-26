@@ -3,12 +3,14 @@ import { Result } from "@webiny/feature/api";
 import { GetIdentityProfileUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
+import { TenantScopes } from "~/features/tenancy/TenantScopes/abstractions.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 
 class GetIdentityProfileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
         private getTenantUseCase: GetTenantByIdUseCase.Interface,
+        private tenantScopes: TenantScopes.Interface,
         private repository: AdminUsersRepository.Interface
     ) {}
 
@@ -34,10 +36,11 @@ class GetIdentityProfileUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(adminUserResult.error);
         }
 
-        const parentTenantUserResult = await this.tenantContext.withTenant(
+        // The parent tenant's users live in the parent's storage: read them in its scope.
+        const parentTenantUserResult = await this.tenantScopes.withTenant(
             parentTenantResult.value,
-            async () => {
-                return this.repository.get({ id: identityId });
+            async scope => {
+                return scope.resolve(AdminUsersRepository).get({ id: identityId });
             }
         );
 
@@ -52,5 +55,5 @@ class GetIdentityProfileUseCaseImpl implements UseCaseAbstraction.Interface {
 export const GetIdentityProfileUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: GetIdentityProfileUseCaseImpl,
-    dependencies: [TenantContext, GetTenantByIdUseCase, AdminUsersRepository]
+    dependencies: [TenantContext, GetTenantByIdUseCase, TenantScopes, AdminUsersRepository]
 });

@@ -1,10 +1,11 @@
+import type { Tenant } from "~/types/tenancy.js";
 import { createAbstraction } from "@webiny/feature/api";
 
 /**
  * Per-request holder for the raw tenant id EXTRACTED by the transport (e.g. the `x-tenant` header
  * of an API Gateway event, the bucket name of an S3 event, or `payload.tenant` of a background
- * task). The transport-specific EXTRACT step sets this; the transport-agnostic LOAD step
- * (RequestTenantLoader) reads it, resolves the Tenant, and sets TenantContext.
+ * task). Set from the `InputTenantSource` that claims the event; the transport-agnostic LOAD step
+ * (RequestTenantLoader) reads it and resolves the Tenant.
  */
 export interface IRawTenantId {
     get(): string | null;
@@ -87,11 +88,15 @@ export namespace RequestIdentityLoader {
 }
 
 /**
- * LOAD step: resolves the Tenant for the id held by RawTenantId and sets TenantContext. Fully
- * transport-agnostic — transports only EXTRACT the id into RawTenantId.
+ * LOAD step: resolves the Tenant for the id held by RawTenantId (the root tenant when it holds
+ * none). Fully transport-agnostic — transports only EXTRACT the id into RawTenantId. Throws
+ * `TenantNotFoundError` for an unknown tenant.
+ *
+ * It doesn't set the tenant anywhere: the request continues in the tenant's scope
+ * (`TenantScopes.withTenant()`), whose `TenantContext` holds it.
  */
 export interface IRequestTenantLoader {
-    establish(): Promise<void>;
+    establish(): Promise<Tenant>;
 }
 
 export const RequestTenantLoader = createAbstraction<IRequestTenantLoader>(

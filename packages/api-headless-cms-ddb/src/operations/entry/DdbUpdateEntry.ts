@@ -5,6 +5,7 @@ import type {
     CmsEntryStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { UpdateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UpdateEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -27,17 +28,19 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     private async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
+        tenant: string,
         params: IGetLatestRevisionByEntryIdParams
     ) {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getLatestRevisionByEntryId<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
         return items.shift() || null;
@@ -48,15 +51,19 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsUpdateParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const isPublished = entry.status === "published";
         const locked = isPublished ? true : entry.locked;
 
-        const storageEntry = convertToStorageEntry({
-            model,
-            storageEntry: initialStorageEntry
-        });
+        const storageEntry = {
+            ...convertToStorageEntry({
+                model,
+                storageEntry: initialStorageEntry
+            }),
+            tenant
+        };
         /**
          * We need to:
          *  - update the current entry
@@ -66,7 +73,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         const entityBatch = this.entity.createEntityWriter({
             put: [
                 {
-                    ...createEntryRevisionKeys(storageEntry),
+                    ...createEntryRevisionKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry,
                         locked
@@ -77,7 +84,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
 
         if (isPublished) {
             entityBatch.put({
-                ...createEntryPublishedKeys(storageEntry),
+                ...createEntryPublishedKeys(storageEntry, tenant),
                 data: {
                     ...storageEntry,
                     locked
@@ -88,13 +95,13 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         /**
          * We need the latest entry to update it as well if necessary.
          */
-        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry);
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, tenant, entry);
 
         if (latestStorageEntry) {
             const updatingLatestRevision = latestStorageEntry.id === entry.id;
             if (updatingLatestRevision) {
                 entityBatch.put({
-                    ...createEntryLatestKeys(storageEntry),
+                    ...createEntryLatestKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry,
                         locked
@@ -116,7 +123,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
                  * - one for the latest record
                  */
                 entityBatch.put({
-                    ...createEntryRevisionKeys(latestStorageEntry),
+                    ...createEntryRevisionKeys(latestStorageEntry, tenant),
                     data: {
                         ...latestStorageEntry,
                         ...updatedEntryLevelMetaFields
@@ -124,7 +131,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
                 });
 
                 entityBatch.put({
-                    ...createEntryLatestKeys(latestStorageEntry),
+                    ...createEntryLatestKeys(latestStorageEntry, tenant),
                     data: {
                         ...latestStorageEntry,
                         ...updatedEntryLevelMetaFields
@@ -135,9 +142,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
 
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
             return initialStorageEntry;
         } catch (ex) {
             throw new WebinyError(
@@ -155,5 +160,5 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
 
 export const DdbUpdateEntry = UpdateEntryStorageOperation.createImplementation({
     implementation: DdbUpdateEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

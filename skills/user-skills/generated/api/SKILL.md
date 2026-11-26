@@ -157,6 +157,9 @@ hashes keep verifying after a swap.
 **Name:** `HttpAllowedRequestHeaders`
 **Import:** `import { HttpAllowedRequestHeaders } from "webiny/api"`
 **Source:** `@webiny/api-kernel-core/features/http/abstractions.ts`
+**Description:** Add request headers your clients send to the ones the API allows in its CORS preflight answer. The
+list is read once per process, at start, with no tenant and no identity, so an implementation must
+not depend on a tenant's or an identity's services.
 
 ---
 

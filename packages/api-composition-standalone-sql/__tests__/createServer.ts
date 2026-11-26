@@ -6,6 +6,7 @@ import { vi } from "vitest";
 import { createSqliteStorage } from "@webiny/api-storage-sqlite";
 import { createSqlApiHandler } from "~/createWebinyApiHandler.js";
 import type { CreateSqlApiHandlerConfig } from "~/createWebinyApiHandler.js";
+import { diskFileStorage } from "./diskFileStorage.js";
 
 declare global {
     /**
@@ -47,7 +48,7 @@ export const createServer = async (
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
 
     /*
-     * What `<Infra.ApiUrl>`, `<Infra.FileStorage>`, `<Infra.Crypto.*>` and `<SelfHostedAuth>` put
+     * What `<Infra.ApiUrl>`, `<Infra.FileStorage.Disk>`, `<Infra.Crypto.*>` and `<SelfHostedAuth>` put
      * in the env of `webiny watch`. The server reads them at startup and refuses to boot without them.
      */
     vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
@@ -63,7 +64,7 @@ export const createServer = async (
     }
 
     const server = await createSqlApiHandler({
-        extensions,
+        extensions: () => [...diskFileStorage, ...extensions()],
         storage: createSqliteStorage({ knex: globalThis.__testKnex })
     }).finally(() => {
         if (!options.keepFakeTimers) {

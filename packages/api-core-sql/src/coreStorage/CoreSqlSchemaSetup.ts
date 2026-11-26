@@ -4,6 +4,7 @@ import { SqlSchemaConfig } from "~/schemaConfig/index.js";
 import { SqlSchemaSetup } from "~/schemaSetup/index.js";
 import { TableManager } from "~/TableManager.js";
 import { defineServiceManifestsTable } from "~/serviceDiscovery/serviceManifestsTable.js";
+import { tenantNeutralScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 /**
  * The `core` schema setup step: the tables of users, tenancy, security, the key-value store and the
@@ -20,8 +21,8 @@ class CoreSqlSchemaSetupImpl implements SqlSchemaSetup.Interface {
     public async setup(): Promise<void> {
         const knex = this.knex.client;
         const tableManager = new TableManager(knex, this.schemaConfig?.tableNamePrefix);
-        // Building them declares their tables on the manager.
-        createApiCoreSqlOperations(knex, tableManager);
+        // Building them declares their tables on the manager. The setup runs in no tenant.
+        createApiCoreSqlOperations(knex, tableManager, tenantNeutralScopeTenant);
         defineServiceManifestsTable(tableManager);
         await tableManager.setup();
     }

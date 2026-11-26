@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Knex } from "knex";
 import { Container } from "@webiny/feature/api";
 import { KnexClient } from "@webiny/api-core-sql";
+import {
+    ScopeTenant,
+    createFixedScopeTenant
+} from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createIdentifier } from "@webiny/utils";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
@@ -81,6 +85,7 @@ describe("SQL model isolation - entry writes", () => {
 
         container = new Container();
         container.registerInstance(KnexClient, { client: knex });
+        container.registerInstance(ScopeTenant, createFixedScopeTenant(TENANT));
         container.registerInstance(TableNameResolverConfig, { sharedTables: false });
         TableNameResolverFeature.register(container);
         EntryTableManagerFeature.register(container);

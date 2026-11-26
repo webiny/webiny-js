@@ -6,6 +6,7 @@ import { RequestContainer } from "@webiny/api-kernel-core";
 import type { IHttpRequest } from "@webiny/api-kernel-core";
 import { TenancyFeature } from "@webiny/api-core/features/tenancy/TenancyFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { SingleContainerTenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/SingleContainerTenantScopes.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { TenancyStorageOperations as ITenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
 import { AssetDeliveryRouteDefinition } from "~/delivery/AssetDeliveryRoute.js";
@@ -30,7 +31,7 @@ const root: Tenant = {
     description: "",
     settings: {},
     tags: [],
-    status: "active",
+    status: "enabled",
     savedOn: new Date().toISOString()
 };
 
@@ -72,6 +73,8 @@ describe("AssetDeliveryRoute - routing", () => {
         const tenancyStorageOperations = new MockTenancyStorageOperations();
         TenancyFeature.register(container, tenancyStorageOperations);
         container.resolve(TenantContext).setTenant(root);
+        // Every asset here is root's: the container is root's only scope.
+        container.register(SingleContainerTenantScopes).inSingletonScope();
 
         container.register(AssetDeliveryRouteDefinition);
         container.register(PrivateAssetDeliveryRouteDefinition);
