@@ -104,8 +104,11 @@ singleton model with `singularApiName: "Settings"`.
   types, and the manage Query and Mutation blocks below. The manage block has no `get<S>` and
   replaces the old `update<S>(data, options)`.
 
-Singleton models with no fields keep today's behaviour: `createSingularSDL.ts:30-32` and
-`createSingularResolvers.ts:26-31` emit nothing, and they have no API.
+Singleton models with no fields (`model.fields.length === 0`) have no API, as today. Both
+`createSingularSDL.ts` (which checks `inputFields.length === 0` at :30 today) and
+`createSingularResolvers.ts:26-31` use this one predicate, so a model with only layout/UI fields
+gets the full API (input and value types fall back to `_empty: String`). The admin uses the same
+predicate.
 
 `createSingularResolvers.ts` follows the same split. Resolvers:
 
