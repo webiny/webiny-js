@@ -381,9 +381,11 @@ One editor for every singleton, built from the regular editor.
 - Save validation: Save sends `skipValidation` only when `isPublishingEnabled(model)`. An untagged
   singleton has no publish step, so Save validates, as for `$publishing:false` models and as the old
   `SingleEntryPresenter` did. A tagged singleton validates on publish.
-- Locked save: the form presenter creates a new revision before saving a locked entry
-  (`ContentEntryFormPresenter.ts:379-384`). It does so only when `isPublishingEnabled(model)`, so an
-  untagged singleton with a locked `#0001` is updated directly (see Locked revisions).
+- Locked save: the form presenter creates a new revision before saving a locked entry (private
+  `saveEntry`, `ContentEntryFormPresenter.ts:381-384`). It does so only when
+  `isPublishingEnabled(model)`, so an untagged singleton with a locked `#0001` is updated directly
+  (see Locked revisions). `canCreateNewRevision` (`:113-114`) gets the same condition, so that
+  entry shows Save, not "New revision".
 - Load errors: `ContentEntryFormPresenter.loadRevision` gets a `loadError` view-model field, shown by
   the editor body. This applies to the regular editor too, where a failed load is an unhandled
   rejection today.
