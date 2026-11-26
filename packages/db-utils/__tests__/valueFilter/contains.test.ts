@@ -27,7 +27,10 @@ describe("contains filter", () => {
         ["price is $100.00", "$100.00"],
         ["path/to/file.txt", "file.txt"],
         ["hello.*world", ".*world"],
-        ["a+b=c", "a+b"]
+        ["a+b=c", "a+b"],
+        ["Ratio 3:2", "3:2"],
+        ["Roadtest: Best Cars", "Roadtest: Best"],
+        ["Opening 9:30 am", "9:3"]
     ];
     test.each(regexMetacharsList)(
         "should match literal metacharacters - %s contains %s",

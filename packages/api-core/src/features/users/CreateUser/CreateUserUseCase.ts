@@ -18,6 +18,7 @@ import {
 } from "~/features/users/shared/errors.js";
 import { UserBeforeCreateEvent, UserAfterCreateEvent } from "./events.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
+import { UserDisplayName } from "~/domain/users/UserDisplayName.js";
 import type { CreateUserInput } from "~/features/users/shared/types.js";
 import type { CreatedBy } from "~/types/users.js";
 
@@ -73,7 +74,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const id = data.id || mdbid();
 
         // 5. Generate display name
-        const displayName = this.getDisplayName(data);
+        const displayName = UserDisplayName.from({ ...data, id }).toString();
 
         // 6. Get tenant and identity
         const tenant = this.tenantContext.getTenant().id;
@@ -111,24 +112,6 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         );
 
         return Result.ok(result.value);
-    }
-
-    private getDisplayName(data: CreateUserInput): string {
-        // If display name is not set, try to get it from the first name and last name.
-        // If first name and last name are not set, use the e-mail address.
-        if (data.displayName) {
-            return data.displayName;
-        }
-
-        if (data.firstName || data.lastName) {
-            return `${data.firstName || ""} ${data.lastName || ""}`.trim();
-        }
-
-        if (data.email) {
-            return data.email;
-        }
-
-        return "Missing display name";
     }
 }
 

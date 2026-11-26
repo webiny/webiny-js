@@ -7,6 +7,8 @@ import type {
     CmsModelPermission
 } from "~/types/index.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { filterPermissionsByName } from "@webiny/api-core/features/security/utils/filterPermissionsByName.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import type {
     IModelAccessGuard,
@@ -23,6 +25,12 @@ export interface AccessControlParams {
      * Additional access rules for specific models. See `ModelAccessGuard`.
      */
     getModelAccessGuards?: () => IModelAccessGuard[];
+}
+
+export interface AccessControlFromPermissionsParams {
+    identity: SecurityIdentity;
+    permissions: SecurityPermission[];
+    listAllGroups: () => Promise<CmsGroup[]>;
 }
 
 interface GetGroupsAccessControlListParams {
@@ -96,6 +104,29 @@ export class AccessControl {
         this.listAllGroupsCallback = listAllGroups;
         this.getModelAccessGuards = getModelAccessGuards ?? (() => []);
         this.allGroups = null;
+    }
+
+    /**
+     * Access control for an identity whose permissions are already known, for example another
+     * user's, built from that user's roles. Model access guards are not applied: they check the
+     * identity of the current request.
+     */
+    static fromPermissions(params: AccessControlFromPermissionsParams) {
+        const { identity, permissions, listAllGroups } = params;
+
+        return new AccessControl({
+            getIdentity: async () => identity,
+            getGroupsPermissions: async () => {
+                return filterPermissionsByName(permissions, "cms.contentModelGroup");
+            },
+            getModelsPermissions: async () => {
+                return filterPermissionsByName(permissions, "cms.contentModel");
+            },
+            getEntriesPermissions: async () => {
+                return filterPermissionsByName(permissions, "cms.contentEntry");
+            },
+            listAllGroups
+        });
     }
 
     /**
