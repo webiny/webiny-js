@@ -11,6 +11,8 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
+export { SwitchTenant } from "./base/Base/UserMenu/SwitchTenant.js";
+export { ExitTenant } from "./base/Base/UserMenu/ExitTenant.js";
 export * from "./base/ui/AssumedPermissionsSelector.js";
 export * from "./base/ui/DebuggerIndicator.js";
 export type { LayoutProps } from "./base/ui/Layout.js";

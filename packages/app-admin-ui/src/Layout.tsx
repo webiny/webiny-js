@@ -6,7 +6,6 @@ import { BannerBar } from "@webiny/app-admin";
 import { DebuggerIndicator } from "@webiny/app-admin";
 import { LayoutRenderer } from "@webiny/app-admin";
 import { Navigation } from "@webiny/app-admin";
-import { TenantSelector } from "@webiny/app-admin";
 import { UserMenu } from "@webiny/app-admin";
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
@@ -86,7 +85,6 @@ const LayoutContent = ({
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <DebuggerIndicator />
-                            <TenantSelector />
                             <AssumedPermissionsSelector />
                             <AiChatsButton />
                             <UserMenu />
