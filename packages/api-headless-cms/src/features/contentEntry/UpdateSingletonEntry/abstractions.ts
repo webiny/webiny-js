@@ -18,11 +18,12 @@ import type {
 /**
  * UpdateSingletonEntry Use Case
  *
- * Updates the singleton entry for a model.
+ * Updates a revision of the singleton entry.
  */
 export interface IUpdateSingletonEntryUseCase {
     execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
+        revision: string,
         data: UpdateCmsEntryInput<T>,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<Result<CmsEntry<T>, UseCaseError>>;

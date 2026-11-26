@@ -25,6 +25,15 @@ import { GetPublishedRevisionByEntryIdFeature } from "./GetPublishedRevisionByEn
 import { UnpublishEntryFeature } from "./UnpublishEntry/feature.js";
 import { GetUniqueFieldValuesFeature } from "./GetUniqueFieldValues/feature.js";
 import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
+import { GetLatestSingletonEntryFeature } from "./GetLatestSingletonEntry/feature.js";
+import { GetPublishedSingletonEntryFeature } from "./GetPublishedSingletonEntry/feature.js";
+import { GetSingletonEntryRevisionFeature } from "./GetSingletonEntryRevision/feature.js";
+import { ListSingletonEntryRevisionsFeature } from "./ListSingletonEntryRevisions/feature.js";
+import { UpdateSingletonEntryRevisionDescriptionFeature } from "./UpdateSingletonEntryRevisionDescription/feature.js";
+import { CreateSingletonEntryRevisionFromFeature } from "./CreateSingletonEntryRevisionFrom/feature.js";
+import { PublishSingletonEntryFeature } from "./PublishSingletonEntry/feature.js";
+import { UnpublishSingletonEntryFeature } from "./UnpublishSingletonEntry/feature.js";
+import { DeleteSingletonEntryRevisionFeature } from "./DeleteSingletonEntryRevision/feature.js";
 import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./UpdateRevisionDescription/feature.js";
@@ -74,5 +83,14 @@ export const ContentEntriesFeature = createFeature({
         DeleteMultipleEntriesFeature.register(container);
         RestoreEntryFromBinFeature.register(container);
         UpdateSingletonEntryFeature.register(container);
+        GetLatestSingletonEntryFeature.register(container);
+        GetPublishedSingletonEntryFeature.register(container);
+        GetSingletonEntryRevisionFeature.register(container);
+        ListSingletonEntryRevisionsFeature.register(container);
+        UpdateSingletonEntryRevisionDescriptionFeature.register(container);
+        CreateSingletonEntryRevisionFromFeature.register(container);
+        PublishSingletonEntryFeature.register(container);
+        UnpublishSingletonEntryFeature.register(container);
+        DeleteSingletonEntryRevisionFeature.register(container);
     }
 });
