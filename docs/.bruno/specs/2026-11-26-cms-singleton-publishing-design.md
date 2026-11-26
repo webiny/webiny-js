@@ -71,7 +71,9 @@ singleton model with `singularApiName: "Settings"`.
   and `CMS_MODEL_PUBLISHING_DISABLED_TAG = "$publishing:false"`. API: `constants.ts`. Admin:
   `@webiny/app-headless-cms-common` constants (where `CMS_MODEL_SINGLETON_TAG` already lives, see
   `isReviewableModel.ts:1`). The literal `"$publishing:false"` in `useIsModelPublishable.ts:7`,
-  `SaveContentButton.tsx:24`, `CreateNewRevisionButton.tsx:28` and `isBindableModel.ts:4` is replaced.
+  `SaveContentButton.tsx:24`, `CreateNewRevisionButton.tsx:28` and `isBindableModel.ts:4` is replaced
+  by the constant. `isBindableModel` keeps its logic (only the constant changes); singletons stay
+  excluded from workflows by `ListCmsEntryWorkflowModelsUseCase.ts:101`.
 - One shared helper encodes both rules: `isPublishingEnabled(model)`.
   - API: `isSingletonModel` moves out of `entryOwnerAccess.ts:15` into one canonical module, and
     both helpers are exported from `exports/api/cms/model.ts`. `entryOwnerAccess.ts` imports it,
@@ -222,20 +224,28 @@ checks in "Order of checks" below.
 Each singleton use case runs its checks in this order and stops at the first failure:
 
 1. Revision (or id) belongs to the singleton, else `EntryNotFoundError`.
-2. Untagged model and the operation needs publishing (publish, unpublish, create-from, delete),
+2. The value is a revision id (has a version). Not applied to `getSettingsRevisions`, which takes
+   an entry id or a revision id. An id without a version fails with `EntryValidationError`:
+   "Singleton entry cannot be deleted." for `deleteSettings`, "A revision id is required." for every
+   other operation.
+3. Untagged model and the operation needs publishing (publish, unpublish, create-from, delete),
    else `EntryValidationError("Model does not support publishing.")`.
-3. Untagged model and the revision is not `#0001`, else
+4. Untagged model and the revision is not `#0001`, else
    `EntryValidationError("Model does not support revisions.")`. Not applied to
    `getSettingsRevisions`, which filters its result instead (see Revision checks).
-4. Operation rules (locked revision, delete rules).
+5. Operation rules (locked revision, delete rules). For delete, the `#0001` rule is checked before
+   the published-revision rule, so a published `#0001` fails with "The first revision of a singleton
+   entry cannot be deleted."
 
-So an untagged `deleteSettings(#0002)` fails with "does not support publishing", and an untagged
-`updateSettings(#0002)` with "does not support revisions".
+So an untagged `deleteSettings(#0002)` fails with "does not support publishing", an untagged
+`updateSettings(#0002)` with "does not support revisions", and `deleteSettings(entryId)` with
+"Singleton entry cannot be deleted." on any singleton.
 
 ### Untagged models
 
-`publishSettings`, `unpublishSettings`, `createSettingsFrom` and `deleteSettings` fail with
-`EntryValidationError("Model does not support publishing.")` for untagged models.
+`publishSettings`, `unpublishSettings`, `createSettingsFrom` and `deleteSettings` with a revision id
+fail with `EntryValidationError("Model does not support publishing.")` for untagged models
+(step 3 of Order of checks).
 `getSettingsLatest`, `getSettingsRevision(#0001)`, `getSettingsRevisions`, `updateSettings(#0001)`
 and `updateSettingsRevisionDescription(#0001)` work.
 
@@ -248,11 +258,12 @@ entries (`UpdateEntryUseCase.ts:47`). To change a published singleton, the clien
 
 ### Delete
 
-All delete failures are `EntryValidationError`:
+A foreign revision or id fails with `EntryNotFoundError` (step 1). The rule-based failures below are
+`EntryValidationError`:
 
 - The whole singleton entry cannot be deleted. `deleteSettings` with an id without a version fails
-  with "Singleton entry cannot be deleted." `DeleteEntryUseCase` and `DeleteMultipleEntries` reject
-  singleton models with the same message.
+  with "Singleton entry cannot be deleted." (step 2). `DeleteEntryUseCase` and
+  `DeleteMultipleEntries` reject singleton models with the same message.
 - Revision `#0001` cannot be deleted: "The first revision of a singleton entry cannot be deleted."
 - The published revision cannot be deleted: "The published revision cannot be deleted. Unpublish it
   first."
@@ -274,7 +285,7 @@ generic use cases. One use case per file.
 | `CreateSingletonEntryRevisionFromUseCase` | `CreateEntryRevisionFrom` |
 | `PublishSingletonEntryUseCase` | `PublishEntry` |
 | `UnpublishSingletonEntryUseCase` | `UnpublishEntry` |
-| `DeleteSingletonEntryRevisionUseCase` | `DeleteEntryRevision` |
+| `DeleteSingletonEntryRevisionUseCase` | `DeleteEntryRevision`, only with a revision id (step 2 rejects an entry id) |
 
 `GetSingletonEntryUseCase` is replaced by the two get use cases above.
 
@@ -350,7 +361,9 @@ Singletons stay excluded from workflows (`ListCmsEntryWorkflowModelsUseCase.ts:1
 `isReviewableModel.ts:8`). Whether to include them later is undecided.
 
 Gap to close: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.ts`
-has no `isReviewableModel` guard. Add an early return for singletons.
+has no `isReviewableModel` guard. Add an early return for singletons. The form and revisions
+decorators already return early for singletons (`isReviewableModel.ts:8`), and the API never binds
+a singleton to a workflow, so no review exists for a singleton entry.
 
 ## Phase 2: scheduled publishing
 
