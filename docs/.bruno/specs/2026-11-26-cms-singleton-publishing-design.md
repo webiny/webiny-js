@@ -195,6 +195,8 @@ extend type Mutation {
   work unchanged. `meta` is emitted only in the manage SDL, not in the read string shared with
   read and preview.
 - `SettingsArrayResponse` copies the regular `<Model>ArrayResponse`.
+- `deleteSettings` keeps `options` for signature parity. As in the regular `resolveDelete.ts:23-25`
+  for a revision id, it is ignored.
 - Not emitted: `list`, `create`, `duplicate`, `move`, `restoreFromBin`, `deleteMultiple`,
   `validate`, `republish`. The manage `getSettings` without arguments is removed.
 
@@ -376,6 +378,15 @@ One editor for every singleton, built from the regular editor.
     around `DeleteEntryMenuItem` (`ContentEntriesModule.tsx:183`).
   - Next to `canDelete(revision)` in `RevisionListItem.tsx:256`: block `#0001` and the published
     revision of a singleton.
+- Save validation: Save sends `skipValidation` only when `isPublishingEnabled(model)`. An untagged
+  singleton has no publish step, so Save validates, as for `$publishing:false` models and as the old
+  `SingleEntryPresenter` did. A tagged singleton validates on publish.
+- Locked save: the form presenter creates a new revision before saving a locked entry
+  (`ContentEntryFormPresenter.ts:379-384`). It does so only when `isPublishingEnabled(model)`, so an
+  untagged singleton with a locked `#0001` is updated directly (see Locked revisions).
+- Load errors: `ContentEntryFormPresenter.loadRevision` gets a `loadError` view-model field, shown by
+  the editor body. This applies to the regular editor too, where a failed load is an unhandled
+  rejection today.
 - No custom styling; reuse the editor's components.
 
 ## Workflows

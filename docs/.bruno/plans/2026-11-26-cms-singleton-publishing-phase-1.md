@@ -131,8 +131,8 @@ it("createSingletonEntryId is stable per modelId", () => {
   - `UpdateSingletonEntryRevisionDescriptionUseCase.execute(model, revision, revisionDescription)` → `CmsEntry`
   - `CreateSingletonEntryRevisionFromUseCase.execute(model, revision, data?, options?)` → `CmsEntry`
   - `PublishSingletonEntryUseCase.execute(model, revision)`, `UnpublishSingletonEntryUseCase.execute(model, revision)` → `CmsEntry`
-  - `DeleteSingletonEntryRevisionUseCase.execute(model, revision)` → `void` (same as `DeleteEntryRevision/abstractions.ts:14`; the resolver returns `true` on success)
-  - `checkSingletonRevision(params: CheckSingletonRevisionParams): Result<string, EntryNotFoundError | EntryValidationError>` with `CheckSingletonRevisionParams { model: CmsModel; value: string; operation: SingletonOperation }`, implementing steps 1-4 of the spec's "Order of checks"; returns the parsed entry id. Steps per operation:
+  - `DeleteSingletonEntryRevisionUseCase.execute(model, revision)` → `void` (same as `DeleteEntryRevision/abstractions.ts:14`; the resolver returns `true` on success). The SDL keeps `options: CmsDeleteEntryOptions` for signature parity; like the regular `resolveDelete.ts:23-25` for revision ids, the resolver ignores it.
+  - `checkSingletonRevision(params: CheckSingletonRevisionParams): Result<string, EntryNotFoundError | EntryValidationError>` with `CheckSingletonRevisionParams { model: CmsModel; value: string; operation: SingletonOperation }`, implementing steps 1-4 of the spec's "Order of checks"; returns the parsed entry id. The function, `CheckSingletonRevisionParams` and `SingletonOperation` all live in `features/contentEntry/shared/checkSingletonRevision.ts` (one public function; the types are named exports next to it). Steps per operation:
 
 | Operation | 1 belongs | 2 revision id required | 3 untagged: publishing | 4 untagged: only `#0001` |
 |---|---|---|---|---|
@@ -269,7 +269,7 @@ type SingletonOperation =
 
 **Files:**
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryFormView.tsx` (extract the editor body)
-- Modify: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.ts:316-334` and `packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts` (`loadError: string | null` on the view model)
+- Modify: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.ts:316-334,384` and `packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts` (`loadError: string | null` on the view model)
 - Test: `packages/app-headless-cms/src/presentation/contentEntries/form/ContentEntryFormPresenter.test.ts` (extend: add a `describe("loadRevision")` block next to `describe("saveRevision")` at :112)
 - Create: `packages/app-headless-cms/src/presentation/contentEntries/views/ContentEntryEditorBody.tsx` (props `ContentEntryEditorBodyProps { entryId: string | null; modelName: string; onBack?: () => void }`)
 - Create: `packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.tsx`
@@ -291,9 +291,10 @@ type SingletonOperation =
   - route `id` changes: the view calls `presenter.init` with the new id and the editor body loads that revision;
   - `vm.hasFields === false`: shows "This model has no fields.";
   - untagged model: Save shows; publish actions and "New revision" do not; Save on a locked `#0001` calls update; Save sends `skipValidation: false` (an untagged singleton has no publish step, so Save validates, as for `$publishing:false` models and as `SingleEntryPresenter` did);
-  - tagged model: Save sends `skipValidation: true` (validation runs on publish).
+  - tagged model: Save sends `skipValidation: true` (validation runs on publish);
+  - presenter test: saving a locked revision of an untagged singleton calls `UpdateEntryUseCase` directly, not `CreateRevisionFromUseCase`; for a tagged singleton and for a regular model it still creates a new revision first.
 - [ ] **Step 2: Run** `yarn test packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.test.tsx`. Expected: FAIL.
-- [ ] **Step 3: Implement.** `ContentEntryFormPresenter.loadRevision` has `try/finally` and no `catch` today (`:316-334`), so a failed load is an unhandled rejection. Add `loadError: string | null` to the view model, set it in a `catch`, clear it on the next load, and render it in `ContentEntryEditorBody` in place of the form. This also fixes the regular editor. `ContentEntryFormView` becomes the list adapter around `ContentEntryEditorBody`, reading `entryId`, folder id and model name from the list presenter as today. `SingletonEditorView` provides `ModelProvider` and `ContentEntryEditorWithConfig` like `ListView.tsx:26-28`, and calls `presenter.init(model, route.params.id)` on mount and whenever `route.params.id` changes. `ModelLoader` renders it for every singleton. Remove the old singleton UI and both record-locking singleton decorators.
+- [ ] **Step 3: Implement.** `ContentEntryFormPresenter.loadRevision` has `try/finally` and no `catch` today (`:316-334`), so a failed load is an unhandled rejection. Add `loadError: string | null` to the view model, set it in a `catch`, clear it on the next load, and render it in `ContentEntryEditorBody` in place of the form. This also fixes the regular editor. In `saveRevision` (`:379-384`) the presenter creates a new revision when the entry is locked; change the condition to `entry.meta.locked && isPublishingEnabled(model)`, so an untagged singleton with a locked `#0001` updates it directly (the API rejects `create<S>From` for untagged models). `ContentEntryFormView` becomes the list adapter around `ContentEntryEditorBody`, reading `entryId`, folder id and model name from the list presenter as today. `SingletonEditorView` provides `ModelProvider` and `ContentEntryEditorWithConfig` like `ListView.tsx:26-28`, and calls `presenter.init(model, route.params.id)` on mount and whenever `route.params.id` changes. `ModelLoader` renders it for every singleton. Remove the old singleton UI and both record-locking singleton decorators.
 - [ ] **Step 4: Run** the new test, then the existing record-locking tests one file at a time (`RecordLockingPresenter.test.ts`, `LogOutUseCaseLockingDecorator.test.ts` in `packages/app-record-locking/src/presentation/entryLocking/`). Expected: PASS.
 - [ ] **Step 5: Commit chain, then commit** `feat(app-headless-cms): edit singletons in the regular entry editor`.
 
@@ -303,7 +304,7 @@ type SingletonOperation =
 - Create: `packages/app-headless-cms/src/admin/components/IsNotSingletonModel.tsx`
 - Modify: `packages/app-headless-cms/src/ContentEntriesModule.tsx:183` (wrap `DeleteEntryMenuItem`)
 - Modify: `packages/app-headless-cms/src/presentation/contentEntries/views/RevisionListItem.tsx:256`
-- Modify: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.ts` (early return when `!isReviewableModel(model)`)
+- Modify: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.ts` (early return when `!isReviewableModel(model)`; `isReviewableModel.ts:8` is false only for singletons)
 - Test: `packages/app-headless-cms/src/presentation/contentEntries/views/SingletonEditorView.test.tsx` (extend)
 - Test: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.test.ts` (extend)
 
@@ -322,6 +323,6 @@ type SingletonOperation =
 ### Task 10: Verification
 
 - [ ] **Step 1:** Build each changed package, one call each: `yarn build -p <pkg> --safe-replace 2>&1 | tail -30` for `@webiny/api-headless-cms`, `@webiny/api-headless-cms-workflows`, `@webiny/app-headless-cms-common`, `@webiny/app-headless-cms`, `@webiny/app-record-locking`, `@webiny/app-headless-cms-workflows`. `packages/webiny` has no build script; check its re-exports with `yarn tsc -b packages/webiny/tsconfig.build.json 2>&1 | tail -20` (build mode, because the root `tsconfig.build.json:15` sets `composite`). Expected: no errors.
-- [ ] **Step 2:** Grep for leftovers: `grep -rn "GetSingletonEntryUseCase\|SingleEntryPresenter\|UNPUBLISHABLE_MODEL_TAG" packages/*/src packages/*/__tests__` (expected: no hits), and check that the literal `"$publishing:false"` no longer appears in `useIsModelPublishable.ts`, `SaveContentButton.tsx`, `CreateNewRevisionButton.tsx`, `isBindableModel.ts` or `toContentTypes.ts`. Model definitions in other packages (languages, webhooks, tenant-manager, background-tasks) keep their tags.
+- [ ] **Step 2:** Grep for leftovers: `grep -rn "GetSingletonEntryUseCase\|SingleEntryPresenter\|UNPUBLISHABLE_MODEL_TAG" packages/*/src packages/*/__tests__` (expected: no hits); also `grep -rn "UpdateSingletonEntryUseCase" packages/*/src packages/*/__tests__` and check every caller passes `revision`, and check that the literal `"$publishing:false"` no longer appears in `useIsModelPublishable.ts`, `SaveContentButton.tsx`, `CreateNewRevisionButton.tsx`, `isBindableModel.ts` or `toContentTypes.ts`. Model definitions in other packages (languages, webhooks, tenant-manager, background-tasks) keep their tags.
 - [ ] **Step 3:** Draft the breaking-change lines for the PR description from the spec's "Breaking changes (release notes)" section, plus: `GetSingletonEntryUseCase` removed from the public exports (use `GetLatestSingletonEntryUseCase` / `GetPublishedSingletonEntryUseCase`); `UpdateSingletonEntryUseCase.execute` takes `revision`. Note in the PR description that the user docs (`docs.webiny.com`: singleton publishing, "publish right after adding the tag") are a follow-up after merge.
 - [ ] **Step 4: Commit chain, then commit** any fixes: `chore: singleton publishing phase 1 cleanup`.
