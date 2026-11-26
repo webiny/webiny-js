@@ -76,6 +76,9 @@ export interface WorkflowNotificationWebsocketData {
     targetRevisionId: string;
     title: string;
     body: string;
+    /** Where the toast's action opens and its text: the same choice the e-mail gets. */
+    link: NotificationLink;
+    linkLabel: string;
 }
 
 /** What changed in a review, as the silent change message names it (R253). */
