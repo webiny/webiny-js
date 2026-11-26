@@ -31,9 +31,20 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
 
         return {
             ...base,
-            canSave: base.canSave && !wfVm.hasState,
+            canSave: base.canSave && !this.isBlockedByReview(),
             canPublish: base.canPublish && (!wfVm.hasWorkflow || wfVm.isApproved)
         };
+    }
+
+    /*
+     * A revision with a content review can't be changed. A locked revision (published or
+     * unpublished) is never changed by a save either: saving it creates a new revision, and
+     * that new revision starts without a review. So only an unlocked revision is blocked.
+     * Blocking locked ones too left "New Revision" on screen with nothing happening on click.
+     */
+    private isBlockedByReview(): boolean {
+        const isLocked = this.original.vm.entry?.meta.locked ?? false;
+        return this.workflowPresenter.vm.hasState && !isLocked;
     }
 
     async loadRevision(id: string): Promise<void> {
@@ -49,7 +60,7 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
     }
 
     async saveRevision(options?: { skipValidation?: boolean }): Promise<boolean> {
-        if (this.workflowPresenter.vm.hasState) {
+        if (this.isBlockedByReview()) {
             return false;
         }
         return this.original.saveRevision(options);
