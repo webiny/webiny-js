@@ -2,16 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Separator } from "~/Separator/index.js";
 import { IconButton } from "~/Button/index.js";
 import { useSidebar } from "./SidebarProvider.js";
-import { ReactComponent as PinSidebarIcon } from "@webiny/icons/chrome_reader_mode.svg";
-import { ReactComponent as UnpinSidebarIcon } from "@webiny/icons/width_full.svg";
+import { ReactComponent as LockSidebarIcon } from "@webiny/icons/sidebar_unlocked.svg";
+import { ReactComponent as UnlockSidebarIcon } from "@webiny/icons/sidebar_locked.svg";
 import { Tooltip } from "~/Tooltip/index.js";
 
 interface SidebarHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
     icon?: React.ReactNode;
     title?: React.ReactNode;
+    /**
+     * Show the button that locks the sidebar open, at the right edge of the header. Defaults to `true`.
+     */
+    lockToggle?: boolean;
 }
 
-const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
+const SidebarHeader = ({ title, icon, lockToggle = true }: SidebarHeaderProps) => {
     const { togglePinned, expanded, pinned } = useSidebar();
     const [showButton, setShowButton] = useState(false);
 
@@ -25,6 +29,18 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
         setShowButton(false);
         return undefined;
     }, [expanded]);
+
+    // On the collapsed rail the icon is all there is of the header: a click on it locks the sidebar
+    // open. Captured, so a link inside the icon doesn't navigate on that click.
+    const onIconClickCapture = (event: React.MouseEvent) => {
+        if (expanded || pinned) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        togglePinned();
+    };
 
     return (
         <>
@@ -40,18 +56,20 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                             "flex items-center gap-x-sm [&_a]:no-underline! [&_a]:text-neutral-primary! truncate"
                         }
                     >
-                        <div className={"flex shrink-0"}>{icon}</div>
+                        <div className={"flex shrink-0"} onClickCapture={onIconClickCapture}>
+                            {icon}
+                        </div>
 
                         <span className={"text-md font-semibold truncate"}>{title}</span>
                     </div>
 
-                    {showButton && (
+                    {lockToggle && showButton && (
                         <div className={"size-md"}>
                             <Tooltip
                                 side={"right"}
                                 trigger={
                                     <IconButton
-                                        icon={pinned ? <UnpinSidebarIcon /> : <PinSidebarIcon />}
+                                        icon={pinned ? <UnlockSidebarIcon /> : <LockSidebarIcon />}
                                         data-sidebar="trigger"
                                         size="xs"
                                         variant={"ghost"}

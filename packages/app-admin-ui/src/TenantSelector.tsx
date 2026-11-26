@@ -1,122 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
-    ExitTenant,
+    createReactiveComponent,
     SimpleLink,
     TenantSelectorRenderer,
-    useAuthentication,
-    useTenantContext
+    TenantSwitcherManageItem,
+    TenantSwitcherPresenterFeature,
+    useAdminConfig
 } from "@webiny/app-admin";
-import { DropdownMenu, Icon, useSidebar, useToast } from "@webiny/admin-ui";
+import { useFeature } from "@webiny/app";
+import { Avatar, DropdownMenu, Icon, InputPrimitive, Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
-import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
-import { ReactComponent as UnfoldIcon } from "@webiny/icons/unfold_more.svg";
+import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 
-export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
-    return function TenantSelector({ title }) {
-        const { identity, isAuthenticated } = useAuthentication();
-        const tenancy = useTenantContext();
-        const toast = useToast();
-        const { expanded } = useSidebar();
-        const [open, setOpen] = useState(false);
+const ROOT_TENANT_ID = "root";
 
-        // The menu hangs off the sidebar header. Once the sidebar collapses, the header is gone.
-        useEffect(() => {
-            if (!expanded) {
-                setOpen(false);
-            }
-        }, [expanded]);
+/**
+ * The tenant switcher's state, loaded once for the sidebar header and the collapsed rail.
+ */
+export const useTenantSwitcher = () => {
+    const { presenter } = useFeature(TenantSwitcherPresenterFeature);
 
-        const titleLink = <SimpleLink to={"/"}>{title}</SimpleLink>;
+    useEffect(() => {
+        void presenter.init();
+    }, [presenter]);
 
-        if (!isAuthenticated) {
-            return titleLink;
-        }
+    return presenter;
+};
 
-        const { currentTenant, defaultTenant, canSwitchTenant } = identity;
+interface TenantAvatarProps {
+    tenant: { id: string; name: string; logo: string | null };
+}
 
-        // In their default tenant, with nowhere else to go, the user has no use for the tenant.
-        if (currentTenant.id === defaultTenant.id && !canSwitchTenant) {
-            return titleLink;
-        }
+/**
+ * A tenant's logo, 24px. Root shows the admin's own logo; any other tenant shows its uploaded
+ * logo, or its initials when it has none, never the root's logo.
+ */
+export const TenantAvatar = ({ tenant }: TenantAvatarProps) => {
+    const { logo, title } = useAdminConfig();
 
-        const copyTenantId = () => {
-            navigator.clipboard.writeText(currentTenant.id);
-            toast.showSuccessToast({ title: "Tenant ID copied to clipboard!" });
-        };
+    if (tenant.id === ROOT_TENANT_ID) {
+        return <Sidebar.Icon element={logo.squareLogo} label={title} />;
+    }
 
-        return (
-            // Not modal: a modal menu turns off pointer events on the page, which the sidebar takes
-            // for the mouse leaving it, and it collapses under the open menu.
-            <DropdownMenu
-                open={open}
-                onOpenChange={setOpen}
-                modal={false}
-                trigger={
-                    <button
-                        type={"button"}
-                        className={"flex items-center gap-x-xs cursor-pointer min-w-0"}
-                        data-testid={"tenant-selector"}
-                    >
-                        <span className={"truncate"}>{currentTenant.name}</span>
-                        <Icon
-                            label={"Tenant menu"}
-                            icon={<UnfoldIcon />}
-                            size={"sm"}
-                            className={"shrink-0 fill-neutral-strong"}
-                        />
-                    </button>
-                }
-                align={"start"}
-                className={"w-[240px]"}
-                data-testid={"tenant-selector-menu"}
-            >
-                {canSwitchTenant ? (
-                    <>
-                        <DropdownMenu.Label text={"Tenants"} />
-                        {identity.tenants.map(tenant => {
-                            const isCurrent = tenant.id === currentTenant.id;
-                            return (
-                                <DropdownMenu.Item
-                                    key={tenant.id}
-                                    // Stretch the label so the check mark sits at the right edge.
-                                    className={"[&>div>span:last-child]:flex-1"}
-                                    icon={<TenantBadge name={tenant.name} />}
-                                    text={
-                                        <span className={"flex items-center justify-between"}>
-                                            {tenant.name}
-                                            {isCurrent ? (
-                                                <Icon
-                                                    label={"Current tenant"}
-                                                    icon={<CheckIcon />}
-                                                    size={"sm"}
-                                                />
-                                            ) : null}
-                                        </span>
-                                    }
-                                    onClick={() => {
-                                        if (!isCurrent) {
-                                            tenancy.setTenant(tenant.id);
-                                        }
-                                    }}
-                                />
-                            );
-                        })}
-                        <DropdownMenu.Separator />
-                    </>
-                ) : null}
-                <DropdownMenu.Item
-                    icon={<DropdownMenu.Item.Icon element={<CopyIcon />} label={"Copy ID"} />}
-                    text={"Copy tenant ID"}
-                    onClick={copyTenantId}
-                />
-                <ExitTenant />
-            </DropdownMenu>
-        );
-    };
-});
-
-const TenantBadge = ({ name }: { name: string }) => {
-    const initials = name
+    const initials = tenant.name
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
@@ -124,12 +50,71 @@ const TenantBadge = ({ name }: { name: string }) => {
         .join("");
 
     return (
-        <span
-            className={
-                "flex items-center justify-center size-md rounded-sm bg-neutral-dimmed text-neutral-primary text-xs font-semibold shrink-0"
-            }
-        >
-            {initials}
-        </span>
+        <Avatar
+            size={"sm"}
+            variant={"strong"}
+            className={"shrink-0"}
+            image={tenant.logo ? <Avatar.Image src={tenant.logo} alt={tenant.name} /> : undefined}
+            fallback={<Avatar.Fallback delayMs={tenant.logo ? 600 : 0}>{initials}</Avatar.Fallback>}
+        />
     );
 };
+
+export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
+    return createReactiveComponent(function TenantSelector({ title }) {
+        const presenter = useTenantSwitcher();
+        const { current, tenants, canSwitch, canSearch, search } = presenter.vm;
+
+        const isRoot = !current || current.id === ROOT_TENANT_ID;
+        const name = isRoot ? title : current.name;
+
+        if (!canSwitch) {
+            return isRoot ? <SimpleLink to={"/"}>{title}</SimpleLink> : <>{name}</>;
+        }
+
+        return (
+            <Sidebar.TitleMenu text={name} data-testid={"tenant-switcher"}>
+                <DropdownMenu.Label text={"Switch tenant"} />
+                {canSearch ? (
+                    <div className={"px-xs-plus pb-xs"}>
+                        <InputPrimitive
+                            size={"md"}
+                            placeholder={"Search tenants"}
+                            value={search}
+                            onChange={value => presenter.setSearch(value)}
+                            startIcon={<Icon icon={<SearchIcon />} label={"Search"} />}
+                            // The menu moves focus on typed letters; keep the keys in the field.
+                            onKeyDown={event => event.stopPropagation()}
+                            autoFocus
+                        />
+                    </div>
+                ) : null}
+                {tenants.map(tenant => {
+                    const isCurrent = tenant.id === current?.id;
+                    return (
+                        <DropdownMenu.Item
+                            key={tenant.id}
+                            // Stretch the label so the check mark sits at the right edge.
+                            className={"[&>div>span:last-child]:flex-1"}
+                            icon={<TenantAvatar tenant={tenant} />}
+                            text={
+                                <span className={"flex items-center justify-between gap-sm"}>
+                                    <span className={"truncate"}>{tenant.name}</span>
+                                    {isCurrent ? (
+                                        <Icon
+                                            label={"Current tenant"}
+                                            icon={<CheckIcon />}
+                                            size={"sm"}
+                                        />
+                                    ) : null}
+                                </span>
+                            }
+                            onClick={() => presenter.switchTo(tenant.id)}
+                        />
+                    );
+                })}
+                <TenantSwitcherManageItem />
+            </Sidebar.TitleMenu>
+        );
+    });
+});

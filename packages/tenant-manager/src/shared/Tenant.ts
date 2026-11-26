@@ -1,5 +1,10 @@
 export interface TenantValues {
     name: string;
+    /**
+     * URL of the tenant's logo, shown in the admin navigation. Without one, the admin shows the
+     * tenant's initials.
+     */
+    logo?: string | null;
     description: string;
     isInstalled: boolean;
     status: "enabled" | "disabled";

@@ -21,6 +21,7 @@ const variants = cva(
     {
         variants: {
             variant: {
+                accent: "text-accent-primary! [&_svg]:fill-accent-default!",
                 "group-label": [
                     "uppercase font-semibold text-neutral-muted! text-sm",
                     "pt-md pb-xs-plus pointer-events-none",

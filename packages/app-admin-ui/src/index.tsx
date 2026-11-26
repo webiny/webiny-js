@@ -9,6 +9,7 @@ import { NotFound } from "./NotFound.js";
 import { Dashboard } from "./Dashboard.js";
 import { Logo } from "./Logo.js";
 import { TenantSelector } from "./TenantSelector.js";
+import { UpgradeMenu } from "./UpgradeMenu.js";
 import { AssistanceWidget } from "./Dashboard/components/index.js";
 import { CommunityWidget } from "./Dashboard/components/index.js";
 import { DashboardLayoutPresenterFeature } from "./Dashboard/dashboardLayout/presenter/feature.js";
@@ -47,6 +48,7 @@ export const AdminUI = () => {
             <UserMenu />
             <Logo />
             <TenantSelector />
+            <UpgradeMenu />
         </>
     );
 };

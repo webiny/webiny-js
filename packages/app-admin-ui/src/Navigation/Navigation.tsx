@@ -1,16 +1,24 @@
 import React from "react";
-import { NavigationRenderer, TenantSelector, useAdminConfig } from "@webiny/app-admin";
+import {
+    createReactiveComponent,
+    NavigationRenderer,
+    TenantSelector,
+    useAdminConfig
+} from "@webiny/app-admin";
 import { Sidebar } from "@webiny/admin-ui";
 import { SidebarMenuItems } from "./SidebarMenuItems.js";
 import { SimpleLink } from "@webiny/app-admin";
+import { TenantAvatar, useTenantSwitcher } from "../TenantSelector.js";
 
 export const Navigation = NavigationRenderer.createDecorator(() => {
-    return function Navigation() {
-        const { menus, title, logo } = useAdminConfig();
+    return createReactiveComponent(function Navigation() {
+        const { menus, title } = useAdminConfig();
+        const { current } = useTenantSwitcher().vm;
 
+        // The current tenant's logo, so the collapsed rail still shows which tenant this is.
         const icon = (
             <SimpleLink to={"/"}>
-                <Sidebar.Icon element={logo.squareLogo} label={"Webiny"} />
+                <TenantAvatar tenant={current ?? { id: "root", name: title, logo: null }} />
             </SimpleLink>
         );
 
@@ -29,5 +37,5 @@ export const Navigation = NavigationRenderer.createDecorator(() => {
                 <SidebarMenuItems menus={menus} />
             </Sidebar>
         );
-    };
+    });
 });

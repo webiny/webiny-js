@@ -4,7 +4,7 @@ import { SignOut } from "./UserMenu/SignOut.js";
 import { UserInfo } from "./UserMenu/UserInfo.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
 
-// "Switch tenant" and "Exit tenant" are in the tenant menu in the sidebar header (TenantSelector).
+// Switching tenants is in the sidebar header (TenantSelector), not here.
 export const UserMenu = React.memo(() => {
     return (
         <AdminConfig>

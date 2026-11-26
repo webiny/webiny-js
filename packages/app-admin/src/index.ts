@@ -11,8 +11,6 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
-export { SwitchTenant } from "./base/Base/UserMenu/SwitchTenant.js";
-export { ExitTenant } from "./base/Base/UserMenu/ExitTenant.js";
 export * from "./base/ui/AssumedPermissionsSelector.js";
 export * from "./base/ui/DebuggerIndicator.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
@@ -67,6 +65,12 @@ export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools
 
 export { Banners } from "./features/banners/abstractions.js";
 export { BannersFeature } from "./features/banners/feature.js";
+export { TenantSwitcherSource, TenantSwitcherFeature } from "./features/tenantSwitcher/index.js";
+export type { ISwitcherTenant, ITenantSwitcherSource } from "./features/tenantSwitcher/index.js";
+export {
+    TenantSwitcherPresenter,
+    TenantSwitcherPresenterFeature
+} from "./presentation/tenantSwitcher/index.js";
 export { Banner } from "./presentation/banners/components/Banner.js";
 export type { BannerProps } from "./presentation/banners/components/Banner.js";
 export { BannerBar } from "./presentation/banners/components/BannerBar.js";

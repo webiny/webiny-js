@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig, HasPermission, RegisterFeature } from "@webiny/app-admin";
+import { AdminConfig, HasPermission, RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { ReactComponent as TenantIcon } from "@webiny/icons/business.svg";
@@ -14,11 +14,15 @@ import { TENANT_MODEL_ID } from "~/shared/constants.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { TmPermissionsFeature } from "./features/permissions/feature.js";
 import { InstallTenantFeature } from "./InstallTenant/index.js";
+import { TenantSwitcherFeature } from "./TenantSwitcher/feature.js";
+import { ManageTenantsItem } from "./TenantSwitcher/ManageTenantsItem.js";
 
 const { Menu } = AdminConfig;
 
 export const Extension = () => {
     const { getLink } = useRouter();
+    // Without multi-tenancy on the license (the Free plan), there are no tenants to manage.
+    const canUseMultiTenancy = useFeatureFlags().isEnabled("multiTenancy");
 
     const link = getLink(Routes.ContentEntries.List, { modelId: TENANT_MODEL_ID });
 
@@ -30,6 +34,8 @@ export const Extension = () => {
             <RegisterFeature feature={TmPermissionsFeature} />
             <RegisterFeature feature={InstallTenantFeature} />
             <CurrentTenantProvider />
+            <RegisterFeature feature={TenantSwitcherFeature} />
+            <ManageTenantsItem />
             <TenantEntryList />
             <SecurityPermission />
             <AdminConfig>
@@ -37,10 +43,12 @@ export const Extension = () => {
                     <RegisterFeature feature={DisableTenantFeature} />
                     <RegisterFeature feature={EnableTenantFeature} />
                     <HasPermission name={"tm.tenant"}>
-                        <Menu
-                            name="tenantManager"
-                            element={<Menu.Link text="Tenant Manager" icon={icon} to={link} />}
-                        />
+                        {canUseMultiTenancy ? (
+                            <Menu
+                                name="tenantManager"
+                                element={<Menu.Link text="Tenant Manager" icon={icon} to={link} />}
+                            />
+                        ) : null}
                     </HasPermission>
                 </IsRootTenant>
             </AdminConfig>

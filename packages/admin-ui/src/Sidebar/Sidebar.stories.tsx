@@ -243,3 +243,54 @@ const SidebarComponent = () => {
         </SidebarProvider>
     );
 };
+
+/**
+ * A title that opens a menu under the sidebar header (`Sidebar.TitleMenu`), here a tenant switcher,
+ * and an `accent` item in the footer.
+ */
+export const TitleMenu: Story = {
+    render: () => (
+        <AdminUiProvider linkComponent={HashLink}>
+            <TitleMenuSidebar />
+        </AdminUiProvider>
+    )
+};
+
+const TitleMenuSidebar = () => {
+    const [tenant, setTenant] = React.useState("Acme Europe");
+
+    return (
+        <SidebarProvider state={{ pinned: true, expandedSections: [], pinnedItems: [] }}>
+            <Sidebar
+                icon={<Sidebar.Icon element={<CarIcon />} label={tenant} />}
+                title={
+                    <Sidebar.TitleMenu text={tenant}>
+                        <DropdownMenu.Label text={"Switch tenant"} />
+                        {["Acme Europe", "Acme US"].map(name => (
+                            <DropdownMenu.Item
+                                key={name}
+                                text={name}
+                                onClick={() => setTenant(name)}
+                            />
+                        ))}
+                    </Sidebar.TitleMenu>
+                }
+                footer={
+                    <Sidebar.Item
+                        text={"Upgrade"}
+                        variant={"accent"}
+                        icon={<Sidebar.Item.Icon element={<InfoIcon />} label={"Upgrade"} />}
+                    />
+                }
+            >
+                <Sidebar.Link
+                    text={"File Manager"}
+                    to={"#fm"}
+                    icon={
+                        <Sidebar.Item.Icon element={<FileManagerIcon />} label={"File Manager"} />
+                    }
+                />
+            </Sidebar>
+        </SidebarProvider>
+    );
+};

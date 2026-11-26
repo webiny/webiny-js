@@ -5,6 +5,7 @@ import { SidebarHeader } from "./components/SidebarHeader.js";
 import { SidebarContent } from "./components/SidebarContent.js";
 import { SidebarIcon } from "./components/SidebarIcon.js";
 import { SidebarFooter } from "./components/SidebarFooter.js";
+import { SidebarTitleMenu } from "./components/SidebarTitleMenu.js";
 import { SidebarMenuItem } from "./components/items/SidebarMenuItem.js";
 import { SidebarMenuLink } from "./components/items/SidebarMenuLink.js";
 import { SidebarMenuRoot } from "./components/items/SidebarMenuRoot.js";
@@ -16,6 +17,10 @@ interface SidebarProps
         Omit<React.ComponentPropsWithoutRef<typeof SidebarContent>, "title"> {
     title?: React.ReactNode;
     icon?: React.ReactNode;
+    /**
+     * Show the button that locks the sidebar open. Defaults to `true`.
+     */
+    lockToggle?: boolean;
     children: React.ReactNode;
     footer?: React.ReactNode;
 }
@@ -26,6 +31,7 @@ const SidebarBase = (props: SidebarProps) => {
             // Header props.
             title,
             icon,
+            lockToggle,
 
             // Root props.
             side,
@@ -40,7 +46,8 @@ const SidebarBase = (props: SidebarProps) => {
         return {
             headerProps: {
                 title,
-                icon
+                icon,
+                lockToggle
             },
             rootProps: {
                 side
@@ -73,7 +80,8 @@ const Sidebar = withStaticProps(DecoratableSidebar, {
     Item: SidebarMenuItem,
     Link: SidebarMenuLink,
     Group: SidebarMenuGroup,
-    Icon: SidebarIcon
+    Icon: SidebarIcon,
+    TitleMenu: SidebarTitleMenu
 });
 
 export { Sidebar };
