@@ -41,6 +41,48 @@ function createDeferred() {
 }
 
 describe("SingletonEditorPresenter", () => {
+    it("assumes fields before init so the loader shows", () => {
+        const { presenter } = setup();
+
+        expect(presenter.vm.hasFields).toBe(true);
+    });
+
+    it("assumes fields again after dispose", async () => {
+        const { presenter } = setup();
+        await presenter.init(EMPTY_MODEL, undefined);
+
+        presenter.dispose();
+
+        expect(presenter.vm.hasFields).toBe(true);
+    });
+
+    it("exposes the error message when the fetch throws", async () => {
+        const { presenter, execute, replaceRoute } = setup();
+        execute.mockImplementation(async () => {
+            throw new Error("Network down");
+        });
+
+        await presenter.init(MODEL, undefined);
+
+        expect(presenter.vm.error).toBe("Network down");
+        expect(presenter.vm.loading).toBe(false);
+        expect(replaceRoute).not.toHaveBeenCalled();
+    });
+
+    it("ignores a throw from a stale fetch", async () => {
+        const { presenter, execute } = setup();
+        execute.mockImplementation(async () => {
+            throw new Error("Network down");
+        });
+
+        const first = presenter.init(MODEL, undefined);
+        await presenter.init(MODEL, "x#0002");
+        await first;
+
+        expect(presenter.vm.error).toBeNull();
+        expect(presenter.vm.entryId).toBe("x#0002");
+    });
+
     it("reports no fields and does not fetch", async () => {
         const { presenter, execute } = setup();
 

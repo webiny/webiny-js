@@ -9,7 +9,7 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
     private entryId: string | null = null;
     private loading = false;
     private error: string | null = null;
-    private hasFields = false;
+    private hasFields = true;
     private initToken = 0;
 
     constructor(
@@ -52,7 +52,19 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
         }
 
         this.loading = true;
-        const result = await this.getLatestSingletonEntryUseCase.execute(model);
+        let result: Awaited<ReturnType<GetLatestSingletonEntryUseCase.Interface["execute"]>>;
+        try {
+            result = await this.getLatestSingletonEntryUseCase.execute(model);
+        } catch (error) {
+            if (token !== this.initToken) {
+                return;
+            }
+            runInAction(() => {
+                this.error = error instanceof Error ? error.message : String(error);
+                this.loading = false;
+            });
+            return;
+        }
 
         if (token !== this.initToken) {
             return;
@@ -82,7 +94,7 @@ class SingletonEditorPresenterImpl implements Abstraction.Interface {
         this.entryId = null;
         this.loading = false;
         this.error = null;
-        this.hasFields = false;
+        this.hasFields = true;
     }
 }
 
