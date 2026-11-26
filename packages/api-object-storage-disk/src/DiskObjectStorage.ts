@@ -143,6 +143,12 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
 
     public async getStream(key: string): Promise<AsyncIterable<Uint8Array> | null> {
         const filePath = this.resolveKey(key);
+        /*
+         * Opened here, not by `createReadStream(path)`, which only opens the file once the consumer
+         * starts reading: by then the response has started, and a missing file would be an error
+         * in the middle of it. Opening reads no bytes; it only checks the file is there and gives
+         * back a handle (a file descriptor) to read it through.
+         */
         let handle;
         try {
             handle = await open(filePath, "r");
@@ -154,15 +160,21 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         }
 
         /*
-         * Opened here rather than when the consumer starts reading, so a missing file is `null`
-         * before anything has been sent. The stream closes the file when it ends or is destroyed.
+         * A process can hold only so many open files (`ulimit -n`, shared with its sockets), and a
+         * handle that is never closed stays taken until the process exits. So every way out of
+         * here before the stream takes the handle over closes it.
          */
         try {
+            // macOS and Linux open a folder for reading without an error, so check again.
             const stats = await handle.stat();
             if (stats.isDirectory()) {
                 await handle.close();
                 return null;
             }
+            /*
+             * Reads 64 KB at a time, only as fast as the consumer pulls. From here the stream owns
+             * the handle and closes it when it ends or is destroyed (the client disconnected).
+             */
             return handle.createReadStream();
         } catch (error) {
             await handle.close();
