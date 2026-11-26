@@ -106,9 +106,9 @@ singleton model with `singularApiName: "Settings"`.
 
 Singleton models with no fields (`model.fields.length === 0`) have no API, as today. Both
 `createSingularSDL.ts` (which checks `inputFields.length === 0` at :30 today) and
-`createSingularResolvers.ts:26-31` use this one predicate, so a model with only layout/UI fields
-gets the full API (input and value types fall back to `_empty: String`). The admin uses the same
-predicate.
+`createSingularResolvers.ts:26-31` use this one predicate, so a model whose fields render no input
+still gets the full API (input and value types fall back to `_empty: String`). Layout cells are not
+stored in `model.fields`, so a layout-only model has no fields. The admin uses the same predicate.
 
 `createSingularResolvers.ts` follows the same split. Resolvers:
 
