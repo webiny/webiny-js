@@ -18,16 +18,21 @@ export const EntryFormHeaderLeft = ({
     modelName,
     status
 }: EntryFormHeaderLeftProps) => {
+    let backButton = null;
+    if (onBack) {
+        backButton = (
+            <IconButton
+                variant={"ghost"}
+                aria-label={"Back"}
+                onClick={onBack}
+                icon={<BackIcon />}
+            />
+        );
+    }
+
     return (
         <div className={"flex items-center gap-sm"}>
-            {onBack ? (
-                <IconButton
-                    variant={"ghost"}
-                    aria-label={"Back"}
-                    onClick={onBack}
-                    icon={<BackIcon />}
-                />
-            ) : null}
+            {backButton}
             <Heading level={5} className={`text-neutral-primary${isNewEntry ? " opacity-50" : ""}`}>
                 {title}
             </Heading>
