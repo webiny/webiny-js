@@ -47,7 +47,8 @@ export const generateSchemaPlugins = async (
     models.forEach(model => {
         if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
             /**
-             * We always need to send either manage or read.
+             * The SDL renders preview as read. The resolvers get the real endpoint,
+             * because read and preview use different use cases.
              */
             const singularType: ApiEndpoint = type === "manage" ? "manage" : "read";
             const plugin = createCmsGraphQLSchemaPlugin({
@@ -61,7 +62,7 @@ export const generateSchemaPlugins = async (
                     models,
                     model,
                     fieldRegistry,
-                    type: singularType
+                    type
                 })
             });
             plugin.name = `headless-cms.graphql.schema.singular.${model.modelId}`;

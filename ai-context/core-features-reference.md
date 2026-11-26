@@ -378,6 +378,12 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/DeleteEntry/abstractions.ts`
 - **Usage:** Delete content entry
 
+#### Singleton entry publishing
+
+- **Import:** `import { GetLatestSingletonEntryUseCase, GetPublishedSingletonEntryUseCase, UpdateSingletonEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js"` (also `webiny/api/cms/entry`)
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/*SingletonEntry*/abstractions.ts`
+- **Usage:** A singleton model (tag `singleEntry`) supports draft, publish, unpublish and revisions only when tagged `$publishing:true` (`isPublishingEnabled(model)`). Untagged singletons keep one revision, `#0001`. The entry id comes from `createSingletonEntryId(model)`. GraphQL: read `get<S>` returns the published revision (empty values if none), preview `get<S>` the latest revision; both create the entry if missing. Manage has `get<S>Latest`, `get<S>Revision`, `get<S>Revisions`, `update<S>(revision, data)`, `update<S>RevisionDescription`, `create<S>From`, `publish<S>`, `unpublish<S>`, `delete<S>(revision)`; it has no `get<S>` without arguments. Singleton models without fields (`model.fields.length === 0`) have no API. SDL and resolvers: `graphql/schema/createSingularSDL.ts`, `createSingularResolvers.ts`, `resolvers/singular/`.
+
 #### ListEntriesRepository
 
 - **Import:** `import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`

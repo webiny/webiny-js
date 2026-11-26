@@ -21,15 +21,16 @@ export const createSingularSDL: CreateSingularSDL = ({
     fieldRegistry,
     type
 }): string => {
+    if (model.fields.length === 0) {
+        return "";
+    }
+
     const inputFields = renderInputFields({
         models,
         model,
         fields: model.fields,
         fieldRegistry
     });
-    if (inputFields.length === 0) {
-        return "";
-    }
 
     const fields = renderFields({
         models,
@@ -56,7 +57,7 @@ export const createSingularSDL: CreateSingularSDL = ({
     }).join("\n");
 
     // Had to remove /* GraphQL */ because it causes issues with oxfmt formatting.
-    const read = `
+    const shared = `
         """${model.description || singularName}"""
         
         type ${singularName}Values {
@@ -84,17 +85,43 @@ export const createSingularSDL: CreateSingularSDL = ({
             data: ${singularName}
             error: CmsError
         }
-        
-        extend type Query {
-            get${singularName}: ${singularName}Response
-        }
-
     `;
     if (type !== "manage") {
-        return read;
+        return `
+            ${shared}
+            
+            extend type Query {
+                get${singularName}: ${singularName}Response
+            }
+        `;
     }
     return `
-        ${read}
+        ${shared}
+        
+        type ${singularName}Meta {
+            modelId: String
+            version: Int
+            locked: Boolean
+            
+            status: String
+            system: CmsEntrySystem
+            """
+            CAUTION: this field is resolved by making an extra query to DB.
+            """
+            revisions: [${singularName}!]
+            title: String
+            description: String
+            image: String
+        }
+        
+        extend type ${singularName} {
+            meta: ${singularName}Meta
+        }
+        
+        type ${singularName}ArrayResponse {
+            data: [${singularName}]
+            error: CmsError
+        }
     
         ${inputFields.map(f => f.typeDefs).join("\n")}
         
@@ -106,9 +133,27 @@ export const createSingularSDL: CreateSingularSDL = ({
             ${onByMetaInputGqlFields}
             values: ${singularName}InputValues!
         }
+        
+        extend type Query {
+            get${singularName}Latest: ${singularName}Response
+            
+            get${singularName}Revision(revision: ID!): ${singularName}Response
+            
+            get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
+        }
     
         extend type Mutation {
-            update${singularName}(data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
+            update${singularName}(revision: ID!, data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
+            
+            update${singularName}RevisionDescription(revision: ID!, revisionDescription: String): ${singularName}Response
+            
+            create${singularName}From(revision: ID!, data: ${singularName}Input, options: CreateRevisionCmsEntryOptionsInput): ${singularName}Response
+            
+            publish${singularName}(revision: ID!): ${singularName}Response
+            
+            unpublish${singularName}(revision: ID!): ${singularName}Response
+            
+            delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
         }
     `;
 };

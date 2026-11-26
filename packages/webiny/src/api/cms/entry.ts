@@ -75,6 +75,8 @@ export {
 } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/events.js";
 export { CmsEntrySystemField } from "@webiny/api-headless-cms/features/contentEntry/EntrySystemField/abstractions.js";
 export { UpdateSingletonEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.js";
+export { GetLatestSingletonEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestSingletonEntry/abstractions.js";
+export { GetPublishedSingletonEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedSingletonEntry/abstractions.js";
 export { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/abstractions.js";
 export { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry/abstractions.js";
 export { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js";
@@ -93,7 +95,6 @@ export { GetPublishedEntriesByIdsUseCase } from "@webiny/api-headless-cms/featur
 export { GetPublishedRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedRevisionByEntryId/abstractions.js";
 export { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/abstractions.js";
 export { GetRevisionsByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionsByEntryId/abstractions.js";
-export { GetSingletonEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetSingletonEntry/abstractions.js";
 export {
     ListEntriesUseCase,
     ListLatestEntriesUseCase,

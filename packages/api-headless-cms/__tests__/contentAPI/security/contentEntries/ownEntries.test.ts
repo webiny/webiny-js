@@ -526,21 +526,21 @@ describe("Own Entries Permissions Checks - singleton model", () => {
         });
 
         // A creates the singleton entry.
-        const [responseA] = await managerA.getCategory();
-        expect(responseA.data.getCategory.error).toBeNull();
-        const singleton = responseA.data.getCategory.data;
+        const [responseA] = await managerA.getCategoryLatest();
+        expect(responseA.data.getCategoryLatest.error).toBeNull();
+        const singleton = responseA.data.getCategoryLatest.data;
         expect(singleton.createdBy.id).toBe("a");
 
         // B can read it.
-        const [responseB] = await managerB.getCategory();
-        expect(responseB.data.getCategory).toMatchObject({
+        const [responseB] = await managerB.getCategoryLatest();
+        expect(responseB.data.getCategoryLatest).toMatchObject({
             data: { id: singleton.id, createdBy: { id: "a" } },
             error: null
         });
 
         // B can update it.
-        const [updateB] = await managerB.updateCategory({
-            data: { values: { title: "Updated by B", slug: "updated-by-b" } }
+        const [updateB] = await managerB.updateCategory(singleton.id, {
+            values: { title: "Updated by B", slug: "updated-by-b" }
         });
         expect(updateB.data.updateCategory).toMatchObject({
             data: {

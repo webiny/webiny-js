@@ -34,6 +34,21 @@ const categoryFields = `
     }
 `;
 
+const manageCategoryFields = `
+    ${categoryFields}
+    revisionDescription
+    meta {
+        modelId
+        version
+        locked
+        status
+        title
+        revisions {
+            id
+        }
+    }
+`;
+
 const errorFields = `
     error {
         code
@@ -55,13 +70,118 @@ const getCategoryQuery = (model: CmsModel) => {
     `;
 };
 
+const getCategoryLatestQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetCategoryLatest {
+            getCategoryLatest: get${model.singularApiName}Latest {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const getCategoryRevisionQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetCategoryRevision($revision: ID!) {
+            getCategoryRevision: get${model.singularApiName}Revision(revision: $revision) {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const getCategoryRevisionsQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query GetCategoryRevisions($id: ID!) {
+            getCategoryRevisions: get${model.singularApiName}Revisions(id: $id) {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 const updateCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation UpdateCategory($data: ${model.singularApiName}Input!) {
-            updateCategory: update${model.singularApiName}(data: $data) {
+        mutation UpdateCategory($revision: ID!, $data: ${model.singularApiName}Input!) {
+            updateCategory: update${model.singularApiName}(revision: $revision, data: $data) {
                 data {
-                    ${categoryFields}
+                    ${manageCategoryFields}
                 }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const updateCategoryRevisionDescriptionMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateCategoryRevisionDescription($revision: ID!, $revisionDescription: String) {
+            updateCategoryRevisionDescription: update${model.singularApiName}RevisionDescription(
+                revision: $revision
+                revisionDescription: $revisionDescription
+            ) {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const createCategoryFromMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation CreateCategoryFrom($revision: ID!) {
+            createCategoryFrom: create${model.singularApiName}From(revision: $revision) {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const publishCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation PublishCategory($revision: ID!) {
+            publishCategory: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const unpublishCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UnpublishCategory($revision: ID!) {
+            unpublishCategory: unpublish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${manageCategoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const deleteCategoryMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DeleteCategory($revision: ID!) {
+            deleteCategory: delete${model.singularApiName}(revision: $revision) {
+                data
                 ${errorFields}
             }
         }
@@ -82,13 +202,75 @@ export const useSingletonCategoryHandler = (params: GraphQLHandlerParams) => {
                 headers
             });
         },
-        async updateCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+        async getCategoryLatest() {
+            return await contentHandler.invoke({
+                body: {
+                    query: getCategoryLatestQuery(model)
+                }
+            });
+        },
+        async getCategoryRevision(revision: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: getCategoryRevisionQuery(model),
+                    variables: { revision }
+                }
+            });
+        },
+        async getCategoryRevisions(id: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: getCategoryRevisionsQuery(model),
+                    variables: { id }
+                }
+            });
+        },
+        async updateCategory(revision: string, data: GenericRecord) {
             return await contentHandler.invoke({
                 body: {
                     query: updateCategoryMutation(model),
-                    variables
-                },
-                headers
+                    variables: { revision, data }
+                }
+            });
+        },
+        async updateCategoryRevisionDescription(revision: string, revisionDescription: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: updateCategoryRevisionDescriptionMutation(model),
+                    variables: { revision, revisionDescription }
+                }
+            });
+        },
+        async createCategoryFrom(revision: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: createCategoryFromMutation(model),
+                    variables: { revision }
+                }
+            });
+        },
+        async publishCategory(revision: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: publishCategoryMutation(model),
+                    variables: { revision }
+                }
+            });
+        },
+        async unpublishCategory(revision: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: unpublishCategoryMutation(model),
+                    variables: { revision }
+                }
+            });
+        },
+        async deleteCategory(revision: string) {
+            return await contentHandler.invoke({
+                body: {
+                    query: deleteCategoryMutation(model),
+                    variables: { revision }
+                }
             });
         }
     };

@@ -110,6 +110,12 @@ export { CmsEntrySystemField } from "~/features/contentEntry/EntrySystemField/ab
 // UpdateSingletonEntry
 export { UpdateSingletonEntryUseCase } from "~/features/contentEntry/UpdateSingletonEntry/abstractions.js";
 
+// GetLatestSingletonEntry
+export { GetLatestSingletonEntryUseCase } from "~/features/contentEntry/GetLatestSingletonEntry/abstractions.js";
+
+// GetPublishedSingletonEntry
+export { GetPublishedSingletonEntryUseCase } from "~/features/contentEntry/GetPublishedSingletonEntry/abstractions.js";
+
 // GetEntriesByIds
 export { GetEntriesByIdsUseCase } from "~/features/contentEntry/GetEntriesByIds/abstractions.js";
 
@@ -147,9 +153,6 @@ export { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/
 
 // GetRevisionsByEntryId
 export { GetRevisionsByEntryIdUseCase } from "~/features/contentEntry/GetRevisionsByEntryId/abstractions.js";
-
-// GetSingletonEntry
-export { GetSingletonEntryUseCase } from "~/features/contentEntry/GetSingletonEntry/abstractions.js";
 
 // ListEntries
 export {
