@@ -5,8 +5,12 @@ import { FindUserRecordsUseCase } from "@webiny/api-core/features/users/FindUser
 import { AdminUsersRepository } from "@webiny/api-core/features/users/shared/abstractions.js";
 import {
     NotAuthorizedError,
+    UserStorageError,
     UserValidationError
 } from "@webiny/api-core/features/users/shared/errors.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
@@ -44,7 +48,10 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         private updateUserUseCase: CoreUpdateUser.Interface,
         private getUserUseCase: GetUserUseCase.Interface,
         private findUserRecords: FindUserRecordsUseCase.Interface,
-        private repository: AdminUsersRepository.Interface
+        private repository: AdminUsersRepository.Interface,
+        private tenantContext: TenantContext.Interface,
+        private tenantScopes: TenantScopes.Interface,
+        private getTenantById: GetTenantByIdUseCase.Interface
     ) {
         this.updateAttributes = defaultUpdateAttributes;
     }
@@ -200,9 +207,7 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         let rollbackErrors: Error[] = [];
 
         for (let attempt = 0; ; attempt++) {
-            const results = await Promise.all(
-                pending.map(record => this.repository.update(record))
-            );
+            const results = await Promise.all(pending.map(record => this.updateRecord(record)));
 
             const failed: AdminUser[] = [];
             rollbackErrors = [];
@@ -234,10 +239,42 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         return Result.fail(error);
     }
 
+    /**
+     * Writes a record in its own tenant's scope: the person's records in other tenants are written
+     * by those tenants' storage.
+     */
+    private async updateRecord(
+        record: AdminUser
+    ): Promise<Result<AdminUser, AdminUsersRepository.Error>> {
+        if (record.tenant === this.tenantContext.getTenant().id) {
+            return this.repository.update(record);
+        }
+
+        const tenantResult = await this.getTenantById.execute(record.tenant);
+        if (tenantResult.isFail()) {
+            const error = tenantResult.error;
+            return Result.fail(
+                new UserStorageError(
+                    error.type === "UNKNOWN"
+                        ? error.cause
+                        : new Error(`Tenant "${record.tenant}" was not found.`)
+                )
+            );
+        }
+
+        try {
+            return await this.tenantScopes.withTenant(tenantResult.value, scope => {
+                return scope.resolve(AdminUsersRepository).update(record);
+            });
+        } catch (error) {
+            return Result.fail(new UserStorageError(error as Error));
+        }
+    }
+
     private async writeRecords(
         records: AdminUser[]
     ): Promise<Result<void, AdminUsersRepository.Error>> {
-        const results = await Promise.all(records.map(record => this.repository.update(record)));
+        const results = await Promise.all(records.map(record => this.updateRecord(record)));
 
         const failed = results.find(result => result.isFail());
         if (failed && failed.isFail()) {
@@ -256,6 +293,9 @@ export const UpdateUserUseCase = UseCaseAbstraction.createImplementation({
         CoreUpdateUser,
         GetUserUseCase,
         FindUserRecordsUseCase,
-        AdminUsersRepository
+        AdminUsersRepository,
+        TenantContext,
+        TenantScopes,
+        GetTenantByIdUseCase
     ]
 });

@@ -3,7 +3,7 @@ import { SaveSettingsRepositoryImplementation } from "./SaveSettingsRepository.j
 import { SaveSettingsUseCaseImplementation } from "./SaveSettingsUseCase.js";
 
 export const SaveSettingsFeature = createFeature({
-    name: "SaveSettings",
+    name: "Mailer/SaveSettings",
     register(container) {
         container.register(SaveSettingsRepositoryImplementation).inSingletonScope();
         container.register(SaveSettingsUseCaseImplementation);

@@ -1,5 +1,5 @@
 import { getIntrospectionQuery } from "graphql";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -9,7 +9,10 @@ import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { until } from "@webiny/api/testing/until.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type {
+    ApiCoreStorageOperations,
+    ApiCoreStorageOperationsBuilder
+} from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -61,7 +64,7 @@ const defaultIdentity: IdentityData = {
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
     const cmsStorage = getStorageOps("cms");
 

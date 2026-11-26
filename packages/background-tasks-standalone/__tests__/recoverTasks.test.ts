@@ -6,7 +6,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTasks/index.js";
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
@@ -14,7 +14,7 @@ import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { RandomProcessOwner } from "@webiny/event-handler-standalone";
+import { RandomProcessOwner } from "@webiny/api-kernel-core";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
@@ -22,7 +22,7 @@ import { RECOVER_GRACE_MS } from "~/claim/constants.js";
 import { RecoverTasksHandler } from "~/recovery/RecoverTasksHandler.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
-import { TaskRecoverEventHandler } from "~/recovery/TaskRecoverEventHandler.js";
+import { TaskRecoverInputHandler } from "~/recovery/TaskRecoverInputHandler.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
 const TTL_MS = 60_000;
@@ -71,12 +71,18 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     container.registerInstance(ListTenantsUseCase, {
         execute: async () => Result.ok(tenants.map(t => ({ isInstalled: true, ...t })) as any)
     });
-    container.registerInstance(TenantContext, {
-        withTenant: async (tenant: { id: string }, cb: (tenant: any) => Promise<unknown>) => {
+    // Every tenant's scope is the test's container; the fakes read which tenant it is for.
+    container.registerInstance(TenantScopes, {
+        withTenant: async (tenant: { id: string }, cb: (scope: any) => Promise<unknown>) => {
             currentTenant = tenant.id;
-            return cb(tenant);
+            return cb({
+                tenant,
+                storage: "default",
+                resolve: (abstraction: any) => container.resolve(abstraction),
+                resolveAll: (abstraction: any) => container.resolveAll(abstraction)
+            });
         }
-    } as unknown as TenantContext.Interface);
+    } as unknown as TenantScopes.Interface);
     container.registerInstance(ListTasksUseCase, {
         execute: async () => {
             const tenant = tenants.find(t => t.id === currentTenant);
@@ -96,7 +102,7 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(RecoverTasksHandler);
 
-    const handler = container.resolve(TaskRecoverEventHandler);
+    const handler = container.resolve(TaskRecoverInputHandler);
     const claim = container.resolve(TaskClaim);
     const next = async () => undefined;
     const recover = () => handler.execute({} as any, next);

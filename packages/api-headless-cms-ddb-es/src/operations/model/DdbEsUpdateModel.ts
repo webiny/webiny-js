@@ -2,19 +2,24 @@ import type { CmsModelStorageOperationsUpdateParams } from "@webiny/api-headless
 import WebinyError from "@webiny/error";
 import { UpdateModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/UpdateModelStorageOperation.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createKeys, createType } from "./keys.js";
 
 class DdbEsUpdateModelImpl implements UpdateModelStorageOperation.Interface {
-    constructor(private entity: CmsDdbEsModelEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbEsModelEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(params: CmsModelStorageOperationsUpdateParams) {
         const { model } = params;
 
-        const keys = createKeys(model);
+        const tenant = this.scopeTenant.getId();
+        const keys = createKeys({ tenant, modelId: model.modelId });
 
         try {
             await this.entity.put({
-                data: model,
+                data: { ...model, tenant },
                 ...keys,
                 TYPE: createType()
             });
@@ -35,5 +40,5 @@ class DdbEsUpdateModelImpl implements UpdateModelStorageOperation.Interface {
 
 export const DdbEsUpdateModel = UpdateModelStorageOperation.createImplementation({
     implementation: DdbEsUpdateModelImpl,
-    dependencies: [CmsDdbEsModelEntity]
+    dependencies: [CmsDdbEsModelEntity, ScopeTenant]
 });

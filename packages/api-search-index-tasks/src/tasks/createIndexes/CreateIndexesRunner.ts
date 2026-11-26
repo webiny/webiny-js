@@ -1,7 +1,7 @@
 import type { IIndexManager } from "~/abstractions/IndexManager.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { TenantIndexFactory } from "~/abstractions/TenantIndexFactory.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { listIndexes } from "./listIndexes.js";
@@ -11,7 +11,7 @@ import { CreateIndexesRunner as Abstraction } from "./abstractions/CreateIndexes
 class CreateIndexesRunnerImpl implements Abstraction.Interface {
     constructor(
         private readonly controller: TaskController.Interface,
-        private readonly tenantContext: TenantContext.Interface,
+        private readonly tenantScopes: TenantScopes.Interface,
         private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
         private readonly indexFactories: TenantIndexFactory.Interface[]
     ) {}
@@ -31,7 +31,7 @@ class CreateIndexesRunnerImpl implements Abstraction.Interface {
         }
         const tenants = tenantsResult.value;
 
-        const indexes = await listIndexes(this.tenantContext, tenants, this.indexFactories);
+        const indexes = await listIndexes(this.tenantScopes, tenants);
 
         if (indexes.length === 0) {
             return this.controller.response.done("No indexes found.");
@@ -88,7 +88,7 @@ export const CreateIndexesRunner = Abstraction.createImplementation({
     implementation: CreateIndexesRunnerImpl,
     dependencies: [
         TaskController,
-        TenantContext,
+        TenantScopes,
         ListTenantsUseCase,
         [TenantIndexFactory, { multiple: true }]
     ]

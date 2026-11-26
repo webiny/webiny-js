@@ -3,6 +3,7 @@ import type {
     CmsEntryStorageOperationsDeleteEntriesParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { DeleteMultipleEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -12,17 +13,19 @@ class DdbDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(initialModel: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams) {
         const { entries } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
         /**
          * First we need all the revisions of the entries we want to delete.
          */
         const revisions = await this.dataLoaders.getAllEntryRevisions({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: entries
         });
         /**
@@ -34,7 +37,7 @@ class DdbDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
         for (const id of entries) {
             const partitionKey = createPartitionKey({
                 id,
-                tenant: model.tenant
+                tenant
             });
             entityBatch.delete({
                 PK: partitionKey,
@@ -52,7 +55,7 @@ class DdbDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
             entityBatch.delete({
                 PK: createPartitionKey({
                     id: revision.id,
-                    tenant: model.tenant
+                    tenant
                 }),
                 SK: createRevisionSortKey({
                     version: revision.version
@@ -62,13 +65,11 @@ class DdbDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
 
         await entityBatch.execute();
 
-        this.dataLoaders.clearAll({
-            tenant: model.tenant
-        });
+        this.dataLoaders.clearAll({ tenant });
     }
 }
 
 export const DdbDeleteMultipleEntries = DeleteMultipleEntriesStorageOperation.createImplementation({
     implementation: DdbDeleteMultipleEntriesImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

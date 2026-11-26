@@ -6,6 +6,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -20,7 +21,8 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -28,12 +30,16 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
-        const storageEntry = convertToStorageEntry({
-            storageEntry: initialStorageEntry,
-            model
-        });
+        const storageEntry = {
+            ...convertToStorageEntry({
+                storageEntry: initialStorageEntry,
+                model
+            }),
+            tenant
+        };
 
         /**
          * We need to:
@@ -46,13 +52,13 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         const entityBatch = this.entity.createEntityWriter({
             put: [
                 {
-                    ...createEntryRevisionKeys(storageEntry),
+                    ...createEntryRevisionKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry
                     }
                 },
                 {
-                    ...createEntryLatestKeys(storageEntry),
+                    ...createEntryLatestKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry
                     }
@@ -63,7 +69,7 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         const isPublished = entry.status === "published";
         if (isPublished) {
             entityBatch.put({
-                ...createEntryPublishedKeys(storageEntry),
+                ...createEntryPublishedKeys(storageEntry, tenant),
                 data: {
                     ...storageEntry
                 }
@@ -72,13 +78,13 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
             // Unpublish previously published revision (if any).
             const [publishedRevisionStorageEntry] =
                 await this.dataLoaders.getPublishedRevisionByEntryId({
-                    model,
+                    model: { tenant, modelId: model.modelId },
                     ids: [entry.id]
                 });
 
             if (publishedRevisionStorageEntry) {
                 entityBatch.put({
-                    ...createEntryRevisionKeys(publishedRevisionStorageEntry),
+                    ...createEntryRevisionKeys(publishedRevisionStorageEntry, tenant),
                     data: {
                         ...publishedRevisionStorageEntry,
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED
@@ -89,9 +95,7 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
 
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create revision from given entry.",
@@ -113,5 +117,5 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
 export const DdbCreateEntryRevisionFrom =
     CreateEntryRevisionFromStorageOperation.createImplementation({
         implementation: DdbCreateEntryRevisionFromImpl,
-        dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+        dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
     });

@@ -1,30 +1,29 @@
-import { ScheduledActionEventHandler } from "@webiny/event-handler-core";
-import type { IScheduledActionEvent } from "@webiny/event-handler-core";
-import type { IScheduledActionResult } from "@webiny/event-handler-core";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { ScheduledActionInputHandler } from "@webiny/api-kernel-core";
+import type { IScheduledActionEvent } from "@webiny/api-kernel-core";
+import type { IScheduledActionResult } from "@webiny/api-kernel-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
-import type { IExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
+import { GetTenantByIdUseCase, TenantScopes } from "@webiny/api-core/exports/api/tenancy.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 
-class ScheduledActionLambdaHandlerImpl implements ScheduledActionEventHandler.Interface {
+class ScheduledActionLambdaHandlerImpl implements ScheduledActionInputHandler.Interface {
     constructor(
-        private executeScheduledAction: IExecuteScheduledActionUseCase,
         private tenantContext: TenantContext.Interface,
-        private getTenantById: GetTenantByIdUseCase.Interface
+        private getTenantById: GetTenantByIdUseCase.Interface,
+        private tenantScopes: TenantScopes.Interface
     ) {}
 
     async execute(
-        eventCtx: EventContext<IScheduledActionEvent>,
+        inputCtx: InputContext<IScheduledActionEvent>,
         _next: NextFunction
     ): Promise<IScheduledActionResult> {
-        const input = eventCtx.event[SCHEDULED_ACTION_EVENT_IDENTIFIER];
+        const input = inputCtx.input[SCHEDULED_ACTION_EVENT_IDENTIFIER];
 
         /**
          * Use the current tenant if the payload doesn't carry one — keeps backward compatibility
-         * with scheduled actions created before `tenant` was added to the payload. The actual
-         * per-request DynamoDB queries run inside withTenant() below.
+         * with scheduled actions created before `tenant` was added to the payload. The action runs in
+         * its tenant's scope (the one this event already runs in, see `ScheduledActionTenantSource`).
          */
         if (!input.tenant) {
             input.tenant = this.tenantContext.getTenant().id;
@@ -36,8 +35,8 @@ class ScheduledActionLambdaHandlerImpl implements ScheduledActionEventHandler.In
         }
         const tenant = tenantResult.value;
 
-        return this.tenantContext.withTenant(tenant, async () => {
-            const result = await this.executeScheduledAction.execute(input);
+        return this.tenantScopes.withTenant(tenant, async scope => {
+            const result = await scope.resolve(ExecuteScheduledActionUseCase).execute(input);
 
             if (result.isFail()) {
                 const error = result.error;
@@ -50,7 +49,7 @@ class ScheduledActionLambdaHandlerImpl implements ScheduledActionEventHandler.In
     }
 }
 
-export const ScheduledActionLambdaHandler = ScheduledActionEventHandler.createImplementation({
+export const ScheduledActionLambdaHandler = ScheduledActionInputHandler.createImplementation({
     implementation: ScheduledActionLambdaHandlerImpl,
-    dependencies: [ExecuteScheduledActionUseCase, TenantContext, GetTenantByIdUseCase]
+    dependencies: [TenantContext, GetTenantByIdUseCase, TenantScopes]
 });

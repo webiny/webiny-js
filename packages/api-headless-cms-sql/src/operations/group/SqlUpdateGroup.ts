@@ -5,6 +5,7 @@ import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js"
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { groupToRow } from "./mappers.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 class SqlUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
     private tableName: string;
@@ -12,18 +13,20 @@ class SqlUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
     constructor(
         private knex: KnexClient.Interface,
         tableNameResolver: TableNameResolver.Interface,
-        private groupSchemaManager: GroupSchemaManager.Interface
+        private groupSchemaManager: GroupSchemaManager.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {
         this.tableName = tableNameResolver.resolve("groups");
     }
 
     async execute(params: CmsGroupStorageOperationsUpdateParams) {
-        const row = groupToRow(params.group);
+        const tenant = this.scopeTenant.getId();
+        const row = groupToRow(params.group, tenant);
 
         await this.groupSchemaManager.ensure(this.tableName);
         await this.knex
             .client<IGroupRow>(this.tableName)
-            .where("tenant", params.group.tenant)
+            .where("tenant", tenant)
             .andWhere("id", params.group.id)
             .update(row);
     }
@@ -31,5 +34,5 @@ class SqlUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
 
 export const SqlUpdateGroup = UpdateGroupStorageOperation.createImplementation({
     implementation: SqlUpdateGroupImpl,
-    dependencies: [KnexClient, TableNameResolver, GroupSchemaManager]
+    dependencies: [KnexClient, TableNameResolver, GroupSchemaManager, ScopeTenant]
 });

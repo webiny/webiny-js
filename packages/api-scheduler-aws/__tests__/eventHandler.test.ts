@@ -5,10 +5,11 @@ import {
 } from "@webiny/api-scheduler/constants.js";
 import { ScheduledActionId } from "@webiny/api-scheduler/domain/ScheduledActionId.js";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
-import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
+import { CreateTenantUseCase, TenantScopes } from "@webiny/api-core/exports/api/tenancy.js";
 import { TenancyStorageOperations } from "@webiny/api-core/features/tenancy/shared/storageOperations.js";
 import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
-import { ScheduledActionEventHandler } from "@webiny/event-handler-core";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { ScheduledActionInputHandler } from "@webiny/api-kernel-core";
 import { useHandler } from "./__mocks/handler/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
@@ -33,24 +34,35 @@ describe("Scheduler Event Handler", () => {
         const contextHandler = useHandler({
             getScheduleClient: () => {
                 return createMockScheduleClient();
+            },
+            // In every tenant's scope: an action scheduled on another tenant runs in its scope.
+            setup: container => {
+                container.register(PublishTestEntryActionHandler);
+                container.register(NamespaceHandler);
+                container.registerInstance(SchedulerService, new VoidSchedulerService());
+                // The scheduled-action event handler is wired by the consuming Lambda app; register
+                // it here as the unit under test.
+                container.register(ScheduledActionLambdaHandler);
             }
         });
         context = await contextHandler.handler();
-        context.container.register(PublishTestEntryActionHandler);
-        context.container.register(NamespaceHandler);
-        context.container.registerInstance(SchedulerService, new VoidSchedulerService());
-        // The scheduled-action event handler is wired by the consuming Lambda app; register it here
-        // as the unit under test.
-        context.container.register(ScheduledActionLambdaHandler);
-        // The handler resolves the event's tenant via GetTenantById (storage-backed). The test mock
-        // only sets "root" as the current tenant without persisting it, so seed it into storage.
-        await context.container
-            .resolve(TenancyStorageOperations)
-            .createTenant(RootTenantValue.create());
+        // The handler resolves the event's tenant via GetTenantById (storage-backed). The test
+        // request runs as the placeholder root tenant without persisting it, so seed it into storage.
+        const now = new Date().toISOString();
+        await context.container.resolve(TenancyStorageOperations).createTenant({
+            ...RootTenantValue.create(),
+            description: "",
+            status: "enabled",
+            settings: {} as Tenant["settings"],
+            tags: [],
+            parent: null,
+            createdOn: now,
+            savedOn: now
+        });
     });
 
     it("should register a handler for scheduled-action events", () => {
-        const eventHandler = context.container.resolve(ScheduledActionEventHandler);
+        const eventHandler = context.container.resolve(ScheduledActionInputHandler);
 
         expect(eventHandler).toBeDefined();
         expect(typeof eventHandler.execute).toBe("function");
@@ -108,10 +120,10 @@ describe("Scheduler Event Handler", () => {
             targetId: "target-id#0001"
         });
 
-        const eventHandler = context.container.resolve(ScheduledActionEventHandler);
+        const eventHandler = context.container.resolve(ScheduledActionInputHandler);
         const result = await eventHandler.execute(
             {
-                event: {
+                input: {
                     [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                         id,
                         namespace,
@@ -147,18 +159,23 @@ describe("Scheduler Event Handler", () => {
         expect(tenantResult.isOk()).toBeTrue();
         const webinyTenant = tenantResult.value;
 
-        /* Schedule action while on the "webiny" tenant. */
+        /* Schedule action in the "webiny" tenant's scope. */
         const scheduleFor = new Date(Date.now() + 5 * 60 * 1000);
-        const createResult = await tenantContext.withTenant(webinyTenant, async () => {
-            const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
-            return scheduleActionUseCase.execute({
-                namespace: PublishTestEntryActionHandlerImpl.name,
-                actionType: SCHEDULED_ACTION_PUBLISH,
-                targetId: "target-id#0002",
-                scheduleFor,
-                tenant: "root",
-                immediately: false
-            });
+        const tenantScopes = context.container.resolve(TenantScopes);
+        // Called from outside any scope's callback, so the identity is passed in explicitly.
+        const scheduler = context.container.resolve(IdentityContext).getIdentity();
+        const createResult = await tenantScopes.withTenant(webinyTenant, async scope => {
+            const scheduleActionUseCase = scope.resolve(ScheduleActionUseCase);
+            return scope.resolve(IdentityContext).withIdentity(scheduler, () =>
+                scheduleActionUseCase.execute({
+                    namespace: PublishTestEntryActionHandlerImpl.name,
+                    actionType: SCHEDULED_ACTION_PUBLISH,
+                    targetId: "target-id#0002",
+                    scheduleFor,
+                    tenant: "root",
+                    immediately: false
+                })
+            );
         });
 
         expect(createResult.isOk()).toBeTrue();
@@ -175,10 +192,10 @@ describe("Scheduler Event Handler", () => {
          * Without the tenant-aware handler this would fail with "ScheduledAction/NotFound"
          * because the CMS entry lives under the "webiny" tenant.
          */
-        const eventHandler = context.container.resolve(ScheduledActionEventHandler);
+        const eventHandler = context.container.resolve(ScheduledActionInputHandler);
         const result = await eventHandler.execute(
             {
-                event: {
+                input: {
                     [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                         id: ScheduledActionId.from({
                             namespace: PublishTestEntryActionHandlerImpl.name,
@@ -199,7 +216,7 @@ describe("Scheduler Event Handler", () => {
             success: true
         });
 
-        /* Tenant context should be restored to root after execution. */
+        /* The request's own scope is still root's. */
         expect(tenantContext.getTenant().id).toBe("root");
     });
 });

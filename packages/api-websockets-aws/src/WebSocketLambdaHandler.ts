@@ -1,17 +1,13 @@
 import type { Container } from "@webiny/feature/api";
 import { parseJson } from "@webiny/utils";
-import { WebSocketEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/WebSocketEventHandler.js";
-import type { IWebSocketEvent } from "@webiny/event-handler-aws/eventTypes/WebSocketEventType.js";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { WebSocketInputHandler } from "@webiny/api-kernel-aws/abstractions/handlers/WebSocketInputHandler.js";
+import type { IWebSocketEvent } from "@webiny/api-kernel-aws/inputTypes/WebSocketInputType.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import type { IAuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/abstractions.js";
 import type { IIdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { WebsocketsRunner } from "@webiny/api-websockets/runner/index.js";
 import { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
@@ -69,32 +65,26 @@ const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWe
     };
 };
 
-class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
+class WebSocketLambdaHandlerImpl implements WebSocketInputHandler.Interface {
     constructor(
         private container: Container,
         private authCtx: IAuthenticationContext,
-        private identityCtx: IIdentityContext,
-        private tenantCtx: ITenantContext,
-        private getTenantById: IGetTenantByIdUseCase
+        private identityCtx: IIdentityContext
     ) {}
 
     async execute(
-        eventCtx: EventContext<IWebSocketEvent>,
+        inputCtx: InputContext<IWebSocketEvent>,
         _next: NextFunction
     ): Promise<APIGatewayProxyResult> {
         // Route handlers and all websockets services are resolved from the DI container;
         // the runner only needs `container` on the context object.
         const ctx: Record<string, any> = { container: this.container };
 
-        const raw = eventCtx.event as IWebsocketsIncomingEvent;
-        const { token, tenant, endpoint } = getEventValues(raw);
+        const raw = inputCtx.input as IWebsocketsIncomingEvent;
+        const { token, endpoint } = getEventValues(raw);
 
-        // The tenant first: an API key is looked up in the current tenant.
-        const tenantResult = await this.getTenantById.execute(tenant);
-        if (tenantResult.isOk()) {
-            this.tenantCtx.setTenant(tenantResult.value);
-        }
-
+        // This runs in the connection's tenant scope (`WebSocketTenantSource` names it from the
+        // event), so an API key is looked up in that tenant.
         const identity = await this.authCtx.authenticate(token ?? "");
         this.identityCtx.setIdentity(identity);
 
@@ -113,13 +103,7 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
     }
 }
 
-export const WebSocketLambdaHandler = WebSocketEventHandler.createImplementation({
+export const WebSocketLambdaHandler = WebSocketInputHandler.createImplementation({
     implementation: WebSocketLambdaHandlerImpl,
-    dependencies: [
-        RequestContainer,
-        AuthenticationContext,
-        IdentityContext,
-        TenantContext,
-        GetTenantByIdUseCase
-    ]
+    dependencies: [RequestContainer, AuthenticationContext, IdentityContext]
 });

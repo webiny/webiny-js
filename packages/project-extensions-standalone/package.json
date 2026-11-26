@@ -13,6 +13,8 @@
   "description": "Extension definitions for standalone Webiny projects.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-object-storage-disk": "0.0.0",
+    "@webiny/api-object-storage-s3": "0.0.0",
     "@webiny/project": "0.0.0",
     "react": "19.3.1",
     "zod": "4.6.7"

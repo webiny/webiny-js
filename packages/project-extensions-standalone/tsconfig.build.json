@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../project/tsconfig.build.json" }],
+  "references": [
+    { "path": "../api-object-storage-disk/tsconfig.build.json" },
+    { "path": "../api-object-storage-s3/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,6 +13,10 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-object-storage-disk/*": ["../api-object-storage-disk/src/*"],
+      "@webiny/api-object-storage-disk": ["../api-object-storage-disk/src"],
+      "@webiny/api-object-storage-s3/*": ["../api-object-storage-s3/src/*"],
+      "@webiny/api-object-storage-s3": ["../api-object-storage-s3/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"]
     }

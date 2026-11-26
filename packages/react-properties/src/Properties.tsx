@@ -240,7 +240,9 @@ export const Property = ({
         addProperty({ ...property, $isFirst, $isLast }, { after, before, priority });
 
         return () => {
-            removeProperty(uniqueId);
+            // Other mounted <Property> elements may share this ID; the store keeps
+            // the property until the last of them is released.
+            propertyStore.releaseProperty(uniqueId);
         };
     }, []);
 

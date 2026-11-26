@@ -49,10 +49,11 @@ import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/in
 import { Vpc } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { DiskFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { S3FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 export { useEnv };
 
@@ -65,6 +66,16 @@ const Encryption = createHostingSwitch(
     "aws"
 );
 const Hashing = createHostingSwitch({ aws: AwsHashing, standalone: StandaloneHashing }, "aws");
+
+/*
+ * Standalone file storage, one tag per storage, each with every setting it needs:
+ * `<Infra.FileStorage.Disk />` keeps files in a folder on disk, `<Infra.FileStorage.S3 />` in an
+ * S3-compatible bucket.
+ */
+const FileStorage = {
+    Disk: DiskFileStorage,
+    S3: S3FileStorage
+};
 
 // Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
 const DynamoDb = {

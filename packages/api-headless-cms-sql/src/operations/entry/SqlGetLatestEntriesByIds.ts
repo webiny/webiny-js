@@ -8,6 +8,7 @@ import type {
 import { GetLatestEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestEntriesByIdsStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
@@ -18,7 +19,8 @@ class SqlGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperat
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -31,13 +33,15 @@ class SqlGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperat
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestByIdsParams
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const idList = params.ids as string[];
         const entryIds = idList.map(id => parseIdentifier(id).id);
 
         const rows: IEntryRow[] = await this.query()
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .whereIn("entryId", entryIds)
             .andWhere("isLatest", true);
@@ -51,5 +55,5 @@ class SqlGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperat
 
 export const SqlGetLatestEntriesByIds = GetLatestEntriesByIdsStorageOperation.createImplementation({
     implementation: SqlGetLatestEntriesByIdsImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

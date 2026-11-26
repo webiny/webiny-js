@@ -17,6 +17,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -35,7 +36,8 @@ class DdbEsCreateEntryRevisionFromImpl
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -43,21 +45,22 @@ class DdbEsCreateEntryRevisionFromImpl
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const transformer = createTransformer<T>({
             model,
-            entry: initialEntry,
-            storageEntry: initialStorageEntry,
+            entry: { ...initialEntry, tenant },
+            storageEntry: { ...initialStorageEntry, tenant },
             fieldIndexRegistry: this.fieldIndexRegistry,
             compressionHandler: this.compressionHandler,
             valuesModifiers: this.valuesModifiers
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        const revisionKeys = createEntryRevisionKeys(entry);
-        const latestKeys = createEntryLatestKeys(entry);
-        const publishedKeys = createEntryPublishedKeys(entry);
+        const revisionKeys = createEntryRevisionKeys(entry, tenant);
+        const latestKeys = createEntryLatestKeys(entry, tenant);
+        const publishedKeys = createEntryPublishedKeys(entry, tenant);
 
         // We'll need this flag below.
         const isPublished = entry.status === "published";
@@ -86,12 +89,15 @@ class DdbEsCreateEntryRevisionFromImpl
             // Unpublish previously published revision (if any).
             const [publishedRevisionStorageEntry] =
                 await this.dataLoaders.getPublishedRevisionByEntryId({
-                    model,
+                    model: { tenant, modelId: model.modelId },
                     ids: [entry.id]
                 });
 
             if (publishedRevisionStorageEntry) {
-                const publishedRevisionKey = createEntryRevisionKeys(publishedRevisionStorageEntry);
+                const publishedRevisionKey = createEntryRevisionKeys(
+                    publishedRevisionStorageEntry,
+                    tenant
+                );
                 entityBatch.put({
                     ...publishedRevisionKey,
                     data: {
@@ -106,7 +112,7 @@ class DdbEsCreateEntryRevisionFromImpl
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -174,6 +180,7 @@ export const DdbEsCreateEntryRevisionFrom =
             CmsEntryOpenSearchFieldIndexRegistry,
             CompressionHandler,
             CmsModelOpenSearchIndexProvider,
-            [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+            [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+            ScopeTenant
         ]
     });

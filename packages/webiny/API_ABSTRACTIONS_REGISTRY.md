@@ -169,6 +169,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | Abstraction                      | Source                                                     |
 | -------------------------------- | ---------------------------------------------------------- |
 | `TenantContext`                  | `@webiny/api-core/features/tenancy/TenantContext/index.js` |
+| `TenantScope`                    | `@webiny/api-core/features/tenancy/TenantScopes/index.js`  |
+| `TenantScopes`                   | `@webiny/api-core/features/tenancy/TenantScopes/index.js`  |
 | `CreateTenantUseCase`            | `@webiny/api-core/features/tenancy/CreateTenant/index.js`  |
 | `CreateTenantRepository`         | `@webiny/api-core/features/tenancy/CreateTenant/index.js`  |
 | `GetTenantByIdUseCase`           | `@webiny/api-core/features/tenancy/GetTenantById/index.js` |
@@ -185,6 +187,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `TenantBeforeDeleteEventHandler` | `@webiny/api-core/features/tenancy/DeleteTenant/index.js`  |
 | `TenantAfterDeleteEventHandler`  | `@webiny/api-core/features/tenancy/DeleteTenant/index.js`  |
 | `TenantInstalledEventHandler`    | `@webiny/api-core/features/tenancy/InstallTenant/index.js` |
+
+`TenantContext.withTenant()`, `withRootTenant()` and `withEachTenant()` are deprecated: use `TenantScopes`, whose callback gets the tenant's `TenantScope` to resolve that tenant's services from.
 
 ### webiny/api/tenant-manager
 

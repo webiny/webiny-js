@@ -29,6 +29,13 @@ export class PropertyStore {
      */
     private lookup = new Map<string, Property>();
 
+    /**
+     * How many mounted registrations currently add each ID. Several `<Property>`
+     * elements can share an ID (e.g. a parent like `browser` used by many config
+     * components), and the property must stay until the last of them unmounts.
+     */
+    private registrations = new Map<string, number>();
+
     private scheduleFlush = debounce(() => {
         this.processQueue();
     }, 0);
@@ -87,17 +94,38 @@ export class PropertyStore {
 
     addProperty(property: Property, options: AddPropertyOptions = {}): void {
         this.registerLookup(property);
+        this.registrations.set(property.id, (this.registrations.get(property.id) ?? 0) + 1);
         this.queue.push({ type: "add", property, options });
         this.scheduleFlush();
     }
 
+    /**
+     * Release one registration of a property added via `addProperty`. The property
+     * is removed only when no other mounted registration of the same ID remains.
+     */
+    releaseProperty(id: string): void {
+        const count = (this.registrations.get(id) ?? 0) - 1;
+        if (count > 0) {
+            this.registrations.set(id, count);
+            return;
+        }
+        this.removeProperty(id);
+    }
+
+    /**
+     * Remove a property regardless of how many registrations added it.
+     */
     removeProperty(id: string): void {
+        this.registrations.delete(id);
         this.lookup.delete(id);
         this.queue.push({ type: "remove", id });
         this.scheduleFlush();
     }
 
     replaceProperty(oldId: string, newProperty: Property): void {
+        if (oldId !== newProperty.id) {
+            this.registrations.delete(oldId);
+        }
         this.lookup.delete(oldId);
         this.lookup.set(newProperty.id, newProperty);
         this.queue.push({ type: "replace", oldId, newProperty });
@@ -196,10 +224,11 @@ export class PropertyStore {
         // Note: we intentionally do NOT call removeDescendants here.
         // React's component lifecycle ensures that when a parent Property
         // unmounts, all child Properties unmount too — each triggering its
-        // own removeProperty call. Calling removeDescendants would wipe
+        // own releaseProperty call. Calling removeDescendants would wipe
         // children that belong to OTHER still-mounted configs sharing the
         // same parent ID (e.g., id="pageSettings" used by both primary
-        // and secondary configs).
+        // and secondary configs). A shared parent ID itself only reaches
+        // this point once its last registration is released.
     }
 
     private executeReplace(oldId: string, newProperty: Property): void {

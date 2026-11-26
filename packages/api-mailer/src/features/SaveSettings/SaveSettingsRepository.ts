@@ -1,12 +1,27 @@
 import { Result } from "@webiny/feature/api";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
-import type { TransportSettings } from "~/types.js";
-import { SettingsPersistenceError, SettingsValidationError } from "~/domain/errors.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { MAILER_TRANSPORT_SETTINGS } from "~/constants.js";
+import { KeyNotFoundError } from "@webiny/api-core/features/keyValueStore/index.js";
+import { SaveSettingsRepository } from "./abstractions.js";
+import type { TransportSettingsDefinition } from "~/domain/TransportSettings/abstractions.js";
+import {
+    getStorageKey,
+    withDefaults,
+    withoutSecrets
+} from "~/domain/TransportSettings/findDefinition.js";
+import { SettingsPersistenceError, SettingsValidationError } from "~/domain/errors.js";
 
-const DEFAULT_PORT = 587;
+const isSet = (value: unknown) => value !== undefined && value !== null;
+
+// "Password is required when changing the host, port, secure or user settings."
+const secretRequiredMessage = (secret: string, fields: string[]) => {
+    const name = secret.charAt(0).toUpperCase() + secret.slice(1);
+    const list =
+        fields.length > 1
+            ? `${fields.slice(0, -1).join(", ")} or ${fields[fields.length - 1]}`
+            : fields.join("");
+    return `${name} is required when changing the ${list} settings.`;
+};
 
 class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
     constructor(
@@ -14,75 +29,73 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         private encryption: Encryption.Interface
     ) {}
 
-    async execute(input: SaveSettingsInput): SaveSettingsRepository.Return {
-        // Check if settings exist
+    async execute(
+        definition: TransportSettingsDefinition.Interface,
+        input: TransportSettingsDefinition.Values
+    ): SaveSettingsRepository.Return {
+        const storageKey = getStorageKey(definition);
+        const secrets = definition.secrets ?? [];
+
         const existingResult =
-            await this.keyValueStore.get<TransportSettings>(MAILER_TRANSPORT_SETTINGS);
-        const existingSettings = existingResult.isOk() ? existingResult.value : null;
-        const transportSettings: Partial<TransportSettings> = existingSettings ?? {};
+            await this.keyValueStore.get<TransportSettingsDefinition.Values>(storageKey);
+        /*
+         * Only a missing key means "nothing saved yet". Any other read failure would have the save
+         * below replace the stored secrets and fields with blanks.
+         */
+        if (existingResult.isFail() && !(existingResult.error instanceof KeyNotFoundError)) {
+            return Result.fail(new SettingsPersistenceError(existingResult.error));
+        }
+        const stored = existingResult.isOk() ? existingResult.value : null;
 
-        // Prepare data
-        const port = input.port ?? transportSettings.port ?? DEFAULT_PORT;
-        const host = input.host ?? transportSettings.host;
-        const secure = input.secure ?? transportSettings.secure ?? port === 465;
-        const user = input.user ?? transportSettings.user;
-
-        // If updating and no password provided, keep the existing password
-        let passwordToStore = input.password || "";
-        if (!input.password && existingSettings) {
-            /**
-             * Security: re-using the stored password is only safe while it is sent to the same
-             * server and account. Otherwise a settings editor could point the transport at a host
-             * they control and receive the stored SMTP password, so it must be re-entered.
-             */
-            const storedPort = transportSettings.port ?? DEFAULT_PORT;
-            const storedSecure = transportSettings.secure ?? storedPort === 465;
-            const connectionChanged =
-                host !== transportSettings.host ||
-                port !== storedPort ||
-                secure !== storedSecure ||
-                user !== transportSettings.user;
-            if (transportSettings.password && connectionChanged) {
-                return Result.fail(
-                    new SettingsValidationError([
-                        {
-                            code: "custom",
-                            path: ["password"],
-                            input: undefined,
-                            message:
-                                "Password is required when changing the host, port, secure or user settings."
-                        }
-                    ])
-                );
+        // A field left out (or sent as null) keeps its stored value.
+        const merged: TransportSettingsDefinition.Values = { ...stored };
+        for (const [key, value] of Object.entries(input)) {
+            if (isSet(value) && !secrets.includes(key)) {
+                merged[key] = value;
             }
-            passwordToStore = await this.encryption.decrypt(transportSettings.password || "");
         }
 
-        // Encrypt password
-        const encryptedPassword = await this.encryption.encrypt(passwordToStore);
+        const storedWithDefaults = withDefaults(definition, { ...stored });
+        const mergedWithDefaults = withDefaults(definition, merged);
+        const boundFieldChanged = (definition.secretsBoundTo ?? []).some(
+            field => mergedWithDefaults[field] !== storedWithDefaults[field]
+        );
 
-        const data = {
-            host,
-            port,
-            secure,
-            user,
-            password: encryptedPassword,
-            from: input.from ?? transportSettings.from,
-            replyTo: input.replyTo ?? transportSettings.replyTo
-        };
+        const data: TransportSettingsDefinition.Values = { ...mergedWithDefaults };
+        for (const secret of secrets) {
+            let plain = input[secret] ? String(input[secret]) : "";
+            if (!plain && stored?.[secret]) {
+                /**
+                 * Security: re-using a stored secret is only safe while it is sent to the same
+                 * server and account. Otherwise a settings editor could point the transport at a
+                 * host they control and receive it, so it must be entered again.
+                 */
+                if (boundFieldChanged) {
+                    return Result.fail(
+                        new SettingsValidationError([
+                            {
+                                code: "custom",
+                                path: [secret],
+                                input: undefined,
+                                message: secretRequiredMessage(
+                                    secret,
+                                    definition.secretsBoundTo ?? []
+                                )
+                            }
+                        ])
+                    );
+                }
+                plain = await this.encryption.decrypt(String(stored[secret]));
+            }
+            data[secret] = await this.encryption.encrypt(plain);
+        }
 
-        // Save settings.
-        const result = await this.keyValueStore.set(MAILER_TRANSPORT_SETTINGS, data);
-
+        const result = await this.keyValueStore.set(storageKey, data);
         if (result.isFail()) {
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 
-        // Return the stored state without the password. Callers that need the
-        // plaintext password go through GetSettingsRepository.get(transportName).
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password: _password, ...savedSettings } = data as TransportSettings;
-        return Result.ok(savedSettings);
+        return Result.ok(withoutSecrets(definition, data));
     }
 }
 

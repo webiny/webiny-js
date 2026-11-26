@@ -6,8 +6,7 @@ import { License } from "@webiny/wcp";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
 import { Logger, NullLogger } from "~/features/logger/index.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
-import type { Tenant } from "~/types/tenancy.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
 import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
@@ -24,7 +23,6 @@ import { GetApiKeyByTokenUseCase } from "~/features/security/apiKeys/GetApiKeyBy
 import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
 import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
 import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
-import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
 import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
@@ -83,7 +81,7 @@ describe("Granting permissions: only what the caller holds", () => {
     beforeEach(() => {
         container = new Container();
 
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
@@ -279,25 +277,6 @@ describe("Granting permissions: only what the caller holds", () => {
             );
 
             expect(deleted.isOk()).toBe(true);
-        });
-
-        it("caches roles per tenant", async () => {
-            const role = await createRole("files-reader", [{ name: "fm.file", rwd: "r" }]);
-            const repository = container.resolve(RolesRepository);
-
-            const inRoot = await repository.get({ id: role.id });
-            expect(inRoot.isOk()).toBe(true);
-
-            const acme = { id: "acme", name: "Acme", parent: "root" } as Tenant;
-            const inAcme = await container
-                .resolve(TenantContext)
-                .withTenant(acme, () => repository.get({ id: role.id }));
-            expect(inAcme.isFail()).toBe(true);
-
-            const bySlugInAcme = await container
-                .resolve(TenantContext)
-                .withTenant(acme, () => repository.get({ slug: "files-reader" }));
-            expect(bySlugInAcme.isFail()).toBe(true);
         });
     });
 

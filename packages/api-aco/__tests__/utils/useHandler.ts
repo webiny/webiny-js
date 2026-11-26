@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
@@ -11,7 +11,7 @@ import { Result } from "@webiny/feature/api";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { AcoFeature } from "~/index";
 import { createIdentity } from "@webiny/api-core-testing";
@@ -36,7 +36,7 @@ export interface UseHandlerParams {
 export const useHandler = (params: UseHandlerParams = {}) => {
     const { permissions = [{ name: "*" }] } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const apiAcoStorage = getStorageOps<any>("aco");
     const cmsStorage = getStorageOps("cms");
 

@@ -167,7 +167,7 @@ const SCENARIOS = [
         apply: s => { s.procs.A.tasks.t1 = "running"; s.procs.A.tasks.t2 = "sleeping"; s.procs.B.status = "off";
           s.db.t1 = task("task-1", { status: "running", progress: "step 3", saved: "-5 s", owner: "A", expires: "55 s" });
           s.db.t2 = task("task-2", { status: "running", progress: "step 1", saved: "-60 s", owner: "A", expires: "600 s" }); } },
-      { clock: "1 s", caption: "A redeploy sends SIGTERM. The server stops taking connections and runs onShutdown, capped at 8 s.", code: "event-handler-standalone/src/server/handleShutdownSignals.ts",
+      { clock: "1 s", caption: "A redeploy sends SIGTERM. The server stops taking connections and runs onShutdown, capped at 8 s.", code: "api-kernel-core/src/server/handleShutdownSignals.ts",
         apply: s => { s.procs.A.status = "stopping"; } },
       { clock: "1 s", caption: "Recovery timers stop. ShutdownSignal.begin() fires: task-1's iteration timer runs out, and task-2's wait is interrupted.", code: PKG + "loop/InProcessBackgroundTasksLoop.ts (stop) · shutdown/ProcessShutdownSignal.ts",
         apply: s => { delete s.procs.A.tasks.t2; } },

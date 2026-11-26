@@ -1,21 +1,24 @@
 import { promises as fs } from "node:fs";
-import { Result } from "@webiny/feature/api";
 import path from "node:path";
 import { afterEach } from "vitest";
 import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { invokeHttpRoute } from "@webiny/event-handler-core";
-import { LocalContentsReader } from "~/assetDelivery/LocalContentsReader.js";
-import { DeleteFileFromDiskHandler } from "~/features/DeleteFileFromDisk/DeleteFileFromDiskHandler.js";
+import { Result } from "@webiny/feature/api";
+import { invokeHttpRoute } from "@webiny/api-kernel-core";
+import { ObjectStorageContentsReader } from "~/assetDelivery/ObjectStorageContentsReader.js";
+import { DeleteFileFromStorageHandler } from "~/features/DeleteFileFromStorage/DeleteFileFromStorageHandler.js";
 import { GetFileContentsByIdUseCase } from "~/features/GetFileContentsById/GetFileContentsByIdUseCase.js";
 import { GetFileContentsByKeyUseCase } from "~/features/GetFileContentsByKey/GetFileContentsByKeyUseCase.js";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
+import { UploadFileUseCase } from "~/features/UploadFile/UploadFileUseCase.js";
 import type { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import { cleanupStorage } from "./utils/helpers.js";
 import { getStoragePath } from "./utils/helpers.js";
 import { makeConfig } from "./utils/helpers.js";
+import { makeDiskStorage } from "./utils/helpers.js";
+import { makeLogger } from "./utils/helpers.js";
 import { makeTenantContext } from "./utils/helpers.js";
 import { makeUploadRequest } from "./utils/helpers.js";
 import { setupStorage } from "./utils/helpers.js";
@@ -44,8 +47,8 @@ const traversalKeyTo = (target: string) => {
     return path.relative(root, target);
 };
 
-const makeAsset = (key: string) => ({
-    getTenant: () => TENANT_ID,
+const makeAsset = (key: string, tenant = TENANT_ID) => ({
+    getTenant: () => tenant,
     getKey: () => key,
     getContentType: () => "text/plain"
 });
@@ -54,11 +57,15 @@ const makeDeleteHandler = () => {
     // No stored metadata, so the handler's tenant check on it has nothing to compare.
     const keyValueStore = {
         get: async () => Result.fail(new Error("Not found.")),
-        delete: async () => {}
+        delete: async () => Result.ok()
     } as any;
     const tenantContext = makeTenantContext();
-    const config = makeConfig();
-    return new DeleteFileFromDiskHandler(tenantContext, keyValueStore, config);
+    return new DeleteFileFromStorageHandler(
+        tenantContext,
+        keyValueStore,
+        makeDiskStorage(),
+        makeLogger()
+    );
 };
 
 const readKeptFile = () => {
@@ -89,7 +96,7 @@ describe("local contents reader", () => {
         const content = Buffer.from("legit");
         await writeTestFile(bucketKey, content);
 
-        const reader = LocalContentsReader.create(getStoragePath());
+        const reader = ObjectStorageContentsReader.create(makeDiskStorage());
         const asset = makeAsset(bucketKey) as any;
         const buffer = await reader.read(asset);
 
@@ -100,10 +107,20 @@ describe("local contents reader", () => {
         const traversalKey = traversalKeyTo(outside().file);
         const bucketKey = `tenants/${TENANT_ID}/files/${traversalKey}`;
 
-        const reader = LocalContentsReader.create(getStoragePath());
+        const reader = ObjectStorageContentsReader.create(makeDiskStorage());
         const asset = makeAsset(bucketKey) as any;
 
-        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant files folder");
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant's files");
+    });
+
+    it("should refuse another tenant's file", async () => {
+        const bucketKey = "tenants/other-tenant/files/abc/doc.txt";
+        await writeTestFile(bucketKey, Buffer.from("theirs"));
+
+        const reader = ObjectStorageContentsReader.create(makeDiskStorage());
+        const asset = makeAsset(bucketKey) as any;
+
+        await expect(reader.read(asset)).rejects.toThrow("outside of the tenant's files");
     });
 });
 
@@ -120,17 +137,34 @@ describe("get file contents", () => {
             })
         };
 
-        const config = makeConfig();
-        const useCase = new GetFileContentsByIdUseCase(metadataReader, config);
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeDiskStorage());
         const result = await useCase.execute("evil");
+
+        expect(result.isFail()).toBe(true);
+    });
+
+    it("should not read another tenant's file by id", async () => {
+        const bucketKey = "tenants/other-tenant/files/abc/doc.txt";
+        await writeTestFile(bucketKey, Buffer.from("theirs"));
+        const metadataReader: MetadataReader.Interface = {
+            read: async () => ({
+                id: "abc",
+                tenant: TENANT_ID,
+                size: 0,
+                contentType: "text/plain",
+                bucketKey
+            })
+        };
+
+        const useCase = new GetFileContentsByIdUseCase(metadataReader, makeDiskStorage());
+        const result = await useCase.execute("abc");
 
         expect(result.isFail()).toBe(true);
     });
 
     it("should not read outside the storage root by key", async () => {
         const tenantContext = makeTenantContext();
-        const config = makeConfig();
-        const useCase = new GetFileContentsByKeyUseCase(tenantContext, config);
+        const useCase = new GetFileContentsByKeyUseCase(tenantContext, makeDiskStorage());
         const traversalKey = traversalKeyTo(outside().file);
         const result = await useCase.execute(traversalKey);
 
@@ -138,13 +172,13 @@ describe("get file contents", () => {
     });
 });
 
-describe("delete file from disk", () => {
+describe("delete file from storage", () => {
     it("should delete the file folder inside the storage root", async () => {
         const content = Buffer.from("legit");
         await writeTestFile(`tenants/${TENANT_ID}/files/abc/doc.txt`, content);
 
         const handler = makeDeleteHandler();
-        await handler.handle({ payload: { file: { id: "abc" } } } as any);
+        await handler.handle({ payload: { file: { id: "abc", key: "abc/doc.txt" } } } as any);
 
         const folderPath = path.join(filesRoot(), "abc");
         await expect(fs.stat(folderPath)).rejects.toThrow("ENOENT");
@@ -154,7 +188,7 @@ describe("delete file from disk", () => {
         const id = traversalKeyTo(outside().dir);
 
         const handler = makeDeleteHandler();
-        await handler.handle({ payload: { file: { id } } } as any);
+        await handler.handle({ payload: { file: { id, key: `${id}/doc.txt` } } } as any);
 
         const kept = await readKeptFile();
         expect(kept).toBe("keep");
@@ -165,8 +199,8 @@ describe("delete file from disk", () => {
         await writeTestFile(`tenants/${TENANT_ID}/files/abc/doc.txt`, content);
 
         const handler = makeDeleteHandler();
-        await handler.handle({ payload: { file: { id: ".." } } } as any);
-        await handler.handle({ payload: { file: { id: "." } } } as any);
+        await handler.handle({ payload: { file: { id: "..", key: "../doc.txt" } } } as any);
+        await handler.handle({ payload: { file: { id: ".", key: "./doc.txt" } } } as any);
 
         const docPath = path.join(filesRoot(), "abc", "doc.txt");
         const kept = await fs.readFile(docPath, "utf8");
@@ -180,8 +214,9 @@ describe("single file upload route", () => {
         const fileContent = Buffer.from("planted");
         const request = makeUploadRequest({ storageKey, fileContent, filename: "x.txt" });
 
-        const config = makeConfig();
-        const route = new UploadSingleFileRoute(config);
+        const route = new UploadSingleFileRoute(
+            new UploadFileUseCase(makeConfig(), makeDiskStorage())
+        );
         const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);

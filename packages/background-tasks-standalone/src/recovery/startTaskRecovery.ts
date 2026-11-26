@@ -1,9 +1,9 @@
 import type { Container } from "@webiny/di";
-import { EventDispatcher } from "@webiny/event-handler-core";
+import { InputDispatcher } from "@webiny/api-kernel-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { RECOVER_EVERY_MS } from "~/claim/constants.js";
-import { TASK_RECOVER_EVENT_IDENTIFIER } from "./TaskRecoverEventType.js";
-import type { ITaskRecoverEvent } from "./TaskRecoverEventType.js";
+import { TASK_RECOVER_EVENT_IDENTIFIER } from "./TaskRecoverInputType.js";
+import type { ITaskRecoverEvent } from "./TaskRecoverInputType.js";
 
 // Shortly after boot, so the first run does not compete with startup.
 const FIRST_RUN_DELAY_MS = 5000;
@@ -18,7 +18,7 @@ const FIRST_RUN_DELAY_MS = 5000;
  * Returns a function that stops the timers, for when the process is shutting down.
  */
 export function startTaskRecovery(rootContainer: Container): () => void {
-    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const dispatcher = rootContainer.resolve(InputDispatcher);
     const logger = rootContainer.resolve(Logger);
     const event: ITaskRecoverEvent = { [TASK_RECOVER_EVENT_IDENTIFIER]: true };
     let running = false;

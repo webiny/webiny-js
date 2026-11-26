@@ -1,32 +1,29 @@
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import {
-    EventBridgeEventHandler,
+    EventBridgeInputHandler,
     type EventBridgeResult
-} from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+} from "@webiny/api-kernel-aws/abstractions/handlers/EventBridgeInputHandler.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
-import type { EventContext } from "@webiny/event-handler-core";
+import type { InputContext } from "@webiny/api-kernel-core";
 
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 
-class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
-    public constructor(
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly taskService: TaskService.Interface
-    ) {}
+class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeInputHandler.Interface {
+    public constructor(private readonly tenantScopes: TenantScopes.Interface) {}
 
     public async execute(
-        eventCtx: EventContext<EventBridgeEvent<string, any>>
+        inputCtx: InputContext<EventBridgeEvent<string, any>>
     ): Promise<EventBridgeResult> {
-        if (eventCtx.event["detail-type"] !== DETAIL_TYPE) {
+        if (inputCtx.input["detail-type"] !== DETAIL_TYPE) {
             return {
                 success: true,
                 message: "Not a bulk action event."
             };
         }
 
-        const result = await this.tenantContext.withRootTenant(async () => {
-            return await this.taskService.trigger({
+        const result = await this.tenantScopes.withRootTenant(async scope => {
+            return await scope.resolve(TaskService).trigger({
                 definition: "hcmsEntriesEmptyTrashBins"
             });
         });
@@ -41,7 +38,7 @@ class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler
     }
 }
 
-export const BulkActionsEventBridgeLambdaHandler = EventBridgeEventHandler.createImplementation({
+export const BulkActionsEventBridgeLambdaHandler = EventBridgeInputHandler.createImplementation({
     implementation: BulkActionsEventBridgeLambdaHandlerImpl,
-    dependencies: [TenantContext, TaskService]
+    dependencies: [TenantScopes]
 });

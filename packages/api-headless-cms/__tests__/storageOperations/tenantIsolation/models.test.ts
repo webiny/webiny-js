@@ -5,14 +5,14 @@ import { UpdateModelStorageOperation } from "~/features/shared/storageOperations
 import { DeleteModelStorageOperation } from "~/features/shared/storageOperations/model/DeleteModelStorageOperation.js";
 import { ListModelsStorageOperation } from "~/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import { createIsolationModel, ISOLATION_MODEL_ID, TENANT_A, TENANT_B } from "./helpers";
-import { useStorageContainer } from "../useStorageContainer";
+import { useTenantRoutedStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000
 });
 
 describe("Tenant isolation - models", () => {
-    const getContainer = useStorageContainer();
+    const getContainer = useTenantRoutedStorageContainer();
 
     it("should update and delete only the tenant's model", async () => {
         const container = getContainer();

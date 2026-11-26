@@ -8,6 +8,7 @@ import type {
     StorageOperationsListUsersParams
 } from "@webiny/api-core/types/users.js";
 import WebinyError from "@webiny/error";
+import type { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { TableManager } from "~/TableManager.js";
 import { sortItems } from "~/sortItems.js";
 
@@ -36,12 +37,19 @@ const rowToUser = <TUser extends AdminUser = AdminUser>(row: IAdminUserRow): TUs
 interface CreateStorageOperationsParams {
     knex: Knex;
     tableManager: TableManager;
+    /** The tenant the storage acts on: its scope's. */
+    scopeTenant: ScopeTenant.Interface;
 }
 
 export const createStorageOperations = (
     params: CreateStorageOperationsParams
 ): AdminUsersStorageOperations => {
-    const { knex, tableManager } = params;
+    const { knex, tableManager, scopeTenant } = params;
+
+    /** The user with its scope's tenant, whatever tenant it carries. */
+    const inScope = <T extends AdminUser>(user: T): T => {
+        return { ...user, tenant: scopeTenant.getId() };
+    };
 
     // The user→tenant index: finds every tenant's record of one user.
     const idIndexName = `${tableManager.resolve(TABLE_NAME)}_id_index`;
@@ -79,8 +87,9 @@ export const createStorageOperations = (
             await ensureTable();
 
             const {
-                where: { tenant, id, email }
+                where: { id, email }
             } = params;
+            const tenant = scopeTenant.getId();
 
             try {
                 if (id) {
@@ -104,6 +113,7 @@ export const createStorageOperations = (
             }
         },
 
+        // Cross-tenant by design: one user's records in the given tenants, not the scope's tenant.
         async getUserAcrossTenants<TUser extends AdminUser = AdminUser>(
             params: StorageOperationsGetUserAcrossTenantsParams
         ): Promise<TUser[]> {
@@ -127,6 +137,7 @@ export const createStorageOperations = (
             }
         },
 
+        // Cross-tenant by design: every tenant's record of one user.
         async listUserRecords<TUser extends AdminUser = AdminUser>(
             params: StorageOperationsListUserRecordsParams
         ): Promise<TUser[]> {
@@ -155,7 +166,7 @@ export const createStorageOperations = (
             const { where, sort } = params;
 
             try {
-                const rows = await query().where("tenant", where.tenant);
+                const rows = await query().where("tenant", scopeTenant.getId());
 
                 let items = rows.map(row => rowToUser<TUser>(row));
 
@@ -185,6 +196,7 @@ export const createStorageOperations = (
         }: {
             user: TUser;
         }): Promise<TUser> {
+            user = inScope(user);
             await ensureTable();
 
             try {
@@ -206,6 +218,7 @@ export const createStorageOperations = (
         }: {
             user: TUser;
         }): Promise<TUser> {
+            user = inScope(user);
             await ensureTable();
 
             try {
@@ -227,6 +240,7 @@ export const createStorageOperations = (
         }: {
             user: TUser;
         }): Promise<void> {
+            user = inScope(user);
             await ensureTable();
 
             try {

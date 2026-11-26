@@ -2,13 +2,18 @@ import type { CmsModelStorageOperationsGetParams } from "@webiny/api-headless-cm
 import WebinyError from "@webiny/error";
 import { GetModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/GetModelStorageOperation.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createKeys } from "./keys.js";
 
 class DdbEsGetModelImpl implements GetModelStorageOperation.Interface {
-    constructor(private entity: CmsDdbEsModelEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbEsModelEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
     async execute(params: CmsModelStorageOperationsGetParams) {
-        const keys = createKeys(params);
+        const tenant = this.scopeTenant.getId();
+        const keys = createKeys({ tenant, modelId: params.modelId });
 
         try {
             const result = await this.entity.get(keys);
@@ -29,5 +34,5 @@ class DdbEsGetModelImpl implements GetModelStorageOperation.Interface {
 
 export const DdbEsGetModel = GetModelStorageOperation.createImplementation({
     implementation: DdbEsGetModelImpl,
-    dependencies: [CmsDdbEsModelEntity]
+    dependencies: [CmsDdbEsModelEntity, ScopeTenant]
 });

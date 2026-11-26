@@ -5,6 +5,7 @@ import type {
     CmsEntryStorageOperationsUnpublishParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { UnpublishEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -24,17 +25,19 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     private async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
+        tenant: string,
         params: { id: string }
     ) {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getLatestRevisionByEntryId<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
         const item = items.shift() || null;
@@ -52,17 +55,21 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
         params: CmsEntryStorageOperationsUnpublishParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
-        const storageEntry = convertToStorageEntry({
-            storageEntry: initialStorageEntry,
-            model
-        });
+        const storageEntry = {
+            ...convertToStorageEntry({
+                storageEntry: initialStorageEntry,
+                model
+            }),
+            tenant
+        };
         /**
          * We need to:
          *  - delete currently published entry
@@ -78,7 +85,7 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
             ],
             put: [
                 {
-                    ...createEntryRevisionKeys(storageEntry),
+                    ...createEntryRevisionKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry
                     }
@@ -89,22 +96,29 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
         /**
          * We need the latest entry to see if something needs to be updated alongside the unpublishing one.
          */
-        const initialLatestStorageEntry = await this.getLatestRevisionByEntryId(model, entry);
+        const initialLatestStorageEntry = await this.getLatestRevisionByEntryId(
+            model,
+            tenant,
+            entry
+        );
 
         if (initialLatestStorageEntry) {
             const unpublishingLatestRevision = entry.id === initialLatestStorageEntry.id;
             if (unpublishingLatestRevision) {
                 entityBatch.put({
-                    ...createEntryLatestKeys(storageEntry),
+                    ...createEntryLatestKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry
                     }
                 });
             } else {
-                const latestStorageEntry = convertToStorageEntry({
-                    storageEntry: initialLatestStorageEntry,
-                    model
-                });
+                const latestStorageEntry = {
+                    ...convertToStorageEntry({
+                        storageEntry: initialLatestStorageEntry,
+                        model
+                    }),
+                    tenant
+                };
 
                 // If the unpublished revision is not the latest one, we still need to
                 // update the latest record with the new values of entry-level meta fields.
@@ -115,7 +129,7 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
 
                 // 1. Update actual revision record.
                 entityBatch.put({
-                    ...createEntryRevisionKeys(latestStorageEntry),
+                    ...createEntryRevisionKeys(latestStorageEntry, tenant),
                     data: {
                         ...latestStorageEntry,
                         ...updatedEntryLevelMetaFields
@@ -124,7 +138,7 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
 
                 // 2. Update latest record.
                 entityBatch.put({
-                    ...createEntryLatestKeys(latestStorageEntry),
+                    ...createEntryLatestKeys(latestStorageEntry, tenant),
                     data: {
                         ...latestStorageEntry,
                         ...updatedEntryLevelMetaFields
@@ -135,9 +149,7 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
 
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
             return initialStorageEntry;
         } catch (ex) {
             throw new WebinyError(
@@ -154,5 +166,5 @@ class DdbUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
 
 export const DdbUnpublishEntry = UnpublishEntryStorageOperation.createImplementation({
     implementation: DdbUnpublishEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

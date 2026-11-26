@@ -1,4 +1,4 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
@@ -9,7 +9,7 @@ import { TestPermissions } from "@webiny/api-core-testing";
 import { TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DashboardLayout } from "~/domain/types.js";
 import { DashboardAppFeature } from "~/index.js";
@@ -82,7 +82,7 @@ interface UpdateDashboardResponse {
 }
 
 export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
 
     const handler = createTestHttpHandler({
         root: container => {

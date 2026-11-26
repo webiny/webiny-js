@@ -1,8 +1,7 @@
-import path from "node:path";
-import { access } from "node:fs/promises";
 import { BaseError } from "@webiny/feature/api";
+import type { ObjectStorage } from "@webiny/api-object-storage";
 import type { FileData } from "@webiny/api-file-manager/features/upload/types.js";
-import { getFileStorageKey, resolveTenantFilePath } from "./storagePaths.js";
+import { toTenantFileKey } from "./toTenantFileKey.js";
 
 class FileAlreadyExistsError extends BaseError<{ id: string }> {
     override readonly code = "FILE_ALREADY_EXISTS" as const;
@@ -12,39 +11,27 @@ class FileAlreadyExistsError extends BaseError<{ id: string }> {
     }
 }
 
-const exists = async (filePath: string): Promise<boolean> => {
-    try {
-        await access(filePath);
-        return true;
-    } catch {
-        return false;
-    }
-};
-
 /**
  * The client may choose the file id. Uploading with an id that is already used would overwrite
- * the existing file, so refuse when that id's folder already exists (same as the S3 storage).
- * Also refuses a file key that resolves outside the tenant's files folder.
+ * the existing file, so refuse when anything is stored in that file's folder already (same as the
+ * AWS file manager). Also refuses a file key outside the tenant's files.
  */
 export const ensureNewFileId = async (params: {
-    storagePath: string;
+    objectStorage: ObjectStorage.Interface;
     file: FileData;
     tenantId: string;
     clientId: string | undefined;
 }): Promise<void> => {
-    const { storagePath, file, tenantId, clientId } = params;
-    const filePath = resolveTenantFilePath(
-        storagePath,
-        tenantId,
-        getFileStorageKey(tenantId, file.key)
-    );
+    const { objectStorage, file, tenantId, clientId } = params;
+    const objectKey = toTenantFileKey(tenantId, file.key);
 
     if (!clientId) {
         // Server-generated ids are unique.
         return;
     }
 
-    if (await exists(path.dirname(filePath))) {
+    const folderPrefix = objectKey.slice(0, objectKey.lastIndexOf("/") + 1);
+    if (await objectStorage.hasPrefix(folderPrefix)) {
         throw new FileAlreadyExistsError(clientId);
     }
 };

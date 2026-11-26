@@ -34,6 +34,11 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
     async execute<TVariables = any, TResult = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
+        // A keepalive request is sent while the page is going away, so a batch timer may never fire.
+        if (params.keepalive) {
+            return this.decoratee.execute(params);
+        }
+
         return new Promise((resolve, reject) => {
             this.queue.push({ request: RequestValue.from(params), resolve, reject });
 

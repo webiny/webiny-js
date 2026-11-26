@@ -6,6 +6,7 @@ import type {
 import { MoveToBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveToBinStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { patchAllEntryRevisions } from "./queryHelpers.js";
 
 class SqlMoveToBinImpl implements MoveToBinStorageOperation.Interface {
@@ -13,18 +14,21 @@ class SqlMoveToBinImpl implements MoveToBinStorageOperation.Interface {
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         await patchAllEntryRevisions(
             this.knex,
             this.entryTableManager.getTableName(),
-            model,
+            { tenant, modelId: model.modelId },
             params.entry.entryId,
             parsed => {
                 const p = parsed as unknown as Record<string, unknown>;
@@ -54,5 +58,5 @@ class SqlMoveToBinImpl implements MoveToBinStorageOperation.Interface {
 
 export const SqlMoveToBin = MoveToBinStorageOperation.createImplementation({
     implementation: SqlMoveToBinImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

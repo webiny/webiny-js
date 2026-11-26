@@ -6,7 +6,8 @@ setStorageOps("apiCore", () => {
     const documentClient = getDocumentClient();
 
     return {
-        storageOperations: createApiCoreDdb({ documentClient }),
+        // A builder: each tenant scope builds the storage with its own tenant.
+        storageOperations: ({ scopeTenant }) => createApiCoreDdb({ documentClient, scopeTenant }),
         plugins: []
     };
 });

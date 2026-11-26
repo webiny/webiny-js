@@ -19,6 +19,7 @@
     "@webiny/api-headless-cms-bulk-actions": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-headless-cms-utils-os": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
@@ -38,7 +39,6 @@
     "@webiny/bug-reporter": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/db": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/frontend-settings": "0.0.0",
@@ -167,7 +167,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "dc5293b1faf8741a037e53d0e02f92e183fa789adc76e6c640c9e99693566744",
+  "exportGenerationHash": "920ec8fdda2542973527780d565b8ce0b256ed3f00a6e526b7b4ca1022db1e58",
   "webiny": {
     "publishFrom": "dist"
   }

@@ -59,26 +59,16 @@ class StubTenantContext implements TenantContext.Interface {
         this.tenant = tenant;
     }
 
-    async withRootTenant<T>(cb: () => T): Promise<T> {
-        return cb();
+    withRootTenant(): never {
+        throw new Error("Not used by the permission cache.");
     }
 
-    async withEachTenant<TReturn>(
-        tenants: Tenant[],
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn[]> {
-        const results: TReturn[] = [];
-        for (const tenant of tenants) {
-            results.push(await cb(tenant));
-        }
-        return results;
+    withEachTenant(): never {
+        throw new Error("Not used by the permission cache.");
     }
 
-    async withTenant<TReturn>(
-        tenant: Tenant,
-        cb: (tenant: Tenant) => Promise<TReturn>
-    ): Promise<TReturn> {
-        return cb(tenant);
+    withTenant(): never {
+        throw new Error("Not used by the permission cache.");
     }
 }
 

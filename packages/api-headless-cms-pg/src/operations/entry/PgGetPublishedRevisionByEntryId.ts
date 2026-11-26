@@ -1,4 +1,5 @@
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { GetPublishedRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 import { PgSchema } from "~/features/schema/abstractions.js";
@@ -8,7 +9,7 @@ import type {
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { modelRows } from "~/features/entries/entryQueries.js";
+import { modelRef, modelRows } from "~/features/entries/entryQueries.js";
 import { rowToEntry } from "~/features/entries/entryRow.js";
 
 class PgGetPublishedRevisionByEntryIdImpl
@@ -17,16 +18,22 @@ class PgGetPublishedRevisionByEntryIdImpl
     public constructor(
         private readonly knex: KnexClient.Interface,
         private readonly schema: PgSchema.Interface,
-        private readonly storageModelProvider: CmsStorageModelProvider.Interface
+        private readonly storageModelProvider: CmsStorageModelProvider.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPublishedRevisionParams
     ) {
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { id: entryId } = parseIdentifier(params.id);
-        const row = await modelRows(this.knex.client, this.schema.getTables().entries, model)
+        const row = await modelRows(
+            this.knex.client,
+            this.schema.getTables().entries,
+            modelRef(tenant, model)
+        )
             .andWhere({ entry_id: entryId, is_published: true })
             .first();
         return row ? rowToEntry<T>(row, this.storageModelProvider.getModel(model)) : null;
@@ -36,5 +43,5 @@ class PgGetPublishedRevisionByEntryIdImpl
 export const PgGetPublishedRevisionByEntryId =
     GetPublishedRevisionByEntryIdStorageOperation.createImplementation({
         implementation: PgGetPublishedRevisionByEntryIdImpl,
-        dependencies: [KnexClient, PgSchema, CmsStorageModelProvider]
+        dependencies: [KnexClient, PgSchema, CmsStorageModelProvider, ScopeTenant]
     });

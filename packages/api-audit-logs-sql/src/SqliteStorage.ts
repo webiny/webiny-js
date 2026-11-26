@@ -1,4 +1,5 @@
 import type { Knex } from "knex";
+import type { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import type { TableManager } from "@webiny/api-core-sql/TableManager.js";
 import type { IAuditLog, IAuditLogCreatedBy } from "@webiny/api-audit-logs/storage/types.js";
 import type {
@@ -68,10 +69,17 @@ export class SqliteStorage implements IStorage {
     private readonly knex: Knex;
     private readonly tableManager: TableManager;
     private readonly ensureTable: () => Promise<void>;
+    private readonly scopeTenant: ScopeTenant.Interface;
 
-    public constructor(params: { knex: Knex; tableManager: TableManager }) {
+    public constructor(params: {
+        knex: Knex;
+        tableManager: TableManager;
+        /** The tenant the storage acts on: its tenant scope's. The schema setup runs without one. */
+        scopeTenant: ScopeTenant.Interface;
+    }) {
         this.knex = params.knex;
         this.tableManager = params.tableManager;
+        this.scopeTenant = params.scopeTenant;
         this.ensureTable = params.tableManager.define(TABLE_NAME, table => {
             table.text("id").primary();
             table.text("tenant").notNullable();
@@ -94,7 +102,7 @@ export class SqliteStorage implements IStorage {
         try {
             const row = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                 .where("id", params.id)
-                .andWhere("tenant", params.tenant)
+                .andWhere("tenant", this.scopeTenant.getId())
                 .first();
 
             if (!row) {
@@ -122,22 +130,26 @@ export class SqliteStorage implements IStorage {
         await this.ensureTable();
 
         try {
-            const row = toRow(params.data);
+            // Stored with its scope's tenant, whatever tenant it carries.
+            const tenant = this.scopeTenant.getId();
+            const row = toRow({ ...params.data, tenant });
 
             const existing = await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                 .where("id", params.data.id)
+                .andWhere("tenant", tenant)
                 .first();
 
             if (existing) {
                 await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME))
                     .where("id", params.data.id)
+                    .andWhere("tenant", tenant)
                     .update(row);
             } else {
                 await this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME)).insert(row);
             }
 
             return {
-                data: params.data,
+                data: { ...params.data, tenant },
                 success: true
             };
         } catch (error) {
@@ -156,7 +168,7 @@ export class SqliteStorage implements IStorage {
 
             const query = this.knex<AuditLogRow>(this.tableManager.resolve(TABLE_NAME)).where(
                 "tenant",
-                params.tenant
+                this.scopeTenant.getId()
             );
 
             if (params.app) {

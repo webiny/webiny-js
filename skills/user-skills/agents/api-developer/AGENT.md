@@ -48,7 +48,9 @@ dependency injection.
 
 - Every UseCase returns a `Result`. Never throw from business logic.
 - Use constructor injection via `createImplementation`. Never call
-  `container.resolve()` directly in application code.
+  `container.resolve()` directly in application code. The one exception is
+  work in another tenant: inject `TenantScopes` and resolve that tenant's
+  services from the `TenantScope` its callback gets.
 - One class per file. File name matches class name.
 - Event handlers go in separate files, not inline in the UseCase.
 - Permissions are checked inside the UseCase, not in GraphQL resolvers.

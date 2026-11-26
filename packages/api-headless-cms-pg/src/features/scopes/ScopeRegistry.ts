@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { Knex } from "knex";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { KnexClient } from "@webiny/api-core-sql";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsEntrySystemField } from "@webiny/api-headless-cms/features/contentEntry/EntrySystemField/index.js";
 import {
     FieldFilterPathRegistry,
@@ -134,7 +135,8 @@ class ScopeRegistryImpl implements Abstraction.Interface {
         private readonly pathRegistry: FieldFilterPathRegistry.Interface,
         private readonly transformRegistry: FieldFilterValueTransformRegistry.Interface,
         private readonly entrySystemFields: CmsEntrySystemField.Interface[],
-        private readonly config: PgStorageConfig.Interface
+        private readonly config: PgStorageConfig.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {}
 
     public reset(): void {
@@ -143,14 +145,15 @@ class ScopeRegistryImpl implements Abstraction.Interface {
 
     public forget(model: CmsModel): void {
         scopeCache.delete(
-            scopeCacheKey(this.schema.getTables().scopes, model.tenant, model.modelId)
+            scopeCacheKey(this.schema.getTables().scopes, this.scopeTenant.getId(), model.modelId)
         );
     }
 
     public async get(model: CmsModel, db?: Knex): Promise<Abstraction.Scope> {
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { scopes } = this.schema.getTables();
-        const key = scopeCacheKey(scopes, model.tenant, model.modelId);
+        const key = scopeCacheKey(scopes, tenant, model.modelId);
         const budget = this.config.fieldBudget;
 
         const cached = scopeCache.get(key);
@@ -185,7 +188,7 @@ class ScopeRegistryImpl implements Abstraction.Interface {
         }
 
         const run = async (trx: Knex.Transaction): Promise<Abstraction.Scope> => {
-            const row = await this.lockScope(trx, model);
+            const row = await this.lockScope(trx, tenant, model);
             const stored: Abstraction.SlotMap = { ...EMPTY_SLOT_MAP, ...row.slot_map };
             const base = fromVersion1(plan, stored) ?? stored;
             let { slotMap, changed } = allocateSlots(plan, base, budget);
@@ -234,9 +237,10 @@ class ScopeRegistryImpl implements Abstraction.Interface {
         model: CmsModel,
         change: (stored: Abstraction.SlotMap) => Abstraction.SlotMap
     ): Promise<void> {
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         await this.knex.client.transaction(async trx => {
-            const row = await this.lockScope(trx, model);
+            const row = await this.lockScope(trx, tenant, model);
             const stored: Abstraction.SlotMap = { ...EMPTY_SLOT_MAP, ...row.slot_map };
             await this.store(trx, row.scope_id, change(stored));
         });
@@ -244,12 +248,13 @@ class ScopeRegistryImpl implements Abstraction.Interface {
     }
 
     public async clear(model: CmsModel): Promise<void> {
+        const tenant = this.scopeTenant.getId();
         await this.schema.ensure();
         const { scopes, search, values, valueDeltas } = this.schema.getTables();
         await this.knex.client.transaction(async trx => {
             const result = await trx.raw(
                 `SELECT scope_id FROM "${scopes}" WHERE tenant = ? AND model_id = ? FOR UPDATE`,
-                [model.tenant, model.modelId]
+                [tenant, model.modelId]
             );
             const scopeId: number | undefined = result.rows[0]?.scope_id;
             if (scopeId === undefined) {
@@ -295,16 +300,17 @@ class ScopeRegistryImpl implements Abstraction.Interface {
 
     private async lockScope(
         trx: Knex.Transaction,
+        tenant: string,
         model: CmsModel
     ): Promise<{ scope_id: number; slot_map: Abstraction.SlotMap; index_mode: IndexMode }> {
         const { scopes } = this.schema.getTables();
         await trx.raw(
             `INSERT INTO "${scopes}" (tenant, model_id, index_mode) VALUES (?, ?, ?) ON CONFLICT (tenant, model_id) DO NOTHING`,
-            [model.tenant, model.modelId, this.config.defaultIndexMode]
+            [tenant, model.modelId, this.config.defaultIndexMode]
         );
         const result = await trx.raw(
             `SELECT scope_id, slot_map, index_mode FROM "${scopes}" WHERE tenant = ? AND model_id = ? FOR UPDATE`,
-            [model.tenant, model.modelId]
+            [tenant, model.modelId]
         );
         return result.rows[0];
     }
@@ -329,6 +335,7 @@ export const ScopeRegistryImplementation = Abstraction.createImplementation({
         FieldFilterPathRegistry,
         FieldFilterValueTransformRegistry,
         [CmsEntrySystemField, { multiple: true }],
-        PgStorageConfig
+        PgStorageConfig,
+        ScopeTenant
     ]
 });

@@ -4,7 +4,7 @@ import {
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ListDeletedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
@@ -31,11 +31,8 @@ class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
     IEmptyTrashBinsOutput
 > {
     constructor(
-        private tenantContext: TenantContext.Interface,
-        private listTenants: ListTenantsUseCase.Interface,
-        private listModels: ListModelsUseCase.Interface,
-        private listDeletedEntries: ListDeletedEntriesUseCase.Interface,
-        private deleteEntry: DeleteEntryUseCase.Interface
+        private tenantScopes: TenantScopes.Interface,
+        private listTenants: ListTenantsUseCase.Interface
     ) {}
 
     async run(
@@ -59,78 +56,84 @@ class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
 
         let shouldTaskContinue = false;
 
-        // Iterate over each tenant.
-        await this.tenantContext.withEachTenant(tenants, async tenant => {
+        // Iterate over each tenant, in its scope: its models and entries are in its storage. The
+        // timeout is checked before entering a scope, so no scope is built once time is up.
+        for (const tenant of tenants) {
             if (controller.runtime.isCloseToTimeout()) {
                 shouldTaskContinue = true;
-                return;
+                break;
             }
 
-            if (controller.runtime.isCloseToTimeout()) {
-                shouldTaskContinue = true;
-                return;
-            }
+            await this.tenantScopes.withTenant(tenant, async scope => {
+                const listModels = scope.resolve(ListModelsUseCase);
+                const listDeletedEntries = scope.resolve(ListDeletedEntriesUseCase);
+                const deleteEntry = scope.resolve(DeleteEntryUseCase);
 
-            // List all non-private models.
-            const modelsResult = await this.listModels.execute({ includePrivate: false });
-            if (modelsResult.isFail()) {
-                await controller.logger.error({
-                    message: `Failed to list models for tenant "${tenant.id}".`,
-                    error: modelsResult.error
-                });
-                return;
-            }
-            const models = modelsResult.value;
+                // List all non-private models.
+                const modelsResult = await listModels.execute({ includePrivate: false });
+                if (modelsResult.isFail()) {
+                    await controller.logger.error({
+                        message: `Failed to list models for tenant "${tenant.id}".`,
+                        error: modelsResult.error
+                    });
+                    return;
+                }
+                const models = modelsResult.value;
 
-            // Process each model to delete trashed entries.
-            for (const model of models) {
-                // Query parameters for fetching deleted entries older than a minute ago.
-                const listEntriesParams = {
-                    where: {
-                        deletedOn_lt: calculateDateTimeString()
-                    },
-                    limit: 50
-                };
+                // Process each model to delete trashed entries.
+                for (const model of models) {
+                    // Query parameters for fetching deleted entries older than a minute ago.
+                    const listEntriesParams = {
+                        where: {
+                            deletedOn_lt: calculateDateTimeString()
+                        },
+                        limit: 50
+                    };
 
-                // Continue deleting entries while there are entries left to delete.
-                while (true) {
-                    const listResult = await this.listDeletedEntries.execute(
-                        model,
-                        listEntriesParams
-                    );
-                    if (listResult.isFail()) {
-                        await controller.logger.error({
-                            message: `Failed to list deleted entries of model "${model.modelId}".`,
-                            error: listResult.error
-                        });
-                        break;
-                    }
-                    const { entries, meta } = listResult.value;
+                    // Continue deleting entries while there are entries left to delete.
+                    while (true) {
+                        const listResult = await listDeletedEntries.execute(
+                            model,
+                            listEntriesParams
+                        );
+                        if (listResult.isFail()) {
+                            await controller.logger.error({
+                                message: `Failed to list deleted entries of model "${model.modelId}".`,
+                                error: listResult.error
+                            });
+                            break;
+                        }
+                        const { entries, meta } = listResult.value;
 
-                    if (meta.totalCount === 0) {
-                        break;
-                    }
+                        if (meta.totalCount === 0) {
+                            break;
+                        }
 
-                    if (controller.runtime.isCloseToTimeout()) {
-                        shouldTaskContinue = true;
-                        break;
-                    }
-                    for (const entry of entries) {
                         if (controller.runtime.isCloseToTimeout()) {
                             shouldTaskContinue = true;
                             break;
                         }
-                        // Delete each entry individually.
-                        await this.deleteEntry.execute(model, entry.id, { permanently: true });
+                        for (const entry of entries) {
+                            if (controller.runtime.isCloseToTimeout()) {
+                                shouldTaskContinue = true;
+                                break;
+                            }
+                            // Delete each entry individually.
+                            await deleteEntry.execute(model, entry.id, { permanently: true });
+                        }
                     }
                 }
-            }
 
-            // If the task isn't continuing, add the tenant to the executed list.
-            if (!shouldTaskContinue) {
-                executedTenantIds.push(tenant.id);
+                // If the task isn't continuing, add the tenant to the executed list.
+                if (!shouldTaskContinue) {
+                    executedTenantIds.push(tenant.id);
+                }
+            });
+
+            if (shouldTaskContinue) {
+                break;
             }
-        });
+        }
 
         // Continue the task or mark it as done based on the `shouldContinue` flag.
         return shouldTaskContinue
@@ -143,13 +146,7 @@ class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
 
 const EmptyTrashBinTaskHandler = TaskHandler.createImplementation({
     implementation: EmptyTrashBinTaskHandlerImpl,
-    dependencies: [
-        TenantContext,
-        ListTenantsUseCase,
-        ListModelsUseCase,
-        ListDeletedEntriesUseCase,
-        DeleteEntryUseCase
-    ]
+    dependencies: [TenantScopes, ListTenantsUseCase]
 });
 
 class EmptyTrashBinTask implements TaskDefinition.Interface {

@@ -1,17 +1,25 @@
-import type { SettingsNotAuthorized } from "~/domain/errors.js";
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { TransportSettings } from "~/types.js";
+import type { SettingsNotAuthorized, UnknownTransportSettings } from "~/domain/errors.js";
+import type { TransportSettingsDefinition } from "~/domain/TransportSettings/abstractions.js";
 
 export type MailerSettingsSource = "code" | "storage" | null;
 
-export interface ISettingsWithSource {
-    settings: TransportSettings | null;
+export interface ISettingsWithSource<
+    TSettings extends object = TransportSettingsDefinition.Values
+> {
+    settings: TSettings | null;
     source: MailerSettingsSource;
 }
 
+/**
+ * Reads a transport's settings with its secrets decrypted. For the transport itself (its
+ * `MailTransportFactory`); no permission check.
+ */
 export interface IGetSettingsRepository {
-    get(transportName: string): Promise<Result<ISettingsWithSource>>;
+    get<TSettings extends object = TransportSettingsDefinition.Values>(
+        transport: string
+    ): Promise<Result<ISettingsWithSource<TSettings>, UnknownTransportSettings>>;
 }
 
 export const GetSettingsRepository =
@@ -19,11 +27,16 @@ export const GetSettingsRepository =
 
 export namespace GetSettingsRepository {
     export type Interface = IGetSettingsRepository;
-    export type Return = Promise<Result<ISettingsWithSource>>;
 }
 
+/**
+ * Reads a transport's settings for the GraphQL API: requires the `mailer.settings` permission and
+ * leaves the secrets out.
+ */
 export interface IGetSettingsUseCase {
-    execute(transportName: string): Promise<Result<ISettingsWithSource, SettingsNotAuthorized>>;
+    execute(
+        transport: string
+    ): Promise<Result<ISettingsWithSource, SettingsNotAuthorized | UnknownTransportSettings>>;
 }
 
 export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>("GetSettingsUseCase");

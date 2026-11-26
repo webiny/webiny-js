@@ -12,7 +12,7 @@ import {
     TENANT_A,
     TENANT_B
 } from "./helpers";
-import { useStorageContainer } from "../useStorageContainer";
+import { useTenantRoutedStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000
@@ -27,7 +27,7 @@ const createBinnedEntry = (model: CmsModel): CmsEntry => {
 };
 
 describe("Tenant isolation - entry location", () => {
-    const getContainer = useStorageContainer();
+    const getContainer = useTenantRoutedStorageContainer();
     const modelA = createIsolationModel(TENANT_A);
     const modelB = createIsolationModel(TENANT_B);
 

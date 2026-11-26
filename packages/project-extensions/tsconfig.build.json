@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../mailer-smtp/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../project-extensions-aws/tsconfig.build.json" },
     { "path": "../project-extensions-standalone/tsconfig.build.json" }
@@ -13,6 +14,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/mailer-smtp/*": ["../mailer-smtp/src/*"],
+      "@webiny/mailer-smtp": ["../mailer-smtp/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],

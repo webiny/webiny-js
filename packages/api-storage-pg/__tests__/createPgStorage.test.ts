@@ -6,6 +6,10 @@ import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { ApiCoreStorageOperationsFactory, RequestStorage } from "@webiny/api-core";
 import {
+    ScopeTenant,
+    createFixedScopeTenant
+} from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
+import {
     KnexClient,
     SqlSchemaConfig,
     SqlSchemaSetup,
@@ -19,7 +23,7 @@ import { createPgStorage } from "~/index.js";
 /**
  * The Postgres storage is generic: SQL core, websockets and audit logs. The CMS and ACO on Postgres
  * are modules the project adds with its extensions; their setup tests live with the handlers that
- * run them (`@webiny/api-event-handler-aws-pg`).
+ * run them (`@webiny/api-composition-aws-pg`).
  */
 
 const startPglite = async () => {
@@ -107,8 +111,10 @@ describe("createPgStorage", () => {
         expect(root.resolveAll(SqlSchemaSetup)).toEqual([]);
         expect(root.resolve(SqlSchemaSetupRunner)).toBeTruthy();
 
-        // A request's container, as `registerApiRequestStack` starts it, gets every storage.
+        // A tenant scope's container, as `TenantScopes` starts it, gets every storage. Storage takes
+        // its tenant from it.
         const request = root.createChildContainer();
+        request.registerInstance(ScopeTenant, createFixedScopeTenant("root"));
         for (const storage of request.resolveAll(RequestStorage)) {
             await storage.register(request);
         }

@@ -1,5 +1,5 @@
 import { until } from "@webiny/api/testing/until.js";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
@@ -13,7 +13,7 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { createFileManagerSdk } from "./createFileManagerSdk";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -34,7 +34,7 @@ export const defaultIdentity: IdentityData = {
 export default (params: HandlerParams = {}) => {
     const { identity, permissions, plugins = [] } = params;
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     // `undefined` uses the default identity, `null` makes the caller anonymous.

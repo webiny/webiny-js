@@ -1,15 +1,15 @@
 import type { Container } from "@webiny/feature/api";
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
 import {
-    EventBridgeEventHandler,
+    EventBridgeInputHandler,
     type EventBridgeResult
-} from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+} from "@webiny/api-kernel-aws/abstractions/handlers/EventBridgeInputHandler.js";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
-import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { InputContext, NextFunction } from "@webiny/api-kernel-core";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
@@ -19,18 +19,18 @@ import type { GuardDutyEvent } from "./types.js";
 
 const DETAIL_TYPE = "GuardDuty Malware Protection Object Scan Result";
 
-class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
+class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeInputHandler.Interface {
     constructor(
         private container: Container,
-        private tenantCtx: ITenantContext,
+        private tenantScopes: TenantScopes.Interface,
         private getTenantById: IGetTenantByIdUseCase
     ) {}
 
     async execute(
-        eventCtx: EventContext<EventBridgeEvent<string, GuardDutyEvent>>,
+        inputCtx: InputContext<EventBridgeEvent<string, GuardDutyEvent>>,
         _next: NextFunction
     ): Promise<EventBridgeResult> {
-        const payload = eventCtx.event;
+        const payload = inputCtx.input;
         if (payload["detail-type"] !== DETAIL_TYPE) {
             return { success: true };
         }
@@ -41,7 +41,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
 
         const objectKey = payload.detail.s3ObjectDetails.objectKey;
         const keyValueStore = this.container.resolve(GlobalKeyValueStore);
-        let tenant: string | null = null;
+        let tenant: Tenant | null = null;
 
         try {
             const fileId = ObjectKey.from(objectKey).id();
@@ -52,27 +52,38 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
             if (result.isOk()) {
                 const tenantResult = await this.getTenantById.execute(result.value.tenant);
                 if (tenantResult.isOk()) {
-                    this.tenantCtx.setTenant(tenantResult.value);
-                    tenant = tenantResult.value.id;
+                    tenant = tenantResult.value;
                 }
             }
         } catch {
             // If metadata can't be loaded, ignore — likely a rendition file.
         }
 
-        await processThreatScanResult(
-            { container: this.container } as unknown as ApiCoreContext,
-            payload.detail,
-            tenant
-        );
+        if (!tenant) {
+            await processThreatScanResult(
+                { container: this.container } as unknown as ApiCoreContext,
+                payload.detail,
+                null
+            );
+            return { success: true };
+        }
+
+        // The file is the tenant's: handle it with that tenant's services.
+        await this.tenantScopes.withTenant(tenant, async scope => {
+            await processThreatScanResult(
+                { container: scope.resolve(RequestContainer) } as unknown as ApiCoreContext,
+                payload.detail,
+                scope.tenant.id
+            );
+        });
         return { success: true };
     }
 }
 
-export const ThreatDetectionEventBridgeLambdaHandler = EventBridgeEventHandler.createImplementation(
+export const ThreatDetectionEventBridgeLambdaHandler = EventBridgeInputHandler.createImplementation(
     {
         implementation: ThreatDetectionEventBridgeLambdaHandlerImpl,
-        dependencies: [RequestContainer, TenantContext, GetTenantByIdUseCase]
+        dependencies: [RequestContainer, TenantScopes, GetTenantByIdUseCase]
     }
 );
 
