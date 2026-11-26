@@ -61,8 +61,6 @@ const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsPr
     const config = useEditorConfig();
     const isReadOnly = useSelectFromEditor(state => state.isReadOnly);
     const [stored, setStored] = useState<OpenState>(() => readStored(side));
-    // Which panel's toggle was pressed, and how many times: each press moves focus once.
-    const [toggled, setToggled] = useState<{ name: string; count: number } | null>(null);
 
     const panels = useMemo(() => {
         // Absent until a panel is registered.
@@ -88,7 +86,6 @@ const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsPr
 
     const setOpen = useCallback(
         (name: string, open: boolean) => {
-            setToggled(current => ({ name, count: (current?.count ?? 0) + 1 }));
             setStored(current => {
                 const next = { ...current, [name]: open };
                 store(side, next);
@@ -110,7 +107,6 @@ const BasePanels = makeDecoratable("EditorPanels", ({ side = "right" }: PanelsPr
                         panel={panel}
                         side={side}
                         open={isOpen(panel.name)}
-                        toggleCount={toggled?.name === panel.name ? toggled.count : 0}
                         onExpand={() => setOpen(panel.name, true)}
                     />
                 ))}
