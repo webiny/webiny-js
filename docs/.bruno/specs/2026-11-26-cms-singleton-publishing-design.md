@@ -2,7 +2,8 @@
 
 Status: draft
 Date: 2026-11-26
-Release: 6.6, one PR. Phase 1 and phase 2 ship together; nothing merges before both are done.
+Release: 6.6, one PR. Phase 1 and phase 2 ship together; the PR merges only after both are done.
+The phase 2 design is written into this spec, and reviewed, before phase 2 implementation starts.
 
 ## Goal
 
@@ -66,15 +67,59 @@ singleton model with `singularApiName: "Settings"`.
 - A singleton model supports publishing and revisions only when its tags include
   `$publishing:true`. Without the tag ("untagged"), it behaves as today.
 - Regular models keep the existing rule: publishable unless tagged `$publishing:false`.
+- Tag constants, next to `CMS_MODEL_SINGLETON_TAG`: `CMS_MODEL_PUBLISHING_ENABLED_TAG = "$publishing:true"`
+  and `CMS_MODEL_PUBLISHING_DISABLED_TAG = "$publishing:false"`. API: `constants.ts`. Admin:
+  `@webiny/app-headless-cms-common` constants (where `CMS_MODEL_SINGLETON_TAG` already lives, see
+  `isReviewableModel.ts:1`). The literal `"$publishing:false"` in `useIsModelPublishable.ts:7`,
+  `SaveContentButton.tsx:24`, `CreateNewRevisionButton.tsx:28` and `isBindableModel.ts:4` is replaced.
 - One shared helper encodes both rules: `isPublishingEnabled(model)`.
-  - API: exported from `exports/api/cms/model.ts`, next to an exported `isSingletonModel`. The
-    private copy in `ListCmsEntryWorkflowModelsUseCase.ts:26` is replaced by the export.
-  - Admin: in `@webiny/app-headless-cms-common`. `useIsModelPublishable` uses it.
+  - API: `isSingletonModel` moves out of `entryOwnerAccess.ts:15` into one canonical module, and
+    both helpers are exported from `exports/api/cms/model.ts`. `entryOwnerAccess.ts` imports it,
+    and the private copy in `ListCmsEntryWorkflowModelsUseCase.ts:26` is replaced by the export.
+  - Admin: `isPublishingEnabled` in `@webiny/app-headless-cms-common`. `useIsModelPublishable`,
+    `SaveContentButton` and `CreateNewRevisionButton` use it.
 - Adding the tag to an existing singleton: the read API returns empty values until an editor
   publishes (see read below). The docs say to publish right after adding the tag. Removing the tag:
   the read API returns `#0001` again; later revisions stay in storage but are not reachable.
 
 ## GraphQL
+
+### Schema generation
+
+`createSingularSDL.ts` today builds one string with the types plus `extend type Query { get<S> }`
+(lines 59-92) and appends manage-only parts to it (lines 93-124). It is restructured into:
+
+- shared types: `<S>Values`, `<S>`, field type defs, `<S>ListWhereInput`, `<S>Response`;
+- read and preview: `extend type Query { get<S> }`;
+- manage: `<S>Meta`, `extend type <S> { meta }`, `<S>ArrayResponse` (a copy of the regular one,
+  `createManageSDL.ts:173`, because the regular manage SDL is not emitted for singletons), input
+  types, and the manage Query and Mutation blocks below. The manage block has no `get<S>` and
+  replaces the old `update<S>(data, options)`.
+
+Singleton models with no fields keep today's behaviour: `createSingularSDL.ts:30-32` and
+`createSingularResolvers.ts:26-31` emit nothing, and they have no API.
+
+`createSingularResolvers.ts` follows the same split. Resolvers:
+
+| Endpoint | Field | Use case |
+|---|---|---|
+| read | `get<S>` | `GetPublishedSingletonEntryUseCase` |
+| preview | `get<S>` | `GetLatestSingletonEntryUseCase` |
+| manage | `get<S>Latest` | `GetLatestSingletonEntryUseCase` |
+| manage | `get<S>Revision` | `GetSingletonEntryRevisionUseCase` |
+| manage | `get<S>Revisions` | `ListSingletonEntryRevisionsUseCase` |
+| manage | `update<S>` | `UpdateSingletonEntryUseCase` |
+| manage | `update<S>RevisionDescription` | `UpdateSingletonEntryRevisionDescriptionUseCase` |
+| manage | `create<S>From` | `CreateSingletonEntryRevisionFromUseCase` |
+| manage | `publish<S>` | `PublishSingletonEntryUseCase` |
+| manage | `unpublish<S>` | `UnpublishSingletonEntryUseCase` |
+| manage | `delete<S>` | `DeleteSingletonEntryRevisionUseCase` |
+
+Change: `schemaPlugins.ts:52` collapses preview to `read` today
+(`type === "manage" ? "manage" : "read"`). It changes to pass the real endpoint (`read` or
+`preview`) to the singular resolvers, only to choose the use case. Field resolvers keep `endpointType: "read"` for preview, as
+`createPreviewResolvers.ts:19-21` does for regular models, and the SDL keeps rendering preview
+fields as `read`.
 
 ### Read API
 
@@ -90,8 +135,6 @@ singleton model with `singularApiName: "Settings"`.
 ### Preview API
 
 `getSettings` (no arguments): the latest revision, published or not. Creates the entry if missing.
-`schemaPlugins.ts` passes the real endpoint type (`read` or `preview`) to the singular SDL and
-resolvers instead of collapsing both to `read`.
 
 ### Manage API
 
@@ -163,12 +206,31 @@ case uses it.
 
 ### Revision checks
 
-Every singleton operation that takes a `revision` (or `id` for `getSettingsRevisions`) checks it:
+Every singleton operation that takes a `revision` (or `id` for `getSettingsRevisions`) runs the
+checks in "Order of checks" below.
 
-1. It belongs to the singleton: it starts with `${entryId}#` (or equals `entryId` for
-   `getSettingsRevisions`). Otherwise `EntryNotFoundError`.
-2. Untagged model: only `${entryId}#0001` is allowed. Otherwise
-   `EntryValidationError("Model does not support revisions.")`.
+- A revision belongs to the singleton when `parseIdentifier(revision).id === entryId`.
+- `getSettingsRevisions(id)` accepts the entry id or any revision id of the singleton, because the
+  admin passes the route id, which is a revision id (`ContentEntryFormView.tsx:47`,
+  `RevisionsListPresenter.ts:101-110`). The use case calls `GetRevisionsByEntryId` with the parsed
+  entry id.
+- For an untagged model, `getSettingsRevisions` returns only `#0001`. Later revisions left in
+  storage after removing the tag are not returned.
+
+### Order of checks
+
+Each singleton use case runs its checks in this order and stops at the first failure:
+
+1. Revision (or id) belongs to the singleton, else `EntryNotFoundError`.
+2. Untagged model and the operation needs publishing (publish, unpublish, create-from, delete),
+   else `EntryValidationError("Model does not support publishing.")`.
+3. Untagged model and the revision is not `#0001`, else
+   `EntryValidationError("Model does not support revisions.")`. Not applied to
+   `getSettingsRevisions`, which filters its result instead (see Revision checks).
+4. Operation rules (locked revision, delete rules).
+
+So an untagged `deleteSettings(#0002)` fails with "does not support publishing", and an untagged
+`updateSettings(#0002)` with "does not support revisions".
 
 ### Untagged models
 
@@ -186,11 +248,15 @@ entries (`UpdateEntryUseCase.ts:47`). To change a published singleton, the clien
 
 ### Delete
 
-- The whole singleton entry cannot be deleted. `deleteSettings` with an id without a version fails.
-  `DeleteEntryUseCase` and `DeleteMultipleEntries` reject singleton models.
-- Revision `#0001` cannot be deleted.
-- The published revision cannot be deleted. Unpublish first.
-- Any other revision can be deleted.
+All delete failures are `EntryValidationError`:
+
+- The whole singleton entry cannot be deleted. `deleteSettings` with an id without a version fails
+  with "Singleton entry cannot be deleted." `DeleteEntryUseCase` and `DeleteMultipleEntries` reject
+  singleton models with the same message.
+- Revision `#0001` cannot be deleted: "The first revision of a singleton entry cannot be deleted."
+- The published revision cannot be deleted: "The published revision cannot be deleted. Unpublish it
+  first."
+- Any other revision of a tagged singleton can be deleted.
 
 ### Use cases
 
@@ -199,10 +265,10 @@ generic use cases. One use case per file.
 
 | Singleton use case | Delegates to |
 |---|---|
-| `GetLatestSingletonEntryUseCase` (manage, preview) | `GetLatestRevisionByEntryId`; creates with `CreateEntry` (`skipValidation: true`) if missing |
+| `GetLatestSingletonEntryUseCase` (manage, preview) | tagged: `GetLatestRevisionByEntryId`; untagged: `#0001` via `GetRevisionById`, so a leftover `#0002` is never returned; creates with `CreateEntry` (`skipValidation: true`) if missing |
 | `GetPublishedSingletonEntryUseCase` (read) | tagged: `GetPublishedRevisionByEntryId`, empty values if none; untagged: `#0001` via `GetRevisionById`; creates if missing |
 | `GetSingletonEntryRevisionUseCase` | `GetRevisionById` |
-| `ListSingletonEntryRevisionsUseCase` | `GetRevisionsByEntryId` |
+| `ListSingletonEntryRevisionsUseCase` | `GetRevisionsByEntryId` with the parsed entry id; untagged: keeps only `#0001` from the result |
 | `UpdateSingletonEntryUseCase` (changed: takes `revision`) | `UpdateEntry` |
 | `UpdateSingletonEntryRevisionDescriptionUseCase` | `UpdateRevisionDescription` |
 | `CreateSingletonEntryRevisionFromUseCase` | `CreateEntryRevisionFrom` |
@@ -216,7 +282,8 @@ The generic use cases also guard singletons, because other packages call them fr
 through GraphQL:
 
 - `PublishEntry`, `UnpublishEntry`, `CreateEntryRevisionFrom`: reject untagged singletons.
-- `DeleteEntryRevision`: rejects `#0001` and the published revision of a singleton.
+- `DeleteEntryRevision`: rejects any revision of an untagged singleton ("does not support
+  publishing"), and `#0001` and the published revision of a tagged singleton.
 - `DeleteEntry`, `DeleteMultipleEntries`: reject singletons.
 
 ### Access control
@@ -242,17 +309,32 @@ One editor for every singleton, built from the regular editor.
     (`ContentEntryFormView.tsx:24-41`).
 - New `SingletonEditorView`: provides `ModelProvider` and `ContentEntryEditorWithConfig` (as
   `ListView.tsx:26-28` does), reads `route.params.id`, and without it loads the entry with
-  `getSettingsLatest`. Renders the editor body without a back button, list, folders, breadcrumbs or
+  `getSettingsLatest`, then replaces the route with that revision id, so revision switching starts
+  from a route that has an id. Renders the editor body without a back button, list, folders, breadcrumbs or
   "New entry". Revision switching keeps working through `route.params.id`
   (`RevisionSelector.tsx:55`, `RevisionListItem.tsx:106`, `OlderRevisionAlert.tsx:29`,
   `CreateNewRevisionButton.tsx:38`).
-- `ModelLoader.tsx:23` renders `SingletonEditorView` for every singleton model.
+- `ModelLoader.tsx:23` renders `SingletonEditorView` for every singleton model. A singleton model
+  with no fields has no API (see Schema generation), so `SingletonEditorView` shows an empty-state
+  message ("This model has no fields.") and makes no request.
+- The form presenter (`presentation/contentEntries/form/ContentEntryFormPresenter.ts`) also holds
+  `CreateEntryUseCase` and `DeleteEntryUseCase`. For a singleton the entry always exists, so the
+  create path (which sends `wbyAco_location`, line 167) never runs, and whole-entry delete is hidden
+  by the guard below. No folder id is set.
 - Delete: `SingleEntryView`, `SingleEntryLayout`, `presentation/contentEntries/singleEntry/` and
-  `features/contentEntry/singletonEntry/`.
+  `features/contentEntry/singletonEntry/`, and the registration in `ContentEntriesView.tsx:45`.
+- Record locking: delete `packages/app-record-locking/src/presentation/entryLocking/SingleEntryPresenterDecorator.ts`
+  and `SingleEntryContentDecorator.tsx` and their registrations (`feature.ts:13` for the presenter
+  decorator). The
+  editor is locked by the existing `ContentEntryFormPresenterDecorator.ts`, so singletons get the
+  same locking as regular entries.
 - Gateways: the editor gateways work unchanged, except loading:
   - first load: a gateway for `getSettingsLatest`;
-  - a revision: a singleton variant of `GetEntryGateway` (`features/contentEntry/getEntry/GetEntryGateway.ts:32`)
+  - a revision: a singleton variant of `GetEntryGateway` (query built at
+    `features/contentEntry/getEntry/GetEntryGateway.ts:31-41`, implementation exported at `:61`)
     that calls `getSettingsRevision(revision)`, registered through DI for singleton models.
+  - Both live in a new `features/contentEntry/singletonEditor/` folder (gateway, use case and
+    feature per operation), replacing the deleted `features/contentEntry/singletonEntry/`.
 - `useIsModelPublishable` uses `isPublishingEnabled(model)`. This hides publish and revision actions
   for untagged singletons in the shared editor.
 - Guards:
@@ -276,7 +358,8 @@ Same PR, after phase 1. In phase 1 the scheduler UI is not hidden: its "Schedule
 (`packages/app-headless-cms-scheduler/src/components/Editor/EditorConfig.tsx:11`, gated by
 `IsModelPublishable`) appears for tagged singletons and may not work until phase 2.
 
-Phase 2 scope, to be designed after phase 1:
+Phase 2 scope. The detailed design is added to this spec after phase 1 is implemented and is
+reviewed before phase 2 implementation starts:
 
 - Scheduling publish and unpublish of a tagged singleton revision from the singleton editor.
 - `api-headless-cms-scheduler` `SchedulePublishEntryUseCase.ts:28` and
@@ -292,8 +375,11 @@ Phase 2 scope, to be designed after phase 1:
   returns `#0001`; creates if missing.
 - Preview: returns latest; creates if missing.
 - Manage: `getSettingsLatest` creates if missing; `getSettingsRevision` returns the revision.
-- Revision checks: foreign revision fails with `EntryNotFoundError`; untagged with `#0002` fails
-  with `EntryValidationError`.
+- Revision checks: foreign revision fails with `EntryNotFoundError`; untagged `updateSettings(#0002)`
+  fails with "does not support revisions"; untagged `publishSettings(#0002)` fails with "does not
+  support publishing".
+- `getSettingsRevisions` accepts the entry id and a revision id; for an untagged model with a
+  leftover `#0002` it returns only `#0001`.
 - Untagged: publish, unpublish, create-from and delete fail; get and update of `#0001` work.
 - Update of a locked revision fails with `EntryLockedError`.
 - Delete: whole entry, `#0001` and the published revision fail; other revisions succeed.
@@ -304,4 +390,7 @@ Phase 2 scope, to be designed after phase 1:
 - Read and preview SDL have no `meta` and no mutations.
 - Admin: `SingletonEditorView` loads latest, switches revisions by route, hides publish actions for
   untagged models, hides whole-entry delete, blocks `#0001` and published revision delete.
+- Untagged model with a leftover `#0002`: preview `getSettings` and `getSettingsLatest` return `#0001`.
+- Delete errors match the messages in Delete.
+- Admin: a singleton model with no fields shows "This model has no fields." and makes no request.
 - Phase 2: scheduling tests, defined with the phase 2 design.
