@@ -10,7 +10,8 @@ The phase 2 design is written into this spec, and reviewed, before phase 2 imple
 A singleton model (tag `singleEntry`) can opt in to the regular entry lifecycle: draft, publish,
 unpublish, revisions, and (phase 2) scheduled publishing. A customer uses a singleton as a global
 site setting and needs changes to go live on a schedule. Singletons without the opt-in keep working
-as today: one revision, `#0001`, never published.
+as today: one revision, `#0001`, never published (unless it was published while the model was
+tagged).
 
 The admin edits every singleton in the regular entry editor, without the entry list.
 
@@ -81,7 +82,9 @@ singleton model with `singularApiName: "Settings"`.
   - Admin: `isPublishingEnabled` in `@webiny/app-headless-cms-common`. `useIsModelPublishable`,
     `SaveContentButton` and `CreateNewRevisionButton` use it.
 - Adding the tag to an existing singleton: the read API returns empty values until an editor
-  publishes (see read below). The docs say to publish right after adding the tag. Removing the tag:
+  publishes (see read below). Exception: if `#0001` was published during an earlier tagged period,
+  it is still published, and read returns its current values, including edits made while untagged
+  (see Locked revisions). The docs say to publish right after adding the tag. Removing the tag:
   the read API returns `#0001` again; later revisions stay in storage but are not reachable. The tag
   cannot be guarded, because code-defined models change it without an API call.
 - If `#0001` was published while tagged, it stays locked after the tag is removed. Untagged models
@@ -261,9 +264,13 @@ entries (`UpdateEntryUseCase.ts:47`). To change a published singleton, the clien
 
 Exception: on an untagged singleton, `updateSettings(#0001)` skips the lock check, so a `#0001` that
 was published before the tag was removed stays editable. `UpdateEntryUseCase.ts:47` gets this
-branch (`isSingletonModel(model) && !isPublishingEnabled(model)`). The untagged read API reads
-`#0001` through `GetRevisionById`, the revision record, so a stale published record in storage is
-never served.
+branch (`isSingletonModel(model) && !isPublishingEnabled(model)`). The update also rewrites the
+published data of `#0001`: DDB writes the published record in the same batch when the revision is
+published (`packages/api-headless-cms-ddb/src/operations/entry/DdbUpdateEntry.ts:53-54,78-83`), and
+SQL storage keeps one row per revision with an `is_published` flag
+(`packages/api-headless-cms-pg/src/operations/entry/PgUpdateEntry.ts:36-40`). The untagged read API
+reads `#0001` through `GetRevisionById` either way. If the tag is added again later, read serves
+these edited values as the published revision.
 
 ### Delete
 
@@ -405,7 +412,7 @@ reviewed before phase 2 implementation starts:
 - Untagged: publish, unpublish, create-from and delete fail; get and update of `#0001` work.
 - Update of a locked revision fails with `EntryLockedError` on a tagged singleton.
 - Untagged singleton with a locked (previously published) `#0001`: `updateSettings(#0001)` works and
-  read returns the updated values.
+  read returns the updated values. After the tag is added again, read returns the same values.
 - Delete: whole entry, `#0001` and the published revision fail; other revisions succeed.
 - A user with "own entries" permission can publish, unpublish, create and delete revisions of a
   singleton created by another user.
