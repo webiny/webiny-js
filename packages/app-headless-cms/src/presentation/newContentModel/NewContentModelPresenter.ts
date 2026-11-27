@@ -6,7 +6,10 @@ import { ListModelGroupsUseCase } from "~/features/modelGroup/listModelGroups/ab
 import { CreateModelUseCase } from "~/features/model/createModel/abstractions.js";
 import { ModelGroupsCache } from "~/features/modelGroup/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";
-const CMS_MODEL_SINGLETON_TAG = "singleEntry";
+import {
+    CMS_MODEL_PUBLISHING_ENABLED_TAG,
+    CMS_MODEL_SINGLETON_TAG
+} from "@webiny/app-headless-cms-common";
 import {
     NewContentModelPresenter as Abstraction,
     type INewContentModelPresenter,
@@ -90,6 +93,9 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
 
             if (data.singleEntry) {
                 tags.push(CMS_MODEL_SINGLETON_TAG);
+                if (data.singleEntryPublishing) {
+                    tags.push(CMS_MODEL_PUBLISHING_ENABLED_TAG);
+                }
                 pluralApiName = `${data.singularApiName}Unused`;
             }
 
@@ -131,6 +137,12 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
                     .label("Singular API Name")
                     .required("Singular API Name is required."),
                 singleEntry: fields.boolean().label("Single entry model").defaultValue(false),
+                singleEntryPublishing: fields
+                    .boolean()
+                    .label("Enable publishing")
+                    .description("Adds drafts, revisions and publishing. Cannot be changed later.")
+                    .defaultValue(false)
+                    .hiddenWhen(({ form }) => !form.field("singleEntry").getValue()),
                 pluralApiName: fields.text().label("Plural API Name"),
                 group: fields
                     .text()
@@ -152,6 +164,7 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
                 layout.row("name"),
                 layout.row("singularApiName"),
                 layout.row("singleEntry"),
+                layout.row("singleEntryPublishing"),
                 layout.row("pluralApiName"),
                 layout.row("group"),
                 layout.row("icon"),
