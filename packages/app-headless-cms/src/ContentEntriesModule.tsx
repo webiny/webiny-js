@@ -57,6 +57,7 @@ import { SaveAndPublishButton } from "~/presentation/contentEntries/views/action
 import { IsNotSingletonModel } from "~/admin/components/IsNotSingletonModel.js";
 import { DeleteEntryMenuItem } from "~/presentation/contentEntries/views/actions/DeleteEntryMenuItem.js";
 import { ShowRevisionListMenuItem } from "~/presentation/contentEntries/views/actions/ShowRevisionListMenuItem.js";
+import { UnpublishEntryMenuItem } from "~/presentation/contentEntries/views/actions/UnpublishEntryMenuItem.js";
 import { CreateNewRevisionButton } from "~/presentation/contentEntries/views/actions/CreateNewRevisionButton.js";
 import { PublishOnlyButton } from "~/presentation/contentEntries/views/actions/PublishOnlyButton.js";
 
@@ -192,6 +193,10 @@ export const ContentEntriesModule = () => {
                     <Actions.MenuItemAction
                         name={"showRevisionsList"}
                         element={<ShowRevisionListMenuItem />}
+                    />
+                    <Actions.MenuItemAction
+                        name={"unpublish"}
+                        element={<UnpublishEntryMenuItem />}
                     />
                 </IsModelPublishable>
             </InternalContentEntryEditorConfig>
