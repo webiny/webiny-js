@@ -30,6 +30,13 @@ export interface IObjectStorage {
     putIfAbsent(key: string, body: Buffer): Promise<boolean>;
     /** The contents stored under `key`, or `null` when nothing is. */
     get(key: string): Promise<Buffer | null>;
+    /**
+     * The contents stored under `key` in chunks, read from storage as the consumer pulls them, or
+     * `null` when nothing is. Use it instead of `get` where the bytes only pass through (delivering
+     * a file), so a large object never sits in memory whole. A consumer that stops early ends the iteration (`break`
+     * in a `for await`), which releases the file or connection.
+     */
+    getStream(key: string): Promise<AsyncIterable<Uint8Array> | null>;
     /** Removes what is stored under `key`. Removing a missing key is not an error. */
     delete(key: string): Promise<void>;
     /** Removes everything whose key starts with `prefix`. */

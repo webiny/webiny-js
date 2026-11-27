@@ -56,6 +56,14 @@ export class Asset {
         return this.contentsReader.read(this);
     }
 
+    /** The contents in chunks, read as the consumer pulls them. */
+    getContentsStream(): Promise<AsyncIterable<Uint8Array>> {
+        if (!this.contentsReader) {
+            throw Error(`Asset contents reader was not configured!`);
+        }
+        return this.contentsReader.readStream(this);
+    }
+
     setContentsReader(reader: AssetContentsReader) {
         this.contentsReader = reader;
     }

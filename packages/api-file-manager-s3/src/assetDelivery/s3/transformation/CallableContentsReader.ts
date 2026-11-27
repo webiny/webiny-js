@@ -1,4 +1,5 @@
 import type { AssetContentsReader } from "@webiny/api-file-manager";
+import { toSingleChunk } from "@webiny/api-file-manager";
 
 interface ContentsCallable {
     (): Promise<Buffer> | Buffer;
@@ -13,5 +14,10 @@ export class CallableContentsReader implements AssetContentsReader {
 
     async read(): Promise<Buffer> {
         return this.callable();
+    }
+
+    async readStream(): Promise<AsyncIterable<Uint8Array>> {
+        const contents = await this.read();
+        return toSingleChunk(contents);
     }
 }

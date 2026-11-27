@@ -37,6 +37,14 @@ const isMissing = (error: unknown): boolean => {
     return errorCode(error) === "ENOENT";
 };
 
+/*
+ * Nothing is stored under a key whose path is a folder: it only holds other keys, as a prefix does
+ * in a bucket.
+ */
+const isFolder = (error: unknown): boolean => {
+    return errorCode(error) === "EISDIR";
+};
+
 /* A path next to `filePath`, for writing a file before it is moved or linked into place. */
 const temporaryPathFor = (filePath: string): string => {
     const suffix = mdbid();
@@ -126,9 +134,50 @@ class DiskObjectStorageImpl implements ObjectStorage.Interface {
         try {
             return await readFile(filePath);
         } catch (error) {
-            if (isMissing(error)) {
+            if (isMissing(error) || isFolder(error)) {
                 return null;
             }
+            throw error;
+        }
+    }
+
+    public async getStream(key: string): Promise<AsyncIterable<Uint8Array> | null> {
+        const filePath = this.resolveKey(key);
+        /*
+         * Opened here, not by `createReadStream(path)`, which only opens the file once the consumer
+         * starts reading: by then the response has started, and a missing file would be an error
+         * in the middle of it. Opening reads no bytes; it only checks the file is there and gives
+         * back a handle (a file descriptor) to read it through.
+         */
+        let handle;
+        try {
+            handle = await open(filePath, "r");
+        } catch (error) {
+            if (isMissing(error) || isFolder(error)) {
+                return null;
+            }
+            throw error;
+        }
+
+        /*
+         * A process can hold only so many open files (`ulimit -n`, shared with its sockets), and a
+         * handle that is never closed stays taken until the process exits. So every way out of
+         * here before the stream takes the handle over closes it.
+         */
+        try {
+            // macOS and Linux open a folder for reading without an error, so check again.
+            const stats = await handle.stat();
+            if (stats.isDirectory()) {
+                await handle.close();
+                return null;
+            }
+            /*
+             * Reads 64 KB at a time, only as fast as the consumer pulls. From here the stream owns
+             * the handle and closes it when it ends or is destroyed (the client disconnected).
+             */
+            return handle.createReadStream();
+        } catch (error) {
+            await handle.close();
             throw error;
         }
     }

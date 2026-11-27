@@ -4,7 +4,6 @@ import type { ImageFormat } from "@webiny/api-file-manager/features/assetDeliver
 export interface ILocalAssetDeliveryConfig {
     imageResizeWidths: number[];
     imageQuality?: Partial<Record<ImageFormat, number>>;
-    assetStreamingMaxSize: number;
 }
 
 export const LocalAssetDeliveryConfig = createAbstraction<ILocalAssetDeliveryConfig>(
