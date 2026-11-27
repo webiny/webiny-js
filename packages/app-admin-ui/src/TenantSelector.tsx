@@ -44,7 +44,7 @@ const TenantRow = ({ tenant, isCurrent, onSelect }: TenantRowProps) => {
 export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
     return createReactiveComponent(function TenantSelector({ title }) {
         const presenter = useTenantSwitcher();
-        const { current, tenants, canSwitch, canSearch, search } = presenter.vm;
+        const { current, tenants, canSwitch, canSearch, search, showSearchHint } = presenter.vm;
 
         const isRoot = !current || current.isRoot;
         const name = isRoot ? title : current.name;
@@ -75,6 +75,15 @@ export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
             );
         }
 
+        let searchHint: React.ReactNode = null;
+        if (showSearchHint) {
+            searchHint = (
+                <div className={"px-sm-extra py-sm text-sm text-neutral-muted"}>
+                    {"Search to switch to another tenant."}
+                </div>
+            );
+        }
+
         return (
             <Sidebar.TitleMenu text={name} data-testid={"tenant-switcher"}>
                 <DropdownMenu.Label text={"Switch tenant"} />
@@ -90,6 +99,7 @@ export const TenantSelector = TenantSelectorRenderer.createDecorator(() => {
                         />
                     ))}
                 </div>
+                {searchHint}
                 <TenantSwitcherManageItem />
             </Sidebar.TitleMenu>
         );

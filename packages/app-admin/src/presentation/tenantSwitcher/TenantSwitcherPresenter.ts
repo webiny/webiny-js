@@ -7,8 +7,8 @@ import { ROOT_TENANT_ID } from "~/features/tenancy/rootTenant.js";
 import { TenantSwitcherPresenter as Abstraction } from "./abstractions.js";
 
 const SEARCH_DELAY_MS = 250;
-// Tenants shown besides Root while nothing is searched, for users who can search every tenant.
-const SHORT_LIST_SIZE = 5;
+// Recent tenants shown while nothing is searched, for users who can search every tenant.
+const RECENT_LIST_SIZE = 5;
 
 const toInitials = (name: string): string => {
     const words = name.split(/\s+/).filter(Boolean);
@@ -62,7 +62,8 @@ class TenantSwitcherPresenterImpl implements Abstraction.Interface {
             canSwitch: this.source.canSwitch(),
             canSearch: this.source.canSearch(),
             search: this.search,
-            loading: this.loading
+            loading: this.loading,
+            showSearchHint: this.showSearchHint()
         };
     }
 
@@ -98,20 +99,19 @@ class TenantSwitcherPresenterImpl implements Abstraction.Interface {
 
     /**
      * Users who can search every tenant (root admins) get a short list while nothing is searched:
-     * Root, the current tenant, the ones they switched to last, then the rest by name. Everyone else
-     * gets their whole list, which is their own few tenants.
+     * Root, the current tenant and the ones they switched to last. They find any other tenant by
+     * searching. Everyone else gets their whole list, which is their own few tenants.
      */
     private shownTenants(): TenantSwitcherSource.Tenant[] {
         // An empty list is a failed request too: then nothing, not even the recent tenants.
-        if (!this.source.canSearch() || this.listedSearch.trim() || !this.tenants.length) {
+        if (!this.isShortList() || !this.tenants.length) {
             return this.tenants;
         }
 
         const listed = new Map(this.tenants.map(tenant => [tenant.id, tenant]));
         const shown = new Map<string, TenantSwitcherSource.Tenant>();
-        const isFull = () => shown.size - (shown.has(ROOT_TENANT_ID) ? 1 : 0) >= SHORT_LIST_SIZE;
         const show = (tenant: TenantSwitcherSource.Tenant) => {
-            if (!shown.has(tenant.id) && (tenant.id === ROOT_TENANT_ID || !isFull())) {
+            if (!shown.has(tenant.id)) {
                 // The listed copy has the current name and logo; a recent one may be older.
                 shown.set(tenant.id, listed.get(tenant.id) ?? tenant);
             }
@@ -124,14 +124,26 @@ class TenantSwitcherPresenterImpl implements Abstraction.Interface {
         if (this.current) {
             show(this.current);
         }
-        for (const recent of this.recentTenants.list()) {
+        for (const recent of this.recentTenants.list().slice(0, RECENT_LIST_SIZE)) {
             show(recent);
-        }
-        for (const tenant of this.tenants) {
-            show(tenant);
         }
 
         return [...shown.values()];
+    }
+
+    private isShortList(): boolean {
+        return this.source.canSearch() && !this.listedSearch.trim();
+    }
+
+    // Nothing to show besides Root and the current tenant: point the user to the search.
+    private showSearchHint(): boolean {
+        if (!this.isShortList() || this.search.trim() || this.loading) {
+            return false;
+        }
+
+        return this.shownTenants().every(
+            tenant => tenant.id === ROOT_TENANT_ID || tenant.id === this.current?.id
+        );
     }
 
     private async load(): Promise<void> {

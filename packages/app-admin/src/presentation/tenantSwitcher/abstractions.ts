@@ -27,6 +27,10 @@ export interface ITenantSwitcherViewModel {
     canSearch: boolean;
     search: string;
     loading: boolean;
+    /**
+     * The short list has no tenants besides Root and the current one, so the menu says to search.
+     */
+    showSearchHint: boolean;
 }
 
 export interface ITenantSwitcherPresenter {

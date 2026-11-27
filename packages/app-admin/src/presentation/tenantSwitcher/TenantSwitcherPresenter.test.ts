@@ -76,7 +76,7 @@ const shownIds = (presenter: Abstraction.Interface) => {
 
 describe("TenantSwitcherPresenter", () => {
     it("loads the current tenant and the tenants to switch to", async () => {
-        const { presenter } = createPresenter();
+        const { presenter } = createPresenter({ canSearch: false });
 
         await presenter.init();
 
@@ -130,7 +130,7 @@ describe("TenantSwitcherPresenter", () => {
     });
 
     it("gives each tenant its initials", async () => {
-        const { presenter } = createPresenter();
+        const { presenter } = createPresenter({ canSearch: false });
 
         await presenter.init();
 
@@ -150,15 +150,16 @@ describe("TenantSwitcherPresenter", () => {
     });
 
     describe("short list for users who can search every tenant", () => {
-        it("shows Root and the first five by name when nothing was switched to yet", async () => {
-            const { presenter } = createPresenter({ list: manyTenants, current: root });
+        it("shows only Root and the current tenant when nothing was switched to yet", async () => {
+            const { presenter } = createPresenter({ list: manyTenants, current: manyTenants[3] });
 
             await presenter.init();
 
-            expect(shownIds(presenter)).toEqual(["root", "a", "b", "c", "d", "e"]);
+            expect(shownIds(presenter)).toEqual(["root", "c"]);
+            expect(presenter.vm.showSearchHint).toBe(true);
         });
 
-        it("shows the current tenant second, then the recent ones, then the rest by name", async () => {
+        it("shows Root, the current tenant, then the recent ones, newest first", async () => {
             const { presenter } = createPresenter({
                 list: manyTenants,
                 current: manyTenants[7],
@@ -167,7 +168,20 @@ describe("TenantSwitcherPresenter", () => {
 
             await presenter.init();
 
-            expect(shownIds(presenter)).toEqual(["root", "g", "i", "c", "a", "b"]);
+            expect(shownIds(presenter)).toEqual(["root", "g", "i", "c"]);
+            expect(presenter.vm.showSearchHint).toBe(false);
+        });
+
+        it("shows five recent tenants at most", async () => {
+            const { presenter } = createPresenter({
+                list: manyTenants,
+                current: root,
+                recent: manyTenants.slice(1, 8).reverse()
+            });
+
+            await presenter.init();
+
+            expect(shownIds(presenter)).toEqual(["root", "g", "f", "e", "d", "c"]);
         });
 
         it("shows a recent tenant that isn't in the loaded list", async () => {
@@ -180,7 +194,7 @@ describe("TenantSwitcherPresenter", () => {
 
             await presenter.init();
 
-            expect(shownIds(presenter)).toEqual(["root", "z", "a", "b", "c", "d"]);
+            expect(shownIds(presenter)).toEqual(["root", "z"]);
         });
 
         it("shows the listed name over a recent tenant's stored one", async () => {
@@ -205,12 +219,17 @@ describe("TenantSwitcherPresenter", () => {
             await vi.advanceTimersByTimeAsync(300);
 
             expect(shownIds(presenter)).toHaveLength(10);
+            expect(presenter.vm.showSearchHint).toBe(false);
             vi.useRealTimers();
         });
 
         it("remembers the tenant it switches to", async () => {
+            vi.useFakeTimers();
             const { presenter, remember } = createPresenter({ list: manyTenants, current: root });
             await presenter.init();
+            presenter.setSearch("tenant b");
+            await vi.advanceTimersByTimeAsync(300);
+            vi.useRealTimers();
 
             presenter.switchTo("b");
 
@@ -227,6 +246,7 @@ describe("TenantSwitcherPresenter", () => {
             await presenter.init();
 
             expect(shownIds(presenter)).toHaveLength(11);
+            expect(presenter.vm.showSearchHint).toBe(false);
         });
     });
 });
