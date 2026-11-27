@@ -12,6 +12,8 @@ type NamespaceHandlerError = INamespaceHandlerErrors[keyof INamespaceHandlerErro
 /**
  * Handling of specific app.
  */
+export type NamespaceHandlerOperation = "schedule" | "cancel";
+
 export interface INamespaceHandlerParams {
     scheduleId: string;
     targetId: string;
@@ -19,6 +21,10 @@ export interface INamespaceHandlerParams {
     namespace: string;
     immediately: boolean | undefined;
     scheduleFor: Date;
+    /**
+     * What the handler is called for. Defaults to "schedule" when omitted.
+     */
+    operation?: NamespaceHandlerOperation;
 }
 
 export type INamespaceHandlerResult<T extends GenericRecord = GenericRecord> = T & {

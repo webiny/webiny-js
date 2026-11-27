@@ -49,7 +49,8 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
             return Result.fail(new SchedulerNotAuthorizedError());
         }
 
-        if (!isPublishingEnabled(model)) {
+        // Cancelling stays possible for schedules that exist on a model without publishing.
+        if (params.operation !== "cancel" && !isPublishingEnabled(model)) {
             return Result.fail(
                 new EntryValidationError("Model does not support publishing.") as any
             );

@@ -4,6 +4,7 @@ import type { CmsContext, CmsModel } from "@webiny/api-headless-cms/types/index.
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import {
+    CancelScheduledActionUseCase,
     ScheduleActionUseCase,
     ScheduledActionTypePublish,
     ScheduledActionTypeUnpublish
@@ -115,5 +116,25 @@ describe("Schedule a publishing singleton with own-entries access", () => {
         const result = await schedule(contextB, model, id, type);
 
         expect(result.isOk()).toBe(true);
+    });
+});
+
+describe("Cancel a schedule on a model without publishing", () => {
+    it("cancels a schedule created while the model still supported publishing", async () => {
+        const publishing = await createContext(["singleEntry", "$publishing:true"]);
+        const { model, id } = await createEntry(publishing);
+        const scheduled = await schedule(publishing, model, id, ScheduledActionTypePublish);
+        expect(scheduled.isOk()).toBe(true);
+
+        const untagged = await createContext(["singleEntry"]);
+        const refused = await schedule(untagged, model, id, ScheduledActionTypePublish);
+        expect(refused.isFail()).toBe(true);
+
+        const cancelled = await untagged.container.resolve(CancelScheduledActionUseCase).execute({
+            id: scheduled.value.id,
+            namespace: scheduled.value.namespace,
+            tenant: "root"
+        });
+        expect(cancelled.isOk()).toBe(true);
     });
 });

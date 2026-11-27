@@ -71,7 +71,8 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 actionType: scheduledAction.actionType,
                 namespace: scheduledAction.namespace,
                 immediately: false,
-                scheduleFor: scheduledAction.scheduledFor
+                scheduleFor: scheduledAction.scheduledFor,
+                operation: "cancel"
             });
             if (handlerResult.isFail()) {
                 return Result.fail(new NotAuthorizedError());
