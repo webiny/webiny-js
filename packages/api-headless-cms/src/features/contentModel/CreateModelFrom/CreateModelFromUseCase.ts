@@ -76,7 +76,9 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
 
         if (!validationResult.success) {
             const zodError = createZodError(validationResult.error);
-            return Result.fail(new ModelValidationError(zodError.message));
+            return Result.fail(
+                new ModelValidationError({ message: zodError.message, data: zodError.data })
+            );
         }
 
         const data = removeUndefinedValues(validationResult.data);
