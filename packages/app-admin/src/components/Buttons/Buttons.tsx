@@ -1,7 +1,7 @@
 import React from "react";
 
 import { ButtonsProvider } from "./useButtons.js";
-import { ButtonContainer } from "./Buttons.styles.js";
+import { ButtonContainer } from "./ButtonContainer.js";
 import {
     Button,
     type ButtonProps as BaseButtonProps,
@@ -45,8 +45,6 @@ export const Buttons = (props: ButtonsProps) => {
     );
 };
 
-export { ButtonContainer };
-
 export const ButtonDefault = ({ onAction, children, ...other }: ButtonProps) => {
     return <Button variant={"ghost"} {...other} onClick={onAction} text={children} />;
 };
@@ -78,3 +76,6 @@ export const IconButton = ({
 
     return <BaseIconButton {...other} onClick={onAction} disabled={disabled} />;
 };
+
+// Kept so deep imports of `Buttons.js` keep working in this patch release.
+export { ButtonContainer };

@@ -1,25 +1,6 @@
 import React, { useCallback, useState } from "react";
-import styled from "@emotion/styled";
 import type { CmsErrorResponse } from "~/types.js";
 import type { InvalidField } from "../../types.js";
-
-const Note = styled("div")({
-    color: "var(--mdc-theme-error)",
-    fontSize: "10px"
-});
-
-const MoreInformation = styled("a")({
-    color: "var(--mdc-theme-error)",
-    fontSize: "9px",
-    cursor: "pointer",
-    margin: "0 0 0 auto"
-});
-
-const Container = styled("div")({
-    padding: "0",
-    margin: "0",
-    lineHeight: "10px"
-});
 
 interface InvalidFieldsProps {
     invalidFields: Record<string, InvalidField>;
@@ -54,24 +35,24 @@ export const DataListModelItemError = ({ error }: DataListModelItemErrorProps) =
     const invalidFields = error.data?.invalidFields;
     if (!invalidFields) {
         if (error.message) {
-            return <Note>{error.message}</Note>;
+            return <div className={"text-[10px]"}>{error.message}</div>;
         }
         return (
-            <Note>
+            <div className={"text-[10px]"}>
                 Missing invalidFields information. Please check the network tab in your
                 browser&apos;s developer tools for more details.
-            </Note>
+            </div>
         );
     }
 
     return (
-        <Container>
-            <MoreInformation onClick={toggleContainer}>
+        <div className={"p-0 m-0 leading-[10px]"}>
+            <a onClick={toggleContainer} className={"text-[9px] cursor-pointer ml-auto"}>
                 {expanded
                     ? "Collapse"
                     : "Validation failed. Click to expand to see more information..."}
-            </MoreInformation>
+            </a>
             <InvalidFields invalidFields={invalidFields} expanded={expanded} />
-        </Container>
+        </div>
     );
 };

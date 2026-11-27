@@ -9,7 +9,7 @@ import { IconPickerConfig } from "../config/index.js";
 import type { Icon } from "../types.js";
 
 /**
- * NOTE: Avoid using `@emotion/styled` in icon renderer components across all plugins.
+ * NOTE: Avoid styling icon renderer components with CSS classes (Tailwind or otherwise) across all plugins.
  * This is crucial for serializing component rendering into a string value as plain HTML,
  * which is necessary for usage in the website application. Please use inline styles here
  * to ensure proper serialization.

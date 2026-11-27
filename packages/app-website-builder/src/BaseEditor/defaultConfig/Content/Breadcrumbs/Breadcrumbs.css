@@ -1,0 +1,74 @@
+.wb-editor-breadcrumbs {
+  display: flex;
+  z-index: 100;
+  flex-direction: row;
+  padding: 0;
+  position: absolute;
+  left: var(--wb-spacing-toolbar);
+  bottom: 0;
+  width: calc(100% - calc(var(--wb-spacing-sidebar) * 2));
+  height: 31px;
+  background-color: var(--color-neutral-dimmed);
+  border-top: 1px solid var(--color-neutral-dimmed);
+  font-size: 12px;
+  overflow: hidden;
+}
+
+.wb-editor-breadcrumbs > li {
+  cursor: pointer;
+  display: flex;
+}
+
+.wb-editor-breadcrumbs > li .element {
+  color: var(--text-neutral-strong);
+  text-decoration: none;
+  text-transform: capitalize;
+  padding: 5px 0 5px 30px;
+  background: hsla(300, 2%, calc(92% - var(--element-count) * 1%), 1);
+  position: relative;
+  display: block;
+}
+
+.wb-editor-breadcrumbs > li .element::after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-left: 20px solid hsla(300, 2%, calc(92% - var(--element-count) * 1%), 1);
+  position: absolute;
+  top: 50%;
+  margin-top: -50px;
+  left: 100%;
+  z-index: 2;
+}
+
+.wb-editor-breadcrumbs > li .element::before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-left: 20px solid hsla(0, 0%, 100%, 1);
+  position: absolute;
+  top: 50%;
+  margin-top: -50px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 1;
+}
+
+.wb-editor-breadcrumbs li:first-child .element {
+  padding-left: 10px;
+}
+
+/* Handle active state. */
+.wb-editor-breadcrumbs li .element:hover {
+  background: var(--color-neutral-muted);
+}
+
+.wb-editor-breadcrumbs li .element:hover::after {
+  border-left-color: var(--color-neutral-muted) !important;
+}

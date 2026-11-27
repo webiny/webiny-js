@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { breadcrumbs } from "./styles.js";
+import "./Breadcrumbs.css";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { $getComponentManifestByElementId } from "~/editorSdk/utils/index.js";
@@ -52,7 +52,7 @@ export const Breadcrumbs = () => {
 
     return (
         <ul
-            className={breadcrumbs}
+            className={"wb-editor-breadcrumbs"}
             data-role={"content-breadcrumbs"}
             data-hover-manager={"ignore"}
             data-affects-preview={"height"}

@@ -25,7 +25,6 @@
     "@rsdoctor/rspack-plugin": "^1.6.5",
     "@rslib/core": "^1.0.7",
     "@rspack/core": "^2.3.3",
-    "@swc/plugin-emotion": "^20.0.3",
     "@tailwindcss/postcss": "^4.3.5",
     "@webiny/stdlib": "0.0.20",
     "chalk": "^6.0.1",
@@ -59,7 +58,6 @@
         "!!raw-loader!"
       ],
       "dependencies": [
-        "@swc/plugin-emotion",
         "postcss-loader",
         "raw-loader",
         "react-refresh",

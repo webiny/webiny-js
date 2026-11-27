@@ -11,7 +11,6 @@ import { oxfmt } from "./oxfmt";
 import { oxlint } from "./oxlint";
 import { vitest } from "./vitest";
 import { storybook } from "./storybook";
-import { emotion } from "./emotion.js";
 import { fontawesome } from "./fontawesome.js";
 
 export const presets = [
@@ -28,6 +27,5 @@ export const presets = [
     oxlint,
     vitest,
     storybook,
-    emotion,
     fontawesome
 ];

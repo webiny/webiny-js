@@ -1,39 +1,15 @@
 import * as React from "react";
 import Helmet from "react-helmet";
-import { css } from "@emotion/css";
-import styled from "@emotion/styled";
 import { Text } from "@webiny/admin-ui";
 import authErrorImg from "./SecureRouteError.svg";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
-const ContentWrapper = styled("div")({
-    display: "block",
-    paddingTop: "15%",
-    textAlign: "center",
-    margin: "auto"
-});
-
 const styles = {
-    authErrorImgStyle: css({
-        width: "192px",
-        paddingBottom: "24px"
-    }),
-    bodyStyle: css({
-        color: "var(--mdc-theme-text-primary-on-background)",
-        display: "block",
-        " strong": {
-            fontWeight: "bold"
-        }
-    }),
-    linkStyle: css({
-        cursor: "pointer",
-        textDecoration: "none",
-        "&:hover": {
-            textDecoration: "underline"
-        }
-    })
+    authErrorImgStyle: "w-[192px] pb-lg",
+    bodyStyle: "block [&_strong]:font-bold",
+    linkStyle: "cursor-pointer no-underline hover:underline"
 };
 
 export interface ImageProps {
@@ -57,7 +33,7 @@ export const ModelIsBeingDeletedError = (props: IModelIsBeingDeletedProps) => {
     };
 
     return (
-        <ContentWrapper>
+        <div className={"block pt-[15%] text-center m-auto"}>
             <Helmet title={"Cannot access the model!"} />
             <Image />
 
@@ -73,6 +49,6 @@ export const ModelIsBeingDeletedError = (props: IModelIsBeingDeletedProps) => {
             <a onClick={goBack} className={styles.linkStyle}>
                 Go back
             </a>
-        </ContentWrapper>
+        </div>
     );
 };

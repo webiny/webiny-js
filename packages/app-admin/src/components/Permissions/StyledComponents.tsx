@@ -1,10 +1,7 @@
 import React from "react";
-import { css } from "@emotion/css";
 import { Label } from "@webiny/admin-ui";
 
-export const gridWithPaddingClass = css({
-    paddingTop: "var(--padding-md)"
-});
+export const gridWithPaddingClass = "pt-md";
 
 interface PermissionInfoProps {
     title: string;

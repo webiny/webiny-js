@@ -1,5 +1,4 @@
 import type { FileError } from "@webiny/app-admin/presentation/browserFilePicker/index.js";
-import styled from "@emotion/styled";
 import React from "react";
 
 export const getError = (error: FileError): string => {
@@ -19,13 +18,6 @@ export const getError = (error: FileError): string => {
     }
 };
 
-const DisplayError = styled("div")({
-    color: "var(--mdc-theme-error)",
-    width: "90%",
-    margin: "5px auto 0 auto",
-    textAlign: "right"
-});
-
 interface ErrorsProps {
     errors?: string[] | null;
 }
@@ -37,7 +29,11 @@ export const Errors = ({ errors }: ErrorsProps) => {
     return (
         <>
             {errors.map((error, index) => {
-                return <DisplayError key={`error-${index}`}>{error}</DisplayError>;
+                return (
+                    <div key={`error-${index}`} className={"w-[90%] mt-[5px] mx-auto text-right"}>
+                        {error}
+                    </div>
+                );
             })}
         </>
     );

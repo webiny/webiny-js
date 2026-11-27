@@ -77,7 +77,7 @@ describe("Test Rich Lexical Renderer", () => {
         // ASSERT
         // editor is here
         expect(container.innerHTML.includes("editor")).toBeTruthy();
-        // emotion produced css classes are here
+        // theme css classes are here.
         expect(container.innerHTML.includes("wby-")).toBeTruthy();
     });
 });
