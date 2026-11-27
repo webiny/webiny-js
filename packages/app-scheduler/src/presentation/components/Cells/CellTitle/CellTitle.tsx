@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
-import { RowIcon, RowText, RowTitle } from "./CellTitle.styled.js";
+import { Text } from "@webiny/admin-ui";
 import { SchedulerListConfig } from "~/presentation/configs/index.js";
 
 export const CellTitle = () => {
@@ -8,11 +8,13 @@ export const CellTitle = () => {
     const { row } = useTableRow();
 
     return (
-        <RowTitle>
-            <RowIcon>
+        <div className={"flex items-center"}>
+            <div className={"mr-sm h-lg"}>
                 <File />
-            </RowIcon>
-            <RowText size={"sm"}>{row.data.title}</RowText>
-        </RowTitle>
+            </div>
+            <Text size={"sm"} className={"truncate"}>
+                {row.data.title}
+            </Text>
+        </div>
     );
 };

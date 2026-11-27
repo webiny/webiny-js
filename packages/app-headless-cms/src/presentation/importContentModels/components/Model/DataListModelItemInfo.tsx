@@ -1,14 +1,5 @@
 import React from "react";
-import styled from "@emotion/styled";
 import type { ImportModelData } from "../../types.js";
-
-const Text = styled("p")({
-    fontSize: "9px",
-    lineHeight: "10px",
-    display: "block",
-    padding: "0",
-    margin: "0"
-});
 
 const getText = (action?: string | null) => {
     if (action === "create") {
@@ -28,5 +19,5 @@ interface DataListModelItemInfoProps {
 export const DataListModelItemInfo = ({ model }: DataListModelItemInfoProps) => {
     const { action } = model;
 
-    return <Text>{getText(action)}</Text>;
+    return <p className={"block text-[9px] leading-[10px] p-0 m-0"}>{getText(action)}</p>;
 };

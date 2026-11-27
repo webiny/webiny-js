@@ -13,7 +13,6 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@emotion/react": "^11.14.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",

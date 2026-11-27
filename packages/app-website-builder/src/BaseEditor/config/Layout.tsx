@@ -1,15 +1,9 @@
 import React, { useEffect } from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 import { EditorConfig } from "./EditorConfig.js";
-import styled from "@emotion/styled";
 import { IsNotReadOnly } from "~/BaseEditor/config/IsNotReadOnly.js";
 import { useReservedUISpace } from "~/BaseEditor/hooks/useReservedUISpace.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
-
-const EditorLayoutContainer = styled.div`
-    height: 100%;
-    overflow: hidden;
-`;
 
 export const Layout = makeDecoratable("EditorLayout", () => {
     const editor = useDocumentEditor();
@@ -29,7 +23,7 @@ export const Layout = makeDecoratable("EditorLayout", () => {
     }, []);
 
     return (
-        <EditorLayoutContainer>
+        <div className={"h-full overflow-hidden"}>
             <EditorConfig.Ui.TopBar />
             <div className={"flex flex-row"}>
                 <IsNotReadOnly>
@@ -43,6 +37,6 @@ export const Layout = makeDecoratable("EditorLayout", () => {
                 </IsNotReadOnly>
             </div>
             <EditorConfig.Ui.Elements group={"overlays"} />
-        </EditorLayoutContainer>
+        </div>
     );
 });

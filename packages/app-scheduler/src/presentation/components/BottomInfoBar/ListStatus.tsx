@@ -1,6 +1,5 @@
 import React from "react";
 import { Loader } from "@webiny/admin-ui";
-import { CircularProgressHolder, StatusWrapper, UploadingLabel } from "./BottomInfoBar.styled.js";
 
 export interface ListStatusProps {
     loading: boolean;
@@ -12,11 +11,11 @@ export const ListStatus = ({ loading }: ListStatusProps) => {
     }
 
     return (
-        <StatusWrapper>
-            <UploadingLabel>{"Loading more items..."}</UploadingLabel>
-            <CircularProgressHolder>
+        <div className={"absolute right-0 bottom-sm-plus mr-sm-plus flex items-center"}>
+            <div className={"mr-[5px] inline-block"}>{"Loading more items..."}</div>
+            <div className={"relative size-sm-extra inline-block"}>
                 <Loader size={"xs"} />
-            </CircularProgressHolder>
-        </StatusWrapper>
+            </div>
+        </div>
     );
 };

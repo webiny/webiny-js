@@ -1,14 +1,14 @@
 import React from "react";
 
 import { ButtonsProvider } from "./useButtons.js";
-import { ButtonContainer } from "./Buttons.styles.js";
 import {
     Button,
     type ButtonProps as BaseButtonProps,
     IconButton as BaseIconButton,
     type IconButtonProps as BaseIconButtonProps,
     Tooltip,
-    type TooltipProps
+    type TooltipProps,
+    cn
 } from "@webiny/admin-ui";
 
 interface ButtonProps extends Omit<BaseButtonProps, "onClick"> {
@@ -45,7 +45,9 @@ export const Buttons = (props: ButtonsProps) => {
     );
 };
 
-export { ButtonContainer };
+export const ButtonContainer = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+    return <div className={cn("ml-md text-nowrap empty:hidden", className)} {...props} />;
+};
 
 export const ButtonDefault = ({ onAction, children, ...other }: ButtonProps) => {
     return <Button variant={"ghost"} {...other} onClick={onAction} text={children} />;

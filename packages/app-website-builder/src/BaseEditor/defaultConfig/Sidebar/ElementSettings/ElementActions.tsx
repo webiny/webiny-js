@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { EditorConfig } from "~/BaseEditor/index.js";
 
 // TODO: find a good place for this!
@@ -11,19 +10,13 @@ export const COLORS = {
     black: "hsla(208, 100%, 5%, 1)"
 };
 
-const SidebarActions = styled("div")({
-    display: "flex",
-    flexWrap: "wrap",
-    borderBottom: `1px solid ${COLORS.gray}`,
-    backgroundColor: COLORS.lightGray,
-    borderTop: `1px solid ${COLORS.gray}`,
-    justifyContent: "center"
-});
-
 export const ElementActions = () => {
     return (
-        <SidebarActions>
+        <div
+            className={"flex flex-wrap justify-center border-y-1 border-solid"}
+            style={{ borderColor: COLORS.gray, backgroundColor: COLORS.lightGray }}
+        >
             <EditorConfig.ElementActions />
-        </SidebarActions>
+        </div>
     );
 };

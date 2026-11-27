@@ -1,87 +1,23 @@
 import React, { useCallback } from "react";
-import styled from "@emotion/styled";
 import type { ImportModelData } from "../../types.js";
 import { DataListModelItemError } from "./DataListModelItemError.js";
 import { DataListModelItemInfo } from "./DataListModelItemInfo.js";
 
+const checkboxContainerClassName = "w-[120px] text-right align-middle";
+
 type ToggleModelCb = (item: Pick<ImportModelData, "id" | "name" | "related">) => void;
-
-const ContainerBase = styled("div")(() => {
-    return {
-        width: "100%",
-        padding: "0px 5px 15px 5px",
-        margin: "0",
-        boxSizing: "border-box" as const,
-        "&:last-child": {
-            paddingBottom: "2px"
-        }
-    };
-});
-const ContainerCreate = styled(ContainerBase)(() => {
-    return {
-        // backgroundColor: "var(--mdc-theme-secondary)"
-    };
-});
-const ContainerImported = styled(ContainerBase)(() => {
-    return {};
-});
-const ContainerUpdate = styled(ContainerBase)(() => {
-    return {};
-});
-const ContainerError = styled(ContainerBase)(() => {
-    return {};
-});
-
-const ModelContainer = styled("div")({
-    display: "flex",
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-});
-const Name = styled("h4")({
-    fontSize: "12px",
-    flex: "1 0 auto",
-    lineHeight: "18px"
-});
-const CheckboxContainer = styled("div")({
-    width: "120px",
-    textAlign: "right",
-    verticalAlign: "middle"
-});
-
-const Button = styled("button")({
-    padding: "1px 5px",
-    textAlign: "right",
-    display: "inline-block",
-    border: "1px solid var(--mdc-theme-on-background)",
-    fontSize: "10px",
-    lineHeight: "12px",
-    cursor: "pointer",
-    outline: "0 none",
-    backgroundColor: "var(--mdc-theme-background)",
-    "&.selected": {
-        border: "1px solid var(--mdc-theme-secondary)"
-    }
-});
-
-const ImportedText = styled("div")({
-    padding: "1px 5px",
-    textAlign: "right",
-    display: "inline-block",
-    border: "1px solid var(--mdc-theme-on-background)",
-    fontSize: "10px",
-    lineHeight: "12px",
-    outline: "0 none",
-    backgroundColor: "var(--mdc-theme-secondary)",
-    color: "#FFF"
-});
 
 const Imported = () => {
     return (
-        <CheckboxContainer>
-            <ImportedText>Imported.</ImportedText>
-        </CheckboxContainer>
+        <div className={checkboxContainerClassName}>
+            <div
+                className={
+                    "inline-block py-px px-[5px] text-right text-[10px] leading-[12px] text-white outline-0"
+                }
+            >
+                Imported.
+            </div>
+        </div>
     );
 };
 
@@ -99,30 +35,25 @@ const Checkbox = ({ model, toggle, selected }: CheckboxProps) => {
         return null;
     }
     return (
-        <CheckboxContainer>
-            <Button onClick={onClick} className={selected ? "selected" : ""}>
+        <div className={checkboxContainerClassName}>
+            <button
+                onClick={onClick}
+                className={
+                    "inline-block py-px px-[5px] text-right text-[10px] leading-[12px] cursor-pointer outline-0"
+                }
+            >
                 {selected ? "Model will be imported" : "Model will be skipped"}
-            </Button>
-        </CheckboxContainer>
+            </button>
+        </div>
     );
 };
 
-interface ContainerProps {
-    model: Pick<ImportModelData, "action" | "error" | "imported">;
-    children: React.ReactNode;
-}
-
-const Container = ({ model, children }: ContainerProps) => {
-    if (model.imported) {
-        return <ContainerImported>{children}</ContainerImported>;
-    } else if (model.action === "create") {
-        return <ContainerCreate>{children}</ContainerCreate>;
-    } else if (model.action === "update") {
-        return <ContainerUpdate>{children}</ContainerUpdate>;
-    } else if (model.error) {
-        return <ContainerError>{children}</ContainerError>;
-    }
-    return <ContainerBase>{children}</ContainerBase>;
+const Container = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <div className={"box-border w-full m-0 pt-0 px-[5px] pb-[15px] last:pb-xxs"}>
+            {children}
+        </div>
+    );
 };
 
 interface DataListModelItemProps {
@@ -133,10 +64,12 @@ interface DataListModelItemProps {
 
 export const DataListModelItem = ({ model, toggle, selected }: DataListModelItemProps) => {
     return (
-        <Container model={model}>
-            <ModelContainer>
+        <Container>
+            <div className={"flex flex-row items-center justify-between w-full"}>
                 <div>
-                    <Name>{model.name || model.id}</Name>
+                    <h4 className={"text-[12px] flex-[1_0_auto] leading-[18px]"}>
+                        {model.name || model.id}
+                    </h4>
                     {model.error ? (
                         <DataListModelItemError error={model.error} />
                     ) : (
@@ -148,7 +81,7 @@ export const DataListModelItem = ({ model, toggle, selected }: DataListModelItem
                 ) : (
                     <Checkbox model={model} toggle={toggle} selected={selected} />
                 )}
-            </ModelContainer>
+            </div>
         </Container>
     );
 };

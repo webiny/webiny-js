@@ -1,21 +1,11 @@
 import { useEffect } from "react";
 import MonacoEditor from "@monaco-editor/react";
-import styled from "@emotion/styled";
 import { Button } from "@webiny/admin-ui";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import React from "react";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import type { HistorySnapshot } from "~/editorSdk/HistorySnapshot.js";
-
-const Toolbar = styled.div`
-    position: absolute;
-    padding-top: 5px;
-    width: 100%;
-    padding-left: 5px;
-    border-top: 1px solid #cccccc;
-    z-index: 10000;
-`;
 
 const monacoOptions = { minimap: { enabled: false } };
 
@@ -58,7 +48,11 @@ export const EditorStateDebugger = () => {
     \n// Snapshot Changes\n${JSON.stringify(history.getCurrentSnapshot().getChanges(), null, 2)}`;
 
     return (
-        <Toolbar>
+        <div
+            className={
+                "absolute w-full pt-[5px] pl-[5px] border-t-1 border-solid border-[#cccccc] z-[10000]"
+            }
+        >
             <Button variant="secondary" text={`Snapshots: ${numberOfSnapshots}`}></Button>
             <MonacoEditor
                 height={"100vh"}
@@ -66,6 +60,6 @@ export const EditorStateDebugger = () => {
                 value={monacoValue}
                 options={monacoOptions}
             />
-        </Toolbar>
+        </div>
     );
 };

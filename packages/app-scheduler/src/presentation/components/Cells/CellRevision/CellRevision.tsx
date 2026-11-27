@@ -1,5 +1,5 @@
 import React from "react";
-import { RowText, RowTitle } from "./CellRevision.styled.js";
+import { Text } from "@webiny/admin-ui";
 import { SchedulerListConfig } from "~/presentation/configs/index.js";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 
@@ -9,8 +9,10 @@ export const CellRevision = () => {
 
     const { version } = parseIdentifier(row.data.targetId);
     return (
-        <RowTitle>
-            <RowText size={"sm"}>{version}</RowText>
-        </RowTitle>
+        <div className={"flex items-center"}>
+            <Text size={"sm"} className={"truncate"}>
+                {version}
+            </Text>
+        </div>
     );
 };

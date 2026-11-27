@@ -1,6 +1,5 @@
 import React from "react";
-import { Skeleton } from "@webiny/admin-ui";
-import { Name } from "./Title.styled.js";
+import { Heading, Skeleton } from "@webiny/admin-ui";
 
 export interface TitleProps {
     title?: string;
@@ -8,8 +7,12 @@ export interface TitleProps {
 
 export const Title = ({ title }: TitleProps) => {
     return (
-        <Name level={6} as={"h1"}>
+        <Heading
+            level={6}
+            as={"h1"}
+            className={"pl-sm leading-[48px] whitespace-nowrap overflow-hidden text-ellipsis"}
+        >
             {title || <Skeleton />}
-        </Name>
+        </Heading>
     );
 };

@@ -1,52 +1,16 @@
 import React from "react";
-import { css } from "@emotion/css";
-import classNames from "classnames";
 import omit from "lodash/omit.js";
-import { Text, FormComponentErrorMessage, FormComponentNote } from "@webiny/admin-ui";
+import { cn, Text, FormComponentErrorMessage, FormComponentNote } from "@webiny/admin-ui";
 
-const inputStyle = css({
-    boxSizing: "border-box",
-    border: "1px solid var(--mdc-theme-on-background)",
-    width: "100%",
-    height: "100%",
-    padding: "4px 8px",
-    textAlign: "left",
-    minHeight: 32,
-    backgroundColor: "var(--mdc-theme-surface)",
-    transition: "150ms all ease-in-out",
-    "&:focus:not(:disabled)": {
-        backgroundColor: "var(--mdc-theme-on-background)"
-    },
-    "&:hover:not(:disabled)": {
-        backgroundColor: "var(--mdc-theme-on-background)"
-    },
-    "&:disabled": {
-        opacity: 0.5,
-        cursor: "not-allowed"
-    },
+const inputStyle = [
+    "box-border w-full h-full min-h-[32px] py-xs px-sm text-left transition-all duration-150 ease-in-out",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    "[&.text-center]:text-center [&.text-center]:p-xs",
+    "[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0",
+    "[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0"
+].join(" ");
 
-    "&.text-center": {
-        textAlign: "center",
-        padding: 4
-    },
-
-    "&::-webkit-inner-spin-button": {
-        WebkitAppearance: "none",
-        margin: 0
-    },
-    "&::-webkit-outer-spin-button": {
-        WebkitAppearance: "none",
-        margin: 0
-    }
-});
-
-const labelStyle = css({
-    marginBottom: 8,
-    padding: "0px 8px",
-    "& span": {
-        color: "var(--mdc-theme-text-primary-on-background)"
-    }
-});
+const labelStyle = "mb-sm px-sm";
 
 interface GetValueParams {
     value: string | number | undefined;
@@ -91,7 +55,7 @@ const InputField = ({
                 </div>
             )}
             <input
-                className={classNames(inputStyle, className)}
+                className={cn(inputStyle, className)}
                 value={getValue({
                     value,
                     type: props.type || "string",

@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useDrop } from "react-dnd";
-import styled from "@emotion/styled";
 
 import type { SlotInput } from "@webiny/website-builder-sdk";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
@@ -21,12 +20,6 @@ import { mergeRefs } from "../mergeRefs.js";
 import { Commands, EditorConfig } from "~/BaseEditor/index.js";
 import type { Editor } from "~/editorSdk/Editor.js";
 import { ElementOverlayProvider } from "~/BaseEditor/defaultConfig/Content/Preview/Overlays/ElementOverlayProvider.js";
-
-const OverlayContainer = styled("div")({
-    overflow: "hidden",
-    position: "absolute",
-    zIndex: 20
-});
 
 const filterElements = (box: Box) => {
     return box.type === "element" && box.id !== "root";
@@ -127,7 +120,11 @@ export const ElementOverlays = observer(() => {
     const slots = boxes.preview.filter(filterSlots);
 
     return (
-        <OverlayContainer ref={mergeRefs(dropRef)} style={viewportContainer}>
+        <div
+            ref={mergeRefs(dropRef)}
+            className={"overflow-hidden absolute z-20"}
+            style={viewportContainer}
+        >
             {boxes.preview.filter(filterElements).map(box => (
                 <ElementOverlayProvider
                     key={box.id}
@@ -148,6 +145,6 @@ export const ElementOverlays = observer(() => {
             {slots.map(slot => (
                 <DropBox key={slot.id} box={slot} onDrop={onDrop} />
             ))}
-        </OverlayContainer>
+        </div>
     );
 });

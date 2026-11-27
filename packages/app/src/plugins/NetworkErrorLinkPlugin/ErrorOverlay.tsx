@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Typography } from "./Typography.js";
 import { i18n } from "../../i18n/index.js";
-import { OverlayWrapper } from "./StyledComponents.js";
 import { ReactComponent as CloseIcon } from "./assets/close_24px.svg";
 
 const t = i18n.ns("app/graphql/error-overlay");
@@ -24,9 +23,10 @@ export const ErrorOverlay = (props: ErrorOverlayProps) => {
     }
 
     return (
-        <OverlayWrapper>
-            <div className="inner">
-                <div className="header">
+        // The highest z-index value is 100 for Dialogs.
+        <div className={"fixed top-0 left-0 z-[105] w-screen h-screen"}>
+            <div className={"flex flex-col box-border w-full h-full overflow-auto bg-white p-md"}>
+                <div className={"flex justify-between items-center mb-md"}>
                     <div className="header__title">
                         <Typography use={"headline"}>{title}</Typography>
                     </div>
@@ -38,16 +38,24 @@ export const ErrorOverlay = (props: ErrorOverlayProps) => {
                         </div>
                     )}
                 </div>
-                <div className="body">
-                    <div className="body__summary">{message}</div>
+                <div>
+                    <div className={"mb-md"}>{message}</div>
                     {description && <div className="body__description">{description}</div>}
                 </div>
-                <div className="footer">
+                <div>
                     <Typography use={"body"}>
                         {t`
                         This screen is only visible if {message} environment variable is set.
                         Read more about it in the {link}. `({
-                            message: <span className={"highlight"}>`REACT_APP_DEBUG=true`</span>,
+                            message: (
+                                <span
+                                    className={
+                                        "bg-[rgba(251,245,180,0.5)] px-xs rounded-[6px] font-mono"
+                                    }
+                                >
+                                    `REACT_APP_DEBUG=true`
+                                </span>
+                            ),
                             link: (
                                 <a
                                     href={ENVIRONMENT_VARIABLES_ARTICLE_LINK}
@@ -63,6 +71,6 @@ export const ErrorOverlay = (props: ErrorOverlayProps) => {
                     </Typography>
                 </div>
             </div>
-        </OverlayWrapper>
+        </div>
     );
 };

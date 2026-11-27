@@ -13,9 +13,6 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
-    "@emotion/css": "^11.13.5",
-    "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.1",
     "@lexical/utils": "^0.53.0",
     "@monaco-editor/react": "^4.7.0",
     "@types/react": "18.3.31",
