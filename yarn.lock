@@ -11889,6 +11889,7 @@ __metadata:
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.1.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -11899,6 +11900,7 @@ __metadata:
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.4"
     typescript: "npm:7.0.2"
+    vitest: "npm:^5.1.1"
   languageName: unknown
   linkType: soft
 

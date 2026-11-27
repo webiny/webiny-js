@@ -23,6 +23,16 @@ export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(
             return <Original {...props} />;
         }
 
+        // The form presenter decides whether a review blocks saving; the warning follows it.
+        let unsavedChangesWarning: React.ReactNode = null;
+        if (presenter.vm.hasState && !formPresenter.vm.canSave) {
+            unsavedChangesWarning = (
+                <Alert type="danger" className={"mt-sm"}>
+                    Any changes you do on the entry will not be stored!
+                </Alert>
+            );
+        }
+
         return (
             <>
                 <div
@@ -31,11 +41,7 @@ export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(
                     }
                 >
                     <WorkflowStateBar />
-                    {presenter.vm.hasState ? (
-                        <Alert type="danger" className={"mt-sm"}>
-                            Any changes you do on the entry will not be stored!
-                        </Alert>
-                    ) : null}
+                    {unsavedChangesWarning}
                 </div>
                 <Original {...props} />
             </>
