@@ -3,7 +3,6 @@ import { TenantSwitcherPresenter } from "@webiny/app-admin";
 import { useAdminConfig } from "@webiny/app-admin";
 import { Avatar } from "@webiny/admin-ui";
 import type { AvatarImageProps } from "@webiny/admin-ui";
-import { Sidebar } from "@webiny/admin-ui";
 
 interface TenantAvatarProps {
     tenant: TenantSwitcherPresenter.Tenant;
@@ -16,8 +15,17 @@ interface TenantAvatarProps {
 export const TenantAvatar = ({ tenant }: TenantAvatarProps) => {
     const { logo, title } = useAdminConfig();
 
+    // The same 24px box as the avatars below, so the rows line up.
     if (tenant.isRoot) {
-        return <Sidebar.Icon element={logo.squareLogo} label={title} />;
+        return (
+            <span
+                className={"flex size-lg shrink-0 items-center justify-center [&_svg]:size-full!"}
+                role={"img"}
+                aria-label={title}
+            >
+                {logo.squareLogo}
+            </span>
+        );
     }
 
     // While the logo loads, the initials wait a moment so they don't flash.
