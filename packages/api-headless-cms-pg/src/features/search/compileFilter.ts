@@ -17,7 +17,6 @@ const containsWords = (value: string): string[] => {
     return value
         .replace(/\s+/g, " ")
         .trim()
-        .replace(/:/g, "")
         .split(" ")
         .filter(word => word.length > 0);
 };
