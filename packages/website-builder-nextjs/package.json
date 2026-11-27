@@ -9,6 +9,7 @@
   "exports": {
     ".": "./index.js",
     "./middleware": "./middleware.js",
+    "./proxy": "./proxy.js",
     "./webpack": "./webpack.js"
   },
   "description": "A Next.js integration SDK for Webiny Website Builder.",
@@ -31,7 +32,7 @@
     "webpack": "^5.113.0"
   },
   "peerDependencies": {
-    "next": ">=15.0.0 <16.0.0"
+    "next": ">=15.0.0 <17.0.0"
   },
   "publishConfig": {
     "access": "public"

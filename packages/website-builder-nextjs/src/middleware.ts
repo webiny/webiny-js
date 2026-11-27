@@ -1,5 +1,5 @@
 /**
- * Next.js middleware for Website Builder.
+ * Next.js middleware / proxy for Website Builder.
  *
  * Handles the two request-time concerns an app would otherwise hand-write:
  *  - **Preview / draft mode** — routes `?wb.preview`/`?wb.editing` requests through the draft-mode
@@ -10,8 +10,24 @@
  * `next` is a peer dependency and is imported dynamically so building this package never requires
  * it. Drop into a project as:
  *
- *   // middleware.ts
- *   export { middleware, config } from "@webiny/website-builder-nextjs/middleware";
+ * Next.js 15 (`middleware.ts`):
+ *
+ *   export { middleware } from "@webiny/website-builder-nextjs/middleware";
+ *
+ *   // Next.js statically analyzes the matcher — define config locally:
+ *   export const config = {
+ *       matcher: ["/((?!_next|api|static|favicon.ico|.well-known).*)"]
+ *   };
+ *
+ * Next.js 16+ (`proxy.ts`):
+ *
+ *   export { proxy } from "@webiny/website-builder-nextjs/proxy";
+ *   // or: export { proxy } from "@webiny/website-builder-nextjs/middleware";
+ *
+ *   // Next.js statically analyzes the matcher — define config locally:
+ *   export const config = {
+ *       matcher: ["/((?!_next|api|static|favicon.ico|.well-known).*)"]
+ *   };
  */
 
 const DEFAULT_PREVIEW_ROUTE = "/api/preview";
@@ -101,7 +117,19 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
 /** Turnkey middleware with default options. */
 export const middleware = createWebsiteBuilderMiddleware();
 
+/** Turnkey proxy with default options (Next.js 16+ convention). */
+export const proxy = middleware;
+
+/** Alias for createWebsiteBuilderMiddleware (Next.js 16+ convention). */
+export const createWebsiteBuilderProxy = createWebsiteBuilderMiddleware;
+
+/** Type alias for WebsiteBuilderMiddlewareOptions (Next.js 16+ convention). */
+export type WebsiteBuilderProxyOptions = WebsiteBuilderMiddlewareOptions;
+
 /** Default matcher: everything except Next internals, API routes, and static assets. */
+export const DEFAULT_MATCHER = ["/((?!_next|api|static|favicon.ico|.well-known).*)"] as const;
+
+/** Turnkey config for backwards compatibility. Note: Next.js requires config in proxy.ts/middleware.ts to be defined statically. */
 export const config = {
-    matcher: ["/((?!_next|api|static|favicon.ico|.well-known).*)"]
+    matcher: [...DEFAULT_MATCHER]
 };
