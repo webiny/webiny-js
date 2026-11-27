@@ -20,7 +20,8 @@ import { useAdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import { createFakeAppAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
 import { findElements } from "@webiny/app-workflows/editor/testing/findElements.js";
-import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/editor/components/WorkflowEditorView.js";
+import { WorkflowEditorRouteView } from "@webiny/app-workflows/editor/mounting/components/WorkflowEditorRouteView.js";
+import { Routes } from "~/routes.js";
 import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { WebsiteBuilderWorkflowsMenu } from "./WebsiteBuilderWorkflowsMenu.js";
 
@@ -175,11 +176,13 @@ describe("WebsiteBuilderWorkflowsMenu", () => {
             throw new Error("The editor route is not registered.");
         }
 
-        const views = findElements(route.element, WorkflowEditorView);
+        // The route view reads the model to open from the route, then renders the editor view.
+        const views = findElements(route.element, WorkflowEditorRouteView);
 
         expect(views).toHaveLength(1);
         expect(views[0].props).not.toHaveProperty("useCases");
-        expect(Object.keys(views[0].props)).toEqual(["app", "breadcrumbName"]);
+        expect(Object.keys(views[0].props)).toEqual(["route", "app", "breadcrumbName"]);
+        expect(views[0].props.route).toBe(Routes.Pages.Workflows);
         expect(views[0].props.app).toBe(app);
     });
 
