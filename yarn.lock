@@ -10404,10 +10404,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
+    "@webiny/stdlib": "npm:0.0.20"
     chalk: "npm:^6.0.1"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.4.1"
-    get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
     type-fest: "npm:^6.0.3"
     write-json-file: "npm:^7.0.0"
@@ -12409,12 +12409,12 @@ __metadata:
     "@rspack/core": "npm:^2.3.3"
     "@swc/plugin-emotion": "npm:^20.0.3"
     "@tailwindcss/postcss": "npm:^4.3.5"
+    "@webiny/stdlib": "npm:0.0.20"
     chalk: "npm:^6.0.1"
     css-loader: "npm:^7.1.5"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.4.1"
-    get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.18.1"
     postcss-loader: "npm:^8.2.2"
@@ -12444,13 +12444,13 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
+    "@webiny/stdlib": "npm:0.0.20"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.1"
     ci-info: "npm:^4.5.0"
     execa: "npm:^5.1.1"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
     humanize-duration: "npm:3.35.1"
     inquirer: "npm:^14.3.1"
     load-json-file: "npm:^7.0.1"
@@ -13205,7 +13205,7 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
+    "@webiny/stdlib": "npm:0.0.20"
     jest-dynalite: "npm:^3.6.1"
     listr2: "npm:^11.4.1"
     load-json-file: "npm:^7.0.1"
@@ -17363,13 +17363,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatten@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "flatten@npm:1.0.3"
-  checksum: 10/5c57379816f1692aaa79fbc6390e0a0644e5e8442c5783ed57c6d315468eddbc53a659eaa03c9bb1e771b0f4a9bd8dd8a2620286bf21fd6538a7857321fdfb20
-  languageName: node
-  linkType: hard
-
 "for-each@npm:^0.3.5":
   version: 0.3.5
   resolution: "for-each@npm:0.3.5"
@@ -17595,17 +17588,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-yarn-workspaces@npm:1.0.2, get-yarn-workspaces@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "get-yarn-workspaces@npm:1.0.2"
-  dependencies:
-    find-root: "npm:^1.1.0"
-    flatten: "npm:^1.0.2"
-    glob: "npm:^7.1.2"
-  checksum: 10/65ac46efe33d128c88352415b5f5090c9062282c1c29149687a7650b98b71f284cd8c83cda618bb9844917baf6bba136e1f9807bdc3da03f73916ff365c1a7ac
-  languageName: node
-  linkType: hard
-
 "getopts@npm:2.3.0":
   version: 2.3.0
   resolution: "getopts@npm:2.3.0"
@@ -17673,7 +17655,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.1.2, glob@npm:^7.1.3":
+"glob@npm:^7.1.3":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -22995,7 +22977,6 @@ __metadata:
     fast-glob: "npm:^3.3.3"
     fs-extra: "npm:^11.4.1"
     fsevents: "npm:^2.3.3"
-    get-yarn-workspaces: "npm:^1.0.2"
     github-actions-wac: "npm:^2.0.0"
     graphql: "npm:^16.15.0"
     husky: "npm:^9.1.7"

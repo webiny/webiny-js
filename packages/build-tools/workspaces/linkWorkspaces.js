@@ -5,7 +5,7 @@
  */
 
 import "tsx";
-
+import { listWorkspaces } from "@webiny/stdlib/node";
 import path from "path";
 import get from "lodash/get.js";
 import fs from "fs-extra";
@@ -56,9 +56,13 @@ export const linkWorkspaces = async ({ whitelist, blacklist } = defaults) => {
     whitelist = (whitelist || []).map(p => path.resolve(p));
     blacklist = (blacklist || []).map(p => path.resolve(p));
     // Filter packages to only those in the whitelisted folders
-    const getYarnWorkspaces = await import("get-yarn-workspaces").then(m => m.default ?? m);
-    const packages = getYarnWorkspaces(process.cwd())
-        .map(pkg => pkg.replace(/\//g, path.sep))
+
+    const packages = listWorkspaces({
+        cwd: process.cwd()
+    })
+        .map(pkg => {
+            return pkg.path.replace(/\//g, path.sep);
+        })
         .filter(pkg => {
             const isBlacklisted = blacklist.some(b => pkg.startsWith(b));
             if (isBlacklisted) {
