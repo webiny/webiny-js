@@ -36,22 +36,40 @@ class GetEntryGatewaySingleton implements GetEntryGateway.Interface {
             extraSelection.push(...selection.getSelection());
         }
 
-        const query = /* GraphQL */ `
-            query CmsEntryGetSingletonRevision${model.singularApiName}($revision: ID!) {
-                content: get${model.singularApiName}Revision(revision: $revision) {
-                    data {
-                        ${this.fields.getSystemFields(model)}
-                        ${extraSelection.join("\n")}
-                        ${this.fields.getValuesBlock(model)}
-                    }
+        const selection = `
+            ${this.fields.getSystemFields(model)}
+            ${extraSelection.join("\n")}
+            ${this.fields.getValuesBlock(model)}
+        `;
+
+        // A bare entry id (no `#`) has no revision to ask for, so the latest one is loaded.
+        const isRevisionId = id.includes("#");
+
+        let query = /* GraphQL */ `
+            query CmsEntryGetSingletonLatest${model.singularApiName} {
+                content: get${model.singularApiName}Latest {
+                    data { ${selection} }
                     error { message code data }
                 }
             }
         `;
+        let variables: { revision: string } | undefined;
+
+        if (isRevisionId) {
+            query = /* GraphQL */ `
+                query CmsEntryGetSingletonRevision${model.singularApiName}($revision: ID!) {
+                    content: get${model.singularApiName}Revision(revision: $revision) {
+                        data { ${selection} }
+                        error { message code data }
+                    }
+                }
+            `;
+            variables = { revision: id };
+        }
 
         const response = await this.client.execute<GetSingletonRevisionResponse>({
             query,
-            variables: { revision: id }
+            variables
         });
 
         const { data, error } = response.content;

@@ -103,6 +103,29 @@ describe("singleton editor gateways", () => {
             expect(entry).toEqual(ENTRY);
         });
 
+        it("should send getLatest, not getRevision, for a bare entry id", async () => {
+            const gateway = container.resolve(GetEntryGateway);
+
+            const entry = await gateway.execute({ model: singletonModel, id: "entry-1" });
+
+            const call = client.execute.mock.calls[0][0];
+            expect(call.query).toContain("getSettingsLatest");
+            expect(call.query).not.toContain("getSettingsRevision");
+            expect(call.variables).toBeUndefined();
+            expect(entry).toEqual(ENTRY);
+        });
+
+        it("should include registered field selections in the latest query too", async () => {
+            container.registerInstance(GetEntryGraphQLFieldSelection, {
+                getSelection: () => ["extraSelectionField"]
+            });
+            const gateway = container.resolve(GetEntryGateway);
+
+            await gateway.execute({ model: singletonModel, id: "entry-1" });
+
+            expect(client.execute.mock.calls[0][0].query).toContain("extraSelectionField");
+        });
+
         it("should include registered field selections in the query", async () => {
             container.registerInstance(GetEntryGraphQLFieldSelection, {
                 getSelection: () => ["extraSelectionField"]
