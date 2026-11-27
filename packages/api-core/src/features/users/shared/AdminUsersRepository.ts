@@ -6,7 +6,12 @@ import { AdminUsersStorageOperations } from "./storageAbstractions.js";
 import { createUserLoaders } from "./loaders.js";
 import { UserNotFoundError, UserStorageError } from "./errors.js";
 import type { AdminUser } from "./types.js";
-import type { GetUserInput, ListUsersInput } from "./types.js";
+import type {
+    GetUserAcrossTenantsInput,
+    GetUserInput,
+    ListUserRecordsInput,
+    ListUsersInput
+} from "./types.js";
 
 class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
     private loaders: ReturnType<typeof createUserLoaders>;
@@ -43,7 +48,7 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
             // Direct query for email-based lookups (rare)
             if (params.email) {
                 const user = await this.storageOperations.getUser({
-                    where: { tenant, email: params.email }
+                    where: { tenant: params.tenant ?? tenant, email: params.email }
                 });
 
                 if (!user) {
@@ -73,6 +78,30 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
         }
     }
 
+    async getUserAcrossTenants(
+        params: GetUserAcrossTenantsInput
+    ): Promise<Result<AdminUser[], RepositoryAbstraction.Error>> {
+        try {
+            const users = await this.storageOperations.getUserAcrossTenants(params);
+
+            return Result.ok(users);
+        } catch (error) {
+            return Result.fail(new UserStorageError(error as Error));
+        }
+    }
+
+    async listUserRecords(
+        params: ListUserRecordsInput
+    ): Promise<Result<AdminUser[], RepositoryAbstraction.Error>> {
+        try {
+            const users = await this.storageOperations.listUserRecords(params);
+
+            return Result.ok(users);
+        } catch (error) {
+            return Result.fail(new UserStorageError(error as Error));
+        }
+    }
+
     async create(user: AdminUser): Promise<Result<AdminUser, RepositoryAbstraction.Error>> {
         try {
             const result = await this.storageOperations.createUser({ user });
@@ -92,9 +121,9 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             await this.storageOperations.updateUser({ user });
 
-            // Update the cache
-            const tenant = this.tenantContext.getTenant().id;
-            await this.loaders.updateDataLoaderUserCache({ tenant, id: user.id }, user);
+            // Update the cache. The record can belong to another tenant than the current one.
+            const key = { tenant: user.tenant, id: user.id };
+            this.loaders.getUser.clear(key).prime(key, user);
 
             return Result.ok(user);
         } catch (error) {
@@ -107,8 +136,7 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
             await this.storageOperations.deleteUser({ user });
 
             // Clear from cache
-            const tenant = this.tenantContext.getTenant().id;
-            this.clearCache([{ tenant, id: user.id }]);
+            this.clearCache([{ tenant: user.tenant, id: user.id }]);
 
             return Result.ok();
         } catch (error) {

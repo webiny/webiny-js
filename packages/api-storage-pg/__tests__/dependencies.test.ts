@@ -24,7 +24,7 @@ describe("api-storage-pg dependencies", () => {
     it("depends on no standalone handler, self-hosted auth or AWS package", () => {
         const forbidden = dependencies.filter(name => {
             return (
-                name.startsWith("@webiny/api-event-handler") ||
+                name.startsWith("@webiny/api-kernel") ||
                 name.startsWith("@webiny/self-hosted-auth") ||
                 name.startsWith("@webiny/aws-sdk") ||
                 name.startsWith("@aws-sdk/") ||
@@ -53,7 +53,7 @@ describe("api-storage-pg dependencies", () => {
 
         expect(imports.length).toBeGreaterThan(0);
         expect(
-            imports.filter(name => /api-event-handler|self-hosted-auth|aws|dynamodb/.test(name))
+            imports.filter(name => /api-kernel|self-hosted-auth|aws|dynamodb/.test(name))
         ).toEqual([]);
         expect(imports.filter(name => /api-headless-cms|api-aco/.test(name))).toEqual([]);
     });

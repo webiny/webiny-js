@@ -11,8 +11,8 @@ const POSTGRES = "pg";
  * lives in a different database. Compares the database setup the core was deployed with (its stack
  * output) with the one the project config now asks for. A first deploy has nothing to compare.
  *
- * Rendered by `ProjectAws`, not by `<Infra.Postgres />`, so it also runs when `<Infra.Postgres />`
- * is removed from a project that was deployed with it.
+ * Rendered by `ProjectAws`, not by `<Infra.AuroraPostgres />`, so it also runs when
+ * `<Infra.AuroraPostgres />` is removed from a project that was deployed with it.
  */
 export class EnsurePostgresSetupUnchangedImpl implements CoreBeforeDeploy.Interface {
     constructor(
@@ -57,7 +57,7 @@ export class EnsurePostgresSetupUnchangedImpl implements CoreBeforeDeploy.Interf
             "DynamoDB",
             "Postgres",
             "webiny.config.tsx",
-            isPostgres ? "remove <Infra.Postgres />" : "add <Infra.Postgres />"
+            isPostgres ? "remove <Infra.AuroraPostgres />" : "add <Infra.AuroraPostgres />"
         );
     }
 }

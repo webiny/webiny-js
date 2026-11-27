@@ -1,6 +1,8 @@
 import { verifyJwtUsingJwk } from "~/features/security/utils/verifyJwtUsingJwk.js";
 import type { IdentityData } from "~/features/security/IdentityContext/Identity.js";
 import { JwkCache, JwtIdentityProvider, OidcIdentityProvider } from "./abstractions.js";
+import { AuthenticationError } from "~/features/security/authentication/AuthenticationContext/errors.js";
+import { InvalidTokenError } from "~/features/security/authentication/AuthenticationContext/errors.js";
 
 class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
     constructor(
@@ -91,12 +93,29 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
 
         if (!verifiedPayload) {
             // Default JWK verification
-            verifiedPayload = await verifyJwtUsingJwk(token, jwk);
+            // Security: audience/issuer are enforced only when the provider has them configured.
+            verifiedPayload = await verifyJwtUsingJwk(token, jwk, {
+                issuer: provider.issuer,
+                audience: provider.clientId
+            });
         }
 
-        // Call verifyTokenClaims if provided
+        /*
+         * Throwing from verifyTokenClaims is the documented way to reject a token, so whatever it
+         * throws is a rejection. Converting it here keeps it apart from errors that are not about the
+         * token, which AuthenticationContext lets through as they are.
+         */
         if (provider.verifyTokenClaims) {
-            await provider.verifyTokenClaims(verifiedPayload);
+            try {
+                await provider.verifyTokenClaims(verifiedPayload);
+            } catch (error) {
+                if (error instanceof AuthenticationError) {
+                    throw error;
+                }
+                // An empty message falls back to InvalidTokenError's own.
+                const message = error instanceof Error && error.message ? error.message : undefined;
+                throw new InvalidTokenError(message);
+            }
         }
 
         return verifiedPayload;

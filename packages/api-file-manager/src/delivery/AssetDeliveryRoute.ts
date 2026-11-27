@@ -1,5 +1,5 @@
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/api-kernel-core";
+import { TenantScope, TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import {
     AssetRequestResolver,
@@ -16,9 +16,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
     constructor(
         private requestResolver: AssetRequestResolver.Interface,
         private assetResolver: AssetResolver.Interface,
-        private assetProcessor: AssetProcessor.Interface,
-        private outputStrategy: AssetOutputStrategy.Interface,
-        private tenantContext: TenantContext.Interface,
+        private tenantScopes: TenantScopes.Interface,
         private getTenantById: GetTenantByIdUseCase.Interface
     ) {}
 
@@ -51,9 +49,9 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
         }
 
         // Delivery requests carry no tenant header, so up to this point the request runs in the
-        // root tenant. Now that we know which tenant owns the asset, switch to it for the rest of
-        // the request, so processors, authorizers and output strategies (e.g. the private files
-        // check, which loads the tenant-scoped file entry) all run in the asset's tenant.
+        // root tenant. Now that we know which tenant owns the asset, the rest of the request runs in
+        // that tenant's scope, so processors, authorizers and output strategies (e.g. the private
+        // files check, which loads the tenant-scoped file entry) are the asset tenant's.
         const tenantResult = await this.getTenantById.execute(resolvedAsset.getTenant());
         if (tenantResult.isFail()) {
             return response
@@ -62,19 +60,22 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
                 .json({ error: "Asset not found!" });
         }
 
-        return this.tenantContext.withTenant(tenantResult.value, () =>
-            this.deliver(resolvedRequest, resolvedAsset, response)
+        return this.tenantScopes.withTenant(tenantResult.value, scope =>
+            this.deliver(scope, resolvedRequest, resolvedAsset, response)
         );
     }
 
     private async deliver(
+        scope: TenantScope.Interface,
         resolvedRequest: AssetRequest,
         resolvedAsset: Asset,
         response: HttpRouteHandler.Response
     ) {
-        resolvedAsset.setOutputStrategy(this.outputStrategy);
+        resolvedAsset.setOutputStrategy(scope.resolve(AssetOutputStrategy));
 
-        const processedAsset = await this.assetProcessor.process(resolvedRequest, resolvedAsset);
+        const processedAsset = await scope
+            .resolve(AssetProcessor)
+            .process(resolvedRequest, resolvedAsset);
         const assetReply = await processedAsset.output();
 
         const rawHeaders = assetReply.getHeaders().getHeaders();
@@ -97,14 +98,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
 
 export const AssetDeliveryRoute = HttpRouteHandler.createImplementation({
     implementation: AssetDeliveryRouteImpl,
-    dependencies: [
-        AssetRequestResolver,
-        AssetResolver,
-        AssetProcessor,
-        AssetOutputStrategy,
-        TenantContext,
-        GetTenantByIdUseCase
-    ]
+    dependencies: [AssetRequestResolver, AssetResolver, TenantScopes, GetTenantByIdUseCase]
 });
 
 class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {

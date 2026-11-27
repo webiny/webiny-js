@@ -1,5 +1,6 @@
 import deepEqual from "deep-equal";
 import type { ComponentInput, RadioInput, RadioOption, ResolvedInputRenderer } from "./types.js";
+import { createListItemIdInput, LIST_ITEM_ID } from "./listItemId.js";
 
 export type InputAstNode = {
     name: string;
@@ -13,6 +14,11 @@ export type InputAstNode = {
      * `{ name, settings }`). Read the renderer from here, not from `input.renderer`.
      */
     renderer: ResolvedInputRenderer;
+    /**
+     * The item id of an object list's item (`_id`, see `listItemId.ts`): generated when the item is
+     * created, kept when it moves.
+     */
+    listItemId?: boolean;
 };
 
 /**
@@ -101,6 +107,9 @@ export class ComponentManifestToAstConverter {
 
             if (input.type === "object" && input.fields) {
                 node.children = this.buildAst(input.fields, path);
+                if (node.list) {
+                    node.children = this.withListItemId(node.children, path);
+                }
             } else if (isRadioWithOptionInputs(input)) {
                 // A radio whose options carry inputs is stored as an object: `value` holds the
                 // selected option, the options' inputs (merged by name) are the other children.
@@ -110,6 +119,32 @@ export class ComponentManifestToAstConverter {
 
             return node;
         });
+    }
+
+    /**
+     * Every object list item gets a hidden `_id` field (last, so it doesn't change the other fields'
+     * order). A manifest that declares `_id` itself keeps its own definition.
+     */
+    private static withListItemId(children: InputAstNode[], listPath: string): InputAstNode[] {
+        const own = children.find(child => child.name === LIST_ITEM_ID);
+        if (own) {
+            own.listItemId = true;
+            return children;
+        }
+        const input = createListItemIdInput();
+        return [
+            ...children,
+            {
+                name: input.name,
+                type: input.type,
+                list: false,
+                path: `${listPath}/${input.name}`,
+                children: [],
+                input,
+                renderer: resolveInputRenderer(input),
+                listItemId: true
+            }
+        ];
     }
 
     private static getRadioChildInputs(input: RadioInput): ComponentInput[] {

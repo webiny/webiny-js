@@ -7,6 +7,8 @@ import merge from "lodash/merge.js";
 import kebabCase from "lodash/kebabCase.js";
 import set from "lodash/set.js";
 import downloadBinaries from "./downloadBinaries.js";
+import { getPulumiStoreFolder } from "./getPulumiStoreFolder.js";
+import { linkSharedPlugins } from "./linkSharedPlugins.js";
 
 export interface PulumiProcessResult {
     readonly stdout: string;
@@ -40,10 +42,18 @@ export interface Options {
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
 
-    // A folder into which the Pulumi CLI, along with all of its meta data and config files, will be set up.
-    // It's recommended this folder is not checked in into a code repository, since the Pulumi CLI can store
-    // sensitive information here, for example - user's Pulumi Service credentials.
+    /*
+     * The project's own Pulumi folder (PULUMI_HOME), with its config and credentials. It's recommended
+     * this folder is not checked in into a code repository, since the Pulumi CLI can store sensitive
+     * information here, for example - user's Pulumi Service credentials.
+     */
     pulumiFolder?: string;
+
+    /*
+     * The folder that holds the Pulumi CLI and its plugins for every project on the machine. Defaults
+     * to `~/.webiny/pulumi`.
+     */
+    storeFolder?: string;
 }
 
 export interface RunArgs {
@@ -66,8 +76,10 @@ export class PulumiError extends Error {}
 export class Pulumi {
     options: Options;
     pulumiFolder: string;
-    pulumiDownloadFolder: string;
-    pulumiBinaryPath: string;
+    pulumiCliFolders: string;
+    pulumiPluginsFolder: string;
+    pulumiBinaryFolder = "";
+    pulumiBinaryPath = "";
 
     static async create(options: Options = {}) {
         const pulumi = new Pulumi(options);
@@ -81,14 +93,18 @@ export class Pulumi {
     private constructor(options: Options = {}) {
         this.options = options;
 
-        this.pulumiDownloadFolder = path.join(
-            options.pulumiFolder || process.cwd(),
-            "pulumi-cli",
-            os.platform()
-        );
+        /*
+         * The project's own Pulumi folder used to be `pulumi-cli/<platform>/pulumi`, which also held a
+         * copy of the CLI and the plugins. That folder is no longer read, and is left for the user to
+         * delete. Every run logs in and selects its stack again, so nothing in it is needed.
+         */
+        const projectFolder = options.pulumiFolder || process.cwd();
+        this.pulumiFolder = path.join(projectFolder, "pulumi");
 
-        this.pulumiFolder = path.join(this.pulumiDownloadFolder, "pulumi");
-        this.pulumiBinaryPath = path.join(this.pulumiFolder, "pulumi");
+        // A relative store folder would make the plugins link resolve against the link's own folder.
+        const storeFolder = path.resolve(options.storeFolder || getPulumiStoreFolder());
+        this.pulumiCliFolders = path.join(storeFolder, "cli");
+        this.pulumiPluginsFolder = path.join(storeFolder, "plugins");
     }
 
     run(rawArgs: RunArgs) {
@@ -150,7 +166,7 @@ export class Pulumi {
                  * we need to specify the exact location of our Pulumi binaries, using the PATH environment variable, so it can correctly resolve
                  * plugins necessary for custom resources and dynamic providers to work.
                  */
-                PATH: this.pulumiFolder + PATH_SEPARATOR + process.env.PATH
+                PATH: this.pulumiBinaryFolder + PATH_SEPARATOR + process.env.PATH
             }
         };
 
@@ -179,14 +195,19 @@ export class Pulumi {
         return wrapped as unknown as PulumiProcess;
     }
 
-    private async install(rawArgs?: InstallArgs): Promise<boolean> {
+    private async install(rawArgs?: InstallArgs) {
         const args = merge({}, this.options, rawArgs);
 
-        return await downloadBinaries(
-            this.pulumiDownloadFolder,
+        const binaryFolder = await downloadBinaries(
+            this.pulumiCliFolders,
             args.beforePulumiInstall,
             args.afterPulumiInstall
         );
+
+        this.pulumiBinaryFolder = binaryFolder;
+        this.pulumiBinaryPath = path.join(binaryFolder, "pulumi");
+
+        linkSharedPlugins(this.pulumiFolder, this.pulumiPluginsFolder);
     }
 
     private async ensureAwsPluginIsInstalled() {
@@ -231,21 +252,6 @@ export class Pulumi {
                     }
                 }
             );
-        }
-
-        // Remove stale resource-aws plugin versions to reclaim disk space.
-        if (fs.pathExistsSync(pluginsDir)) {
-            for (const entry of fs.readdirSync(pluginsDir)) {
-                if (!entry.startsWith("resource-aws-") || entry === requiredPluginDir) {
-                    continue;
-                }
-                // Strip the trailing ".lock" suffix so both the directory and its
-                // lock file are matched by the same prefix check.
-                const baseName = entry.endsWith(".lock") ? entry.slice(0, -5) : entry;
-                if (baseName !== requiredPluginDir) {
-                    fs.removeSync(path.join(pluginsDir, entry));
-                }
-            }
         }
     }
 }

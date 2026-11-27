@@ -7,6 +7,7 @@ type MainGraphQLRequest<TVariables = any> = {
     query: DocumentNode | string;
     variables?: TVariables;
     headers?: IHeaders;
+    keepalive?: boolean;
 };
 
 export interface IMainGraphQLClient {

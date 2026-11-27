@@ -5,6 +5,11 @@ export {
     RequestIdentityLoader,
     RequestTenantLoader
 } from "./abstractions.js";
-export { RequestContextFeature } from "./feature.js";
+export {
+    RequestContextFeature,
+    TenantNeutralRequestContextFeature,
+    TenantScopeRequestContextFeature
+} from "./feature.js";
+export { TenantNotFoundError } from "./TenantNotFoundError.js";
 export { ASSUME_PERMISSIONS_HEADER } from "./extractAssumePermissions.js";
 export { extractAssumePermissions } from "./extractAssumePermissions.js";

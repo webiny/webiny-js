@@ -39,6 +39,8 @@ export interface IdentityData {
     profile: Identity.Profile;
     currentTenant: Tenant;
     defaultTenant: Tenant;
+    /** The enabled tenants in which the identity has a user record, sorted by name. */
+    tenants?: Tenant[];
 }
 
 const anonymousData: IdentityData = {
@@ -111,6 +113,18 @@ export class Identity {
 
     get defaultTenant() {
         return this.data.defaultTenant;
+    }
+
+    get tenants(): Tenant[] {
+        return this.data.tenants ?? [];
+    }
+
+    /**
+     * Whether the identity can open another tenant than this one.
+     * Root users never can: they open tenants through Tenant Manager.
+     */
+    get canSwitchTenant(): boolean {
+        return this.tenants.length > 1 && !this.tenants.some(tenant => tenant.id === "root");
     }
 
     getPermission<T extends Identity.Permission = Identity.Permission>(

@@ -5,4 +5,5 @@ export interface RadioItemFormatted {
     label: string | React.ReactNode;
     value: string;
     disabled: boolean;
+    description?: React.ReactNode;
 }

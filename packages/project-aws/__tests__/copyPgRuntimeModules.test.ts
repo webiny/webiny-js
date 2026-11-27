@@ -57,7 +57,7 @@ describe("copyPgRuntimeModules", () => {
 
     it("copies knex, pg and their dependencies, and nothing else from the install", async () => {
         const project = path.join(tmp, "project");
-        writePackage(project, "@webiny/api-event-handler-aws-pg", {
+        writePackage(project, "@webiny/api-composition-aws-pg", {
             version: "1.0.0",
             dependencies: { knex: "^3", pg: "^8" },
             files: {
@@ -141,7 +141,7 @@ describe("copyPgRuntimeModules", () => {
 
         await expect(
             copyPgRuntimeModules({ resolveFrom: graphql, buildDir: path.join(graphql, "build") })
-        ).rejects.toThrow("@webiny/api-event-handler-aws-pg");
+        ).rejects.toThrow("<Infra.AuroraPostgres /> needs @webiny/api-composition-aws-pg");
     });
 
     it("gives the build a knex that loads the pg driver, with the repo's real packages", async () => {
@@ -150,8 +150,8 @@ describe("copyPgRuntimeModules", () => {
         const project = path.join(tmp, "project");
         fs.mkdirSync(path.join(project, "node_modules", "@webiny"), { recursive: true });
         fs.symlinkSync(
-            path.join(repoRoot, "packages", "api-event-handler-aws-pg"),
-            path.join(project, "node_modules", "@webiny", "api-event-handler-aws-pg")
+            path.join(repoRoot, "packages", "api-composition-aws-pg"),
+            path.join(project, "node_modules", "@webiny", "api-composition-aws-pg")
         );
         const buildDir = path.join(project, "build");
         fs.mkdirSync(buildDir);

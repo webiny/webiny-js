@@ -1,11 +1,11 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
@@ -55,6 +55,7 @@ export interface InvokeParams {
 
 export interface UseHandlerParams {
     plugins?: any[];
+    permissions?: SecurityPermission[];
 }
 
 const defaultIdentity: IdentityData = {
@@ -69,13 +70,15 @@ const defaultPermissions: SecurityPermission[] = [
 ];
 
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, { list: defaultPermissions });
+            container.registerInstance(TestPermissions, {
+                list: params?.permissions ?? defaultPermissions
+            });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

@@ -4,10 +4,10 @@ import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/sha
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
 import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
-import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch-aws";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createLatestSortKey, createPartitionKey, createPublishedSortKey } from "./keys.js";
 
 class DdbEsMoveEntryImpl implements MoveEntryStorageOperation.Interface {
@@ -15,16 +15,16 @@ class DdbEsMoveEntryImpl implements MoveEntryStorageOperation.Interface {
         private entity: CmsDdbEsEntryEntity.Interface,
         private esEntity: CmsDdbEsEntriesEsEntity.Interface,
         private dataLoaders: CmsDdbEsDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface,
-        private compressionHandler: CompressionHandler.Interface
+        private compressionHandler: CompressionHandler.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(initialModel: CmsModel, id: string, folderId: string) {
-        const model = this.storageModelProvider.getModel(initialModel);
+        const tenant = this.scopeTenant.getId();
 
         const partitionKey = createPartitionKey({
             id,
-            tenant: model.tenant
+            tenant
         });
         /**
          * First we need to fetch all the records in the regular DynamoDB table.
@@ -69,7 +69,7 @@ class DdbEsMoveEntryImpl implements MoveEntryStorageOperation.Interface {
         try {
             await entityBatch.execute();
             this.dataLoaders.clearAll({
-                tenant: initialModel.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -156,7 +156,7 @@ export const DdbEsMoveEntry = MoveEntryStorageOperation.createImplementation({
         CmsDdbEsEntryEntity,
         CmsDdbEsEntriesEsEntity,
         CmsDdbEsDataLoaders,
-        CmsStorageModelProvider,
-        CompressionHandler
+        CompressionHandler,
+        ScopeTenant
     ]
 });

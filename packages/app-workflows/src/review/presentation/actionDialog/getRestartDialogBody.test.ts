@@ -10,9 +10,7 @@ describe("getRestartDialogBody", () => {
 
         const body = getRestartDialogBody(step);
 
-        expect(body).toBe(
-            "Last attempt failed. Restarting runs the step again from the beginning."
-        );
+        expect(body).toBe("Last attempt failed. Restarting runs the step again from the start.");
     });
 
     it("keeps the reason and drops the unparsable end time", () => {
@@ -21,7 +19,7 @@ describe("getRestartDialogBody", () => {
         const body = getRestartDialogBody(step);
 
         expect(body).toBe(
-            "Last attempt failed: The model timed out. Restarting runs the step again from the beginning."
+            "Last attempt failed: The model timed out. Restarting runs the step again from the start."
         );
     });
 

@@ -101,7 +101,7 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
         expect(presenter.vm.rows[449].label).toBe("Name user-449");
     });
 
-    it("shows a missing id as Deleted user with the sub line, and its raw id in the filter", async () => {
+    it("shows a missing id as Deleted user with the sub line", async () => {
         const gone = createExclusion({ userId: "user-gone", reason: null, endsOn: null });
         const { presenter, listWorkflowUsers } = createExclusionsPageSetup([gone]);
         listWorkflowUsers.execute.mockImplementation(answerLookup);
@@ -112,11 +112,6 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
         expect(row.label).toBe("Deleted user");
         expect(row.muted).toBe(true);
         expect(row.subLine).toBe("This user no longer exists");
-        const [option] = presenter.vm.filter.options;
-        expect(option.label).toBe("Deleted user");
-        expect(option.description).toBe("user-gone");
-        expect(option.icon).toBe("person_off");
-        expect(option.muted).toBe(true);
         expect(presenter.getUserName("user-gone").state).toBe("deleted");
     });
 

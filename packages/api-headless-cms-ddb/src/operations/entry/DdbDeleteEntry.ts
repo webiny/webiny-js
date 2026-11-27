@@ -4,26 +4,26 @@ import type {
     CmsEntryStorageOperationsDeleteParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { DeleteEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
-import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { createPartitionKey } from "~/operations/entry/keys.js";
 
 class DdbDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(initialModel: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
         const { entry } = params;
+        const tenant = this.scopeTenant.getId();
         const id = entry.id || entry.entryId;
-        const model = this.storageModelProvider.getModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id,
-            tenant: model.tenant
+            tenant
         });
 
         let records: Awaited<ReturnType<typeof this.entity.queryAll>> = [];
@@ -56,9 +56,7 @@ class DdbDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
 
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete the entry.",
@@ -75,5 +73,5 @@ class DdbDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
 
 export const DdbDeleteEntry = DeleteEntryStorageOperation.createImplementation({
     implementation: DdbDeleteEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, ScopeTenant]
 });

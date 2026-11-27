@@ -4,9 +4,8 @@ import type { HostingType } from "@webiny/project/extensions/hosting/index.js";
 type HostingVersions = Record<HostingType, React.ComponentType<any>>;
 
 /*
- * The props of every hosting type's version, as a union: `Infra.Postgres` takes the standalone
- * connection props (`host`, `password`, …) in a standalone project and the AWS capacity props in
- * an AWS one, and each set type-checks on its own.
+ * The props of every hosting type's version, as a union, so each hosting type's set of props
+ * type-checks on its own.
  */
 type HostingSwitchProps<TVersions extends HostingVersions> =
     TVersions[HostingType] extends infer TVersion

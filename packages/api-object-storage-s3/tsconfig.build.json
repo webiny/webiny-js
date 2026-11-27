@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-object-storage/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" },
+    { "path": "../api-object-storage-disk/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-object-storage/*": ["../api-object-storage/src/*"],
+      "@webiny/api-object-storage": ["../api-object-storage/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
+      "@webiny/api-object-storage-disk/*": ["../api-object-storage-disk/src/*"],
+      "@webiny/api-object-storage-disk": ["../api-object-storage-disk/src"]
+    }
+  }
+}

@@ -17,6 +17,7 @@ const tagIconVariants = cva("mr-xxs", {
             "accent-light": "fill-neutral-primary",
             success: "fill-neutral-light",
             "success-light": "fill-neutral-primary",
+            "warning-light": "fill-neutral-primary",
             warning: "fill-neutral-primary",
             destructive: "fill-neutral-light",
             "destructive-light": "fill-neutral-primary"
@@ -32,6 +33,7 @@ const tagIconVariants = cva("mr-xxs", {
         { variant: "neutral-muted", disabled: true, className: "fill-neutral-disabled" },
         { variant: "accent-light", disabled: true, className: "fill-neutral-muted" },
         { variant: "success-light", disabled: true, className: "fill-neutral-muted" },
+        { variant: "warning-light", disabled: true, className: "fill-neutral-muted" },
         { variant: "warning", disabled: true, className: "fill-neutral-disabled" },
         { variant: "destructive-light", disabled: true, className: "fill-neutral-muted" }
     ],

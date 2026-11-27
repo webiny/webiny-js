@@ -21,11 +21,31 @@ const switchVariants = cva("inline-flex items-start space-x-sm", {
     }
 });
 
+const switchRootVariants = cva(
+    [
+        "peer inline-flex h-md w-[26px] shrink-0 cursor-pointer items-center rounded-xxl border-sm transition-colors",
+        "border-transparent data-[state=unchecked]:bg-neutral-strong",
+        "focus-visible:outline-none focus-visible:border-success focus-visible:ring-lg"
+    ],
+    {
+        variants: {
+            variant: {
+                default: "data-[state=checked]:bg-secondary focus-visible:ring-primary-dimmed",
+                branded: "data-[state=checked]:bg-primary focus-visible:ring-primary-dimmed"
+            }
+        },
+        defaultVariants: {
+            variant: "default"
+        }
+    }
+);
+
 type SwitchPrimitiveProps = Omit<
     SwitchPrimitives.SwitchProps,
     "defaultChecked" | "onCheckedChange" | "onChange"
 > &
     VariantProps<typeof switchVariants> &
+    VariantProps<typeof switchRootVariants> &
     SwitchItemDto & {
         onChange?: (checked: boolean) => void;
     };
@@ -47,6 +67,7 @@ const SwitchRenderer = ({
     description,
     className,
     labelPosition,
+    variant,
     disabled,
     required,
     checked
@@ -68,9 +89,7 @@ const SwitchRenderer = ({
                 id={id}
                 checked={checked}
                 className={cn([
-                    "peer inline-flex h-md w-[26px] shrink-0 cursor-pointer items-center rounded-xxl border-sm transition-colors",
-                    "border-transparent data-[state=checked]:bg-secondary data-[state=unchecked]:bg-neutral-strong",
-                    "focus-visible:outline-none focus-visible:border-success focus-visible:ring-lg focus-visible:ring-primary-dimmed",
+                    switchRootVariants({ variant }),
                     "disabled:cursor-not-allowed disabled:bg-neutral-muted disabled:data-[state=checked]:bg-neutral-muted",
                     // Nudges the switch down to line up with the inline label's text.
                     label && "mt-xxs"

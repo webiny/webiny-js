@@ -3,6 +3,7 @@ import { test } from "vitest";
 import { expect } from "vitest";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.public.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
+import { TenantScopes } from "~/features/tenancy/TenantScopes/abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 import { useGqlHandler } from "../useGqlHandler";
 
@@ -17,14 +18,14 @@ const otherTenant: Tenant = {
     description: "",
     settings: {},
     tags: [],
-    status: "active",
+    status: "enabled",
     savedOn: new Date().toISOString()
 };
 
 /**
  * Two root query fields resolved concurrently by graphql-js within one request: `switchTenant` holds
- * a `withTenant()` callback open for 20ms, and `readTenant` reads the tenant 5ms in, while that
- * callback is still running.
+ * a `TenantScopes.withTenant()` callback open for 20ms, and `readTenant` reads the tenant 5ms in,
+ * while that callback is still running.
  */
 class SiblingFieldsSchemaImpl implements GraphQLSchemaFactory.Interface {
     async execute(
@@ -39,11 +40,11 @@ class SiblingFieldsSchemaImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "Query.switchTenant",
-            dependencies: [TenantContext],
-            resolver: (tenantContext: TenantContext.Interface) => async () => {
-                return tenantContext.withTenant(otherTenant, async tenant => {
+            dependencies: [TenantScopes],
+            resolver: (tenantScopes: TenantScopes.Interface) => async () => {
+                return tenantScopes.withTenant(otherTenant, async scope => {
                     await wait(20);
-                    return tenant.id;
+                    return scope.resolve(TenantContext).getTenant().id;
                 });
             }
         });
@@ -66,7 +67,7 @@ const SiblingFieldsSchema = GraphQLSchemaFactory.createImplementation({
     dependencies: []
 });
 
-describe("TenantContext.withTenant() and sibling GraphQL fields", () => {
+describe("TenantScopes.withTenant() and sibling GraphQL fields", () => {
     test("a sibling field keeps reading the request's own tenant", async () => {
         const { invoke } = useGqlHandler({ registrations: [SiblingFieldsSchema] });
 

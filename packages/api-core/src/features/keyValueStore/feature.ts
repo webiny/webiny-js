@@ -4,11 +4,17 @@ import { KeyValueStore } from "./KeyValueStore.js";
 import { KeyValueStoreRepository } from "./KeyValueStoreRepository.js";
 import { KeyValueStorageOperations } from "./abstractions.js";
 
-export const KeyValueStoreFeature = createFeature<KeyValueStorageOperations.Interface>({
+/**
+ * Omit the storage operations to register `KeyValueStorageOperations` yourself (`ApiCoreFeature`
+ * serves it from the tenant scope's core storage).
+ */
+export const KeyValueStoreFeature = createFeature<KeyValueStorageOperations.Interface | undefined>({
     name: "KeyValueStore",
     register(container, storageOperations) {
         // Register legacy storage operations
-        container.registerInstance(KeyValueStorageOperations, storageOperations);
+        if (storageOperations) {
+            container.registerInstance(KeyValueStorageOperations, storageOperations);
+        }
 
         container.register(KeyValueStoreRepository).inSingletonScope();
         container.register(GlobalKeyValueStore);

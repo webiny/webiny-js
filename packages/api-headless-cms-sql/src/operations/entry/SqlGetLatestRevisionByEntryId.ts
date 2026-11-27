@@ -7,6 +7,7 @@ import type {
 import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
@@ -19,7 +20,8 @@ class SqlGetLatestRevisionByEntryIdImpl
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -32,12 +34,14 @@ class SqlGetLatestRevisionByEntryIdImpl
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         const { id: entryId } = parseIdentifier(params.id);
 
         const row = await this.query()
-            .where("tenant", model.tenant)
+            .where("tenant", tenant)
             .andWhere("modelId", model.modelId)
             .where("entryId", entryId)
             .andWhere("isLatest", true)
@@ -54,5 +58,5 @@ class SqlGetLatestRevisionByEntryIdImpl
 export const SqlGetLatestRevisionByEntryId =
     GetLatestRevisionByEntryIdStorageOperation.createImplementation({
         implementation: SqlGetLatestRevisionByEntryIdImpl,
-        dependencies: [KnexClient, EntryTableManager]
+        dependencies: [KnexClient, EntryTableManager, ScopeTenant]
     });

@@ -6,7 +6,8 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
 import { getStorageOps } from "~/testing/environment.js";
-import type { ApiCoreStorageOperations } from "~/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "~/types/core.js";
+import { createFixedScopeTenant } from "~/features/tenancy/ScopeTenant/index.js";
 
 class TestRoleFactory implements RoleFactory.Interface {
     execute(): RoleFactory.Return {
@@ -350,8 +351,11 @@ describe("Security Team CRUD Test", () => {
         const team = createResponse.data.security.createTeam.data;
 
         // Write null straight through storage, bypassing the use case that would coalesce it.
-        const { securityStorageOperations } =
-            getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+        const { securityStorageOperations } = getStorageOps<ApiCoreStorageOperationsBuilder>(
+            "apiCore"
+        ).storageOperations({
+            scopeTenant: createFixedScopeTenant("root")
+        });
 
         const stored = await securityStorageOperations.getTeam({
             where: { id: team.id, tenant: "root" }

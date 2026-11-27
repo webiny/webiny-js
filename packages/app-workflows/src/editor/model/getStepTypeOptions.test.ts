@@ -28,9 +28,9 @@ describe("getStepTypeOptions", () => {
         const options = getStepTypeOptions(params());
 
         expect(options.map(option => option.description)).toEqual([
-            "Members of one or more teams review.",
-            "Runs a code-defined automation, such as Send webhook.",
-            "An AI model reviews against your written instructions."
+            "Members of the reviewing teams approve or reject the revision.",
+            "Runs an automation, e.g. sends a webhook.",
+            "An AI model checks the content and approves or rejects it."
         ]);
     });
 

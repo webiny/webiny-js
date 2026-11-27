@@ -1,4 +1,3 @@
-import { promises as fs } from "node:fs";
 import type { ExifTags } from "exifreader";
 import {
     TaskDefinition,
@@ -7,14 +6,13 @@ import {
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
 
 class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMetadataInput> {
     public constructor(
         private readonly metadataReader: MetadataReader.Interface,
         private readonly updateFileUseCase: UpdateFileUseCase.Interface,
-        private readonly config: FileManagerStandaloneConfig.Interface
+        private readonly objectStorage: ObjectStorage.Interface
     ) {}
 
     public async run({
@@ -41,13 +39,13 @@ class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMet
             return controller.response.done();
         }
 
-        const storagePath = this.config.storagePath;
-
         try {
-            const filePath = resolveStoragePath(storagePath, fileMetadata.bucketKey);
-
-            /* Read the image file from local disk. */
-            const buffer = await fs.readFile(filePath);
+            const buffer = await this.objectStorage.get(fileMetadata.bucketKey);
+            if (!buffer) {
+                return controller.response.error({
+                    message: `File contents not found for file ID: ${input.fileId}`
+                });
+            }
 
             const sharp = await import(/* webpackChunkName: "sharp" */ "sharp").then(
                 m => m.default
@@ -130,7 +128,7 @@ class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMet
 
 const ExtractMetadataTaskHandler = TaskHandler.createImplementation({
     implementation: ExtractMetadataTaskHandlerImpl,
-    dependencies: [MetadataReader, UpdateFileUseCase, FileManagerStandaloneConfig]
+    dependencies: [MetadataReader, UpdateFileUseCase, ObjectStorage]
 });
 
 class ExtractMetadataTaskImpl implements TaskDefinition.Interface {

@@ -15,6 +15,7 @@ import {
 import { ARTICLE_NAMESPACE } from "~tests/__helpers/cmsModel.js";
 import {
     EDITOR,
+    NOBODY,
     READER,
     toActor,
     WB_READER,
@@ -288,6 +289,25 @@ describe("WB workflow wrappers", () => {
         expect(listed.map(workflow => workflow.id)).toEqual(["wb-workflow"]);
         expect(wb.isOk()).toBe(true);
         expect(cms.error.code).toBe("Workflows/Workflow/NotFound");
+    });
+
+    it("refuses to list or get pages workflows without page read or workflow editor", async () => {
+        const admin = await createUserContext();
+        await storeWbWorkflow(admin);
+        const nobody = await createUserContext({ identity: NOBODY, permissions: [] });
+        const workflowsEditor = await createUserContext({
+            identity: EDITOR,
+            permissions: [WORKFLOWS_EDITOR]
+        });
+
+        const listed = await list(nobody);
+        const got = await get(nobody, "wb-workflow");
+
+        expect(listed.error.code).toBe("Workflows/NotAuthorized");
+        expect(got.error.code).toBe("Workflows/NotAuthorized");
+        expect(expectOk(await list(workflowsEditor)).map(workflow => workflow.id)).toEqual([
+            "wb-workflow"
+        ]);
     });
 
     it("deletes a pages workflow for an editor and not another app's", async () => {

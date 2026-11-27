@@ -6,6 +6,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { PublishEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -24,17 +25,19 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
     constructor(
         private entity: CmsDdbEntryEntity.Interface,
         private dataLoaders: CmsDdbDataLoaders.Interface,
-        private storageModelProvider: CmsStorageModelProvider.Interface
+        private storageModelProvider: CmsStorageModelProvider.Interface,
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     private async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
+        tenant: string,
         params: { id: string }
     ) {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getLatestRevisionByEntryId<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
         const item = items.shift() || null;
@@ -49,12 +52,13 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
     private async getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
+        tenant: string,
         params: { id: string }
     ) {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const items = await this.dataLoaders.getPublishedRevisionByEntryId<T>({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [params.id]
         });
         const item = items.shift() || null;
@@ -72,12 +76,17 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsPublishParams<T>
     ) {
         const { entry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         /**
          * We need the latest and published entries to see if something needs to be updated alongside the publishing one.
          */
-        const initialLatestStorageEntry = await this.getLatestRevisionByEntryId(model, entry);
+        const initialLatestStorageEntry = await this.getLatestRevisionByEntryId(
+            model,
+            tenant,
+            entry
+        );
         if (!initialLatestStorageEntry) {
             throw new WebinyError(
                 `Could not publish entry. Could not load latest ("L") record.`,
@@ -86,24 +95,31 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
             );
         }
 
-        const initialPublishedStorageEntry = await this.getPublishedRevisionByEntryId(model, entry);
-
-        const storageEntry = convertToStorageEntry({
+        const initialPublishedStorageEntry = await this.getPublishedRevisionByEntryId(
             model,
-            storageEntry: initialStorageEntry
-        });
+            tenant,
+            entry
+        );
+
+        const storageEntry = {
+            ...convertToStorageEntry({
+                model,
+                storageEntry: initialStorageEntry
+            }),
+            tenant
+        };
 
         // 1. Update REV# and P records with new data.
         const entityBatch = this.entity.createEntityWriter({
             put: [
                 {
-                    ...createEntryRevisionKeys(storageEntry),
+                    ...createEntryRevisionKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry
                     }
                 },
                 {
-                    ...createEntryPublishedKeys(storageEntry),
+                    ...createEntryPublishedKeys(storageEntry, tenant),
                     data: {
                         ...storageEntry
                     }
@@ -119,7 +135,7 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         if (publishingLatestRevision) {
             // 2.1 If we're publishing the latest revision, we first need to update the L record.
             entityBatch.put({
-                ...createEntryLatestKeys(storageEntry),
+                ...createEntryLatestKeys(storageEntry, tenant),
                 data: {
                     ...storageEntry
                 }
@@ -127,13 +143,16 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
             if (publishedRevisionId && publishedRevisionId !== entry.id) {
-                const publishedStorageEntry = convertToStorageEntry({
-                    storageEntry: initialPublishedStorageEntry,
-                    model
-                });
+                const publishedStorageEntry = {
+                    ...convertToStorageEntry({
+                        storageEntry: initialPublishedStorageEntry,
+                        model
+                    }),
+                    tenant
+                };
 
                 entityBatch.put({
-                    ...createEntryRevisionKeys(publishedStorageEntry),
+                    ...createEntryRevisionKeys(publishedStorageEntry, tenant),
                     data: {
                         ...publishedStorageEntry,
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED
@@ -149,10 +168,13 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
                 isEntryLevelEntryMetaField
             );
 
-            const latestStorageEntry = convertToStorageEntry({
-                storageEntry: initialLatestStorageEntry,
-                model
-            });
+            const latestStorageEntry = {
+                ...convertToStorageEntry({
+                    storageEntry: initialLatestStorageEntry,
+                    model
+                }),
+                tenant
+            };
 
             // 2.3.1 Update L record. Apart from updating the entry-level meta fields, we also need
             //    to change the status from "published" to "unpublished" (if the status is set to "published").
@@ -168,7 +190,7 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
             };
 
             entityBatch.put({
-                ...createEntryLatestKeys(latestStorageEntryFields),
+                ...createEntryLatestKeys(latestStorageEntryFields, tenant),
                 data: {
                     ...latestStorageEntryFields
                 }
@@ -176,7 +198,7 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
             // 2.3.2 Update REV# record.
             entityBatch.put({
-                ...createEntryRevisionKeys(latestStorageEntryFields),
+                ...createEntryRevisionKeys(latestStorageEntryFields, tenant),
                 data: {
                     ...latestStorageEntryFields
                 }
@@ -190,13 +212,16 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
             const publishedRevisionDifferentFromLatest =
                 publishedRevisionId && publishedRevisionId !== latestStorageEntry.id;
             if (!isRepublishing && publishedRevisionDifferentFromLatest) {
-                const publishedStorageEntry = convertToStorageEntry({
-                    storageEntry: initialPublishedStorageEntry,
-                    model
-                });
+                const publishedStorageEntry = {
+                    ...convertToStorageEntry({
+                        storageEntry: initialPublishedStorageEntry,
+                        model
+                    }),
+                    tenant
+                };
 
                 entityBatch.put({
-                    ...createEntryRevisionKeys(publishedStorageEntry),
+                    ...createEntryRevisionKeys(publishedStorageEntry, tenant),
                     data: {
                         ...publishedStorageEntry,
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED
@@ -207,9 +232,7 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
         try {
             await entityBatch.execute();
-            this.dataLoaders.clearAll({
-                tenant: entry.tenant
-            });
+            this.dataLoaders.clearAll({ tenant });
             return initialStorageEntry;
         } catch (ex) {
             throw new WebinyError(
@@ -227,5 +250,5 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
 export const DdbPublishEntry = PublishEntryStorageOperation.createImplementation({
     implementation: DdbPublishEntryImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider, ScopeTenant]
 });

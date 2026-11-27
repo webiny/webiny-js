@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -14,7 +14,7 @@ import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient
 import { createTable } from "@webiny/db-dynamodb";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createEntryEntity } from "~/definitions/entry";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { CmsContext } from "~/types";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -41,7 +41,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const documentClient = getDocumentClient();
     const elasticsearchClient = createTestOpenSearchClient();
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const table = createTable({

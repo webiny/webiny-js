@@ -36,7 +36,8 @@ class ReleaseLockGatewayImpl implements GatewayAbstraction.Interface {
     async execute(params: IReleaseLockParams) {
         const response = await this.client.execute<ReleaseLockResponse>({
             query: RELEASE_LOCK_MUTATION,
-            variables: { id: params.id, type: params.type, force: false }
+            variables: { id: params.id, type: params.type, force: false },
+            keepalive: params.keepalive
         });
 
         const { data, error } = response.recordLocking.unlockEntry;

@@ -9,7 +9,7 @@ export const PG_CMS_BUILD_PARAM = "HeadlessCmsPg";
 
 /**
  * The build param with defaults for the same settings, set by the hosting rather than the project:
- * `<Infra.RdsProxy enabled />` on AWS sets `{ bitmapHints: false }`, which is faster through the
+ * `<Infra.AuroraPostgres rdsProxy />` on AWS sets `{ bitmapHints: false }`, which is faster through the
  * proxy. A setting in `PG_CMS_BUILD_PARAM` wins over its default here; `<HeadlessCmsPg>` knows
  * nothing about it.
  */

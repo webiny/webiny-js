@@ -70,9 +70,50 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
+    });
+
+    it("opens the model named by initialModelId instead of the first one", async () => {
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
+            createWorkflowModelPage({
+                rows: [
+                    createWorkflowModelRow(),
+                    createWorkflowModelRow({ model: "cms.page", modelId: "page", name: "Page" })
+                ]
+            })
+        );
+
+        await presenter.init({ ...params, initialModelId: "page" });
+
+        const active = presenter.vm.panel.rows.filter(row => row.active);
+        expect(active.map(row => row.name)).toEqual(["Page"]);
+    });
+
+    it("opens the first model when initialModelId is unknown or absent", async () => {
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
+            createWorkflowModelPage({
+                rows: [
+                    createWorkflowModelRow(),
+                    createWorkflowModelRow({ model: "cms.page", modelId: "page", name: "Page" })
+                ]
+            })
+        );
+
+        await presenter.init({ ...params, initialModelId: "missing" });
+        expect(presenter.vm.status).toBe("ready");
+        expect(presenter.vm.panel.rows.filter(row => row.active).map(row => row.name)).toEqual([
+            "Article"
+        ]);
+
+        await presenter.init(params);
+        expect(presenter.vm.panel.rows.filter(row => row.active).map(row => row.name)).toEqual([
+            "Article"
+        ]);
     });
 
     it("takes the panel label and the search flag from the app adapter", async () => {
@@ -89,12 +130,14 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(cms.listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
         expect(wb.listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "wb",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -161,7 +204,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(presenter.vm.header).toEqual({
             name: "Article review",
             nameError: null,
-            appliesTo: "Applies to Article · Headless CMS model",
+            appliesTo: "Applies to Article (Headless CMS) · Created by Ada Lovelace on 17.10.2026",
             dirty: false,
             saving: false,
             canSave: false,

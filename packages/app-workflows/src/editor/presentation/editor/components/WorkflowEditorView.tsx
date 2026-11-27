@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFeature } from "@webiny/app";
 import { AdminConfig } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
@@ -12,6 +12,8 @@ export interface WorkflowEditorViewProps {
     app: WorkflowEditorAppAdapter;
     // The route's breadcrumb name; the open model's crumb is registered under `<name>.model`.
     breadcrumbName: string;
+    // The model to open on the first load; later changes of it do not re-run `init`.
+    initialModelId?: string;
 }
 
 /*
@@ -23,14 +25,15 @@ export const WorkflowEditorView = createReactiveComponent(function WorkflowEdito
 ) {
     const { app } = props;
     const { presenter } = useFeature(WorkflowEditorPresenterFeature);
+    const initialModelId = useRef(props.initialModelId).current;
 
     // The per-app mounting components pass a singleton: a new identity would re-run `init` and drop the draft.
     useEffect(() => {
-        void presenter.init({ app });
+        void presenter.init({ app, initialModelId });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, app]);
+    }, [presenter, app, initialModelId]);
 
     // A model without a workflow has no flow yet, so its name comes from the open row first.
     const { vm } = presenter;

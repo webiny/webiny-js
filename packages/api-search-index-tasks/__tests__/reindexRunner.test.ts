@@ -3,7 +3,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/abstractions.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { StorageScanner } from "~/abstractions/StorageScanner.js";
 import { StorageWriter } from "~/abstractions/StorageWriter.js";
@@ -25,14 +25,22 @@ const createRecord = (index: string, entity: string, id: string): IStorageScanne
     modified: "2026-01-01T00:00:00.000Z"
 });
 
-const createMockTenantContext = (): TenantContext.Interface =>
+/** Every tenant's scope is the test's container. */
+const createMockTenantScopes = (container: Container): TenantScopes.Interface =>
     ({
-        getTenant: () => ({ id: "root" }),
-        setTenant: () => {},
-        withEachTenant: async (tenants, callback) => {
+        withEachTenant: async (tenants: any[], callback: (scope: any) => Promise<unknown>) => {
+            const results = [];
             for (const tenant of tenants) {
-                await callback(tenant);
+                results.push(
+                    await callback({
+                        tenant,
+                        storage: "default",
+                        resolve: (abstraction: any) => container.resolve(abstraction),
+                        resolveAll: (abstraction: any) => container.resolveAll(abstraction)
+                    })
+                );
             }
+            return results;
         }
     }) as any;
 
@@ -51,7 +59,7 @@ const buildRunner = (params: {
     container.registerInstance(TaskController, params.controller.controller);
     container.registerInstance(StorageScanner, params.scanner.scanner);
     container.registerInstance(StorageWriter, params.writer.writer);
-    container.registerInstance(TenantContext, createMockTenantContext());
+    container.registerInstance(TenantScopes, createMockTenantScopes(container));
     container.registerInstance(ListTenantsUseCase, createMockListTenants());
 
     const configs = params.indexConfigs || [];

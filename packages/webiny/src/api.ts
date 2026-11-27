@@ -18,27 +18,20 @@ export {
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
 export { WebsocketsSendToIdentityUseCase } from "@webiny/api-core/features/websockets/index.js";
-export { WebsocketsTransport } from "@webiny/api-websockets/transport/index.js";
-export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
-export { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
-export { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js";
-export { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
-export { WebsocketsEventValidator } from "@webiny/api-websockets/validator/index.js";
-export { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner.js";
-export { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
-export { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
-export type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 export {
     HttpAllowedRequestHeaders,
     HttpRouteDefinition,
     HttpRouteHandler
-} from "@webiny/event-handler-core/features/http/abstractions.js";
+} from "@webiny/api-kernel-core/features/http/abstractions.js";
 export type {
     IHttpRequest,
     IHttpResponse,
     IHttpResponseBuilder,
     IMatchedRouteDefinition
-} from "@webiny/event-handler-core/features/http/abstractions.js";
+} from "@webiny/api-kernel-core/features/http/abstractions.js";
+export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
+export { WebsocketsSendToConnectionsUseCase } from "@webiny/api-websockets/features/SendToConnections/abstractions.js";
+export { WebsocketsDisconnectUseCase } from "@webiny/api-websockets/features/Disconnect/abstractions.js";
 export { createFeature, createAbstraction, Result, BaseError } from "@webiny/feature/api/index.js";
 export { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 export { Compression } from "@webiny/utils/features/compression/abstractions/Compression.js";

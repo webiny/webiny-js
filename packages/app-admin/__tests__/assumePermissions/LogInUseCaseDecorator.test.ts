@@ -59,6 +59,8 @@ const setup = (options: SetupOptions) => {
 
             const identity = identityFor(loginAs);
             identityContext.setIdentity(identity);
+
+            return { type: "loggedIn" as const };
         }
     });
     container.registerDecorator(LogInUseCaseDecorator);

@@ -36,6 +36,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
 
         // Create folder path
         const pathResult = await this.createFolderPath({
+            type: data.type,
             slug: data.slug,
             parentId: data.parentId
         });
@@ -104,11 +105,12 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
     }
 
     private async createFolderPath(params: {
+        type: string;
         slug: string;
         parentId?: string | null;
     }): Promise<Result<string, RepositoryAbstraction.Error>> {
         const folderModel = await this.folderModelProvider.get();
-        const { slug, parentId } = params;
+        const { type, slug, parentId } = params;
 
         if (!parentId) {
             return Result.ok(Path.create(slug));
@@ -128,6 +130,14 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         }
 
         const parentFolder = EntryToFolderMapper.toFolder(parentResult.value);
+
+        // Security: a folder cannot be planted under a folder of another type (another app).
+        if (parentFolder.type !== type) {
+            return Result.fail(
+                new FolderValidationError("Parent folder must be of the same type as the folder.")
+            );
+        }
+
         return Result.ok(Path.create(slug, parentFolder.path));
     }
 }

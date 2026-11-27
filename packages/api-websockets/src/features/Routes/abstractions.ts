@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
+import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 import type { WebsocketsResponse } from "~/response/index.js";
 import type { IWebsocketsRunnerResponse } from "~/runner/abstractions/WebsocketsRunner.js";
@@ -18,20 +19,17 @@ export interface IWebsocketsRouteHandlerParams<
     container: Container;
     response: WebsocketsResponse.Interface;
     getTenant: () => string | null;
-    getIdentity: () => ConnectionRegistry.Identity | null;
+    /*
+     * Always set. A request without a valid token gets the anonymous identity, so a handler that
+     * must refuse anonymous users checks `identity.isAnonymous()`.
+     */
+    identity: Identity;
     next: () => Promise<R>;
 }
 
 /**
- * A handler for a single WebSocket route (e.g. "connect", "disconnect", "default", or a
- * custom route key). Register built-in and custom routes as multiple implementations:
- *
- *   container.registerInstance(WebsocketsRouteHandler, {
- *       route: "myRoute",
- *       async run({ response }) { return response.ok(); }
- *   });
- *
- * The runner resolves all handlers via `resolveAll` and runs the ones matching the event route.
+ * A handler for a single WebSocket route: "connect", "disconnect" or "default". The runner
+ * resolves all handlers via `resolveAll` and runs the ones matching the event route.
  */
 export interface IWebsocketsRouteHandler<
     R extends IWebsocketsRunnerResponse = IWebsocketsRunnerResponse,

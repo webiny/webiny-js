@@ -33,5 +33,6 @@ Read every rule in this folder before writing or editing code.
 | [without-authorization-only-for-private-models.md](./without-authorization-only-for-private-models.md) | `withoutAuthorization` is a no-op on private models; keep it where reads are filtered.   |
 | [use-cases-may-share-a-repository.md](./use-cases-may-share-a-repository.md)                           | Call another feature's repository directly unless you need what its use case adds.       |
 | [request-state-is-container-scoped.md](./request-state-is-container-scoped.md)                         | Request state registered in the root uses `inContainerScope()`, never a singleton.       |
+| [users-import-from-webiny.md](./users-import-from-webiny.md)                                           | Project authors import from `webiny` only; user-facing text never names `@webiny/*`.     |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.

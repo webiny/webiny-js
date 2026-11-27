@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { registerFaultyTenantContext, tenantFault } from "~tests/__helpers/FaultyTenantContext.js";
@@ -108,7 +110,16 @@ const setup = async (ports: Array<typeof CmsLike> = [CmsLike, PageLike]) => {
     });
     return {
         tenantContext: context.container.resolve(TenantContext),
-        service: context.container.resolve(ReviewTargetLinkService)
+        service: context.container.resolve(ReviewTargetLinkService),
+        /** The service of `tenant`'s scope, in that scope. */
+        inTenant: <T>(
+            tenant: Tenant,
+            cb: (service: ReviewTargetLinkService.Interface) => Promise<T>
+        ): Promise<T> => {
+            return context.container.resolve(TenantScopes).withTenant(tenant, scope => {
+                return cb(scope.resolve(ReviewTargetLinkService));
+            });
+        }
     };
 };
 
@@ -147,11 +158,60 @@ describe("ReviewTargetLinkService.getUrl (R195, R196)", () => {
         expect(url).not.toContain("%2523");
     });
 
-    it("carries the id of a non-root tenant, encoded", async () => {
+    it("appends the review id, encoded, after the tenant when asked for the review details", async () => {
         const { service, tenantContext } = await setup();
+        const tenantId = encodeURIComponent(tenantContext.getTenant().id);
+
+        const pageUrl = await service.getUrl({ ...PAGE_PARAMS, reviewId: "review-1" });
+        const cmsUrl = await service.getUrl({ ...CMS_PARAMS, reviewId: "review #2&x" });
+
+        expect(pageUrl).toBe(
+            `${ADMIN_URL}/website-builder/pages/editor/page-1%230002?tenantId=${tenantId}&reviewId=review-1`
+        );
+        expect(cmsUrl).toBe(
+            `${ADMIN_URL}/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}&reviewId=review%20%232%26x`
+        );
+    });
+
+    it("leaves the review id out when it is empty", async () => {
+        const { service, tenantContext } = await setup();
+        const tenantId = encodeURIComponent(tenantContext.getTenant().id);
+
+        const url = await service.getUrl({ ...PAGE_PARAMS, reviewId: "" });
+
+        expect(url).toBe(
+            `${ADMIN_URL}/website-builder/pages/editor/page-1%230002?tenantId=${tenantId}`
+        );
+    });
+
+    it("hands the port only the target, never the review id", async () => {
+        const seen: ReviewTargetLink.Params[] = [];
+        class RecordingPort implements ReviewTargetLink.Interface {
+            public canLink(): boolean {
+                return true;
+            }
+
+            public getPath(params: ReviewTargetLink.Params): string {
+                seen.push({ ...params });
+                return "/recorded";
+            }
+        }
+        const Recording = ReviewTargetLink.createImplementation({
+            implementation: RecordingPort,
+            dependencies: []
+        });
+        const { service } = await setup([Recording]);
+
+        await service.getUrl({ ...PAGE_PARAMS, reviewId: "review-1" });
+
+        expect(seen).toEqual([PAGE_PARAMS]);
+    });
+
+    it("carries the id of a non-root tenant, encoded", async () => {
+        const { inTenant, tenantContext } = await setup();
         const child = { ...tenantContext.getTenant(), id: "child tenant/1" };
 
-        const url = await tenantContext.withTenant(child, () => service.getUrl(PAGE_PARAMS));
+        const url = await inTenant(child, service => service.getUrl(PAGE_PARAMS));
 
         expect(url).toBe(
             `${ADMIN_URL}/website-builder/pages/editor/page-1%230002?tenantId=child%20tenant%2F1`
@@ -191,10 +251,10 @@ describe("ReviewTargetLinkService.getUrl (R195, R196)", () => {
     });
 
     it("is null, without a log, when the current tenant has an empty id (never a link without tenantId)", async () => {
-        const { service, tenantContext } = await setup();
+        const { inTenant, tenantContext } = await setup();
         const empty = { ...tenantContext.getTenant(), id: "" };
 
-        const url = await tenantContext.withTenant(empty, () => service.getUrl(PAGE_PARAMS));
+        const url = await inTenant(empty, service => service.getUrl(PAGE_PARAMS));
 
         expect(url).toBeNull();
         expect(loggedErrors).toEqual([]);

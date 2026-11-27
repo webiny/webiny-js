@@ -1,14 +1,13 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { WebsocketsFeature } from "~/features/feature.js";
-import { WebsocketsGraphQLFactoryFeature } from "~/graphql/feature.js";
 import { WebsocketsTransport } from "~/transport/index.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport.js";
 import { WebsocketsRouteHandler } from "~/features/Routes/abstractions.js";
@@ -40,7 +39,7 @@ const defaultPermissions: SecurityPermission[] = [
 ];
 
 export const useHandler = (params?: UseHandlerParams) => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
     const websocketsStorage = getStorageOps("websockets");
 
@@ -72,7 +71,6 @@ export const useHandler = (params?: UseHandlerParams) => {
                 websocketsStorage.createConnectionRegistry()
             );
             WebsocketsFeature.register(container);
-            WebsocketsGraphQLFactoryFeature.register(container);
             container.registerInstance(WebsocketsTransport, new MockWebsocketsTransport());
 
             // Built-in routes are registered by WebsocketsFeature; register any custom routes.

@@ -6,7 +6,7 @@
  * separate bundle (`build-web/`), never part of `handler.mjs`. The web function serves the HTTP routes;
  * every other invocation still goes to the regular `graphql` Lambda built from `index.ts`.
  */
-import { startAwsDdbWebApi } from "@webiny/api-event-handler-aws-ddb";
+import { startAwsDdbWebApi } from "@webiny/api-composition-aws-ddb";
 import { extensions } from "./extensions";
 
 startAwsDdbWebApi({ extensions }).catch(err => {

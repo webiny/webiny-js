@@ -15,6 +15,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createTransformer } from "./transformations/index.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createLatestSortKey, createPartitionKey, createPublishedSortKey } from "./keys.js";
 import {
     isDeletedEntryMetaField,
@@ -31,7 +32,8 @@ class DdbEsMoveToBinImpl implements MoveToBinStorageOperation.Interface {
         private storageModelProvider: CmsStorageModelProvider.Interface,
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute(
@@ -39,6 +41,7 @@ class DdbEsMoveToBinImpl implements MoveToBinStorageOperation.Interface {
         params: CmsEntryStorageOperationsMoveToBinParams
     ): Promise<void> {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const transformer = createTransformer({
@@ -54,7 +57,7 @@ class DdbEsMoveToBinImpl implements MoveToBinStorageOperation.Interface {
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
         /**
@@ -113,7 +116,7 @@ class DdbEsMoveToBinImpl implements MoveToBinStorageOperation.Interface {
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -214,6 +217,7 @@ export const DdbEsMoveToBin = MoveToBinStorageOperation.createImplementation({
         CmsStorageModelProvider,
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

@@ -1,19 +1,19 @@
 import type { Container } from "@webiny/di";
 import { getIntrospectionQuery } from "graphql";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "~/HeadlessCmsFeature.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
 import { createPermissions } from "~tests/testHelpers/helpers";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
-import { RootTenantInitializer } from "@webiny/api-core-testing";
+import { TestTenantScopesFeature, createTenantScopedChild } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { CmsEndpointAccessDecorator } from "~tests/testHelpers/handlers/CmsEndpointAccessDecorator";
 import { defaultIdentity } from "~tests/testHelpers/helpers";
@@ -114,12 +114,13 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         ...(params.bottomPlugins ?? [])
     ];
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
     const cmsType = extractCmsType(params.path);
     const resolvedPermissions = createPermissions(permissions);
 
     const capturedCtx: { value?: Record<string, any> } = {};
+    let capturedThisRequest = false;
 
     const handler = createTestHttpHandler({
         root: container => {
@@ -128,50 +129,59 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             // Decorator order (last = outermost = runs first):
-            // RootTenantInit → AuthTrigger → CmsEndpointAccess → HttpRouterHandler
+            // AuthTrigger → CmsEndpointAccess → HttpRouterHandler, in the request's tenant scope
             container.registerDecorator(CmsEndpointAccessDecorator);
             container.registerDecorator(AuthTriggerHandler);
-            container.registerDecorator(RootTenantInitializer);
+            // Each request runs in the scope of its `x-tenant` header's tenant, as in the API.
+            TestTenantScopesFeature.register(container);
         },
-        child: async container => {
-            const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
+        child: createTenantScopedChild({
+            request: async container => {
+                await WcpLicenseLoader.load(createTestWcpLicense());
+                registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+                container.registerInstance(Logger, new NullLogger());
+                capturedThisRequest = false;
+            },
+            scope: async container => {
+                const wcpLicense = WcpLicenseLoader.getCached();
+                ApiCoreFeature.register(container, { wcpLicense, tenantScope: true });
 
-            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new NullLogger();
-            container.registerInstance(Logger, logger);
-            ApiCoreFeature.register(container, { wcpLicense });
+                // Process legacy RegisterExtensionPlugins to register StorageOperationsFactory
+                await processLegacyPlugins(container, cmsStorage.plugins);
 
-            // Process legacy RegisterExtensionPlugins to register StorageOperationsFactory
-            await processLegacyPlugins(container, cmsStorage.plugins);
+                // Separate plugins:
+                // - Arrow functions (no prototype) → container setup callbacks, call immediately
+                // - Everything else → extra plugins (CmsGraphQLSchemaPlugin, ContextPlugin, etc.)
+                const extraCmsPlugins: any[] = [];
 
-            // Separate plugins:
-            // - Arrow functions (no prototype) → container setup callbacks, call immediately
-            // - Everything else → extra plugins (CmsGraphQLSchemaPlugin, ContextPlugin, etc.)
-            const extraCmsPlugins: any[] = [];
-
-            // Collect plain Plugin objects from cmsStorage.plugins (e.g. sorting plugins)
-            for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
-                if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
-                    extraCmsPlugins.push(p);
+                // Collect plain Plugin objects from cmsStorage.plugins (e.g. sorting plugins)
+                for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
+                    if (p && typeof (p as any).apply !== "function" && typeof p !== "function") {
+                        extraCmsPlugins.push(p);
+                    }
                 }
-            }
 
-            for (const plugin of allPlugins) {
-                if (typeof plugin === "function" && !plugin.prototype) {
-                    await (plugin as (container: any) => void)(container);
-                } else {
-                    extraCmsPlugins.push(...[plugin].flat());
+                for (const plugin of allPlugins) {
+                    if (typeof plugin === "function" && !plugin.prototype) {
+                        await (plugin as (container: any) => void)(container);
+                    } else {
+                        extraCmsPlugins.push(...[plugin].flat());
+                    }
                 }
-            }
 
-            HeadlessCmsFeature.register(container, {
-                type: cmsType,
-                extraPlugins: extraCmsPlugins
-            });
-            params.afterSetup?.(container);
-            capturedCtx.value = { container };
-            GraphQLEngineFeature.register(container);
-        }
+                HeadlessCmsFeature.register(container, {
+                    type: cmsType,
+                    extraPlugins: extraCmsPlugins
+                });
+                params.afterSetup?.(container);
+                // The request's own tenant scope: the first one the request builds.
+                if (!capturedThisRequest) {
+                    capturedCtx.value = { container };
+                    capturedThisRequest = true;
+                }
+                GraphQLEngineFeature.register(container);
+            }
+        })
     });
 
     const invoke = async <T = any>({

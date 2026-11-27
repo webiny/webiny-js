@@ -106,13 +106,13 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/ListConnections/abstractions.ts`
-- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Filters out stale connections (>3 hours).
+- **Usage:** List active WebSocket connections. Namespace types: `.Interface`, `.Params`, `.ParamsWhere`, `.RegistryData`. Call `.execute({ where: { identityId } })` to filter. Returns `Result<ConnectionRegistry.Data[], WebsocketsError>`. Returns the current tenant's connections only, whatever the filter. For another tenant, resolve it from that tenant's scope inside `TenantScopes.withTenant()`. Filters out stale connections (>3 hours).
 
 ### WebsocketsSendToIdentityUseCase
 
 - **Import:** `import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js"`
 - **Interface Type:** See `packages/api-websockets/src/features/SendToIdentity/abstractions.ts`
-- **Usage:** Send a message to all connections for a given identity. Namespace types: `.Interface`, `.Identity`, `.Data<T>`. Call `.execute({ id: userId }, { action, data })`. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
+- **Usage:** Send a message to all of an identity's connections in the current tenant. Namespace types: `.Interface`, `.Identity`, `.Data<T>`. Call `.execute({ id: userId }, { action, data })`. Make optional with `[WebsocketsSendToIdentityUseCase, { optional: true }]`.
 
 ### WebsocketsSendToConnectionsUseCase
 
@@ -551,7 +551,9 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ## Mailer Features
 
-Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration; the built-in one is SMTP. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
+Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` that reads its own configuration. `@webiny/api-mailer` has no transport of its own. SMTP is the `@webiny/mailer-smtp` package, exported from `webiny/extensions` as `Api.Mailer.Smtp`: the project templates render `<Api.Mailer.Smtp />` in `webiny.config.tsx`, and replacing SMTP means replacing that component. Other providers are extensions from the webiny/extensions repository, installed with `yarn webiny extension mailer/resend` (also `mailer/sendgrid`, `mailer/ses`); each renders an `Api.Extension` that registers a `MailTransportFactory` reading `WEBINY_API_*` environment variables when mail is sent. See `skills/user-skills/mailer-providers`. `MailerService` (which picks the transport) is internal to `api-mailer` and not exported from `webiny/api/mailer`.
+
+Stored transport settings are core: a transport that needs them registers a `TransportSettingsDefinition`, and `@webiny/api-mailer` reads, saves, encrypts and audits them. SMTP is one such definition.
 
 ### SendMailUseCase
 
@@ -569,25 +571,35 @@ Send mail through `SendMailUseCase`. Each transport is a `MailTransportFactory` 
 
 - **Import:** `import { MailTransportFactory, MailTransport } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
-- **Usage:** Register a custom mail transport (SES, an HTTP API). `createTransport()` takes no arguments, reads the transport's own configuration (env vars, stored settings, anything) and returns a `MailTransport`, or `null` when not configured. The last registered factory that returns a transport is used. Example: the `aws-ses-mailer` extension in webiny/extensions.
+- **Usage:** Register a custom mail transport (SES, an HTTP API). `createTransport()` takes no arguments, reads the transport's own configuration (env vars, stored settings, anything) and returns a `MailTransport`, or `null` when not configured. The last registered factory that returns a transport is used. Examples are the `mailer/resend`, `mailer/sendgrid` and `mailer/ses` extensions in the webiny/extensions repository.
+
+### TransportSettingsDefinition
+
+- **Import:** `import { TransportSettingsDefinition } from "webiny/api/mailer"`
+- **Interface Type:** See `packages/api-mailer/src/domain/TransportSettings/abstractions.ts`
+- **Usage:** Register one (multiple implementations allowed) for a transport whose settings are stored and edited in Settings > Mailer. Declares `transport` (the factory's `name`), a zod `schema` for saved input, `secrets` (encrypted at rest, never returned by the API or put in events, kept when a save leaves them out), `secretsBoundTo` (fields whose change requires the secrets again), optional `withDefaults()`, `getCodeSettings()` (settings set in code, which lock saving) and `storageKey` (default `Mailer/Settings/Transport/<transport>`). The core mailer then provides `GetSettingsUseCase`, `SaveSettingsUseCase`, the `mailer.settings` permission check, the save events, the audit log (`api-audit-logs`) and the JSON GraphQL fields `mailer.getTransportSettings` / `mailer.saveTransportSettings`. SMTP's definition: `packages/mailer-smtp/src/api/features/SmtpSettings/SmtpSettingsDefinition.ts`.
+
+### GetSettingsRepository (Mailer)
+
+- **Import:** `import { GetSettingsRepository } from "webiny/api/mailer"`
+- **Interface Type:** See `packages/api-mailer/src/features/GetSettings/abstractions.ts`
+- **Usage:** For the transport itself (its `MailTransportFactory`): `get<TSettings>(transport)` returns `{ settings, source }` with secrets decrypted and defaults applied. `source: "code"` when `getCodeSettings()` returned settings, `"storage"` when saved through the API. No permission check.
 
 ### GetSettingsUseCase (Mailer)
 
 - **Import:** `import { GetSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/features/GetSettings/abstractions.ts`
-- **Usage:** Read stored transport settings (SMTP today). Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Api.Mailer.Smtp>` is driving the config; `"storage"` means settings were saved via the admin UI.
+- **Usage:** `execute(transport)`, for APIs: requires `mailer.settings`, returns `{ settings, source }` without the secrets. Fails with `UnknownTransportSettings` when no definition is registered for the transport.
 
 ### SaveSettingsUseCase (Mailer)
 
 - **Import:** `import { SaveSettingsUseCase } from "webiny/api/mailer"`
 - **Interface Type:** See `packages/api-mailer/src/features/SaveSettings/abstractions.ts`
-- **Usage:** Persist mailer settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when any registered transport has code-defined settings. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
+- **Usage:** `execute(transport, input)`. Requires `mailer.settings`, validates with the definition's schema, fails with `SettingsLockedByCode` when the settings come from code. Fields left out keep their stored value; a left-out secret is kept unless a `secretsBoundTo` field changed. Publishes `MailerSettingsBeforeSaveEvent` / `MailerSettingsAfterSaveEvent` with `{ transport, input | settings }`, secrets left out; `api-audit-logs` records the after-save event for every transport.
 
-### CodeMailerSettings
+### Mailer settings screen (Admin)
 
-- **Import:** `import { CodeMailerSettings } from "@webiny/api-mailer/domain/CodeMailerSettings/abstractions"`
-- **Interface Type:** See `packages/api-mailer/src/domain/CodeMailerSettings/abstractions.ts`
-- **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<Api.Mailer.Smtp>` registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
+`@webiny/app-mailer` owns the Settings > Mailer route, the menu item and the test email. A transport package adds its form by decorating `MailerTransportSettings` (render `Original` too). `TransportSettingsGateway` (from `@webiny/app-mailer`) reads and saves any transport's settings by name, so the form needs no GraphQL of its own. To hold the test back while its form has unsaved changes, it registers a `TestMailGuard`. It reads and clears the test's state through `TestMailState`. All three are exported from `@webiny/app-mailer`. See `packages/mailer-smtp/src/admin/presentation/SmtpSettings/`.
 
 ---
 

@@ -1,11 +1,11 @@
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { Extension } from "~/api/Extension.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
@@ -25,8 +25,12 @@ const defaultIdentity: IdentityData = {
 
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 
-export const useHandler = () => {
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+export interface UseHandlerParams {
+    permissions?: SecurityPermission[];
+}
+
+export const useHandler = (params: UseHandlerParams = {}) => {
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const capturedCtx: { value?: Record<string, any> } = {};
@@ -34,7 +38,9 @@ export const useHandler = () => {
     const handler = createTestHttpHandler({
         root: container => {
             container.registerInstance(TestIdentity, defaultIdentity);
-            container.registerInstance(TestPermissions, { list: defaultPermissions });
+            container.registerInstance(TestPermissions, {
+                list: params.permissions ?? defaultPermissions
+            });
             container.register(TestAuthenticator);
             container.register(TestAuthorizer);
             container.registerDecorator(AuthTriggerHandler);

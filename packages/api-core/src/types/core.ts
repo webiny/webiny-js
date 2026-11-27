@@ -25,4 +25,12 @@ export type ApiCoreStorageOperations = {
  */
 export type ApiCoreConfig = {
     wcpLicense?: ILicense;
+    /**
+     * Registers into a tenant scope, nested in a request container that registered
+     * `TenantNeutralRequestFeature`: the tenant registry and the raw request values are left to it.
+     * Off, the feature registers them too, and one container holds a whole request (tests).
+     */
+    tenantScope?: boolean;
 };
+
+export type { ApiCoreStorageOperationsBuilder } from "~/features/storageOperations/abstractions.js";

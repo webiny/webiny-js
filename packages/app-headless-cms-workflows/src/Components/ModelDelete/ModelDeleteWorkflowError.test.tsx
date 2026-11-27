@@ -21,7 +21,14 @@ vi.mock("@webiny/app-workflows/presentation/permissions/useWorkflowsPermission.j
 
 vi.mock("@webiny/app-admin", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app-admin")>();
-    return { ...actual, useRouter: () => ({ getLink: () => "/cms/workflows" }) };
+    return {
+        ...actual,
+        useRouter: () => ({
+            getLink: (_route: unknown, params?: Record<string, string>) => {
+                return params ? `/cms/workflows?modelId=${params.modelId}` : "/cms/workflows";
+            }
+        })
+    };
 });
 
 const model = { modelId: "article", name: "Article" } as CmsModel;
@@ -48,12 +55,14 @@ describe("ModelDeleteWorkflowError (UI-18, QBZ-38)", () => {
         hoisted.editor = true;
         renderError(BOUND);
 
-        expect(await screen.findByText("Article has a workflow")).toBeTruthy();
         expect(
-            screen.getByText("Delete the workflow “Article review” first, then delete the model.")
+            await screen.findByText(
+                "Article has a workflow. Delete the workflow “Article review” first, then delete the model."
+            )
         ).toBeTruthy();
-        expect(screen.getByText("Open workflow →").closest("a")?.getAttribute("href")).toBe(
-            "/cms/workflows"
+        expect(screen.queryByRole("heading")).toBeNull();
+        expect(screen.getByText("Open workflow").closest("a")?.getAttribute("href")).toBe(
+            "/cms/workflows?modelId=article"
         );
         expect(screen.queryByText(BOUND.message)).toBeNull();
     });
@@ -67,7 +76,7 @@ describe("ModelDeleteWorkflowError (UI-18, QBZ-38)", () => {
                 "Ask someone with Manage workflows to delete the workflow “Article review” first, then delete the model."
             )
         ).toBeTruthy();
-        expect(screen.queryByText("Open workflow →")).toBeNull();
+        expect(screen.queryByText("Open workflow")).toBeNull();
     });
 
     it("leaves every other delete error as it was", async () => {

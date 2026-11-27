@@ -218,12 +218,18 @@
   fill: var(--fill-neutral-disabled);
 }
 
-/* Website-builder-only: fullscreen/expand toggle (still a background-image glyph). */
+/*
+ * Website-builder-only: fullscreen/expand toggle. The glyph is a mask over the icons' fill colour,
+ * so it has the same colour as the inline SVG icons.
+ */
 .wb-static-toolbar i.expand {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-image: url("./icons/fullscreen.svg");
+  background-color: var(--fill-neutral-xstrong);
+  -webkit-mask: url("./icons/fullscreen.svg") center / contain no-repeat;
+  mask: url("./icons/fullscreen.svg") center / contain no-repeat;
+}
+
+.wb-static-toolbar button:disabled i.expand {
+  background-color: var(--fill-neutral-disabled);
 }
 
 .lexical-dropdown-container {

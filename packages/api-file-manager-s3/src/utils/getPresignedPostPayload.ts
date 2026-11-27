@@ -1,9 +1,11 @@
 import type { PresignedPostOptions } from "@webiny/aws-sdk/client-s3/index.js";
-import { S3Client, createPresignedPost } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, createPresignedPost, createS3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { validation } from "@webiny/validation";
 import type { FileData, PresignedPostPayloadDataResponse } from "~/types.js";
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { getFileStorageKey } from "./getFileStorageKey.js";
+import { ensureNewFileId } from "./ensureNewFileId.js";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB
@@ -21,7 +23,13 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
 export const getPresignedPostPayload = async (
     file: FileData,
     settings: FileManagerSettings,
-    tenantContext: TenantContext.Interface
+    tenantContext: TenantContext.Interface,
+    options: {
+        /**
+         * The file id, when it was provided by the client (not generated on the server).
+         */
+        clientId?: string;
+    } = {}
 ): Promise<PresignedPostPayloadDataResponse> => {
     const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
@@ -30,7 +38,15 @@ export const getPresignedPostPayload = async (
     );
 
     const tenant = tenantContext.getTenant();
-    const storageKey = `tenants/${tenant.id}/files/${file.key}`;
+    await ensureNewFileId({
+        s3: createS3(),
+        bucket: S3_BUCKET as string,
+        file,
+        tenantId: tenant.id,
+        clientId: options.clientId
+    });
+
+    const storageKey = getFileStorageKey(tenant.id, file.key);
 
     const params = {
         Key: storageKey,
@@ -43,10 +59,6 @@ export const getPresignedPostPayload = async (
             "Content-Type": file.type
         }
     };
-
-    if (params.Key.startsWith("/")) {
-        params.Key = params.Key.slice(1);
-    }
 
     const s3 = new S3Client();
     const payload = await createPresignedPost(s3, params);

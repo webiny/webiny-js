@@ -1,4 +1,9 @@
-import { NamespaceHandler as NamespaceHandlerAbstraction } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import {
+    NamespaceHandler as NamespaceHandlerAbstraction,
+    SchedulerNotAuthorizedError,
+    ScheduledActionTypePublish
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { WbPermissions } from "@webiny/api-website-builder/features/permissions/abstractions.js";
 import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -7,7 +12,10 @@ import type { IScheduledActionPayload } from "~/types.js";
 import { GetPageByIdUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
 
 class PageNamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
-    public constructor(private getPageByIdUseCase: GetPageByIdUseCase.Interface) {}
+    public constructor(
+        private getPageByIdUseCase: GetPageByIdUseCase.Interface,
+        private permissions: WbPermissions.Interface
+    ) {}
 
     public canHandle(namespace: string): boolean {
         const type = extractModelIdFromNamespace(namespace);
@@ -24,6 +32,14 @@ class PageNamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<
             return Result.fail(pageResult.error as any);
         }
         const page = pageResult.value;
+        // Same checks as publishing / unpublishing the page directly.
+        const canPublishOrUnpublish =
+            params.actionType === ScheduledActionTypePublish
+                ? await this.permissions.canPublish("page")
+                : await this.permissions.canUnpublish("page");
+        if (!canPublishOrUnpublish || !(await this.permissions.canAccess("page", page))) {
+            return Result.fail(new SchedulerNotAuthorizedError());
+        }
 
         const title = page.properties.title || "Unknown page title";
 
@@ -41,5 +57,5 @@ class PageNamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<
 
 export const PageNamespaceHandler = NamespaceHandlerAbstraction.createImplementation({
     implementation: PageNamespaceHandlerImpl,
-    dependencies: [GetPageByIdUseCase]
+    dependencies: [GetPageByIdUseCase, WbPermissions]
 });

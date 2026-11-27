@@ -128,7 +128,7 @@ describe("StepDrawerPresenter: live rule issues (R299, Review Focus 1)", () => {
         ]);
     });
 
-    it("keeps the step's own warnings, drops its stale rule lines and adds the live ones", () => {
+    it("drops the stale rule lines, adds the live ones and ends with the step's own warnings", () => {
         const { presenter, source } = createSetup(twoRules(), configured => {
             configured.warnings = [
                 { text: "Legal has no members.", severity: "warning" },
@@ -140,8 +140,8 @@ describe("StepDrawerPresenter: live rule issues (R299, Review Focus 1)", () => {
         presenter.open(source, "step-1");
 
         expect(presenter.vm.warnings).toEqual([
-            { text: "Legal has no members.", severity: "warning" },
-            { text: "Rule 2: The assigned user was deleted.", severity: "error", ruleId: "r-2" }
+            { text: "Rule 2: The assigned user was deleted.", severity: "error", ruleId: "r-2" },
+            { text: "Legal has no members.", severity: "warning" }
         ]);
     });
 });

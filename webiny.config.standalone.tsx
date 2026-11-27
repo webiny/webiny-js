@@ -53,7 +53,7 @@ export const StandaloneExtensions = () => {
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves like
                 the SQLite file — against the project root — so uploads persist across rebuilds. */}
-            <Infra.FileStorage
+            <Infra.FileStorage.Disk
                 path={process.env.WEBINY_LOCAL_STORAGE_PATH || "./.webiny/storage"}
                 uploadSecret={process.env.WEBINY_UPLOAD_SECRET || "dev-only-insecure-upload-secret"}
             />

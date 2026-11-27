@@ -148,6 +148,35 @@ describe("TableManager", () => {
 
         expect(await knex.schema.hasTable("live_items")).toBe(true);
     });
+
+    it("upgrades a table that already existed, in ensure and in setup", async () => {
+        knex = createKnex();
+        await knex.schema.createTable("old_items", createItemsTable);
+        const upgraded: string[] = [];
+        const upgrade = async (_: Knex, tableName: string) => {
+            upgraded.push(tableName);
+        };
+
+        await new TableManager(knex, "old").ensure("items", createItemsTable, upgrade);
+        expect(upgraded).toEqual(["old_items"]);
+
+        const managed = new TableManager(knex, "old", { schemaManaged: true });
+        managed.define("items", createItemsTable, upgrade);
+        await managed.setup();
+        expect(upgraded).toEqual(["old_items", "old_items"]);
+    });
+
+    it("doesn't upgrade a table it creates", async () => {
+        knex = createKnex();
+        const upgraded: string[] = [];
+
+        await new TableManager(knex, "new").ensure("items", createItemsTable, async () => {
+            upgraded.push("items");
+        });
+
+        expect(await knex.schema.hasTable("new_items")).toBe(true);
+        expect(upgraded).toEqual([]);
+    });
 });
 
 describe("setSqlServiceManifestLoader", () => {
@@ -201,7 +230,9 @@ describe("ApiCoreSqlFeature", () => {
         for (let request = 0; request < 25; request++) {
             const container = root.createChildContainer();
             ApiCoreSqlFeature.register(container);
-            const operations = container.resolve(ApiCoreStorageOperationsFactory).create();
+            const operations = container
+                .resolve(ApiCoreStorageOperationsFactory)
+                .create({ scopeTenant: { getId: () => "root" } });
             built.add(operations);
             await operations.keyValueStorageOperations.get("key", "scope");
         }

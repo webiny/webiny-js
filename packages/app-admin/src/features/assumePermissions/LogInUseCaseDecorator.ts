@@ -27,30 +27,38 @@ class LogInUseCaseDecoratorImpl implements LogInUseCase.Interface {
         private decoratee: LogInUseCase.Interface
     ) {}
 
-    async execute(params: LogInUseCase.Params): Promise<void> {
+    async execute(params: LogInUseCase.Params): Promise<LogInUseCase.Result> {
         const active = this.assumePermissionsContext.get();
 
         if (!active) {
-            await this.decoratee.execute(params);
-            return;
+            return this.decoratee.execute(params);
         }
 
+        let result: LogInUseCase.Result;
         try {
-            await this.decoratee.execute(params);
+            result = await this.decoratee.execute(params);
         } catch {
-            await this.loginWithoutAssumedPermissions(params);
-            return;
+            return this.loginWithoutAssumedPermissions(params);
+        }
+
+        // Not logged in yet (the user is moving to, or picking, another tenant): no identity to check.
+        if (result.type !== "loggedIn") {
+            return result;
         }
 
         const identity = this.identityContext.getIdentity();
         if (identity.id !== active.startedBy) {
-            await this.loginWithoutAssumedPermissions(params);
+            return this.loginWithoutAssumedPermissions(params);
         }
+
+        return result;
     }
 
-    private async loginWithoutAssumedPermissions(params: LogInUseCase.Params): Promise<void> {
+    private async loginWithoutAssumedPermissions(
+        params: LogInUseCase.Params
+    ): Promise<LogInUseCase.Result> {
         this.assumePermissionsContext.set(null);
-        await this.decoratee.execute(params);
+        return this.decoratee.execute(params);
     }
 }
 

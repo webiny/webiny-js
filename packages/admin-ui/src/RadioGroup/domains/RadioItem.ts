@@ -1,3 +1,4 @@
+import type React from "react";
 import type { RadioItemParams } from "./RadioItemParams.js";
 import { generateId } from "~/utils.js";
 
@@ -6,17 +7,20 @@ export class RadioItem {
     private readonly _label: any;
     private readonly _value: string | number;
     private readonly _disabled: boolean;
+    private readonly _description?: React.ReactNode;
 
     protected constructor(data: {
         id: string;
         label: any;
         value: string | number;
         disabled: boolean;
+        description?: React.ReactNode;
     }) {
         this._id = data.id;
         this._label = data.label;
         this._value = data.value;
         this._disabled = data.disabled;
+        this._description = data.description;
     }
 
     static create(data: RadioItemParams) {
@@ -24,7 +28,8 @@ export class RadioItem {
             id: generateId(data.id),
             label: data.label,
             value: data.value,
-            disabled: data.disabled ?? false
+            disabled: data.disabled ?? false,
+            description: data.description
         });
     }
 
@@ -42,5 +47,9 @@ export class RadioItem {
 
     get disabled() {
         return this._disabled;
+    }
+
+    get description() {
+        return this._description;
     }
 }

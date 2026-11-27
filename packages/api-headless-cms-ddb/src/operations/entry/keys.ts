@@ -55,17 +55,23 @@ export const createGSISortKey = (params: GSISortKeyParams): string => {
 
 export interface ICreateEntryPublishedKeysParams {
     id: string;
-    tenant: string;
     modelId: string;
     expiresAt: number | null;
 }
 
-export const createEntryPublishedKeys = (params: ICreateEntryPublishedKeysParams) => {
-    const { tenant, expiresAt } = params;
+/**
+ * The record's keys in the given tenant: the tenant of the storage operation's scope, never the one
+ * the record carries.
+ */
+export const createEntryPublishedKeys = (
+    params: ICreateEntryPublishedKeysParams,
+    tenant: string
+) => {
+    const { id, modelId, expiresAt } = params;
     return {
-        PK: createPartitionKey(params),
+        PK: createPartitionKey({ id, tenant }),
         SK: createPublishedSortKey(),
-        GSI1_PK: createGSIPartitionKey(params, "P"),
+        GSI1_PK: createGSIPartitionKey({ tenant, modelId }, "P"),
         GSI1_SK: createGSISortKey(params),
         TYPE: `cms.entry.p`,
         GSI_TENANT: tenant,
@@ -75,17 +81,20 @@ export const createEntryPublishedKeys = (params: ICreateEntryPublishedKeysParams
 
 export interface ICreateEntryLatestKeysParams {
     id: string;
-    tenant: string;
     modelId: string;
     expiresAt: number | null;
 }
 
-export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams) => {
-    const { tenant, expiresAt } = params;
+/**
+ * The record's keys in the given tenant: the tenant of the storage operation's scope, never the one
+ * the record carries.
+ */
+export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams, tenant: string) => {
+    const { id, modelId, expiresAt } = params;
     return {
-        PK: createPartitionKey(params),
+        PK: createPartitionKey({ id, tenant }),
         SK: createLatestSortKey(),
-        GSI1_PK: createGSIPartitionKey(params, "L"),
+        GSI1_PK: createGSIPartitionKey({ tenant, modelId }, "L"),
         GSI1_SK: createGSISortKey(params),
         TYPE: `cms.entry.l`,
         GSI_TENANT: tenant,
@@ -95,18 +104,21 @@ export const createEntryLatestKeys = (params: ICreateEntryLatestKeysParams) => {
 
 export interface ICreateRevisionKeysParams {
     id: string;
-    tenant: string;
     version: number;
     modelId: string;
     expiresAt: number | null;
 }
 
-export const createEntryRevisionKeys = (params: ICreateRevisionKeysParams) => {
-    const { tenant, expiresAt } = params;
+/**
+ * The record's keys in the given tenant: the tenant of the storage operation's scope, never the one
+ * the record carries.
+ */
+export const createEntryRevisionKeys = (params: ICreateRevisionKeysParams, tenant: string) => {
+    const { id, modelId, expiresAt } = params;
     return {
-        PK: createPartitionKey(params),
+        PK: createPartitionKey({ id, tenant }),
         SK: createRevisionSortKey(params),
-        GSI1_PK: createGSIPartitionKey(params, "A"),
+        GSI1_PK: createGSIPartitionKey({ tenant, modelId }, "A"),
         GSI1_SK: createGSISortKey(params),
         TYPE: `cms.entry`,
         GSI_TENANT: tenant,

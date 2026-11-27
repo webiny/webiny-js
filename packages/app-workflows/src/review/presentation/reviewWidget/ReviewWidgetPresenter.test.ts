@@ -94,8 +94,8 @@ describe("ReviewWidgetPresenter", () => {
 
         expect(listReviews.execute).toHaveBeenCalledWith({
             app: "cms",
-            list: "assignedToMe",
-            where: {},
+            scope: "assignedToMe",
+            where: { state: "inReview" },
             sort: "lastChangedOn_ASC",
             limit: REVIEW_WIDGET_PAGE_SIZE,
             after: null
@@ -115,7 +115,11 @@ describe("ReviewWidgetPresenter", () => {
 
         expect(presenter.vm.tab).toBe("pool");
         expect(listReviews.execute).toHaveBeenLastCalledWith(
-            expect.objectContaining({ list: "pool", sort: "lastChangedOn_ASC" })
+            expect.objectContaining({
+                scope: "pool",
+                where: { state: "inReview" },
+                sort: "lastChangedOn_ASC"
+            })
         );
     });
 
@@ -127,7 +131,11 @@ describe("ReviewWidgetPresenter", () => {
 
         expect(presenter.vm.tab).toBeNull();
         expect(listReviews.execute).toHaveBeenCalledWith(
-            expect.objectContaining({ list: "myRequests", sort: "lastChangedOn_DESC" })
+            expect.objectContaining({
+                scope: "myRequests",
+                where: { state: "all" },
+                sort: "lastChangedOn_DESC"
+            })
         );
 
         await presenter.setTab("pool");

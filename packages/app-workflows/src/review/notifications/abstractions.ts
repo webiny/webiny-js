@@ -10,6 +10,8 @@ export type WorkflowsNotificationEvent =
     | "failed"
     | "cancelled";
 
+export type WorkflowsNotificationLink = "content" | "reviewDetails";
+
 // The data of a `workflows.notification` websocket message (phase 7 contract, R187).
 export interface WorkflowsNotificationData {
     event: WorkflowsNotificationEvent;
@@ -20,6 +22,9 @@ export interface WorkflowsNotificationData {
     targetRevisionId: string;
     title: string;
     body: string;
+    // What the toast's action opens and says. Optional: a message without it gets "Open content".
+    link?: WorkflowsNotificationLink;
+    linkLabel?: string;
 }
 
 export type WorkflowReviewChangedKind =
@@ -40,7 +45,7 @@ export interface WorkflowReviewChangedData {
 
 export interface HandleReviewNotificationParams {
     data: WorkflowsNotificationData;
-    // The content URL for the "Open content" link; `null` when the app cannot build one.
+    // The content URL; the toast link is this URL or, for `reviewDetails`, this URL with `reviewId`; `null` when the app cannot build one.
     url: string | null;
 }
 

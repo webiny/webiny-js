@@ -55,6 +55,11 @@ export interface AwsVariantJobsContext {
     bugReporter?: PrFeature;
     // Add the E2E API route only when the PR's code has it. Unset, it always is added.
     apiRoute?: PrFeature;
+    /*
+     * Expression for the area tags the shards run (`/e2e <area>`); empty runs every test. See
+     * createUnlicensedE2eSteps. Unset on `push`.
+     */
+    tags?: string;
 }
 
 // AWS-deployed E2E. One variant per storage setup, three jobs each (two on `push`), the same shape
@@ -68,8 +73,8 @@ export interface AwsVariantJobsContext {
 // - report status (`/e2e` only): writes the shards' combined result and the Admin URL into the status comment.
 //
 // Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
-// Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
-// aws-nuke rather than `webiny destroy`.
+// Nothing needs it afterwards: the nightly `aws-nuke.yml` workflow in webiny/webiny-js-ci-infrastructure
+// removes the deployed resources with aws-nuke rather than `webiny destroy`.
 export const createAwsJobs = (
     { dbSetup, shards }: AwsVariant,
     {
@@ -81,7 +86,8 @@ export const createAwsJobs = (
         report,
         savePlaywrightCache,
         bugReporter,
-        apiRoute
+        apiRoute,
+        tags
     }: AwsVariantJobsContext
 ) => {
     const jobKeys = {
@@ -253,7 +259,7 @@ export const createAwsJobs = (
                 run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
             },
             {
-                // The API's CloudFront URL, which e2e/tests/apiRoute.e2e.ts calls.
+                // The API's CloudFront URL, which e2e/tests/api/apiRoute.e2e.ts calls.
                 name: "Extract API URL",
                 id: "api-url",
                 "working-directory": DIR_TEST_PROJECT,
@@ -287,7 +293,8 @@ export const createAwsJobs = (
                 adminUrl,
                 apiUrl,
                 artifactName: `e2e-test-results-${dbSetup}-shard-\${{ matrix.shard }}`,
-                shard: `\${{ matrix.shard }}/${shards}`
+                shard: `\${{ matrix.shard }}/${shards}`,
+                tags
             })
         ]
     });

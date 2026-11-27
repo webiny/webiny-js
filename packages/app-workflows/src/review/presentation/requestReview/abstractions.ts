@@ -28,6 +28,8 @@ export interface RequestReviewStepVm {
     mode: RequestReviewMode;
     hasPicker: boolean;
     noCandidates: boolean;
+    // The note shown when `noCandidates`; names the step's teams when the workflow lists them.
+    noCandidatesNote: string;
 }
 
 export interface RequestReviewConflictVm {

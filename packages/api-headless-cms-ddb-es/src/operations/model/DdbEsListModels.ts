@@ -2,14 +2,18 @@ import type { CmsModelStorageOperationsListParams } from "@webiny/api-headless-c
 import WebinyError from "@webiny/error";
 import { ListModelsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createPartitionKey } from "./keys.js";
 
 class DdbEsListModelsImpl implements ListModelsStorageOperation.Interface {
-    constructor(private entity: CmsDdbEsModelEntity.Interface) {}
+    constructor(
+        private entity: CmsDdbEsModelEntity.Interface,
+        private scopeTenant: ScopeTenant.Interface
+    ) {}
 
-    async execute(params: CmsModelStorageOperationsListParams) {
-        const { where } = params;
-        const partitionKey = createPartitionKey(where);
+    async execute(_params: CmsModelStorageOperationsListParams) {
+        const tenant = this.scopeTenant.getId();
+        const partitionKey = createPartitionKey({ tenant });
         try {
             const result = await this.entity.queryAll({
                 partitionKey,
@@ -33,5 +37,5 @@ class DdbEsListModelsImpl implements ListModelsStorageOperation.Interface {
 
 export const DdbEsListModels = ListModelsStorageOperation.createImplementation({
     implementation: DdbEsListModelsImpl,
-    dependencies: [CmsDdbEsModelEntity]
+    dependencies: [CmsDdbEsModelEntity, ScopeTenant]
 });

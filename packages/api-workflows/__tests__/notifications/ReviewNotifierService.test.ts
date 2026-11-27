@@ -23,7 +23,10 @@ import {
     createWorkflow
 } from "~tests/__helpers/fixtures.js";
 import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
-import type { NotificationMessage } from "~/domain/notifications/types.js";
+import type {
+    NotificationMessage,
+    WorkflowNotificationWebsocketData
+} from "~/domain/notifications/types.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
@@ -58,7 +61,29 @@ const MESSAGE: NotificationMessage = {
     body: "All steps approved. It’s ready to publish.",
     subject: "Approved: Article 1",
     text: "Every step approved this revision. It’s ready to publish.",
-    linkLabel: "Open content"
+    linkLabel: "Open content",
+    link: "content",
+    footer: "You get this e-mail because you requested this review."
+};
+
+const DETAILS_MESSAGE: NotificationMessage = {
+    title: "“Article 1” was reassigned to Bob",
+    body: "Legal review · reassigned by Mona. You no longer own this step.",
+    subject: "Reassigned: Article 1 (Legal review)",
+    text: "Mona reassigned this step to Bob. You don’t need to review it any more.",
+    linkLabel: "View review details",
+    link: "reviewDetails",
+    footer: "You get this e-mail because you owned this step."
+};
+
+/** The details every transport gets for the "legal" step of `createReview`. */
+const LEGAL_DETAILS: NotificationTransport.MessageDetails = {
+    contentType: "Article",
+    contentTitle: "Article 1",
+    stepNumber: 1,
+    stepCount: 3,
+    stepTitle: "Legal review",
+    requester: "Rita Requester"
 };
 
 /**
@@ -109,6 +134,19 @@ class ThrowingRecipientService implements NotificationRecipientService.Interface
     public async listUsers(): NotificationRecipientService.UsersReturn {
         throw new Error(`The recipient service crashed ${SECRET}.`);
     }
+}
+
+/**
+ * What a test changes in a `notify` call. `recipients` and `message` make the one delivery most
+ * tests need; `deliveries` replaces it.
+ */
+interface NotifyOverrides {
+    review?: ReviewData;
+    stepId?: string | null;
+    event?: ReviewNotifierService.Params["event"];
+    recipients?: NotificationRecipientService.Recipient[];
+    message?: NotificationMessage;
+    deliveries?: ReviewNotifierService.Delivery[];
 }
 
 interface SetupParams {
@@ -169,14 +207,18 @@ const setup = async (params: SetupParams = {}) => {
         link,
         users,
         tenantId,
-        notify: (overrides: Partial<ReviewNotifierService.Params> = {}): Promise<void> => {
+        notify: (overrides: NotifyOverrides = {}): Promise<void> => {
+            const deliveries = overrides.deliveries ?? [
+                {
+                    recipients: overrides.recipients ?? [ANNA, BOB],
+                    message: overrides.message ?? MESSAGE
+                }
+            ];
             return notifier.notify({
-                review: createReview(),
-                stepId: "legal",
-                event: "approved",
-                recipients: [ANNA, BOB],
-                message: MESSAGE,
-                ...overrides
+                review: overrides.review ?? createReview(),
+                stepId: overrides.stepId === undefined ? "legal" : overrides.stepId,
+                event: overrides.event ?? "approved",
+                deliveries
             });
         }
     };
@@ -213,7 +255,9 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
                             targetId: "article-1",
                             targetRevisionId: "article-1#0001",
                             title: MESSAGE.title,
-                            body: MESSAGE.body
+                            body: MESSAGE.body,
+                            link: "content",
+                            linkLabel: "Open content"
                         }
                     }
                 }
@@ -221,6 +265,8 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
             expect(Object.keys(sends.sent[0].message.data ?? {}).sort()).toEqual([
                 "body",
                 "event",
+                "link",
+                "linkLabel",
                 "namespace",
                 "reviewId",
                 "stepId",
@@ -413,9 +459,25 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
                         targetId: "article-1",
                         targetRevisionId: "article-1#0001",
                         title: MESSAGE.title,
-                        body: MESSAGE.body
+                        body: MESSAGE.body,
+                        link: "content",
+                        linkLabel: "Open content"
                     }
                 }
+            ]);
+        });
+
+        it("carries the link kind and label of the built message: content, and review details", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify } = await setup({ sender });
+
+            await notify({ stepId: "plain", recipients: [ANNA] });
+            await notify({ stepId: "plain", recipients: [ANNA], message: DETAILS_MESSAGE });
+
+            const sent = sender.calls.map(call => call.data as WorkflowNotificationWebsocketData);
+            expect(sent.map(data => [data.link, data.linkLabel])).toEqual([
+                ["content", "Open content"],
+                ["reviewDetails", "View review details"]
             ]);
         });
 
@@ -511,10 +573,30 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
                         title: MESSAGE.subject,
                         body: MESSAGE.text,
                         url: `https://admin.example.com/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}`,
-                        linkLabel: MESSAGE.linkLabel
+                        linkLabel: MESSAGE.linkLabel,
+                        footer: MESSAGE.footer,
+                        details: LEGAL_DETAILS
                     }
                 }
             ]);
+        });
+
+        it("links a review details message to the content with the review id", async () => {
+            const { notify, chatB, tenantId } = await setup();
+
+            await notify({ stepId: "editorial", message: DETAILS_MESSAGE });
+
+            expect(chatB.sent).toHaveLength(1);
+            expect(chatB.sent[0].message).toMatchObject({
+                url: `https://admin.example.com/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}&reviewId=review-1`,
+                linkLabel: "View review details",
+                footer: DETAILS_MESSAGE.footer
+            });
+            expect(chatB.sent[0].message.details).toMatchObject({
+                stepNumber: 2,
+                stepCount: 3,
+                stepTitle: "Editorial review"
+            });
         });
 
         it("builds the link once per notification, however many transports send it", async () => {
@@ -524,6 +606,22 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
 
             expect(link.paths).toHaveLength(1);
             expect(adminUrl.calls).toBe(1);
+        });
+
+        it("builds at most one link per kind, however many deliveries use it", async () => {
+            const { notify, link, adminUrl } = await setup();
+
+            await notify({
+                stepId: "legal",
+                deliveries: [
+                    { recipients: [ANNA], message: MESSAGE },
+                    { recipients: [BOB], message: DETAILS_MESSAGE },
+                    { recipients: [ANNA], message: { ...MESSAGE, title: "Another text" } }
+                ]
+            });
+
+            expect(link.paths).toHaveLength(2);
+            expect(adminUrl.calls).toBe(2);
         });
 
         it("passes url null to the transport and logs nothing itself when there is no admin host", async () => {
@@ -563,6 +661,113 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
             expect(mailer.sent[0].text).toContain(
                 `Open content: https://admin.example.com/cms/content-entries/article?id=article-1%230001&tenantId=${tenantId}`
             );
+        });
+    });
+
+    describe("deliveries (B2 design 8)", () => {
+        const deliveries = (): ReviewNotifierService.Delivery[] => {
+            return [
+                { recipients: [ANNA], message: { ...MESSAGE, title: "First", subject: "S1" } },
+                { recipients: [BOB], message: { ...MESSAGE, title: "Second", subject: "S2" } }
+            ];
+        };
+
+        it("looks the users of every delivery up once, and sends one websocket call and one transport call per delivery", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify, users, chat, chatB, order } = await setup({ sender });
+
+            await notify({ stepId: "legal", deliveries: deliveries() });
+
+            expect(users.calls).toHaveLength(1);
+            expect(users.calls[0].input).toEqual({ where: { id_in: ["user-anna", "user-bob"] } });
+            expect(
+                sender.calls.map(call => {
+                    const data = call.data as WorkflowNotificationWebsocketData;
+                    return { ids: call.recipientIds, title: data.title };
+                })
+            ).toEqual([
+                { ids: ["user-anna"], title: "First" },
+                { ids: ["user-bob"], title: "Second" }
+            ]);
+            expect(order).toEqual(["chat", "chat-b", "chat", "chat-b"]);
+            expect(
+                chat.sent.map(item => {
+                    return {
+                        ids: item.users.map(user => user.id),
+                        title: item.message.title
+                    };
+                })
+            ).toEqual([
+                { ids: ["user-anna"], title: "S1" },
+                { ids: ["user-bob"], title: "S2" }
+            ]);
+            expect(chatB.sent).toHaveLength(2);
+        });
+
+        it("skips a delivery with no recipients and one whose people have no user", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify, chatB } = await setup({ sender });
+
+            await notify({
+                stepId: "editorial",
+                deliveries: [
+                    { recipients: [], message: MESSAGE },
+                    {
+                        recipients: [{ id: "user-unknown", displayName: "Api key" }],
+                        message: MESSAGE
+                    },
+                    { recipients: [BOB], message: MESSAGE }
+                ]
+            });
+
+            expect(sender.calls.map(call => call.recipientIds)).toEqual([
+                ["user-unknown"],
+                ["user-bob"]
+            ]);
+            expect(chatB.sent.map(item => item.users.map(user => user.id))).toEqual([["user-bob"]]);
+        });
+
+        it("does nothing at all when no delivery has recipients", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify, users } = await setup({ sender });
+
+            await notify({ deliveries: [{ recipients: [], message: MESSAGE }] });
+            await notify({ deliveries: [] });
+
+            expect(sender.calls).toEqual([]);
+            expect(users.calls).toEqual([]);
+        });
+
+        it("a sender that rejects for one delivery does not stop the next", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            sender.mode = "throw";
+            const { notify, chatB } = await setup({ sender });
+
+            await expect(
+                notify({ stepId: "editorial", deliveries: deliveries() })
+            ).resolves.toBeUndefined();
+
+            expect(sender.calls).toHaveLength(2);
+            expect(loggedErrors.map(item => item.message)).toEqual([
+                WEBSOCKET_TEXT,
+                WEBSOCKET_TEXT
+            ]);
+            expect(chatB.sent).toHaveLength(2);
+        });
+
+        it("a transport that throws for one delivery still gets the next", async () => {
+            const { notify, chatB } = await setup();
+            chatB.mode = "throw";
+
+            await expect(
+                notify({ stepId: "editorial", deliveries: deliveries() })
+            ).resolves.toBeUndefined();
+
+            expect(chatB.sent).toHaveLength(2);
+            expect(loggedErrors.map(item => item.message)).toEqual([
+                TRANSPORT_TEXT,
+                TRANSPORT_TEXT
+            ]);
         });
     });
 

@@ -17,9 +17,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-kernel-aws": "0.0.0",
+    "@webiny/api-kernel-core": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
-    "@webiny/event-handler-aws": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0"
   },
   "peerDependencies": {
@@ -30,7 +30,7 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "access": "public"

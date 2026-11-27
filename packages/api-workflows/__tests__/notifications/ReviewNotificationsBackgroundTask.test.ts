@@ -6,6 +6,8 @@ import type {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantScopes } from "@webiny/api-core/features/tenancy/TenantScopes/index.js";
+import type { Container } from "@webiny/di";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import {
     WebsocketsListConnectionsUseCase,
@@ -137,9 +139,13 @@ const setup = async () => {
     const connections = new FakeWebsocketConnections();
     const sends = new RecordingWebsocketsSend();
     const directory = new FakeListUsers(DIRECTORY_USERS);
+    // The container of the tenant scope `setup` last ran in: right after the first `inTenant`
+    // builds `tenant-a`'s scope, that one.
+    let lastScopeContainer: Container | null = null;
     // The routing context adds the read-access fakes the pool lookup needs.
     const { context } = await createRoutingContext({
         setup: container => {
+            lastScopeContainer = container;
             captureLoggedErrors(container);
             container.registerDecorator(RecordingEventPublisher);
             registerTestAutomation(container);
@@ -156,11 +162,17 @@ const setup = async () => {
     directory.watch(container.resolve(IdentityContext), tenantContext);
     const rootTenantId = tenantContext.getTenant().id;
     const tenant = { ...tenantContext.getTenant(), id: TENANT_ID };
-    const handler = container.resolveImplementation(
-        WorkflowStepRunTaskHandler
-    ) as TaskHandler.Interface<StepRunTaskInput>;
-    const saver = container.resolve(ReviewSaver);
-    const repository = container.resolve(ReviewRepository);
+    const tenantScopes = container.resolve(TenantScopes);
+
+    /** The container of `tenant-a`'s scope while `inTenant` runs: the review and its run live there. */
+    let tenantContainer: Container | null = null;
+    let tenantScopeContainer: Container | null = null;
+    const inScope = (): Container => {
+        if (!tenantContainer) {
+            throw new Error("Call this inside inTenant().");
+        }
+        return tenantContainer;
+    };
 
     return {
         mailer,
@@ -169,18 +181,32 @@ const setup = async () => {
         directory,
         tenantContext,
         rootTenantId,
-        /** Runs `callback` with `tenant-a` as the current tenant: the review lives in it. */
+        /** Runs `callback` in `tenant-a`'s scope: the review lives in it. */
         inTenant: <TValue>(callback: () => Promise<TValue>): Promise<TValue> => {
-            return tenantContext.withTenant(tenant, callback);
+            return tenantScopes.withTenant(tenant, async scope => {
+                tenantScopeContainer ??= lastScopeContainer;
+                tenantContainer = tenantScopeContainer;
+                directory.watch(scope.resolve(IdentityContext), scope.resolve(TenantContext));
+                try {
+                    return await callback();
+                } finally {
+                    tenantContainer = null;
+                    directory.watch(container.resolve(IdentityContext), tenantContext);
+                }
+            });
         },
+        /** The current tenant, inside `inTenant`. */
+        currentTenantId: (): string => inScope().resolve(TenantContext).getTenant().id,
         seed: async (review: Review): Promise<void> => {
-            expectOk(await saver.save(review));
+            expectOk(await inScope().resolve(ReviewSaver).save(review));
             recordedEvents.length = 0;
             loggedErrors.length = 0;
             mailer.sent.length = 0;
             sends.sent.length = 0;
         },
-        read: async (): Promise<ReviewData> => expectOk(await repository.get("review-1")),
+        read: async (): Promise<ReviewData> => {
+            return expectOk(await inScope().resolve(ReviewRepository).get("review-1"));
+        },
         /**
          * One iteration of the step run task, driven the way the runner does (R157). It calls
          * `handler.run` directly, so it is NOT inside the task runner's `withoutAuthorization`
@@ -189,6 +215,9 @@ const setup = async () => {
          */
         run: async () => {
             const { controller, task } = createFakeTaskController({ iterations: 1 });
+            const handler = inScope().resolveImplementation(
+                WorkflowStepRunTaskHandler
+            ) as TaskHandler.Interface<StepRunTaskInput>;
             return handler.run({ input: task.input, controller, definition: DEFINITION });
         }
     };
@@ -209,6 +238,7 @@ describe("review notifications inside the background-task step run (R188, R195, 
             run,
             read,
             tenantContext,
+            currentTenantId,
             rootTenantId,
             connections,
             sends,
@@ -221,7 +251,7 @@ describe("review notifications inside the background-task step run (R188, R195, 
         expect(tenantContext.getTenant().id).toBe(rootTenantId);
         expect(rootTenantId).not.toBe(TENANT_ID);
         const stored = await inTenant(async () => {
-            expect(tenantContext.getTenant().id).toBe(TENANT_ID);
+            expect(currentTenantId()).toBe(TENANT_ID);
             await seed(
                 createNotifyingAutomationReview({ mode: "reject", comment: REJECT_COMMENT })
             );
@@ -244,7 +274,7 @@ describe("review notifications inside the background-task step run (R188, R195, 
             stepId: AUTOMATION_STEP_ID,
             namespace: ARTICLE_MODEL,
             title: `“${TITLE}” was rejected at Check links`,
-            body: `Check links: “${REJECT_COMMENT}”. Create a new revision to fix it, then request a new review.`
+            body: `Check links: “${REJECT_COMMENT}”. Create a new revision to fix it.`
         });
         // One mail to the requester, with a link that opens the review's own tenant.
         expect(mailer.sent).toHaveLength(1);

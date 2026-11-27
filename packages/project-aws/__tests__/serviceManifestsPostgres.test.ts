@@ -137,7 +137,7 @@ beforeEach(() => {
     vi.mocked(projectUsesPostgres).mockReset();
 });
 
-describe("an app's service manifests with <Infra.Postgres />", () => {
+describe("an app's service manifests with <Infra.AuroraPostgres />", () => {
     it("go to the api's schema-setup function, by its ARN, with only the app's manifests, and no DynamoDB item is written", async () => {
         usePostgres(true);
         const fake = await deployAdmin("https://admin.cloudfront.net");
@@ -214,7 +214,7 @@ describe("an app's service manifests with <Infra.Postgres />", () => {
     });
 });
 
-describe("an app's service manifests without <Infra.Postgres />", () => {
+describe("an app's service manifests without <Infra.AuroraPostgres />", () => {
     it("are written as DynamoDB items of the core table, as before, and nothing is invoked", async () => {
         usePostgres(false);
         const fake = createFakeApp();

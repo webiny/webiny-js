@@ -7,6 +7,7 @@ import type {
 import { RestoreFromBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { patchAllEntryRevisions } from "./queryHelpers.js";
 
 class SqlRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface {
@@ -14,7 +15,8 @@ class SqlRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
 
     public constructor(
         knexClient: KnexClient.Interface,
-        private readonly entryTableManager: EntryTableManager.Interface
+        private readonly entryTableManager: EntryTableManager.Interface,
+        private readonly scopeTenant: ScopeTenant.Interface
     ) {
         this.knex = knexClient.client;
     }
@@ -23,12 +25,14 @@ class SqlRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
         model: CmsModel,
         params: CmsEntryStorageOperationsRestoreFromBinParams<T>
     ) {
+        const tenant = this.scopeTenant.getId();
+
         await this.entryTableManager.ensureTable();
 
         await patchAllEntryRevisions(
             this.knex,
             this.entryTableManager.getTableName(),
-            model,
+            { tenant, modelId: model.modelId },
             params.entry.entryId,
             parsed => {
                 const p = parsed as unknown as Record<string, unknown>;
@@ -58,5 +62,5 @@ class SqlRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
 
 export const SqlRestoreFromBin = RestoreFromBinStorageOperation.createImplementation({
     implementation: SqlRestoreFromBinImpl,
-    dependencies: [KnexClient, EntryTableManager]
+    dependencies: [KnexClient, EntryTableManager, ScopeTenant]
 });

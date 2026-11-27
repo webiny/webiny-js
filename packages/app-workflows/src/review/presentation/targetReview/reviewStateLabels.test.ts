@@ -16,11 +16,18 @@ describe("REVIEW_STATE_LABELS", () => {
     });
 
     it("is the source of the state tag labels", () => {
-        const states = [ReviewState.InProgress, ReviewState.Approved, ReviewState.Rejected];
-        states.forEach(state => {
-            const tag = getReviewStateTag(state);
-            expect(tag?.label).toBe(`Review: ${REVIEW_STATE_LABELS[state]}`);
+        expect(getReviewStateTag(ReviewState.Approved)).toEqual({
+            label: REVIEW_STATE_LABELS[ReviewState.Approved],
+            variant: "success-light"
         });
+        expect(getReviewStateTag(ReviewState.Rejected)).toEqual({
+            label: REVIEW_STATE_LABELS[ReviewState.Rejected],
+            variant: "destructive"
+        });
+    });
+
+    it("has no state tag while the review is in progress or cancelled", () => {
+        expect(getReviewStateTag(ReviewState.InProgress)).toBeNull();
         expect(getReviewStateTag(ReviewState.Cancelled)).toBeNull();
     });
 });

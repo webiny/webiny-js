@@ -45,7 +45,7 @@ const ERROR: ReviewErrorDto = {
 };
 
 const LIST_QUERY: ListReviewsParams = {
-    list: "myRequests",
+    scope: "myRequests",
     where: { titleContains: "launch" },
     sort: "lastChangedOn_DESC",
     limit: 20,

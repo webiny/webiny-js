@@ -8,7 +8,7 @@ import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
@@ -33,7 +33,7 @@ describe("Admin Users (Cognito)", () => {
         // Create a new container for each test
         container = new Container();
 
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         // Register api-core features. The test WCP license is supplied via config (it becomes the
@@ -69,7 +69,8 @@ describe("Admin Users (Cognito)", () => {
         });
 
         // Verify user was created in Cognito
-        const userExistsInCognito = await mockCognitoService.userExists(adminUsers.userA.email);
+        const userExistsInCognito =
+            (await mockCognitoService.getUser(adminUsers.userA.email)) !== null;
         expect(userExistsInCognito).toBe(true);
     });
 
@@ -194,7 +195,8 @@ describe("Admin Users (Cognito)", () => {
         const user = createResult.value!;
 
         // Verify user exists in Cognito
-        let userExistsInCognito = await mockCognitoService.userExists(adminUsers.userA.email);
+        let userExistsInCognito =
+            (await mockCognitoService.getUser(adminUsers.userA.email)) !== null;
         expect(userExistsInCognito).toBe(true);
 
         // Clear any errors from mock
@@ -206,7 +208,7 @@ describe("Admin Users (Cognito)", () => {
         expect(deleteResult.isOk()).toBe(true);
 
         // Verify user was deleted from Cognito
-        userExistsInCognito = await mockCognitoService.userExists(adminUsers.userA.email);
+        userExistsInCognito = (await mockCognitoService.getUser(adminUsers.userA.email)) !== null;
         expect(userExistsInCognito).toBe(false);
     });
 

@@ -3,12 +3,14 @@ import { Identity } from "~/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
+import { TenantScopes } from "~/features/tenancy/TenantScopes/abstractions.js";
 import { PermissionsProcessor } from "./abstractions.js";
 
 class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
+        private readonly tenantScopes: TenantScopes.Interface,
         private readonly permissionsProcessor: PermissionsProcessor.Interface
     ) {}
 
@@ -45,8 +47,9 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
 
         const parentTenant = result.value;
 
-        const parentTenantPermissions = await this.tenantContext.withTenant(parentTenant, () => {
-            return this.permissionsProcessor.getPermissions(identity);
+        // The parent's roles and users live in the parent's storage: read them in its scope.
+        const parentTenantPermissions = await this.tenantScopes.withTenant(parentTenant, scope => {
+            return scope.resolve(PermissionsProcessor).getPermissions(identity);
         });
 
         if (Array.isArray(parentTenantPermissions)) {
@@ -59,5 +62,5 @@ class GroupsTeamsAuthorizerImpl implements Authorizer.Interface {
 
 export const RolesTeamsAuthorizer = Authorizer.createImplementation({
     implementation: GroupsTeamsAuthorizerImpl,
-    dependencies: [TenantContext, GetTenantByIdUseCase, PermissionsProcessor]
+    dependencies: [TenantContext, GetTenantByIdUseCase, TenantScopes, PermissionsProcessor]
 });

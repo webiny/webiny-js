@@ -7,17 +7,18 @@ import type { IEntryRow } from "./types.js";
 
 const IMMUTABLE_FIELDS = new Set(["createdOn", "createdBy"]);
 
-export const entryToRow = (entry: CmsStorageEntry): IEntryRow => {
+/** The entry's row, in `tenant`: the scope's tenant of the operation writing it. */
+export const entryToRow = (entry: CmsStorageEntry, tenant: string): IEntryRow => {
     return {
         id: entry.id,
         entryId: entry.entryId,
         modelId: entry.modelId,
-        tenant: entry.tenant,
+        tenant,
         version: entry.version,
         isLatest: entry.isLatest,
         isPublished: entry.isPublished,
         wbyDeleted: entry.wbyDeleted ?? false,
-        data: JSON.stringify(entry)
+        data: JSON.stringify({ ...entry, tenant })
     };
 };
 

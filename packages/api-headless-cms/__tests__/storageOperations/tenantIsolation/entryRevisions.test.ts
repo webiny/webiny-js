@@ -15,7 +15,7 @@ import {
     TENANT_A,
     TENANT_B
 } from "./helpers";
-import { useStorageContainer } from "../useStorageContainer";
+import { useTenantRoutedStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000
@@ -26,7 +26,7 @@ vi.setConfig({
  * id-only query in a storage operation has a same-id row in the other tenant to hit by mistake.
  */
 describe("Tenant isolation - entry revisions", () => {
-    const getContainer = useStorageContainer();
+    const getContainer = useTenantRoutedStorageContainer();
 
     it("should keep revisions, latest and published apart across tenants", async () => {
         const container = getContainer();

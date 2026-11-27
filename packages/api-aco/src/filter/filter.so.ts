@@ -19,6 +19,9 @@ import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/cont
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 import type { Result } from "@webiny/feature/api";
 
 const unwrap = <TValue>(result: Result<TValue, Error>): TValue => {
@@ -48,18 +51,45 @@ export const createFilterOperations = (
     const cmsWhereMapper = container.resolve(CmsWhereMapper);
     const cmsSortMapper = container.resolve(CmsSortMapper);
 
+    /**
+     * Saved filters are personal. The filter model is private, so CMS authorization doesn't
+     * apply: only the identity that created a filter may read, update or delete it. Someone
+     * else's filter is reported as not found, so its existence isn't revealed.
+     */
+    const getOwnFilterEntry = async (model: CmsModel, id: string) => {
+        const entry = unwrap(await container.resolve(GetEntryByIdUseCase).execute(model, id));
+        if (entry.createdBy?.id !== identityContext.getIdentity()?.id) {
+            throw new EntryNotFoundError(id);
+        }
+        return entry;
+    };
+
+    /**
+     * A client may choose the filter id; it must not replace someone else's filter.
+     * Deleted entries count too.
+     */
+    const ensureFilterIdIsFree = async (model: CmsModel, id: string | undefined) => {
+        if (!id) {
+            return;
+        }
+        const result = await container
+            .resolve(GetLatestRevisionByEntryIdIncludingDeletedUseCase)
+            .execute(model, { id: id.split("#")[0] });
+        if (result.isOk() && result.value) {
+            throw new WebinyError(
+                "A filter with this id already exists.",
+                "Cms/Entry/AlreadyExists",
+                {
+                    id
+                }
+            );
+        }
+    };
+
     return {
         getFilter({ id }) {
             return withModel(async model => {
-                const entry = unwrap(
-                    await container.resolve(GetEntryByIdUseCase).execute(model, id)
-                );
-
-                if (!entry) {
-                    throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
-                        id
-                    });
-                }
+                const entry = await getOwnFilterEntry(model, id);
 
                 return pickEntryFieldValues(entry);
             });
@@ -90,6 +120,7 @@ export const createFilterOperations = (
         },
         createFilter({ data }) {
             return withModel(async model => {
+                await ensureFilterIdIsFree(model, data.id);
                 const result = await container.resolve(CreateEntryUseCase).execute(model, {
                     id: data.id,
                     values: data
@@ -100,9 +131,7 @@ export const createFilterOperations = (
         },
         updateFilter({ id, data }) {
             return withModel(async model => {
-                const original = unwrap(
-                    await container.resolve(GetEntryByIdUseCase).execute(model, id)
-                );
+                const original = await getOwnFilterEntry(model, id);
 
                 const input = {
                     /**
@@ -124,6 +153,7 @@ export const createFilterOperations = (
         },
         deleteFilter({ id }) {
             return withModel(async model => {
+                await getOwnFilterEntry(model, id);
                 unwrap(await container.resolve(DeleteEntryUseCase).execute(model, id));
                 return true;
             });

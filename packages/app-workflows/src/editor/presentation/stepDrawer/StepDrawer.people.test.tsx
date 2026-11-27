@@ -128,7 +128,12 @@ const INSPECTION: RoutingInspection = {
     skipped: []
 };
 
-const IVAN: WorkflowUserSummary = { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"] };
+const IVAN: WorkflowUserSummary = {
+    id: "user-1",
+    displayName: "Ivan Horvat",
+    teamIds: ["team-1"],
+    teams: []
+};
 const PARTNERS: AppFolder = { id: "f2", path: "/Partners" };
 
 const createSetup = () => {
@@ -202,10 +207,34 @@ describe("StepDrawer with the real People form (R234, R293, R300)", () => {
         activateTab(/Assignment/);
 
         expect(screen.getByText("Rule 1")).toBeTruthy();
-        expect(screen.getByText("The folder no longer exists.")).toBeTruthy();
+        // The rule shows its warning next to its field error (design); no Check this step block
+        // repeats it (B23), and the tab counts only the error.
+        expect(screen.getAllByText("Rule 1: The folder no longer exists.")).toHaveLength(1);
         expect(
             screen.getByText("The target team is not one of the step's reviewing teams.")
         ).toBeTruthy();
+        expect(screen.getByRole("tab", { name: "Assignment, 1 error" })).toBeTruthy();
+    });
+
+    it("ends the Assignment tab with the step's own warnings as warning alerts, not on General", () => {
+        const { open, source } = createSetup();
+        source.setWarnings([
+            { text: "Editors has no members.", severity: "warning" },
+            { text: "Rule 1: An error line.", severity: "error", ruleId: RULE_ID }
+        ]);
+        act(() => {
+            open("step-1");
+        });
+
+        activateTab(/General/);
+        expect(screen.queryByTestId("step-drawer-warnings")).toBeNull();
+
+        activateTab(/Assignment/);
+
+        const block = screen.getByTestId("step-drawer-warnings");
+        expect(block.textContent).toContain("Editors has no members.");
+        expect(block.textContent).not.toContain("An error line.");
+        expect(screen.getByRole("tab", { name: "Assignment, 1 error" })).toBeTruthy();
     });
 
     it("keeps a rule's target error when its folder is edited and clears it when the target is", () => {

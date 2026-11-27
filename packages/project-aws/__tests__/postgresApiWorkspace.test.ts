@@ -12,7 +12,7 @@ import { ReplaceApiLambdaFnHandlers } from "~/extensions/Postgres/ReplaceApiLamb
 
 const DDB_ENTRY = `export const handler = createAwsDdbApiHandler({ extensions });`;
 
-describe("the api workspace with <Infra.Postgres />", () => {
+describe("the api workspace with <Infra.AuroraPostgres />", () => {
     let tmp: string;
     let container: Container;
 
@@ -46,11 +46,11 @@ describe("the api workspace with <Infra.Postgres />", () => {
         fs.rmSync(tmp, { recursive: true, force: true });
     });
 
-    it("exports both handlers from @webiny/api-event-handler-aws-pg in the api entry", async () => {
+    it("exports both handlers from @webiny/api-composition-aws-pg in the api entry", async () => {
         await container.resolve(BuildAppWorkspaceService).execute("api");
 
         const entry = fs.readFileSync(entryOf("api"), "utf8");
-        expect(entry).toContain(`from "@webiny/api-event-handler-aws-pg"`);
+        expect(entry).toContain(`from "@webiny/api-composition-aws-pg"`);
         expect(entry).toContain("export const handler = createAwsPgApiHandler({ extensions });");
         expect(entry).toContain(
             "export const streamHandler = createAwsPgStreamApiHandler({ extensions });"

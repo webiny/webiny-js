@@ -32,8 +32,8 @@ describe("WorkflowEditorPresenter: step warnings for the drawer (R312)", () => {
         await setup.presenter.init(setup.params);
 
         expect(setup.presenter.getStepWarnings("step-1")).toEqual([
-            { text: "Editors has no members.", severity: "warning" },
-            { text: "Rule 1: The assigned user was deleted.", severity: "error", ruleId: "r-1" }
+            { text: "Rule 1: The assigned user was deleted.", severity: "error", ruleId: "r-1" },
+            { text: "Editors has no members.", severity: "warning" }
         ]);
     });
 

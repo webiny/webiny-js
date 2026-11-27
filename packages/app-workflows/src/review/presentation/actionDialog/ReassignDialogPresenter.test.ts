@@ -125,6 +125,7 @@ describe("ReassignDialogPresenter", () => {
         const { vm } = setup.presenter;
         expect(vm.status).toBe("ready");
         expect(vm.title).toBe("Reassign “Legal sign-off”");
+        expect(vm.description).toBe("Choose who reviews this step on “Spring campaign”.");
         expect(vm.hint).toBe("The previous owner (if any) and the new owner are notified.");
         expect(vm.confirmLabel).toBe("Reassign");
         expect(vm.cancelLabel).toBe("Cancel");
@@ -141,7 +142,6 @@ describe("ReassignDialogPresenter", () => {
                 label: "Luka Perić",
                 value: "user-2",
                 disabled: true,
-                initials: "LP",
                 teams: "",
                 note: "Current owner"
             },
@@ -149,7 +149,6 @@ describe("ReassignDialogPresenter", () => {
                 label: "Ivan Horvat",
                 value: "user-3",
                 disabled: false,
-                initials: "IH",
                 teams: "",
                 note: null
             },
@@ -157,7 +156,6 @@ describe("ReassignDialogPresenter", () => {
                 label: "Petra Novak",
                 value: "user-4",
                 disabled: true,
-                initials: "PN",
                 teams: "",
                 note: "Unavailable"
             }

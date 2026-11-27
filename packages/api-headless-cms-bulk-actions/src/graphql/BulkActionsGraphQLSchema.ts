@@ -7,6 +7,9 @@ import {
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { Response } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
+import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { HeadlessCmsEndpointConfig } from "@webiny/api-headless-cms/HeadlessCmsEndpointConfig.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
@@ -14,8 +17,9 @@ import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
 import { BULK_ACTION_LIST_TASK_ID } from "~/features/EntriesBulkAction/createBulkActionTasks.js";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/api-kernel-core";
 import type { HcmsBulkActionsContext } from "~/types.js";
+import { canMoveToFolder, getRequiredAccess, restrictWhere } from "./bulkActionAccess.js";
 
 class BulkActionsGraphQLSchemaImpl implements CmsGraphQLSchemaFactory.Interface {
     constructor(private readonly container: Container) {}
@@ -95,9 +99,40 @@ class BulkActionsGraphQLSchemaImpl implements CmsGraphQLSchemaFactory.Interface 
                 resolvers: {
                     Mutation: {
                         [`bulkAction${model.singularApiName}`]: async (_, args, context) => {
+                            const canAccess = await context.container
+                                .resolve(AccessControl)
+                                .canAccessEntry({ model, ...getRequiredAccess(args.action) });
+                            if (!canAccess) {
+                                return new ErrorResponse(EntryNotAuthorizedError.fromModel(model));
+                            }
+
+                            if (args.action === BulkActionName.from("moveToFolder")) {
+                                const folderId = args.data?.folderId;
+                                if (!folderId) {
+                                    return new ErrorResponse({
+                                        code: "VALIDATION_FAILED",
+                                        message: `Missing "data.folderId" in the input.`
+                                    });
+                                }
+                                if (!(await canMoveToFolder(context, folderId))) {
+                                    return new ErrorResponse(
+                                        EntryNotAuthorizedError.fromModel(model)
+                                    );
+                                }
+                            }
+
                             const identity = context.container
                                 .resolve(IdentityContext)
                                 .getIdentity();
+
+                            /* The task lists and changes entries without authorization, so its
+                               query is limited here to the entries the caller may act on. */
+                            const where = await restrictWhere(
+                                context,
+                                model,
+                                args.action,
+                                args.where
+                            );
 
                             const response = await context.container
                                 .resolve(TriggerTaskUseCase)
@@ -106,7 +141,7 @@ class BulkActionsGraphQLSchemaImpl implements CmsGraphQLSchemaFactory.Interface 
                                     input: {
                                         actionName: args.action,
                                         modelId: model.modelId,
-                                        where: args.where,
+                                        where,
                                         search: args.search,
                                         data: args.data,
                                         identity

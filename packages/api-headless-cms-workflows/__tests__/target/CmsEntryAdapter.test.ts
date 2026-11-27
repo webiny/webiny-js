@@ -112,6 +112,8 @@ describe("CMS target adapter", () => {
                 folder: { id: "folder-1", type: "cms:author" },
                 modelId: "author",
                 title: "Ann",
+                // The model's name, snapshotted for notifications (B2 design 10).
+                contentTypeName: "Author",
                 author: { id: ADMIN.id, displayName: ADMIN.displayName }
             }
         });

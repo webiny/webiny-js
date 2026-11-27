@@ -23,9 +23,16 @@ export type WorkflowNotificationEvent =
     | "cancelled";
 
 /**
+ * Where the transport link of a message points: the content, or the content with the review's
+ * details open (`&reviewId=`).
+ */
+export type NotificationLink = "content" | "reviewDetails";
+
+/**
  * One notification's texts (R189). `title` and `body` are the websocket (in-app) texts;
- * `subject`, `text` and `linkLabel` go to the transports (`subject` is the transport message
- * `title`, `text` its `body`). Plain text: escaping is the transport's job.
+ * `subject`, `text`, `linkLabel` and `footer` go to the transports (`subject` is the transport
+ * message `title`, `text` its `body`). `link` picks the URL the transports get. Plain text:
+ * escaping is the transport's job.
  */
 export interface NotificationMessage {
     title: string;
@@ -33,6 +40,25 @@ export interface NotificationMessage {
     subject: string;
     text: string;
     linkLabel: string;
+    link: NotificationLink;
+    /** Why the recipient gets the message (one line, the e-mail footer). */
+    footer: string;
+}
+
+/**
+ * The facts of a review a transport may show next to the text (the e-mail's details table). Plain
+ * text: escaping is the transport's job.
+ */
+export interface NotificationDetails {
+    /** The content type's name ("Article", "Page"); `null` for reviews requested before it was kept. */
+    contentType: string | null;
+    contentTitle: string;
+    /** The step's position, from 1. */
+    stepNumber: number;
+    stepCount: number;
+    stepTitle: string;
+    /** The requester's name (`getActorName`). */
+    requester: string;
 }
 
 /**
@@ -50,6 +76,9 @@ export interface WorkflowNotificationWebsocketData {
     targetRevisionId: string;
     title: string;
     body: string;
+    /** Where the toast's action opens and its text: the same choice the e-mail gets. */
+    link: NotificationLink;
+    linkLabel: string;
 }
 
 /** What changed in a review, as the silent change message names it (R253). */

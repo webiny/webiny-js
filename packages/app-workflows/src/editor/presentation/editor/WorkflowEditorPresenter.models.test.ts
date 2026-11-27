@@ -5,9 +5,11 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
+import type { EditorStepType } from "~/editor/domain/types.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createEditorPresenterSetup } from "~/editor/testing/editorPresenterSetup.js";
+import { createEditorStepType } from "~/editor/testing/editorFixtures.js";
 import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelRow } from "~/editor/testing/editorFixtures.js";
@@ -71,6 +73,7 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
         expect(listWorkflowModels.execute).toHaveBeenCalledWith({
             app: "cms",
             search: "arti",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -144,6 +147,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
             app: "cms",
             search: "",
+            hasWorkflow: null,
             limit: 20,
             after: "c1"
         });
@@ -171,6 +175,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
             app: "cms",
             search: "x",
+            hasWorkflow: null,
             limit: 20,
             after: null
         });
@@ -241,7 +246,9 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
 
         expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-2" });
         expect(presenter.vm.header?.name).toBe("Press approval");
-        expect(presenter.vm.header?.appliesTo).toBe("Applies to Press · Headless CMS model");
+        expect(presenter.vm.header?.appliesTo).toBe(
+            "Applies to Press (Headless CMS) · Created by Ada Lovelace on 17.10.2026"
+        );
         expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
         expect(presenter.vm.dialog).toBeNull();
     });
@@ -392,6 +399,68 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
 
         expect(presenter.vm.header?.name).toBe("Article review");
         expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([true, false, false]);
+    });
+
+    it("keeps a model picked while the editor still loads its lists instead of opening the first one", async () => {
+        const { presenter, params, getWorkflow, listStepTypes, listWorkflowModels } =
+            setupWithThreeModels();
+        const stepTypes = createDeferred<EditorStepType[]>();
+        listStepTypes.execute.mockReturnValueOnce(stepTypes.promise);
+
+        const pendingInit = presenter.init(params);
+        await vi.waitFor(() => expect(presenter.vm.status).toBe("ready"));
+        expect(listWorkflowModels.execute).toHaveBeenCalledTimes(1);
+
+        await presenter.selectModel("press");
+        stepTypes.resolve([createEditorStepType({ type: "review", title: "Review" })]);
+        await pendingInit;
+
+        expect(getWorkflow.execute).toHaveBeenCalledTimes(1);
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-2" });
+        expect(presenter.vm.header?.name).toBe("Press approval");
+        expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
+    });
+
+    it("keeps a model picked while the first model loads when the first answers last", async () => {
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
+        const article = createDeferred<EditorWorkflow>();
+        const press = createDeferred<EditorWorkflow>();
+        getWorkflow.execute.mockReturnValueOnce(article.promise);
+        getWorkflow.execute.mockReturnValueOnce(press.promise);
+
+        const pendingInit = presenter.init(params);
+        await vi.waitFor(() => expect(getWorkflow.execute).toHaveBeenCalledTimes(1));
+        const pendingPress = presenter.selectModel("press");
+
+        press.resolve(
+            createEditorWorkflow({
+                id: "workflow-2",
+                name: "Press approval",
+                models: ["cms.press"]
+            })
+        );
+        await pendingPress;
+        article.resolve(createEditorWorkflow());
+        await pendingInit;
+
+        expect(presenter.vm.header?.name).toBe("Press approval");
+        expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
+    });
+
+    it("ignores a failure of the first model that arrives after another model was picked", async () => {
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
+        const article = createDeferred<EditorWorkflow>();
+        getWorkflow.execute.mockReturnValueOnce(article.promise);
+
+        const pendingInit = presenter.init(params);
+        await vi.waitFor(() => expect(getWorkflow.execute).toHaveBeenCalledTimes(1));
+        await presenter.selectModel("press");
+        article.reject(new Error("The server did not respond."));
+        await pendingInit;
+
+        expect(presenter.vm.status).toBe("ready");
+        expect(presenter.vm.header?.name).toBe("Press approval");
+        expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
     });
 
     it("shows the open workflow's step count in its row", async () => {

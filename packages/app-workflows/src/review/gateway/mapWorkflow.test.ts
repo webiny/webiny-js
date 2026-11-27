@@ -45,10 +45,32 @@ describe("mapWorkflow", () => {
                     description: "Check the copy.",
                     type: "review",
                     allowManualPick: false,
-                    assignedAutomatically: false
+                    assignedAutomatically: false,
+                    candidateTeamNames: []
                 }
             ]
         });
+    });
+
+    it("maps the candidate teams to their names, in the step's order", () => {
+        const workflow = mapWorkflow(
+            createWorkflow([
+                createStep({
+                    candidateTeams: [
+                        { id: "team-2", name: "Legal" },
+                        { id: "team-1", name: "Editors" }
+                    ]
+                }),
+                createStep({ id: "step-2", candidateTeams: null }),
+                createStep({ id: "step-3" })
+            ])
+        );
+
+        expect(workflow.steps.map(step => step.candidateTeamNames)).toEqual([
+            ["Legal", "Editors"],
+            [],
+            []
+        ]);
     });
 
     it("sets assignedAutomatically for a review step whose strategy is not none (R246)", () => {

@@ -31,14 +31,18 @@ class ReviewStepFailedNotificationsImpl implements ReviewStepFailedEventHandler.
                 review,
                 stepId: step.id,
                 event: "failed",
-                recipients: [
-                    { id: review.createdBy.id, displayName: review.createdBy.displayName }
-                ],
-                message: buildFailedMessage({
-                    contentTitle: review.title,
-                    stepTitle: step.title,
-                    reason: fact.reason
-                })
+                deliveries: [
+                    {
+                        recipients: [
+                            { id: review.createdBy.id, displayName: review.createdBy.displayName }
+                        ],
+                        message: buildFailedMessage({
+                            contentTitle: review.title,
+                            stepTitle: step.title,
+                            reason: fact.reason
+                        })
+                    }
+                ]
             });
         } catch (error) {
             this.logger.error(

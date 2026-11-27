@@ -17,6 +17,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -39,7 +40,8 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -47,22 +49,23 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         params: CmsEntryStorageOperationsPublishParams<T>
     ) {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const transformer = createTransformer({
             valuesModifiers: this.valuesModifiers,
             model,
-            entry: initialEntry,
-            storageEntry: initialStorageEntry,
+            entry: { ...initialEntry, tenant },
+            storageEntry: { ...initialStorageEntry, tenant },
             fieldIndexRegistry: this.fieldIndexRegistry,
             compressionHandler: this.compressionHandler
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        const revisionKeys = createEntryRevisionKeys(entry);
-        const latestKeys = createEntryLatestKeys(entry);
-        const publishedKeys = createEntryPublishedKeys(entry);
+        const revisionKeys = createEntryRevisionKeys(entry, tenant);
+        const latestKeys = createEntryLatestKeys(entry, tenant);
+        const publishedKeys = createEntryPublishedKeys(entry, tenant);
 
         let latestEsEntry: IElasticsearchEntityAttributes | null = null;
         try {
@@ -91,7 +94,7 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
          * We need the latest entry to check if it needs to be updated as well in the Elasticsearch.
          */
         const [latestStorageEntry] = await this.dataLoaders.getLatestRevisionByEntryId({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [entry.id]
         });
 
@@ -107,7 +110,7 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
          * We need currently published entry to check if need to remove it.
          */
         const [publishedStorageEntry] = await this.dataLoaders.getPublishedRevisionByEntryId({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [entry.id]
         });
 
@@ -154,8 +157,10 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
                     /**
                      * Update currently published entry (unpublish it)
                      */
-                    const publishedStorageEntryKeys =
-                        createEntryRevisionKeys(publishedStorageEntry);
+                    const publishedStorageEntryKeys = createEntryRevisionKeys(
+                        publishedStorageEntry,
+                        tenant
+                    );
                     entityBatch.put({
                         ...publishedStorageEntryKeys,
                         data: {
@@ -187,14 +192,17 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
                 status: latestRevisionStatus
             };
 
-            const latestStorageEntryLatestKeys = createEntryLatestKeys(latestStorageEntry);
+            const latestStorageEntryLatestKeys = createEntryLatestKeys(latestStorageEntry, tenant);
             entityBatch.put({
                 ...latestStorageEntryLatestKeys,
                 data: latestStorageEntryFields
             });
 
             // 2.5 Update REV# record.
-            const latestStorageEntryRevisionKeys = createEntryRevisionKeys(latestStorageEntry);
+            const latestStorageEntryRevisionKeys = createEntryRevisionKeys(
+                latestStorageEntry,
+                tenant
+            );
             entityBatch.put({
                 ...latestStorageEntryRevisionKeys,
                 data: latestStorageEntryFields
@@ -210,8 +218,10 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
                     publishedRevisionId !== latestStorageEntry.id;
 
                 if (!isRepublishing && publishedRevisionDifferentFromLatest) {
-                    const publishedStorageEntryRevisionKeys =
-                        createEntryRevisionKeys(publishedStorageEntry);
+                    const publishedStorageEntryRevisionKeys = createEntryRevisionKeys(
+                        publishedStorageEntry,
+                        tenant
+                    );
                     entityBatch.put({
                         ...publishedStorageEntryRevisionKeys,
                         data: {
@@ -261,7 +271,7 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
                 compressionHandler: this.compressionHandler
             });
 
-            const esEntryLatestKeys = createEntryLatestKeys(latestEsEntryDataDecompressed);
+            const esEntryLatestKeys = createEntryLatestKeys(latestEsEntryDataDecompressed, tenant);
             elasticsearchEntityWriter.put({
                 index: esIndex,
                 data: await latestTransformer.getElasticsearchLatestEntryData(),
@@ -309,7 +319,7 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -355,6 +365,7 @@ export const DdbEsPublishEntry = PublishEntryStorageOperation.createImplementati
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
         CmsModelOpenSearchIndexProvider,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

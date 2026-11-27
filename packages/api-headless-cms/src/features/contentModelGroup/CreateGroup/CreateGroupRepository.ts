@@ -10,6 +10,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { StringFormatter } from "@webiny/api-core/features/stringFormatter/index.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import type { CmsGroup } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * CreateGroupRepository - Validates and persists a new group.
@@ -28,10 +29,12 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         private listGroups: ListGroupsStorageOperation.Interface,
         private createGroup: CreateGroupStorageOperation.Interface,
         private tenantContext: TenantContext.Interface,
-        private stringFormatter: StringFormatter.Interface
+        private stringFormatter: StringFormatter.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialGroup: CmsGroup): Promise<Result<CmsGroup, RepositoryAbstraction.Error>> {
+        const group = this.runtimeTenant.assign(initialGroup);
         try {
             const tenant = this.tenantContext.getTenant();
 
@@ -68,7 +71,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             // 5. Clear cache
             this.groupCache.clear();
 
-            return Result.ok();
+            return Result.ok(group);
         } catch (error) {
             return Result.fail(new GroupPersistenceError(error as Error));
         }
@@ -116,6 +119,7 @@ export const CreateGroupRepository = RepositoryAbstraction.createImplementation(
         ListGroupsStorageOperation,
         CreateGroupStorageOperation,
         TenantContext,
-        StringFormatter
+        StringFormatter,
+        RuntimeTenant
     ]
 });

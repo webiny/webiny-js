@@ -117,7 +117,7 @@ describe("TargetReviewPresenter", () => {
 
         await setup.presenter.init(createParams());
 
-        expect(setup.presenter.vm.message).toBe("Waiting in the Legal team pool");
+        expect(setup.presenter.vm.message).toBe("Waiting in the Legal team pool.");
     });
 
     it("starts in the loading status before init", () => {
@@ -439,7 +439,7 @@ describe("TargetReviewPresenter", () => {
             createReviewWithFlags(createReview({ state: ReviewState.Approved }))
         );
         await setup.presenter.init(createParams());
-        expect(setup.presenter.vm.message).toBe("Approved, ready to publish");
+        expect(setup.presenter.vm.message).toBe("Every step approved. Ready to publish.");
 
         setup.presenter.setContext({
             targetTitle: "New title",

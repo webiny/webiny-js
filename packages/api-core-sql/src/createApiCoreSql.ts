@@ -5,12 +5,18 @@ import { createStorageOperations as createTenancyStorageOperations } from "./ten
 import { createStorageOperations as createSecurityStorageOperations } from "./security/index.js";
 import { createStorageOperations as createKeyValueStorageOperations } from "./keyValueStore/index.js";
 import { TableManager } from "./TableManager.js";
+import type { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 interface CreateApiCoreSqlParams {
     knex: Knex;
     tableNamePrefix?: string;
     /** The schema was set up before the API took traffic: no table checks at runtime. */
     schemaManaged?: boolean;
+    /**
+     * The tenant the storage acts on: its tenant scope's. The tenant records and the key-value store
+     * don't use it (the tenant registry is tenant-neutral, and the store is keyed by its own scope).
+     */
+    scopeTenant: ScopeTenant.Interface;
 }
 
 /**
@@ -19,12 +25,17 @@ interface CreateApiCoreSqlParams {
  */
 export const createApiCoreSqlOperations = (
     knex: Knex,
-    tableManager: TableManager
+    tableManager: TableManager,
+    scopeTenant: ScopeTenant.Interface
 ): ApiCoreStorageOperations => {
     return {
-        usersStorageOperations: createUsersStorageOperations({ knex, tableManager }),
+        usersStorageOperations: createUsersStorageOperations({ knex, tableManager, scopeTenant }),
         tenancyStorageOperations: createTenancyStorageOperations({ knex, tableManager }),
-        securityStorageOperations: createSecurityStorageOperations({ knex, tableManager }),
+        securityStorageOperations: createSecurityStorageOperations({
+            knex,
+            tableManager,
+            scopeTenant
+        }),
         keyValueStorageOperations: createKeyValueStorageOperations({ knex, tableManager })
     };
 };
@@ -36,8 +47,9 @@ export const createApiCoreSqlOperations = (
 export const createApiCoreSql = ({
     knex,
     tableNamePrefix,
-    schemaManaged
+    schemaManaged,
+    scopeTenant
 }: CreateApiCoreSqlParams): ApiCoreStorageOperations => {
     const tableManager = new TableManager(knex, tableNamePrefix, { schemaManaged });
-    return createApiCoreSqlOperations(knex, tableManager);
+    return createApiCoreSqlOperations(knex, tableManager, scopeTenant);
 };

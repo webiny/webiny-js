@@ -111,6 +111,7 @@ export const buildPeopleStepForm = (
 
             const tabs = layout
                 .tabs(PEOPLE_TABS_ID)
+                .renderer(STEP_FORM_RENDERER.stepTabs)
                 .tab(PEOPLE_TAB.general, tab => {
                     tab.label(ASSIGNMENT_FORM_MESSAGES.tabGeneral).layout(general => [
                         general.row("title"),

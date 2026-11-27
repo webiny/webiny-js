@@ -4,6 +4,10 @@ import { Container, type Abstraction } from "@webiny/di";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { ApiCoreStorageOperationsFactory, RequestStorage } from "@webiny/api-core";
 import {
+    ScopeTenant,
+    createFixedScopeTenant
+} from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
+import {
     KnexClient,
     SqlSchemaConfig,
     SqlSchemaSetup,
@@ -11,7 +15,7 @@ import {
     type ISqlSchemaSetupRequest
 } from "@webiny/api-core-sql";
 import { AuditLogsStorage } from "@webiny/api-audit-logs/abstractions.js";
-import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ConnectionRegistry } from "@webiny/api-websockets/features/ConnectionRegistry/abstractions.js";
 import { FlpStorageOperations } from "@webiny/api-aco/features/folder/shared/abstractions.js";
 import { createSqliteStorage } from "~/index.js";
 
@@ -179,8 +183,9 @@ describe("createSqliteStorage", () => {
         expect(root.resolveAll(SqlSchemaSetup)).toEqual([]);
         expect(root.resolve(SqlSchemaSetupRunner)).toBeTruthy();
 
-        // A request's container, as `registerApiRequestStack` starts it.
+        // A tenant scope's container, as `TenantScopes` starts it: storage takes its tenant from it.
         const request = root.createChildContainer();
+        request.registerInstance(ScopeTenant, createFixedScopeTenant("root"));
         for (const storage of request.resolveAll(RequestStorage)) {
             await storage.register(request);
         }

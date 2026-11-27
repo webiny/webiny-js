@@ -15,7 +15,8 @@ const BOUND_TO_WORKFLOW = "Workflows/Model/BoundToWorkflow";
 
 /*
  * A model delete the server refused because a workflow uses the model (UI-18, QBZ-38): names the
- * workflow and links to it for someone who may manage workflows. Any other error stays as it was.
+ * workflow in one sentence with an Open workflow link for someone who may manage workflows; anyone
+ * else gets the heading and the ask. Any other error stays as it was.
  */
 export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Original => {
     return function ModelDeleteWorkflowErrorDecorator(props) {
@@ -34,16 +35,28 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
             canManage: permission.editor
         });
 
+        // Opens the editor on the model whose delete was refused.
+        const workflowLink = router.getLink(Routes.ContentModels.Workflows, {
+            modelId: props.model.modelId
+        });
+
+        if (copy.title === null) {
+            return (
+                <Alert type={"danger"}>
+                    <div className={"flex flex-col gap-xs"}>
+                        <Text>{copy.body}</Text>
+                        {copy.showLink ? <Link to={workflowLink}>{"Open workflow"}</Link> : null}
+                    </div>
+                </Alert>
+            );
+        }
+
         return (
             <Alert type={"danger"} icon={<AccountTreeIcon />}>
                 <div className={"flex flex-col gap-xs"}>
                     <Heading level={6}>{copy.title}</Heading>
                     <Text>{copy.body}</Text>
-                    {copy.showLink && (
-                        <Link to={router.getLink(Routes.ContentModels.Workflows)}>
-                            {"Open workflow →"}
-                        </Link>
-                    )}
+                    {copy.showLink ? <Link to={workflowLink}>{"Open workflow"}</Link> : null}
                 </div>
             </Alert>
         );

@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import React from "react";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import type { PulumiAppModuleDefinition } from "@webiny/pulumi";
@@ -22,6 +23,8 @@ import { createApiServiceManifests } from "~/pulumi/apps/api/apiServiceManifests
 import { CoreOutput, type PostgresOutputs } from "~/pulumi/apps/common/CoreOutput.js";
 import { VpcConfig } from "~/pulumi/apps/common/VpcConfig.js";
 import { sealEnvVariables } from "~/pulumi/utils/lambdaEnvVariables.js";
+import { AuroraPostgres } from "@webiny/project-extensions-aws/extensions/index.js";
+import { renderAwsConfig, toProjectConfig, useHostingType } from "./renderAwsConfig.js";
 
 /* Resolves a Pulumi output (or a plain value) outside of a deployment. */
 const resolve = <T>(value: pulumi.Input<T>): Promise<T> => {
@@ -105,7 +108,7 @@ const createFakeApi = (postgres: PostgresOutputs) => {
         eventBusName: "event-bus",
         eventBusArn: "event-bus-arn",
         fileManagerBucketId: "fm-bucket",
-        // As the core deploy puts it in its output with `<Infra.Postgres />`.
+        // As the core deploy puts it in its output with `<Infra.AuroraPostgres />`.
         serviceManifests: [
             { name: "core", manifest: { eventBus: { arn: "event-bus-arn", name: "event-bus" } } }
         ]
@@ -413,7 +416,7 @@ describe("the schema setup on deploy", () => {
     });
 });
 
-/* A project config with `<Infra.Postgres {...params} />`, or without it for `undefined`. */
+/* A project config with the Aurora cluster with these params, or without it for `undefined`. */
 const createProjectConfig = (postgresParams: Record<string, unknown> | undefined) => {
     return {
         extensionsByType: () => (postgresParams ? [{ params: postgresParams }] : [])
@@ -422,7 +425,7 @@ const createProjectConfig = (postgresParams: Record<string, unknown> | undefined
 
 /*
  * The api app's functions with the web function on, as `createApiPulumiApp` adds them for the given
- * project config: the Postgres env and the schema setup only with `<Infra.Postgres />`.
+ * project config: the Postgres env and the schema setup only with `<Infra.AuroraPostgres />`.
  */
 const addApiModulesWithWebFunction = (
     fake: ReturnType<typeof createFakeApi>,
@@ -499,23 +502,34 @@ describe("the web function's NODE_OPTIONS", () => {
 });
 
 describe("the web function's Postgres pool size", () => {
+    let restoreHostingType: () => void;
+
     beforeAll(() => {
         sealEnvVariables();
         process.env.AWS_REGION = process.env.AWS_REGION || "eu-central-1";
+        restoreHostingType = useHostingType("aws");
     });
 
-    it("is 8 by default with <Infra.Postgres />", async () => {
+    afterAll(() => {
+        restoreHostingType();
+    });
+
+    /* The project config of a `webiny.config.tsx` with `<Infra.AuroraPostgres />`. */
+    const withAuroraPostgres = async () =>
+        toProjectConfig(await renderAwsConfig(React.createElement(AuroraPostgres)));
+
+    it("is 16 by default with <Infra.AuroraPostgres />, the requests one environment serves", async () => {
         const fake = createFakeApi(WITH_PROXY);
-        addApiModulesWithWebFunction(fake, createProjectConfig({}));
+        addApiModulesWithWebFunction(fake, await withAuroraPostgres());
 
         const envs = await getFunctionEnvs(fake);
-        expect(envs["graphql-web"].WEBINY_PG_POOL_MAX).toBe("8");
+        expect(envs["graphql-web"].WEBINY_PG_POOL_MAX).toBe("16");
         // Still the database the graphql Lambda connects to.
         const { NODE_EXTRA_CA_CERTS: _, ...database } = getPostgresLambdaEnv(WITH_PROXY);
         expect(envs["graphql-web"]).toMatchObject(database);
     });
 
-    it("is the project's `poolSize` when it sets one", async () => {
+    it("is the cluster's `poolSize` when it has one", async () => {
         const fake = createFakeApi(WITH_PROXY);
         addApiModulesWithWebFunction(fake, createProjectConfig({ poolSize: 20 }));
 
@@ -525,7 +539,7 @@ describe("the web function's Postgres pool size", () => {
 
     it("leaves the plain Lambda functions at their default pool of 1", async () => {
         const fake = createFakeApi(WITH_PROXY);
-        addApiModulesWithWebFunction(fake, createProjectConfig({ poolSize: 20 }));
+        addApiModulesWithWebFunction(fake, await withAuroraPostgres());
 
         const envs = await getFunctionEnvs(fake);
         expect(Object.keys(envs).sort()).toEqual(
@@ -540,7 +554,7 @@ describe("the web function's Postgres pool size", () => {
         }
     });
 
-    it("is not set on any function without <Infra.Postgres />", async () => {
+    it("is not set on any function without <Infra.AuroraPostgres />", async () => {
         const fake = createFakeApi(NO_POSTGRES);
         addApiModulesWithWebFunction(fake, createProjectConfig(undefined));
 
@@ -581,7 +595,7 @@ describe("the RDS certificates the API functions verify the database with", () =
         }
     });
 
-    it("are not set on any function without <Infra.Postgres />", async () => {
+    it("are not set on any function without <Infra.AuroraPostgres />", async () => {
         const fake = createFakeApi(NO_POSTGRES);
         addApiModulesWithWebFunction(fake, createProjectConfig(undefined));
 

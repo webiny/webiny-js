@@ -32,7 +32,8 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
                     "Content-Type": "application/json",
                     ...(headers || {})
                 },
-                body
+                body,
+                ...(request.keepalive ? { keepalive: true } : {})
             });
         } catch (err) {
             throw new Error(`Network error: ${(err as Error).message}`);

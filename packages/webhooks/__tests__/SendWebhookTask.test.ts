@@ -72,10 +72,7 @@ describe("SendWebhookTask", () => {
         });
         container.registerInstance(TenantContext, {
             getTenant: vi.fn().mockReturnValue({ id: "root" }),
-            setTenant: vi.fn(),
-            withRootTenant: vi.fn(),
-            withEachTenant: vi.fn(),
-            withTenant: vi.fn()
+            setTenant: vi.fn()
         });
         container.registerInstance(GetWebhookSettingsRepository, {
             execute: vi.fn().mockResolvedValue(Result.ok({ signingSecret: undefined }))

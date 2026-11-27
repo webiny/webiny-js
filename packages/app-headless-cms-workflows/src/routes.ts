@@ -4,7 +4,13 @@ export const Routes = {
     ContentModels: {
         Workflows: new Route({
             name: "Cms/ContentModels/Workflows",
-            path: "/cms/workflows"
+            path: "/cms/workflows",
+            // The model the editor opens first, by `modelId`.
+            params: zod => {
+                return {
+                    modelId: zod.string().optional()
+                };
+            }
         })
     },
     ContentEntries: {
@@ -13,7 +19,8 @@ export const Routes = {
             path: "/cms/content-reviews",
             params: zod => {
                 return {
-                    tab: zod.string().optional()
+                    scope: zod.string().optional(),
+                    state: zod.string().optional()
                 };
             }
         })

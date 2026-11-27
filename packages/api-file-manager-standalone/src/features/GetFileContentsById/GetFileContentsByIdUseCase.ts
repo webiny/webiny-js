@@ -1,4 +1,3 @@
-import { promises as fs } from "node:fs";
 import { Result } from "@webiny/feature/api";
 import { GetFileContentsByIdUseCase as GetFileContentsByIdUseCaseAbstraction } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
 import type { FileContents } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
@@ -7,19 +6,19 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
-import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
+import { ObjectStorage } from "@webiny/api-object-storage";
+import { isTenantFileKey } from "~/utils/isTenantFileKey.js";
 
 class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstraction.Interface {
     private readonly metadataReader: MetadataReader.Interface;
-    private readonly config: FileManagerStandaloneConfig.Interface;
+    private readonly objectStorage: ObjectStorage.Interface;
 
     public constructor(
         metadataReader: MetadataReader.Interface,
-        config: FileManagerStandaloneConfig.Interface
+        objectStorage: ObjectStorage.Interface
     ) {
         this.metadataReader = metadataReader;
-        this.config = config;
+        this.objectStorage = objectStorage;
     }
 
     public async execute(
@@ -30,16 +29,18 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
             return Result.fail(new FileNotFoundError(fileId));
         }
 
-        const storagePath = this.config.storagePath;
+        // Security: the key comes from the file record, never read outside the tenant's files.
+        if (!isTenantFileKey(metadata.tenant, metadata.bucketKey)) {
+            return Result.fail(new FileNotFoundError(fileId));
+        }
 
         try {
-            const filePath = resolveStoragePath(storagePath, metadata.bucketKey);
-            const buffer = await fs.readFile(filePath);
-            return Result.ok({ buffer, contentType: metadata.contentType });
-        } catch (error) {
-            if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+            const buffer = await this.objectStorage.get(metadata.bucketKey);
+            if (!buffer) {
                 return Result.fail(new FileNotFoundError(fileId));
             }
+            return Result.ok({ buffer, contentType: metadata.contentType });
+        } catch (error) {
             return Result.fail(
                 new FilePersistenceError(error instanceof Error ? error : new Error(String(error)))
             );
@@ -50,5 +51,5 @@ class GetFileContentsByIdUseCaseImpl implements GetFileContentsByIdUseCaseAbstra
 export const GetFileContentsByIdUseCase =
     GetFileContentsByIdUseCaseAbstraction.createImplementation({
         implementation: GetFileContentsByIdUseCaseImpl,
-        dependencies: [MetadataReader, FileManagerStandaloneConfig]
+        dependencies: [MetadataReader, ObjectStorage]
     });

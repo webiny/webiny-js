@@ -91,9 +91,11 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             return {
                 status: this.status,
                 title: "",
+                description: null,
                 body: "",
                 showComment: false,
                 commentLabel: "",
+                commentDescription: null,
                 commentRequired: false,
                 commentPlaceholder: "",
                 commentNote: null,
@@ -105,6 +107,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                 notifyLabel: null,
                 confirmLabel: "",
                 confirmVariant: "primary",
+                confirmIcon: null,
                 cancelLabel: "Cancel",
                 canSubmit: false,
                 submitting: this.submitting,
@@ -127,6 +130,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         let showComment = copy.showComment;
         let commentLabel = copy.commentLabel;
         let commentRequired = copy.commentRequired;
+        let commentDescription = copy.commentDescription;
         let commentNote = copy.commentNote;
         let commentCounter = copy.commentCounter;
         let commentError = copy.commentError;
@@ -139,6 +143,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             showComment = this.comment.trim() !== "";
             commentLabel = CONFLICT_COMMENT_LABEL;
             commentRequired = false;
+            commentDescription = null;
             commentNote = CONFLICT_COMMENT_NOTE;
             commentCounter = null;
             commentError = null;
@@ -147,9 +152,11 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         return {
             status: this.status,
             title,
+            description: copy.description,
             body,
             showComment,
             commentLabel,
+            commentDescription,
             commentRequired,
             commentPlaceholder: copy.commentPlaceholder,
             commentNote,
@@ -161,6 +168,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             notifyLabel: copy.notifyLabel,
             confirmLabel: copy.confirmLabel,
             confirmVariant: copy.confirmVariant,
+            confirmIcon: copy.confirmIcon,
             cancelLabel: copy.cancelLabel,
             canSubmit: copy.canSubmit && !this.submitting && this.conflict === null,
             submitting: this.submitting,

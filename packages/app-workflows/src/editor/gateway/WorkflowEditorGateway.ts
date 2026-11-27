@@ -27,6 +27,7 @@ class WorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
         const appGateway = this.forApp(params.app);
         const envelope = await appGateway.listModels({
             search: params.search,
+            hasWorkflow: params.hasWorkflow,
             limit: params.limit,
             after: params.after
         });

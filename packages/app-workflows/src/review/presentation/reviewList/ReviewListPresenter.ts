@@ -1,11 +1,12 @@
 import { makeAutoObservable } from "mobx";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
+import { isEmptyReviewListFilter } from "~/review/domain/isEmptyReviewListFilter.js";
+import type { ReviewListScope } from "~/review/domain/ReviewListScope.js";
+import { REVIEW_LIST_SCOPES } from "./reviewListScopes.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
-import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
-import type { StepStateValue } from "~/review/domain/StepState.js";
+import type { ReviewListState } from "~/review/domain/ReviewListState.js";
 import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
-import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
@@ -19,20 +20,24 @@ import type { IReviewRowProvider } from "./abstractions.js";
 import type { ReviewListDialogVm } from "./abstractions.js";
 import type { ReviewListEmptyVm } from "./abstractions.js";
 import type { ReviewListInitParams } from "./abstractions.js";
+import type { ReviewListRouteParams } from "./abstractions.js";
 import type { ReviewListRowVm } from "./abstractions.js";
+import type { ReviewListSortField } from "./abstractions.js";
 import type { ReviewListStatus } from "./abstractions.js";
-import type { ReviewListTab } from "./abstractions.js";
 import { formatLastChange } from "./formatLastChange.js";
 import { getDefaultReviewListSort } from "./getDefaultReviewListSort.js";
+import { getDefaultReviewListState } from "./getDefaultReviewListState.js";
+import { isFilteredReviewList } from "./isFilteredReviewList.js";
 import { getListOwnerLabel } from "./getListOwnerLabel.js";
 import { getListReviewStateLabel } from "./getListReviewStateLabel.js";
 import { getListRowActions } from "./getListRowActions.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
-import { getVisibleReviewListTabs } from "./getVisibleReviewListTabs.js";
+import { getReviewListStates } from "./getReviewListStates.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
-import { isReviewListTabAvailable } from "./isReviewListTabAvailable.js";
+import { resolveReviewListRoute } from "./resolveReviewListRoute.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
+import { toggleReviewListSort } from "./toggleReviewListSort.js";
 
 // The search input applies its draft after this long without typing.
 const SEARCH_DEBOUNCE_MS = 300;
@@ -49,13 +54,12 @@ interface ReviewListEntry {
 }
 
 class ReviewListPresenterImpl implements Abstraction.Interface {
-    private _tab: ReviewListTab = "assignedToMe";
+    private _scope: ReviewListScope = "assignedToMe";
+    private _state: ReviewListState = "inReview";
     private _sort: ReviewListSort = "lastChangedOn_ASC";
     private _search = "";
     private _searchDraft = "";
     private _contentTypeId: string | null = null;
-    private _reviewState: ReviewStateValue | null = null;
-    private _stepState: StepStateValue | null = null;
     private _status: ReviewListStatus = "loading";
     private _loadingMore = false;
     private _hasMore = false;
@@ -67,6 +71,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     // The app the list was opened for; the list use case routes by it (R348).
     private app: WorkflowAppKind | null = null;
     private rowProvider: IReviewRowProvider | null = null;
+    private showContentType = false;
+    // The content model every request is narrowed to, outside the filters; `null` for none.
+    private fixedContentTypeId: string | null = null;
     private unsubscribe: (() => void) | null = null;
     // A generation: every load, reload and dispose starts a new one, and a response of an older
     // generation is ignored. An in-flight refetch only counts for the generation it started in.
@@ -89,6 +96,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             | "identityContext"
             | "app"
             | "rowProvider"
+            | "showContentType"
+            | "fixedContentTypeId"
             | "unsubscribe"
             | "loadToken"
             | "refreshingToken"
@@ -101,6 +110,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             identityContext: false,
             app: false,
             rowProvider: false,
+            showContentType: false,
+            fixedContentTypeId: false,
             unsubscribe: false,
             loadToken: false,
             refreshingToken: false,
@@ -111,22 +122,25 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     // The relative times are computed when the view model is read; they are as fresh as the last
-    // state change (a refetch, a tab switch), which is enough for "12 min ago" granularity.
+    // state change (a refetch, a scope switch), which is enough for "12 min ago" granularity.
     get vm(): Abstraction.ViewModel {
         const now = new Date();
         const rows = this._entries.map(entry => this.toRowVm(entry, now));
-        const isFiltered =
-            this._search.trim() !== "" ||
-            this._contentTypeId !== null ||
-            this._reviewState !== null ||
-            this._stepState !== null;
+        const hasFilters = this._search.trim() !== "" || this._contentTypeId !== null;
+        // The same test as the empty copy: "Clear filters" shows only beside the filtered text.
+        const isFiltered = isFilteredReviewList(hasFilters, this._state);
         const hasTeams = this.identityContext.getIdentity().teams.length > 0;
-        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
-        const tabs = getVisibleReviewListTabs(permissions);
 
         let empty: ReviewListEmptyVm | null = null;
         if (this._status === "ready" && this._entries.length === 0 && this._heldIds.length === 0) {
-            empty = getReviewListEmpty(this._tab, isFiltered, hasTeams);
+            empty = getReviewListEmpty({
+                scope: this._scope,
+                state: this._state,
+                hasFilters,
+                hasTeams,
+                showContentType: this.showContentType,
+                appLabel: this.app ? WIDGET_APP_LABELS[this.app] : ""
+            });
         }
 
         let notice: string | null = null;
@@ -135,8 +149,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
 
         return {
-            tab: this._tab,
-            tabs,
+            scope: this._scope,
+            scopes: REVIEW_LIST_SCOPES,
+            state: this._state,
+            states: getReviewListStates(this._scope),
             rows,
             status: this._status,
             loadingMore: this._loadingMore,
@@ -145,8 +161,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             search: this._search,
             searchDraft: this._searchDraft,
             contentTypeId: this._contentTypeId,
-            reviewState: this._reviewState,
-            stepState: this._stepState,
             notice,
             error: this._error,
             empty,
@@ -159,15 +173,15 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.dispose();
         this.app = params.app;
         this.rowProvider = params.rowProvider;
-        // A tab the viewer may not open (`?tab=failedSteps` without `reassign`) falls back to the
-        // default tab, so the server's refusal is never provoked (R259).
-        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
-        let initialTab = params.initialTab;
-        if (!isReviewListTabAvailable(initialTab, permissions)) {
-            initialTab = "assignedToMe";
-        }
-        this._tab = initialTab;
-        this._sort = getDefaultReviewListSort(initialTab);
+        this.showContentType = params.showContentType;
+        this.fixedContentTypeId = params.fixedContentTypeId;
+        const { scope, state } = resolveReviewListRoute({
+            scope: params.initialScope,
+            state: params.initialState
+        });
+        this._scope = scope;
+        this._state = state;
+        this._sort = getDefaultReviewListSort(scope, state);
         this.unsubscribe = this.activity.subscribe(params.namespaces, () => {
             void this.refresh();
         });
@@ -186,25 +200,49 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    async setTab(tab: ReviewListTab): Promise<void> {
+    async applyRoute(params: ReviewListRouteParams): Promise<void> {
         const app = this.app;
         if (!app) {
             return;
         }
 
-        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
-        if (!isReviewListTabAvailable(tab, permissions)) {
+        const { scope, state } = resolveReviewListRoute(params);
+        if (scope === this._scope && state === this._state) {
             return;
         }
 
-        this._tab = tab;
-        this._sort = getDefaultReviewListSort(tab);
-        this.cancelSearchTimer();
-        this._search = "";
-        this._searchDraft = "";
-        this._contentTypeId = null;
-        this._reviewState = null;
-        this._stepState = null;
+        // The search and the content model filter are kept, as on a scope switch (B11).
+        this._scope = scope;
+        this._state = state;
+        this._sort = getDefaultReviewListSort(scope, state);
+
+        const token = this.beginLoad(false);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
+        try {
+            const listed = await this.listReviewsUseCase.execute(request);
+            if (token === this.loadToken) {
+                this.applyFirstPage(listed, false);
+            }
+        } catch {
+            if (token === this.loadToken) {
+                this.applyLoadFailure();
+            }
+        }
+    }
+
+    async setScope(scope: ReviewListScope): Promise<void> {
+        const app = this.app;
+        if (!app) {
+            return;
+        }
+
+        // The state is kept unless the pair is empty by definition (B2 design 1). The search and
+        // the content model filter are kept; paging and the sort reset to the scope's (B11).
+        this._scope = scope;
+        if (isEmptyReviewListFilter(scope, this._state)) {
+            this._state = getDefaultReviewListState(scope);
+        }
+        this._sort = getDefaultReviewListSort(scope, this._state);
 
         const token = this.beginLoad(false);
         const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
@@ -277,13 +315,14 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    async setReviewState(reviewState: ReviewStateValue | null): Promise<void> {
+    async setState(state: ReviewListState): Promise<void> {
         const app = this.app;
-        if (!app) {
+        if (!app || isEmptyReviewListFilter(this._scope, state)) {
             return;
         }
 
-        this._reviewState = reviewState;
+        this._state = state;
+        this._sort = getDefaultReviewListSort(this._scope, state);
 
         const token = this.beginLoad(false);
         const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
@@ -299,39 +338,13 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    async setStepState(stepState: StepStateValue | null): Promise<void> {
+    async toggleSort(field: ReviewListSortField): Promise<void> {
         const app = this.app;
         if (!app) {
             return;
         }
 
-        this._stepState = stepState;
-
-        const token = this.beginLoad(false);
-        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
-        try {
-            const listed = await this.listReviewsUseCase.execute(request);
-            if (token === this.loadToken) {
-                this.applyFirstPage(listed, false);
-            }
-        } catch {
-            if (token === this.loadToken) {
-                this.applyLoadFailure();
-            }
-        }
-    }
-
-    async toggleSort(): Promise<void> {
-        const app = this.app;
-        if (!app) {
-            return;
-        }
-
-        if (this._sort === "lastChangedOn_ASC") {
-            this._sort = "lastChangedOn_DESC";
-        } else {
-            this._sort = "lastChangedOn_ASC";
-        }
+        this._sort = toggleReviewListSort(this._sort, field);
 
         const token = this.beginLoad(false);
         const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
@@ -357,9 +370,30 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._search = "";
         this._searchDraft = "";
         this._contentTypeId = null;
-        this._reviewState = null;
-        this._stepState = null;
+        this._state = getDefaultReviewListState(this._scope);
+        this._sort = getDefaultReviewListSort(this._scope, this._state);
 
+        const token = this.beginLoad(false);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
+        try {
+            const listed = await this.listReviewsUseCase.execute(request);
+            if (token === this.loadToken) {
+                this.applyFirstPage(listed, false);
+            }
+        } catch {
+            if (token === this.loadToken) {
+                this.applyLoadFailure();
+            }
+        }
+    }
+
+    async reload(): Promise<void> {
+        const app = this.app;
+        if (!app) {
+            return;
+        }
+
+        // The toolbar's Refresh (B13): the first page again with every choice kept.
         const token = this.beginLoad(false);
         const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
@@ -465,7 +499,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             // A failed background refetch keeps the visible rows; the next signal or "Show" tries again.
         }
 
-        // A newer generation (reload, tab switch, dispose) owns the flags now.
+        // A newer generation (reload, scope switch, dispose) owns the flags now.
         if (token !== this.loadToken) {
             return;
         }
@@ -533,14 +567,14 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.signalDuringLoad = false;
         this.app = null;
         this.rowProvider = null;
-        this._tab = "assignedToMe";
+        this.fixedContentTypeId = null;
+        this._scope = "assignedToMe";
+        this._state = "inReview";
         this._sort = "lastChangedOn_ASC";
         this.cancelSearchTimer();
         this._search = "";
         this._searchDraft = "";
         this._contentTypeId = null;
-        this._reviewState = null;
-        this._stepState = null;
         this._status = "loading";
         this._loadingMore = false;
         this._hasMore = false;
@@ -670,7 +704,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
                 entries.push({ row: entry.row, highlighted: false });
                 return;
             }
-            // A row the server no longer lists left the tab: it is dropped.
+            // A row the server no longer lists left the list: it is dropped.
         });
 
         const fresh = incoming.filter(row => !known.has(row.reviewId));
@@ -704,18 +738,13 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         if (search) {
             where.titleContains = search;
         }
-        if (this._contentTypeId) {
-            where.modelId = this._contentTypeId;
+        // A fixed content model wins over the filter, which the list hides with it.
+        const contentTypeId = this.fixedContentTypeId ?? this._contentTypeId;
+        if (contentTypeId) {
+            where.modelId = contentTypeId;
         }
-        if (this._tab === "myRequests") {
-            if (this._reviewState) {
-                where.reviewState = this._reviewState;
-            }
-            if (this._stepState) {
-                where.stepState = this._stepState;
-            }
-        }
-        return { app, list: this._tab, where, sort: this._sort, limit, after };
+        where.state = this._state;
+        return { app, scope: this._scope, where, sort: this._sort, limit, after };
     }
 
     private toRowVm(entry: ReviewListEntry, now: Date): ReviewListRowVm {
@@ -738,7 +767,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             stepColor: row.stepColor,
             stepStateLabel: stepStateTag.label,
             stepStateVariant: stepStateTag.variant,
-            stepStateIcon: stepStateTag.icon ?? null,
             ownerLabel: getListOwnerLabel(row.owner, row.stepTitle, row.stepState),
             requesterName: row.requester.displayName,
             lastChange: formatLastChange(row.lastChangedOn, now),

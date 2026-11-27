@@ -10,6 +10,7 @@ import type {
     StorageOperationsListFlpsParams,
     StorageOperationsUpdateFlpParams
 } from "@webiny/api-aco/types.js";
+import type { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 
 interface FlpRow {
     id: string;
@@ -31,15 +32,19 @@ export interface StorageOperationsConfig {
      * `@webiny/api-core-sql`): the table is never checked for or created at runtime.
      */
     schemaManaged?: boolean;
+    /** The tenant the storage acts on: its tenant scope's. The schema setup runs without one. */
+    scopeTenant: ScopeTenant.Interface;
 }
 
 export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPermissionsStorageOperations {
     private readonly knex: Knex;
     private readonly tableName: string;
     private readonly schemaManaged: boolean;
+    private readonly scopeTenant: ScopeTenant.Interface;
 
-    constructor({ knex, tableNamePrefix, schemaManaged }: StorageOperationsConfig) {
+    constructor({ knex, tableNamePrefix, schemaManaged, scopeTenant }: StorageOperationsConfig) {
         this.knex = knex;
+        this.scopeTenant = scopeTenant;
         this.schemaManaged = schemaManaged === true;
         this.tableName = tableNamePrefix
             ? `${tableNamePrefix}_${BASE_TABLE_NAME}`
@@ -47,8 +52,10 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     }
 
     public async list({
-        where: { tenant, type, path_startsWith, parentId }
+        where
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
+        const { type, path_startsWith, parentId } = where;
+        const tenant = this.scopeTenant.getId();
         try {
             await this.ensureTable();
 
@@ -69,6 +76,15 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
                 return rows.map(row => this.fromRow(row));
             }
 
+            // All folder level permissions of a folder type.
+            if (type) {
+                const rows = await this.knex<FlpRow>(this.tableName)
+                    .where("tenant", tenant)
+                    .andWhere("type", type);
+
+                return rows.map(row => this.fromRow(row));
+            }
+
             throw new WebinyError("Missing required parameters.", "LIST_FLP_MISSING_PARAMETERS", {
                 tenant,
                 type,
@@ -83,10 +99,9 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async get({
-        tenant,
-        id
-    }: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
+    public async get(params: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
+        const { id } = params;
+        const tenant = this.scopeTenant.getId();
         try {
             await this.ensureTable();
 
@@ -109,9 +124,8 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async create({
-        data
-    }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+    public async create(params: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+        const data = this.inScope(params.data);
         try {
             await this.ensureTable();
 
@@ -131,13 +145,13 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         data: inputData,
         original
     }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
+        const data = this.inScope({
+            ...original,
+            ...inputData
+        });
+
         try {
             await this.ensureTable();
-
-            const data = {
-                ...original,
-                ...inputData
-            };
 
             await this.knex<FlpRow>(this.tableName)
                 .where("tenant", data.tenant)
@@ -154,7 +168,8 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
         }
     }
 
-    public async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
+    public async delete(params: StorageOperationsDeleteFlpParams): Promise<void> {
+        const flp = this.inScope(params.flp);
         try {
             await this.ensureTable();
 
@@ -174,18 +189,20 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
     public async batchUpdate({
         items
     }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
+        const scopedItems = items.map(({ original, data: inputData }) => {
+            return this.inScope({
+                ...original,
+                ...inputData
+            });
+        });
+
         try {
             await this.ensureTable();
 
             // Built inside the callback: a transaction that loses its connection runs it again.
             return await this.knex.transaction(async trx => {
                 const updatedItems: FolderLevelPermission[] = [];
-                for (const { original, data: inputData } of items) {
-                    const data = {
-                        ...original,
-                        ...inputData
-                    };
-
+                for (const data of scopedItems) {
                     await trx<FlpRow>(this.tableName)
                         .where("tenant", data.tenant)
                         .andWhere("id", data.id)
@@ -229,6 +246,11 @@ export class FolderLevelPermissionsStorageOperations implements AcoFolderLevelPe
             table.text("permissions").notNullable();
             table.primary(["tenant", "id"]);
         });
+    }
+
+    /** The permission with its scope's tenant, whatever tenant it carries. */
+    private inScope<T extends { tenant?: string | null }>(record: T): T & { tenant: string } {
+        return { ...record, tenant: this.scopeTenant.getId() };
     }
 
     private toRow(data: FolderLevelPermission & { tenant: string }): FlpRow {

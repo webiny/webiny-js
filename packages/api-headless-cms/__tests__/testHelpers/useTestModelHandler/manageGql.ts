@@ -225,6 +225,11 @@ export interface ITestMutationData {
     lastPublishedOn?: string;
     firstPublishedBy?: IGraphQLIdentityInput;
     lastPublishedBy?: IGraphQLIdentityInput;
+    createdOn?: string;
+    createdBy?: IGraphQLIdentityInput;
+    savedBy?: IGraphQLIdentityInput;
+    modifiedBy?: IGraphQLIdentityInput;
+    revisionCreatedBy?: IGraphQLIdentityInput;
     values: ITestEntryValues;
 }
 

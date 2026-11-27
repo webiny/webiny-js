@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { CacheConfig } from "e2e";
@@ -19,6 +20,16 @@ for (const file of [join(import.meta.dirname, ".env"), join(import.meta.dirname,
 // without one. With no key there is no model, and the first agent step stops the run with
 // MODEL_UNAVAILABLE, so leave those tests out (`--exclude-tag wcp` does today).
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+/*
+ * The workflows review tests create their own users and sign in as them. Their one password is
+ * made fresh for every run, here, so the runner knows it as a secret: a sign-in fills it through
+ * `secrets.get()` and the runner redacts it from reports and traces. It goes to the test workers
+ * through the environment they inherit, never into a file. `||=` keeps the runner's value when a
+ * worker loads this config again.
+ */
+const WORKFLOWS_USER_PASSWORD =
+    (process.env.E2E_WORKFLOWS_USER_PASSWORD ||= `${randomBytes(24).toString("base64url")}Aa1!`);
 
 /*
  * Unset by default: read-write locally, read-only in CI, so `/e2e` only reads the committed
@@ -74,8 +85,11 @@ export default {
             password: process.env.E2E_ADMIN_PASSWORD || "12345678"
         }
     },
-    // Only with a key: an empty secret is rejected when the config loads.
-    secrets: ANTHROPIC_API_KEY ? { "anthropic-api-key": ANTHROPIC_API_KEY } : {},
+    secrets: {
+        // Only with a key: an empty secret is rejected when the config loads.
+        ...(ANTHROPIC_API_KEY ? { "anthropic-api-key": ANTHROPIC_API_KEY } : {}),
+        "workflows-user-password": WORKFLOWS_USER_PASSWORD
+    },
     // AI enrichment runs as a background task after upload, so tests here wait on real model calls.
     timeout: 300_000,
     assertionTimeout: 10_000

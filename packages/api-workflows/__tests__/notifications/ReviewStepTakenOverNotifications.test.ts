@@ -67,13 +67,17 @@ describe("ReviewStepTakenOverNotifications (R181, R183, R185, D111)", () => {
         const [call] = notifier.calls;
         expect(call.event).toBe("takenOver");
         expect(call.stepId).toBe("legal");
-        expect(call.recipients).toEqual([{ id: "user-reviewer", displayName: "Rob Reviewer" }]);
-        expect(call.message).toEqual({
+        expect(call.deliveries[0].recipients).toEqual([
+            { id: "user-reviewer", displayName: "Rob Reviewer" }
+        ]);
+        expect(call.deliveries[0].message).toEqual({
             title: "Anna took over Legal review on “Article 1”.",
             body: "You no longer own this step.",
             subject: "Taken over: Article 1 (Legal review)",
             text: "Anna took over Legal review on “Article 1”. You don’t need to review it any more.",
-            linkLabel: "Open content"
+            linkLabel: "Open content",
+            link: "content",
+            footer: "You get this e-mail because you owned this step."
         });
     });
 
@@ -89,7 +93,9 @@ describe("ReviewStepTakenOverNotifications (R181, R183, R185, D111)", () => {
 
         const [call] = notifier.calls;
         expect(call.stepId).toBe("editorial");
-        expect(call.message.title).toBe("Anna took over Editorial review on “Article 1”.");
+        expect(call.deliveries[0].message.title).toBe(
+            "Anna took over Editorial review on “Article 1”."
+        );
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
             { id: EDITORIAL_CHANNEL }
         ]);
@@ -134,7 +140,7 @@ describe("ReviewStepTakenOverNotifications (R181, R183, R185, D111)", () => {
             createFact({ actor: { ...ANNA, displayName: "  " } })
         );
 
-        expect(notifier.calls[0].message.title).toBe(
+        expect(notifier.calls[0].deliveries[0].message.title).toBe(
             "A user took over Legal review on “Article 1”."
         );
     });

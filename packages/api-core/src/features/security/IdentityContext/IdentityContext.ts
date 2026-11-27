@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
-import { HandlerExecution } from "@webiny/event-handler-core";
+import { KernelExecution } from "@webiny/api-kernel-core";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
@@ -15,14 +15,14 @@ class IdentityContextImpl implements Abstraction.Interface {
     private identity: Identity = new AnonymousIdentity();
     /*
      * `withIdentity()` switches the identity for its callback's async call chain only, the same way
-     * `TenantContext.withTenant()` switches the tenant.
+     * `TenantScopes.withTenant()` runs its callback as the caller's identity.
      */
     private readonly overrides = new AsyncLocalStorage<Identity>();
 
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
         private featureFlags: FeatureFlags.Interface,
-        private handlerExecution: HandlerExecution.Interface | undefined
+        private kernelExecution: KernelExecution.Interface | undefined
     ) {}
 
     // ========================================================================
@@ -30,7 +30,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     getIdentity(): Identity {
-        this.handlerExecution?.assertCurrent("IdentityContext");
+        this.kernelExecution?.assertCurrent("IdentityContext");
 
         const override = this.overrides.getStore();
         if (override) {
@@ -45,7 +45,7 @@ class IdentityContextImpl implements Abstraction.Interface {
      * rest of the request.
      */
     setIdentity(identity: Identity | undefined): void {
-        this.handlerExecution?.assertCurrent("IdentityContext");
+        this.kernelExecution?.assertCurrent("IdentityContext");
 
         if (this.overrides.getStore()) {
             throw new Error(
@@ -61,7 +61,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     }
 
     withIdentity<T>(identity: Identity, cb: () => Promise<T>): Promise<T> {
-        this.handlerExecution?.assertCurrent("IdentityContext");
+        this.kernelExecution?.assertCurrent("IdentityContext");
         return this.overrides.run(identity, cb);
     }
 
@@ -70,12 +70,12 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T> {
-        this.handlerExecution?.assertCurrent("IdentityContext");
+        this.kernelExecution?.assertCurrent("IdentityContext");
         return this.authorizationContext.withoutAuthorization(cb);
     }
 
     withAuthorization<T>(cb: () => Promise<T>): Promise<T> {
-        this.handlerExecution?.assertCurrent("IdentityContext");
+        this.kernelExecution?.assertCurrent("IdentityContext");
         return this.authorizationContext.withAuthorization(cb);
     }
 
@@ -166,5 +166,5 @@ class IdentityContextImpl implements Abstraction.Interface {
 export const IdentityContext = createImplementation({
     abstraction: Abstraction,
     implementation: IdentityContextImpl,
-    dependencies: [AuthorizationContext, FeatureFlags, [HandlerExecution, { optional: true }]]
+    dependencies: [AuthorizationContext, FeatureFlags, [KernelExecution, { optional: true }]]
 });

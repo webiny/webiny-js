@@ -37,6 +37,7 @@ These packages have `storageOps: ["ddb", "ddb-os,ddb"]`:
 - `api-mailer`
 - `api-scheduler`
 - `api-workflows`
+- `mailer-smtp`
 - `tasks`
 - `testing`
 

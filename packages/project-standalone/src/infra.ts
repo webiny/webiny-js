@@ -9,7 +9,8 @@ import { CiIs } from "@webiny/project/extensions/infra/index.js";
 import { CiIsNot } from "@webiny/project/extensions/infra/index.js";
 import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { DiskFileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { S3FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Pglite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
@@ -40,8 +41,15 @@ export const Infra = {
     Postgres,
     // PGlite (Postgres compiled to WebAssembly) that `watch` / `serve` start next to the api: development only.
     Pglite,
-    // Standalone hosting-type local file storage (counterpart to the AWS S3 bucket).
-    FileStorage,
+    /*
+     * Standalone hosting-type file storage (counterpart to the AWS S3 bucket), one tag per storage:
+     * `<Infra.FileStorage.Disk />` keeps files in a folder on disk, `<Infra.FileStorage.S3 />` in an
+     * S3-compatible bucket.
+     */
+    FileStorage: {
+        Disk: DiskFileStorage,
+        S3: S3FileStorage
+    },
     // Standalone hosting-type public API URL (the WEBINY_API_URL env var).
     ApiUrl,
     // Standalone hosting-type public Admin app URL (the WEBINY_ADMIN_URL env var).

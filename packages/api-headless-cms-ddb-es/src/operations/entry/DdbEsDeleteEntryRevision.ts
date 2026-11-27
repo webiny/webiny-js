@@ -16,6 +16,7 @@ import {
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { ScopeTenant } from "@webiny/api-core/features/tenancy/ScopeTenant/index.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -35,7 +36,8 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
         private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
+        private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[],
+        private scopeTenant: ScopeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -43,11 +45,12 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
         params: CmsEntryStorageOperationsDeleteRevisionParams<T>
     ): Promise<void> {
         const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
+        const tenant = this.scopeTenant.getId();
         const model = this.storageModelProvider.getModel(initialModel);
 
         const partitionKey = createPartitionKey({
             id: entry.id,
-            tenant: model.tenant
+            tenant
         });
 
         const configurations = createConfigurations(this.indexProvider);
@@ -58,7 +61,7 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
          * We need published entry to delete it if necessary.
          */
         const [publishedStorageEntry] = await this.dataLoaders.getPublishedRevisionByEntryId({
-            model,
+            model: { tenant, modelId: model.modelId },
             ids: [entry.id]
         });
         /**
@@ -92,14 +95,14 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
 
         if (latestEntry && initialLatestStorageEntry) {
             const latestStorageEntry = convertToStorageEntry({
-                storageEntry: initialLatestStorageEntry,
+                storageEntry: { ...initialLatestStorageEntry, tenant },
                 model
             });
 
             /**
              * In the end we need to set the new latest entry.
              */
-            const latestStorageEntryLatestKey = createEntryLatestKeys(latestStorageEntry);
+            const latestStorageEntryLatestKey = createEntryLatestKeys(latestStorageEntry, tenant);
             entityBatch.put({
                 ...latestStorageEntryLatestKey,
                 data: latestStorageEntry
@@ -109,7 +112,10 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
              * Also perform an update on the actual revision. This is needed
              * because of updates on the entry-level meta fields.
              */
-            const actualRevisionEntryKey = createEntryRevisionKeys(initialLatestStorageEntry);
+            const actualRevisionEntryKey = createEntryRevisionKeys(
+                initialLatestStorageEntry,
+                tenant
+            );
             entityBatch.put({
                 ...actualRevisionEntryKey,
                 data: latestStorageEntry
@@ -118,15 +124,15 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
             const latestTransformer = createTransformer({
                 valuesModifiers: this.valuesModifiers,
                 model,
-                entry: latestEntry,
-                storageEntry: initialLatestStorageEntry,
+                entry: { ...latestEntry, tenant },
+                storageEntry: { ...initialLatestStorageEntry, tenant },
                 fieldIndexRegistry: this.fieldIndexRegistry,
                 compressionHandler: this.compressionHandler
             });
 
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
 
-            const esLatestKeys = createEntryLatestKeys(latestEntry);
+            const esLatestKeys = createEntryLatestKeys(latestEntry, tenant);
             elasticsearchEntityBatch.put({
                 ...esLatestKeys,
                 index,
@@ -138,7 +144,7 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
             await entityBatch.execute();
 
             this.dataLoaders.clearAll({
-                tenant: entry.tenant
+                tenant
             });
         } catch (ex) {
             throw new WebinyError(
@@ -181,6 +187,7 @@ export const DdbEsDeleteEntryRevision = DeleteEntryRevisionStorageOperation.crea
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
         CmsModelOpenSearchIndexProvider,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        [CmsEntryOpenSearchValuesModifier, { multiple: true }],
+        ScopeTenant
     ]
 });

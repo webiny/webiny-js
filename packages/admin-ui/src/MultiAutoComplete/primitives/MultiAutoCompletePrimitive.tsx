@@ -165,7 +165,9 @@ const DecoratableMultiAutoCompletePrimitive = (props: MultiAutoCompletePrimitive
     return (
         <PopoverPrimitive open={vm.optionsListVm.open} onOpenChange={() => setListOpenState(true)}>
             <Command
-                label={String(props.label)}
+                // Only a text label can name the combobox: `String()` turned a missing label into
+                // "undefined" and an element into "[object Object]".
+                label={typeof props.label === "string" ? props.label : undefined}
                 shouldFilter={props.shouldFilter}
                 onKeyDown={handleKeyDown}
             >

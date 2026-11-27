@@ -10,6 +10,7 @@ export type { AssetData } from "~/delivery/AssetDelivery/Asset.js";
 export { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 export type { AssetRequestOptions } from "~/delivery/AssetDelivery/AssetRequest.js";
 export { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
+export { toSingleChunk } from "~/delivery/AssetDelivery/toSingleChunk.js";
 export { createAssetDeliveryPluginLoader } from "~/delivery/AssetDelivery/createAssetDeliveryPluginLoader.js";
 export {
     AssetRequestResolver,

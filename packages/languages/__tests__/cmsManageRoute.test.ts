@@ -9,7 +9,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms/graphql/CmsGraphQLSchemaFactory.js";
-import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { createRegisterExtensionPlugin, registerExtensions } from "@webiny/handler";
@@ -18,7 +18,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import { Extension } from "~/api/Extension.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
@@ -50,7 +50,7 @@ const GET_MODEL = /* GraphQL */ `
 
 describe("Languages model via the CMS manage route (createCmsRoute)", () => {
     it("getContentModel('wbyLanguage') resolves through /cms/manage", async () => {
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
         const cmsStorage = getStorageOps("cms");
 
         const handler = createTestHttpHandler({
@@ -102,7 +102,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
     });
 
     it("REPRO: an earlier request-time model listing (like ACO) must NOT hide wbyLanguage", async () => {
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
         const cmsStorage = getStorageOps("cms");
 
         const handler = createTestHttpHandler({

@@ -1,4 +1,5 @@
 import type { NotificationMessage } from "~/domain/notifications/types.js";
+import { PREVIOUS_REVIEWER_FOOTER } from "~/domain/notifications/messages/notificationFooters.js";
 
 export interface ReassignedMessageParams {
     /** `review.title`. */
@@ -18,6 +19,8 @@ export const buildReassignedMessage = (params: ReassignedMessageParams): Notific
         body: `${stepTitle} · reassigned by ${operator}. You no longer own this step.`,
         subject: `Reassigned: ${contentTitle} (${stepTitle})`,
         text: `${operator} reassigned this step to ${newOwner}. You don’t need to review it any more.`,
-        linkLabel: "Open content"
+        linkLabel: "View review details",
+        link: "reviewDetails",
+        footer: PREVIOUS_REVIEWER_FOOTER
     };
 };

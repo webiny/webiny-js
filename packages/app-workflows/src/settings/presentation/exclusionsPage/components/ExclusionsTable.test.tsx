@@ -6,6 +6,7 @@ import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createExclusionRowVm } from "~/settings/testing/createExclusionRowVm.js";
+import { createExclusionsPageViewModel } from "~/settings/testing/createExclusionsPageViewModel.js";
 import { createFakeExclusionsPagePresenter } from "~/settings/testing/fakeExclusionsPagePresenter.js";
 import type { ExclusionRowVm } from "../abstractions.js";
 import { ExclusionsTable } from "./ExclusionsTable.js";
@@ -16,6 +17,7 @@ const DELETED = createExclusionRowVm({
     userId: "user-9",
     label: "Deleted user",
     muted: true,
+    initials: null,
     subLine: "This user no longer exists",
     reason: "No reason given",
     reasonMuted: true,
@@ -28,6 +30,7 @@ const DELETED = createExclusionRowVm({
 const EXPIRED = createExclusionRowVm({
     userId: "user-2",
     label: "Luka Perić",
+    initials: "LP",
     reason: "Workload",
     untilLabel: "3 Sep 2026, 06:59",
     untilTitle: "Thu 3 Sep 2026, 06:59 CEST (Europe/Zagreb)",
@@ -40,18 +43,22 @@ const EXPIRED = createExclusionRowVm({
 const UNRESOLVED = createExclusionRowVm({
     userId: "user-77",
     label: "user-77",
+    initials: null,
     editLabel: "Edit exclusion for user-77",
     removeLabel: "Remove exclusion for user-77"
 });
 
-const renderTable = (rows: ExclusionRowVm[]) => {
-    const presenter = createFakeExclusionsPagePresenter();
-    const result = renderWithAdminUi(<ExclusionsTable rows={rows} presenter={presenter} />);
+const renderTable = (rows: ExclusionRowVm[], sortDirection: "asc" | "desc" = "asc") => {
+    const vm = createExclusionsPageViewModel({ rows, sortDirection });
+    const presenter = createFakeExclusionsPagePresenter(vm);
+    const result = renderWithAdminUi(<ExclusionsTable presenter={presenter} />);
     return { presenter, result };
 };
 
+// The table row of a user: the user cell carries the id.
 const getRow = (container: HTMLElement, userId: string): HTMLElement => {
-    const row = container.querySelector<HTMLElement>(`[data-user-id="${userId}"]`);
+    const cell = container.querySelector<HTMLElement>(`[data-user-id="${userId}"]`);
+    const row = cell?.closest("tr");
     if (!row) {
         throw new Error(`No row for ${userId}.`);
     }
@@ -62,9 +69,40 @@ describe("ExclusionsTable (R323)", () => {
     it("shows the column headers User, Reason, Until, Status and an empty actions header", () => {
         renderTable([ANA]);
 
+        // The sortable User header also holds the sort direction's screen-reader text.
         const headers = screen.getAllByRole("columnheader").map(header => header.textContent);
 
-        expect(headers).toEqual(["User", "Reason", "Until", "Status", ""]);
+        expect(headers).toEqual(["UserSort column", "Reason", "Until", "Status", ""]);
+    });
+
+    it("puts the column settings in the last header", () => {
+        renderTable([ANA]);
+
+        const headers = screen.getAllByRole("columnheader");
+        const last = headers[headers.length - 1];
+
+        expect(last.querySelector("button")).not.toBeNull();
+    });
+
+    it("shows the user name sort and flips it through the presenter", () => {
+        const { presenter } = renderTable([ANA, EXPIRED]);
+
+        const user = screen.getAllByRole("columnheader")[0];
+        expect(user.querySelector("svg")).not.toBeNull();
+
+        fireEvent.click(screen.getByText("User"));
+
+        expect(presenter.toggleSort).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows a found user's initials in an avatar hidden from screen readers", () => {
+        const { result } = renderTable([ANA]);
+
+        const row = getRow(result.container, "user-1");
+        const initials = screen.getByText("AK");
+
+        expect(row.contains(initials)).toBe(true);
+        expect(initials.closest("[aria-hidden='true']")).not.toBeNull();
     });
 
     it("shows the name, the reason and the until label with the full time as its title", () => {
@@ -110,6 +148,7 @@ describe("ExclusionsTable (R323)", () => {
 
         expect(screen.getByText("user-77")).toBeTruthy();
         expect(row.querySelector('[data-icon="person_off"]')).toBeNull();
+        expect(row.querySelector('[data-icon="person"]')).not.toBeNull();
     });
 
     it("shows a missing reason muted", () => {
@@ -132,6 +171,15 @@ describe("ExclusionsTable (R323)", () => {
 
         expect(active?.textContent).toBe("Active");
         expect(expired?.textContent).toBe("Expired");
+    });
+
+    it("does not dim an expired row (B27)", () => {
+        const { result } = renderTable([ANA, EXPIRED]);
+
+        const expired = getRow(result.container, "user-2");
+        expect(expired.className).not.toMatch(/opacity|muted|disabled/);
+        expect(expired.querySelector("[class*='opacity']")).toBeNull();
+        expect(expired.querySelector("[data-muted]")).toBeNull();
     });
 
     it("names the row actions for screen readers and titles them Edit and Remove (Q68.6)", () => {
@@ -173,7 +221,7 @@ describe("ExclusionsTable (R323)", () => {
     it("renders the rows in the order of the view model", () => {
         const { result } = renderTable([EXPIRED, ANA, DELETED]);
 
-        const ids = Array.from(result.container.querySelectorAll("[data-user-id]")).map(row =>
+        const ids = Array.from(result.container.querySelectorAll("tbody [data-user-id]")).map(row =>
             row.getAttribute("data-user-id")
         );
 

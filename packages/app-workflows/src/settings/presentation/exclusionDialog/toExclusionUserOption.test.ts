@@ -15,16 +15,29 @@ describe("toExclusionUserOption (R324, Q64)", () => {
             warning: null,
             muted: false,
             disabled: false,
-            icon: "person",
+            icon: null,
             note: null
         });
     });
 
-    it("disables a user who is already in the list, with the note In the list", () => {
+    it("describes a user with the names of the teams, joined with commas", () => {
+        const member = createWorkflowUserSummary({
+            id: "user-ivan",
+            displayName: "Ivan Horvat",
+            teams: [
+                { id: "team-1", name: "Editors" },
+                { id: "team-2", name: "Legal" }
+            ]
+        });
+
+        expect(toExclusionUserOption(member, false).description).toBe("Editors, Legal");
+    });
+
+    it("disables a user who is already in the list, with the note Already excluded", () => {
         const option = toExclusionUserOption(ivan, true);
 
         expect(option.disabled).toBe(true);
-        expect(option.note).toBe("In the list");
+        expect(option.note).toBe("Already excluded");
         expect(option.muted).toBe(false);
     });
 });

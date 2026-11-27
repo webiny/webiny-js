@@ -4,10 +4,18 @@ import { mergeEntryLevelMeta } from "@webiny/api-headless-cms-sql/operations/ent
 import { SqlFragment } from "~/features/search/SqlFragment.js";
 import type { IEntryRow } from "./entryRow.js";
 
+/**
+ * The rows of one model of one tenant. `tenant` is the storage's scope tenant (`ScopeTenant`), never
+ * one read from a parameter: build it with `modelRef()`.
+ */
 export interface IModelRef {
     tenant: string;
     modelId: string;
 }
+
+export const modelRef = (tenant: string, model: { modelId: string }): IModelRef => {
+    return { tenant, modelId: model.modelId };
+};
 
 export const modelRows = (
     db: Knex,

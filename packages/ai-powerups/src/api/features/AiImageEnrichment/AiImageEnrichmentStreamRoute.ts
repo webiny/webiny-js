@@ -1,5 +1,5 @@
-import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/api-kernel-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/api-kernel-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import type { IPreparedImageEnrichment } from "./abstractions.js";

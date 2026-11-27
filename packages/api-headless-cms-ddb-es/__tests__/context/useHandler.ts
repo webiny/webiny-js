@@ -1,10 +1,7 @@
-import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
+import { createTestHttpHandler } from "@webiny/api-kernel-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -17,13 +14,16 @@ import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreStorageOperationsBuilder } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
+import type { Container } from "@webiny/di";
 import type { CmsContext } from "~/types";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
+import { AuthTriggerHandler } from "@webiny/api-core-testing";
+import { TestTenantScopesFeature, createTenantScopedChild } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -45,13 +45,17 @@ export const defaultIdentity: IdentityData = {
     displayName: "John Doe"
 };
 
-// Root container is created once across all handler() calls.
-let rootContainer: Container | null = null;
+const TENANTS = [
+    { id: "root", name: "Root", parent: "" },
+    { id: "webiny", name: "Webiny", parent: "" },
+    { id: "dev", name: "Dev", parent: "" },
+    { id: "sales", name: "Sales", parent: "" }
+] as CreateTenantInput[];
 
 export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHandlerCoreParams) => {
     const elasticsearchClient = createTestOpenSearchClient();
 
-    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperationsBuilder>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = params.identity ?? defaultIdentity;
@@ -61,74 +65,76 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
     const legacyPlugins = flatPlugins.filter(p => p instanceof RegisterExtensionPlugin);
     const extraCmsPlugins = flatPlugins.filter(p => !(p instanceof RegisterExtensionPlugin));
 
+    // The request's own scope (the root tenant's): the first scope the request builds.
+    let requestScope: Container | null = null;
+
+    /*
+     * Requests run the way the API runs them: the request container is tenant-neutral, and the
+     * request continues in the scope of its `x-tenant` header's tenant. Work in another tenant
+     * (`TenantScopes.withTenant()`, as the index tasks do for every tenant) builds that tenant's
+     * scope the same way.
+     */
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, resolvedIdentity);
+            container.registerInstance(TestPermissions, { list: resolvedPermissions });
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            TestTenantScopesFeature.register(container);
+        },
+        child: createTenantScopedChild({
+            request: async container => {
+                await WcpLicenseLoader.load(createTestWcpLicense());
+                registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+                container.registerInstance(Logger, new NullLogger());
+            },
+            scope: container => {
+                const wcpLicense = WcpLicenseLoader.getCached();
+                ApiCoreFeature.register(container, { wcpLicense, tenantScope: true });
+                processLegacyPlugins(container, cmsStorage.plugins);
+                processLegacyPlugins(container, legacyPlugins);
+
+                HeadlessCmsFeature.register(container, {
+                    type: "manage",
+                    extraPlugins: extraCmsPlugins
+                });
+
+                ProcessEnvFeature.register(container);
+                BackgroundTasksFeature.register(container);
+                TimerFeature.register(container, timerFactory());
+                SearchIndexTasksFeature.register(container);
+                SearchIndexTasksDdbOsFeature.register(container);
+
+                requestScope ??= container;
+
+                GraphQLEngineFeature.register(container);
+            }
+        })
+    });
+
     const buildContext = async (): Promise<C> => {
-        if (!rootContainer) {
-            rootContainer = new Container();
-            rootContainer.registerInstance(TestIdentity, resolvedIdentity);
-            rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
-            rootContainer.register(TestAuthenticator);
-            rootContainer.register(TestAuthorizer);
-        }
-
-        const container = rootContainer.createChildContainer();
-        container.registerInstance(RequestContainer, container);
-
-        const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
-        registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        const logger = new NullLogger();
-        container.registerInstance(Logger, logger);
-        ApiCoreFeature.register(container, { wcpLicense });
-        processLegacyPlugins(container, cmsStorage.plugins);
-        processLegacyPlugins(container, legacyPlugins);
-
-        HeadlessCmsFeature.register(container, {
-            type: "manage",
-            extraPlugins: extraCmsPlugins
+        requestScope = null;
+        await handler({
+            method: "POST",
+            path: "/graphql",
+            headers: {
+                "x-tenant": "root",
+                "content-type": "application/json",
+                authorization: "Bearer test-token"
+            },
+            body: { query: "{ __typename }" }
         });
+        const container = requestScope! as Container;
 
         const createTenantUseCase = container.resolve(CreateTenantUseCase);
-        for (const tenant of [
-            { id: "root", name: "Root", parent: "" },
-            { id: "webiny", name: "Webiny", parent: "" },
-            { id: "dev", name: "Dev", parent: "" },
-            { id: "sales", name: "Sales", parent: "" }
-        ] as CreateTenantInput[]) {
+        for (const tenant of TENANTS) {
             try {
                 await createTenantUseCase.execute(tenant);
             } catch {
                 // Tenant may already exist in DynamoDB
             }
         }
-
-        ProcessEnvFeature.register(container);
-        BackgroundTasksFeature.register(container);
-        TimerFeature.register(container, timerFactory());
-        SearchIndexTasksFeature.register(container);
-        SearchIndexTasksDdbOsFeature.register(container);
-
-        const tenantCtx = container.resolve(TenantContext);
-        tenantCtx.setTenant({
-            id: "root",
-            name: "Root",
-            description: "",
-            status: "enabled",
-            isInstalled: false,
-            settings: {
-                name: { full: "Root", slug: "root" },
-                social: {},
-                favicon: {},
-                logo: {}
-            } as any,
-            tags: [],
-            parent: null,
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString()
-        });
-
-        const authCtx = container.resolve(AuthenticationContext);
-        const identityCtx = container.resolve(IdentityContext);
-        const identity = await authCtx.authenticate("");
-        identityCtx.setIdentity(identity);
 
         const ctx: Record<string, any> = { container };
 

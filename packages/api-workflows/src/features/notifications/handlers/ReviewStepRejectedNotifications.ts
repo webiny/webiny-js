@@ -40,13 +40,17 @@ class ReviewStepRejectedNotificationsImpl implements ReviewStepRejectedEventHand
                 review,
                 stepId: step.id,
                 event: "rejected",
-                recipients,
-                message: buildRejectedMessage({
-                    contentTitle: review.title,
-                    stepTitle: step.title,
-                    decider: getActorName(fact.actor, step.title),
-                    comment: fact.comment
-                })
+                deliveries: [
+                    {
+                        recipients,
+                        message: buildRejectedMessage({
+                            contentTitle: review.title,
+                            stepTitle: step.title,
+                            decider: getActorName(fact.actor, step.title),
+                            comment: fact.comment
+                        })
+                    }
+                ]
             });
         } catch (error) {
             this.logger.error(
