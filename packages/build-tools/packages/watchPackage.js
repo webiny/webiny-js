@@ -4,7 +4,7 @@ export default async options => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
     const [{ createRslib }, { pluginSvgr }] = await Promise.all([
         import("@rslib/core"),
-        import("@rsbuild/plugin-svgr")
+        import("../bundling/svgr/index.js")
     ]);
 
     const rslib = await createRslib({

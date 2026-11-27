@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
 import { pluginReact } from "@rsbuild/plugin-react";
-import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { pluginSass } from "@rsbuild/plugin-sass";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import tailwindcss from "@tailwindcss/postcss";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
+import { pluginSvgr } from "../svgr/index.js";
 
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
@@ -61,20 +61,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                 splitChunks: false
             }),
             pluginSass(),
-            pluginSvgr({
-                mixedImport: true,
-                svgrOptions: {
-                    exportType: "named",
-                    svgoConfig: {
-                        plugins: [
-                            {
-                                name: "pres" + "et-default",
-                                params: { overrides: { removeViewBox: false } }
-                            }
-                        ]
-                    }
-                }
-            })
+            pluginSvgr({ mixedImport: true, svgrOptions: { exportType: "named" } })
         ]
     });
 };

@@ -1232,7 +1232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.21.3, @babel/core@npm:^7.28.0":
+"@babel/core@npm:^7.28.0, @babel/core@npm:^7.29.0":
   version: 7.29.13
   resolution: "@babel/core@npm:7.29.13"
   dependencies:
@@ -7487,7 +7487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsbuild/plugin-react@npm:^2.0.0, @rsbuild/plugin-react@npm:^2.1.1":
+"@rsbuild/plugin-react@npm:^2.1.1":
   version: 2.1.1
   resolution: "@rsbuild/plugin-react@npm:2.1.1"
   dependencies:
@@ -7517,25 +7517,6 @@ __metadata:
     "@rsbuild/core":
       optional: true
   checksum: 10/ab0c0579b2ef805e199d8c3723a3d70eb35ba4c970205210dd0ae77f13005a1a40a350a62104dd67e0cae8017b69bae9e27c7bcbb1423fdf105678cb189411bf
-  languageName: node
-  linkType: hard
-
-"@rsbuild/plugin-svgr@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "@rsbuild/plugin-svgr@npm:2.0.5"
-  dependencies:
-    "@rsbuild/plugin-react": "npm:^2.0.0"
-    "@svgr/core": "npm:8.1.0"
-    "@svgr/plugin-jsx": "npm:8.1.0"
-    "@svgr/plugin-svgo": "npm:8.1.0"
-    deepmerge: "npm:^4.3.1"
-    loader-utils: "npm:^3.3.1"
-  peerDependencies:
-    "@rsbuild/core": ^2.0.0
-  peerDependenciesMeta:
-    "@rsbuild/core":
-      optional: true
-  checksum: 10/0ad4f5d302c01d6e70b8986356983ef069da67656df68c306f3983a114f80c02e9b7d98a923c2fb46dedde99c689e898b157214fc38a9e9b5345a3407bd4f3c7
   languageName: node
   linkType: hard
 
@@ -8474,19 +8455,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/core@npm:8.1.0":
-  version: 8.1.0
-  resolution: "@svgr/core@npm:8.1.0"
-  dependencies:
-    "@babel/core": "npm:^7.21.3"
-    "@svgr/babel-preset": "npm:8.1.0"
-    camelcase: "npm:^6.2.0"
-    cosmiconfig: "npm:^8.1.3"
-    snake-case: "npm:^3.0.4"
-  checksum: 10/bc98cd5fc349ab9dcf0c13c2279164726d45878cdac8999090765379c6e897a1b24aca641c12a3c33f578d06f7a09252fb090962a4695c753fb02b627a56bfe6
-  languageName: node
-  linkType: hard
-
 "@svgr/hast-util-to-babel-ast@npm:8.0.0":
   version: 8.0.0
   resolution: "@svgr/hast-util-to-babel-ast@npm:8.0.0"
@@ -8494,33 +8462,6 @@ __metadata:
     "@babel/types": "npm:^7.21.3"
     entities: "npm:^4.4.0"
   checksum: 10/243aa9c92d66aa3f1fc82851fe1fa376808a08fcc02719fed38ebfb4e25cf3e3c1282c185300c29953d047c36acb9e3ac588d46b0af55a3b7a5186a6badec8a9
-  languageName: node
-  linkType: hard
-
-"@svgr/plugin-jsx@npm:8.1.0":
-  version: 8.1.0
-  resolution: "@svgr/plugin-jsx@npm:8.1.0"
-  dependencies:
-    "@babel/core": "npm:^7.21.3"
-    "@svgr/babel-preset": "npm:8.1.0"
-    "@svgr/hast-util-to-babel-ast": "npm:8.0.0"
-    svg-parser: "npm:^2.0.4"
-  peerDependencies:
-    "@svgr/core": "*"
-  checksum: 10/0418a9780753d3544912ee2dad5d2cf8d12e1ba74df8053651b3886aeda54d5f0f7d2dece0af5e0d838332c4f139a57f0dabaa3ca1afa4d1a765efce6a7656f2
-  languageName: node
-  linkType: hard
-
-"@svgr/plugin-svgo@npm:8.1.0":
-  version: 8.1.0
-  resolution: "@svgr/plugin-svgo@npm:8.1.0"
-  dependencies:
-    cosmiconfig: "npm:^8.1.3"
-    deepmerge: "npm:^4.3.1"
-    svgo: "npm:^3.0.2"
-  peerDependencies:
-    "@svgr/core": "*"
-  checksum: 10/59d9d214cebaacca9ca71a561f463d8b7e5a68ca9443e4792a42d903acd52259b1790c0680bc6afecc3f00a255a6cbd7ea278a9f625bac443620ea58a590c2d0
   languageName: node
   linkType: hard
 
@@ -10404,10 +10345,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
+    "@webiny/stdlib": "npm:0.0.20"
     chalk: "npm:^6.0.1"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.4.1"
-    get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
     type-fest: "npm:^6.0.3"
     write-json-file: "npm:^7.0.0"
@@ -10447,7 +10388,6 @@ __metadata:
     "@monaco-editor/react": "npm:^4.7.0"
     "@radix-ui/react-scroll-area": "npm:^1.4.0"
     "@rsbuild/core": "npm:^2.3.3"
-    "@rsbuild/plugin-svgr": "npm:^2.0.5"
     "@storybook/addon-a11y": "npm:^10.6.8"
     "@storybook/addon-docs": "npm:^10.6.8"
     "@storybook/react": "npm:^10.6.8"
@@ -12399,23 +12339,27 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
   dependencies:
+    "@babel/core": "npm:^7.29.0"
     "@rsbuild/core": "npm:^2.3.3"
     "@rsbuild/plugin-react": "npm:^2.1.1"
     "@rsbuild/plugin-sass": "npm:^2.0.1"
-    "@rsbuild/plugin-svgr": "npm:^2.0.5"
     "@rsbuild/plugin-type-check": "npm:^1.6.1"
     "@rsdoctor/rspack-plugin": "npm:^1.6.5"
     "@rslib/core": "npm:^1.0.7"
     "@rspack/core": "npm:^2.3.3"
+    "@svgr/babel-preset": "npm:8.1.0"
+    "@svgr/hast-util-to-babel-ast": "npm:8.0.0"
     "@swc/plugin-emotion": "npm:^20.0.3"
     "@tailwindcss/postcss": "npm:^4.3.5"
+    "@webiny/stdlib": "npm:0.0.20"
+    camelcase: "npm:^6.3.0"
     chalk: "npm:^6.0.1"
     css-loader: "npm:^7.1.5"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.4.1"
-    get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
+    loader-utils: "npm:^3.3.1"
     lodash: "npm:^4.18.1"
     postcss-loader: "npm:^8.2.2"
     raw-loader: "npm:^4.0.2"
@@ -12426,6 +12370,8 @@ __metadata:
     sass-loader: "npm:^17.1.1"
     strip-json-comments: "npm:^5.1.0"
     style-loader: "npm:4.0.0"
+    svg-parser: "npm:^2.1.0"
+    svgo: "npm:^3.3.5"
     ts-morph: "npm:^28.0.0"
     tsx: "npm:4.23.15"
     typescript: "npm:7.0.2"
@@ -12444,13 +12390,13 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
+    "@webiny/stdlib": "npm:0.0.20"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.1"
     ci-info: "npm:^4.5.0"
     execa: "npm:^5.1.1"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
     humanize-duration: "npm:3.35.1"
     inquirer: "npm:^14.3.1"
     load-json-file: "npm:^7.0.1"
@@ -13205,7 +13151,7 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
+    "@webiny/stdlib": "npm:0.0.20"
     jest-dynalite: "npm:^3.6.1"
     listr2: "npm:^11.4.1"
     load-json-file: "npm:^7.0.1"
@@ -14980,7 +14926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase@npm:^6.2.0":
+"camelcase@npm:^6.3.0":
   version: 6.3.0
   resolution: "camelcase@npm:6.3.0"
   checksum: 10/8c96818a9076434998511251dcb2761a94817ea17dbdc37f47ac080bd088fc62c7369429a19e2178b993497132c8cbcf5cc1f44ba963e76782ba469c0474938d
@@ -15626,23 +15572,6 @@ __metadata:
     path-type: "npm:^4.0.0"
     yaml: "npm:^1.10.0"
   checksum: 10/03600bb3870c80ed151b7b706b99a1f6d78df8f4bdad9c95485072ea13358ef294b13dd99f9e7bf4cc0b43bcd3599d40df7e648750d21c2f6817ca2cd687e071
-  languageName: node
-  linkType: hard
-
-"cosmiconfig@npm:^8.1.3":
-  version: 8.3.6
-  resolution: "cosmiconfig@npm:8.3.6"
-  dependencies:
-    import-fresh: "npm:^3.3.0"
-    js-yaml: "npm:^4.1.0"
-    parse-json: "npm:^5.2.0"
-    path-type: "npm:^4.0.0"
-  peerDependencies:
-    typescript: ">=4.9.5"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10/91d082baca0f33b1c085bf010f9ded4af43cbedacba8821da0fb5667184d0a848addc52c31fadd080007f904a555319c238cf5f4c03e6d58ece2e4876b2e73d6
   languageName: node
   linkType: hard
 
@@ -17363,13 +17292,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatten@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "flatten@npm:1.0.3"
-  checksum: 10/5c57379816f1692aaa79fbc6390e0a0644e5e8442c5783ed57c6d315468eddbc53a659eaa03c9bb1e771b0f4a9bd8dd8a2620286bf21fd6538a7857321fdfb20
-  languageName: node
-  linkType: hard
-
 "for-each@npm:^0.3.5":
   version: 0.3.5
   resolution: "for-each@npm:0.3.5"
@@ -17595,17 +17517,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-yarn-workspaces@npm:1.0.2, get-yarn-workspaces@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "get-yarn-workspaces@npm:1.0.2"
-  dependencies:
-    find-root: "npm:^1.1.0"
-    flatten: "npm:^1.0.2"
-    glob: "npm:^7.1.2"
-  checksum: 10/65ac46efe33d128c88352415b5f5090c9062282c1c29149687a7650b98b71f284cd8c83cda618bb9844917baf6bba136e1f9807bdc3da03f73916ff365c1a7ac
-  languageName: node
-  linkType: hard
-
 "getopts@npm:2.3.0":
   version: 2.3.0
   resolution: "getopts@npm:2.3.0"
@@ -17673,7 +17584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.1.2, glob@npm:^7.1.3":
+"glob@npm:^7.1.3":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -22995,7 +22906,6 @@ __metadata:
     fast-glob: "npm:^3.3.3"
     fs-extra: "npm:^11.4.1"
     fsevents: "npm:^2.3.3"
-    get-yarn-workspaces: "npm:^1.0.2"
     github-actions-wac: "npm:^2.0.0"
     graphql: "npm:^16.15.0"
     husky: "npm:^9.1.7"
@@ -23885,16 +23795,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"snake-case@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "snake-case@npm:3.0.4"
-  dependencies:
-    dot-case: "npm:^3.0.4"
-    tslib: "npm:^2.0.3"
-  checksum: 10/0a7a79900bbb36f8aaa922cf111702a3647ac6165736d5dc96d3ef367efc50465cac70c53cd172c382b022dac72ec91710608e5393de71f76d7142e6fd80e8a3
-  languageName: node
-  linkType: hard
-
 "socket.io-adapter@npm:~2.5.2":
   version: 2.5.8
   resolution: "socket.io-adapter@npm:2.5.8"
@@ -24437,14 +24337,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svg-parser@npm:^2.0.4":
+"svg-parser@npm:^2.1.0":
   version: 2.1.0
   resolution: "svg-parser@npm:2.1.0"
   checksum: 10/51dc6c5e73c1ae2af92781254a6eb44ffc1b6caf3c5b094e9e00e9e72a207bc7eecb61faa98d767c8425de00035edd60bd3f82206398b1a714d06a8636e9abcb
   languageName: node
   linkType: hard
 
-"svgo@npm:^3.0.2":
+"svgo@npm:^3.3.5":
   version: 3.3.5
   resolution: "svgo@npm:3.3.5"
   dependencies:
