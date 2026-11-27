@@ -8,6 +8,7 @@ import { ContentEntryEditorWithConfig } from "~/admin/config/contentEntries/edit
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
 import { SingletonEditorPresenterFeature } from "../singletonEditor/feature.js";
 import { ContentEntryEditorBody } from "./ContentEntryEditorBody.js";
+import { SingletonEditorBreadcrumbs } from "./SingletonEditorBreadcrumbs.js";
 
 export interface SingletonEditorViewProps {
     model: CmsModel;
@@ -35,23 +36,7 @@ export const SingletonEditorView = createReactiveComponent(
 
         const { vm } = presenter;
 
-        if (vm.error) {
-            return (
-                <div className={"p-lg"}>
-                    <Alert type={"danger"}>{vm.error}</Alert>
-                </div>
-            );
-        }
-
-        if (!vm.hasFields) {
-            return <div className={"p-lg"}>{"This model has no fields."}</div>;
-        }
-
-        if (vm.loading || !vm.entryId) {
-            return <OverlayLoader text={"Loading entry..."} />;
-        }
-
-        return (
+        let content = (
             <ModelProvider model={model}>
                 <ContentEntryEditorWithConfig>
                     <ContentEntryEditorBody
@@ -61,6 +46,24 @@ export const SingletonEditorView = createReactiveComponent(
                     />
                 </ContentEntryEditorWithConfig>
             </ModelProvider>
+        );
+        if (vm.error) {
+            content = (
+                <div className={"p-lg"}>
+                    <Alert type={"danger"}>{vm.error}</Alert>
+                </div>
+            );
+        } else if (!vm.hasFields) {
+            content = <div className={"p-lg"}>{"This model has no fields."}</div>;
+        } else if (vm.loading || !vm.entryId) {
+            content = <OverlayLoader text={"Loading entry..."} />;
+        }
+
+        return (
+            <>
+                <SingletonEditorBreadcrumbs model={model} />
+                {content}
+            </>
         );
     }
 );

@@ -224,6 +224,15 @@ vi.mock("~/admin/config/contentEntries/editor/ContentEntryEditorConfig.js", () =
     };
 });
 
+// `Breadcrumb` needs the admin config provider; the stub shows which trail the view emits.
+vi.mock("./SingletonEditorBreadcrumbs.js", () => {
+    return {
+        SingletonEditorBreadcrumbs: ({ model }: { model: { name: string } }) => (
+            <div data-testid={"singleton-breadcrumbs"}>{`Headless CMS / ${model.name}`}</div>
+        )
+    };
+});
+
 vi.mock("~/admin/hooks/usePermission.js", () => {
     return {
         usePermission: () => ({
@@ -440,6 +449,29 @@ describe("SingletonEditorView", () => {
         );
         expect(view.queryByText("Back")).toBeNull();
         expect(view.queryByText(/New entry/i)).toBeNull();
+    });
+
+    it("emits the Headless CMS breadcrumb trail ending at the model", async () => {
+        const { model } = setup({ tags: UNTAGGED });
+
+        const view = render(<SingletonEditorView model={model} />);
+
+        const trail = await view.findByTestId("singleton-breadcrumbs");
+        expect(trail.textContent).toBe(`Headless CMS / ${model.name}`);
+    });
+
+    it("keeps the breadcrumb trail when the presenter has an error", async () => {
+        const { model } = setup({
+            tags: UNTAGGED,
+            onInit: state => {
+                state.error = "Could not load the entry.";
+            }
+        });
+
+        const view = render(<SingletonEditorView model={model} />);
+
+        expect(await view.findByText("Could not load the entry.")).toBeTruthy();
+        expect(view.getByTestId("singleton-breadcrumbs")).toBeTruthy();
     });
 
     it("shows the presenter's error", async () => {
