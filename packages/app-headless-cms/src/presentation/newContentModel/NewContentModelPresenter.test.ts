@@ -82,7 +82,7 @@ describe("NewContentModelPresenter", () => {
 
     it("ignores publishing when the model is not a single entry model", async () => {
         fillRequired();
-        setValue("pluralApiName", "settings");
+        setValue("pluralApiName", "Settings");
         setValue("singleEntry", true);
         setValue("singleEntryPublishing", true);
         setValue("singleEntry", false);
@@ -100,5 +100,60 @@ describe("NewContentModelPresenter", () => {
 
         setValue("singleEntry", false);
         expect(fieldNames()).not.toContain("singleEntryPublishing");
+    });
+
+    describe("plural API name", () => {
+        const pluralField = () => {
+            const rows = presenter.vm.form.layout as IRowNodeVM[];
+            return rows.flatMap(row => row.fields).find(f => f.name === "pluralApiName");
+        };
+
+        it("is hidden for single entry models and save succeeds without it", async () => {
+            fillRequired();
+            setValue("singleEntry", true);
+
+            expect(fieldNames()).not.toContain("pluralApiName");
+
+            await presenter.save();
+
+            expect(createModel.mock.calls[0][0].pluralApiName).toBe("settingUnused");
+        });
+
+        it("is visible when single entry is off and fails when empty", async () => {
+            fillRequired();
+
+            expect(fieldNames()).toContain("pluralApiName");
+
+            const result = await presenter.save();
+
+            expect(result).toBeNull();
+            expect(createModel).not.toHaveBeenCalled();
+            expect(pluralField()!.validation.message).toBe("Plural API Name is required.");
+        });
+
+        it("fails when longer than 100 characters", async () => {
+            fillRequired();
+            setValue("pluralApiName", "A".repeat(101));
+
+            expect(await presenter.save()).toBeNull();
+            expect(createModel).not.toHaveBeenCalled();
+        });
+
+        it("fails for an invalid API name", async () => {
+            fillRequired();
+            setValue("pluralApiName", "settings list");
+
+            expect(await presenter.save()).toBeNull();
+            expect(createModel).not.toHaveBeenCalled();
+        });
+
+        it("passes for a valid API name", async () => {
+            fillRequired();
+            setValue("pluralApiName", "Settings");
+
+            await presenter.save();
+
+            expect(createModel.mock.calls[0][0].pluralApiName).toBe("Settings");
+        });
     });
 });

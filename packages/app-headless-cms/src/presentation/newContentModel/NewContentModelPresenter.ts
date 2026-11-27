@@ -10,6 +10,7 @@ import {
     CMS_MODEL_PUBLISHING_ENABLED_TAG,
     CMS_MODEL_SINGLETON_TAG
 } from "@webiny/app-headless-cms-common";
+import { createApiNameSchema } from "./createApiNameSchema.js";
 import {
     NewContentModelPresenter as Abstraction,
     type INewContentModelPresenter,
@@ -143,7 +144,12 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
                     .description("Adds drafts, revisions and publishing. Cannot be changed later.")
                     .defaultValue(false)
                     .hiddenWhen(({ form }) => !form.field("singleEntry").getValue()),
-                pluralApiName: fields.text().label("Plural API Name"),
+                pluralApiName: fields
+                    .text()
+                    .label("Plural API Name")
+                    .required("Plural API Name is required.")
+                    .schema(createApiNameSchema(() => this.modelsCache.getItems()))
+                    .hiddenWhen(({ form }) => form.field("singleEntry").getValue()),
                 group: fields
                     .text()
                     .label("Content model group")
