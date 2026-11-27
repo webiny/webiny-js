@@ -3,7 +3,11 @@ import { GetLatestSingletonEntryUseCase as UseCaseAbstraction } from "./abstract
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
-import { EntryNotFoundError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import {
+    EntryAlreadyExistsError,
+    EntryNotFoundError,
+    EntryValidationError
+} from "~/domain/contentEntry/errors.js";
 import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 import { createSingletonEntryId } from "~/domain/contentModel/createSingletonEntryId.js";
 import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
@@ -35,26 +39,38 @@ class GetLatestSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface
 
         const entryId = createSingletonEntryId(model);
 
-        let getResult: GetResult<T>;
-        if (isPublishingEnabled(model)) {
-            getResult = await this.getLatestRevisionByEntryId.execute<T>(model, { id: entryId });
-        } else {
-            getResult = await this.getRevisionById.execute<T>(model, `${entryId}#0001`);
+        // A concurrent request can create the entry between our read and our create. In that case
+        // the create fails as already existing, and a second round reads the entry that won.
+        for (let attempt = 0; attempt < 2; attempt++) {
+            let getResult: GetResult<T>;
+            if (isPublishingEnabled(model)) {
+                getResult = await this.getLatestRevisionByEntryId.execute<T>(model, {
+                    id: entryId
+                });
+            } else {
+                getResult = await this.getRevisionById.execute<T>(model, `${entryId}#0001`);
+            }
+
+            if (getResult.isOk()) {
+                return Result.ok(getResult.value);
+            }
+
+            if (!(getResult.error instanceof EntryNotFoundError)) {
+                return Result.fail(getResult.error);
+            }
+
+            const createResult = await this.createEntry.execute<T>(
+                model,
+                { id: entryId, values: {} as T },
+                { skipValidation: true }
+            );
+
+            if (createResult.isOk() || !(createResult.error instanceof EntryAlreadyExistsError)) {
+                return createResult;
+            }
         }
 
-        if (getResult.isOk()) {
-            return Result.ok(getResult.value);
-        }
-
-        if (!(getResult.error instanceof EntryNotFoundError)) {
-            return Result.fail(getResult.error);
-        }
-
-        return await this.createEntry.execute<T>(
-            model,
-            { id: entryId, values: {} as T },
-            { skipValidation: true }
-        );
+        return Result.fail(new EntryNotFoundError(entryId));
     }
 }
 

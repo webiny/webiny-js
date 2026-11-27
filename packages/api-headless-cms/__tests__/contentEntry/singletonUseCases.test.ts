@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
+import { createDecorator, Result } from "@webiny/feature/api";
 import { useSingletonCategoryHandler } from "~tests/testHelpers/useSingletonCategoryHandler";
 import { createPluginFromCmsModel, getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 import { CMS_MODEL_PUBLISHING_ENABLED_TAG, CMS_MODEL_SINGLETON_TAG } from "~/constants";
 import { createSingletonEntryId } from "~/domain/contentModel/createSingletonEntryId";
-import { EntryNotFoundError, EntryLockedError } from "~/domain/contentEntry/errors";
+import {
+    EntryAlreadyExistsError,
+    EntryNotFoundError,
+    EntryLockedError
+} from "~/domain/contentEntry/errors";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
+import type { CmsEntryValues } from "~/types";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
 import { GetLatestSingletonEntryUseCase } from "~/features/contentEntry/GetLatestSingletonEntry/index.js";
@@ -442,5 +448,56 @@ describe("singleton use cases - untagged model", () => {
             .execute(model, entryId);
         expect(publishIdOnly.isFail()).toBe(true);
         expect(publishIdOnly.error.message).toBe(REVISION_REQUIRED);
+    });
+});
+
+/**
+ * Creates the entry through the real use case, then reports it as already existing. That is what
+ * a request sees when another request created the entry between its read and its own create.
+ */
+class LoseCreateRaceDecorator implements CreateEntryUseCase.Interface {
+    public constructor(private decoratee: CreateEntryUseCase.Interface) {}
+
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        ...args: Parameters<CreateEntryUseCase.Interface["execute"]>
+    ) {
+        const created = await this.decoratee.execute<T>(...args);
+        if (created.isFail()) {
+            return created;
+        }
+        return Result.fail(new EntryAlreadyExistsError(created.value.entryId));
+    }
+}
+
+const LoseCreateRace = createDecorator({
+    abstraction: CreateEntryUseCase,
+    decorator: LoseCreateRaceDecorator,
+    dependencies: []
+});
+
+describe.each([
+    ["tagged", taggedPlugins],
+    ["untagged", untaggedPlugins]
+])("singleton use cases - concurrent create on a %s model", (_, plugins) => {
+    const setupModel = useSetup(plugins);
+
+    it("GetLatestSingletonEntry returns the entry another request created first", async () => {
+        const { container, model, entryId } = await setupModel();
+        container.registerDecorator(LoseCreateRace);
+
+        const result = await container.resolve(GetLatestSingletonEntryUseCase).execute(model);
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.id).toBe(`${entryId}#0001`);
+    });
+
+    it("GetPublishedSingletonEntry returns the entry another request created first", async () => {
+        const { container, model, entryId } = await setupModel();
+        container.registerDecorator(LoseCreateRace);
+
+        const result = await container.resolve(GetPublishedSingletonEntryUseCase).execute(model);
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.id).toBe(`${entryId}#0001`);
     });
 });

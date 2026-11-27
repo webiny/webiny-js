@@ -3,7 +3,11 @@ import { GetPublishedSingletonEntryUseCase as UseCaseAbstraction } from "./abstr
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
-import { EntryNotFoundError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import {
+    EntryAlreadyExistsError,
+    EntryNotFoundError,
+    EntryValidationError
+} from "~/domain/contentEntry/errors.js";
 import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 import { createSingletonEntryId } from "~/domain/contentModel/createSingletonEntryId.js";
 import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
@@ -48,23 +52,36 @@ class GetPublishedSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interf
             }
         }
 
-        const firstResult = await this.getRevisionById.execute<T>(model, `${entryId}#0001`);
+        // A concurrent request can create the entry between our read and our create. In that case
+        // the create fails as already existing, and a second round reads the entry that won.
+        let first: CmsEntry<T> | undefined;
+        for (let attempt = 0; attempt < 2 && !first; attempt++) {
+            const firstResult = await this.getRevisionById.execute<T>(model, `${entryId}#0001`);
 
-        let first: CmsEntry<T>;
-        if (firstResult.isOk()) {
-            first = firstResult.value;
-        } else if (firstResult.error instanceof EntryNotFoundError) {
+            if (firstResult.isOk()) {
+                first = firstResult.value;
+                continue;
+            }
+
+            if (!(firstResult.error instanceof EntryNotFoundError)) {
+                return Result.fail(firstResult.error);
+            }
+
             const createResult = await this.createEntry.execute<T>(
                 model,
                 { id: entryId, values: {} as T },
                 { skipValidation: true }
             );
-            if (createResult.isFail()) {
+
+            if (createResult.isOk()) {
+                first = createResult.value;
+            } else if (!(createResult.error instanceof EntryAlreadyExistsError)) {
                 return Result.fail(createResult.error);
             }
-            first = createResult.value;
-        } else {
-            return Result.fail(firstResult.error);
+        }
+
+        if (!first) {
+            return Result.fail(new EntryNotFoundError(`${entryId}#0001`));
         }
 
         if (publishingEnabled) {
