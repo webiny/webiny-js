@@ -1,14 +1,14 @@
 import React from "react";
 
 import { ButtonsProvider } from "./useButtons.js";
+import { ButtonContainer } from "./ButtonContainer.js";
 import {
     Button,
     type ButtonProps as BaseButtonProps,
     IconButton as BaseIconButton,
     type IconButtonProps as BaseIconButtonProps,
     Tooltip,
-    type TooltipProps,
-    cn
+    type TooltipProps
 } from "@webiny/admin-ui";
 
 interface ButtonProps extends Omit<BaseButtonProps, "onClick"> {
@@ -45,10 +45,6 @@ export const Buttons = (props: ButtonsProps) => {
     );
 };
 
-export const ButtonContainer = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-    return <div className={cn("ml-md text-nowrap empty:hidden", className)} {...props} />;
-};
-
 export const ButtonDefault = ({ onAction, children, ...other }: ButtonProps) => {
     return <Button variant={"ghost"} {...other} onClick={onAction} text={children} />;
 };
@@ -80,3 +76,6 @@ export const IconButton = ({
 
     return <BaseIconButton {...other} onClick={onAction} disabled={disabled} />;
 };
+
+// Kept so deep imports of `Buttons.js` keep working in this patch release.
+export { ButtonContainer };

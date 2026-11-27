@@ -5,7 +5,7 @@ import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { Button, OverlayLoader } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModel } from "~/types.js";
-import { Dialog } from "~/admin/components/Dialog.js";
+import { Dialog } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
 import { useCloneContentModelPresenter } from "~/presentation/cloneContentModel/useCloneContentModelPresenter.js";
 

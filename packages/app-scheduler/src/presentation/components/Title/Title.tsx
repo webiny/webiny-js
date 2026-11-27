@@ -1,5 +1,6 @@
 import React from "react";
-import { Heading, Skeleton } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
+import { Skeleton } from "@webiny/admin-ui";
 
 export interface TitleProps {
     title?: string;

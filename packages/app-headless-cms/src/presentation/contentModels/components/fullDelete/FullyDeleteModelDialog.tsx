@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from "react";
-import { Dialog } from "~/admin/components/Dialog.js";
 import { Dialog as AdminUiDialog } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import type { CmsModel } from "~/types.js";
@@ -80,7 +79,7 @@ export const FullyDeleteModelDialog = ({
     }, [setStatusUnderstood, startProcessing, status]);
 
     return (
-        <Dialog
+        <AdminUiDialog
             open={!!model}
             onClose={onClose}
             dismissible={false}
@@ -117,6 +116,6 @@ export const FullyDeleteModelDialog = ({
                 error={state.error}
                 status={status}
             />
-        </Dialog>
+        </AdminUiDialog>
     );
 };

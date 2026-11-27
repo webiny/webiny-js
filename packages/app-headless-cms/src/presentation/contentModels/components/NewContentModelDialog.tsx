@@ -5,7 +5,7 @@ import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { Dialog as AdminUiDialog } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { type DialogProps } from "~/admin/components/Dialog.js";
+import { type DialogProps } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
 import { useNewContentModelPresenter } from "~/presentation/newContentModel/useNewContentModelPresenter.js";
 
