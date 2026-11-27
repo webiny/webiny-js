@@ -41,6 +41,11 @@ export interface CreateServerHandlerOptions {
      * shut down.
      */
     exitOnShutdownSignal?: boolean;
+    /**
+     * How long an idle keep-alive connection stays open, in ms. Defaults to 65 s, above an AWS
+     * load balancer's 60 s idle timeout; set it above the idle timeout of whatever proxy is in front.
+     */
+    keepAliveTimeoutMs?: number;
 }
 
 export interface IOnShutdownParams {
@@ -70,7 +75,9 @@ export async function createServerHandler(
     });
 
     const inFlight = new InFlightRequests();
-    const server = createNodeHttpServer(app, inFlight);
+    const server = createNodeHttpServer(app, inFlight, {
+        keepAliveTimeoutMs: options.keepAliveTimeoutMs
+    });
 
     if (options.onServer) {
         // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
