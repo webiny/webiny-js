@@ -5,8 +5,12 @@ import {
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
-import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import {
+    EntryNotAuthorizedError,
+    EntryValidationError
+} from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { isPublishingEnabled } from "@webiny/api-headless-cms/exports/api/cms/model.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 
 class SchedulePublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -24,6 +28,12 @@ class SchedulePublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(modelResult.error as any);
         }
         const model = modelResult.value;
+
+        if (!isPublishingEnabled(model)) {
+            return Result.fail(
+                new EntryValidationError("Model does not support publishing.") as any
+            );
+        }
 
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "p" });
         if (!canAccess) {
