@@ -1,17 +1,29 @@
 import { describe, expect, it } from "vitest";
 import { createModelPlugin } from "@webiny/api-headless-cms";
+import type { CmsContext, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import {
-    SchedulePublishEntryUseCase,
-    ScheduleUnpublishEntryUseCase
-} from "~/exports/api/cms/scheduler.js";
+    ScheduleActionUseCase,
+    ScheduledActionTypePublish,
+    ScheduledActionTypeUnpublish
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import { createMockTargetModel, createMockTargetModelPlugins } from "./__mocks/targetModel.js";
+import { createNamespace } from "~/utils/namespace.js";
 
 const MODEL_ID = "taggedModel";
 
-const setup = async (tags: string[]) => {
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
+
+const createContext = async (
+    tags: string[],
+    identity?: IdentityData,
+    permissions?: SecurityPermission[]
+): Promise<CmsContext> => {
     const { singularApiName, pluralApiName, ...model } = createMockTargetModel();
     const isSingleEntry = tags.includes("singleEntry");
     const plugin = createModelPlugin({
@@ -22,35 +34,51 @@ const setup = async (tags: string[]) => {
         pluralApiName: isSingleEntry ? "taggedModelUnused" : "taggedModels",
         tags
     } as any);
-    const { container } = await useHandler({
-        legacyPlugins: [createMockTargetModelPlugins(), plugin]
+    return useHandler({
+        legacyPlugins: [createMockTargetModelPlugins(), plugin],
+        identity,
+        permissions
     }).handler();
-    const modelResult = await container.resolve(GetModelUseCase).execute(MODEL_ID);
-    const cmsModel = modelResult.value;
-    const entry = await container.resolve(CreateEntryUseCase).execute(cmsModel, {
-        values: { title: "Entry" }
-    });
-    return { container, model: cmsModel, id: entry.value.id as string };
 };
 
-const useCases = [
-    ["publish", SchedulePublishEntryUseCase],
-    ["unpublish", ScheduleUnpublishEntryUseCase]
+const createEntry = async (context: CmsContext) => {
+    const modelResult = await context.container.resolve(GetModelUseCase).execute(MODEL_ID);
+    const model = modelResult.value as CmsModel;
+    const entry = await context.container.resolve(CreateEntryUseCase).execute(model, {
+        values: { title: "Entry" }
+    });
+    return { model, id: entry.value.id as string };
+};
+
+const schedule = (
+    context: CmsContext,
+    model: CmsModel,
+    id: string,
+    actionType: typeof ScheduledActionTypePublish | typeof ScheduledActionTypeUnpublish
+) => {
+    return context.container.resolve(ScheduleActionUseCase).execute({
+        tenant: "root",
+        namespace: createNamespace(model),
+        targetId: id,
+        actionType,
+        scheduleFor: new Date(Date.now() + 100000)
+    });
+};
+
+const actionTypes = [
+    ["publish", ScheduledActionTypePublish],
+    ["unpublish", ScheduledActionTypeUnpublish]
 ] as const;
 
-describe.each(useCases)("Schedule %s on models without publishing", (_, UseCase) => {
+describe.each(actionTypes)("Schedule %s through the scheduler", (_, actionType) => {
     it.each([
         ["an untagged singleton model", ["singleEntry"]],
         ["a regular model tagged $publishing:false", ["$publishing:false"]]
     ])("fails for %s", async (_name, tags) => {
-        const { container, model, id } = await setup(tags);
+        const context = await createContext(tags);
+        const { model, id } = await createEntry(context);
 
-        const result = await container.resolve(UseCase).execute({
-            id,
-            model,
-            tenant: "root",
-            scheduleFor: new Date(Date.now() + 100000)
-        });
+        const result = await schedule(context, model, id, actionType);
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toBe("Model does not support publishing.");
@@ -60,14 +88,31 @@ describe.each(useCases)("Schedule %s on models without publishing", (_, UseCase)
         ["a regular model", []],
         ["a singleton model tagged $publishing:true", ["singleEntry", "$publishing:true"]]
     ])("succeeds for %s", async (_name, tags) => {
-        const { container, model, id } = await setup(tags);
+        const context = await createContext(tags);
+        const { model, id } = await createEntry(context);
 
-        const result = await container.resolve(UseCase).execute({
-            id,
-            model,
-            tenant: "root",
-            scheduleFor: new Date(Date.now() + 100000)
-        });
+        const result = await schedule(context, model, id, actionType);
+
+        expect(result.isOk()).toBe(true);
+    });
+});
+
+describe("Schedule a publishing singleton with own-entries access", () => {
+    const ownEntries = [
+        { _src: "role", name: "cms.endpoint.manage" },
+        { _src: "role", name: "cms.contentModelGroup", rwd: "r" },
+        { _src: "role", name: "cms.contentModel", rwd: "r" },
+        { _src: "role", name: "cms.contentEntry", rwd: "rwd", pw: "pu", own: true }
+    ] as unknown as SecurityPermission[];
+
+    const tags = ["singleEntry", "$publishing:true"];
+
+    it.each(actionTypes)("allows %s of an entry created by another identity", async (_, type) => {
+        const contextA = await createContext(tags, identityA);
+        const { model, id } = await createEntry(contextA);
+
+        const contextB = await createContext(tags, identityB, ownEntries);
+        const result = await schedule(contextB, model, id, type);
 
         expect(result.isOk()).toBe(true);
     });
