@@ -31,7 +31,7 @@ class GetCurrentTenantUseCase implements UseCaseAbstraction.Interface {
         }
 
         // Security: the tenant comes from the caller-chosen `x-tenant` header, so an identity
-        // without access to this tenant only gets its ID and name, not the full entry.
+        // without access to this tenant only gets its ID, name and logo, not the full entry.
         if (!(await this.hasAccessToCurrentTenant())) {
             return Result.ok(this.toPublicTenant(result.value));
         }
@@ -54,6 +54,7 @@ class GetCurrentTenantUseCase implements UseCaseAbstraction.Interface {
             id: tenant.id,
             values: {
                 name: tenant.values.name,
+                logo: tenant.values.logo ?? null,
                 description: "",
                 isInstalled: tenant.values.isInstalled,
                 status: tenant.values.status,

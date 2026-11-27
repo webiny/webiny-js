@@ -20,6 +20,7 @@ const variants = cva(
     {
         variants: {
             variant: {
+                accent: "text-accent-primary! [&_svg]:fill-accent-default!",
                 "group-label":
                     "text-neutral-muted! uppercase hover:bg-transparent! group-hover/menu-root-button:bg-transparent! focus:bg-transparent! cursor-default!"
             },

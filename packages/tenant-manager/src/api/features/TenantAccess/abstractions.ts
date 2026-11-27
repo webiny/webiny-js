@@ -11,6 +11,11 @@ import type { TenantNotChildError, TenantNotFoundError } from "../../domain/erro
 export interface ITenantAccess {
     /** The current identity may create tenants (as children of the current tenant). */
     canCreate(): Promise<Result<void, NotAuthorizedError>>;
+    /**
+     * The current identity may list every tenant under root, for the tenant switcher: it needs the
+     * Tenant Manager permission and a user record in the root tenant, wherever the request comes from.
+     */
+    canList(): Promise<Result<void, NotAuthorizedError>>;
     /** The current identity may manage the given tenant: it must be a child of the current tenant. */
     canManage(
         tenantId: string

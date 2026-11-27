@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { ResolveIdentityTenantsUseCase } from "@webiny/api-core/exports/api/security.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js";
@@ -73,6 +74,9 @@ describe("Tenant manager: installing a tenant", () => {
                 installCalls.push(identityContext.isAuthorizationEnabled());
                 return Result.ok();
             }
+        } as any);
+        container.registerInstance(ResolveIdentityTenantsUseCase, {
+            execute: async () => Result.ok([{ id: "root", name: "Root" }])
         } as any);
         container.register(TenantAccessImpl);
         container.register(CreateAndInstallTenantUseCaseImpl);

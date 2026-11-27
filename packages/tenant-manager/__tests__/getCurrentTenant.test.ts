@@ -12,6 +12,7 @@ const tenant = Tenant.from({
     id: "acme",
     values: {
         name: "Acme",
+        logo: "https://example.com/files/acme-logo.png",
         description: "Acme's private description",
         isInstalled: true,
         status: "enabled",
@@ -70,7 +71,7 @@ describe("Tenant manager: getCurrentTenant", () => {
         expect(result.value?.values.extensions).toEqual({ secret: "value" });
     });
 
-    it("returns only the ID and name to an identity without permissions in the tenant", async () => {
+    it("returns only the ID, name and logo to an identity without permissions in the tenant", async () => {
         for (const permissions of [[], [{ name: "aacl" }]]) {
             const result = await createContainer({ permissions })
                 .resolve(GetCurrentTenantUseCase)
@@ -80,6 +81,7 @@ describe("Tenant manager: getCurrentTenant", () => {
             expect(result.value?.id).toBe("acme");
             expect(result.value?.values).toEqual({
                 name: "Acme",
+                logo: "https://example.com/files/acme-logo.png",
                 description: "",
                 isInstalled: true,
                 status: "enabled",

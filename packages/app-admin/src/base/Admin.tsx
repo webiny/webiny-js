@@ -17,6 +17,8 @@ import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { AssumePermissionsFeature } from "~/features/assumePermissions/index.js";
 import { AssumePermissionsPresenterFeature } from "~/presentation/assumePermissions/feature.js";
 import { BannersPresenterFeature } from "~/presentation/banners/feature.js";
+import { TenantSwitcherFeature } from "~/features/tenantSwitcher/feature.js";
+import { TenantSwitcherPresenterFeature } from "~/presentation/tenantSwitcher/feature.js";
 import { DebuggerFeature } from "~/features/debugger/feature.js";
 import { DebuggerPresenterFeature } from "~/presentation/debugger/feature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
@@ -63,6 +65,9 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     AssumePermissionsPresenterFeature.register(container);
     // The Layout renders the banner bar, so its presenter has to exist before the Layout mounts.
     BannersPresenterFeature.register(container);
+    // The navigation renders the tenant switcher, so it has to exist before the Layout mounts.
+    TenantSwitcherFeature.register(container);
+    TenantSwitcherPresenterFeature.register(container);
     /*
      * Here rather than in the config tree for two reasons: the response handler has to exist
      * before the first GraphQL request, and the Layout renders the header indicator, so its

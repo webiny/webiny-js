@@ -15,11 +15,15 @@ export const AccountDetails = (props: AccountDetailsProps) => {
     if (!isDefaultTenant) {
         return null;
     }
+    // The divider keeps "Sign out" apart from the account items.
     return (
-        <Menu.User.Link
-            icon={<Menu.User.Item.Icon element={<AccountIcon />} label={"Account settings"} />}
-            text={"Account settings"}
-            to={props.accountRoute}
-        />
+        <>
+            <Menu.User.Link
+                icon={<Menu.User.Item.Icon element={<AccountIcon />} label={"Account settings"} />}
+                text={"Account settings"}
+                to={props.accountRoute}
+            />
+            <Menu.User.Separator />
+        </>
     );
 };

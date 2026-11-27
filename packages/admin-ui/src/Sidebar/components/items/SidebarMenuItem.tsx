@@ -16,7 +16,11 @@ export interface SidebarMenuItemBaseProps {
     onClick?: React.MouseEventHandler;
     icon?: React.ReactNode;
     action?: React.ReactNode;
-    variant?: "group-label";
+    /**
+     * `accent` draws the label and icon in the accent colour, for an item that stands out from the
+     * navigation, such as an upgrade link.
+     */
+    variant?: "group-label" | "accent";
     active?: boolean;
     disabled?: boolean;
     pinnable?: boolean;

@@ -1,25 +1,34 @@
 import React from "react";
-import { NavigationRenderer, useAdminConfig } from "@webiny/app-admin";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { NavigationRenderer } from "@webiny/app-admin";
+import { TenantSelector } from "@webiny/app-admin";
+import { useAdminConfig } from "@webiny/app-admin";
+import { SimpleLink } from "@webiny/app-admin";
 import { Sidebar } from "@webiny/admin-ui";
 import { SidebarMenuItems } from "./SidebarMenuItems.js";
-import { SimpleLink } from "@webiny/app-admin";
+import { TenantAvatar } from "../TenantAvatar.js";
+import { useTenantSwitcher } from "../useTenantSwitcher.js";
 
 export const Navigation = NavigationRenderer.createDecorator(() => {
-    return function Navigation() {
-        const { menus, title, logo } = useAdminConfig();
+    return createReactiveComponent(function Navigation() {
+        const { menus, title } = useAdminConfig();
+        const { current } = useTenantSwitcher().vm;
 
-        const titleElement = <SimpleLink to={"/"}>{title}</SimpleLink>;
-        const icon = (
-            <SimpleLink to={"/"}>
-                <Sidebar.Icon element={logo.squareLogo} label={"Webiny"} />
-            </SimpleLink>
-        );
+        // The current tenant's logo, so the collapsed rail still shows which tenant this is.
+        let icon: React.ReactNode = null;
+        if (current) {
+            icon = (
+                <SimpleLink to={"/"}>
+                    <TenantAvatar tenant={current} />
+                </SimpleLink>
+            );
+        }
 
         const hasFooterMenus = menus.some(m => (m.tags || []).includes("footer"));
 
         return (
             <Sidebar
-                title={titleElement}
+                title={<TenantSelector title={title} />}
                 icon={icon}
                 footer={
                     hasFooterMenus ? (
@@ -30,5 +39,5 @@ export const Navigation = NavigationRenderer.createDecorator(() => {
                 <SidebarMenuItems menus={menus} />
             </Sidebar>
         );
-    };
+    });
 });

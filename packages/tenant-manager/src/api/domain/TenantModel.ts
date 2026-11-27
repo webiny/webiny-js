@@ -27,6 +27,13 @@ class TenantModelFactory implements ModelFactory.Interface {
                     .description("Enter a tenant name")
                     .required()
                     .renderer("textInput"),
+                logo: fields
+                    .file()
+                    .imagesOnly()
+                    .label("Logo")
+                    .description(
+                        "Shown next to the tenant's name in the admin navigation. Without a logo, the tenant's initials are shown."
+                    ),
                 description: fields
                     .longText()
                     .label("Description")
@@ -55,7 +62,7 @@ class TenantModelFactory implements ModelFactory.Interface {
                     .defaultValue(false),
                 extensions: fields.object().renderer("passthrough")
             }))
-            .layout([["name"], ["description"], ["extensions"]]);
+            .layout([["name"], ["logo"], ["description"], ["extensions"]]);
 
         for (const modifier of this.extensions) {
             model.fields(fields => {
