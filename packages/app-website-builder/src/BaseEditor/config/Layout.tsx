@@ -2,13 +2,15 @@ import React, { useEffect } from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 import { EditorConfig } from "./EditorConfig.js";
 import styled from "@emotion/styled";
-import { IsNotReadOnly } from "~/BaseEditor/config/IsNotReadOnly.js";
 import { useReservedUISpace } from "~/BaseEditor/hooks/useReservedUISpace.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 
+// The editor takes the whole window: the body does not scroll while it is open (see below).
 const EditorLayoutContainer = styled.div`
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 `;
 
 export const Layout = makeDecoratable("EditorLayout", () => {
@@ -31,16 +33,22 @@ export const Layout = makeDecoratable("EditorLayout", () => {
     return (
         <EditorLayoutContainer>
             <EditorConfig.Ui.TopBar />
-            <div className={"flex flex-row"}>
-                <IsNotReadOnly>
-                    <EditorConfig.Ui.Toolbar />
-                </IsNotReadOnly>
-                <div className={"flex-auto"}>
+            {/*
+             * The rest of the window, so a panel's long content scrolls inside it rather than
+             * stretching the row past the window and pushing the breadcrumb bar out of view.
+             */}
+            <div className={"flex min-h-0 flex-1 flex-row"}>
+                <EditorConfig.Ui.Panels side={"left"} />
+                {/*
+                 * `relative`: the breadcrumb bar sits at its foot, as wide as the panels leave it.
+                 * `min-w-0`: the canvas is sized in pixels after a panel has moved, so while a panel
+                 * animates open this column must give way, or the row overflows and pushes the
+                 * panels beyond it off the window until the canvas catches up.
+                 */}
+                <div className={"relative min-w-0 flex-auto overflow-hidden"}>
                     <EditorConfig.Ui.Content />
                 </div>
-                <IsNotReadOnly>
-                    <EditorConfig.Ui.Sidebar />
-                </IsNotReadOnly>
+                <EditorConfig.Ui.Panels />
             </div>
             <EditorConfig.Ui.Elements group={"overlays"} />
         </EditorLayoutContainer>

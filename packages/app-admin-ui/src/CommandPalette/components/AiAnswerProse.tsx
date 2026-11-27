@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { compiler } from "markdown-to-jsx/react";
 import { Markdown } from "@webiny/admin-ui";
+import { AnswerLink } from "./AnswerLink.js";
 
 /*
  * Body text, not help text. The shared `Markdown` defaults suit a sentence of field help, and an
@@ -27,9 +29,20 @@ const PROSE_CLASSES = [
     "[&_td_code]:whitespace-nowrap [&_td_code]:bg-transparent [&_td_code]:p-0"
 ].join(" ");
 
+const options = {
+    overrides: {
+        a: { component: AnswerLink }
+    }
+};
+
 /** An answer's markdown, in the answer prose style. */
-export const AiAnswerProse = ({ text }: { text: string }) => (
-    <Markdown size="md" className={PROSE_CLASSES}>
-        {text}
-    </Markdown>
-);
+export const AiAnswerProse = ({ text }: { text: string }) => {
+    // Compiled here for its links; `Markdown` passes a compiled element through as it is.
+    const content = useMemo(() => compiler(text, options), [text]);
+
+    return (
+        <Markdown size="md" className={PROSE_CLASSES}>
+            {content}
+        </Markdown>
+    );
+};

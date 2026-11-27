@@ -58,6 +58,7 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/wcp": "0.0.0",
+    "@webiny/website-builder-sdk": "0.0.0",
     "graphql": "^16.15.0",
     "rimraf": "^6.1.4",
     "typescript": "^7.0.2",

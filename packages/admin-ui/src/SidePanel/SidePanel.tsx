@@ -16,6 +16,8 @@ interface SidePanelProps extends Omit<React.HTMLAttributes<HTMLElement>, "title"
     headerEnd?: React.ReactNode;
     onClose?: () => void;
     closeLabel?: string;
+    /** The close button's icon. Default: a cross. A host that collapses the panel shows its own. */
+    closeIcon?: React.ReactElement;
     /** A fixed row under the header that does not scroll, such as a search field. */
     headerExtra?: React.ReactNode;
     width?: React.CSSProperties["width"];
@@ -38,6 +40,7 @@ const SidePanelBase = ({
     headerEnd,
     onClose,
     closeLabel = "Close panel",
+    closeIcon = <CloseIcon />,
     headerExtra,
     width = 464,
     className,
@@ -88,7 +91,7 @@ const SidePanelBase = ({
                     <IconButton
                         variant={"ghost"}
                         size={"md"}
-                        icon={<CloseIcon />}
+                        icon={closeIcon}
                         aria-label={closeLabel}
                         onClick={onClose}
                     />

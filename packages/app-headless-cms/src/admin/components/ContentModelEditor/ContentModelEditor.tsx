@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { makeDecoratable, useDialogs } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { IconButton, OverlayLoader, SegmentedControlPrimitive, Tag, Text } from "@webiny/admin-ui";
-import { ReactComponent as ExpandSidebarIcon } from "@webiny/icons/left_panel_open.svg";
+import {
+    CollapsibleSidePanel,
+    OverlayLoader,
+    SegmentedControlPrimitive,
+    Tag,
+    Text
+} from "@webiny/admin-ui";
 import { ReactComponent as ViewCompactAltIcon } from "@webiny/icons/view_compact_alt.svg";
 import { ReactComponent as ViewDayIcon } from "@webiny/icons/view_day.svg";
 import { FieldsSidebar } from "./FieldsSidebar.js";
@@ -82,50 +87,19 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
             <Header activeTab={activeTab} onTabChange={setActiveTab} />
             <div className={"w-full overflow-y-auto h-main-content"}>
                 <div className={"flex h-full"}>
-                    <div
-                        className={
-                            "shrink-0 bg-neutral-base border-r border-neutral-dimmed overflow-hidden h-main-content relative transition-[width] duration-200 ease-in-out"
-                        }
-                        style={{ width: isSidebarOpen ? 200 : 45 }}
+                    <CollapsibleSidePanel
+                        open={isSidebarOpen}
+                        label={"Fields"}
+                        width={200}
+                        bordered={true}
+                        onExpand={() => setIsSidebarOpen(true)}
+                        className={"bg-neutral-base h-main-content"}
                     >
-                        {/* Expanded content */}
-                        <div
-                            className={
-                                "transition-opacity duration-150 " +
-                                (isSidebarOpen
-                                    ? "opacity-100 delay-75"
-                                    : "opacity-0 pointer-events-none")
-                            }
-                        >
-                            <FieldsSidebar
-                                onFieldDragStart={() => setActiveTab("edit")}
-                                onCollapse={() => setIsSidebarOpen(false)}
-                            />
-                        </div>
-                        {/* Collapsed strip */}
-                        <div
-                            className={
-                                "absolute inset-0 flex flex-col items-center pt-md gap-md transition-opacity duration-150 " +
-                                (!isSidebarOpen
-                                    ? "opacity-100 delay-75"
-                                    : "opacity-0 pointer-events-none")
-                            }
-                        >
-                            <IconButton
-                                variant={"ghost"}
-                                size={"xs"}
-                                icon={<ExpandSidebarIcon />}
-                                onClick={() => setIsSidebarOpen(true)}
-                            />
-                            <span
-                                className={
-                                    "text-sm font-semibold text-neutral-strong [writing-mode:vertical-rl]"
-                                }
-                            >
-                                Fields
-                            </span>
-                        </div>
-                    </div>
+                        <FieldsSidebar
+                            onFieldDragStart={() => setActiveTab("edit")}
+                            onCollapse={() => setIsSidebarOpen(false)}
+                        />
+                    </CollapsibleSidePanel>
                     <div
                         className={
                             "flex-1 overflow-y-scroll h-main-content " +

@@ -4,7 +4,6 @@ import { ListCapabilitiesFeature } from "~/admin/features/listCapabilities/index
 import { SharedSettingsFeature } from "~/admin/features/settings/shared/index.js";
 import { GetSettingsFeature } from "~/admin/features/settings/getSettings/index.js";
 import { UpdateSettingsFeature } from "~/admin/features/settings/updateSettings/index.js";
-import { GeneratePageContentFeature } from "~/admin/features/generatePageContent/index.js";
 import { CompareEntryRevisionsFeature } from "~/admin/features/compareEntryRevisions/index.js";
 import { SettingsLocationFeature } from "~/admin/features/settingsLocation/index.js";
 
@@ -16,7 +15,6 @@ export const AiPowerUpsHeadlessFeatures = createFeature({
         UpdateSettingsFeature.register(container);
         ListModelsFeature.register(container);
         ListCapabilitiesFeature.register(container);
-        GeneratePageContentFeature.register(container);
         CompareEntryRevisionsFeature.register(container);
         SettingsLocationFeature.register(container);
     },

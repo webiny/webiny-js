@@ -44,3 +44,105 @@ describe("parseChatBody page context", () => {
         expect(params?.pageContext).toEqual({ view, details: {} });
     });
 });
+
+describe("parseChatBody client tools", () => {
+    const tool = { name: "addPageElements", description: "Adds.", inputSchema: { type: "object" } };
+
+    it("takes results for a paused run as a request of their own", () => {
+        const params = parseChatBody({
+            chatId: "chat-1",
+            toolResults: [{ toolCallId: "c1", toolName: "addPageElements", output: { added: 1 } }],
+            clientTools: [tool],
+            pageContext: { view, details: {} }
+        });
+
+        expect(params?.toolResults).toEqual([
+            { toolCallId: "c1", toolName: "addPageElements", output: { added: 1 } }
+        ]);
+        expect(params?.clientTools).toEqual([tool]);
+        // Results come from the screen that ran them, so it still describes itself.
+        expect(params?.pageContext).toEqual({ view, details: {} });
+    });
+
+    it("refuses results without the chat they continue", () => {
+        const params = parseChatBody({
+            toolResults: [{ toolCallId: "c1", toolName: "addPageElements", output: {} }]
+        });
+
+        expect(params).toBeNull();
+    });
+
+    it("drops tools with a bad name or a schema that is not an object", () => {
+        const params = parseChatBody({
+            prompt: "add a hero",
+            clientTools: [
+                tool,
+                { ...tool, name: "has space" },
+                { ...tool, name: "other", inputSchema: { type: "string" } },
+                { ...tool }
+            ]
+        });
+
+        expect(params?.clientTools).toEqual([tool]);
+    });
+
+    it("drops a tool whose schema has properties that are not an object", () => {
+        const params = parseChatBody({
+            prompt: "add a hero",
+            clientTools: [
+                tool,
+                { ...tool, name: "other", inputSchema: { type: "object", properties: 7 } }
+            ]
+        });
+
+        expect(params?.clientTools).toEqual([tool]);
+    });
+
+    it("keeps results sent with a question that replaces a paused run", () => {
+        const results = [{ toolCallId: "c1", toolName: "addPageElements", output: {} }];
+        const params = parseChatBody({
+            chatId: "chat-1",
+            prompt: "never mind",
+            toolResults: results
+        });
+
+        expect(params?.toolResults).toEqual(results);
+    });
+
+    it("drops a set of tools too large to send", () => {
+        const params = parseChatBody({
+            prompt: "add a hero",
+            clientTools: [{ ...tool, description: "x".repeat(70_000) }]
+        });
+
+        expect(params?.clientTools).toEqual([]);
+    });
+});
+
+describe("parseChatBody composer controls", () => {
+    it("keeps what the composer controls are set to", () => {
+        const controls = { promptContext: { projectId: "velo" } };
+        const params = parseChatBody({ prompt: "build the page", controls });
+
+        expect(params?.controls).toEqual(controls);
+    });
+
+    it("keeps them on a decision too, since the resumed run builds its instructions again", () => {
+        const controls = { promptContext: { projectId: "velo" } };
+        const params = parseChatBody({
+            chatId: "chat-1",
+            approvals: [{ approvalId: "a1", approved: true }],
+            controls
+        });
+
+        expect(params?.controls).toEqual(controls);
+    });
+
+    it("drops controls too big to be settings, and still takes the question", () => {
+        const controls = { promptContext: { projectId: "x".repeat(5000) } };
+        const params = parseChatBody({ prompt: "build the page", controls });
+
+        expect(params?.prompt).toBe("build the page");
+        expect(params?.controls).toBeUndefined();
+    });
+});

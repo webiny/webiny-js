@@ -1,5 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ApprovalDecision } from "./approvals.js";
+import type { ClientToolDeclaration } from "./clientTools/index.js";
+import type { ClientToolResult } from "./clientTools/index.js";
 import type { AdminAssistantEvent } from "./events.js";
 
 /**
@@ -33,8 +35,9 @@ export namespace AdminAssistantConfig {
 }
 
 /**
- * A question, or a decision on a paused one. The conversation so far is read from the saved chat
- * rather than sent, so a request stays the same size however long the chat gets.
+ * A question, or what a paused run waits for: decisions on its approvals, results of the calls the
+ * browser ran, or both. The conversation so far is read from the saved chat rather than sent, so a
+ * request stays the same size however long the chat gets.
  */
 export interface AdminAssistantParams {
     /** The saved chat to continue. Omitted for a new chat, which the run creates. */
@@ -45,6 +48,18 @@ export interface AdminAssistantParams {
     decisions: ApprovalDecision[];
     /** What the user had on screen when they asked. Absent when the view says nothing. */
     pageContext?: AdminAssistantPageContext;
+    /**
+     * Tools the screen the user is on runs itself. Sent with every request, since a resumed run can
+     * call them again. Empty on a screen that has none.
+     */
+    clientTools?: ClientToolDeclaration[];
+    /** Results of the client tool calls the chat's last run paused on. */
+    toolResults?: ClientToolResult[];
+    /**
+     * What the screen's composer controls are set to, by control name, such as the page editor's
+     * project and personas. Sent with every request, since each run builds its instructions afresh.
+     */
+    controls?: Record<string, unknown>;
 }
 
 export interface IAdminAssistantUseCase {

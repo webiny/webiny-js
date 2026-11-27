@@ -10,6 +10,7 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 // UI components
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
+export * from "./base/ui/AiChatsPanel.js";
 export * from "./base/ui/TenantSelector.js";
 export * from "./base/ui/AssumedPermissionsSelector.js";
 export * from "./base/ui/DebuggerIndicator.js";
@@ -131,6 +132,14 @@ export {
     AssistantPageContext,
     AssistantPageContextFeature
 } from "./features/assistantPageContext/index.js";
+export {
+    AssistantClientTools,
+    AssistantClientToolsFeature
+} from "./features/assistantClientTools/index.js";
+export {
+    AssistantComposerControls,
+    AssistantComposerControlsFeature
+} from "./features/assistantComposerControls/index.js";
 
 /*
  * AI chats: the saved assistant conversations and the side panel that lists them. Stored through the

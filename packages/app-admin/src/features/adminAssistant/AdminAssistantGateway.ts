@@ -28,6 +28,15 @@ const toBody = (request: AdminAssistantRequest): Record<string, unknown> => {
     if (request.pageContext) {
         body["pageContext"] = request.pageContext;
     }
+    if (request.clientTools?.length) {
+        body["clientTools"] = request.clientTools;
+    }
+    if (request.toolResults?.length) {
+        body["toolResults"] = request.toolResults;
+    }
+    if (request.controls) {
+        body["controls"] = request.controls;
+    }
 
     return body;
 };

@@ -10441,6 +10441,7 @@ __metadata:
     "@webiny/project-extensions": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    "@webiny/website-builder-sdk": "npm:0.0.0"
     ai: "npm:^7.0.179"
     front-matter: "npm:^4.0.2"
     graphql: "npm:^16.15.0"
@@ -11955,6 +11956,7 @@ __metadata:
     rimraf: "npm:^6.1.4"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.1.1"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -12158,6 +12160,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     cmdk: "npm:^1.1.1"
+    markdown-to-jsx: "npm:^9.10.6"
     mobx: "npm:^7.1.7"
     react: "npm:19.3.1"
     react-dnd: "npm:^16.0.1"

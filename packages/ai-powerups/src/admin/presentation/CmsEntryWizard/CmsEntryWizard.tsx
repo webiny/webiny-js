@@ -9,7 +9,7 @@ import { useWebsockets } from "@webiny/app-websockets";
 import { useModel } from "@webiny/app-headless-cms/admin/components/ModelProvider/useModel.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { CmsGenerateContentFeature } from "~/admin/presentation/CmsContentGeneration/feature.js";
-import { decompressGzipBase64 } from "~/admin/presentation/WbContentGeneration/decompressGzipBase64.js";
+import { decompressGzipBase64 } from "~/admin/domain/decompressGzipBase64.js";
 
 function formatElapsed(totalSeconds: number): string {
     const minutes = Math.floor(totalSeconds / 60);

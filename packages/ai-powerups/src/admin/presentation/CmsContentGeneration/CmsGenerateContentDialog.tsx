@@ -7,7 +7,7 @@ import type { IncomingGenericData } from "@webiny/app-websockets";
 import { useWebsockets } from "@webiny/app-websockets";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { CmsGenerateContentFeature } from "./feature.js";
-import { decompressGzipBase64 } from "~/admin/presentation/WbContentGeneration/decompressGzipBase64.js";
+import { decompressGzipBase64 } from "~/admin/domain/decompressGzipBase64.js";
 
 function formatElapsed(totalSeconds: number): string {
     const minutes = Math.floor(totalSeconds / 60);

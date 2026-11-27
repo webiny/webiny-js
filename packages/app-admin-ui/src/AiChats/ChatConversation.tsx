@@ -11,6 +11,7 @@ import { NO_MODEL_PLACEHOLDER } from "~/CommandPalette/components/index.js";
 import { assistantLabel } from "./assistantLabel.js";
 import { CHAT_STARTERS } from "./chatStarters.js";
 import { ChatComposer } from "./ChatComposer.js";
+import { ComposerControls } from "./ComposerControls.js";
 import { ChatTurn } from "./ChatTurn.js";
 import { InsightCard } from "./InsightCard.js";
 
@@ -118,6 +119,7 @@ export const ChatConversation = ({
                         onStartNew={onStartNew}
                     />
                 ) : null}
+                <ComposerControls />
                 <ChatComposer
                     placeholder={placeholderFor(started, setupRequired)}
                     // Asking cannot work until a model is set, so the composer waits for "Try again".
