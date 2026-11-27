@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import { useContainer, useRouter } from "@webiny/app";
 import { useWebsockets } from "@webiny/app-websockets";
 import { useDialogs } from "@webiny/app-admin";
-import { OverlayLoader } from "@webiny/admin-ui";
+import { isSingletonModel } from "@webiny/app-headless-cms-common";
 import { parseIdentifier } from "@webiny/utils";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { RecordLockingPresenter } from "~/presentation/entryLocking/abstractions.js";
-import { LockedEntryOverlay } from "~/presentation/entryLocking/components/LockedEntryOverlay.js";
+import { LockStatusView } from "~/presentation/entryLocking/components/LockStatusView.js";
 import { RecordLockingCellActionsDecorator } from "~/presentation/listLocking/components/LockIndicatorCell.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import type { IKickOutData } from "~/presentation/entryLocking/abstractions.js";
@@ -82,26 +82,16 @@ const ContentDecorator = ContentEntryFormContent.createDecorator(Original => {
             return <Original {...props} />;
         }
 
-        if (presenter.vm.status === "checking") {
-            return (
-                <div className={"h-screen w-screen fixed top-0 left-0 z-20"}>
-                    <OverlayLoader text={"Checking record status..."} />
-                </div>
-            );
-        }
-
-        if (presenter.vm.status === "locked") {
-            return (
-                <LockedEntryOverlay
-                    vm={presenter.vm}
-                    entryTitle={entry.meta?.title}
-                    onForceUnlock={() => presenter.forceUnlock()}
-                    onNavigateBack={() => router.goBack()}
-                />
-            );
-        }
-
-        return <Original {...props} />;
+        return (
+            <LockStatusView
+                vm={presenter.vm}
+                isSingleton={isSingletonModel(model)}
+                entryTitle={entry.meta?.title}
+                onForceUnlock={() => presenter.forceUnlock()}
+            >
+                <Original {...props} />
+            </LockStatusView>
+        );
     });
 });
 
