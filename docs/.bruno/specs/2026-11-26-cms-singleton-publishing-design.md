@@ -284,6 +284,12 @@ SQL storage keeps one row per revision with an `is_published` flag
 reads `#0001` through `GetRevisionById` either way. If the tag is added again later, read serves
 these edited values as the published revision.
 
+### Concurrent first access
+
+`getSettingsLatest` and the published read create `#0001` when it is missing. When a concurrent
+request creates it between the read and the create, the create fails with `EntryAlreadyExistsError`.
+The use case then reads the entry once more and returns it, instead of failing.
+
 ### Delete
 
 A foreign revision or id fails with `EntryNotFoundError` (step 1). The rule-based failures below are
@@ -383,6 +389,12 @@ One editor for every singleton, built from the regular editor.
     feature per operation), replacing the deleted `features/contentEntry/singletonEntry/`.
 - `useIsModelPublishable` uses `isPublishingEnabled(model)`. This hides publish and revision actions
   for untagged singletons in the shared editor.
+- Record locking (`app-record-locking`): for a singleton, the "Checking record status..." loader and
+  the locked overlay render inside the content area (`LockStatusView`), not as a fixed full-screen
+  layer, and "Unlock and go back" goes to the models list because there is no previous list.
+  Regular models are unchanged.
+- Revision gateway: `GetEntryGatewaySingletonDecorator` calls `get<S>Latest` when the id has no `#`
+  (a bare entry id), and `get<S>Revision` for a revision id.
 - Guards:
   - `IsNotSingletonModel` wrapper (in the style of `admin/components/IsModelPublishable.tsx`)
     around `DeleteEntryMenuItem` (`ContentEntriesModule.tsx:183`).
@@ -392,17 +404,23 @@ One editor for every singleton, built from the regular editor.
   singleton has no publish step, so Save validates, as for `$publishing:false` models and as the old
   `SingleEntryPresenter` did. A tagged singleton validates on publish.
 - Locked save: the form presenter creates a new revision before saving a locked entry (private
-  `saveEntry`, `ContentEntryFormPresenter.ts:381-384`). It does so only when
-  `isPublishingEnabled(model)`, so an untagged singleton with a locked `#0001` is updated directly
-  (see Locked revisions). `canCreateNewRevision` (`:113-114`) gets the same condition, so that
-  entry shows Save, not "New revision".
+  `saveEntry`, `ContentEntryFormPresenter.ts`). It updates in place instead only when
+  `isSingletonModel(model) && !isPublishingEnabled(model)`, so an untagged singleton with a locked
+  `#0001` is updated directly (see Locked revisions). A regular `$publishing:false` model is not a
+  singleton and still creates a revision. `canCreateNewRevision` uses the same condition, so that
+  singleton shows Save, not "New revision".
 - Load errors: `ContentEntryFormPresenter.loadRevision` gets a `loadError` view-model field, shown by
   the editor body. This applies to the regular editor too, where a failed load is an unhandled
-  rejection today.
+  rejection today. Each load takes a token (`reset()` bumps it too); a load that finishes after a
+  newer one or a reset drops both its result and its error, so a stale failure cannot replace the
+  entry on screen.
 - Editor menu: an "Unpublish" item (`views/actions/UnpublishEntryMenuItem.tsx`) is in the header
   kebab while the open revision is published and the user has unpublish permission. It uses the
   revisions presenter's `unpublishRevision` (same confirmation and list refresh as the revisions
   drawer). It applies to regular models too; before, Unpublish existed only in the revisions drawer.
+  `unpublishRevision` returns `{ unpublished, error }`: a cancelled confirmation has no error and
+  stays silent; a failure shows a warning toast with the API message, in the kebab item and in the
+  drawer's revision item.
 - "Compare revisions" (ai-powerups, `CmsCompareEntryRevisions/Extension.tsx`) is wrapped in
   `IsModelPublishable`: models without publishing (untagged singletons, `$publishing:false`) have
   only one revision.
@@ -411,7 +429,10 @@ One editor for every singleton, built from the regular editor.
     (see Opt-in).
   - "Plural API Name" is hidden while "Single entry model" is on, and otherwise required, max 100
     characters, with the API-name rules (`createApiNameSchema.ts`: UpperFirst camelCase, no
-    reserved suffix, no duplicate). The form-model refactor (`c39b424b16`) had dropped both.
+    reserved suffix, no duplicate). The reserved endings are one case-sensitive list,
+    `CMS_MODEL_DISALLOWED_API_NAME_ENDINGS` in `@webiny/app-headless-cms-common`, kept in sync with
+    the server's `isModelEndingAllowed.ts` (`Response`, `List`, `Meta`, `Input`, `Sorter`,
+    `RefType`), so `Checklist` is valid and `FooRefType` is not. The form-model refactor (`c39b424b16`) had dropped both.
     "Singular API Name" keeps only `required` in the UI; the API validates its format.
   - API errors reach the dialog. Create and create-from now return the zod details
     (`ModelValidationError` with `data.invalidFields`); the admin `CmsModelError` keeps code and
@@ -425,7 +446,10 @@ One editor for every singleton, built from the regular editor.
 ## Workflows
 
 Singletons stay excluded from workflows (`ListCmsEntryWorkflowModelsUseCase.ts:101`,
-`isReviewableModel.ts:8`). Whether to include them later is undecided.
+`isReviewableModel.ts:8`). Whether to include them later is undecided. Binding is rejected on the
+API as well: `isBindableModel` is false for a singleton, and the workflow before-create and
+before-update handlers fail with "Cannot bind a workflow to the model ... because it is a singleton
+model.".
 
 Gap to close: `packages/app-headless-cms-workflows/src/features/trash/DeleteEntryRevisionUseCaseReviewDecorator.ts`
 has no `isReviewableModel` guard. Add an early return for singletons. The form and revisions
