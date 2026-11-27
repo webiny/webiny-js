@@ -441,11 +441,23 @@ publish" / "Schedule unpublish" for tagged singletons, and the scheduled action 
 publish of a draft singleton revision and a scheduled unpublish of the published revision both ran
 at the set time, and the read API followed (published values, then empty values).
 
-API guard: `SchedulePublishEntryUseCase` and `ScheduleUnpublishEntryUseCase`
-(`api-headless-cms-scheduler`) reject a model when `!isPublishingEnabled(model)` with
-`EntryValidationError("Model does not support publishing.")`. This blocks scheduling for untagged
-singletons and closes the existing gap for `$publishing:false` models, which the UI hid but the API
-accepted.
+API guard. GraphQL `scheduler.scheduleAction` and `cancelScheduledAction` go through
+`api-headless-cms-scheduler/src/features/NamespaceHandler/NamespaceHandler.ts`, not through
+`SchedulePublishEntryUseCase` / `ScheduleUnpublishEntryUseCase` (those are only registered and
+exported). The handler:
+
+- rejects scheduling when `!isPublishingEnabled(model)` with
+  `EntryValidationError("Model does not support publishing.")`. This blocks untagged singletons and
+  closes the existing gap for `$publishing:false` models, which the UI hid but the API accepted;
+- still allows **cancelling** on such models, so a schedule created before the tag was removed (or
+  through the API before this guard) can be cancelled. api-scheduler's handler params get an
+  optional `operation: "schedule" | "cancel"` (`api-scheduler/src/features/NamespaceHandler/abstractions.ts`);
+  `CancelScheduledActionUseCase` passes `"cancel"`, and a missing value means `"schedule"`, so
+  other handlers are unaffected;
+- gives singletons the same owner exemption as publish: for `isSingletonModel(model)` it runs the
+  model-level `canAccessEntry({ model, pw })` instead of the entry-level check.
+
+The two use cases keep the same `isPublishingEnabled` guard, since they are public exports.
 
 ## Tests
 
@@ -475,9 +487,12 @@ accepted.
 - Untagged model with a leftover `#0002`: preview `getSettings` and `getSettingsLatest` return `#0001`.
 - Delete errors match the messages in Delete.
 - Admin: a singleton model with no fields shows "This model has no fields." and makes no request.
-- Scheduler: scheduling publish and unpublish fails with "Model does not support publishing." for an
-  untagged singleton and a `$publishing:false` model; succeeds for a regular model and a publishing
-  singleton (`api-headless-cms-scheduler/__tests__/schedulePublishingDisabled.test.ts`).
+- Scheduler (through `ScheduleActionUseCase`, the GraphQL path): scheduling publish and unpublish
+  fails with "Model does not support publishing." for an untagged singleton and a
+  `$publishing:false` model; succeeds for a regular model and a publishing singleton; an
+  own-entries user can schedule a singleton created by another identity; an existing schedule on a
+  model without publishing can still be cancelled
+  (`api-headless-cms-scheduler/__tests__/schedulePublishingDisabled.test.ts`).
 - New model dialog: plural hidden for single entry, required and validated otherwise; API
   invalid-field errors under their field, other errors in the alert; derived plural error dropped or
   moved to the singular field (`NewContentModelPresenter.test.ts`).
