@@ -31,7 +31,7 @@ export const rslibCompile = async ({ cwd, outputDir }) => {
     // the workers that actually need it.
     const [{ createRslib }, { pluginSvgr }] = await Promise.all([
         import("@rslib/core"),
-        import("../../bundling/svgr/index.js")
+        import("@rsbuild/plugin-svgr")
     ]);
 
     const rslib = await createRslib({

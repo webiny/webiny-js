@@ -2,7 +2,7 @@ import type { StorybookConfig } from "storybook-react-rsbuild";
 import { dirname, join } from "node:path";
 import path from "path";
 import { fileURLToPath } from "node:url";
-import { pluginSvgr } from "@webiny/build-tools/bundling/svgr/index.js";
+import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import tailwindcss from "@tailwindcss/postcss";
 
 function getAbsolutePath(value: string): any {
@@ -49,7 +49,8 @@ const config: StorybookConfig = {
                     exportType: "named",
                     namedExport: "ReactComponent"
                 },
-                mixedImport: true
+                mixedImport: true,
+                include: /packages\/icons\/.*\.svg$/
             })
         ];
 
