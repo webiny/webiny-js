@@ -16,6 +16,11 @@ interface IframeProps {
     showLoading: boolean;
     viewportManager: ViewportManager;
     onConnected: (messenger: Messenger) => void;
+    /**
+     * Rendered on top of the preview instead of the loader. Used to explain why the preview is
+     * empty, while keeping the iframe mounted so that a late connection still resolves on its own.
+     */
+    overlay?: React.ReactNode;
 }
 
 export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
@@ -49,14 +54,15 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
     return (
         <PreviewContainer key={iframeUrl}>
             <ConnectEditorToPreview iframeRef={iframeRef} onConnected={props.onConnected} />
-            {props.showLoading ? (
-                <OverlayLoader
-                    size="lg"
-                    variant="accent"
-                    text="Loading preview..."
-                    className={"bg-neutral-base"}
-                />
-            ) : null}
+            {props.overlay ??
+                (props.showLoading ? (
+                    <OverlayLoader
+                        size="lg"
+                        variant="accent"
+                        text="Loading preview..."
+                        className={"bg-neutral-base"}
+                    />
+                ) : null)}
             {/* Content wrapper - sized by iframe content */}
             <div
                 id={"preview-body"}
