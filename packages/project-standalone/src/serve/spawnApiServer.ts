@@ -4,6 +4,7 @@ import path from "node:path";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { pickServerRuntimeEnvVariables } from "@webiny/project";
 import { findFreePort } from "./findFreePort.js";
+import { getDevProxyUrls } from "./devProxy/getDevProxyUrls.js";
 import { stopWithParent } from "./stopWithParent.js";
 
 interface IRunApiServerOptions {
@@ -67,6 +68,17 @@ export async function spawnApiServer(
     // `WCP_PROJECT_LICENSE` is absent (not allowlisted), so the handler's per-request license refresh
     // (`WcpLicenseLoader.load`) fetches a fresh license rather than reading the build-time plaintext value.
     const runtimeEnv = pickServerRuntimeEnvVariables();
+
+    // Behind the proxy the api is reached at <proxy>/api, whatever `<Infra.ApiUrl>` and
+    // `<Infra.AdminUrl>` said: their values are for running without one. Set here rather than by
+    // each command, so `watch` and `serve` both get it; before, `serve` didn't, and the api handed
+    // out file and upload URLs on a port nothing listened on. Absolute, unlike the admin's `/api`:
+    // the api hands URLs to clients that have no page origin to resolve a relative one against.
+    const devProxyUrls = getDevProxyUrls();
+    if (devProxyUrls) {
+        runtimeEnv.WEBINY_API_URL = devProxyUrls.apiUrl;
+        runtimeEnv.WEBINY_ADMIN_URL = devProxyUrls.url;
+    }
 
     // The database is driver-agnostic here: the DB infra extension in webiny.config (<Infra.Sqlite> /
     // <Infra.Postgres>) emits its own connection env — an absolute WEBINY_SQL_FILENAME, or the
