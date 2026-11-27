@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { RevisionsListPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
+import type { IUnpublishRevisionResult } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
@@ -62,7 +63,7 @@ class CmsRevisionsListPresenterWithReview implements RevisionsListPresenter.Inte
         return this.decoratee.publishRevision(revisionId);
     }
 
-    public unpublishRevision(revisionId: string): Promise<boolean> {
+    public unpublishRevision(revisionId: string): Promise<IUnpublishRevisionResult> {
         return this.decoratee.unpublishRevision(revisionId);
     }
 

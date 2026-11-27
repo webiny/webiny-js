@@ -42,7 +42,7 @@ class BaseRevisionsListPresenter implements RevisionsListPresenter.Interface {
     public hide = vi.fn();
     public createRevision = vi.fn(async () => null);
     public publishRevision = vi.fn(async () => true);
-    public unpublishRevision = vi.fn(async () => true);
+    public unpublishRevision = vi.fn(async () => ({ unpublished: true, error: null }));
     public updateRevisionNote = vi.fn(async () => true);
     public deleteRevision = vi.fn(async () => true);
     public dispose = vi.fn();
