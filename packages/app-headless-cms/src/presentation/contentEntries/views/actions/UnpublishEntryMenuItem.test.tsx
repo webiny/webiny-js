@@ -57,7 +57,8 @@ const patchEntryMeta: Mock = vi.fn((meta: { status: string }) => {
         state.status = meta.status;
     });
 });
-const unpublishRevision: Mock = vi.fn(async () => true);
+const unpublishRevision: Mock = vi.fn(async () => ({ unpublished: true, error: null }));
+const showWarningToast: Mock = vi.fn();
 
 vi.mock("~/presentation/contentEntries/form/useContentEntryFormPresenter.js", () => ({
     useContentEntryFormPresenter: () => ({
@@ -74,6 +75,11 @@ vi.mock("~/presentation/contentEntries/form/useContentEntryFormPresenter.js", ()
     })
 }));
 
+vi.mock("@webiny/admin-ui", async importOriginal => {
+    const actual = await importOriginal<typeof import("@webiny/admin-ui")>();
+    return { ...actual, useToast: () => ({ showWarningToast }) };
+});
+
 vi.mock("@webiny/app", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app")>();
     return {
@@ -89,6 +95,7 @@ describe("UnpublishEntryMenuItem", () => {
             state.status = "published";
         });
         unpublishRevision.mockClear();
+        showWarningToast.mockClear();
         patchEntryMeta.mockClear();
     });
 
@@ -126,7 +133,7 @@ describe("UnpublishEntryMenuItem", () => {
     });
 
     it("leaves the entry untouched when the unpublish is cancelled", async () => {
-        unpublishRevision.mockResolvedValueOnce(false);
+        unpublishRevision.mockResolvedValueOnce({ unpublished: false, error: null });
         const view = render(<UnpublishEntryMenuItem />);
 
         fireEvent.click(view.getByText("Unpublish"));
@@ -134,5 +141,32 @@ describe("UnpublishEntryMenuItem", () => {
         await waitFor(() => expect(unpublishRevision).toHaveBeenCalled());
         expect(patchEntryMeta).not.toHaveBeenCalled();
         expect(view.getByText("Unpublish")).toBeTruthy();
+    });
+
+    it("stays silent when the unpublish is cancelled", async () => {
+        unpublishRevision.mockResolvedValueOnce({ unpublished: false, error: null });
+        const view = render(<UnpublishEntryMenuItem />);
+
+        fireEvent.click(view.getByText("Unpublish"));
+
+        await waitFor(() => expect(unpublishRevision).toHaveBeenCalled());
+        expect(showWarningToast).not.toHaveBeenCalled();
+    });
+
+    it("shows the error when the unpublish fails", async () => {
+        unpublishRevision.mockResolvedValueOnce({
+            unpublished: false,
+            error: "Workflow is running."
+        });
+        const view = render(<UnpublishEntryMenuItem />);
+
+        fireEvent.click(view.getByText("Unpublish"));
+
+        await waitFor(() => expect(showWarningToast).toHaveBeenCalledTimes(1));
+        expect(showWarningToast).toHaveBeenCalledWith({
+            title: "Could not unpublish the entry.",
+            description: "Workflow is running."
+        });
+        expect(patchEntryMeta).not.toHaveBeenCalled();
     });
 });

@@ -87,6 +87,7 @@ interface TestSetup {
     listRevisions: { execute: Mock };
     createRevisionFrom: { execute: Mock };
     deleteEntryRevision: { execute: Mock };
+    unpublishEntry: { execute: Mock };
     confirmation: { confirm: Mock };
 }
 
@@ -122,14 +123,22 @@ function setup(permissions: Identity.Permission[] = FULL_ACCESS): TestSetup {
     container.registerInstance(CreateRevisionFromUseCase, createRevisionFrom);
     container.registerInstance(DeleteEntryRevisionUseCase, deleteEntryRevision);
     container.registerInstance(PublishEntryUseCase, { execute: vi.fn() });
-    container.registerInstance(UnpublishEntryUseCase, { execute: vi.fn() });
+    const unpublishEntry = { execute: vi.fn() };
+    container.registerInstance(UnpublishEntryUseCase, unpublishEntry);
     container.registerInstance(UpdateRevisionDescriptionUseCase, { execute: vi.fn() });
     container.registerInstance(Confirmation, confirmation as unknown as Confirmation.Interface);
 
     container.register(RevisionsListPresenter).inSingletonScope();
     const presenter = container.resolve(Abstraction);
 
-    return { presenter, listRevisions, createRevisionFrom, deleteEntryRevision, confirmation };
+    return {
+        presenter,
+        listRevisions,
+        createRevisionFrom,
+        deleteEntryRevision,
+        unpublishEntry,
+        confirmation
+    };
 }
 
 describe("RevisionsListPresenter", () => {
@@ -266,6 +275,39 @@ describe("RevisionsListPresenter", () => {
             expect(deleted).toBe(false);
             expect(ctx.deleteEntryRevision.execute).toHaveBeenCalledTimes(1);
             expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(1);
+            expect(ctx.presenter.vm.loading).toBe(false);
+        });
+    });
+
+    describe("unpublishRevision", () => {
+        it("reports an unpublished revision and refreshes the list", async () => {
+            ctx.listRevisions.execute.mockResolvedValue([createRevisionDto("abc", 1)]);
+            ctx.confirmation.confirm.mockResolvedValue(undefined);
+            ctx.unpublishEntry.execute.mockResolvedValue(undefined);
+            await ctx.presenter.init("abc");
+
+            const result = await ctx.presenter.unpublishRevision("abc#0001");
+
+            expect(result).toEqual({ unpublished: true, error: null });
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(2);
+        });
+
+        it("reports a cancelled confirmation without an error", async () => {
+            ctx.confirmation.confirm.mockResolvedValue(false);
+
+            const result = await ctx.presenter.unpublishRevision("abc#0001");
+
+            expect(result).toEqual({ unpublished: false, error: null });
+            expect(ctx.unpublishEntry.execute).not.toHaveBeenCalled();
+        });
+
+        it("reports the message of a failed unpublish", async () => {
+            ctx.confirmation.confirm.mockResolvedValue(undefined);
+            ctx.unpublishEntry.execute.mockRejectedValue(new Error("Workflow is running."));
+
+            const result = await ctx.presenter.unpublishRevision("abc#0001");
+
+            expect(result).toEqual({ unpublished: false, error: "Workflow is running." });
             expect(ctx.presenter.vm.loading).toBe(false);
         });
     });

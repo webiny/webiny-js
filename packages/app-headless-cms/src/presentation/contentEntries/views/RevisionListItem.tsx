@@ -2,7 +2,16 @@ import React from "react";
 import { useFeature } from "@webiny/app";
 import { isSingletonModel } from "@webiny/app-headless-cms-common";
 import { useRoute, useRouter } from "@webiny/app-admin";
-import { DropdownMenu, Icon, IconButton, List, Tag, Text, Tooltip } from "@webiny/admin-ui";
+import {
+    DropdownMenu,
+    Icon,
+    IconButton,
+    List,
+    Tag,
+    Text,
+    Tooltip,
+    useToast
+} from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
@@ -97,6 +106,7 @@ interface RevisionListItemProps {
 export const RevisionListItem = ({ item }: RevisionListItemProps) => {
     const { revision } = item;
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
+    const toast = useToast();
     const formPresenter = useContentEntryFormPresenter();
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
@@ -147,7 +157,14 @@ export const RevisionListItem = ({ item }: RevisionListItemProps) => {
     };
 
     const handleUnpublishRevision = async () => {
-        const unpublished = await revisionsPresenter.unpublishRevision(revision.id);
+        const { unpublished, error } = await revisionsPresenter.unpublishRevision(revision.id);
+        if (error) {
+            toast.showWarningToast({
+                title: "Could not unpublish the revision.",
+                description: error
+            });
+            return;
+        }
         if (!unpublished) {
             return;
         }
