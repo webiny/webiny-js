@@ -13,6 +13,7 @@ import { ListModelGroupsUseCase } from "~/features/modelGroup/listModelGroups/ab
 import { CreateModelUseCase } from "~/features/model/createModel/abstractions.js";
 import { ModelGroupsCache } from "~/features/modelGroup/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";
+import { CmsModelError } from "~/features/model/CmsModelError.js";
 import { NewContentModelPresenter as Abstraction } from "./abstractions.js";
 import { NewContentModelPresenter } from "./NewContentModelPresenter.js";
 
@@ -154,6 +155,103 @@ describe("NewContentModelPresenter", () => {
             await presenter.save();
 
             expect(createModel.mock.calls[0][0].pluralApiName).toBe("Settings");
+        });
+    });
+
+    describe("API errors", () => {
+        const singularField = () => {
+            const rows = presenter.vm.form.layout as IRowNodeVM[];
+            return rows.flatMap(row => row.fields).find(f => f.name === "singularApiName");
+        };
+
+        it("shows an invalid field message under the field", async () => {
+            fillRequired();
+            setValue("pluralApiName", "Settings");
+            createModel.mockRejectedValueOnce(
+                new CmsModelError(
+                    {
+                        code: "Cms/Model/ValidationError",
+                        message: "Validation failed.",
+                        data: {
+                            invalidFields: {
+                                singularApiName: {
+                                    code: "invalid_string",
+                                    message: "The Singular API Name value is not valid.",
+                                    data: { path: "singularApiName" }
+                                }
+                            }
+                        }
+                    },
+                    "fallback"
+                )
+            );
+
+            expect(await presenter.save()).toBeNull();
+
+            expect(singularField()!.validation.message).toBe(
+                "The Singular API Name value is not valid."
+            );
+            expect(presenter.vm.error).toBeNull();
+            expect(presenter.vm.saving).toBe(false);
+        });
+
+        it("shows the message when there are no invalid fields and clears it on the next save", async () => {
+            fillRequired();
+            setValue("pluralApiName", "Settings");
+            createModel.mockRejectedValueOnce(
+                new CmsModelError(
+                    {
+                        code: "Cms/Model/AlreadyExists",
+                        message: 'Content model with singularApiName "setting" already exists.'
+                    },
+                    "fallback"
+                )
+            );
+
+            expect(await presenter.save()).toBeNull();
+            expect(presenter.vm.error).toBe(
+                'Content model with singularApiName "setting" already exists.'
+            );
+
+            await presenter.save();
+
+            expect(presenter.vm.error).toBeNull();
+        });
+
+        it("shows the message when the invalid field is not in the form", async () => {
+            fillRequired();
+            setValue("singleEntry", true);
+            createModel.mockRejectedValueOnce(
+                new CmsModelError(
+                    {
+                        code: "Cms/Model/ValidationError",
+                        message: "Validation failed.",
+                        data: {
+                            invalidFields: {
+                                pluralApiName: { code: "x", message: "Bad plural.", data: {} }
+                            }
+                        }
+                    },
+                    "fallback"
+                )
+            );
+
+            await presenter.save();
+
+            expect(presenter.vm.error).toBe("Bad plural.");
+        });
+
+        it("clears the error on reset", async () => {
+            fillRequired();
+            setValue("pluralApiName", "Settings");
+            createModel.mockRejectedValueOnce(new Error("Boom"));
+
+            await presenter.save();
+            expect(presenter.vm.error).toBe("Boom");
+
+            presenter.reset();
+
+            expect(presenter.vm.error).toBeNull();
         });
     });
 });

@@ -2,6 +2,7 @@ import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsModel, CmsErrorResponse } from "~/types.js";
 import type { CreateModelParams } from "./abstractions.js";
 import { CreateModelGateway as GatewayAbstraction } from "./abstractions.js";
+import { CmsModelError } from "~/features/model/CmsModelError.js";
 
 interface CreateModelResponse {
     createContentModel: {
@@ -61,7 +62,7 @@ class CreateModelGatewayImpl implements GatewayAbstraction.Interface {
         const { data: result, error } = response.createContentModel;
 
         if (!result) {
-            throw new Error(error?.message || "Could not create content model");
+            throw new CmsModelError(error, "Could not create content model");
         }
 
         return result;

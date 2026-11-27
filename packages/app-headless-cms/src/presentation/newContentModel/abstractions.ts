@@ -5,6 +5,7 @@ import type { CmsModel } from "~/types.js";
 export interface INewContentModelPresenterViewModel {
     loading: boolean;
     saving: boolean;
+    error: string | null;
     groups: { value: string; label: string }[];
     models: CmsModel[];
     form: IFormVM;
