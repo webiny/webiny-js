@@ -1,5 +1,4 @@
-// @ts-expect-error
-import getYarnWorkspaces from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 import { WebinyPackage } from "./WebinyPackage";
 import { ReadmeGenerator } from "./generators/ReadmeGenerator";
 import { LockedDepsGenerator } from "./generators/LockedDepsGenerator";
@@ -8,12 +7,15 @@ import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 
-const packages = getYarnWorkspaces()
-    .filter((workspacePath: string) => {
+const packages = listWorkspaces()
+    .map(pkg => {
+        return pkg.path;
+    })
+    .filter(workspacePath => {
         const packageJsonPath = path.join(workspacePath, "package.json");
         return fs.existsSync(packageJsonPath);
     })
-    .map((workspacePath: string) => {
+    .map(workspacePath => {
         return new WebinyPackage(workspacePath);
     });
 
