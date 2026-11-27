@@ -25,8 +25,9 @@ export default function assetLoader(content) {
         content: buffer
     });
 
+    const relativePath = path.relative(this.rootContext, this.resourcePath);
     const assetInfo = {
-        sourceFilename: normalizePath(path.relative(this.rootContext, this.resourcePath))
+        sourceFilename: normalizePath(relativePath)
     };
     if (typeof name === "string" && HASH_TEMPLATE_REGEX.test(name)) {
         assetInfo.immutable = true;
@@ -37,13 +38,14 @@ export default function assetLoader(content) {
     return `export default ${getPublicPathCode(publicPath, filename, this)};`;
 }
 
-// rslib passes a `publicPath` function in bundleless builds, so the URL
-// becomes a relative import of the emitted file.
+/*
+ * rslib passes a `publicPath` function in bundleless builds, so the URL
+ * becomes a relative import of the emitted file.
+ */
 const getPublicPathCode = (publicPath, filename, loaderContext) => {
     if (typeof publicPath === "function") {
-        return JSON.stringify(
-            publicPath(filename, loaderContext.resourcePath, loaderContext.rootContext)
-        );
+        const url = publicPath(filename, loaderContext.resourcePath, loaderContext.rootContext);
+        return JSON.stringify(url);
     }
     if (typeof publicPath === "string") {
         const base = publicPath.endsWith("/") ? publicPath : `${publicPath}/`;

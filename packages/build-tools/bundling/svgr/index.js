@@ -17,12 +17,15 @@ import { fileURLToPath } from "node:url";
 import { PLUGIN_REACT_NAME } from "@rsbuild/plugin-react";
 
 const SVG_REGEX = /\.svg$/;
-const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
+const FILENAME = fileURLToPath(import.meta.url);
+const DIRNAME = path.dirname(FILENAME);
 const LOADER = path.join(DIRNAME, "loader.js");
 const ASSET_LOADER = path.join(DIRNAME, "assetLoader.js");
 
-// Keep the original plugin's name: rslib's asset plugin orders itself after
-// "rsbuild:svgr" and patches the SVG rules it creates.
+/*
+ * Keep the original plugin's name: rslib's asset plugin orders itself after
+ * "rsbuild:svgr" and patches the SVG rules it creates.
+ */
 export const PLUGIN_SVGR_NAME = "rsbuild:svgr";
 
 /**
@@ -105,8 +108,10 @@ export const pluginSvgr = (options = {}) => ({
                 .parser({ dataUrlCondition: { maxSize } })
                 .set("generator", generatorOptions);
 
-            // The loader emits JSX, so run the project's JS loader (SWC or Babel)
-            // after it. React Refresh is turned off for these modules.
+            /*
+             * The loader emits JSX, so run the project's JS loader (SWC or Babel)
+             * after it. React Refresh is turned off for these modules.
+             */
             const jsMainRule = chain.module.rules
                 .get(CHAIN_ID.RULE.JS)
                 .oneOfs.get(CHAIN_ID.ONE_OF.JS_MAIN);
@@ -139,10 +144,11 @@ export const pluginSvgr = (options = {}) => ({
                         };
                     }
 
+                    const jsLoader = use.get("loader");
                     rule.oneOf(oneOfId)
                         .use(jsUseId)
                         .before(CHAIN_ID.USE.SVGR)
-                        .loader(use.get("loader"))
+                        .loader(jsLoader)
                         .options(loaderOptions);
                 }
                 break;

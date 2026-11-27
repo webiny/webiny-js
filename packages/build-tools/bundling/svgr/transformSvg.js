@@ -12,7 +12,8 @@ import { optimize } from "svgo";
 import { parse } from "svg-parser";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
 import svgrBabelPreset from "@svgr/babel-preset";
-import { createConfigItem, transformFromAstSync } from "@babel/core";
+import { createConfigItem } from "@babel/core";
+import { transformFromAstSync } from "@babel/core";
 
 export const DEFAULT_SVGO_CONFIG = {
     plugins: [
@@ -52,12 +53,14 @@ export const transformSvg = (code, options = {}) => {
         filePath
     } = options;
 
-    const optimized = optimize(String(code).replace("\0", ""), {
+    const svg = String(code).replace("\0", "");
+    const optimized = optimize(svg, {
         ...svgoConfig,
         path: filePath
     });
 
-    const babelTree = hastToBabelAst(parse(optimized.data));
+    const hastTree = parse(optimized.data);
+    const babelTree = hastToBabelAst(hastTree);
 
     // Same values as `@svgr/core`'s DEFAULT_CONFIG.
     const presetOptions = {
@@ -82,9 +85,10 @@ export const transformSvg = (code, options = {}) => {
         }
     };
 
+    const preset = createConfigItem([svgrBabelPreset, presetOptions], { type: "preset" });
     const result = transformFromAstSync(babelTree, optimized.data, {
         caller: { name: "svgr" },
-        presets: [createConfigItem([svgrBabelPreset, presetOptions], { type: "preset" })],
+        presets: [preset],
         filename: filePath || "unknown",
         babelrc: false,
         configFile: false,

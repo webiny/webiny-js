@@ -4,13 +4,12 @@ export class ListAllPackages {
     public list(paths: string[]): string[] {
         const results: string[] = [];
         for (const p of paths) {
-            results.push(
-                ...listWorkspaces({
-                    cwd: p
-                }).map(pkg => {
-                    return pkg.path;
-                })
-            );
+            const workspaces = listWorkspaces({
+                cwd: p
+            });
+            for (const workspace of workspaces) {
+                results.push(workspace.path);
+            }
         }
         return results;
     }

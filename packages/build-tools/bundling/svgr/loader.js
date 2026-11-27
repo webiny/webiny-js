@@ -11,9 +11,11 @@ export default function svgrLoader(contents) {
     const options = this.getOptions();
     const filePath = normalize(this.resourcePath);
 
-    // When another loader (the asset loader in mixed-import mode) ran first,
-    // `contents` is its JS output. Keep it as the default export and read the
-    // SVG from disk.
+    /*
+     * When another loader (the asset loader in mixed-import mode) ran first,
+     * `contents` is its JS output. Keep it as the default export and read the
+     * SVG from disk.
+     */
     const previousExport = (() => {
         if (contents.startsWith("export ")) {
             return contents;
@@ -24,7 +26,8 @@ export default function svgrLoader(contents) {
 
     const run = svg => {
         try {
-            callback(null, transformSvg(svg, { ...options, previousExport, filePath }));
+            const code = transformSvg(svg, { ...options, previousExport, filePath });
+            callback(null, code);
         } catch (err) {
             callback(err);
         }
@@ -40,6 +43,7 @@ export default function svgrLoader(contents) {
             callback(err);
             return;
         }
-        run(String(result));
+        const svg = String(result);
+        run(svg);
     });
 }
