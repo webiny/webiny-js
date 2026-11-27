@@ -10,6 +10,7 @@ import { waitFor } from "@testing-library/react";
 import { CmsEntryReviewNewRevision } from "./CmsEntryReviewNewRevision.js";
 import { NO_PUBLISHING_MODEL } from "~/testing/models.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";
+import { PUBLISHING_SINGLETON_MODEL } from "~/testing/models.js";
 import { createEntry } from "~/testing/createEntry.js";
 import { renderEditorTree } from "~/testing/renderEditorTree.js";
 import { APPROVED } from "~/testing/reviewStates.js";
@@ -127,12 +128,19 @@ describe("CmsEntryReviewNewRevision", () => {
         expect(item.hasAttribute("disabled")).toBe(true);
     });
 
-    it("stays enabled for a singleton model whatever the shared presenter holds", async () => {
-        renderMenu({ formVm: { model: SINGLETON_MODEL }, reviewVm: LOADING });
+    it("stays enabled for a publishing singleton whatever the shared presenter holds", async () => {
+        renderMenu({ formVm: { model: PUBLISHING_SINGLETON_MODEL }, reviewVm: LOADING });
 
         const item = await screen.findByTestId("menu-item");
 
         expect(item.hasAttribute("disabled")).toBe(false);
+    });
+
+    it("renders nothing for a singleton without publishing (it has no revisions)", async () => {
+        renderMenu({ formVm: { model: SINGLETON_MODEL }, reviewVm: LOADING });
+
+        await screen.findByTestId("menu-actions");
+        await waitFor(() => expect(screen.queryByTestId("menu-item")).toBeNull());
     });
 
     it("renders nothing without an entry", async () => {
