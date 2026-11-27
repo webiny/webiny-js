@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
+import { requireApiKey } from "./requireApiKey.js";
 
 const OPENAI_MODELS: IAiSdkModel[] = [
     { id: "gpt-6-astra", name: "GPT-6 Astra" },
@@ -57,7 +58,9 @@ class OpenAiSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
     async execute(apiKey?: string): Promise<IAiSdk> {
         const { createOpenAI } = await import("@ai-sdk/openai");
         const provider = createOpenAI({
-            apiKey: apiKey ?? process.env.WEBINY_API_OPENAI_API_KEY
+            apiKey: requireApiKey(this.name, apiKey),
+            // Set explicitly, or the SDK reads OPENAI_BASE_URL and sends the key there.
+            baseURL: "https://api.openai.com/v1"
         });
         return {
             languageModel: modelId => provider.chat(modelId)

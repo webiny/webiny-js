@@ -187,7 +187,7 @@ class AiImpl implements AiAbstraction.Interface {
         const cacheKey =
             "id" in connection
                 ? (connection as IAiConnection).id
-                : `${connection.sdkName}:${connection.apiKey ?? "__env__"}`;
+                : `${connection.sdkName}:${connection.apiKey ?? ""}`;
 
         const cached = this.sdkCache.get(cacheKey);
         if (cached) {
