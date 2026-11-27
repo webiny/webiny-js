@@ -1,12 +1,8 @@
 import { z } from "zod";
 import lodashUpperFirst from "lodash/upperFirst.js";
 import lodashCamelCase from "lodash/camelCase.js";
+import { CMS_MODEL_DISALLOWED_API_NAME_ENDINGS } from "@webiny/app-headless-cms-common";
 import type { CmsModel } from "~/types.js";
-
-/*
- * Endings that would interfere with GraphQL schema creation.
- */
-const disallowedEndings = ["Response", "List", "Meta", "Input", "Sorter"];
 
 export const createApiNameSchema = (getModels: () => CmsModel[]) => {
     return z
@@ -29,8 +25,8 @@ export const createApiNameSchema = (getModels: () => CmsModel[]) => {
                 return;
             }
 
-            for (const ending of disallowedEndings) {
-                if (new RegExp(`${ending}$`, "i").test(value)) {
+            for (const ending of CMS_MODEL_DISALLOWED_API_NAME_ENDINGS) {
+                if (value.endsWith(ending)) {
                     ctx.addIssue({
                         code: "custom",
                         message: `The name must not end with "${ending}".`
