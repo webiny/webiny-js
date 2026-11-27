@@ -1,3 +1,4 @@
+import { Readable } from "node:stream";
 import pMap from "p-map";
 import { AbortMultipartUploadCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { CompleteMultipartUploadCommand } from "@webiny/aws-sdk/client-s3/index.js";
@@ -141,6 +142,36 @@ class S3ObjectStorageImpl implements ObjectStorage.Interface {
             }
             throw error;
         }
+    }
+
+    public async getStream(key: string): Promise<AsyncIterable<Uint8Array> | null> {
+        const objectKey = this.toObjectKey(key);
+        const command = new GetObjectCommand({
+            Bucket: this.bucket,
+            Key: objectKey
+        });
+        let result;
+        try {
+            result = await this.client.send(command);
+        } catch (error) {
+            if (isNotFound(error)) {
+                return null;
+            }
+            throw error;
+        }
+
+        if (!result.Body) {
+            return Readable.from([]);
+        }
+        /*
+         * In Node the SDK hands back the HTTP response itself, a `Readable`. Reading it pulls the
+         * object from the service chunk by chunk; ending the iteration early destroys it, which
+         * frees the connection.
+         */
+        if (!(result.Body instanceof Readable)) {
+            throw new Error(`GetObject of "${objectKey}" did not return a Node stream.`);
+        }
+        return result.Body;
     }
 
     public async delete(key: string): Promise<void> {

@@ -40,6 +40,55 @@ export const describeObjectStorageContract = (backend: ObjectStorageTestBackend)
             expect(result).toBeNull();
         });
 
+        it("should read a large object back in more than one chunk with getStream", async () => {
+            const storage = backend.storage();
+            const contents = Buffer.alloc(1024 * 1024, "w");
+            await storage.put(KEY, contents);
+
+            const stream = await storage.getStream(KEY);
+            const chunks: Uint8Array[] = [];
+            for await (const chunk of stream!) {
+                chunks.push(chunk);
+            }
+
+            expect(chunks.length).toBeGreaterThan(1);
+            expect(Buffer.concat(chunks).equals(contents)).toBe(true);
+        });
+
+        it("should let a getStream consumer stop after the first chunk", async () => {
+            const storage = backend.storage();
+            await storage.put(KEY, Buffer.alloc(1024 * 1024, "w"));
+
+            const stream = await storage.getStream(KEY);
+            let chunks = 0;
+            for await (const _chunk of stream!) {
+                chunks++;
+                break;
+            }
+            await storage.delete(KEY);
+
+            expect(chunks).toBe(1);
+            expect(await storage.get(KEY)).toBeNull();
+        });
+
+        it("should return null from getStream for a key with nothing stored", async () => {
+            const result = await backend.storage().getStream("tenants/t1/files/missing/x.txt");
+
+            expect(result).toBeNull();
+        });
+
+        it("should return null for a key that only holds other keys", async () => {
+            const storage = backend.storage();
+            await storage.put(KEY, Buffer.from("x"));
+
+            const folderKey = "tenants/t1/files/abc";
+            const contents = await storage.get(folderKey);
+            const stream = await storage.getStream(folderKey);
+
+            expect(contents).toBeNull();
+            expect(stream).toBeNull();
+        });
+
         it("should store with putIfAbsent only when the key is free", async () => {
             const storage = backend.storage();
 

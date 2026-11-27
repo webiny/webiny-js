@@ -1,5 +1,6 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import type { Asset, AssetContentsReader } from "@webiny/api-file-manager";
+import { toSingleChunk } from "@webiny/api-file-manager";
 
 export class S3ContentsReader implements AssetContentsReader {
     private s3: S3;
@@ -21,5 +22,14 @@ export class S3ContentsReader implements AssetContentsReader {
         }
 
         return Buffer.from(await Body.transformToByteArray());
+    }
+
+    /*
+     * One chunk: on AWS, `S3OutputStrategy` redirects large files to a presigned URL and API
+     * Gateway buffers the response anyway, so there is nothing to gain from streaming here.
+     */
+    async readStream(asset: Asset): Promise<AsyncIterable<Uint8Array>> {
+        const contents = await this.read(asset);
+        return toSingleChunk(contents);
     }
 }

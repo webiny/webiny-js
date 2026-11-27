@@ -2,6 +2,7 @@ export * from "./AssetDelivery/Asset.js";
 export * from "./AssetDelivery/AssetRequest.js";
 export * from "./AssetDelivery/abstractions/AssetReply.js";
 export * from "./AssetDelivery/createAssetDeliveryPluginLoader.js";
+export * from "./AssetDelivery/toSingleChunk.js";
 
 // Backward-compatible type aliases for the old interface names.
 // External consumers (e.g. api-file-manager-s3) import these as types.
