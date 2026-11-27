@@ -39,3 +39,22 @@ export namespace TenantSwitcherSource {
     export type Interface = ITenantSwitcherSource;
     export type Tenant = ISwitcherTenant;
 }
+
+/**
+ * The tenants this browser switched to last, newest first. The switcher shows them before the rest,
+ * so a root admin with many tenants finds the ones they use without searching.
+ */
+export interface IRecentTenantsRepository {
+    list(): ISwitcherTenant[];
+    /**
+     * Puts the tenant first. Root is never stored: the switcher always shows it.
+     */
+    remember(tenant: ISwitcherTenant): void;
+}
+
+export const RecentTenantsRepository =
+    createAbstraction<IRecentTenantsRepository>("RecentTenantsRepository");
+
+export namespace RecentTenantsRepository {
+    export type Interface = IRecentTenantsRepository;
+}
