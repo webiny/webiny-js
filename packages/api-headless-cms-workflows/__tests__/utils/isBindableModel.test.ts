@@ -14,6 +14,13 @@ describe("isBindableModel", () => {
         expect(isBindableModel({ isPrivate: false, tags: ["$publishing:false"] })).toBe(false);
     });
 
+    it("is false for a singleton model, with or without publishing", () => {
+        expect(isBindableModel({ isPrivate: false, tags: ["singleEntry"] })).toBe(false);
+        expect(
+            isBindableModel({ isPrivate: false, tags: ["singleEntry", "$publishing:true"] })
+        ).toBe(false);
+    });
+
     it("is true for a public model, with or without other tags", () => {
         expect(isBindableModel({ isPrivate: false, tags: [] })).toBe(true);
         expect(isBindableModel({ isPrivate: false, tags: ["type:model"] })).toBe(true);

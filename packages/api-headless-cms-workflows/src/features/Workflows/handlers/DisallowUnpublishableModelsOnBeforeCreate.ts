@@ -2,7 +2,10 @@ import { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WorkflowValidationError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
-import { CMS_MODEL_PUBLISHING_DISABLED_TAG } from "@webiny/api-headless-cms/exports/api/cms/model.js";
+import {
+    CMS_MODEL_PUBLISHING_DISABLED_TAG,
+    isSingletonModel
+} from "@webiny/api-headless-cms/exports/api/cms/model.js";
 
 const MODEL_NOT_FOUND = "Cms/Model/NotFound";
 const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
@@ -49,6 +52,12 @@ class DisallowUnpublishableModelsOnBeforeCreateImpl
             if (model.value.isPrivate) {
                 throw new WorkflowValidationError(
                     `Cannot bind a workflow to the model "${modelId}" because it is a private model.`,
+                    { field: "models" }
+                );
+            }
+            if (isSingletonModel(model.value)) {
+                throw new WorkflowValidationError(
+                    `Cannot bind a workflow to the model "${modelId}" because it is a singleton model.`,
                     { field: "models" }
                 );
             }
