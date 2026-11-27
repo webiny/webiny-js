@@ -2,8 +2,7 @@
 
 Status: draft
 Date: 2026-11-26
-Release: 6.6, one PR. Phase 1 and phase 2 ship together; the PR merges only after both are done.
-The phase 2 design is written into this spec, and reviewed, before phase 2 implementation starts.
+Release: 6.6, one PR. Phase 1 and phase 2 (scheduling) ship together.
 
 ## Goal
 
@@ -350,8 +349,15 @@ One editor for every singleton, built from the regular editor.
 - New `SingletonEditorView`: provides `ModelProvider` and `ContentEntryEditorWithConfig` (as
   `ListView.tsx:26-28` does), reads `route.params.id`, and without it loads the entry with
   `getSettingsLatest`, then replaces the route with that revision id, so revision switching starts
-  from a route that has an id. Renders the editor body without a back button, list, folders, breadcrumbs or
-  "New entry". Revision switching keeps working through `route.params.id`
+  from a route that has an id. Renders the editor body without a back button, list, folders or
+  "New entry", **inside the admin layout**: the sidebar, breadcrumb and top bar stay visible. The
+  regular editor body is a fixed full-screen overlay (`layout/Container.tsx`, `fixed z-overlay`)
+  that relies on its back button; `Container` and `ScrollArea` take `fullScreen` (default `true`,
+  regular editor unchanged) and `SingletonEditorView` passes `false`.
+- Breadcrumb: `SingletonEditorBreadcrumbs` emits `Headless CMS › <model name>` (the same `cms` and
+  `cms.model` entries as the list view's `ContentEntriesBreadcrumbs`), in every view state. Any
+  user who can open a singleton can open the "Headless CMS" link: the models list needs a
+  `cms.contentModel` permission, and loading a singleton already needs model read access. Revision switching keeps working through `route.params.id`
   (`actions/RevisionSelector.tsx:55`, `RevisionListItem.tsx:106`, `OlderRevisionAlert.tsx:29`,
   `actions/CreateNewRevisionButton.tsx:38`).
 - `ModelLoader.tsx:23` renders `SingletonEditorView` for every singleton model. A singleton model
@@ -393,6 +399,27 @@ One editor for every singleton, built from the regular editor.
 - Load errors: `ContentEntryFormPresenter.loadRevision` gets a `loadError` view-model field, shown by
   the editor body. This applies to the regular editor too, where a failed load is an unhandled
   rejection today.
+- Editor menu: an "Unpublish" item (`views/actions/UnpublishEntryMenuItem.tsx`) is in the header
+  kebab while the open revision is published and the user has unpublish permission. It uses the
+  revisions presenter's `unpublishRevision` (same confirmation and list refresh as the revisions
+  drawer). It applies to regular models too; before, Unpublish existed only in the revisions drawer.
+- "Compare revisions" (ai-powerups, `CmsCompareEntryRevisions/Extension.tsx`) is wrapped in
+  `IsModelPublishable`: models without publishing (untagged singletons, `$publishing:false`) have
+  only one revision.
+- "New model" dialog (`presentation/newContentModel/NewContentModelPresenter.ts`):
+  - "Enable publishing" switch, shown only while "Single entry model" is on; adds `$publishing:true`
+    (see Opt-in).
+  - "Plural API Name" is hidden while "Single entry model" is on, and otherwise required, max 100
+    characters, with the API-name rules (`createApiNameSchema.ts`: UpperFirst camelCase, no
+    reserved suffix, no duplicate). The form-model refactor (`c39b424b16`) had dropped both.
+    "Singular API Name" keeps only `required` in the UI; the API validates its format.
+  - API errors reach the dialog. Create and create-from now return the zod details
+    (`ModelValidationError` with `data.invalidFields`); the admin `CmsModelError` keeps code and
+    data; the presenter puts each invalid-field message under its field (`form.setErrors`) and
+    anything else (duplicate name, reserved suffix) in a dialog `Alert`. Before, `save()` swallowed
+    the error and the dialog did nothing.
+  - Single entry models send the derived plural `<singular>Unused`. Its error is dropped when the
+    singular already has one, and shown under "Singular API Name" when it is the only error.
 - No custom styling; reuse the editor's components.
 
 ## Workflows
@@ -407,18 +434,18 @@ a singleton to a workflow, so no review exists for a singleton entry.
 
 ## Phase 2: scheduled publishing
 
-Same PR, after phase 1. In phase 1 the scheduler UI is not hidden: its "Schedule" menu item
-(`packages/app-headless-cms-scheduler/src/components/Editor/EditorConfig.tsx:11`, gated by
-`IsModelPublishable`) appears for tagged singletons and may not work until phase 2.
+Scheduling needed no singleton-specific code. The scheduler UI (gated by `IsModelPublishable`,
+`packages/app-headless-cms-scheduler/src/components/Editor/EditorConfig.tsx:11`) shows "Schedule
+publish" / "Schedule unpublish" for tagged singletons, and the scheduled action runs `PublishEntry`
+/ `UnpublishEntry`, so the singleton rules above apply. Verified on a deployed project: a scheduled
+publish of a draft singleton revision and a scheduled unpublish of the published revision both ran
+at the set time, and the read API followed (published values, then empty values).
 
-Phase 2 scope. The detailed design is added to this spec after phase 1 is implemented and is
-reviewed before phase 2 implementation starts:
-
-- Scheduling publish and unpublish of a tagged singleton revision from the singleton editor.
-- `api-headless-cms-scheduler` `SchedulePublishEntryUseCase/SchedulePublishEntryUseCase.ts:28` and
-  `ScheduleUnpublishEntryUseCase/ScheduleUnpublishEntryUseCase.ts:28` run only a model-level check today. Add the
-  `isPublishingEnabled` check, which also closes the existing gap for `$publishing:false` models.
-- The scheduled action runs `PublishEntry` / `UnpublishEntry`, so the singleton rules above apply.
+API guard: `SchedulePublishEntryUseCase` and `ScheduleUnpublishEntryUseCase`
+(`api-headless-cms-scheduler`) reject a model when `!isPublishingEnabled(model)` with
+`EntryValidationError("Model does not support publishing.")`. This blocks scheduling for untagged
+singletons and closes the existing gap for `$publishing:false` models, which the UI hid but the API
+accepted.
 
 ## Tests
 
@@ -448,4 +475,11 @@ reviewed before phase 2 implementation starts:
 - Untagged model with a leftover `#0002`: preview `getSettings` and `getSettingsLatest` return `#0001`.
 - Delete errors match the messages in Delete.
 - Admin: a singleton model with no fields shows "This model has no fields." and makes no request.
-- Phase 2: scheduling tests, defined with the phase 2 design.
+- Scheduler: scheduling publish and unpublish fails with "Model does not support publishing." for an
+  untagged singleton and a `$publishing:false` model; succeeds for a regular model and a publishing
+  singleton (`api-headless-cms-scheduler/__tests__/schedulePublishingDisabled.test.ts`).
+- New model dialog: plural hidden for single entry, required and validated otherwise; API
+  invalid-field errors under their field, other errors in the alert; derived plural error dropped or
+  moved to the singular field (`NewContentModelPresenter.test.ts`).
+- Editor kebab Unpublish item: shown for a published revision with permission only
+  (`UnpublishEntryMenuItem.test.tsx`).
