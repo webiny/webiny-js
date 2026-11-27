@@ -61,7 +61,10 @@ const names = [
     "90's music",
     "Score 3;4",
     "東京タワー",
-    "ひらがな text"
+    "ひらがな text",
+    "Escola col\u00B7legi",
+    "Price 1\uFF0C000 units",
+    "ひらか\u3099な decomposed"
 ];
 
 /**

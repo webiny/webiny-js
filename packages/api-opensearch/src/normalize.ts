@@ -23,35 +23,49 @@ const notPartOfWord = /[^\p{L}\p{N}\p{M}_\s]/gu;
 /**
  * The analyzer indexes every Chinese or Japanese ideograph and every hiragana character as a word
  * of its own, so "東京" is indexed as "東" and "京". Katakana and Korean words are kept whole.
+ * Marks that follow the character stay with it: a decomposed "が" is "か" followed by a combining
+ * voicing mark, and a variation selector can follow an ideograph. The analyzer never indexes such a
+ * mark on its own.
  */
-const indexedOneCharacterAtATime = /[\p{Script=Han}\p{Script=Hiragana}]/gu;
+const indexedOneCharacterAtATime = /[\p{Script=Han}\p{Script=Hiragana}]\p{M}*/gu;
 
 const isLetter = (character: string | undefined) => !!character && /[\p{L}\p{M}]/u.test(character);
 const isDigit = (character: string | undefined) => !!character && /\p{N}/u.test(character);
 
 /**
- * The analyzer keeps some punctuation inside a word when it has the right characters on both sides:
- * - a dot or an apostrophe, straight or curly, between two letters or between two digits, so
- *   "node.js", "1.5", "rock'n'roll" and "O’Reilly" are each one word, while "abc.123" and "90's"
- *   are split,
- * - a colon between two letters, so "Roadtest:Best" is one word, while "3:2" is split,
- * - a comma or a semicolon between two digits, so "1,000" is one word.
- * The colon is special in the query string syntax, so it is escaped. Anywhere else these split
- * words like any other punctuation.
+ * The analyzer splits words by the Unicode word boundary rules (UAX #29), which keep some
+ * punctuation inside a word when it has the right characters on both sides. The three strings
+ * below are the MidNumLet, MidLetter and MidNum sets of those rules, with the apostrophe counted
+ * as MidNumLet:
+ * - MidNumLet, between two letters or between two digits: a dot or an apostrophe, straight or
+ *   curly, and their fullwidth and small forms, so "node.js", "1.5", "rock'n'roll" and "O’Reilly"
+ *   are each one word, while "abc.123" and "90's" are split,
+ * - MidLetter, between two letters: a colon, a middle dot and their variants, so "Roadtest:Best"
+ *   and "col·legi" are each one word, while "3:2" is split,
+ * - MidNum, between two digits: a comma, a semicolon and their variants, so "1,000" is one word.
+ */
+const midNumLet = ".'‘’․﹒＇．";
+const midLetter = ":··՟״‧︓﹕：";
+const midNum = ",;;։،؍٬߸⁄︐︔﹐﹔，；";
+
+/**
+ * Returns the character to keep inside the word, or null when it splits words like any other
+ * punctuation. The colon is special in the query string syntax, so it is escaped.
  */
 const keepInsideWord = (character: string, before?: string, after?: string): string | null => {
     const betweenLetters = isLetter(before) && isLetter(after);
     const betweenDigits = isDigit(before) && isDigit(after);
-    if (".'\u2018\u2019".includes(character) && (betweenLetters || betweenDigits)) {
-        return character;
+    const kept =
+        (midNumLet.includes(character) && (betweenLetters || betweenDigits)) ||
+        (midLetter.includes(character) && betweenLetters) ||
+        (midNum.includes(character) && betweenDigits);
+    if (!kept) {
+        return null;
     }
-    if (character === ":" && betweenLetters) {
+    if (character === ":") {
         return "\\:";
     }
-    if ((character === "," || character === ";") && betweenDigits) {
-        return character;
-    }
-    return null;
+    return character;
 };
 
 export const normalizeValue = (value: string) => {

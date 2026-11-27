@@ -74,8 +74,24 @@ describe(`GraphQL "contains" operator - query normalization`, () => {
     );
 
     it.each([
+        ["col·legi", "col·legi"],
+        ["Ratio 3·2", "Ratio 3 2"],
+        ["a：b", "a：b"],
+        ["1，000", "1，000"],
+        ["a，b", "a b"],
+        ["node．js", "node．js"]
+    ])(
+        "should keep the other UAX #29 word-inner punctuation the analyzer keeps in %j",
+        (value, expected) => {
+            expect(normalizeValue(value)).toBe(expected);
+        }
+    );
+
+    it.each([
         ["東京タワー", "東 京 タワー"],
-        ["ひらがな", "ひ ら が な"]
+        ["ひらがな", "ひ ら が な"],
+        ["ひらがな", "ひ ら が な"],
+        ["葛\u{E0100}城", "葛\u{E0100} 城"]
     ])(
         "should split %j into the characters the analyzer indexes one at a time",
         (value, expected) => {
