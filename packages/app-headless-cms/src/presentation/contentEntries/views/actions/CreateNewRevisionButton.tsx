@@ -48,6 +48,8 @@ export const CreateNewRevisionButton = observer(() => {
             variant={"secondary"}
             text={"New Revision"}
             onClick={handleSave}
+            // Each click creates a revision, so wait for the one in progress.
+            disabled={presenter.vm.loading !== null}
             icon={<NewRevisionIcon />}
         />
     );

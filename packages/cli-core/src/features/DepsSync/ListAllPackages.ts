@@ -1,11 +1,15 @@
-// @ts-expect-error
-import getPackages from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 
 export class ListAllPackages {
     public list(paths: string[]): string[] {
         const results: string[] = [];
         for (const p of paths) {
-            results.push(...getPackages(p));
+            const workspaces = listWorkspaces({
+                cwd: p
+            });
+            for (const workspace of workspaces) {
+                results.push(workspace.path);
+            }
         }
         return results;
     }

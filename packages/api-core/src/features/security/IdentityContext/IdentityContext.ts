@@ -1,13 +1,13 @@
-import { AsyncLocalStorage } from "async_hooks";
 import { minimatch } from "minimatch";
+import { AsyncLocalStorage } from "async_hooks";
 import { createImplementation } from "@webiny/di";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
 import { AuthorizationContext } from "../authorization/AuthorizationContext/index.js";
-import { filterOutCustomWbyAppsPermissions } from "../utils/filterOutCustomWbyAppsPermissions.js";
+import { applyAaclLogic } from "../utils/applyAaclLogic.js";
+import { filterPermissionsByName } from "../utils/filterPermissionsByName.js";
 import type { SecurityPermission } from "~/types/security.js";
-import type { AaclPermission } from "../../wcp/WcpContext/types.js";
 import { WcpContext } from "../../wcp/WcpContext/index.js";
 
 const identityStorage = new AsyncLocalStorage<Identity | undefined>();
@@ -94,46 +94,21 @@ class IdentityContextImpl implements Abstraction.Interface {
 
         const permissions = await this.listPermissions();
 
-        return permissions.filter(p => {
-            if (p.name === name) {
-                return true;
-            }
-            return minimatch(name, p.name);
-        }) as TPermission[];
+        return filterPermissionsByName<TPermission>(permissions, name);
     }
 
     async listPermissions(): Promise<SecurityPermission[]> {
         const permissions = await this.authorizationContext.loadPermissions(this.getIdentity());
         // TODO: extract this into a decorator
-        return this.applyAaclLogic(permissions);
+        const aaclEnabled = this.wcpContext.canUseAacl();
+        const teamsEnabled = this.wcpContext.canUseTeams();
+
+        return applyAaclLogic(permissions, { aaclEnabled, teamsEnabled });
     }
 
     async hasFullAccess(): Promise<boolean> {
         const permissions = await this.listPermissions();
         return permissions.some(p => p.name === "*");
-    }
-
-    // ========================================================================
-    // Private Helper Methods
-    // ========================================================================
-
-    private applyAaclLogic(permissions: SecurityPermission[]): SecurityPermission[] {
-        const aaclEnabled = this.wcpContext.canUseAacl();
-        const teamsEnabled = this.wcpContext.canUseTeams();
-
-        if (aaclEnabled) {
-            // Add AACL metadata permission
-            return [
-                ...permissions,
-                {
-                    name: "aacl",
-                    teams: teamsEnabled
-                } as AaclPermission
-            ];
-        }
-
-        // If AACL is not enabled, filter out custom Webiny apps permissions
-        return filterOutCustomWbyAppsPermissions(permissions);
     }
 }
 

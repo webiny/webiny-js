@@ -3,6 +3,7 @@ import { AuthorizationContext as Abstraction, PermissionTransformer } from "./ab
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Identity } from "~/features/security/IdentityContext/index.js";
+import { transformPermissions } from "~/features/security/utils/transformPermissions.js";
 
 const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();
 
@@ -30,7 +31,8 @@ export class AuthorizationContext implements Abstraction.Interface {
             for (const authorizer of authorizers) {
                 const permissions = await authorizer.authorize(identity);
                 if (Array.isArray(permissions)) {
-                    this.permissions = this.transformPermissions(permissions);
+                    const transformers = this.getTransformers();
+                    this.permissions = transformPermissions(permissions, transformers);
                     return resolve(this.permissions);
                 }
             }
@@ -55,34 +57,5 @@ export class AuthorizationContext implements Abstraction.Interface {
     clearPermissionsCache(): void {
         this.permissions = undefined;
         this.permissionsLoader = undefined;
-    }
-
-    private transformPermissions(permissions: SecurityPermission[]) {
-        const transformers = this.getTransformers();
-        if (transformers.length === 0) {
-            return this.deduplicatePermissions(permissions);
-        }
-
-        const transformed = permissions
-            .map(permission => {
-                // A transformer can return one or multiple permissions, so we flatten the result.
-                return transformers.map(t => t.execute(permission)).flat();
-            })
-            .flat();
-
-        return this.deduplicatePermissions(transformed);
-    }
-
-    private deduplicatePermissions(permissions: SecurityPermission[]) {
-        const seen = new Set<string>();
-
-        return permissions.filter(permission => {
-            const key = JSON.stringify(permission);
-            if (seen.has(key)) {
-                return false;
-            }
-            seen.add(key);
-            return true;
-        });
     }
 }
