@@ -1,7 +1,7 @@
 import React from "react";
-import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
+import { isSingletonModel } from "@webiny/app-headless-cms-common";
 import { GenericModelLoader } from "./GenericModelLoader.js";
-import { SingleEntryView } from "./SingleEntryView.js";
+import { SingletonEditorView } from "./SingletonEditorView.js";
 import { ListView } from "./ListView.js";
 
 interface ModelLoaderProps {
@@ -20,8 +20,8 @@ export const ModelLoader = ({
     return (
         <GenericModelLoader modelId={modelId}>
             {model => {
-                if (model.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
-                    return <SingleEntryView model={model} />;
+                if (isSingletonModel(model)) {
+                    return <SingletonEditorView model={model} />;
                 }
 
                 return (

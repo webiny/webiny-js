@@ -3,7 +3,8 @@ import type { CmsDeleteEntryOptions, CmsEntry, CmsModel } from "~/types/index.js
 import type {
     EntryNotAuthorizedError,
     EntryNotFoundError,
-    EntryPersistenceError
+    EntryPersistenceError,
+    EntryValidationError
 } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -21,6 +22,7 @@ export interface IDeleteEntryUseCase {
 export interface IDeleteEntryUseCaseErrors {
     notAuthorized: EntryNotAuthorizedError;
     notFound: EntryNotFoundError;
+    validation: EntryValidationError;
     storage: EntryPersistenceError;
 }
 

@@ -623,10 +623,17 @@ Provides storageId, list, validation, renderer, and other data-field methods.
 
 ---
 
-**Name:** `GetSingletonEntryUseCase`
-**Import:** `import { GetSingletonEntryUseCase } from "webiny/api/cms/entry"`
-**Source:** `@webiny/api-headless-cms/features/contentEntry/GetSingletonEntry/abstractions.ts`
-**Description:** Retrieve a singleton content entry.
+**Name:** `GetLatestSingletonEntryUseCase`
+**Import:** `import { GetLatestSingletonEntryUseCase } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/GetLatestSingletonEntry/abstractions.ts`
+**Description:** Retrieve the latest revision of a singleton content entry for management. Creates the entry when it does not exist.
+
+---
+
+**Name:** `GetPublishedSingletonEntryUseCase`
+**Import:** `import { GetPublishedSingletonEntryUseCase } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/GetPublishedSingletonEntry/abstractions.ts`
+**Description:** Retrieve the published revision of a singleton content entry for reading.
 
 ---
 
@@ -952,7 +959,7 @@ Call .private() or .public() to get the appropriate typed builder.
 **Name:** `UpdateSingletonEntryUseCase`
 **Import:** `import { UpdateSingletonEntryUseCase } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.ts`
-**Description:** Update a singleton content entry.
+**Description:** Update a singleton content entry. Call `execute(model, revision, data, options)`.
 
 ---
 

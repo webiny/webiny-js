@@ -1,6 +1,6 @@
 import type { AccessControl } from "~/features/shared/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 
 /**
  * Entry-level (owner) access checks for entries loaded from storage.
@@ -12,10 +12,6 @@ import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
  * Singleton models are exempt: there is only one entry and it is shared by everyone
  * who can access the model.
  */
-export const isSingletonModel = (model: Pick<CmsModel, "tags">): boolean => {
-    return !!model.tags?.includes(CMS_MODEL_SINGLETON_TAG);
-};
-
 export const canAccessLoadedEntry = async (
     accessControl: AccessControl.Interface,
     model: CmsModel,

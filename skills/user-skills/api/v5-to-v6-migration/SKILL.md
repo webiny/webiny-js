@@ -316,18 +316,18 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 
 ### Backend: Context Method Calls → Use Cases
 
-| v5 Pattern                                | v6 Equivalent                            |
-| ----------------------------------------- | ---------------------------------------- |
-| `context.cms.getModel()`                  | `GetModelUseCase`                        |
-| `context.cms.createModel()`               | `CreateModelUseCase`                     |
-| `context.cms.updateEntry()`               | `UpdateEntryUseCase`                     |
-| `context.cms.getSingletonEntryManager()`  | `GetSingletonEntryUseCase`               |
-| `context.tenancy.getCurrentTenant()`      | `TenantContext.getTenant()`              |
-| `context.security.withoutAuthorization()` | `IdentityContext.withoutAuthorization()` |
-| `context.aco.folder.delete()`             | `DeleteFolderUseCase`                    |
-| `context.aco.folder.get()`                | `GetFolderUseCase`                       |
-| `context.plugins.register()`              | DI container registration                |
-| `context.plugins.byType()`                | DI container injection                   |
+| v5 Pattern                                | v6 Equivalent                                                                          |
+| ----------------------------------------- | -------------------------------------------------------------------------------------- |
+| `context.cms.getModel()`                  | `GetModelUseCase`                                                                      |
+| `context.cms.createModel()`               | `CreateModelUseCase`                                                                   |
+| `context.cms.updateEntry()`               | `UpdateEntryUseCase`                                                                   |
+| `context.cms.getSingletonEntryManager()`  | `GetLatestSingletonEntryUseCase` (manage) / `GetPublishedSingletonEntryUseCase` (read) |
+| `context.tenancy.getCurrentTenant()`      | `TenantContext.getTenant()`                                                            |
+| `context.security.withoutAuthorization()` | `IdentityContext.withoutAuthorization()`                                               |
+| `context.aco.folder.delete()`             | `DeleteFolderUseCase`                                                                  |
+| `context.aco.folder.get()`                | `GetFolderUseCase`                                                                     |
+| `context.plugins.register()`              | DI container registration                                                              |
+| `context.plugins.byType()`                | DI container injection                                                                 |
 
 ### Backend: Lifecycle Event Subscriptions → EventHandlers
 

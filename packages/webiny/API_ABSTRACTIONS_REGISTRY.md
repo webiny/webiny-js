@@ -216,6 +216,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `CmsEntrySystemField`                               | `@webiny/api-headless-cms/features/contentEntry/EntrySystemField/abstractions.js`              |
 | `UpdateRevisionDescriptionUseCase`                  | `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/abstractions.js`     |
 | `UpdateSingletonEntryUseCase`                       | `@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.js`          |
+| `GetLatestSingletonEntryUseCase`                    | `@webiny/api-headless-cms/features/contentEntry/GetLatestSingletonEntry/abstractions.js`       |
+| `GetPublishedSingletonEntryUseCase`                 | `@webiny/api-headless-cms/features/contentEntry/GetPublishedSingletonEntry/abstractions.js`    |
 | `GetEntriesByIdsUseCase`                            | `@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/abstractions.js`               |
 | `GetEntryUseCase`                                   | `@webiny/api-headless-cms/features/contentEntry/GetEntry/abstractions.js`                      |
 | `GetEntryByIdUseCase`                               | `@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js`                  |
@@ -230,7 +232,6 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `GetPublishedRevisionByEntryIdUseCase`              | `@webiny/api-headless-cms/features/contentEntry/GetPublishedRevisionByEntryId/abstractions.js` |
 | `GetRevisionByIdUseCase`                            | `@webiny/api-headless-cms/features/contentEntry/GetRevisionById/abstractions.js`               |
 | `GetRevisionsByEntryIdUseCase`                      | `@webiny/api-headless-cms/features/contentEntry/GetRevisionsByEntryId/abstractions.js`         |
-| `GetSingletonEntryUseCase`                          | `@webiny/api-headless-cms/features/contentEntry/GetSingletonEntry/abstractions.js`             |
 | `ListEntriesUseCase`                                | `@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js`                   |
 | `ListLatestEntriesUseCase`                          | `@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js`                   |
 | `ListPublishedEntriesUseCase`                       | `@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js`                   |

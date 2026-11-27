@@ -1,12 +1,17 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
-import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
+import type { IFormModel, IRowNodeVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModel } from "~/types.js";
 import { ListModelGroupsUseCase } from "~/features/modelGroup/listModelGroups/abstractions.js";
 import { CreateModelUseCase } from "~/features/model/createModel/abstractions.js";
 import { ModelGroupsCache } from "~/features/modelGroup/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";
-const CMS_MODEL_SINGLETON_TAG = "singleEntry";
+import {
+    CMS_MODEL_PUBLISHING_ENABLED_TAG,
+    CMS_MODEL_SINGLETON_TAG
+} from "@webiny/app-headless-cms-common";
+import { createApiNameSchema } from "./createApiNameSchema.js";
+import { getInvalidFieldErrors } from "./getInvalidFieldErrors.js";
 import {
     NewContentModelPresenter as Abstraction,
     type INewContentModelPresenter,
@@ -16,6 +21,7 @@ import {
 class NewContentModelPresenterImpl implements INewContentModelPresenter {
     private loading = true;
     private saving = false;
+    private error: string | null = null;
     private form: IFormModel;
 
     constructor(
@@ -47,6 +53,7 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
         return {
             loading: this.loading,
             saving: this.saving,
+            error: this.error,
             groups: this.groupOptions,
             models: this.modelsCache.getItems(),
             form: this.form.vm
@@ -75,6 +82,10 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
     }
 
     async save(): Promise<CmsModel | null> {
+        runInAction(() => {
+            this.error = null;
+        });
+
         const data = await this.form.submit<Record<string, any>>();
         if (!data) {
             return null;
@@ -90,6 +101,9 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
 
             if (data.singleEntry) {
                 tags.push(CMS_MODEL_SINGLETON_TAG);
+                if (data.singleEntryPublishing) {
+                    tags.push(CMS_MODEL_PUBLISHING_ENABLED_TAG);
+                }
                 pluralApiName = `${data.singularApiName}Unused`;
             }
 
@@ -105,7 +119,8 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
             });
 
             return model;
-        } catch {
+        } catch (error) {
+            this.showError(error, Boolean(data.singleEntry));
             return null;
         } finally {
             runInAction(() => {
@@ -115,11 +130,52 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
     }
 
     reset(): void {
+        this.error = null;
         this.form = this.buildForm();
         const groups = this.groupsCache.getItems();
         if (groups.length > 0) {
             this.form.setData({ group: groups[0].slug });
         }
+    }
+
+    private showError(error: unknown, singleEntry: boolean): void {
+        const visibleFields = this.visibleFieldNames;
+        const allInvalidFields = getInvalidFieldErrors(error);
+        const hasSingularError = allInvalidFields.some(item => item.path === "singularApiName");
+        /**
+         * A single entry model's plural API name is derived from the singular one and hidden,
+         * so its error is shown under the singular field, or dropped when that has its own.
+         */
+        const invalidFields = singleEntry
+            ? allInvalidFields
+                  .filter(item => !(item.path === "pluralApiName" && hasSingularError))
+                  .map(item =>
+                      item.path === "pluralApiName" ? { ...item, path: "singularApiName" } : item
+                  )
+            : allInvalidFields;
+        const fieldErrors = invalidFields.filter(item => visibleFields.includes(item.path));
+        const otherErrors = invalidFields.filter(item => !visibleFields.includes(item.path));
+
+        runInAction(() => {
+            if (fieldErrors.length > 0) {
+                this.form.setErrors(fieldErrors);
+            }
+
+            if (otherErrors.length > 0) {
+                this.error = otherErrors.map(item => item.message).join(" ");
+                return;
+            }
+
+            if (fieldErrors.length === 0) {
+                this.error =
+                    error instanceof Error ? error.message : "Could not create content model.";
+            }
+        });
+    }
+
+    private get visibleFieldNames(): string[] {
+        const rows = this.form.vm.layout as IRowNodeVM[];
+        return rows.flatMap(row => row.fields).map(field => field.name);
     }
 
     private buildForm(): IFormModel {
@@ -131,7 +187,18 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
                     .label("Singular API Name")
                     .required("Singular API Name is required."),
                 singleEntry: fields.boolean().label("Single entry model").defaultValue(false),
-                pluralApiName: fields.text().label("Plural API Name"),
+                singleEntryPublishing: fields
+                    .boolean()
+                    .label("Enable publishing")
+                    .description("Adds drafts, revisions and publishing. Cannot be changed later.")
+                    .defaultValue(false)
+                    .hiddenWhen(({ form }) => !form.field("singleEntry").getValue()),
+                pluralApiName: fields
+                    .text()
+                    .label("Plural API Name")
+                    .required("Plural API Name is required.")
+                    .schema(createApiNameSchema(() => this.modelsCache.getItems()))
+                    .hiddenWhen(({ form }) => form.field("singleEntry").getValue()),
                 group: fields
                     .text()
                     .label("Content model group")
@@ -152,6 +219,7 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
                 layout.row("name"),
                 layout.row("singularApiName"),
                 layout.row("singleEntry"),
+                layout.row("singleEntryPublishing"),
                 layout.row("pluralApiName"),
                 layout.row("group"),
                 layout.row("icon"),

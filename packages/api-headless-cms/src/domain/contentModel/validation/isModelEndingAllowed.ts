@@ -1,6 +1,9 @@
 /**
  * This list is to disallow creating models that might interfere with GraphQL schema creation.
  * Add more if required.
+ *
+ * The admin validates the same endings from `CMS_MODEL_DISALLOWED_API_NAME_ENDINGS` in
+ * `@webiny/app-headless-cms-common`. Keep both lists in sync.
  */
 export const disallowedEnding: string[] = [
     "Response",

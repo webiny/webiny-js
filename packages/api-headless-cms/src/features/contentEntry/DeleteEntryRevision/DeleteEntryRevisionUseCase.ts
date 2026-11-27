@@ -14,7 +14,9 @@ import {
     EntryRevisionDeleteErrorEvent
 } from "./events.js";
 import { parseIdentifier } from "@webiny/utils";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
+import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
 
 /**
  * DeleteEntryRevisionUseCase - Orchestrates deletion of a specific entry revision.
@@ -52,6 +54,18 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const { id: entryId, version } = parseIdentifier(revisionId);
 
+        if (isSingletonModel(model) && !isPublishingEnabled(model)) {
+            return Result.fail(new EntryValidationError("Model does not support publishing."));
+        }
+
+        if (isSingletonModel(model) && version === 1) {
+            return Result.fail(
+                new EntryValidationError(
+                    "The first revision of a singleton entry cannot be deleted."
+                )
+            );
+        }
+
         // Get the revision to delete
         const getRevisionResult = await this.getRevisionById.execute(model, revisionId);
         if (getRevisionResult.isFail()) {
@@ -60,15 +74,25 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const entryToDelete = getRevisionResult.value;
 
-        // Check access control on the specific entry
-        const canAccessEntry = await this.accessControl.canAccessEntry({
-            model,
-            entry: entryToDelete,
-            rwd: "d"
-        });
+        if (isSingletonModel(model)) {
+            if (entryToDelete.status === "published") {
+                return Result.fail(
+                    new EntryValidationError(
+                        "The published revision cannot be deleted. Unpublish it first."
+                    )
+                );
+            }
+        } else {
+            // Check access control on the specific entry
+            const canAccessEntry = await this.accessControl.canAccessEntry({
+                model,
+                entry: entryToDelete,
+                rwd: "d"
+            });
 
-        if (!canAccessEntry) {
-            return Result.fail(new EntryNotAuthorizedError());
+            if (!canAccessEntry) {
+                return Result.fail(new EntryNotAuthorizedError());
+            }
         }
 
         // Get the latest revision

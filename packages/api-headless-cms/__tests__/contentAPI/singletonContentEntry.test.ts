@@ -3,9 +3,11 @@ import { useSingletonCategoryHandler } from "~tests/testHelpers/useSingletonCate
 import { createPluginFromCmsModel, getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants";
 
+const baseModel = getCmsModel("categorySingleton");
+
 describe("singleton model content entries", () => {
     const plugins = createPluginFromCmsModel({
-        ...getCmsModel("categorySingleton"),
+        ...baseModel,
         tags: [CMS_MODEL_SINGLETON_TAG]
     });
 
@@ -17,13 +19,17 @@ describe("singleton model content entries", () => {
         path: `read/en-US`,
         plugins
     });
+    const previewer = useSingletonCategoryHandler({
+        path: `preview/en-US`,
+        plugins
+    });
 
-    it("should fetch the singleton entry", async () => {
-        const [managerResponse] = await manager.getCategory();
+    it("should create and fetch the latest singleton entry", async () => {
+        const [managerResponse] = await manager.getCategoryLatest();
 
-        expect(managerResponse).toEqual({
+        expect(managerResponse).toMatchObject({
             data: {
-                getCategory: {
+                getCategoryLatest: {
                     data: {
                         createdBy: {
                             displayName: "John Doe",
@@ -31,25 +37,18 @@ describe("singleton model content entries", () => {
                             type: "admin"
                         },
                         createdOn: expect.toBeDateString(),
-                        deletedBy: null,
-                        deletedOn: null,
                         entryId: expect.any(String),
                         firstPublishedOn: null,
-                        id: expect.any(String),
+                        id: expect.stringMatching(/#0001$/),
                         lastPublishedOn: null,
-                        modifiedBy: null,
-                        modifiedOn: null,
-                        restoredBy: null,
-                        restoredOn: null,
-                        savedBy: {
-                            displayName: "John Doe",
-                            id: "id-12345678",
-                            type: "admin"
-                        },
-                        savedOn: expect.toBeDateString(),
                         values: {
                             slug: null,
                             title: null
+                        },
+                        meta: {
+                            version: 1,
+                            locked: false,
+                            status: "draft"
                         }
                     },
                     error: null
@@ -57,7 +56,9 @@ describe("singleton model content entries", () => {
             }
         });
 
-        const item = managerResponse.data.getCategory.data;
+        const { meta, revisionDescription, ...item } = managerResponse.data.getCategoryLatest.data;
+        expect(meta).toBeTruthy();
+        expect(revisionDescription).toBeDefined();
 
         const [readerResponse] = await reader.getCategory();
         expect(readerResponse).toEqual({
@@ -70,21 +71,26 @@ describe("singleton model content entries", () => {
         });
     });
 
-    it("should update the singleton entry", async () => {
+    it("should update the singleton entry and return it on read and preview", async () => {
+        const [latestResponse] = await manager.getCategoryLatest();
+        const id = latestResponse.data.getCategoryLatest.data.id;
+        expect(id).toMatch(/#0001$/);
+
         const data = {
             values: {
                 title: "New title",
                 slug: "new-title"
             }
         };
-        const [managerResponse] = await manager.updateCategory({
-            data
-        });
+        const [managerResponse] = await manager.updateCategory(id, data);
 
         expect(managerResponse).toMatchObject({
             data: {
                 updateCategory: {
-                    data,
+                    data: {
+                        ...data,
+                        id
+                    },
                     error: null
                 }
             }
@@ -94,7 +100,23 @@ describe("singleton model content entries", () => {
         expect(readerResponse).toMatchObject({
             data: {
                 getCategory: {
-                    data,
+                    data: {
+                        ...data,
+                        id
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [previewResponse] = await previewer.getCategory();
+        expect(previewResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        ...data,
+                        id
+                    },
                     error: null
                 }
             }
@@ -102,69 +124,31 @@ describe("singleton model content entries", () => {
     });
 
     it("should update the singleton entry multiple times in a row", async () => {
-        const [rootResponse] = await reader.getCategory();
-        expect(rootResponse).toMatchObject({
-            data: {
-                getCategory: {
-                    data: {
-                        id: expect.any(String)
-                    },
-                    error: null
-                }
-            }
+        const [latestResponse] = await manager.getCategoryLatest();
+        const id = latestResponse.data.getCategoryLatest.data.id;
+
+        const [response1] = await manager.updateCategory(id, {
+            values: { title: "First", slug: "first" }
+        });
+        expect(response1.data.updateCategory).toMatchObject({
+            data: { id, values: { title: "First" } },
+            error: null
         });
 
-        const id = rootResponse.data.getCategory.data.id;
-
-        const data = {
-            values: {
-                title: "New title",
-                slug: "new-title"
-            }
-        };
-        const [response1] = await manager.updateCategory({
-            data
+        const [response2] = await manager.updateCategory(id, {
+            values: { title: "Second", slug: "second" }
         });
-        expect(response1).toMatchObject({
-            data: {
-                updateCategory: {
-                    data: {
-                        ...data,
-                        id
-                    },
-                    error: null
-                }
-            }
+        expect(response2.data.updateCategory).toMatchObject({
+            data: { id, values: { title: "Second" } },
+            error: null
         });
 
-        const [response2] = await manager.updateCategory({
-            data
+        const [response3] = await manager.updateCategory(id, {
+            values: { title: "Third", slug: "third" }
         });
-        expect(response2).toMatchObject({
-            data: {
-                updateCategory: {
-                    data: {
-                        ...data,
-                        id
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [response3] = await manager.updateCategory({
-            data
-        });
-        expect(response3).toMatchObject({
-            data: {
-                updateCategory: {
-                    data: {
-                        ...data,
-                        id
-                    },
-                    error: null
-                }
-            }
+        expect(response3.data.updateCategory).toMatchObject({
+            data: { id, values: { title: "Third" } },
+            error: null
         });
 
         const [readerResponse] = await reader.getCategory();
@@ -172,12 +156,20 @@ describe("singleton model content entries", () => {
             data: {
                 getCategory: {
                     data: {
-                        ...data,
-                        id
+                        id,
+                        values: { title: "Third" }
                     },
                     error: null
                 }
             }
         });
+    });
+
+    it("should not have the manage get query without arguments", async () => {
+        const [response] = await manager.getCategory();
+
+        expect(response.errors?.[0]?.message).toContain(
+            `Cannot query field "get${baseModel.singularApiName}" on type "Query"`
+        );
     });
 });

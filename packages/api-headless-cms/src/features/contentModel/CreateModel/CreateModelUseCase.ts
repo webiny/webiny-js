@@ -54,7 +54,9 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         const validationResult = await createModelCreateValidation().safeParseAsync(input);
         if (!validationResult.success) {
             const zodError = createZodError(validationResult.error);
-            return Result.fail(new ModelValidationError(zodError.message));
+            return Result.fail(
+                new ModelValidationError({ message: zodError.message, data: zodError.data })
+            );
         }
 
         // Extract defaultFields flag and remove it from data

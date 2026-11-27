@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "@webiny/app";
 import { useRoute } from "@webiny/app-admin";
 import { Button, useToast } from "@webiny/admin-ui";
+import { isPublishingEnabled } from "@webiny/app-headless-cms-common";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { ReactComponent as NewRevisionIcon } from "@webiny/icons/add.svg";
@@ -25,7 +26,7 @@ export const CreateNewRevisionButton = observer(() => {
 
     const handleSave = async () => {
         const model = presenter.vm.model;
-        const isPublishable = !model.tags.includes("$publishing:false");
+        const isPublishable = isPublishingEnabled(model);
         const previousId = presenter.vm.entry?.id;
 
         const saved = await presenter.saveRevision({ skipValidation: isPublishable });

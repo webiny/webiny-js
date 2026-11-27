@@ -1,4 +1,5 @@
 import { computed, makeAutoObservable, runInAction, toJS } from "mobx";
+import { isPublishingEnabled, isSingletonModel } from "@webiny/app-headless-cms-common";
 import { FormModel, FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import type { CmsContentEntry, CmsModel } from "~/types.js";
@@ -38,7 +39,9 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private entry: CmsContentEntry | null = null;
     private form: FormModel.Interface | null = null;
     private loading: string | null = null;
+    private loadError: string | null = null;
     private folderId: string | null = null;
+    private loadToken = 0;
 
     constructor(
         private readonly formModelFactory: FormModelFactory.Interface,
@@ -69,6 +72,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             | "deleteEntryUseCase"
             | "updateRevisionDescriptionUseCase"
             | "formModelModifiers"
+            | "loadToken"
         >(this, {
             formModelFactory: false,
             cmsFormModelBuilder: false,
@@ -82,6 +86,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             deleteEntryUseCase: false,
             updateRevisionDescriptionUseCase: false,
             formModelModifiers: false,
+            loadToken: false,
             vm: computed
         });
     }
@@ -95,6 +100,8 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         const meta = entry?.meta;
         const isLocked = meta?.locked ?? false;
         const status = meta?.status;
+        const updatesLockedInPlace =
+            isSingletonModel(this.model) && !isPublishingEnabled(this.model);
         /**
          * Can save if the entry is locked and published/unpublished - it will trigger create new revision.
          * Or if the entry is not locked and the form is not null (meaning we are creating a new entry or editing an existing one).
@@ -105,13 +112,20 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
 
         return {
             loading: this.loading,
+            loadError: this.loadError,
             model: this.model,
             entry: toJS(this.entry),
             form: this.form?.vm ?? null,
             canSave,
             status,
+            /**
+             * A singleton without publishing has no new revisions: saving a locked revision updates it.
+             */
             canCreateNewRevision:
-                !!status && canSave && ["published", "unpublished"].includes(status),
+                !updatesLockedInPlace &&
+                !!status &&
+                canSave &&
+                ["published", "unpublished"].includes(status),
             canPublish: this.entry !== null && status !== "published",
             canUnpublish: this.entry !== null && status === "published",
             canDelete: this.entry !== null,
@@ -314,7 +328,9 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     }
 
     async loadRevision(id: string): Promise<void> {
+        const token = ++this.loadToken;
         this.loading = "Loading entry...";
+        this.loadError = null;
 
         try {
             const entry = await this.getEntryUseCase.execute({
@@ -322,14 +338,28 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 id
             });
 
+            if (token !== this.loadToken) {
+                return;
+            }
+
             runInAction(() => {
                 this.entry = entry;
                 this.buildAndPopulateForm(entry);
             });
-        } finally {
+        } catch (error) {
+            if (token !== this.loadToken) {
+                return;
+            }
+
             runInAction(() => {
-                this.loading = null;
+                this.loadError = error.message;
             });
+        } finally {
+            if (token === this.loadToken) {
+                runInAction(() => {
+                    this.loading = null;
+                });
+            }
         }
     }
 
@@ -356,8 +386,11 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     }
 
     reset(): void {
+        this.loadToken++;
+        this.loading = null;
         this.form = null;
         this.entry = null;
+        this.loadError = null;
         this.folderId = null;
     }
 
@@ -381,7 +414,11 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private async saveEntry(params: SaveEntryParams): Promise<CmsContentEntry> {
         const { model, entry, data, skipValidation } = params;
 
-        if (entry.meta.locked) {
+        /**
+         * A singleton without publishing has no new revisions, so a locked revision is updated in place.
+         */
+        const updatesLockedInPlace = isSingletonModel(model) && !isPublishingEnabled(model);
+        if (entry.meta.locked && !updatesLockedInPlace) {
             return await this.createRevisionFromUseCase.execute({
                 model,
                 revisionId: entry.id,

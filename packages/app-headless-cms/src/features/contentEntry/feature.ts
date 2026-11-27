@@ -12,7 +12,7 @@ import { DeleteEntryRevisionFeature } from "./deleteEntryRevision/feature.js";
 import { CreateRevisionFromFeature } from "./createRevisionFrom/feature.js";
 import { ListRevisionsFeature } from "./listRevisions/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./updateRevisionDescription/feature.js";
-import { SingletonEntryFeature } from "./singletonEntry/feature.js";
+import { SingletonEditorFeature } from "./singletonEditor/feature.js";
 import { MoveEntryFeature } from "./moveEntry/feature.js";
 import { BulkActionFeature } from "./bulkAction/feature.js";
 import { SearchContentEntriesFeature } from "./searchContentEntries/feature.js";
@@ -43,7 +43,7 @@ export const ContentEntryFeature = createFeature({
         CreateRevisionFromFeature.register(container);
         ListRevisionsFeature.register(container);
         UpdateRevisionDescriptionFeature.register(container);
-        SingletonEntryFeature.register(container);
+        SingletonEditorFeature.register(container);
         MoveEntryFeature.register(container);
         BulkActionFeature.register(container);
     }

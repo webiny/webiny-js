@@ -14,8 +14,6 @@ import { CreateEntryGateway as CreateEntryGatewayAbstraction } from "./createEnt
 import { CreateEntryGateway } from "./createEntry/CreateEntryGateway.js";
 import { UpdateEntryGateway as UpdateEntryGatewayAbstraction } from "./updateEntry/abstractions.js";
 import { UpdateEntryGateway } from "./updateEntry/UpdateEntryGateway.js";
-import { UpdateSingletonEntryGateway as UpdateSingletonEntryGatewayAbstraction } from "./singletonEntry/abstractions.js";
-import { UpdateSingletonEntryGateway } from "./singletonEntry/UpdateSingletonEntryGateway.js";
 import { CreateRevisionFromGateway as CreateRevisionFromGatewayAbstraction } from "./createRevisionFrom/abstractions.js";
 import { CreateRevisionFromGateway } from "./createRevisionFrom/CreateRevisionFromGateway.js";
 
@@ -49,14 +47,6 @@ const cases: GatewayCase[] = [
             container
                 .resolve(UpdateEntryGatewayAbstraction)
                 .execute({ model: pageModel, revisionId: ENTRY.id, data })
-    },
-    {
-        name: "UpdateSingletonEntryGateway",
-        register: container => container.register(UpdateSingletonEntryGateway),
-        execute: (container, data) =>
-            container
-                .resolve(UpdateSingletonEntryGatewayAbstraction)
-                .execute({ model: pageModel, data })
     },
     {
         name: "CreateRevisionFromGateway",

@@ -14,6 +14,7 @@ import { RevisionsListPresenter as Abstraction } from "./abstractions.js";
 import type { IRevisionsListItemViewModel } from "./abstractions.js";
 import type { IRevisionsListPresenter } from "./abstractions.js";
 import type { IRevisionsListViewModel } from "./abstractions.js";
+import type { IUnpublishRevisionResult } from "./abstractions.js";
 
 const ENTRY_PERMISSION = "cms.contentEntry";
 
@@ -189,13 +190,13 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         }
     }
 
-    async unpublishRevision(revisionId: string): Promise<boolean> {
+    async unpublishRevision(revisionId: string): Promise<IUnpublishRevisionResult> {
         const confirmed = await this.confirmation.confirm(UNPUBLISH_REVISION_DIALOG, {
             revisionId
         });
 
         if (confirmed === false) {
-            return false;
+            return { unpublished: false, error: null };
         }
 
         runInAction(() => {
@@ -210,9 +211,9 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
 
             await this.refreshRevisions(revisionId);
 
-            return true;
-        } catch {
-            return false;
+            return { unpublished: true, error: null };
+        } catch (error) {
+            return { unpublished: false, error: error.message };
         } finally {
             runInAction(() => {
                 this.loading = false;

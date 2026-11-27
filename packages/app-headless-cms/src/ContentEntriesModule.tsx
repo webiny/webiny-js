@@ -54,8 +54,10 @@ import { RevisionSelector } from "~/presentation/contentEntries/views/actions/Re
 import { ContentFormOptionsMenu } from "~/presentation/contentEntries/views/actions/ContentFormOptionsMenu.js";
 import { SaveContentButton } from "~/presentation/contentEntries/views/actions/SaveContentButton.js";
 import { SaveAndPublishButton } from "~/presentation/contentEntries/views/actions/SaveAndPublishButton.js";
+import { IsNotSingletonModel } from "~/admin/components/IsNotSingletonModel.js";
 import { DeleteEntryMenuItem } from "~/presentation/contentEntries/views/actions/DeleteEntryMenuItem.js";
 import { ShowRevisionListMenuItem } from "~/presentation/contentEntries/views/actions/ShowRevisionListMenuItem.js";
+import { UnpublishEntryMenuItem } from "~/presentation/contentEntries/views/actions/UnpublishEntryMenuItem.js";
 import { CreateNewRevisionButton } from "~/presentation/contentEntries/views/actions/CreateNewRevisionButton.js";
 import { PublishOnlyButton } from "~/presentation/contentEntries/views/actions/PublishOnlyButton.js";
 
@@ -180,15 +182,21 @@ export const ContentEntriesModule = () => {
                     <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                     <Actions.ButtonAction name={"publishOnly"} element={<PublishOnlyButton />} />
                 </IsModelPublishable>
-                <Actions.MenuItemAction
-                    name={"delete"}
-                    element={<DeleteEntryMenuItem />}
-                    after={"$last"}
-                />
+                <IsNotSingletonModel>
+                    <Actions.MenuItemAction
+                        name={"delete"}
+                        element={<DeleteEntryMenuItem />}
+                        after={"$last"}
+                    />
+                </IsNotSingletonModel>
                 <IsModelPublishable>
                     <Actions.MenuItemAction
                         name={"showRevisionsList"}
                         element={<ShowRevisionListMenuItem />}
+                    />
+                    <Actions.MenuItemAction
+                        name={"unpublish"}
+                        element={<UnpublishEntryMenuItem />}
                     />
                 </IsModelPublishable>
             </InternalContentEntryEditorConfig>

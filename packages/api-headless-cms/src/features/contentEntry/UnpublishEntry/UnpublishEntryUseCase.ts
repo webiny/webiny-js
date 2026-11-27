@@ -13,6 +13,8 @@ import type { CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
+import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
 import { CreateUnpublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateUnpublishEntryDataFactory/index.js";
 
 class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -33,6 +35,10 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
+        if (isSingletonModel(model) && !isPublishingEnabled(model)) {
+            return Result.fail(new EntryValidationError("Model does not support publishing."));
+        }
+
         const { id: entryId } = parseIdentifier(id);
 
         const publishedResult = await this.getPublishedRevisionByEntryId.execute<T>(model, entryId);
@@ -51,14 +57,18 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new EntryValidationError(`Entry is not published!`));
         }
 
-        const canAccessEntry = await this.accessControl.canAccessEntry({
-            model,
-            entry: originalEntry,
-            pw: "u"
-        });
+        // Singleton entries are shared by everyone who can access the model, so the
+        // entry-level (owner) check is skipped for them.
+        if (!isSingletonModel(model)) {
+            const canAccessEntry = await this.accessControl.canAccessEntry({
+                model,
+                entry: originalEntry,
+                pw: "u"
+            });
 
-        if (!canAccessEntry) {
-            return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            if (!canAccessEntry) {
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            }
         }
 
         const dataResult = await this.createUnpublishEntryDataFactory.create<T>(

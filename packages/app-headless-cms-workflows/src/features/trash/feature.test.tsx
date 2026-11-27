@@ -84,7 +84,7 @@ vi.mock("~/features/feature.js", () => {
     };
 });
 
-const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;
+const MODEL = { modelId: "article", singularApiName: "Article", tags: [] } as unknown as CmsModel;
 
 describe("CmsWorkflows (composition root)", () => {
     const createContainer = (isEnabled: boolean) => {

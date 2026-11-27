@@ -2,7 +2,8 @@ import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import type {
     EntryNotAuthorizedError,
-    EntryPersistenceError
+    EntryPersistenceError,
+    EntryValidationError
 } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -24,6 +25,7 @@ export interface IDeleteMultipleEntriesUseCase {
 
 export interface IDeleteMultipleEntriesUseCaseErrors {
     notAuthorized: EntryNotAuthorizedError;
+    validation: EntryValidationError;
     storage: EntryPersistenceError;
 }
 

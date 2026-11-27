@@ -9,6 +9,7 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 import { UpdateEntryRepository } from "../UpdateEntry/index.js";
 
 class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -44,15 +45,19 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
                 revisionDescription
             };
 
-            // Apply access control on the updated entry
-            const canAccessEntry = await this.accessControl.canAccessEntry({
-                model,
-                entry,
-                rwd: "w"
-            });
+            // Singleton entries are shared by everyone who can access the model, so the
+            // entry-level (owner) check is skipped for them.
+            if (!isSingletonModel(model)) {
+                // Apply access control on the updated entry
+                const canAccessEntry = await this.accessControl.canAccessEntry({
+                    model,
+                    entry,
+                    rwd: "w"
+                });
 
-            if (!canAccessEntry) {
-                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                if (!canAccessEntry) {
+                    return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                }
             }
 
             // Publish before event

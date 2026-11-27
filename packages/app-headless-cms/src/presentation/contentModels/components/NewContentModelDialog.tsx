@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "@webiny/app-admin";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
-import { OverlayLoader } from "@webiny/admin-ui";
+import { Alert, OverlayLoader } from "@webiny/admin-ui";
 import { Dialog as AdminUiDialog } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { type DialogProps } from "~/admin/components/Dialog.js";
@@ -54,6 +54,7 @@ const NewContentModelDialog = observer(({ open, onClose }: NewContentModelDialog
                 {vm.loading && (
                     <OverlayLoader text={"Please wait while we load required information."} />
                 )}
+                {vm.error && <Alert type="danger">{vm.error}</Alert>}
                 <FormView name={"NewContentModel"} form={vm.form} />
             </>
         </AdminUiDialog>

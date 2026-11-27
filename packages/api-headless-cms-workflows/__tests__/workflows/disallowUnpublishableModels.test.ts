@@ -10,6 +10,8 @@ import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow
 
 const expectedMessage = `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is marked as unpublishable.`;
 
+const singletonMessage = `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is a singleton model.`;
+
 /** Every model problem of the handlers marks the models field (R267). */
 const MODELS_ERROR_DATA = { stepId: null, field: "models", workflowId: null, ruleId: null };
 
@@ -81,6 +83,39 @@ describe("Disallow unpublishable models", () => {
         expect(result.error.message).toBe(
             `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is a private model.`
         );
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
+    });
+
+    it("rejects creating a workflow for a singleton model", async () => {
+        const { context } = createContextHandler({
+            modifyModel: model => {
+                return { ...model, tags: ["singleEntry", "$publishing:true"] };
+            }
+        });
+
+        const result = await storeWorkflow(await context());
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(singletonMessage);
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
+    });
+
+    it("rejects binding an existing workflow to a singleton model", async () => {
+        const { context } = createContextHandler({
+            modifyModel: model => {
+                return { ...model, tags: ["singleEntry", "$publishing:true"] };
+            }
+        });
+        const ctx = await context();
+        const created = await storeWorkflow(ctx, createWorkflowValues(["wb.page"]));
+        expect(created.isOk()).toBe(true);
+
+        const result = await storeWorkflow(ctx, createWorkflowValues(), created.value.savedOn);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(singletonMessage);
         expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 

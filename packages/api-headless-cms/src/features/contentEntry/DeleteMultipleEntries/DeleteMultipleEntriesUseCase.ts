@@ -10,7 +10,8 @@ import {
     EntryAfterDeleteMultipleEvent,
     EntryDeleteMultipleErrorEvent
 } from "./events.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
 import { parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { filterAsync } from "~/utils/filterAsync.js";
@@ -39,6 +40,10 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         model: CmsModel,
         params: { entries: string[] }
     ): Promise<Result<Array<{ id: string }>, UseCaseAbstraction.Error>> {
+        if (isSingletonModel(model)) {
+            return Result.fail(new EntryValidationError("Singleton entry cannot be deleted."));
+        }
+
         const { entries: input } = params;
         const maxDeletableEntries = 50;
 

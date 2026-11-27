@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { UpdateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
@@ -94,14 +95,28 @@ describe("Model delete block (D41, D64)", () => {
     it("refuses to delete a bound singleton model before its entry is deleted", async () => {
         const { context } = createContextHandler();
         const ctx = await context();
-        const settings = await createDbModel(ctx, "settings", [CMS_MODEL_SINGLETON_TAG]);
+        /*
+         * A singleton cannot be bound to a workflow any more, but a binding made before that rule
+         * (or before the model became a singleton) must still block the delete. Bind while the
+         * model is a regular one, then make it a singleton.
+         */
+        const regular = await createDbModel(ctx, "settings");
         const entry = expectOk(
-            await ctx.container.resolve(CreateEntryUseCase).execute(settings, {
+            await ctx.container.resolve(CreateEntryUseCase).execute(regular, {
                 values: { title: "Kept" },
                 location: { folderId: "root" }
             })
         );
         expectOk(await storeWorkflow(ctx, createWorkflowValues(["cms.settings"])));
+        const settings = expectOk(
+            await ctx.container.resolve(UpdateModelUseCase).execute("settings", {
+                name: regular.name,
+                fields: regular.fields,
+                layout: regular.layout,
+                titleFieldId: regular.titleFieldId,
+                tags: [CMS_MODEL_SINGLETON_TAG]
+            })
+        );
 
         const blocked = await ctx.container.resolve(DeleteModelUseCase).execute("settings");
 

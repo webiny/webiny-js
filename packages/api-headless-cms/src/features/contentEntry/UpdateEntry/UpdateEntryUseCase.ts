@@ -12,7 +12,9 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { EntryLockedError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { isSingletonModel } from "~/features/contentEntry/shared/entryOwnerAccess.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
+import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
+import { parseIdentifier } from "@webiny/utils";
 import { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/index.js";
 
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -44,7 +46,14 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             const originalEntry = result.value;
 
-            if (originalEntry.locked) {
+            // An untagged singleton has no publishing, so a `#0001` published before the tag was
+            // removed stays editable.
+            const skipLockCheck =
+                isSingletonModel(model) &&
+                !isPublishingEnabled(model) &&
+                parseIdentifier(id).version === 1;
+
+            if (originalEntry.locked && !skipLockCheck) {
                 return Result.fail(new EntryLockedError());
             }
 

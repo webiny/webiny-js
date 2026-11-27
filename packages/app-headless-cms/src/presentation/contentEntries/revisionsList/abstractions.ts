@@ -20,6 +20,12 @@ export interface IRevisionsListViewModel {
     visible: boolean;
 }
 
+/** `error` is set only when the unpublish failed. A cancelled confirmation has none. */
+export interface IUnpublishRevisionResult {
+    unpublished: boolean;
+    error: string | null;
+}
+
 export interface IRevisionsListPresenter {
     vm: IRevisionsListViewModel;
     init(entryId: string): Promise<void>;
@@ -27,7 +33,7 @@ export interface IRevisionsListPresenter {
     hide(): void;
     createRevision(revisionId: string): Promise<CmsContentEntry | null>;
     publishRevision(revisionId: string): Promise<boolean>;
-    unpublishRevision(revisionId: string): Promise<boolean>;
+    unpublishRevision(revisionId: string): Promise<IUnpublishRevisionResult>;
     updateRevisionNote(revisionId: string, currentDescription: string): Promise<boolean>;
     deleteRevision(revisionId: string): Promise<boolean>;
     dispose(): void;
@@ -40,4 +46,5 @@ export namespace RevisionsListPresenter {
     export type Interface = IRevisionsListPresenter;
     export type ViewModel = IRevisionsListViewModel;
     export type ItemViewModel = IRevisionsListItemViewModel;
+    export type UnpublishResult = IUnpublishRevisionResult;
 }

@@ -43,7 +43,18 @@ const createEntry = (entryId: string) => ({
     values: { title: entryId }
 });
 
-const setup = () => {
+interface SetupOptions {
+    tags?: string[];
+}
+
+const createLockedPublishedEntry = (entryId: string) => ({
+    id: `${entryId}#0001`,
+    entryId,
+    meta: { locked: true, status: "published", title: entryId },
+    values: { title: entryId }
+});
+
+const setup = (options: SetupOptions = {}) => {
     const forms: ReturnType<typeof createFakeForm>[] = [];
     const create = deferred<any>();
     const update = deferred<any>();
@@ -51,9 +62,14 @@ const setup = () => {
     let nextValidation: Promise<unknown> | undefined;
     /** Entries whose load the test settles by hand. */
     const pendingLoads = new Map<string, Promise<any>>();
+    /** Entries the next loads return instead of the default draft. */
+    const loadedEntries = new Map<string, any>();
+    /** Loads that fail with the given error. */
+    const failingLoads = new Map<string, Error>();
 
     const createExecute = vi.fn(() => create.promise);
     const updateExecute = vi.fn(() => update.promise);
+    const createRevisionFromExecute = vi.fn(async () => createEntry("A"));
 
     const container = new Container();
     container.registerInstance(FormModelFactory, {
@@ -68,7 +84,7 @@ const setup = () => {
         build: () => ({})
     } as unknown as CmsFormModelBuilder.Interface);
     container.registerInstance(CmsModelContext, {
-        getModel: () => ({ modelId: "article", fields: [] })
+        getModel: () => ({ modelId: "article", fields: [], tags: options.tags ?? [] })
     } as unknown as CmsModelContext.Interface);
     container.registerInstance(CreateEntryUseCase, {
         execute: createExecute
@@ -77,13 +93,21 @@ const setup = () => {
         execute: updateExecute
     } as unknown as UpdateEntryUseCase.Interface);
     container.registerInstance(GetEntryUseCase, {
-        execute: async ({ id }: { id: string }) => pendingLoads.get(id) ?? createEntry(id)
+        execute: async ({ id }: { id: string }) => {
+            const error = failingLoads.get(id);
+            if (error) {
+                throw error;
+            }
+            return pendingLoads.get(id) ?? loadedEntries.get(id) ?? createEntry(id);
+        }
     } as unknown as GetEntryUseCase.Interface);
+    container.registerInstance(CreateRevisionFromUseCase, {
+        execute: createRevisionFromExecute
+    } as unknown as CreateRevisionFromUseCase.Interface);
 
     // Not reached by the paths these tests exercise.
     for (const abstraction of [
         Confirmation,
-        CreateRevisionFromUseCase,
         PublishEntryUseCase,
         UnpublishEntryUseCase,
         DeleteEntryUseCase,
@@ -101,6 +125,9 @@ const setup = () => {
         update,
         updateExecute,
         pendingLoads,
+        loadedEntries,
+        failingLoads,
+        createRevisionFromExecute,
         slowValidation: () => {
             const validation = deferred<unknown>();
             nextValidation = validation.promise;
@@ -108,6 +135,168 @@ const setup = () => {
         }
     };
 };
+
+describe("ContentEntryFormPresenter.loadRevision", () => {
+    it("puts a failed load's error on the view model and stops loading", async () => {
+        const { presenter, failingLoads } = setup();
+        failingLoads.set("A#0001", new Error("Entry not found."));
+
+        await expect(presenter.loadRevision("A#0001")).resolves.toBeUndefined();
+
+        expect(presenter.vm.loadError).toBe("Entry not found.");
+        expect(presenter.vm.loading).toBe(null);
+    });
+
+    it("clears the load error when a later load succeeds", async () => {
+        const { presenter, failingLoads } = setup();
+        failingLoads.set("A#0001", new Error("Entry not found."));
+        await presenter.loadRevision("A#0001");
+
+        await presenter.loadRevision("B");
+
+        expect(presenter.vm.loadError).toBe(null);
+        expect(presenter.vm.entry?.entryId).toBe("B");
+    });
+
+    it("ignores the error of an earlier load that fails after a later one finished", async () => {
+        const { presenter, pendingLoads } = setup();
+        const loadA = deferred<any>();
+        pendingLoads.set("A", loadA.promise);
+        const first = presenter.loadRevision("A");
+        await presenter.loadRevision("B");
+
+        loadA.reject(new Error("Entry not found."));
+        await first;
+
+        expect(presenter.vm.loadError).toBe(null);
+        expect(presenter.vm.entry?.entryId).toBe("B");
+    });
+
+    it("keeps the later entry when an earlier load succeeds after it", async () => {
+        const { presenter, pendingLoads } = setup();
+        const loadA = deferred<any>();
+        pendingLoads.set("A", loadA.promise);
+        const first = presenter.loadRevision("A");
+        await presenter.loadRevision("B");
+
+        loadA.resolve(createEntry("A"));
+        await first;
+
+        expect(presenter.vm.entry?.entryId).toBe("B");
+        expect(presenter.vm.loading).toBe(null);
+    });
+
+    it("ignores a load that finishes after the presenter was reset", async () => {
+        const { presenter, pendingLoads } = setup();
+        const loadA = deferred<any>();
+        pendingLoads.set("A", loadA.promise);
+        const first = presenter.loadRevision("A");
+        presenter.reset();
+
+        loadA.resolve(createEntry("A"));
+        await first;
+
+        expect(presenter.vm.entry).toBe(null);
+        expect(presenter.vm.loading).toBe(null);
+    });
+});
+
+describe("ContentEntryFormPresenter.canCreateNewRevision", () => {
+    it("is false for a locked published revision of an untagged singleton", async () => {
+        const { presenter, loadedEntries } = setup({ tags: ["singleEntry"] });
+        loadedEntries.set("S", createLockedPublishedEntry("S"));
+
+        await presenter.loadRevision("S");
+
+        expect(presenter.vm.canCreateNewRevision).toBe(false);
+        expect(presenter.vm.canSave).toBe(true);
+    });
+
+    it("is true for a locked published revision of a tagged singleton", async () => {
+        const { presenter, loadedEntries } = setup({ tags: ["singleEntry", "$publishing:true"] });
+        loadedEntries.set("S", createLockedPublishedEntry("S"));
+
+        await presenter.loadRevision("S");
+
+        expect(presenter.vm.canCreateNewRevision).toBe(true);
+    });
+
+    it("is true for a locked published revision of a regular model without publishing", async () => {
+        const { presenter, loadedEntries } = setup({ tags: ["$publishing:false"] });
+        loadedEntries.set("A", createLockedPublishedEntry("A"));
+
+        await presenter.loadRevision("A");
+
+        expect(presenter.vm.canCreateNewRevision).toBe(true);
+    });
+
+    it("is true for a locked published revision of a regular model", async () => {
+        const { presenter, loadedEntries } = setup();
+        loadedEntries.set("A", createLockedPublishedEntry("A"));
+
+        await presenter.loadRevision("A");
+
+        expect(presenter.vm.canCreateNewRevision).toBe(true);
+    });
+});
+
+describe("ContentEntryFormPresenter saving a locked revision", () => {
+    it("creates a new revision from the locked revision of a regular model without publishing", async () => {
+        const { presenter, loadedEntries, updateExecute, createRevisionFromExecute } = setup({
+            tags: ["$publishing:false"]
+        });
+        loadedEntries.set("A", createLockedPublishedEntry("A"));
+        await presenter.loadRevision("A");
+
+        await expect(presenter.saveRevision()).resolves.toBe(true);
+        expect(createRevisionFromExecute).toHaveBeenCalledWith(
+            expect.objectContaining({ revisionId: "A#0001" })
+        );
+        expect(updateExecute).not.toHaveBeenCalled();
+    });
+
+    it("updates the locked revision of an untagged singleton in place", async () => {
+        const { presenter, loadedEntries, update, updateExecute, createRevisionFromExecute } =
+            setup({ tags: ["singleEntry"] });
+        loadedEntries.set("S", createLockedPublishedEntry("S"));
+        await presenter.loadRevision("S");
+
+        const saving = presenter.saveRevision();
+        update.resolve(createEntry("S"));
+
+        await expect(saving).resolves.toBe(true);
+        expect(updateExecute).toHaveBeenCalledWith(
+            expect.objectContaining({ revisionId: "S#0001" })
+        );
+        expect(createRevisionFromExecute).not.toHaveBeenCalled();
+    });
+
+    it("creates a new revision from the locked revision of a tagged singleton", async () => {
+        const { presenter, loadedEntries, updateExecute, createRevisionFromExecute } = setup({
+            tags: ["singleEntry", "$publishing:true"]
+        });
+        loadedEntries.set("S", createLockedPublishedEntry("S"));
+        await presenter.loadRevision("S");
+
+        await expect(presenter.saveRevision()).resolves.toBe(true);
+        expect(createRevisionFromExecute).toHaveBeenCalledWith(
+            expect.objectContaining({ revisionId: "S#0001" })
+        );
+        expect(updateExecute).not.toHaveBeenCalled();
+    });
+
+    it("creates a new revision from the locked revision of a regular model", async () => {
+        const { presenter, loadedEntries, updateExecute, createRevisionFromExecute } = setup();
+        loadedEntries.set("A", createLockedPublishedEntry("A"));
+        await presenter.loadRevision("A");
+
+        await expect(presenter.saveRevision()).resolves.toBe(true);
+        expect(createRevisionFromExecute).toHaveBeenCalledWith(
+            expect.objectContaining({ revisionId: "A#0001" })
+        );
+        expect(updateExecute).not.toHaveBeenCalled();
+    });
+});
 
 describe("ContentEntryFormPresenter.saveRevision", () => {
     it("puts a rejected save's errors on the form", async () => {

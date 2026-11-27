@@ -9,6 +9,11 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { ScheduleEntryGuard } from "~/features/ScheduleEntryGuard/index.js";
+import { EntryValidationError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import {
+    isPublishingEnabled,
+    isSingletonModel
+} from "@webiny/api-headless-cms/exports/api/cms/model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
@@ -44,6 +49,13 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
             return Result.fail(new SchedulerNotAuthorizedError());
         }
 
+        // Cancelling stays possible for schedules that exist on a model without publishing.
+        if (params.operation !== "cancel" && !isPublishingEnabled(model)) {
+            return Result.fail(
+                new EntryValidationError("Model does not support publishing.") as any
+            );
+        }
+
         // Fetch entry to get title
         const entryResult = await this.getEntryByIdUseCase.execute(model, params.targetId);
         if (entryResult.isFail()) {
@@ -51,12 +63,13 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
         }
 
         const entry = entryResult.value;
+        const pw = params.actionType === ScheduledActionTypePublish ? "p" : "u";
         // Same check as publishing / unpublishing the entry directly, including "own entries only".
-        const canSchedule = await this.accessControl.canAccessEntry({
-            model,
-            entry,
-            pw: params.actionType === ScheduledActionTypePublish ? "p" : "u"
-        });
+        // Singleton entries are shared by everyone who can access the model, so the entry-level
+        // (owner) check is skipped for them.
+        const canSchedule = isSingletonModel(model)
+            ? await this.accessControl.canAccessEntry({ model, pw })
+            : await this.accessControl.canAccessEntry({ model, entry, pw });
         if (!canSchedule) {
             return Result.fail(new SchedulerNotAuthorizedError());
         }

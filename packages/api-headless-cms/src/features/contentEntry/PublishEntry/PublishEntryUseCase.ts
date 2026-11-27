@@ -13,7 +13,13 @@ import {
     EntryAfterPublishEvent,
     EntryPublishErrorEvent
 } from "./events.js";
-import { EntryNotAuthorizedError, EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryValidationError
+} from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/domain/contentModel/isSingletonModel.js";
+import { isPublishingEnabled } from "~/domain/contentModel/isPublishingEnabled.js";
 import { CreatePublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/index.js";
 
 class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -35,6 +41,10 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
+        if (isSingletonModel(model) && !isPublishingEnabled(model)) {
+            return Result.fail(new EntryValidationError("Model does not support publishing."));
+        }
+
         const result = await this.getRevisionById.execute<T>(model, id);
 
         if (result.isFail()) {
@@ -43,14 +53,18 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const originalEntry = result.value;
 
-        const canAccessEntry = await this.accessControl.canAccessEntry({
-            model,
-            entry: originalEntry,
-            pw: "p"
-        });
+        // Singleton entries are shared by everyone who can access the model, so the
+        // entry-level (owner) check is skipped for them.
+        if (!isSingletonModel(model)) {
+            const canAccessEntry = await this.accessControl.canAccessEntry({
+                model,
+                entry: originalEntry,
+                pw: "p"
+            });
 
-        if (!canAccessEntry) {
-            return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            if (!canAccessEntry) {
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            }
         }
 
         const source = options?.values
