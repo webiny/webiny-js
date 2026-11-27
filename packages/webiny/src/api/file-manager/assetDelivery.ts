@@ -3,6 +3,7 @@ export type { AssetData } from "@webiny/api-file-manager/delivery/AssetDelivery/
 export { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 export type { AssetRequestOptions } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 export { AssetReply } from "@webiny/api-file-manager/delivery/AssetDelivery/abstractions/AssetReply.js";
+export { toSingleChunk } from "@webiny/api-file-manager/delivery/AssetDelivery/toSingleChunk.js";
 export { createAssetDeliveryPluginLoader } from "@webiny/api-file-manager/delivery/AssetDelivery/createAssetDeliveryPluginLoader.js";
 export {
     AssetRequestResolver,
