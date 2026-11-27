@@ -48,7 +48,8 @@ export class ScheduledActionMapper {
             unpublishOn:
                 action.actionType === SCHEDULED_ACTION_UNPUBLISH ? action.scheduledFor : null,
             actionType: action.actionType,
-            title: action.title
+            title: action.title,
+            error: action.error || null
         };
     }
 }

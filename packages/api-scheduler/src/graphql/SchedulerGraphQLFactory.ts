@@ -24,6 +24,7 @@ interface IScheduleRecordOutput {
     unpublishOn: Date | null;
     actionType: ScheduledActionType;
     title: string;
+    error: string | null;
 }
 
 export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
@@ -66,6 +67,8 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 unpublishOn: DateTime
                 actionType: ScheduleRecordType!
                 title: String!
+                # Error message of the last failed execution.
+                error: String
             }
 
             type GetScheduledActionResponse {
