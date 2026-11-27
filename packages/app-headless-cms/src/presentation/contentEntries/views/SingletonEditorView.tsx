@@ -54,7 +54,11 @@ export const SingletonEditorView = createReactiveComponent(
         return (
             <ModelProvider model={model}>
                 <ContentEntryEditorWithConfig>
-                    <ContentEntryEditorBody entryId={vm.entryId} modelName={model.name} />
+                    <ContentEntryEditorBody
+                        entryId={vm.entryId}
+                        modelName={model.name}
+                        fullScreen={false}
+                    />
                 </ContentEntryEditorWithConfig>
             </ModelProvider>
         );

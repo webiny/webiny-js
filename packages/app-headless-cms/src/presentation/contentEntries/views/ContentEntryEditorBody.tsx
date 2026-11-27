@@ -23,10 +23,12 @@ export interface ContentEntryEditorBodyProps {
     modelName: string;
     /** Shows a back button when set. */
     onBack?: () => void;
+    /** Covers the whole admin (regular editor). When false, renders inside the admin layout. */
+    fullScreen?: boolean;
 }
 
 export const ContentEntryEditorBody = createReactiveComponent(
-    ({ entryId, modelName, onBack }: ContentEntryEditorBodyProps) => {
+    ({ entryId, modelName, onBack, fullScreen = true }: ContentEntryEditorBodyProps) => {
         const formPresenter = useContentEntryFormPresenter();
         const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
         const { newEntryWizard, width } = useContentEntryEditorConfig();
@@ -92,7 +94,7 @@ export const ContentEntryEditorBody = createReactiveComponent(
         }
 
         return (
-            <Container>
+            <Container fullScreen={fullScreen}>
                 <Helmet title={vm.entry?.meta?.title || modelName} />
                 <HeaderBar
                     start={
@@ -106,7 +108,7 @@ export const ContentEntryEditorBody = createReactiveComponent(
                     }
                     end={<EntryFormHeaderRight />}
                 />
-                <ScrollArea>
+                <ScrollArea fullScreen={fullScreen}>
                     {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
                     <OlderRevisionAlert />
                     {content}
