@@ -157,6 +157,48 @@ describe("ContentEntryFormPresenter.loadRevision", () => {
         expect(presenter.vm.loadError).toBe(null);
         expect(presenter.vm.entry?.entryId).toBe("B");
     });
+
+    it("ignores the error of an earlier load that fails after a later one finished", async () => {
+        const { presenter, pendingLoads } = setup();
+        const loadA = deferred<any>();
+        pendingLoads.set("A", loadA.promise);
+        const first = presenter.loadRevision("A");
+        await presenter.loadRevision("B");
+
+        loadA.reject(new Error("Entry not found."));
+        await first;
+
+        expect(presenter.vm.loadError).toBe(null);
+        expect(presenter.vm.entry?.entryId).toBe("B");
+    });
+
+    it("keeps the later entry when an earlier load succeeds after it", async () => {
+        const { presenter, pendingLoads } = setup();
+        const loadA = deferred<any>();
+        pendingLoads.set("A", loadA.promise);
+        const first = presenter.loadRevision("A");
+        await presenter.loadRevision("B");
+
+        loadA.resolve(createEntry("A"));
+        await first;
+
+        expect(presenter.vm.entry?.entryId).toBe("B");
+        expect(presenter.vm.loading).toBe(null);
+    });
+
+    it("ignores a load that finishes after the presenter was reset", async () => {
+        const { presenter, pendingLoads } = setup();
+        const loadA = deferred<any>();
+        pendingLoads.set("A", loadA.promise);
+        const first = presenter.loadRevision("A");
+        presenter.reset();
+
+        loadA.resolve(createEntry("A"));
+        await first;
+
+        expect(presenter.vm.entry).toBe(null);
+        expect(presenter.vm.loading).toBe(null);
+    });
 });
 
 describe("ContentEntryFormPresenter.canCreateNewRevision", () => {

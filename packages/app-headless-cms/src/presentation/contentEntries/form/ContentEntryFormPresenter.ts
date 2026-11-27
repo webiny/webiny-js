@@ -41,6 +41,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private loading: string | null = null;
     private loadError: string | null = null;
     private folderId: string | null = null;
+    private loadToken = 0;
 
     constructor(
         private readonly formModelFactory: FormModelFactory.Interface,
@@ -71,6 +72,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             | "deleteEntryUseCase"
             | "updateRevisionDescriptionUseCase"
             | "formModelModifiers"
+            | "loadToken"
         >(this, {
             formModelFactory: false,
             cmsFormModelBuilder: false,
@@ -84,6 +86,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             deleteEntryUseCase: false,
             updateRevisionDescriptionUseCase: false,
             formModelModifiers: false,
+            loadToken: false,
             vm: computed
         });
     }
@@ -325,6 +328,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     }
 
     async loadRevision(id: string): Promise<void> {
+        const token = ++this.loadToken;
         this.loading = "Loading entry...";
         this.loadError = null;
 
@@ -334,18 +338,28 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 id
             });
 
+            if (token !== this.loadToken) {
+                return;
+            }
+
             runInAction(() => {
                 this.entry = entry;
                 this.buildAndPopulateForm(entry);
             });
         } catch (error) {
+            if (token !== this.loadToken) {
+                return;
+            }
+
             runInAction(() => {
                 this.loadError = error.message;
             });
         } finally {
-            runInAction(() => {
-                this.loading = null;
-            });
+            if (token === this.loadToken) {
+                runInAction(() => {
+                    this.loading = null;
+                });
+            }
         }
     }
 
@@ -372,6 +386,8 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     }
 
     reset(): void {
+        this.loadToken++;
+        this.loading = null;
         this.form = null;
         this.entry = null;
         this.loadError = null;
