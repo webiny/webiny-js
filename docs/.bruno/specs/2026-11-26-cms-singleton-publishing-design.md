@@ -68,6 +68,10 @@ singleton model with `singularApiName: "Settings"`.
 - A singleton model supports publishing and revisions only when its tags include
   `$publishing:true`. Without the tag ("untagged"), it behaves as today.
 - Regular models keep the existing rule: publishable unless tagged `$publishing:false`.
+- Admin: the "New model" dialog has an "Enable publishing" checkbox, shown only while "Single entry
+  model" is checked; it adds `$publishing:true`. The option exists only at creation. The model
+  settings do not offer it, so publishing cannot be changed in the admin later. Code-defined
+  models set the tag in code.
 - Tag constants, next to `CMS_MODEL_SINGLETON_TAG`: `CMS_MODEL_PUBLISHING_ENABLED_TAG = "$publishing:true"`
   and `CMS_MODEL_PUBLISHING_DISABLED_TAG = "$publishing:false"`. API: `constants.ts`. Admin:
   `@webiny/app-headless-cms-common` constants (where `CMS_MODEL_SINGLETON_TAG` already lives, see
