@@ -218,27 +218,66 @@ describe("NewContentModelPresenter", () => {
             expect(presenter.vm.error).toBeNull();
         });
 
-        it("shows the message when the invalid field is not in the form", async () => {
+        const validationError = (invalidFields: Record<string, { message: string }>) => {
+            const entries = Object.entries(invalidFields).map(([path, field]) => [
+                path,
+                { code: "invalid_string", message: field.message, data: { path } }
+            ]);
+            return new CmsModelError(
+                {
+                    code: "Cms/Model/ValidationError",
+                    message: "Validation failed.",
+                    data: { invalidFields: Object.fromEntries(entries) }
+                },
+                "fallback"
+            );
+        };
+
+        it("drops the derived plural error for a single entry model when the singular one exists", async () => {
             fillRequired();
             setValue("singleEntry", true);
             createModel.mockRejectedValueOnce(
-                new CmsModelError(
-                    {
-                        code: "Cms/Model/ValidationError",
-                        message: "Validation failed.",
-                        data: {
-                            invalidFields: {
-                                pluralApiName: { code: "x", message: "Bad plural.", data: {} }
-                            }
-                        }
-                    },
-                    "fallback"
-                )
+                validationError({
+                    singularApiName: { message: "Bad singular." },
+                    pluralApiName: { message: "Bad plural." }
+                })
             );
 
             await presenter.save();
 
-            expect(presenter.vm.error).toBe("Bad plural.");
+            expect(singularField()!.validation.message).toBe("Bad singular.");
+            expect(presenter.vm.error).toBeNull();
+        });
+
+        it("shows the plural error under the singular field for a single entry model", async () => {
+            fillRequired();
+            setValue("singleEntry", true);
+            createModel.mockRejectedValueOnce(
+                validationError({ pluralApiName: { message: "Bad plural." } })
+            );
+
+            await presenter.save();
+
+            expect(singularField()!.validation.message).toBe("Bad plural.");
+            expect(presenter.vm.error).toBeNull();
+        });
+
+        it("keeps the plural error on the plural field for a regular model", async () => {
+            fillRequired();
+            setValue("pluralApiName", "Settings");
+            createModel.mockRejectedValueOnce(
+                validationError({ pluralApiName: { message: "Bad plural." } })
+            );
+
+            await presenter.save();
+
+            const rows = presenter.vm.form.layout as IRowNodeVM[];
+            const pluralField = rows
+                .flatMap(row => row.fields)
+                .find(f => f.name === "pluralApiName");
+            expect(pluralField!.validation.message).toBe("Bad plural.");
+            expect(singularField()!.validation.message).toBeFalsy();
+            expect(presenter.vm.error).toBeNull();
         });
 
         it("clears the error on reset", async () => {

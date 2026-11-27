@@ -120,7 +120,7 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
 
             return model;
         } catch (error) {
-            this.showError(error);
+            this.showError(error, Boolean(data.singleEntry));
             return null;
         } finally {
             runInAction(() => {
@@ -138,9 +138,21 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
         }
     }
 
-    private showError(error: unknown): void {
+    private showError(error: unknown, singleEntry: boolean): void {
         const visibleFields = this.visibleFieldNames;
-        const invalidFields = getInvalidFieldErrors(error);
+        const allInvalidFields = getInvalidFieldErrors(error);
+        const hasSingularError = allInvalidFields.some(item => item.path === "singularApiName");
+        /**
+         * A single entry model's plural API name is derived from the singular one and hidden,
+         * so its error is shown under the singular field, or dropped when that has its own.
+         */
+        const invalidFields = singleEntry
+            ? allInvalidFields
+                  .filter(item => !(item.path === "pluralApiName" && hasSingularError))
+                  .map(item =>
+                      item.path === "pluralApiName" ? { ...item, path: "singularApiName" } : item
+                  )
+            : allInvalidFields;
         const fieldErrors = invalidFields.filter(item => visibleFields.includes(item.path));
         const otherErrors = invalidFields.filter(item => !visibleFields.includes(item.path));
 
