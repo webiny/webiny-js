@@ -5,9 +5,11 @@ import { ColorPicker } from "@webiny/admin-ui";
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
 import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
+import { useThemeColorPresets } from "~/BaseEditor/hooks/useThemeColorPresets.js";
 
 export const BackgroundColor = observer(({ elementId }: { elementId: string }) => {
     const { styles, onChange, onPreviewChange, inheritanceMap } = useStyles(elementId);
+    const presets = useThemeColorPresets();
     const [value, setValue] = useState(styles.backgroundColor ?? "transparent");
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -53,7 +55,13 @@ export const BackgroundColor = observer(({ elementId }: { elementId: string }) =
                 />
             }
         >
-            <ColorPicker value={value} onChange={handleChange} size={"md"} variant={"secondary"} />
+            <ColorPicker
+                value={value}
+                onChange={handleChange}
+                size={"md"}
+                variant={"secondary"}
+                presets={presets}
+            />
         </SidebarRow>
     );
 });
