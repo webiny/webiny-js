@@ -26,7 +26,7 @@ const openNewModelDialog = async (screen: Screen) => {
 const fillNewModel = async (dialog: Locator, name: string, singular: string, plural: string) => {
     await dialog.getByRole("textbox", "Name *").fill(name);
     await dialog.getByRole("textbox", "Singular API Name *").fill(singular);
-    await dialog.getByRole("textbox", "Plural API Name").fill(plural);
+    await dialog.getByRole("textbox", "Plural API Name *").fill(plural);
 };
 
 interface CreateModelAnswer {

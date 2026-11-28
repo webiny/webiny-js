@@ -111,7 +111,7 @@ describe(
 
             // The API names are not derived from the name: the user types them.
             await expect(dialog.getByRole("textbox", "Singular API Name *")).toHaveValue("");
-            await expect(dialog.getByRole("textbox", "Plural API Name")).toHaveValue("");
+            await expect(dialog.getByRole("textbox", "Plural API Name *")).toHaveValue("");
         });
 
         test("the model is created in the group without default fields", async ({
@@ -120,7 +120,7 @@ describe(
         }) => {
             const dialog = screen.getByTestId("cms-new-content-model-modal");
             await dialog.getByRole("textbox", "Singular API Name *").fill(singularApiName);
-            await dialog.getByRole("textbox", "Plural API Name").fill(`CmsLifes${runId}`);
+            await dialog.getByRole("textbox", "Plural API Name *").fill(`CmsLifes${runId}`);
             await dialog.getByRole("combobox", "Content model group *").tap();
             await screen.getByRole("option", groupName).tap();
             await dialog.getByRole("switch", "Create model with default fields").tap();
